@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
+    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-importedresources-ge-importedresources8c81d8d-j5w43nqek34u"
+    "OutputValue": "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
+    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "oauthCognitoDomain",
-    "OutputValue": ".auth.us-east-1.amazoncognito.com"
+    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain"
   },
   {
     "OutputKey": "oauthScope",
@@ -41,7 +41,7 @@
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+    "OutputValue": "c643a9b272.awsAppsyncAdditionalAuthenticationTypes"
   },
   {
     "OutputKey": "mfaTypes",
@@ -61,11 +61,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputValue": "api.importedresources.GraphQLAPIKeyOutput"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "API_KEY"
+    "OutputValue": "c643a9b272.awsAppsyncAuthenticationType"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://tyw3rmjx7vdv7lciqxuritf4fm.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "wl2oasglxvbnza7q3obncdxijq"
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,15 +89,15 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-importedresources-ge-importedresources8c81d8d-j5w43nqek34u\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main\\\",\\\"bucketName\\\":\\\"675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-importedresources-ge-amplifydataamplifycodege-zkceqz3aufv6/model-schema.graphql"
+    "OutputValue": "c643a9b272.amplifyApiModelSchemaS3Uri"
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"importedresourcequotegenerator-gen2-main\"]"
+    "OutputValue": "[\"fd08f90f6e.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref\"]"
   },
   {
     "OutputKey": "awsAppsyncRegion",
@@ -105,7 +105,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "branch"
+    "OutputValue": "c643a9b272.deploymentType"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -117,11 +117,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "auth.importedresources2c7c1c40.UserPoolId"
+    "OutputValue": "c643a9b272.userPoolId"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "auth.importedresources2c7c1c40.IdentityPoolId"
+    "OutputValue": "c643a9b272.identityPoolId"
   },
   {
     "OutputKey": "verificationMechanisms",

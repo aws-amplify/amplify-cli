@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-fitnesstracker-main-a0537-authRole"
+    "OutputValue": "e6829a95b8.AuthRoleName"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-unauthRole"
+    "OutputValue": "e6829a95b8.UnauthRoleArn"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-authRole"
+    "OutputValue": "e6829a95b8.AuthRoleArn"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-fitnesstracker-main-a0537-Region"
+    "ExportName": "e6829a95b8.StackName-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-fitnesstracker-main-a0537-deployment",
+    "OutputValue": "e6829a95b8.DeploymentBucketName",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-fitnesstracker-main-a0537-DeploymentBucketName"
+    "ExportName": "e6829a95b8.StackName-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-fitnesstracker-main-a0537-unauthRole"
+    "OutputValue": "e6829a95b8.UnauthRoleName"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-fitnesstracker-main-a0537",
+    "OutputValue": "e6829a95b8.StackName",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-fitnesstracker-main-a0537-StackName"
+    "ExportName": "e6829a95b8.StackName-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-main-a0537/1749a530-272d-11f1-a465-0e5f0b5f7853",
+    "OutputValue": "e6829a95b8.StackId",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-fitnesstracker-main-a0537-StackId"
+    "ExportName": "e6829a95b8.StackName-StackId"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "1o40oi80febsgsdamen2i1gnfd"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "1o40oi80febsgsdamen2i1gnfd"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -37,7 +37,7 @@
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "API_KEY,AWS_IAM"
+    "OutputValue": "3f11ed2aac.awsAppsyncAdditionalAuthenticationTypes"
   },
   {
     "OutputKey": "mfaTypes",
@@ -53,19 +53,19 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputValue": "api.fitnesstracker.GraphQLAPIKeyOutput"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "AMAZON_COGNITO_USER_POOLS"
+    "OutputValue": "3f11ed2aac.awsAppsyncAuthenticationType"
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"custom\":{\"API\":{\"api.api.adminapi.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://3tygfqh1kh.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"api.api.adminapi.ApiName.ApiName-gen2-main\"},\"api.api.nutritionapi.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://klqsuoycl8.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"api.api.nutritionapi.ApiName.ApiName-gen2-main\"}}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"custom\":{\"API\":{\"api.d809bc5a09.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://ae47f28d1b.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebrestapistackd809bc5a09.ApiNameRestApi15E05C08Ref.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"api.d809bc5a09.ApiName.ApiName-gen2-main\"},\"api.5c8596b905.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://cee77f3d0f.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebrestapistack5c8596b905.ApiNameRestApiEC7FBBC7Ref.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"api.5c8596b905.ApiName.ApiName-gen2-main\"}}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "https://example.com"
+    "OutputValue": "3f11ed2aac.oauthRedirectSignIn"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -73,11 +73,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://lpsucva2qjdofmkpzenwokjsue.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BGraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "jrmmxaml4ndpxmx4pmyk3bgv7u"
+    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -85,7 +85,7 @@
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-fitnesstracker-ge-amplifydataamplifycodege-qcmnmg6hhy5m/model-schema.graphql"
+    "OutputValue": "3f11ed2aac.amplifyApiModelSchemaS3Uri"
   },
   {
     "OutputKey": "groups",
@@ -93,7 +93,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"fitnesstracker33f5545533f55455PreSignup-gen2-main\",\"admin-gen2-main\",\"lognutrition-gen2-main\"]"
+    "OutputValue": "[\"5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef\",\"5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthadmingen2mainlambda19698385Ref\",\"f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdatalognutritiongen2mainlambda08A76FE8Ref\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -105,7 +105,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "branch"
+    "OutputValue": "3f11ed2aac.deploymentType"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -117,11 +117,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_KGveHFLxc"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:b0685620-d814-422e-830f-b0f30f6900f3"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
   },
   {
     "OutputKey": "verificationMechanisms",

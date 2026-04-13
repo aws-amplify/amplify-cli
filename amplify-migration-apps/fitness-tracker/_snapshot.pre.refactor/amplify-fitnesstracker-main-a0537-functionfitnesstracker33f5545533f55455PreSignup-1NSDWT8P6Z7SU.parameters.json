@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
+    "ParameterValue": "e6829a95b8.DeploymentBucketName"
   },
   {
     "ParameterKey": "DOMAINBLACKLIST",

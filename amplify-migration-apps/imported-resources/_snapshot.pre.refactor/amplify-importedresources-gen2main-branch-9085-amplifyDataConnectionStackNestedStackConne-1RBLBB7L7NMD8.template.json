@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Projecttodosauth0Function",
@@ -17,17 +17,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/ConnectionStack/Projecttodosauth0Function/Projecttodosauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/ConnectionStack/Projecttodosauth0Function/Projecttodosauth0Function.AppSyncFunction"
       }
     },
     "ProjectTodosDataResolverFnProjectTodosDataResolverFnAppSyncFunction6418E519": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoDataSource108D508BName"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "ProjectTodosDataResolverFn",
@@ -39,14 +39,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/ConnectionStack/ProjectTodosDataResolverFn/ProjectTodosDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/ConnectionStack/ProjectTodosDataResolverFn/ProjectTodosDataResolverFn.AppSyncFunction"
       }
     },
     "ProjecttodosResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "FieldName": "todos",
         "Kind": "PIPELINE",
@@ -72,7 +72,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"todos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+                "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoTable2DD94F95TableArn"
+                                "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn"
                               }
                             ]
                           }
@@ -114,7 +114,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -122,7 +122,7 @@
         "TypeName": "Project"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/ConnectionStack/projectTodosResolver"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/ConnectionStack/projectTodosResolver"
       }
     },
     "CDKMetadata": {
@@ -131,7 +131,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMQQ6CMBBA0bOwLyMWTdwKiUsXcAAyloEUcEo6LcQQ7m7Q1cvffA36coUswVVS047pZF+wPUkCtXVAMypcpdkkb1CEgsD9QEkORTQjhQKFFM6zfNjAVnb8iGyCdVw67mwfPR6hyo4rEjct5Pdd/R51wN5yvyt2LcEgp0VrON8gSwaxNvWRg30TVH+/6T0LR6cAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/ConnectionStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/ConnectionStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -403,16 +403,16 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName": {
       "Type": "String"
     },
-    "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoDataSource108D508BName": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName": {
       "Type": "String"
     },
-    "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoTable2DD94F95TableArn": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn": {
       "Type": "String"
     }
   }

@@ -1,56 +1,56 @@
 [
   {
-    "OutputKey": "GetAttMoodItemTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-api.moodboard.GraphQLAPIIdOutput-main/stream/2026-03-08T17:03:43.962",
+    "OutputKey": "GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameStreamArn",
+    "OutputValue": "79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemTable:StreamArn"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName:StreamArn"
   },
   {
     "OutputKey": "GetAttMoodItemDataSourceName",
-    "OutputValue": "MoodItemTable",
+    "OutputValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemDataSource:Name"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:MoodItemDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackMoodItemMoodItemTable5135EED9Ref",
-    "OutputValue": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main"
+    "OutputKey": "transformerrootstackMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName5135EED9Ref",
+    "OutputValue": "79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName"
   },
   {
     "OutputKey": "transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId",
-    "OutputValue": "2b6kbyvzpfh6legcpe7qnmfnnq"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId"
   },
   {
     "OutputKey": "transformerrootstackMoodItemSubscriptionOnCreateMoodItemDataResolverFnSubscriptionOnCreateMoodItemDataResolverFnAppSyncFunctionE0588344FunctionId",
-    "OutputValue": "npjglo5qrzgdtdu6vnutw7jyhi"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemSubscriptionOnCreateMoodItemDataResolverFnSubscriptionOnCreateMoodItemDataResolverFnAppSyncFunctionE0588344FunctionId"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMoodItemDataSource0777FF0CName",
-    "OutputValue": "MoodItemTable"
+    "OutputValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId",
-    "OutputValue": "tuqdbm3jabhd7ke7yobm2dkldu"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMutationupdateMoodIteminit0FunctionMutationupdateMoodIteminit0FunctionAppSyncFunctionA5BB53A1FunctionId",
-    "OutputValue": "2yn7gzkgznd4bakw2hto3wxilm"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemMutationupdateMoodIteminit0FunctionMutationupdateMoodIteminit0FunctionAppSyncFunctionA5BB53A1FunctionId"
   },
   {
     "OutputKey": "transformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId",
-    "OutputValue": "jgql3pwqu5fzzblyk2xg3ttzdm"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMutationcreateMoodItemauth0FunctionMutationcreateMoodItemauth0FunctionAppSyncFunction8743A884FunctionId",
-    "OutputValue": "w5xtplaf2bh77ewj5kmeenetw4"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemMutationcreateMoodItemauth0FunctionMutationcreateMoodItemauth0FunctionAppSyncFunction8743A884FunctionId"
   },
   {
-    "OutputKey": "GetAttMoodItemTableName",
-    "OutputValue": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName",
+    "OutputValue": "79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemTable:Name"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",
-    "OutputValue": "r57v3miwtnb5vgvzvxpjs2ijyi"
+    "OutputValue": "1230b2630f.transformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId"
   }
 ]

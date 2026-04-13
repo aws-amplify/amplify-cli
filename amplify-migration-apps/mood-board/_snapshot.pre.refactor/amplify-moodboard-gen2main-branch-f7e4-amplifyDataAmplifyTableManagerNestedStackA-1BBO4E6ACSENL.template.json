@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+                            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main"
+                          "tableName": "79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Board-api.moodboard.GraphQLAPIIdOutput-main"
+                          "tableName": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName"
                         }
                       ]
                     }
@@ -100,12 +100,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -118,7 +118,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleB4E71DEA": {
@@ -175,7 +175,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+                            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -185,7 +185,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main"
+                          "tableName": "79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName"
                         }
                       ]
                     },
@@ -193,7 +193,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Board-api.moodboard.GraphQLAPIIdOutput-main"
+                          "tableName": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName"
                         }
                       ]
                     }
@@ -221,12 +221,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -239,7 +239,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6": {
@@ -265,7 +265,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
       }
     },
     "TableManagerCustomProviderframeworkonEvent1DFC2ECC": {
@@ -277,7 +277,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - onEvent (amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - onEvent (amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Environment": {
           "Variables": {
             "WAITER_STATE_MACHINE_ARN": {
@@ -299,12 +299,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -322,7 +322,7 @@
         "AmplifyManagedTableOnEventRoleB4E71DEA"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -337,7 +337,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - isComplete (amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - isComplete (amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Handler": "amplify-table-manager-handler.isComplete",
         "Role": {
           "Fn::GetAtt": [
@@ -352,12 +352,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -374,7 +374,7 @@
         "AmplifyManagedTableIsCompleteRoleF825222C"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -401,12 +401,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -419,7 +419,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
       }
     },
     "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A": {
@@ -464,7 +464,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "AmplifyTableWaiterStateMachine060600BC": {
@@ -497,7 +497,7 @@
         "AmplifyTableWaiterStateMachineRole470BE899"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
       }
     },
     "CDKMetadata": {
@@ -506,7 +506,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNyw6CMBBFv4V9GXm4cCsmLo2BDyBDGclAaROmSEzDvxtAV+fcnMXNIDunkES4SKzbITbcQHiQeGorj3pQuEgdGEcIpTOkbi+78+kM6882D1uVwbFpEcJ9ttqzs1v7+6okr1GEvMB1g5IcilkP5AsUWlVJ4uZJk9pr5bFj2+1nv7Aq61qCXk7vLIP0AknUC3M8zdbzSFAe/ALgt1g4zwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -778,12 +778,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent251BECFBArn": {
+    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent251BECFBArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

@@ -1,12 +1,12 @@
 import { defineFunction } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const da5e56ee3d.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const recorduseractivity = defineFunction({
   entry: './index.js',
-  name: `recorduseractivity-${branchName}`,
+  name: `recorduseractivity-${da5e56ee3d.deploymentTypeName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${da5e56ee3d.deploymentTypeName}`, REGION: 'us-east-1' },
   runtime: 22,
 });

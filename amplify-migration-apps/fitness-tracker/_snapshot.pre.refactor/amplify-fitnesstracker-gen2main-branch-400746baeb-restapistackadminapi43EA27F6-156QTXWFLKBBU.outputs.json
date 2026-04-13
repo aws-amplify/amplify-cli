@@ -1,14 +1,14 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiNameRestApi15E05C08Ref",
-    "OutputValue": "3tygfqh1kh"
+    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebrestapistackapi.d809bc5a09.ApiName.ApiNameRestApi15E05C08Ref",
+    "OutputValue": "ae47f28d1b.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebrestapistackd809bc5a09.ApiNameRestApi15E05C08Ref"
   },
   {
     "OutputKey": "RestApiEndpoint0551178A",
-    "OutputValue": "https://3tygfqh1kh.execute-api.us-east-1.amazonaws.com/prod/"
+    "OutputValue": "ae47f28d1b.RestApiEndpoint0551178A"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiNameRestApiDeploymentStageprodB49BA490Ref",
+    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebrestapistackapi.d809bc5a09.ApiName.ApiNameRestApiDeploymentStageprodB49BA490Ref",
     "OutputValue": "prod"
   }
 ]

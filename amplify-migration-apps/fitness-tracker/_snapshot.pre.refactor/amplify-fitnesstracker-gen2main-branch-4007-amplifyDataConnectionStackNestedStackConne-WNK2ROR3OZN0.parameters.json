@@ -1,30 +1,30 @@
 [
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseTableA7BD0631TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn",
+    "ParameterValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef",
-    "ParameterValue": "amplify-fitnesstracker-ge-amplifyAuthunauthenticate-RtuRf8ygfomA"
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef",
+    "ParameterValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
-    "ParameterValue": "us-east-1:b0685620-d814-422e-830f-b0f30f6900f3"
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
+    "ParameterValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId",
-    "ParameterValue": "jrmmxaml4ndpxmx4pmyk3bgv7u"
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId",
+    "ParameterValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
-    "ParameterValue": "ExerciseTable"
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
+    "ParameterValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref",
-    "ParameterValue": "amplify-fitnesstracker-ge-amplifyAuthauthenticatedU-fF1WwIKcoHtV"
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref",
+    "ParameterValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name",
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name",
     "ParameterValue": "NONE_DS"
   }
 ]

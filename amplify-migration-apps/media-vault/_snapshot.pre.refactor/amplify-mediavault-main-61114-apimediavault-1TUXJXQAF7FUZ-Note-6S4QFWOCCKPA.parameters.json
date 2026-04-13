@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "api.mediavault.GraphQLAPIIdOutput"
+    "ParameterValue": "5d5520c8f1.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -33,7 +33,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-mediavault-main-61114-deployment"
+    "ParameterValue": "6b2a52a982.DeploymentBucketName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

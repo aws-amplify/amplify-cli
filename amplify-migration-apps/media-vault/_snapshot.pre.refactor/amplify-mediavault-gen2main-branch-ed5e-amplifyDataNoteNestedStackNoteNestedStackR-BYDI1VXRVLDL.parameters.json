@@ -4,8 +4,8 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref",
-    "ParameterValue": "amplify-mediavault-ge-amplifyAuthauthenticatedU-slnshFMVHHTk"
+    "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref",
+    "ParameterValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -20,27 +20,27 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault-ge-TableManagerCustomProvid-wtgatGRcG6Wl"
+    "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8",
+    "ParameterValue": "dd7dcd3ba3.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventB15C54B2Arn"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref",
-    "ParameterValue": "us-east-1:bed96618-da8d-4017-b873-fdff1744397a"
+    "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref",
+    "ParameterValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref",
-    "ParameterValue": "amplify-mediavault-ge-amplifyAuthunauthenticate-vTKBs153l45R"
+    "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref",
+    "ParameterValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId",
-    "ParameterValue": "lrahqddacbde5pc3etoruofrzu"
+    "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId",
+    "ParameterValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name",
+    "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name",
     "ParameterValue": "NONE_DS"
   }
 ]

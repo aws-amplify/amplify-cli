@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.discussions.GraphQLAPIIdOutput",
+    "OutputValue": "358c55d6a3.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiId"
+    "ExportName": "b77cc5b997.StackName-apidiscussions-ZIHO40IAIPU4:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.discussions.GraphQLAPIEndpointOutput",
+    "OutputValue": "358c55d6a3.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
-    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiEndpoint"
+    "ExportName": "b77cc5b997.StackName-apidiscussions-ZIHO40IAIPU4:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "da2-fakeapikey00000000000000",
+    "OutputValue": "api.discussions.GraphQLAPIKeyOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiKey"
+    "ExportName": "b77cc5b997.StackName-apidiscussions-ZIHO40IAIPU4:GraphQLApiKey"
   }
 ]

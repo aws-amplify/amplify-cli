@@ -1,10 +1,10 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref",
-    "ParameterValue": "amplify-moodboard-ge-amplifyAuthauthenticatedU-UANJImTyKZ7p"
+    "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref",
+    "ParameterValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef",
-    "ParameterValue": "amplify-moodboard-ge-amplifyAuthunauthenticate-rp3r1qUbAKVV"
+    "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef",
+    "ParameterValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
   }
 ]

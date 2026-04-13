@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "WorkoutProgramTable": {
+    "a519ab46e6.GetAttWorkoutProgramDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -303,7 +303,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "WorkoutProgramTable",
+                    "a519ab46e6.GetAttWorkoutProgramDataSourceName",
                     "Arn"
                   ]
                 },
@@ -334,10 +334,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "WorkoutProgramTable"
+            "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
           }
         },
-        "Name": "WorkoutProgramTable",
+        "Name": "a519ab46e6.GetAttWorkoutProgramDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "WorkoutProgramIAMRoleB75B98D5",
@@ -501,9 +501,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "WorkoutProgramTable"
+                "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -602,9 +602,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "WorkoutProgramTable"
+                "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -769,9 +769,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "WorkoutProgramTable"
+                "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -957,9 +957,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "WorkoutProgramTable"
+                "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1109,9 +1109,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "WorkoutProgramTable"
+                "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1232,7 +1232,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1278,7 +1278,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1324,7 +1324,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1403,7 +1403,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.fitnesstracker33f5545533f55455.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1413,11 +1413,11 @@
     }
   },
   "Outputs": {
-    "GetAttWorkoutProgramTableStreamArn": {
+    "GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "WorkoutProgramTable",
+          "a519ab46e6.GetAttWorkoutProgramDataSourceName",
           "StreamArn"
         ]
       },
@@ -1429,16 +1429,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:WorkoutProgramTable:StreamArn"
+              "GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttWorkoutProgramTableName": {
+    "GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "WorkoutProgramTable"
+        "Ref": "a519ab46e6.GetAttWorkoutProgramDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1448,7 +1448,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:WorkoutProgramTable:Name"
+              "GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:Name"
             ]
           ]
         }

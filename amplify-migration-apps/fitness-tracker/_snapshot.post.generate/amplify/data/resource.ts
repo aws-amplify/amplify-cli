@@ -35,12 +35,12 @@ type Meal @model @auth(rules: [{ allow: public }]) {
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-      branchName: 'main',
+      //The "3f11ed2aac.deploymentTypename" variable needs to be the same as your deployment 3f11ed2aac.deploymentType if you want to reuse your Gen1 app tables
+      3f11ed2aac.deploymentTypeName: 'main',
       modelNameToTableNameMapping: {
-        WorkoutProgram: 'WorkoutProgram-api.fitnesstracker.GraphQLAPIIdOutput-main',
-        Exercise: 'Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main',
-        Meal: 'Meal-api.fitnesstracker.GraphQLAPIIdOutput-main',
+        WorkoutProgram: '16892071e0.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName',
+        Exercise: '5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName',
+        Meal: '36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameName',
       },
     },
   ],

@@ -1,28 +1,28 @@
 [
   {
     "OutputKey": "GetAttCommentDataSourceName",
-    "OutputValue": "CommentTable",
+    "OutputValue": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:CommentDataSource:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:CommentDataSource:Name"
   },
   {
-    "OutputKey": "GetAttCommentTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-api.discussions.GraphQLAPIIdOutput-main/stream/2026-03-20T21:21:05.630",
+    "OutputKey": "GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameStreamArn",
+    "OutputValue": "89544babf0.GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:CommentTable:StreamArn"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackCommentCommentDataSourceA0E54655Name",
-    "OutputValue": "CommentTable"
+    "OutputValue": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
   },
   {
-    "OutputKey": "transformerrootstackCommentCommentTable5427FDE2Ref",
-    "OutputValue": "Comment-api.discussions.GraphQLAPIIdOutput-main"
+    "OutputKey": "transformerrootstackComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name5427FDE2Ref",
+    "OutputValue": "89544babf0.GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameName"
   },
   {
-    "OutputKey": "GetAttCommentTableName",
-    "OutputValue": "Comment-api.discussions.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameName",
+    "OutputValue": "89544babf0.GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:CommentTable:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name:Name"
   }
 ]

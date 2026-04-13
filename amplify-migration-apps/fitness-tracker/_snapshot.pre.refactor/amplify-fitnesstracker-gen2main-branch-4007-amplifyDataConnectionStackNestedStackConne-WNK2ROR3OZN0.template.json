@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramexercisesauth0Function",
@@ -17,17 +17,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/ConnectionStack/WorkoutProgramexercisesauth0Function/WorkoutProgramexercisesauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/ConnectionStack/WorkoutProgramexercisesauth0Function/WorkoutProgramexercisesauth0Function.AppSyncFunction"
       }
     },
     "WorkoutProgramExercisesDataResolverFnWorkoutProgramExercisesDataResolverFnAppSyncFunctionA9FFE7A3": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramExercisesDataResolverFn",
@@ -39,14 +39,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/ConnectionStack/WorkoutProgramExercisesDataResolverFn/WorkoutProgramExercisesDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/ConnectionStack/WorkoutProgramExercisesDataResolverFn/WorkoutProgramExercisesDataResolverFn.AppSyncFunction"
       }
     },
     "WorkoutProgramexercisesResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "exercises",
         "Kind": "PIPELINE",
@@ -72,7 +72,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"WorkoutProgram\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"exercises\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseTableA7BD0631TableArn"
+                                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn"
                               }
                             ]
                           }
@@ -108,7 +108,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -120,11 +120,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -134,7 +134,7 @@
         "TypeName": "WorkoutProgram"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/ConnectionStack/workoutProgramExercisesResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/ConnectionStack/workoutProgramExercisesResolver"
       }
     },
     "CDKMetadata": {
@@ -143,7 +143,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMsQ6CMBCA4WdhLycWBlchcXSAByBnOUgBr6TXQgzh3Q06ffmXX4MuCsgS3CQ13ZTO9gX7kyRQ1wQ0k8JN2l3yFkUoCNxPlORQRjNRKFFI4bLIhw3sVc+PyCZYx5Xj3g7R4xmq6rkmcfNK/jjU79EEHCwPh2LXEYxyWbWG6w2yZBRrUx852DdB/fcLf5ddvqcAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/ConnectionStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/ConnectionStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -415,25 +415,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseTableA7BD0631TableArn": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref": {
       "Type": "String"
     }
   }

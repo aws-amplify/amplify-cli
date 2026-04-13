@@ -47,12 +47,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:da5e56ee3d.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "da5e56ee3d.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storage/discus-avatarsc39a5-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storage/discus-avatarsc39a5-gen2-main/Bucket/Resource"
       }
     }
   },

@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "amplify-importedresources-main-8a9e9-authRole"
+    "ParameterValue": "8d0d0cbe70.AuthRoleName"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "amplify-importedresources-main-8a9e9-deployment"
+    "ParameterValue": "8d0d0cbe70.DeploymentBucketName"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "amplify-importedresources-main-8a9e9-unauthRole"
+    "ParameterValue": "8d0d0cbe70.UnauthRoleName"
   }
 ]

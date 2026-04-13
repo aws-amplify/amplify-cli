@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
+          "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPINONEDS6292E862Name"
+          "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPINONEDS6292E862Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Projecttodosauth0Function",
@@ -17,17 +17,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/data/amplifyData/ConnectionStack/Projecttodosauth0Function/Projecttodosauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/data/amplifyData/ConnectionStack/Projecttodosauth0Function/Projecttodosauth0Function.AppSyncFunction"
       }
     },
     "ProjectTodosDataResolverFnProjectTodosDataResolverFnAppSyncFunction6418E519": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
+          "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+          "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "ProjectTodosDataResolverFn",
@@ -39,14 +39,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/data/amplifyData/ConnectionStack/ProjectTodosDataResolverFn/ProjectTodosDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/data/amplifyData/ConnectionStack/ProjectTodosDataResolverFn/ProjectTodosDataResolverFn.AppSyncFunction"
       }
     },
     "ProjecttodosResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
+          "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
         },
         "FieldName": "todos",
         "Kind": "PIPELINE",
@@ -72,7 +72,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"todos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
+                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoTable43ECE720TableArn"
+                                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn"
                               }
                             ]
                           }
@@ -108,7 +108,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef"
+                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -120,11 +120,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref"
+                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthIdentityPool91CBC3ADRef"
+                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -134,7 +134,7 @@
         "TypeName": "Project"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/data/amplifyData/ConnectionStack/projectTodosResolver"
+        "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/data/amplifyData/ConnectionStack/projectTodosResolver"
       }
     },
     "CDKMetadata": {
@@ -143,7 +143,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMsQ6CMBCA4WdhLycUB1chcXSAByBnOUgBr6TXQgzh3Q06ffmXX4O+5pAluElquimd7Qv2J0mgrgloJoWbtLsULYpQELifKCmgjGaiUKKQwmWRDxvYq54fkU2wjivHvR2ixzNU1XNN4uaV/HGo36MJOFgeDsWuIxjlsmoN+Q2yZBRrUx852DdB/fcLM5uzFKcAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/data/amplifyData/ConnectionStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/data/amplifyData/ConnectionStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -415,25 +415,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPINONEDS6292E862Name": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPINONEDS6292E862Name": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoTable43ECE720TableArn": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthIdentityPool91CBC3ADRef": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef": {
       "Type": "String"
     }
   }

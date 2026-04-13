@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "NoteTable": {
+    "8febe7e2a6.GetAttNoteDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -303,7 +303,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "NoteTable",
+                    "8febe7e2a6.GetAttNoteDataSourceName",
                     "Arn"
                   ]
                 },
@@ -334,10 +334,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "NoteTable"
+            "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
           }
         },
-        "Name": "NoteTable",
+        "Name": "8febe7e2a6.GetAttNoteDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "NoteIAMRoleCA742F19",
@@ -501,9 +501,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "NoteTable"
+                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -602,9 +602,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "NoteTable"
+                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -769,9 +769,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "NoteTable"
+                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -957,9 +957,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "NoteTable"
+                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1109,9 +1109,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "NoteTable"
+                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1232,7 +1232,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1278,7 +1278,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1324,7 +1324,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1403,7 +1403,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1413,11 +1413,11 @@
     }
   },
   "Outputs": {
-    "GetAttNoteTableStreamArn": {
+    "GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "NoteTable",
+          "8febe7e2a6.GetAttNoteDataSourceName",
           "StreamArn"
         ]
       },
@@ -1429,16 +1429,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:NoteTable:StreamArn"
+              "GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttNoteTableName": {
+    "GetAtt8febe7e2a6.GetAttNoteDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "NoteTable"
+        "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1448,7 +1448,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:NoteTable:Name"
+              "GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
             ]
           ]
         }

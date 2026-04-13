@@ -47,8 +47,8 @@
         },
         "UserPoolTags": {
           "amplify:app-id": "productcatalog",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:40f1c9f949.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "40f1c9f949.deploymentType",
           "amplify:friendly-name": "amplifyAuth",
           "created-by": "amplify"
         },
@@ -68,7 +68,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -86,10 +86,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_OFRBVzhq5"
+        "UserPoolId": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -107,7 +107,7 @@
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "https://example.com"
+          "40f1c9f949.oauthRedirectSignIn"
         ],
         "ExplicitAuthFlows": [
           "ALLOW_CUSTOM_AUTH",
@@ -118,10 +118,10 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_OFRBVzhq5"
+        "UserPoolId": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -130,7 +130,7 @@
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "61e6oq3acg1at7f9da6cfna70d",
+            "ClientId": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -140,7 +140,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_OFRBVzhq5"
+                  "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
                 ]
               ]
             }
@@ -152,12 +152,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:40f1c9f949.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "40f1c9f949.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -171,13 +171,13 @@
         "SupportedLoginProviders": {}
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f",
+        "IdentityPoolId": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -190,9 +190,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_OFRBVzhq5",
+                  "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef",
                   ":",
-                  "61e6oq3acg1at7f9da6cfna70d"
+                  "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
                 ]
               ]
             },
@@ -200,12 +200,12 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-ge-amplifyAuthunauthenticate-JMPocA8XyO6M",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-ge-amplifyAuthauthenticatedU-7u6GoubHxSy7"
+          "unauthenticated": "arn:aws:iam::123456789012:role/2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef",
+          "authenticated": "arn:aws:iam::123456789012:role/2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     }
   },

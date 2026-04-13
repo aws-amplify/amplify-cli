@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.productcatalog.GraphQLAPIIdOutput",
+    "OutputValue": "8dcbe94f9b.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-productcatalog-main-31323-apiproductcatalog-1KOJQLNKG63G:GraphQLApiId"
+    "ExportName": "4c3f39313a.StackName-apiproductcatalog-1KOJQLNKG63G:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.productcatalog.GraphQLAPIEndpointOutput",
+    "OutputValue": "8dcbe94f9b.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
-    "ExportName": "amplify-productcatalog-main-31323-apiproductcatalog-1KOJQLNKG63G:GraphQLApiEndpoint"
+    "ExportName": "4c3f39313a.StackName-apiproductcatalog-1KOJQLNKG63G:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "da2-fakeapikey00000000000000",
+    "OutputValue": "api.productcatalog.GraphQLAPIKeyOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-productcatalog-main-31323-apiproductcatalog-1KOJQLNKG63G:GraphQLApiKey"
+    "ExportName": "4c3f39313a.StackName-apiproductcatalog-1KOJQLNKG63G:GraphQLApiKey"
   }
 ]

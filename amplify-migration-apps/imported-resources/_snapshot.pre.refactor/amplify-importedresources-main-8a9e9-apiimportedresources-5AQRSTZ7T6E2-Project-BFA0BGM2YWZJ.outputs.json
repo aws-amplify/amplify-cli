@@ -1,48 +1,48 @@
 [
   {
     "OutputKey": "transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",
-    "OutputValue": "dwpxejxapfa5veh7a5bjxgqd2i"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId",
-    "OutputValue": "nyv4duzvlbeajmfb3d6vbimdzi"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId",
-    "OutputValue": "of42pjwmxrhzncx67dcyhebxwq"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId",
-    "OutputValue": "twiaszpgzzcv5p7jvq7th4c2ji"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId"
   },
   {
     "OutputKey": "GetAttProjectDataSourceName",
-    "OutputValue": "ProjectTable",
+    "OutputValue": "6fe1426d26.GetAttProjectDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
+    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
-    "OutputValue": "axjyyr5gkrestiwupa5abfwnri"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId",
-    "OutputValue": "xjvylquxkradnbnlnhgengruiy"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId",
-    "OutputValue": "a2kgziahejenxcgi5nusysgzom"
+    "OutputValue": "6fe1426d26.transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId"
   },
   {
-    "OutputKey": "GetAttProjectTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-api.importedresources.GraphQLAPIIdOutput-main/stream/2026-03-27T18:35:40.439",
+    "OutputKey": "GetAtt6fe1426d26.GetAttProjectDataSourceNameStreamArn",
+    "OutputValue": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:ProjectTable:StreamArn"
+    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:6fe1426d26.GetAttProjectDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "GetAttProjectTableName",
-    "OutputValue": "Project-api.importedresources.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
+    "OutputValue": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:ProjectTable:Name"
+    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:6fe1426d26.GetAttProjectDataSourceName:Name"
   }
 ]

@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-storelocator-main-f9ca7-authRole"
+    "OutputValue": "b3b1865edc.AuthRoleName"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-unauthRole"
+    "OutputValue": "b3b1865edc.UnauthRoleArn"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-authRole"
+    "OutputValue": "b3b1865edc.AuthRoleArn"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-storelocator-main-f9ca7-Region"
+    "ExportName": "b3b1865edc.StackName-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-storelocator-main-f9ca7-deployment",
+    "OutputValue": "b3b1865edc.DeploymentBucketName",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-storelocator-main-f9ca7-DeploymentBucketName"
+    "ExportName": "b3b1865edc.StackName-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-storelocator-main-f9ca7-unauthRole"
+    "OutputValue": "b3b1865edc.UnauthRoleName"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-storelocator-main-f9ca7",
+    "OutputValue": "b3b1865edc.StackName",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-storelocator-main-f9ca7-StackName"
+    "ExportName": "b3b1865edc.StackName-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-main-f9ca7/06c2ecf0-279e-11f1-a161-0ea0286337e9",
+    "OutputValue": "b3b1865edc.StackId",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-storelocator-main-f9ca7-StackId"
+    "ExportName": "b3b1865edc.StackName-StackId"
   }
 ]

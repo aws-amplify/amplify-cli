@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-moodboard-main-1959a-authRole"
+    "OutputValue": "1133a3293d.AuthRoleName"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-unauthRole"
+    "OutputValue": "1133a3293d.UnauthRoleArn"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-authRole"
+    "OutputValue": "1133a3293d.AuthRoleArn"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-moodboard-main-1959a-Region"
+    "ExportName": "1133a3293d.StackName-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-moodboard-main-1959a-deployment",
+    "OutputValue": "1133a3293d.DeploymentBucketName",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-moodboard-main-1959a-DeploymentBucketName"
+    "ExportName": "1133a3293d.StackName-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-moodboard-main-1959a-unauthRole"
+    "OutputValue": "1133a3293d.UnauthRoleName"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-moodboard-main-1959a",
+    "OutputValue": "1133a3293d.StackName",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-moodboard-main-1959a-StackName"
+    "ExportName": "1133a3293d.StackName-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-main-1959a/f2787a30-1b0e-11f1-a58a-0afff81a6d49",
+    "OutputValue": "1133a3293d.StackId",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-moodboard-main-1959a-StackId"
+    "ExportName": "1133a3293d.StackName-StackId"
   }
 ]

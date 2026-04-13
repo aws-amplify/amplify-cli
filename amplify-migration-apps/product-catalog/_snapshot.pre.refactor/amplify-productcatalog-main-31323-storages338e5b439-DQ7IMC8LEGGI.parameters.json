@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783Name",
-    "ParameterValue": "function.S3Trigger1ef46783.Name"
+    "ParameterValue": "2a52e89b9c.Name"
   },
   {
     "ParameterKey": "s3PublicPolicy",
@@ -17,11 +17,11 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783LambdaExecutionRole",
-    "ParameterValue": "function.S3Trigger1ef46783.LambdaExecutionRole"
+    "ParameterValue": "2a52e89b9c.LambdaExecutionRole"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-productcatalog-main-31323-unauthRole"
+    "ParameterValue": "4c3f39313a.UnauthRoleName"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -45,7 +45,7 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783Arn",
-    "ParameterValue": "function.S3Trigger1ef46783.Arn"
+    "ParameterValue": "2a52e89b9c.Arn"
   },
   {
     "ParameterKey": "s3PermissionsAuthenticatedProtected",
@@ -81,7 +81,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-productcatalog-main-31323-authRole"
+    "ParameterValue": "4c3f39313a.AuthRoleName"
   },
   {
     "ParameterKey": "GuestAllowList",

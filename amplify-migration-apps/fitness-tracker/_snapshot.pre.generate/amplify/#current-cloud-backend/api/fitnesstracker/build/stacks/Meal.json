@@ -104,7 +104,7 @@
     }
   },
   "Resources": {
-    "MealTable": {
+    "c3c677ee62.GetAttMealDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -315,7 +315,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "MealTable",
+                    "c3c677ee62.GetAttMealDataSourceName",
                     "Arn"
                   ]
                 },
@@ -346,10 +346,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "MealTable"
+            "Ref": "c3c677ee62.GetAttMealDataSourceName"
           }
         },
-        "Name": "MealTable",
+        "Name": "c3c677ee62.GetAttMealDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "MealIAMRoleEDE19E15",
@@ -480,9 +480,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "MealTable"
+                "Ref": "c3c677ee62.GetAttMealDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -578,9 +578,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "MealTable"
+                "Ref": "c3c677ee62.GetAttMealDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -709,9 +709,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "MealTable"
+                "Ref": "c3c677ee62.GetAttMealDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -861,9 +861,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "MealTable"
+                "Ref": "c3c677ee62.GetAttMealDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1010,9 +1010,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "MealTable"
+                "Ref": "c3c677ee62.GetAttMealDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1082,7 +1082,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1122,7 +1122,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1162,7 +1162,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"e36d705715.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1172,11 +1172,11 @@
     }
   },
   "Outputs": {
-    "GetAttMealTableStreamArn": {
+    "GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "MealTable",
+          "c3c677ee62.GetAttMealDataSourceName",
           "StreamArn"
         ]
       },
@@ -1188,16 +1188,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:MealTable:StreamArn"
+              "GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttMealTableName": {
+    "GetAttc3c677ee62.GetAttMealDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "MealTable"
+        "Ref": "c3c677ee62.GetAttMealDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1207,7 +1207,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:MealTable:Name"
+              "GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
             ]
           ]
         }

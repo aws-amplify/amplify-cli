@@ -10,7 +10,7 @@
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "storage.activity.SortKeyName",
             "AttributeType": "S"
           },
           {
@@ -23,7 +23,7 @@
             "IndexName": "byUserId",
             "KeySchema": [
               {
-                "AttributeName": "storage.bookmarks.PartitionKeyName",
+                "AttributeName": "storage.activity.SortKeyName",
                 "KeyType": "HASH"
               },
               {
@@ -46,7 +46,7 @@
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "storage.activity.SortKeyName",
             "KeyType": "RANGE"
           }
         ],
@@ -63,12 +63,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:da5e56ee3d.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "da5e56ee3d.deploymentType"
           },
           {
             "Key": "created-by",
@@ -79,7 +79,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storageactivity/activity/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storageactivity/activity/Resource"
       }
     },
     "CDKMetadata": {
@@ -88,7 +88,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ7MaLOztt1B7mWRGiJ8EnERZxLsvaPWeAVPXUBZ4ina06NVbuL4sialP6BaFp4z0C7hFsnANaFdW7RSe3KpjiXl3fKsQiWGWz2EMVA2UxSze6z2H5DeG7vUPAxTDOW4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storageactivity/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storageactivity/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -360,7 +360,7 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97Arn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97Arn": {
       "Value": {
         "Fn::GetAtt": [
           "activity1E902D9C",
@@ -368,7 +368,7 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97StreamArn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97StreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "activity1E902D9C",
@@ -376,7 +376,7 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97Ref": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97Ref": {
       "Value": {
         "Ref": "activity1E902D9C"
       }

@@ -1,14 +1,14 @@
 {
-  "x": {
+  "main": {
     "awscloudformation": {
-      "AuthRoleName": "1cbef42f68.AuthRoleName",
-      "UnauthRoleArn": "1cbef42f68.UnauthRoleArn",
-      "AuthRoleArn": "1cbef42f68.AuthRoleArn",
+      "AuthRoleName": "6df4025c53.AuthRoleName",
+      "UnauthRoleArn": "6df4025c53.UnauthRoleArn",
+      "AuthRoleArn": "6df4025c53.AuthRoleArn",
       "Region": "us-east-1",
-      "DeploymentBucketName": "1cbef42f68.DeploymentBucketName",
-      "UnauthRoleName": "1cbef42f68.UnauthRoleName",
-      "StackName": "1cbef42f68.StackName",
-      "StackId": "1cbef42f68.StackId",
+      "DeploymentBucketName": "6df4025c53.DeploymentBucketName",
+      "UnauthRoleName": "6df4025c53.UnauthRoleName",
+      "StackName": "6df4025c53.StackName",
+      "StackId": "6df4025c53.StackId",
       "AmplifyAppId": "projectboards"
     },
     "categories": {
@@ -17,7 +17,7 @@
       },
       "function": {
         "quotegenerator": {
-          "deploymentBucketName": "1cbef42f68.DeploymentBucketName",
+          "deploymentBucketName": "6df4025c53.DeploymentBucketName",
           "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip"
         }
       },

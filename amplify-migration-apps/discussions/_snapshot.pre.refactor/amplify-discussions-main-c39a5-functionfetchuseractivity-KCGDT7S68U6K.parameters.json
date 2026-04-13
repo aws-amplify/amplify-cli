@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storageactivityName",
-    "ParameterValue": "storage.activity.Name"
+    "ParameterValue": "293f068c38.Name"
   },
   {
     "ParameterKey": "s3Key",
@@ -13,11 +13,11 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
+    "ParameterValue": "b77cc5b997.DeploymentBucketName"
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "storage.activity.StreamArn"
+    "ParameterValue": "293f068c38.StreamArn"
   },
   {
     "ParameterKey": "env",
@@ -25,6 +25,6 @@
   },
   {
     "ParameterKey": "storageactivityArn",
-    "ParameterValue": "storage.activity.Arn"
+    "ParameterValue": "293f068c38.Arn"
   }
 ]

@@ -202,7 +202,7 @@
     "AuthTriggerCustomLambdaStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
         "Parameters": {
           "env": "main",
           "userpoolId": {
@@ -245,7 +245,7 @@
     "authstorelocator41a9495f41a9495f": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "storelocator41a9495f_identitypool_41a9495f",
           "allowUnauthenticatedIdentities": true,
@@ -306,7 +306,7 @@
     "authuserPoolGroups": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "Parameters": {
           "AuthRoleArn": {
             "Fn::GetAtt": [
@@ -351,12 +351,12 @@
     "functionstorelocator41a9495f41a9495fPostConfirmation": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
         "Parameters": {
           "modules": "add-to-group",
           "resourceName": "storelocator41a9495f41a9495fPostConfirmation",
           "GROUP": "storeLocatorAdmin",
-          "deploymentBucketName": "amplify-storelocator-main-f9ca7-deployment",
+          "deploymentBucketName": "b3b1865edc.DeploymentBucketName",
           "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip",
           "env": "main"
         }
@@ -365,7 +365,7 @@
     "geostoreLocatorGeofence": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
         "Parameters": {
           "collectionName": "storeLocatorGeofence",
           "isDefault": true,
@@ -388,7 +388,7 @@
     "geostoreLocatorMap": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
         "Parameters": {
           "authRoleName": {
             "Ref": "AuthRoleName"
@@ -418,7 +418,7 @@
     "geostoreLocatorSearch": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
         "Parameters": {
           "authRoleName": {
             "Ref": "AuthRoleName"

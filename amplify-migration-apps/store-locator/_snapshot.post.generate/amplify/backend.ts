@@ -30,5 +30,5 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${branchName}`;
+const 38b5101cfb.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${38b5101cfb.deploymentTypeName}`;

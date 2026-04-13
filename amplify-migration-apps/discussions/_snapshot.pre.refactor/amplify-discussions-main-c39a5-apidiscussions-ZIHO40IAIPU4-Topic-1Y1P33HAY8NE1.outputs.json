@@ -1,56 +1,56 @@
 [
   {
-    "OutputKey": "GetAttTopicTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-api.discussions.GraphQLAPIIdOutput-main/stream/2026-03-20T21:20:17.537",
+    "OutputKey": "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameStreamArn",
+    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:TopicTable:StreamArn"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:StreamArn"
   },
   {
-    "OutputKey": "GetAttTopicTableName",
-    "OutputValue": "Topic-api.discussions.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
+    "OutputValue": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:TopicTable:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:Name"
   },
   {
     "OutputKey": "transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
-    "OutputValue": "xpl3pgeq4fhwji3vgpzje5i7ky"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId"
   },
   {
     "OutputKey": "transformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId",
-    "OutputValue": "k6fcuyzzyja75po4s3jdi2odwe"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId"
   },
   {
     "OutputKey": "transformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId",
-    "OutputValue": "gb77pqdsqvfxlf43gz2ay4ll7a"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId"
   },
   {
     "OutputKey": "GetAttTopicDataSourceName",
-    "OutputValue": "TopicTable",
+    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackTopicTopicTableFD91FB92Ref",
-    "OutputValue": "Topic-api.discussions.GraphQLAPIIdOutput-main"
+    "OutputKey": "transformerrootstackTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameFD91FB92Ref",
+    "OutputValue": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName"
   },
   {
     "OutputKey": "transformerrootstackTopicTopicDataSource63D2F34BName",
-    "OutputValue": "TopicTable"
+    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
   },
   {
     "OutputKey": "transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",
-    "OutputValue": "27xllzlwpve67blxdyydbpfvzm"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId"
   },
   {
     "OutputKey": "transformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId",
-    "OutputValue": "stocrj6wmnfwdc4rdkdv7z5t2u"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId"
   },
   {
     "OutputKey": "transformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId",
-    "OutputValue": "gsc7uhamufgixefq3v5ucyfwua"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId"
   },
   {
     "OutputKey": "transformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId",
-    "OutputValue": "e4yi7ioceze5riv7y2vaozdoqu"
+    "OutputValue": "44f5eef0ce.transformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId"
   }
 ]

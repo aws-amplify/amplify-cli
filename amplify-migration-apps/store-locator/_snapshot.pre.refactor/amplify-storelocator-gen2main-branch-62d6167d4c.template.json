@@ -49,7 +49,7 @@
   },
   "Outputs": {
     "deploymentType": {
-      "Value": "branch"
+      "Value": "38b5101cfb.deploymentType"
     },
     "region": {
       "Value": {
@@ -60,7 +60,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthUserPoolE0F0BF85Ref"
+          "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolE0F0BF85Ref"
         ]
       }
     },
@@ -68,7 +68,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
+          "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
         ]
       }
     },
@@ -76,7 +76,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthIdentityPool537188CARef"
+          "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthIdentityPool537188CARef"
         ]
       }
     },
@@ -122,7 +122,7 @@
       "Value": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
     },
     "oauthRedirectSignIn": {
-      "Value": "https://example.com"
+      "Value": "38b5101cfb.oauthRedirectSignIn"
     },
     "oauthRedirectSignOut": {
       "Value": ""
@@ -134,7 +134,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
+          "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
         ]
       }
     },
@@ -150,7 +150,7 @@
             {
               "Fn::GetAtt": [
                 "auth179371D7",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthstorelocator41a9495f41a9495fPostConfirmationgen2mainlambda5D769661Ref"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthstorelocator41a9495f41a9495fPostConfirmationgen2mainlambda5D769661Ref"
               ]
             },
             "\"]"
@@ -177,42 +177,42 @@
             {
               "Fn::GetAtt": [
                 "geostoreLocatorMap6A22ACC1",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
               ]
             },
             "\":{\"style\":\"geo.storeLocatorMap.Style\"}},\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorMap6A22ACC1",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
               ]
             },
             "\"},\"search_indices\":{\"items\":[\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorSearch516CF59F",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
               ]
             },
             "\"],\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorSearch516CF59F",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
               ]
             },
             "\"},\"geofence_collections\":{\"items\":[\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorGeofenceEAAC8D05",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName"
               ]
             },
             "\"],\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorGeofenceEAAC8D05",
-                "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName"
+                "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName"
               ]
             },
             "\"}},\"version\":\"1.4\"}"
@@ -257,12 +257,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -271,7 +271,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceLambdaServiceRoleDefaultPolicy86099CA1": {
@@ -285,7 +285,7 @@
                 "amplify:UpdateBranch"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:amplify:*:*:apps/storelocator/branches/gen2-main"
+              "Resource": "arn:aws:amplify:*:*:apps/storelocator/38b5101cfb.deploymentTypees/gen2-main"
             }
           ],
           "Version": "2012-10-17"
@@ -298,7 +298,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceLambda582AC093": {
@@ -324,12 +324,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -343,7 +343,7 @@
         "AmplifyBranchLinkerCustomResourceLambdaServiceRole3DDCBC03"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceLambda/Resource",
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceLambda/Resource",
         "aws:asset:path": "asset.59635e07adb5fb948b68e22ccd96205d87940fdcdfb7993bddf9639acde4f941",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -384,12 +384,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -398,7 +398,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy38AAE412": {
@@ -453,7 +453,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceProviderframeworkonEvent3B23F900": {
@@ -465,7 +465,7 @@
           },
           "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
         },
-        "Description": "AWS CDK resource provider framework - onEvent (amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -494,12 +494,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -513,7 +513,7 @@
         "AmplifyBranchLinkerCustomResourceProviderframeworkonEventServiceRole92A035EB"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -529,12 +529,12 @@
           ]
         },
         "appId": "storelocator",
-        "branchName": "gen2-main"
+        "38b5101cfb.deploymentTypeName": "gen2-main"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/AmplifyBranchLinker/CustomResource/Default"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/AmplifyBranchLinker/CustomResource/Default"
       }
     },
     "auth179371D7": {
@@ -546,12 +546,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -582,8 +582,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifystorelocatorgen2mainbranch62d6167d4cauthBE445115.nested.template.json",
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/auth.NestedStack/auth.NestedStackResource",
+        "aws:asset:path": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthBE445115.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -591,10 +591,10 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
             ]
           }
         },
@@ -604,12 +604,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -640,8 +640,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence.NestedStack/geostoreLocatorGeofence.NestedStackResource",
-        "aws:asset:path": "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorGeofenceC4B4AC70.nested.template.json",
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence.NestedStack/geostoreLocatorGeofence.NestedStackResource",
+        "aws:asset:path": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceC4B4AC70.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -649,22 +649,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref"
             ]
           },
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref"
             ]
           },
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
             ]
           }
         },
@@ -674,12 +674,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -710,8 +710,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorMap.NestedStack/geostoreLocatorMap.NestedStackResource",
-        "aws:asset:path": "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorMap6456EB66.nested.template.json",
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorMap.NestedStack/geostoreLocatorMap.NestedStackResource",
+        "aws:asset:path": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMap6456EB66.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -719,22 +719,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref"
             ]
           },
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref"
             ]
           },
-          "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
+          "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
+              "Outputs.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
             ]
           }
         },
@@ -744,12 +744,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -780,8 +780,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch.NestedStack/geostoreLocatorSearch.NestedStackResource",
-        "aws:asset:path": "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorSearchE6091B13.nested.template.json",
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorSearch.NestedStack/geostoreLocatorSearch.NestedStackResource",
+        "aws:asset:path": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchE6091B13.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -791,7 +791,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PzWrDQAyEnyV3WU2dHHJtDD22wXkAo6yVIP/slpU2oRi/e/C6LT19I4YZNCWW+z1uN/TQwrV9McgFp7OR66G6+s9kX8mAHtpMA42XlhofWu4UPzLek3cmwYPQiFMdBl5SmacwiPtezlXNoLuGVNkU3xaA7vCYXM92JGVY63Gqrv6v9VfMM+TI2egm/gYuqYWxiawhRceKpxju0nKEKjv1j5Gf+afzrhmWCdjpy70s8fWA202nIkVM3mRkrFc+AXlCmgwZAQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }

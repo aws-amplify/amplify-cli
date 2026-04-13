@@ -1,20 +1,20 @@
 [
   {
-    "OutputKey": "GetAttMealTableName",
-    "OutputValue": "Meal-api.fitnesstracker.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAttc3c677ee62.GetAttMealDataSourceNameName",
+    "OutputValue": "36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:MealTable:Name"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
   },
   {
     "OutputKey": "GetAttMealDataSourceName",
-    "OutputValue": "MealTable",
+    "OutputValue": "c3c677ee62.GetAttMealDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:MealDataSource:Name"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:MealDataSource:Name"
   },
   {
-    "OutputKey": "GetAttMealTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-api.fitnesstracker.GraphQLAPIIdOutput-main/stream/2026-03-24T03:05:11.935",
+    "OutputKey": "GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
+    "OutputValue": "36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:MealTable:StreamArn"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
   }
 ]

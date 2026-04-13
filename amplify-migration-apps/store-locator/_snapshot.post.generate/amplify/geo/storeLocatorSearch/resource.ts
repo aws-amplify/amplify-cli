@@ -1,7 +1,7 @@
 import { geostoreLocatorSearch } from './storeLocatorSearch-construct';
 import { Backend } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const 38b5101cfb.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const defineStoreLocatorSearch = (backend: Backend<any>) => {
   const storeLocatorSearchStack = backend.createStack('geostoreLocatorSearch');
@@ -19,7 +19,7 @@ export const defineStoreLocatorSearch = (backend: Backend<any>) => {
       indexName: 'storeLocatorSearch',
       dataProvider: 'Here',
       dataSourceIntendedUse: 'SingleUse',
-      branchName,
+      38b5101cfb.deploymentTypeName,
       isDefault: 'true',
     }
   );

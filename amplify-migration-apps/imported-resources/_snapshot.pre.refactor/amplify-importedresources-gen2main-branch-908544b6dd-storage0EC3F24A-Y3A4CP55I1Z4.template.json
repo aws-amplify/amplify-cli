@@ -46,12 +46,12 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:c643a9b272.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "c643a9b272.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -70,7 +70,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/Resource"
       }
     },
     "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucketPolicy7B9EE8DA": {
@@ -159,7 +159,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/Policy/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/Policy/Resource"
       }
     },
     "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucketAutoDeleteObjectsCustomResourceC750E544": {
@@ -181,7 +181,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
@@ -206,7 +206,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
@@ -245,7 +245,7 @@
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
         "aws:asset:property": "Code"
       }
@@ -253,11 +253,11 @@
     "IMPORTEDRESOURCES8C81D8D7EDE741F3B102B3E1686ABE8A9E9GEN2MAINBUCKETNAMEParameter2154E477": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/importedresources/gen2main-branch-908544b6dd/IMPORTEDRESOURCES_8_C_81_D_8_D_7_EDE_741_F_3_B_102_B_3_E_1686_ABE_8_A_9_E_9_GEN_2_MAIN_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/importedresources/gen2main-c643a9b272.deploymentType-908544b6dd/IMPORTEDRESOURCES_8_C_81_D_8_D_7_EDE_741_F_3_B_102_B_3_E_1686_ABE_8_A_9_E_9_GEN_2_MAIN_BUCKET_NAME",
         "Tags": {
           "amplify:app-id": "importedresources",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:c643a9b272.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "c643a9b272.deploymentType",
           "created-by": "amplify"
         },
         "Type": "String",
@@ -266,10 +266,10 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/IMPORTEDRESOURCES_8_C_81_D_8_D_7_EDE_741_F_3_B_102_B_3_E_1686_ABE_8_A_9_E_9_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/IMPORTEDRESOURCES_8_C_81_D_8_D_7_EDE_741_F_3_B_102_B_3_E_1686_ABE_8_A_9_E_9_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
       }
     },
-    "amplifyimportedresourcesgen2mainbranch908544b6ddstorageAccess33EC951D8": {
+    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageAccess33EC951D8": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -313,16 +313,16 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifyimportedresourcesgen2mainbranch908544b6ddstorageAccess33EC951D8",
+        "PolicyName": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageAccess33EC951D8",
         "Roles": [
           "importedresources-unauth-role"
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/amplify-importedresources-gen2main-branch-908544b6dd--storageAccess3/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd--storageAccess3/Resource"
       }
     },
-    "amplifyimportedresourcesgen2mainbranch908544b6ddstorageAccess4C6E5569D": {
+    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageAccess4C6E5569D": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -496,13 +496,13 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifyimportedresourcesgen2mainbranch908544b6ddstorageAccess4C6E5569D",
+        "PolicyName": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageAccess4C6E5569D",
         "Roles": [
           "importedresources-auth-role"
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/amplify-importedresources-gen2main-branch-908544b6dd--storageAccess4/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd--storageAccess4/Resource"
       }
     },
     "CDKMetadata": {
@@ -511,7 +511,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Ts3oQELctnFm1XpECGWpqdw2iRS721CU/466SBSOnPxaz/tRQfXwCOuVvnBp2qEc6QTxFVmwbUSbQekLf0TeQNxNZkBR+0+X1VssLF3JFc/F7/Ds5w3cEEO2bifxLzii4OHUoxEu0rvKqPYjma+lNf//6M6BRrSgRXerTorZQmwkkOtqHbRFwTBv/DxJkbYQl/WsUlL7icXbI7KfgsEZLfoPqoM/U4thpxnVlhmlEd2R65JyvkXo+e5cVXD/BOtVz0RlmJyQRTjm+w0TNfmAegEAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/storage/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -783,7 +783,7 @@
     }
   },
   "Outputs": {
-    "amplifyimportedresourcesgen2mainbranch908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref": {
+    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref": {
       "Value": {
         "Ref": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket7C2850AF"
       }

@@ -1,7 +1,7 @@
 import { geostoreLocatorMap } from './storeLocatorMap-construct';
 import { Backend } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const 38b5101cfb.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const defineStoreLocatorMap = (backend: Backend<any>) => {
   const storeLocatorMapStack = backend.createStack('geostoreLocatorMap');
@@ -18,7 +18,7 @@ export const defineStoreLocatorMap = (backend: Backend<any>) => {
         backend.auth.resources.groups['storeLocatorAdmin'].role.roleName,
       mapName: 'storeLocatorMap',
       mapStyle: 'geo.storeLocatorMap.Style',
-      branchName,
+      38b5101cfb.deploymentTypeName,
       isDefault: 'true',
     }
   );

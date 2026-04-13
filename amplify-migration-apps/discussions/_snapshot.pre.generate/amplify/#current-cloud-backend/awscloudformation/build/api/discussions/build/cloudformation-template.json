@@ -58,7 +58,7 @@
     "GraphQLAPI": {
       "Type": "AWS::AppSync::GraphQLApi",
       "Properties": {
-        "AuthenticationType": "API_KEY",
+        "AuthenticationType": "da5e56ee3d.awsAppsyncAuthenticationType",
         "Name": {
           "Fn::Join": [
             "",
@@ -492,10 +492,10 @@
               "Outputs.transformerrootstackPostPostDataSource6998E105Name"
             ]
           },
-          "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef": {
+          "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name34CAE87BRef": {
             "Fn::GetAtt": [
               "Post",
-              "Outputs.transformerrootstackPostPostTable34CAE87BRef"
+              "Outputs.transformerrootstackPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name34CAE87BRef"
             ]
           },
           "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name": {
@@ -504,10 +504,10 @@
               "Outputs.transformerrootstackCommentCommentDataSourceA0E54655Name"
             ]
           },
-          "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref": {
+          "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name5427FDE2Ref": {
             "Fn::GetAtt": [
               "Comment",
-              "Outputs.transformerrootstackCommentCommentTable5427FDE2Ref"
+              "Outputs.transformerrootstackComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name5427FDE2Ref"
             ]
           },
           "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicDataSource63D2F34BName": {
@@ -516,10 +516,10 @@
               "Outputs.transformerrootstackTopicTopicDataSource63D2F34BName"
             ]
           },
-          "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref": {
+          "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameFD91FB92Ref": {
             "Fn::GetAtt": [
               "Topic",
-              "Outputs.transformerrootstackTopicTopicTableFD91FB92Ref"
+              "Outputs.transformerrootstackTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameFD91FB92Ref"
             ]
           }
         },
@@ -641,7 +641,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -681,7 +681,7 @@
               {
                 "Ref": "S3DeploymentRootKey"
               },
-              "/resolvers/Activity.storage.bookmarks.PartitionKeyName.req.vtl"
+              "/resolvers/Activity.storage.activity.SortKeyName.req.vtl"
             ]
           ]
         },
@@ -697,7 +697,7 @@
               {
                 "Ref": "S3DeploymentRootKey"
               },
-              "/resolvers/Activity.storage.bookmarks.PartitionKeyName.res.vtl"
+              "/resolvers/Activity.storage.activity.SortKeyName.res.vtl"
             ]
           ]
         }
@@ -706,7 +706,7 @@
         "GraphQLAPITransformerSchema3CB2AE18"
       ]
     },
-    "Activitystorage.bookmarks.PartitionKeyNameResolver": {
+    "Activitystorage.activity.SortKeyNameResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -715,7 +715,7 @@
             "ApiId"
           ]
         },
-        "FieldName": "storage.bookmarks.PartitionKeyName",
+        "FieldName": "storage.activity.SortKeyName",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
@@ -731,14 +731,14 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"storage.bookmarks.PartitionKeyName\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"storage.activity.SortKeyName\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -835,7 +835,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -932,7 +932,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
             ]
           ]
         },

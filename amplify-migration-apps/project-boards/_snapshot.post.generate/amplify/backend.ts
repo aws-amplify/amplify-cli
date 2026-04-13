@@ -55,5 +55,5 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.quotegenerator.resources.cfnResources.cfnFunction.functionName = `quotegenerator-${branchName}`;
+const dc72c1d108.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.quotegenerator.resources.cfnResources.cfnFunction.functionName = `quotegenerator-${dc72c1d108.deploymentTypeName}`;

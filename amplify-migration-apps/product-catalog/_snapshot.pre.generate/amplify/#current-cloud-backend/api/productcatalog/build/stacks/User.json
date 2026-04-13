@@ -98,7 +98,7 @@
     }
   },
   "Resources": {
-    "UserTable": {
+    "c29f8ec2f7.GetAttUserDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -309,7 +309,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "UserTable",
+                    "c29f8ec2f7.GetAttUserDataSourceName",
                     "Arn"
                   ]
                 },
@@ -340,10 +340,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "UserTable"
+            "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
           }
         },
-        "Name": "UserTable",
+        "Name": "c29f8ec2f7.GetAttUserDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "UserIAMRole93CEE926",
@@ -507,7 +507,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "UserTable"
+                "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -525,7 +525,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -624,7 +624,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "UserTable"
+                "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -642,7 +642,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -807,7 +807,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "UserTable"
+                "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -825,7 +825,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1011,7 +1011,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "UserTable"
+                "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -1029,7 +1029,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1179,7 +1179,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "UserTable"
+                "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -1197,7 +1197,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1334,7 +1334,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1396,7 +1396,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1458,7 +1458,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1553,7 +1553,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1563,11 +1563,11 @@
     }
   },
   "Outputs": {
-    "GetAttUserTableStreamArn": {
+    "GetAttc29f8ec2f7.GetAttUserDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "UserTable",
+          "c29f8ec2f7.GetAttUserDataSourceName",
           "StreamArn"
         ]
       },
@@ -1579,16 +1579,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:UserTable:StreamArn"
+              "GetAtt:c29f8ec2f7.GetAttUserDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttUserTableName": {
+    "GetAttc29f8ec2f7.GetAttUserDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "UserTable"
+        "Ref": "c29f8ec2f7.GetAttUserDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1598,7 +1598,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:UserTable:Name"
+              "GetAtt:c29f8ec2f7.GetAttUserDataSourceName:Name"
             ]
           ]
         }

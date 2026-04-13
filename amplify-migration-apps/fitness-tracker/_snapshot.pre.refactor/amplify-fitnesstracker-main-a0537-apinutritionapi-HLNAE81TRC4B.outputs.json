@@ -1,17 +1,17 @@
 [
   {
     "OutputKey": "ApiName",
-    "OutputValue": "api.api.nutritionapi.ApiName.ApiName",
+    "OutputValue": "api.5c8596b905.ApiName.ApiName",
     "Description": "API Friendly name"
   },
   {
     "OutputKey": "RootUrl",
-    "OutputValue": "api.api.api.nutritionapi.ApiName.ApiName.RootUrl",
+    "OutputValue": "api.api.5c8596b905.ApiName.ApiName.RootUrl",
     "Description": "Root URL of the API gateway"
   },
   {
     "OutputKey": "ApiId",
-    "OutputValue": "api.api.nutritionapi.ApiName.ApiId",
+    "OutputValue": "api.5c8596b905.ApiName.ApiId",
     "Description": "API ID (prefix of API URL)"
   }
 ]

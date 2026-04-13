@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-storelocator-main-f9ca7-deployment"
+    "ParameterValue": "b3b1865edc.DeploymentBucketName"
   },
   {
     "ParameterKey": "roleName",

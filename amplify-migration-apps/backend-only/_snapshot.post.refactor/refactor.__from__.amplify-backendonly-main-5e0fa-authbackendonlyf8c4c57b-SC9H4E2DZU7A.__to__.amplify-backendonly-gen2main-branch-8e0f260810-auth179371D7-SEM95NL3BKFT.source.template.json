@@ -146,7 +146,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
+                      "a46443d3d7.StackName-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
                     ]
                   }
                 ]
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "auth.backendonlyf8c4c57b.IdentityPoolId"
+      "Value": "2dfb8ed9d7.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "auth.backendonlyf8c4c57b.IdentityPoolName"
+      "Value": "2dfb8ed9d7.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "auth.backendonlyf8c4c57b.UserPoolId"
+      "Value": "2dfb8ed9d7.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "auth.backendonlyf8c4c57b.UserPoolArn"
+      "Value": "2dfb8ed9d7.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "auth.backendonlyf8c4c57b.UserPoolName"
+      "Value": "2dfb8ed9d7.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "auth.backendonlyf8c4c57b.AppClientIDWeb"
+      "Value": "2dfb8ed9d7.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "auth.backendonlyf8c4c57b.AppClientID"
+      "Value": "2dfb8ed9d7.AppClientID"
     }
   }
 }

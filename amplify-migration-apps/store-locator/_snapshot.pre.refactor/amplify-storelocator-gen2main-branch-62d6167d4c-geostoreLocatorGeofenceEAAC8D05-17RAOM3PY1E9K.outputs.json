@@ -1,7 +1,7 @@
 [
   {
-    "OutputKey": "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName",
-    "OutputValue": "storeLocatorGeofence-gen2-main"
+    "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName",
+    "OutputValue": "19bf0e623d.Name"
   },
   {
     "OutputKey": "Region",
@@ -9,10 +9,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-gen2-main"
+    "OutputValue": "19bf0e623d.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorGeofence-gen2-main"
+    "OutputValue": "19bf0e623d.Name"
   }
 ]

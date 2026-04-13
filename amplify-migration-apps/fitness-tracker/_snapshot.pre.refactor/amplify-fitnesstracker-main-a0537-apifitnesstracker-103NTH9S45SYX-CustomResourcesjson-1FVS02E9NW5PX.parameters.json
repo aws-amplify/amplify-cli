@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
+    "ParameterValue": "e6829a95b8.DeploymentBucketName"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
+    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

@@ -46,8 +46,8 @@
         },
         "UserPoolTags": {
           "amplify:app-id": "productcatalog",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:40f1c9f949.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "40f1c9f949.deploymentType",
           "amplify:friendly-name": "amplifyAuth",
           "created-by": "amplify"
         },
@@ -67,7 +67,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -90,7 +90,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -108,7 +108,7 @@
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "https://example.com"
+          "40f1c9f949.oauthRedirectSignIn"
         ],
         "ExplicitAuthFlows": [
           "ALLOW_CUSTOM_AUTH",
@@ -124,7 +124,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -159,12 +159,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:40f1c9f949.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "40f1c9f949.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -178,7 +178,7 @@
         "SupportedLoginProviders": {}
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
@@ -212,12 +212,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:40f1c9f949.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "40f1c9f949.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -230,7 +230,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthauthenticatedUserRoleDefaultPolicy82E52873": {
@@ -253,7 +253,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/api.productcatalog.GraphQLAPIIdOutput/*"
+                    ":apis/8dcbe94f9b.GraphQLAPIIdOutput/*"
                   ]
                 ]
               }
@@ -269,7 +269,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/DefaultPolicy/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -303,12 +303,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:40f1c9f949.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "40f1c9f949.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -321,7 +321,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
@@ -375,7 +375,7 @@
         "amplifyAuthUserPoolAppClient2626C6F8"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     },
     "CDKMetadata": {
@@ -384,7 +384,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LvQ6CMBSFn4W9XKFxcDVMLsZgnE1tr3qhtAm9SkjTdzdIUKbznT8JcltCkakh5Nq0uaUbxCMGRnNmpVuhhnCN2j8csYd4CdifvLeiursfL1BZQsfr6p8cDDomHpfz2tfe4p5Z6WeHjpMg1UGcwmn41ZO3pMfJzpRSEs4bhCZs3lJCuYMiawJR3r8cU4dQz/oBzysbsN8AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -656,27 +656,27 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
+    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef": {
+    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
+    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
+    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
+    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

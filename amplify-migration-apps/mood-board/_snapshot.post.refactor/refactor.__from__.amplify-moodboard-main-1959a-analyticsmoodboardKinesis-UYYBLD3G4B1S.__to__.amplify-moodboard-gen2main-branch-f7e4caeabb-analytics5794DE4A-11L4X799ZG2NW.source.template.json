@@ -39,7 +39,7 @@
       "Properties": {
         "PolicyName": "kinesis_amplify_bca5ce95",
         "Roles": [
-          "amplify-moodboard-main-1959a-unauthRole"
+          "1133a3293d.UnauthRoleName"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -50,7 +50,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "analytics.moodboardKinesis.kinesisStreamArn"
+              "Resource": "7b219a8449.kinesisStreamArn"
             }
           ]
         }
@@ -61,7 +61,7 @@
       "Properties": {
         "PolicyName": "kinesis_amplify_bca5ce95",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "1133a3293d.AuthRoleName"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -72,7 +72,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "analytics.moodboardKinesis.kinesisStreamArn"
+              "Resource": "7b219a8449.kinesisStreamArn"
             }
           ]
         }
@@ -81,10 +81,10 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "analytics.moodboardKinesis.kinesisStreamArn"
+      "Value": "7b219a8449.kinesisStreamArn"
     },
     "kinesisStreamId": {
-      "Value": "analytics.moodboardKinesis.kinesisStreamId"
+      "Value": "7b219a8449.kinesisStreamId"
     },
     "kinesisStreamShardCount": {
       "Value": "1"

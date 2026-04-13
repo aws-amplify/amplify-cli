@@ -5,7 +5,7 @@
     "moodboardKinesisKinesisStreamD5E97047": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "Name": "moodboardKinesis-gen2-main",
+        "Name": "ffc70d1b3b.kinesisStreamId",
         "ShardCount": 1,
         "Tags": [
           {
@@ -13,12 +13,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -27,7 +27,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/moodboardKinesis/KinesisStream"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/analytics/moodboardKinesis/KinesisStream"
       }
     }
   },

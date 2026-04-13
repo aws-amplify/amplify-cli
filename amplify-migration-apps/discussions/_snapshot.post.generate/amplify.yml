@@ -5,7 +5,7 @@ backend:
       commands:
         - "# Execute Amplify CLI with the helper script"
         - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        - npx ampx pipeline-deploy --da5e56ee3d.deploymentType $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
     preBuild:

@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-moodboard-main-1959a-authRole"
+    "ParameterValue": "1133a3293d.AuthRoleName"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-moodboard-main-1959a-unauthRole"
+    "ParameterValue": "1133a3293d.UnauthRoleName"
   },
   {
     "ParameterKey": "authPolicyName",

@@ -4,7 +4,7 @@
     "apiName": "importedresources",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "API_KEY",
+      "mode": "c643a9b272.awsAppsyncAuthenticationType",
       "expirationTime": 7
     },
     "additionalAuthTypes": [

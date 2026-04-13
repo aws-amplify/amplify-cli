@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
+    "ParameterValue": "b77cc5b997.DeploymentBucketName"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "api.discussions.GraphQLAPIIdOutput"
+    "ParameterValue": "358c55d6a3.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

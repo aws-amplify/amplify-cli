@@ -202,13 +202,13 @@
     "apiimportedresources": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-importedresources-main-8a9e9-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/8d0d0cbe70.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "importedresources",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
           "DynamoDBEnableServerSideEncryption": false,
-          "AuthCognitoUserPoolId": "auth.importedresources2c7c1c40.UserPoolId",
-          "S3DeploymentBucket": "amplify-importedresources-main-8a9e9-deployment",
+          "AuthCognitoUserPoolId": "c643a9b272.userPoolId",
+          "S3DeploymentBucket": "8d0d0cbe70.DeploymentBucketName",
           "S3DeploymentRootKey": "amplify-appsync-files/a4738ed9c7ff62e5dda2f6697e1457a141ba078d",
           "env": "main"
         }
@@ -217,9 +217,9 @@
     "functionimportedresourcequotegenerator": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-importedresources-main-8a9e9-deployment/amplify-cfn-templates/function/importedresourcequotegenerator-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/8d0d0cbe70.DeploymentBucketName/amplify-cfn-templates/function/importedresourcequotegenerator-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-importedresources-main-8a9e9-deployment",
+          "deploymentBucketName": "8d0d0cbe70.DeploymentBucketName",
           "s3Key": "amplify-builds/importedresourcequotegenerator-564649317a6f53484f35-build.zip",
           "env": "main"
         }
@@ -228,7 +228,7 @@
     "storages34ebf8874": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-importedresources-main-8a9e9-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/8d0d0cbe70.DeploymentBucketName/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "importedresources8c81d8d7ede741f3b102b3e1686abe",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",

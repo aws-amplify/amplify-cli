@@ -186,7 +186,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                      "b77cc5b997.StackName-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
                     ]
                   }
                 ]
@@ -224,7 +224,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                      "b77cc5b997.StackName-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
                     ]
                   }
                 ]
@@ -240,33 +240,33 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolId"
+      "Value": "3641aeee95.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolName"
+      "Value": "3641aeee95.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "auth.discussionsc578c16ec578c16e.UserPoolId"
+      "Value": "3641aeee95.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "auth.discussionsc578c16ec578c16e.UserPoolArn"
+      "Value": "3641aeee95.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "auth.discussionsc578c16ec578c16e.UserPoolName"
+      "Value": "3641aeee95.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "auth.discussionsc578c16ec578c16e.AppClientIDWeb"
+      "Value": "3641aeee95.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "auth.discussionsc578c16ec578c16e.AppClientID"
+      "Value": "3641aeee95.AppClientID"
     },
     "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
+      "Value": "3641aeee95.CreatedSNSRole"
     }
   }
 }

@@ -1,28 +1,28 @@
 [
   {
     "OutputKey": "GetAttPostDataSourceName",
-    "OutputValue": "PostTable",
+    "OutputValue": "d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:PostDataSource:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:PostDataSource:Name"
   },
   {
-    "OutputKey": "GetAttPostTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-api.discussions.GraphQLAPIIdOutput-main/stream/2026-03-20T21:21:05.591",
+    "OutputKey": "GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameStreamArn",
+    "OutputValue": "d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:PostTable:StreamArn"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackPostPostDataSource6998E105Name",
-    "OutputValue": "PostTable"
+    "OutputValue": "d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name"
   },
   {
-    "OutputKey": "GetAttPostTableName",
-    "OutputValue": "Post-api.discussions.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName",
+    "OutputValue": "d7cb664f4a.GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:PostTable:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name:Name"
   },
   {
-    "OutputKey": "transformerrootstackPostPostTable34CAE87BRef",
-    "OutputValue": "Post-api.discussions.GraphQLAPIIdOutput-main"
+    "OutputKey": "transformerrootstackPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name34CAE87BRef",
+    "OutputValue": "d7cb664f4a.GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName"
   }
 ]

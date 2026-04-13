@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAttTodoTableName",
-    "OutputValue": "Todo-api.backendonly.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameName",
+    "OutputValue": "052354d56a.GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "pjpnolkqdzf57jyueue5dlgyam:GetAtt:TodoTable:Name"
+    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName:Name"
   },
   {
-    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
-    "OutputValue": "TodoTable"
+    "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
+    "OutputValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
   },
   {
-    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoTable43ECE720TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.backendonly.GraphQLAPIIdOutput-main"
+    "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn",
+    "OutputValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn"
   },
   {
-    "OutputKey": "GetAttTodoTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.backendonly.GraphQLAPIIdOutput-main/stream/2026-03-08T18:11:40.339",
+    "OutputKey": "GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameStreamArn",
+    "OutputValue": "052354d56a.GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "pjpnolkqdzf57jyueue5dlgyam:GetAtt:TodoTable:StreamArn"
+    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName:StreamArn"
   }
 ]

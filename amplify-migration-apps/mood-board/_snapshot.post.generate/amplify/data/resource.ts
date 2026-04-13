@@ -1,6 +1,6 @@
 import { defineData } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const 383edf5091.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type MoodItem @model @auth(rules: [{ allow: public }]) {
   id: ID!
   title: String!
@@ -17,19 +17,19 @@ type Board @model @auth(rules: [{ allow: public }]) {
 }
 
 type Query {
-  getRandomEmoji: String @function(name: "moodboardGetRandomEmoji-${branchName}") @auth(rules: [{ allow: private }])
-  getKinesisEvents: AWSJSON @function(name: "moodboardKinesisReader-${branchName}") @auth(rules: [{ allow: private }])
+  getRandomEmoji: String @function(name: "moodboardGetRandomEmoji-${383edf5091.deploymentTypeName}") @auth(rules: [{ allow: private }])
+  getKinesisEvents: AWSJSON @function(name: "moodboardKinesisReader-${383edf5091.deploymentTypeName}") @auth(rules: [{ allow: private }])
 }
 `;
 
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-      branchName: 'main',
+      //The "383edf5091.deploymentTypename" variable needs to be the same as your deployment 383edf5091.deploymentType if you want to reuse your Gen1 app tables
+      383edf5091.deploymentTypeName: 'main',
       modelNameToTableNameMapping: {
-        MoodItem: 'MoodItem-api.moodboard.GraphQLAPIIdOutput-main',
-        Board: 'Board-api.moodboard.GraphQLAPIIdOutput-main',
+        MoodItem: '79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName',
+        Board: '0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName',
       },
     },
   ],

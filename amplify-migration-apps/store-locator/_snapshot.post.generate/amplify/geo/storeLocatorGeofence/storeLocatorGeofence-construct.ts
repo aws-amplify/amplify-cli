@@ -18,7 +18,7 @@ export interface geostoreLocatorGeofenceProps {
   readonly isDefault: string;
   /**
    */
-  readonly branchName: string;
+  readonly 38b5101cfb.deploymentTypeName: string;
 }
 
 /**
@@ -152,7 +152,7 @@ export class geostoreLocatorGeofence extends Construct {
                   'locationServiceRegion'
                 )}:${cdk.Stack.of(this).account}:geofence-collection/${[
                   props.collectionName!,
-                  props.branchName!,
+                  props.38b5101cfb.deploymentTypeName!,
                 ].join('-')}`,
               },
             ],
@@ -195,7 +195,7 @@ export class geostoreLocatorGeofence extends Construct {
     customGeofenceCollection.addOverride('Type', 'Custom::LambdaCallout');
     customGeofenceCollection.addPropertyOverride(
       'collectionName',
-      [props.collectionName!, props.branchName!].join('-')
+      [props.collectionName!, props.38b5101cfb.deploymentTypeName!].join('-')
     );
     customGeofenceCollection.addPropertyOverride(
       'region',
@@ -204,7 +204,7 @@ export class geostoreLocatorGeofence extends Construct {
         'locationServiceRegion'
       )
     );
-    customGeofenceCollection.addPropertyOverride('env', props.branchName!);
+    customGeofenceCollection.addPropertyOverride('env', props.38b5101cfb.deploymentTypeName!);
     customGeofenceCollection.cfnOptions.deletionPolicy =
       cdk.CfnDeletionPolicy.DELETE;
 
@@ -237,7 +237,7 @@ export class geostoreLocatorGeofence extends Construct {
         },
         policyName: [
           'storeLocatorAdmin',
-          [props.collectionName!, props.branchName!].join('-'),
+          [props.collectionName!, props.38b5101cfb.deploymentTypeName!].join('-'),
           'Policy',
         ].join(''),
         roles: [props.authuserPoolGroupsstoreLocatorAdminGroupRole!],

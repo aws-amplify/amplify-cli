@@ -202,7 +202,7 @@
     "apiproductcatalog": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-main-31323-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/4c3f39313a.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "productcatalog",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
@@ -219,7 +219,7 @@
           "unauthRoleName": {
             "Ref": "UnauthRoleName"
           },
-          "S3DeploymentBucket": "amplify-productcatalog-main-31323-deployment",
+          "S3DeploymentBucket": "4c3f39313a.DeploymentBucketName",
           "S3DeploymentRootKey": "amplify-appsync-files/51b6d4362e9dc4529fd8298646795247239d2c30",
           "env": "main"
         }
@@ -228,12 +228,12 @@
     "authproductcatalog90174ac4": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-main-31323-deployment/amplify-cfn-templates/auth/productcatalog90174ac4-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/4c3f39313a.DeploymentBucketName/amplify-cfn-templates/auth/productcatalog90174ac4-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "productcatalog90174ac4_identitypool_90174ac4",
           "allowUnauthenticatedIdentities": false,
           "resourceNameTruncated": "produc90174ac4",
-          "userPoolName": "auth.productcatalog90174ac4.UserPoolName",
+          "userPoolName": "8563cd35c0.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -282,9 +282,9 @@
     "functionS3Trigger1ef46783": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-main-31323-deployment/amplify-cfn-templates/function/S3Trigger1ef46783-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/4c3f39313a.DeploymentBucketName/amplify-cfn-templates/function/S3Trigger1ef46783-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-productcatalog-main-31323-deployment",
+          "deploymentBucketName": "4c3f39313a.DeploymentBucketName",
           "s3Key": "amplify-builds/S3Trigger1ef46783-4b4665534739746b326e-build.zip",
           "apiproductcatalogGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
@@ -311,11 +311,11 @@
     "functionlowstockproducts": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-main-31323-deployment/amplify-cfn-templates/function/lowstockproducts-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/4c3f39313a.DeploymentBucketName/amplify-cfn-templates/function/lowstockproducts-cloudformation-template.json",
         "Parameters": {
           "lowStockThreshold": "5",
           "secretsPathAmplifyAppId": "productcatalog",
-          "deploymentBucketName": "amplify-productcatalog-main-31323-deployment",
+          "deploymentBucketName": "4c3f39313a.DeploymentBucketName",
           "s3Key": "amplify-builds/lowstockproducts-5a45534e5173597a5842-build.zip",
           "apiproductcatalogGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
@@ -342,7 +342,7 @@
     "storages338e5b439": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-main-31323-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/4c3f39313a.DeploymentBucketName/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "productcatalogf95af07481f845caa6594c26ac9c8ed3",
           "selectedGuestPermissions": "",

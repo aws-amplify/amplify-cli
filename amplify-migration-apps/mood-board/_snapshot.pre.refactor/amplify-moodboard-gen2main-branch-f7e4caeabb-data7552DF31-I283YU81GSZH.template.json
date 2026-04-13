@@ -12,12 +12,12 @@
                 "Ref": "AWS::Region"
               },
               "UserPoolId": {
-                "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+                "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
               }
             }
           }
         ],
-        "AuthenticationType": "API_KEY",
+        "AuthenticationType": "383edf5091.awsAppsyncAuthenticationType",
         "Name": "amplifyData",
         "Tags": [
           {
@@ -25,12 +25,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -43,7 +43,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/GraphQLAPI/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/GraphQLAPI/Resource"
       }
     },
     "amplifyDataGraphQLAPITransformerSchemaFF50A789": {
@@ -60,7 +60,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/GraphQLAPI/TransformerSchema"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/GraphQLAPI/TransformerSchema"
       }
     },
     "amplifyDataGraphQLAPIDefaultApiKey1C8ED374": {
@@ -76,7 +76,7 @@
         "Expires": 1804528387
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/GraphQLAPI/DefaultApiKey"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/GraphQLAPI/DefaultApiKey"
       }
     },
     "amplifyDataGraphQLAPINONEDS684BF699": {
@@ -92,14 +92,14 @@
         "Type": "NONE"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/GraphQLAPI/NONE_DS/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/GraphQLAPI/NONE_DS/Resource"
       }
     },
     "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
@@ -112,12 +112,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -152,8 +152,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyTableManager.NestedStack/AmplifyTableManager.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerC06A4320.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyTableManager.NestedStack/AmplifyTableManager.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerC06A4320.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -176,32 +176,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent251BECFBArn"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent251BECFBArn"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
           }
         },
         "Tags": [
@@ -210,12 +210,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -253,8 +253,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/MoodItem.NestedStack/MoodItem.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItem23933E23.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/MoodItem.NestedStack/MoodItem.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem23933E23.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -277,32 +277,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent251BECFBArn"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent251BECFBArn"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
           }
         },
         "Tags": [
@@ -311,12 +311,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -354,8 +354,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/Board.NestedStack/Board.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardE427F9EE.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/Board.NestedStack/Board.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardE427F9EE.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -363,22 +363,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
@@ -391,12 +391,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -434,8 +434,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/FunctionDirectiveStack.NestedStack/FunctionDirectiveStack.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataFunctionDirectiveStackEBFA404C.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/FunctionDirectiveStack.NestedStack/FunctionDirectiveStack.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataFunctionDirectiveStackEBFA404C.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -443,49 +443,49 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName": {
             "Fn::GetAtt": [
               "amplifyDataMoodItemNestedStackMoodItemNestedStackResource4E6CE7C0",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemMoodItemTable2DB74480TableArn": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName2DB74480TableArn": {
             "Fn::GetAtt": [
               "amplifyDataMoodItemNestedStackMoodItemNestedStackResource4E6CE7C0",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemMoodItemTable2DB74480TableArn"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName2DB74480TableArn"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
+            "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name": {
             "Fn::GetAtt": [
               "amplifyDataBoardNestedStackBoardNestedStackResourceC5F2D278",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardBoardTable0122C8B9TableArn": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn": {
             "Fn::GetAtt": [
               "amplifyDataBoardNestedStackBoardNestedStackResourceC5F2D278",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataBoardBoardTable0122C8B9TableArn"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn"
             ]
           }
         },
@@ -495,12 +495,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -540,8 +540,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/ConnectionStack.NestedStack/ConnectionStack.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataConnectionStackAE8FB6C7.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/ConnectionStack.NestedStack/ConnectionStack.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataConnectionStackAE8FB6C7.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -581,12 +581,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -609,7 +609,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Resource"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucketPolicyF1C1C548": {
@@ -664,7 +664,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Policy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Policy/Resource"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucketAutoDeleteObjectsCustomResource437F26F5": {
@@ -686,7 +686,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentAwsCliLayerE322F905": {
@@ -701,7 +701,7 @@
         "Description": "/opt/awscli/aws"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/AwsCliLayer/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/AwsCliLayer/Resource",
         "aws:asset:path": "asset.0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Content"
@@ -743,7 +743,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/CustomResource-1536MiB/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/CustomResource-1536MiB/Default"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
@@ -768,7 +768,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
@@ -807,7 +807,7 @@
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
         "aws:asset:property": "Code"
       }
@@ -847,12 +847,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -861,7 +861,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/Resource"
       }
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBServiceRoleDefaultPolicyFF1C635B": {
@@ -995,7 +995,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBC5D8AB21": {
@@ -1032,12 +1032,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -1051,7 +1051,7 @@
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBServiceRoleA41FC8C2"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/Resource",
         "aws:asset:path": "asset.3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -1066,12 +1066,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -1090,7 +1090,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/modelIntrospectionSchemaBucket/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/modelIntrospectionSchemaBucket/Resource"
       }
     },
     "modelIntrospectionSchemaBucketPolicy4DAB0D15": {
@@ -1179,7 +1179,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/modelIntrospectionSchemaBucket/Policy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/modelIntrospectionSchemaBucket/Policy/Resource"
       }
     },
     "modelIntrospectionSchemaBucketAutoDeleteObjectsCustomResourceFE57309F": {
@@ -1201,7 +1201,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/modelIntrospectionSchemaBucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/modelIntrospectionSchemaBucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "modelIntrospectionSchemaBucketDeploymentAwsCliLayer13C432F7": {
@@ -1216,7 +1216,7 @@
         "Description": "/opt/awscli/aws"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/modelIntrospectionSchemaBucketDeployment/AwsCliLayer/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/modelIntrospectionSchemaBucketDeployment/AwsCliLayer/Resource",
         "aws:asset:path": "asset.0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Content"
@@ -1252,17 +1252,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/modelIntrospectionSchemaBucketDeployment/CustomResource-1536MiB/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/modelIntrospectionSchemaBucketDeployment/CustomResource-1536MiB/Default"
       }
     },
     "AMPLIFYDATAGRAPHQLENDPOINTParameter1C2CBB16": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/moodboard/gen2main-branch-f7e4caeabb/AMPLIFY_DATA_GRAPHQL_ENDPOINT",
+        "Name": "/amplify/resource_reference/moodboard/gen2main-383edf5091.deploymentType-f7e4caeabb/AMPLIFY_DATA_GRAPHQL_ENDPOINT",
         "Tags": {
           "amplify:app-id": "moodboard",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:383edf5091.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "383edf5091.deploymentType",
           "created-by": "amplify"
         },
         "Type": "String",
@@ -1274,17 +1274,17 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/AMPLIFY_DATA_GRAPHQL_ENDPOINTParameter/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/AMPLIFY_DATA_GRAPHQL_ENDPOINTParameter/Resource"
       }
     },
     "AMPLIFYDATAMODELINTROSPECTIONSCHEMABUCKETNAMEParameter47BF4F44": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/moodboard/gen2main-branch-f7e4caeabb/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/moodboard/gen2main-383edf5091.deploymentType-f7e4caeabb/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAME",
         "Tags": {
           "amplify:app-id": "moodboard",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:383edf5091.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "383edf5091.deploymentType",
           "created-by": "amplify"
         },
         "Type": "String",
@@ -1293,41 +1293,41 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAMEParameter/Resource"
       }
     },
     "AMPLIFYDATAMODELINTROSPECTIONSCHEMAKEYParameterB6AEAE8A": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/moodboard/gen2main-branch-f7e4caeabb/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEY",
+        "Name": "/amplify/resource_reference/moodboard/gen2main-383edf5091.deploymentType-f7e4caeabb/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEY",
         "Tags": {
           "amplify:app-id": "moodboard",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:383edf5091.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "383edf5091.deploymentType",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": "modelIntrospectionSchema.json"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEYParameter/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEYParameter/Resource"
       }
     },
     "AMPLIFYDATADEFAULTNAMEParameterE7C23CC4": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/moodboard/gen2main-branch-f7e4caeabb/AMPLIFY_DATA_DEFAULT_NAME",
+        "Name": "/amplify/resource_reference/moodboard/gen2main-383edf5091.deploymentType-f7e4caeabb/AMPLIFY_DATA_DEFAULT_NAME",
         "Tags": {
           "amplify:app-id": "moodboard",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:383edf5091.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "383edf5091.deploymentType",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": "amplifyData"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/AMPLIFY_DATA_DEFAULT_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/AMPLIFY_DATA_DEFAULT_NAMEParameter/Resource"
       }
     },
     "CDKMetadata": {
@@ -1336,7 +1336,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/11QyW6DMBD9lt4dN6E99EqI2kOjKA1Sr2hiBuLEC/WYIGTx75WhIW1Pb5nRmyXhyfOKLx+go4UoLwsljzzskDyWuQdxYQck2zqBDDoqAjQN9Ubw8OagOX2ptJFrIGRZZUbnY5s28pfKxQk1RCNt5Dv2bGcNbsBDPoVmlbmrgdFTEYAIPfE0AiuxUbbXaDxft+KCfjMbsZuHyR13mGiM/GET7K2Sor/bkx6YAn0sgYesMlvo0X2iI2kNy6WpFXprXlsjfHRmklWzOTAJmoeDVeMRI94n3WYQaR5y76Sp9+BAo0c31m9iGNh4aO6hlqaOtentWUve6vn5ccSNT4sXKi5dQEdCSZ52lCk53vEn/1/O3tmrLNHFfw3M2BL5mR6vScJXL3z5cCYpF641Xmrkhwm/ARE0OCMhAgAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -1379,16 +1379,16 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAE38F854Ref": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
       "Type": "String"
     }
   },
@@ -1659,7 +1659,7 @@
     }
   },
   "Outputs": {
-    "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
+    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPI42A6FA33",
@@ -1667,7 +1667,7 @@
         ]
       }
     },
-    "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl": {
+    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPI42A6FA33",
@@ -1675,7 +1675,7 @@
         ]
       }
     },
-    "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0881F041DestinationBucketArn": {
+    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0881F041DestinationBucketArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB21775929",
@@ -1683,7 +1683,7 @@
         ]
       }
     },
-    "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey": {
+    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPIDefaultApiKey1C8ED374",

@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "api.backendonly.GraphQLAPIIdOutput"
+    "ParameterValue": "994414bf7a.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-backendonly-main-5e0fa-deployment"
+    "ParameterValue": "a46443d3d7.DeploymentBucketName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

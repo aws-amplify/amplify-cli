@@ -47,12 +47,12 @@
             "Value": "backendonly"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:c0d444ea7b.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "c0d444ea7b.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/storage/backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/storage/backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-gen2-main/Bucket/Resource"
       }
     }
   },

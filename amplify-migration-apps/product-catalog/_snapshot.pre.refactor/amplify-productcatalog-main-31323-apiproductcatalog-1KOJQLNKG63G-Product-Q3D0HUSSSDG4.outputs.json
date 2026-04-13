@@ -1,20 +1,20 @@
 [
   {
-    "OutputKey": "GetAttProductTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Product-api.productcatalog.GraphQLAPIIdOutput-main/stream/2026-03-07T14:16:20.704",
+    "OutputKey": "GetAttb3e773b37b.GetAttProductDataSourceNameStreamArn",
+    "OutputValue": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:ProductTable:StreamArn"
+    "ExportName": "8dcbe94f9b.GraphQLAPIIdOutput:GetAtt:b3e773b37b.GetAttProductDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "GetAttProductTableName",
-    "OutputValue": "Product-api.productcatalog.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAttb3e773b37b.GetAttProductDataSourceNameName",
+    "OutputValue": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:ProductTable:Name"
+    "ExportName": "8dcbe94f9b.GraphQLAPIIdOutput:GetAtt:b3e773b37b.GetAttProductDataSourceName:Name"
   },
   {
     "OutputKey": "GetAttProductDataSourceName",
-    "OutputValue": "ProductTable",
+    "OutputValue": "b3e773b37b.GetAttProductDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:ProductDataSource:Name"
+    "ExportName": "8dcbe94f9b.GraphQLAPIIdOutput:GetAtt:ProductDataSource:Name"
   }
 ]

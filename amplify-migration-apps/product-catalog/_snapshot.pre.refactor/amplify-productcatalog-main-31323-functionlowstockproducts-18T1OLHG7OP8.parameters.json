@@ -13,15 +13,15 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-productcatalog-main-31323-deployment"
+    "ParameterValue": "4c3f39313a.DeploymentBucketName"
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIKeyOutput",
-    "ParameterValue": "da2-fakeapikey00000000000000"
+    "ParameterValue": "api.productcatalog.GraphQLAPIKeyOutput"
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
-    "ParameterValue": "api.productcatalog.GraphQLAPIEndpointOutput"
+    "ParameterValue": "8dcbe94f9b.GraphQLAPIEndpointOutput"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
-    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
+    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
   }
 ]

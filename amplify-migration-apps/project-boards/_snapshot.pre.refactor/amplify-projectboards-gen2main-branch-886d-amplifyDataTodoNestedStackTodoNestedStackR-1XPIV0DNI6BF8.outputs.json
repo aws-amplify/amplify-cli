@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "GetAtt4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameName",
+    "OutputValue": "Todo-api.projectboards.GraphQLAPIIdOutput-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId:GetAtt:4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName:Name"
+  },
+  {
+    "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodo4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName729B81E3TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-main"
+  },
+  {
+    "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName",
+    "OutputValue": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+  },
+  {
+    "OutputKey": "GetAtt4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-main/stream/2026-03-07T02:16:37.111",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId:GetAtt:4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName:StreamArn"
+  }
+]

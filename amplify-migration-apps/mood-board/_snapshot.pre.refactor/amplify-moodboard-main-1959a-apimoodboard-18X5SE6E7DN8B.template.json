@@ -74,7 +74,7 @@
             }
           }
         ],
-        "AuthenticationType": "API_KEY",
+        "AuthenticationType": "383edf5091.awsAppsyncAuthenticationType",
         "Name": {
           "Fn::Join": [
             "",
@@ -403,10 +403,10 @@
               "Outputs.transformerrootstackMoodItemMoodItemDataSource0777FF0CName"
             ]
           },
-          "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref": {
+          "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName5135EED9Ref": {
             "Fn::GetAtt": [
               "MoodItem",
-              "Outputs.transformerrootstackMoodItemMoodItemTable5135EED9Ref"
+              "Outputs.transformerrootstackMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName5135EED9Ref"
             ]
           },
           "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName": {
@@ -415,10 +415,10 @@
               "Outputs.transformerrootstackBoardBoardDataSource99BFC69FName"
             ]
           },
-          "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref": {
+          "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref": {
             "Fn::GetAtt": [
               "Board",
-              "Outputs.transformerrootstackBoardBoardTable30788E07Ref"
+              "Outputs.transformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref"
             ]
           }
         },

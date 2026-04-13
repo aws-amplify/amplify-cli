@@ -48,7 +48,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'storage.moodboardStorage.BucketName';
+// s3Bucket.bucketName = '8a5916c5d3.BucketName';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -59,9 +59,9 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.moodboardGetRandomEmoji.resources.cfnResources.cfnFunction.functionName = `moodboardGetRandomEmoji-${branchName}`;
-backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${branchName}`;
+const 383edf5091.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.moodboardGetRandomEmoji.resources.cfnResources.cfnFunction.functionName = `moodboardGetRandomEmoji-${383edf5091.deploymentTypeName}`;
+backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${383edf5091.deploymentTypeName}`;
 backend.moodboardKinesisReader.addEnvironment(
   'ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN',
   analytics.kinesisStreamArn

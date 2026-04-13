@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-importedresources-main-8a9e9-authRole"
+    "OutputValue": "8d0d0cbe70.AuthRoleName"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-importedresources-main-8a9e9-unauthRole"
+    "OutputValue": "8d0d0cbe70.UnauthRoleArn"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-importedresources-main-8a9e9-authRole"
+    "OutputValue": "8d0d0cbe70.AuthRoleArn"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-importedresources-main-8a9e9-Region"
+    "ExportName": "8d0d0cbe70.StackName-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-importedresources-main-8a9e9-deployment",
+    "OutputValue": "8d0d0cbe70.DeploymentBucketName",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-importedresources-main-8a9e9-DeploymentBucketName"
+    "ExportName": "8d0d0cbe70.StackName-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-importedresources-main-8a9e9-unauthRole"
+    "OutputValue": "8d0d0cbe70.UnauthRoleName"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-importedresources-main-8a9e9",
+    "OutputValue": "8d0d0cbe70.StackName",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-importedresources-main-8a9e9-StackName"
+    "ExportName": "8d0d0cbe70.StackName-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-importedresources-main-8a9e9/5c5e4ec0-2a0a-11f1-8859-126d6e2516bf",
+    "OutputValue": "8d0d0cbe70.StackId",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-importedresources-main-8a9e9-StackId"
+    "ExportName": "8d0d0cbe70.StackName-StackId"
   }
 ]

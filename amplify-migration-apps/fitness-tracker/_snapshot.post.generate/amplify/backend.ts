@@ -44,9 +44,9 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${branchName}`;
-backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
+const 3f11ed2aac.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${3f11ed2aac.deploymentTypeName}`;
+backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${3f11ed2aac.deploymentTypeName}`;
 backend.lognutrition.addEnvironment(
   'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
   backend.data.apiId
@@ -78,7 +78,7 @@ backend.data.resources.tables['Meal'].grant(
   'dynamodb:Delete*',
   'dynamodb:PartiQLDelete'
 );
-backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
+backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${3f11ed2aac.deploymentTypeName}`;
 backend.admin.addEnvironment(
   'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
@@ -89,11 +89,11 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     authenticationType: 'API_KEY',
   },
 ];
-const api.api.nutritionapi.ApiName.ApiNameStack = backend.createStack('rest-api-stack-api.api.nutritionapi.ApiName.ApiName');
-const api.api.nutritionapi.ApiName.ApiNameApi = new RestApi(api.api.nutritionapi.ApiName.ApiNameStack, 'RestApi', {
-  restApiName: `api.api.nutritionapi.ApiName.ApiName-${branchName}`,
+const api.5c8596b905.ApiName.ApiNameStack = backend.createStack('rest-api-stack-api.5c8596b905.ApiName.ApiName');
+const api.5c8596b905.ApiName.ApiNameApi = new RestApi(api.5c8596b905.ApiName.ApiNameStack, 'RestApi', {
+  restApiName: `api.5c8596b905.ApiName.ApiName-${3f11ed2aac.deploymentTypeName}`,
 });
-api.api.nutritionapi.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
+api.5c8596b905.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
   type: ResponseType.DEFAULT_4XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -103,7 +103,7 @@ api.api.nutritionapi.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
     'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
   },
 });
-api.api.nutritionapi.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
+api.5c8596b905.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
   type: ResponseType.DEFAULT_5XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -116,35 +116,35 @@ api.api.nutritionapi.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
 const lognutritionIntegration = new LambdaIntegration(
   backend.lognutrition.resources.lambda
 );
-const gen1api.api.nutritionapi.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
-  api.api.nutritionapi.ApiName.ApiNameStack,
-  'Gen1api.api.nutritionapi.ApiName.ApiNameApi',
+const gen1api.5c8596b905.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
+  api.5c8596b905.ApiName.ApiNameStack,
+  'Gen1api.5c8596b905.ApiName.ApiNameApi',
   {
-    restApiId: 'api.api.nutritionapi.ApiName.ApiId',
-    rootResourceId: 'api.api.nutritionapi.ApiName.ApiId-root',
+    restApiId: 'api.5c8596b905.ApiName.ApiId',
+    rootResourceId: 'api.5c8596b905.ApiName.ApiId-root',
   }
 );
-const gen1api.api.nutritionapi.ApiName.ApiNamePolicy = new Policy(
-  api.api.nutritionapi.ApiName.ApiNameStack,
-  'Gen1api.api.nutritionapi.ApiName.ApiNamePolicy',
+const gen1api.5c8596b905.ApiName.ApiNamePolicy = new Policy(
+  api.5c8596b905.ApiName.ApiNameStack,
+  'Gen1api.5c8596b905.ApiName.ApiNamePolicy',
   {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/*')}`,
-          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/*')}`,
-          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/*')}`,
-          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/*')}`,
+          `${gen1api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('POST', '/*')}`,
+          `${gen1api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('GET', '/*')}`,
+          `${gen1api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/*')}`,
+          `${gen1api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/*')}`,
         ],
       }),
     ],
   }
 );
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  gen1api.api.nutritionapi.ApiName.ApiNamePolicy
+  gen1api.5c8596b905.ApiName.ApiNamePolicy
 );
-const nutritionlog = api.api.nutritionapi.ApiName.ApiNameApi.root
+const nutritionlog = api.5c8596b905.ApiName.ApiNameApi.root
   .addResource('nutrition')
   .addResource('log', {
     defaultMethodOptions: {
@@ -171,19 +171,19 @@ nutritionlog.addProxy({
 });
 // /nutrition/log - all authenticated users
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  new Policy(api.api.nutritionapi.ApiName.ApiNameStack, 'nutritionlogAuthPolicy', {
+  new Policy(api.5c8596b905.ApiName.ApiNameStack, 'nutritionlogAuthPolicy', {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log/*'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log/*'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
         ],
       }),
     ],
@@ -191,19 +191,19 @@ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
 );
 // /nutrition/log - Admin group only
 backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(api.api.nutritionapi.ApiName.ApiNameStack, 'nutritionlogAdminPolicy', {
+  new Policy(api.5c8596b905.ApiName.ApiNameStack, 'nutritionlogAdminPolicy', {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log/*'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log/*'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log'),
-          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log'),
+          api.5c8596b905.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
         ],
       }),
     ],
@@ -212,19 +212,19 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
 backend.addOutput({
   custom: {
     API: {
-      [api.api.nutritionapi.ApiName.ApiNameApi.restApiName]: {
-        endpoint: api.api.nutritionapi.ApiName.ApiNameApi.url.slice(0, -1),
-        region: Stack.of(api.api.nutritionapi.ApiName.ApiNameApi).region,
-        apiName: api.api.nutritionapi.ApiName.ApiNameApi.restApiName,
+      [api.5c8596b905.ApiName.ApiNameApi.restApiName]: {
+        endpoint: api.5c8596b905.ApiName.ApiNameApi.url.slice(0, -1),
+        region: Stack.of(api.5c8596b905.ApiName.ApiNameApi).region,
+        apiName: api.5c8596b905.ApiName.ApiNameApi.restApiName,
       },
     },
   },
 });
-const api.api.adminapi.ApiName.ApiNameStack = backend.createStack('rest-api-stack-api.api.adminapi.ApiName.ApiName');
-const api.api.adminapi.ApiName.ApiNameApi = new RestApi(api.api.adminapi.ApiName.ApiNameStack, 'RestApi', {
-  restApiName: `api.api.adminapi.ApiName.ApiName-${branchName}`,
+const api.d809bc5a09.ApiName.ApiNameStack = backend.createStack('rest-api-stack-api.d809bc5a09.ApiName.ApiName');
+const api.d809bc5a09.ApiName.ApiNameApi = new RestApi(api.d809bc5a09.ApiName.ApiNameStack, 'RestApi', {
+  restApiName: `api.d809bc5a09.ApiName.ApiName-${3f11ed2aac.deploymentTypeName}`,
 });
-api.api.adminapi.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
+api.d809bc5a09.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
   type: ResponseType.DEFAULT_4XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -234,7 +234,7 @@ api.api.adminapi.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
     'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
   },
 });
-api.api.adminapi.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
+api.d809bc5a09.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
   type: ResponseType.DEFAULT_5XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -245,26 +245,26 @@ api.api.adminapi.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
   },
 });
 const adminIntegration = new LambdaIntegration(backend.admin.resources.lambda);
-const gen1api.api.adminapi.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
-  api.api.adminapi.ApiName.ApiNameStack,
-  'Gen1api.api.adminapi.ApiName.ApiNameApi',
+const gen1api.d809bc5a09.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
+  api.d809bc5a09.ApiName.ApiNameStack,
+  'Gen1api.d809bc5a09.ApiName.ApiNameApi',
   {
-    restApiId: 'api.api.api.adminapi.ApiName.ApiName.ApiId',
-    rootResourceId: 'api.api.api.adminapi.ApiName.ApiName.ApiId-root',
+    restApiId: 'api.api.d809bc5a09.ApiName.ApiName.ApiId',
+    rootResourceId: 'api.api.d809bc5a09.ApiName.ApiName.ApiId-root',
   }
 );
-const gen1api.api.adminapi.ApiName.ApiNamePolicy = new Policy(api.api.adminapi.ApiName.ApiNameStack, 'Gen1api.api.adminapi.ApiName.ApiNamePolicy', {
+const gen1api.d809bc5a09.ApiName.ApiNamePolicy = new Policy(api.d809bc5a09.ApiName.ApiNameStack, 'Gen1api.d809bc5a09.ApiName.ApiNamePolicy', {
   statements: [
     new PolicyStatement({
       actions: ['execute-api:Invoke'],
-      resources: [`${gen1api.api.adminapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/*')}`],
+      resources: [`${gen1api.d809bc5a09.ApiName.ApiNameApi.arnForExecuteApi('GET', '/*')}`],
     }),
   ],
 });
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  gen1api.api.adminapi.ApiName.ApiNamePolicy
+  gen1api.d809bc5a09.ApiName.ApiNamePolicy
 );
-const adminResource = api.api.adminapi.ApiName.ApiNameApi.root.addResource('admin', {
+const adminResource = api.d809bc5a09.ApiName.ApiNameApi.root.addResource('admin', {
   defaultMethodOptions: {
     authorizationType: AuthorizationType.IAM,
   },
@@ -289,13 +289,13 @@ adminResource.addProxy({
 });
 // /admin - Admin group only
 backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(api.api.adminapi.ApiName.ApiNameStack, 'adminAdminPolicy', {
+  new Policy(api.d809bc5a09.ApiName.ApiNameStack, 'adminAdminPolicy', {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          api.api.adminapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/admin'),
-          api.api.adminapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/admin/*'),
+          api.d809bc5a09.ApiName.ApiNameApi.arnForExecuteApi('GET', '/admin'),
+          api.d809bc5a09.ApiName.ApiNameApi.arnForExecuteApi('GET', '/admin/*'),
         ],
       }),
     ],
@@ -304,10 +304,10 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
 backend.addOutput({
   custom: {
     API: {
-      [api.api.adminapi.ApiName.ApiNameApi.restApiName]: {
-        endpoint: api.api.adminapi.ApiName.ApiNameApi.url.slice(0, -1),
-        region: Stack.of(api.api.adminapi.ApiName.ApiNameApi).region,
-        apiName: api.api.adminapi.ApiName.ApiNameApi.restApiName,
+      [api.d809bc5a09.ApiName.ApiNameApi.restApiName]: {
+        endpoint: api.d809bc5a09.ApiName.ApiNameApi.url.slice(0, -1),
+        region: Stack.of(api.d809bc5a09.ApiName.ApiNameApi).region,
+        apiName: api.d809bc5a09.ApiName.ApiNameApi.restApiName,
       },
     },
   },

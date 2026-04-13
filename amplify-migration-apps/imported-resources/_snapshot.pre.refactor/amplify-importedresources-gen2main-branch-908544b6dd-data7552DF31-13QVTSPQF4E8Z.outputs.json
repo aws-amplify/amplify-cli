@@ -1,18 +1,18 @@
 [
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
-    "OutputValue": "wl2oasglxvbnza7q3obncdxijq"
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl",
-    "OutputValue": "https://tyw3rmjx7vdv7lciqxuritf4fm.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl",
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB60E2BFEADestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-importedresources-ge-amplifydataamplifycodege-zkceqz3aufv6"
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB60E2BFEADestinationBucketArn",
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB60E2BFEADestinationBucketArn"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey",
+    "OutputValue": "api.importedresources.GraphQLAPIKeyOutput"
   }
 ]

@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
+    "ParameterValue": "b77cc5b997.DeploymentBucketName"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

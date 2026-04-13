@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB62CA266CDestinationBucketArn",
+    "OutputValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB62CA266CDestinationBucketArn"
+  },
+  {
+    "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIDefaultApiKey8E86CD59ApiKey",
+    "OutputValue": "api.projectboards.GraphQLAPIKeyOutput"
+  },
+  {
+    "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId",
+    "OutputValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId"
+  },
+  {
+    "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BGraphQLUrl",
+    "OutputValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BGraphQLUrl"
+  }
+]

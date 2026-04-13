@@ -4,7 +4,7 @@
     "apiName": "productcatalog",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "AWS_IAM"
+      "mode": "40f1c9f949.awsAppsyncAuthenticationType"
     },
     "additionalAuthTypes": [
       {

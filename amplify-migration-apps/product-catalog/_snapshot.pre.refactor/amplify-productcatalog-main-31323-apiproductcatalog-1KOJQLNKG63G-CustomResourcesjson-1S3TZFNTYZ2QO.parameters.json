@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-productcatalog-main-31323-deployment"
+    "ParameterValue": "4c3f39313a.DeploymentBucketName"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
+    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

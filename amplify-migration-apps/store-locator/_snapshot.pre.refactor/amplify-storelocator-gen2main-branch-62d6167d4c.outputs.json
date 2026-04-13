@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "1t7et22n9m68741vh3pmv2nmfq"
+    "OutputValue": "38b5101cfb.webClientId"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "1t7et22n9m68741vh3pmv2nmfq"
+    "OutputValue": "38b5101cfb.webClientId"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -49,11 +49,11 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-main\":{\"style\":\"geo.storeLocatorMap.Style\"}},\"default\":\"storeLocatorMap-gen2-main\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-main\"],\"default\":\"storeLocatorSearch-gen2-main\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-main\"],\"default\":\"storeLocatorGeofence-gen2-main\"}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"a5e76e9278.Name\":{\"style\":\"geo.storeLocatorMap.Style\"}},\"default\":\"a5e76e9278.Name\"},\"search_indices\":{\"items\":[\"2d8904d0a4.Name\"],\"default\":\"2d8904d0a4.Name\"},\"geofence_collections\":{\"items\":[\"19bf0e623d.Name\"],\"default\":\"19bf0e623d.Name\"}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "https://example.com"
+    "OutputValue": "38b5101cfb.oauthRedirectSignIn"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -69,7 +69,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-main\"]"
+    "OutputValue": "[\"dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthstorelocator41a9495f41a9495fPostConfirmationgen2mainlambda5D769661Ref\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -77,7 +77,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "branch"
+    "OutputValue": "38b5101cfb.deploymentType"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_AeAJNVPgB"
+    "OutputValue": "38b5101cfb.userPoolId"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:cbd1c99c-bad6-4aff-8d75-a63d582714ee"
+    "OutputValue": "38b5101cfb.identityPoolId"
   },
   {
     "OutputKey": "verificationMechanisms",

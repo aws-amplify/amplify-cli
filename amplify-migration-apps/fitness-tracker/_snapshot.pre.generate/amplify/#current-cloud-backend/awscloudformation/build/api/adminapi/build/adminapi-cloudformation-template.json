@@ -46,7 +46,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.adminapi.ApiName.ApiName"
+                        "Ref": "api.d809bc5a09.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -76,7 +76,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.adminapi.ApiName.ApiName"
+                        "Ref": "api.d809bc5a09.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -97,7 +97,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "api.api.adminapi.ApiName.ApiName-admin-Admin-group-policy",
+        "PolicyName": "api.d809bc5a09.ApiName.ApiName-admin-Admin-group-policy",
         "Roles": [
           {
             "Fn::Join": [
@@ -113,7 +113,7 @@
         ]
       }
     },
-    "functionadminPermissionapi.api.adminapi.ApiName.ApiName": {
+    "functionadminPermissionapi.d809bc5a09.ApiName.ApiName": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -135,7 +135,7 @@
               },
               ":",
               {
-                "Ref": "api.api.adminapi.ApiName.ApiName"
+                "Ref": "api.d809bc5a09.ApiName.ApiName"
               },
               "/*/*/*"
             ]
@@ -143,14 +143,14 @@
         }
       }
     },
-    "api.api.adminapi.ApiName.ApiName": {
+    "api.d809bc5a09.ApiName.ApiName": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Body": {
           "swagger": "2.0",
           "info": {
             "version": "2018-05-24T17:52:00Z",
-            "title": "api.api.adminapi.ApiName.ApiName"
+            "title": "api.d809bc5a09.ApiName.ApiName"
           },
           "host": {
             "Fn::Join": [
@@ -423,10 +423,10 @@
         },
         "Description": "",
         "FailOnWarnings": true,
-        "Name": "api.api.adminapi.ApiName.ApiName"
+        "Name": "api.d809bc5a09.ApiName.ApiName"
       }
     },
-    "api.api.adminapi.ApiName.ApiNameDefault4XXResponse0e27c647": {
+    "api.d809bc5a09.ApiName.ApiNameDefault4XXResponse0e27c647": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -437,11 +437,11 @@
         },
         "ResponseType": "DEFAULT_4XX",
         "RestApiId": {
-          "Ref": "api.api.adminapi.ApiName.ApiName"
+          "Ref": "api.d809bc5a09.ApiName.ApiName"
         }
       }
     },
-    "api.api.adminapi.ApiName.ApiNameDefault5XXResponse0e27c647": {
+    "api.d809bc5a09.ApiName.ApiNameDefault5XXResponse0e27c647": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -452,16 +452,16 @@
         },
         "ResponseType": "DEFAULT_5XX",
         "RestApiId": {
-          "Ref": "api.api.adminapi.ApiName.ApiName"
+          "Ref": "api.d809bc5a09.ApiName.ApiName"
         }
       }
     },
-    "DeploymentAPIGWapi.api.adminapi.ApiName.ApiNamead7711e6": {
+    "DeploymentAPIGWapi.d809bc5a09.ApiName.ApiNamead7711e6": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
         "RestApiId": {
-          "Ref": "api.api.adminapi.ApiName.ApiName"
+          "Ref": "api.d809bc5a09.ApiName.ApiName"
         },
         "StageName": {
           "Fn::If": [
@@ -474,8 +474,8 @@
         }
       },
       "DependsOn": [
-        "api.api.adminapi.ApiName.ApiNameDefault4XXResponse0e27c647",
-        "api.api.adminapi.ApiName.ApiNameDefault5XXResponse0e27c647"
+        "api.d809bc5a09.ApiName.ApiNameDefault4XXResponse0e27c647",
+        "api.d809bc5a09.ApiName.ApiNameDefault5XXResponse0e27c647"
       ]
     }
   },
@@ -498,7 +498,7 @@
           [
             "https://",
             {
-              "Ref": "api.api.adminapi.ApiName.ApiName"
+              "Ref": "api.d809bc5a09.ApiName.ApiName"
             },
             ".execute-api.",
             {
@@ -520,12 +520,12 @@
     },
     "ApiName": {
       "Description": "API Friendly name",
-      "Value": "api.api.adminapi.ApiName.ApiName"
+      "Value": "api.d809bc5a09.ApiName.ApiName"
     },
     "ApiId": {
       "Description": "API ID (prefix of API URL)",
       "Value": {
-        "Ref": "api.api.adminapi.ApiName.ApiName"
+        "Ref": "api.d809bc5a09.ApiName.ApiName"
       }
     }
   }

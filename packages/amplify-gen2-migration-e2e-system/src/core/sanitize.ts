@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -13,15 +14,14 @@ import * as os from 'os';
 interface SensitiveValues {
   accountId: string;
   amplifyAppId: string;
-  gen1ApiKey: string | null;
-  gen2ApiKey: string | null;
 }
 
 function extractAccountId(meta: any): string {
   const authRoleArn = meta.providers.awscloudformation.AuthRoleArn;
   const arnMatch = authRoleArn.match(/arn:aws:iam::(\d{12}):/);
   if (!arnMatch) {
-    throw new Error('Could not extract AWS Account ID from AuthRoleArn');
+    // Already sanitized — account ID is baked into the placeholder.
+    return '123456789012';
   }
   return arnMatch[1];
 }
@@ -34,26 +34,6 @@ function extractAmplifyAppId(meta: any): string {
   return appId;
 }
 
-function extractGen1ApiKey(meta: any): string | null {
-  if (!meta.api) return null;
-  const firstApiResource = Object.keys(meta.api)[0];
-  return meta.api[firstApiResource]?.output?.GraphQLAPIKeyOutput ?? null;
-}
-
-/** Categories in amplify-meta.json that contain resources with output values. */
-const AMPLIFY_META_CATEGORIES = [
-  'auth',
-  'api',
-  'storage',
-  'function',
-  'analytics',
-  'hosting',
-  'interactions',
-  'predictions',
-  'geo',
-  'custom',
-];
-
 /**
  * Extracts all string output values from the amplify-meta.json, paired with
  * a sanitized placeholder of the form `<category>.<resourceName>.<outputKey>`.
@@ -64,19 +44,24 @@ const AMPLIFY_META_CATEGORIES = [
  */
 const AWS_REGION_PATTERN = /^[a-z]{2}(-[a-z]+-\d+)$/;
 
+/** Values that are too generic to safely replace via global string substitution. */
+const SKIP_VALUES = new Set(['sandbox', 'NONE', 'false', 'true']);
+
 function extractOutputReplacements(meta: any): { value: string; placeholder: string }[] {
   const replacements: { value: string; placeholder: string }[] = [];
 
-  for (const category of AMPLIFY_META_CATEGORIES) {
-    if (!meta[category]) continue;
+  for (const category of Object.keys(meta)) {
+    if (category === 'providers') continue;
+    if (typeof meta[category] !== 'object' || meta[category] === null) continue;
     for (const resourceName of Object.keys(meta[category])) {
       const output = meta[category][resourceName]?.output;
-      if (!output) continue;
+      if (!output || typeof output !== 'object') continue;
       for (const outputKey of Object.keys(output)) {
         const outputValue = output[outputKey];
         if (typeof outputValue !== 'string') continue;
         if (outputValue.length < 5) continue;
         if (AWS_REGION_PATTERN.test(outputValue)) continue;
+        if (SKIP_VALUES.has(outputValue)) continue;
         replacements.push({ value: outputValue, placeholder: `${category}.${resourceName}.${outputKey}` });
       }
     }
@@ -88,25 +73,39 @@ function extractOutputReplacements(meta: any): { value: string; placeholder: str
   return replacements;
 }
 
-function extractGen2ApiKey(appDir: string): string | null {
+/**
+ * Extracts replacements from all .outputs.json files in _snapshot.pre.refactor.
+ *
+ * Each output value is replaced with `<hash>.<OutputKey>` where `<hash>` is a
+ * stable 10-character hex digest derived from the outputs filename.
+ */
+function extractRefactorOutputReplacements(appDir: string): { value: string; placeholder: string }[] {
   const preRefactor = path.join(appDir, '_snapshot.pre.refactor');
-  for (const outputsFile of fs.readdirSync(preRefactor).filter((f) => f.endsWith('outputs.json'))) {
-    const outputs = JSON.parse(fs.readFileSync(path.join(preRefactor, outputsFile), { encoding: 'utf-8' }));
+  if (!fs.existsSync(preRefactor)) return [];
+
+  const replacements: { value: string; placeholder: string }[] = [];
+
+  for (const fileName of fs.readdirSync(preRefactor).filter((f) => f.endsWith('.outputs.json'))) {
+    const hash = crypto.createHash('sha256').update(fileName).digest('hex').slice(0, 10);
+    const outputs: any[] = JSON.parse(fs.readFileSync(path.join(preRefactor, fileName), { encoding: 'utf-8' }));
     for (const output of outputs) {
-      if (output.OutputKey.includes('ApiKey')) {
-        return output.OutputValue;
-      }
+      const outputValue: unknown = output.OutputValue;
+      if (typeof outputValue !== 'string') continue;
+      if (outputValue.length < 5) continue;
+      if (AWS_REGION_PATTERN.test(outputValue)) continue;
+      if (SKIP_VALUES.has(outputValue)) continue;
+      replacements.push({ value: outputValue, placeholder: `${hash}.${output.OutputKey}` });
     }
   }
-  return null;
+
+  replacements.sort((a, b) => b.value.length - a.value.length);
+  return replacements;
 }
 
-function extractSensitiveValues(meta: any, appDir: string): SensitiveValues {
+function extractSensitiveValues(meta: any): SensitiveValues {
   return {
     accountId: extractAccountId(meta),
     amplifyAppId: extractAmplifyAppId(meta),
-    gen1ApiKey: extractGen1ApiKey(meta),
-    gen2ApiKey: extractGen2ApiKey(appDir),
   };
 }
 
@@ -150,16 +149,17 @@ function getAllFiles(dir: string): string[] {
  * Targets:
  * - AWS Account ID (from providers.awscloudformation AuthRoleArn) → replaced with 123456789012
  * - Amplify App ID (from providers.awscloudformation) → replaced with app name (dashes removed)
- * - AppSync API Key (from api output, if present) → replaced with da2-fakeapikey00000000000000
  * - All string output values from resource categories → replaced with <category>.<resourceName>.<outputKey>
+ * - All string output values from .outputs.json files → replaced with <fileHash>.<OutputKey>
  */
 export function sanitize(appName: string, appDir: string): void {
   const appNameNoDashes = appName.replaceAll('-', '');
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
-  const values = extractSensitiveValues(amplifyMeta, appDir);
+  const values = extractSensitiveValues(amplifyMeta);
 
   const outputReplacements = extractOutputReplacements(amplifyMeta);
+  const refactorOutputReplacements = extractRefactorOutputReplacements(appDir);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
@@ -170,15 +170,11 @@ export function sanitize(appName: string, appDir: string): void {
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, appNameNoDashes);
 
-    if (values.gen1ApiKey) {
-      content = content.replaceAll(values.gen1ApiKey, 'da2-fakeapikey00000000000000');
-    }
-
-    if (values.gen2ApiKey) {
-      content = content.replaceAll(values.gen2ApiKey, 'da2-fakeapikey00000000000000');
-    }
-
     for (const { value, placeholder } of outputReplacements) {
+      content = content.replaceAll(value, placeholder);
+    }
+
+    for (const { value, placeholder } of refactorOutputReplacements) {
       content = content.replaceAll(value, placeholder);
     }
 

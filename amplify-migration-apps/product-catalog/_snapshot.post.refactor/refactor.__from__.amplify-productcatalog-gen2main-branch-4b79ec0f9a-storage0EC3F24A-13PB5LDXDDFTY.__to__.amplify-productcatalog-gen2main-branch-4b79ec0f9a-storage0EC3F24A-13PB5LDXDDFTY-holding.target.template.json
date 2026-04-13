@@ -47,12 +47,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:40f1c9f949.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "40f1c9f949.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/storage/productcatalogf95af07481f845caa6594c26ac9c8ed331323-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/storage/productcatalogf95af07481f845caa6594c26ac9c8ed331323-gen2-main/Bucket/Resource"
       }
     }
   },

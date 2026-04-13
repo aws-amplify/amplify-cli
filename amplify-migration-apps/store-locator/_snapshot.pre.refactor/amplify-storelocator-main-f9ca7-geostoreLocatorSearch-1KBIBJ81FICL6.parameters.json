@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-storelocator-main-f9ca7-authRole"
+    "ParameterValue": "b3b1865edc.AuthRoleName"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-storelocator-main-f9ca7-unauthRole"
+    "ParameterValue": "b3b1865edc.UnauthRoleName"
   },
   {
     "ParameterKey": "indexName",

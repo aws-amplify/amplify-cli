@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "AuthRoleName",
+    "ParameterValue": "6df4025c53.AuthRoleName"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "6df4025c53.DeploymentBucketName"
+  },
+  {
+    "ParameterKey": "UnauthRoleName",
+    "ParameterValue": "6df4025c53.UnauthRoleName"
+  }
+]

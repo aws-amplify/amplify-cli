@@ -110,7 +110,7 @@
     }
   },
   "Resources": {
-    "CommentTable": {
+    "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -355,7 +355,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "CommentTable",
+                    "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
                     "Arn"
                   ]
                 },
@@ -365,7 +365,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "CommentTable",
+                          "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
                           "Arn"
                         ]
                       },
@@ -397,10 +397,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "CommentTable"
+            "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
           }
         },
-        "Name": "CommentTable",
+        "Name": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "CommentIAMRoleD5EC5F51",
@@ -531,7 +531,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "CommentTable"
+                "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -549,7 +549,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -645,7 +645,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "CommentTable"
+                "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -663,7 +663,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -792,7 +792,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "CommentTable"
+                "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -810,7 +810,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -960,7 +960,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "CommentTable"
+                "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -978,7 +978,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1125,7 +1125,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "CommentTable"
+                "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -1143,7 +1143,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1229,7 +1229,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1285,7 +1285,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1341,7 +1341,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1437,7 +1437,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "CommentTable"
+                "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -1455,7 +1455,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1550,7 +1550,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.productcatalog90174ac4.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"8563cd35c0.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1560,11 +1560,11 @@
     }
   },
   "Outputs": {
-    "GetAttCommentTableStreamArn": {
+    "GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "CommentTable",
+          "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
           "StreamArn"
         ]
       },
@@ -1576,16 +1576,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:CommentTable:StreamArn"
+              "GetAtt:5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttCommentTableName": {
+    "GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "CommentTable"
+        "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
       },
       "Export": {
         "Name": {
@@ -1595,7 +1595,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:CommentTable:Name"
+              "GetAtt:5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName:Name"
             ]
           ]
         }
@@ -1631,9 +1631,9 @@
         ]
       }
     },
-    "transformerrootstackCommentCommentTable5427FDE2Ref": {
+    "transformerrootstackComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName5427FDE2Ref": {
       "Value": {
-        "Ref": "CommentTable"
+        "Ref": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
       }
     }
   }

@@ -36,16 +36,16 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:c643a9b272.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "c643a9b272.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "importedresourcequotegenerator-gen2-main"
+            "Value": "fd08f90f6e.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref"
           },
           {
             "Key": "created-by",
@@ -54,7 +54,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/function/importedresourcequotegenerator-gen2-main-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/function/fd08f90f6e.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref-lambda/ServiceRole/Resource"
       }
     },
     "importedresourcequotegeneratorgen2mainlambdaC998C0A9": {
@@ -79,7 +79,7 @@
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "importedresourcequotegenerator-gen2-main",
+        "FunctionName": "fd08f90f6e.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref",
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {
@@ -95,16 +95,16 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:c643a9b272.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "c643a9b272.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "importedresourcequotegenerator-gen2-main"
+            "Value": "fd08f90f6e.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref"
           },
           {
             "Key": "created-by",
@@ -117,7 +117,7 @@
         "importedresourcequotegeneratorgen2mainlambdaServiceRole6D2EFBC1"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/function/importedresourcequotegenerator-gen2-main-lambda/Resource",
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/function/fd08f90f6e.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref-lambda/Resource",
         "aws:asset:path": "asset.f38c76d2be884e3a52a06659f0a64fad781cbd8cf76c6c877f00fa75f2e7660f",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -129,7 +129,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNuwqDQBCF4WexHydmTSBtDKS00AeQcXeU9TJCZo2F+O5BJdXXHP5j0NzumES0aGxdHw++xjVnDezKQLYHWrRaBxprR5VMjjvF/OA9iw1+EvA04lpMA8Orkd0NNK1IlYPicwc0xWy2PYeMlOGs4auRf2ODY1cGar20G+xH2OnlawxeH5hEnXoff2YJfmQsTn/mCn7QuwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/function/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/function/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -401,7 +401,7 @@
     }
   },
   "Outputs": {
-    "amplifyimportedresourcesgen2mainbranch908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref": {
+    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddfunctionimportedresourcequotegeneratorgen2mainlambda21A13354Ref": {
       "Value": {
         "Ref": "importedresourcequotegeneratorgen2mainlambdaC998C0A9"
       }

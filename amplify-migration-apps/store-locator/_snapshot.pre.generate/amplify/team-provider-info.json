@@ -1,16 +1,16 @@
 {
   "main": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-storelocator-main-f9ca7-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-authRole",
+      "AuthRoleName": "b3b1865edc.AuthRoleName",
+      "UnauthRoleArn": "b3b1865edc.UnauthRoleArn",
+      "AuthRoleArn": "b3b1865edc.AuthRoleArn",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-storelocator-main-f9ca7-deployment",
-      "UnauthRoleName": "amplify-storelocator-main-f9ca7-unauthRole",
-      "StackName": "amplify-storelocator-main-f9ca7",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-main-f9ca7/06c2ecf0-279e-11f1-a161-0ea0286337e9",
+      "DeploymentBucketName": "b3b1865edc.DeploymentBucketName",
+      "UnauthRoleName": "b3b1865edc.UnauthRoleName",
+      "StackName": "b3b1865edc.StackName",
+      "StackId": "b3b1865edc.StackId",
       "AmplifyAppId": "storelocator",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/b3b1865edc.DeploymentBucketName/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
@@ -20,7 +20,7 @@
       "function": {
         "storelocator41a9495f41a9495fPostConfirmation": {
           "GROUP": "storeLocatorAdmin",
-          "deploymentBucketName": "amplify-storelocator-main-f9ca7-deployment",
+          "deploymentBucketName": "b3b1865edc.DeploymentBucketName",
           "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip"
         }
       },

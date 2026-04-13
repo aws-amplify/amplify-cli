@@ -146,7 +146,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
+                      "4c3f39313a.StackName-authproductcatalog90174ac4-1DKM3MK2JKRFC"
                     ]
                   }
                 ]
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "auth.productcatalog90174ac4.IdentityPoolId"
+      "Value": "8563cd35c0.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "auth.productcatalog90174ac4.IdentityPoolName"
+      "Value": "8563cd35c0.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "auth.productcatalog90174ac4.UserPoolId"
+      "Value": "8563cd35c0.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "auth.productcatalog90174ac4.UserPoolArn"
+      "Value": "8563cd35c0.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "auth.productcatalog90174ac4.UserPoolName"
+      "Value": "8563cd35c0.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "auth.productcatalog90174ac4.AppClientIDWeb"
+      "Value": "8563cd35c0.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "auth.productcatalog90174ac4.AppClientID"
+      "Value": "8563cd35c0.AppClientID"
     }
   }
 }

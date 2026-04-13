@@ -299,12 +299,12 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:c643a9b272.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "c643a9b272.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -317,7 +317,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2MainLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2MainLambdaDataSource/ServiceRole/Resource"
       }
     },
     "QuotegeneratorGen2MainLambdaDataSourceServiceRoleDefaultPolicy3C33C32C": {
@@ -378,14 +378,14 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "QuotegeneratorGen2MainLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -413,14 +413,14 @@
         "Type": "AWS_LAMBDA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2MainLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2MainLambdaDataSource/Resource"
       }
     },
     "InvokeQuotegeneratorGen2MainLambdaDataSourceInvokeQuotegeneratorGen2MainLambdaDataSourceAppSyncFunction0A6EA349": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -441,14 +441,14 @@
         "QuotegeneratorGen2MainLambdaDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/InvokeQuotegeneratorGen2MainLambdaDataSource/InvokeQuotegeneratorGen2MainLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/InvokeQuotegeneratorGen2MainLambdaDataSource/InvokeQuotegeneratorGen2MainLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerygetRandomQuoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "FieldName": "getRandomQuote",
         "Kind": "PIPELINE",
@@ -480,7 +480,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
           ]
         },
@@ -490,17 +490,17 @@
         "TypeName": "Query"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/queryGetRandomQuoteResolver"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/queryGetRandomQuoteResolver"
       }
     },
     "QueryGetRandomQuoteAuthFNQueryGetRandomQuoteAuthFNAppSyncFunction15864A6C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName"
+          "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryGetRandomQuoteAuthFN",
@@ -510,7 +510,7 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/QueryGetRandomQuoteAuthFN/QueryGetRandomQuoteAuthFN.AppSyncFunction"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/QueryGetRandomQuoteAuthFN/QueryGetRandomQuoteAuthFN.AppSyncFunction"
       }
     },
     "CDKMetadata": {
@@ -519,16 +519,16 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQWvDMAyFf0vvjtalHey6Zuw0Rkl+QFFtJahx5BLZLSXkvw+77LDTp/ek91AN9f4Nthu8a2XdWHk+w/JDGsl1Ee1oml6aII4jBzF419PicTo7hK8kNpsHVDJ4vepDLCzfZfmJEbuQZks5/1/95ZogPQ9pxtLc9NKSBn+jeTWMEyxt8OW+8Bg820eWz2k1ujuhKkWFjwyjOzgkO1LM/6ymmF3EgWVYjQRHcNGXW13D6ztsNxdlruYkkSeC9slfDhPtXwsBAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
   },
   "Parameters": {
-    "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName": {
       "Type": "String"
     }
   }

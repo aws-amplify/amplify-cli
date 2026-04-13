@@ -37,22 +37,22 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceE84470E2Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataAmplifyTableManagerTableMaE24831DE": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceE84470E2Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyTableManagerTableMaE24831DE": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref": {
+    "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref": {
       "Type": "String"
     }
   },
@@ -349,13 +349,13 @@
     }
   },
   "Resources": {
-    "ExerciseTable": {
+    "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceE84470E2Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataAmplifyTableManagerTableMaE24831DE"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceE84470E2Outputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyTableManagerTableMaE24831DE"
         },
-        "tableName": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main",
+        "tableName": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -444,7 +444,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/ExerciseTable/Default/Default"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name/Default/Default"
       }
     },
     "ExerciseIAMRole28D09384": {
@@ -487,7 +487,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
+                          "tablename": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName"
                         }
                       ]
                     },
@@ -495,7 +495,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
+                          "tablename": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName"
                         }
                       ]
                     }
@@ -513,7 +513,7 @@
             [
               "ExerciseIAMRoled0d0e6-",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "-NONE"
             ]
@@ -525,12 +525,12 @@
             "Value": "fitnesstracker"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:3f11ed2aac.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "3f11ed2aac.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -543,14 +543,14 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/ExerciseIAMRole/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/ExerciseIAMRole/Resource"
       }
     },
     "ExerciseDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DynamoDBConfig": {
           "AwsRegion": {
@@ -570,7 +570,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "ExerciseTable",
+                              "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
                               "TableArn"
                             ]
                           }
@@ -583,7 +583,7 @@
             ]
           }
         },
-        "Name": "ExerciseTable",
+        "Name": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "ExerciseIAMRole28D09384",
@@ -596,17 +596,17 @@
         "ExerciseIAMRole28D09384"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/ExerciseDataSource/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/ExerciseDataSource/Resource"
       }
     },
     "QuerygetExerciseauth0FunctionQuerygetExerciseauth0FunctionAppSyncFunction0AC70BDB": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetExerciseauth0Function",
@@ -616,17 +616,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/QuerygetExerciseauth0Function/QuerygetExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/QuerygetExerciseauth0Function/QuerygetExerciseauth0Function.AppSyncFunction"
       }
     },
     "QuerygetExercisepostAuth0FunctionQuerygetExercisepostAuth0FunctionAppSyncFunction6287EBF7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetExercisepostAuth0Function",
@@ -636,14 +636,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/QuerygetExercisepostAuth0Function/QuerygetExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/QuerygetExercisepostAuth0Function/QuerygetExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "QueryGetExerciseDataResolverFnQueryGetExerciseDataResolverFnAppSyncFunction73149704": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -664,14 +664,14 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/QueryGetExerciseDataResolverFn/QueryGetExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/QueryGetExerciseDataResolverFn/QueryGetExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "GetExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "getExercise",
         "Kind": "PIPELINE",
@@ -703,7 +703,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -720,7 +720,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ExerciseTable",
+                                  "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
                                   "TableArn"
                                 ]
                               }
@@ -742,7 +742,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -754,11 +754,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -768,17 +768,17 @@
         "TypeName": "Query"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/queryGetExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/queryGetExerciseResolver"
       }
     },
     "QuerylistExercisesauth0FunctionQuerylistExercisesauth0FunctionAppSyncFunction51A6AD03": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistExercisesauth0Function",
@@ -788,17 +788,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/QuerylistExercisesauth0Function/QuerylistExercisesauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/QuerylistExercisesauth0Function/QuerylistExercisesauth0Function.AppSyncFunction"
       }
     },
     "QuerylistExercisespostAuth0FunctionQuerylistExercisespostAuth0FunctionAppSyncFunction0E7A24F2": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistExercisespostAuth0Function",
@@ -808,14 +808,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/QuerylistExercisespostAuth0Function/QuerylistExercisespostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/QuerylistExercisespostAuth0Function/QuerylistExercisespostAuth0Function.AppSyncFunction"
       }
     },
     "QueryListExercisesDataResolverFnQueryListExercisesDataResolverFnAppSyncFunction0818DDCE": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -836,14 +836,14 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/QueryListExercisesDataResolverFn/QueryListExercisesDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/QueryListExercisesDataResolverFn/QueryListExercisesDataResolverFn.AppSyncFunction"
       }
     },
     "ListExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "listExercises",
         "Kind": "PIPELINE",
@@ -875,7 +875,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listExercises\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -892,7 +892,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ExerciseTable",
+                                  "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
                                   "TableArn"
                                 ]
                               }
@@ -914,7 +914,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -926,11 +926,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -940,17 +940,17 @@
         "TypeName": "Query"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/queryListExercisesResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/queryListExercisesResolver"
       }
     },
     "MutationcreateExerciseinit0FunctionMutationcreateExerciseinit0FunctionAppSyncFunction007007C2": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateExerciseinit0Function",
@@ -960,17 +960,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationcreateExerciseinit0Function/MutationcreateExerciseinit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationcreateExerciseinit0Function/MutationcreateExerciseinit0Function.AppSyncFunction"
       }
     },
     "MutationcreateExerciseauth0FunctionMutationcreateExerciseauth0FunctionAppSyncFunction06E6FB6C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateExerciseauth0Function",
@@ -980,17 +980,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationcreateExerciseauth0Function/MutationcreateExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationcreateExerciseauth0Function/MutationcreateExerciseauth0Function.AppSyncFunction"
       }
     },
     "MutationcreateExercisepostAuth0FunctionMutationcreateExercisepostAuth0FunctionAppSyncFunctionFAC86A10": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateExercisepostAuth0Function",
@@ -1000,14 +1000,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationcreateExercisepostAuth0Function/MutationcreateExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationcreateExercisepostAuth0Function/MutationcreateExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "MutationCreateExerciseDataResolverFnMutationCreateExerciseDataResolverFnAppSyncFunction9F8EC7E0": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1028,14 +1028,14 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationCreateExerciseDataResolverFn/MutationCreateExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationCreateExerciseDataResolverFn/MutationCreateExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "CreateExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "createExercise",
         "Kind": "PIPELINE",
@@ -1073,7 +1073,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1090,7 +1090,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ExerciseTable",
+                                  "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
                                   "TableArn"
                                 ]
                               }
@@ -1112,7 +1112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1124,11 +1124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1138,17 +1138,17 @@
         "TypeName": "Mutation"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/mutationCreateExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/mutationCreateExerciseResolver"
       }
     },
     "MutationupdateExerciseinit0FunctionMutationupdateExerciseinit0FunctionAppSyncFunction2DE5E607": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateExerciseinit0Function",
@@ -1158,14 +1158,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationupdateExerciseinit0Function/MutationupdateExerciseinit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationupdateExerciseinit0Function/MutationupdateExerciseinit0Function.AppSyncFunction"
       }
     },
     "MutationupdateExerciseauth0FunctionMutationupdateExerciseauth0FunctionAppSyncFunction2CE5BE66": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1186,17 +1186,17 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationupdateExerciseauth0Function/MutationupdateExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationupdateExerciseauth0Function/MutationupdateExerciseauth0Function.AppSyncFunction"
       }
     },
     "MutationupdateExercisepostAuth0FunctionMutationupdateExercisepostAuth0FunctionAppSyncFunction25628A67": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateExercisepostAuth0Function",
@@ -1206,14 +1206,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationupdateExercisepostAuth0Function/MutationupdateExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationupdateExercisepostAuth0Function/MutationupdateExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "MutationUpdateExerciseDataResolverFnMutationUpdateExerciseDataResolverFnAppSyncFunctionD0CB335C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1234,14 +1234,14 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationUpdateExerciseDataResolverFn/MutationUpdateExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationUpdateExerciseDataResolverFn/MutationUpdateExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "UpdateExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "updateExercise",
         "Kind": "PIPELINE",
@@ -1279,7 +1279,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1296,7 +1296,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ExerciseTable",
+                                  "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
                                   "TableArn"
                                 ]
                               }
@@ -1318,7 +1318,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1330,11 +1330,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1344,14 +1344,14 @@
         "TypeName": "Mutation"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/mutationUpdateExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/mutationUpdateExerciseResolver"
       }
     },
     "MutationdeleteExerciseauth0FunctionMutationdeleteExerciseauth0FunctionAppSyncFunctionC2D9DFF8": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1372,17 +1372,17 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationdeleteExerciseauth0Function/MutationdeleteExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationdeleteExerciseauth0Function/MutationdeleteExerciseauth0Function.AppSyncFunction"
       }
     },
     "MutationdeleteExercisepostAuth0FunctionMutationdeleteExercisepostAuth0FunctionAppSyncFunction990C3B7B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationdeleteExercisepostAuth0Function",
@@ -1392,14 +1392,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationdeleteExercisepostAuth0Function/MutationdeleteExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationdeleteExercisepostAuth0Function/MutationdeleteExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "MutationDeleteExerciseDataResolverFnMutationDeleteExerciseDataResolverFnAppSyncFunction91D88DD6": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1420,14 +1420,14 @@
         "ExerciseDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/MutationDeleteExerciseDataResolverFn/MutationDeleteExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/MutationDeleteExerciseDataResolverFn/MutationDeleteExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "DeleteExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "deleteExercise",
         "Kind": "PIPELINE",
@@ -1459,7 +1459,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1476,7 +1476,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ExerciseTable",
+                                  "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
                                   "TableArn"
                                 ]
                               }
@@ -1498,7 +1498,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1510,11 +1510,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1524,17 +1524,17 @@
         "TypeName": "Mutation"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/mutationDeleteExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/mutationDeleteExerciseResolver"
       }
     },
     "SubscriptiononCreateExerciseauth0FunctionSubscriptiononCreateExerciseauth0FunctionAppSyncFunctionC50A81C7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateExerciseauth0Function",
@@ -1544,17 +1544,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptiononCreateExerciseauth0Function/SubscriptiononCreateExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptiononCreateExerciseauth0Function/SubscriptiononCreateExerciseauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononCreateExercisepostAuth0FunctionSubscriptiononCreateExercisepostAuth0FunctionAppSyncFunction5A196A51": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateExercisepostAuth0Function",
@@ -1564,17 +1564,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptiononCreateExercisepostAuth0Function/SubscriptiononCreateExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptiononCreateExercisepostAuth0Function/SubscriptiononCreateExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnCreateExerciseDataResolverFnSubscriptionOnCreateExerciseDataResolverFnAppSyncFunctionAB5DF306": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnCreateExerciseDataResolverFn",
@@ -1586,14 +1586,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptionOnCreateExerciseDataResolverFn/SubscriptionOnCreateExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptionOnCreateExerciseDataResolverFn/SubscriptionOnCreateExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononCreateExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "onCreateExercise",
         "Kind": "PIPELINE",
@@ -1625,7 +1625,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1637,7 +1637,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1649,11 +1649,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1663,17 +1663,17 @@
         "TypeName": "Subscription"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/subscriptionOnCreateExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/subscriptionOnCreateExerciseResolver"
       }
     },
     "SubscriptiononUpdateExerciseauth0FunctionSubscriptiononUpdateExerciseauth0FunctionAppSyncFunction9193D2A0": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateExerciseauth0Function",
@@ -1683,17 +1683,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptiononUpdateExerciseauth0Function/SubscriptiononUpdateExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptiononUpdateExerciseauth0Function/SubscriptiononUpdateExerciseauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononUpdateExercisepostAuth0FunctionSubscriptiononUpdateExercisepostAuth0FunctionAppSyncFunctionDE028CEA": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateExercisepostAuth0Function",
@@ -1703,17 +1703,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptiononUpdateExercisepostAuth0Function/SubscriptiononUpdateExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptiononUpdateExercisepostAuth0Function/SubscriptiononUpdateExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnUpdateExerciseDataResolverFnSubscriptionOnUpdateExerciseDataResolverFnAppSyncFunctionA7AA88CA": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnUpdateExerciseDataResolverFn",
@@ -1725,14 +1725,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptionOnUpdateExerciseDataResolverFn/SubscriptionOnUpdateExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptionOnUpdateExerciseDataResolverFn/SubscriptionOnUpdateExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononUpdateExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "onUpdateExercise",
         "Kind": "PIPELINE",
@@ -1764,7 +1764,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1776,7 +1776,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1788,11 +1788,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1802,17 +1802,17 @@
         "TypeName": "Subscription"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/subscriptionOnUpdateExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/subscriptionOnUpdateExerciseResolver"
       }
     },
     "SubscriptiononDeleteExerciseauth0FunctionSubscriptiononDeleteExerciseauth0FunctionAppSyncFunction54DF160B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteExerciseauth0Function",
@@ -1822,17 +1822,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptiononDeleteExerciseauth0Function/SubscriptiononDeleteExerciseauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptiononDeleteExerciseauth0Function/SubscriptiononDeleteExerciseauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononDeleteExercisepostAuth0FunctionSubscriptiononDeleteExercisepostAuth0FunctionAppSyncFunctionAF03921E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteExercisepostAuth0Function",
@@ -1842,17 +1842,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptiononDeleteExercisepostAuth0Function/SubscriptiononDeleteExercisepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptiononDeleteExercisepostAuth0Function/SubscriptiononDeleteExercisepostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnDeleteExerciseDataResolverFnSubscriptionOnDeleteExerciseDataResolverFnAppSyncFunctionA2A2A8C9": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnDeleteExerciseDataResolverFn",
@@ -1864,14 +1864,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/SubscriptionOnDeleteExerciseDataResolverFn/SubscriptionOnDeleteExerciseDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/SubscriptionOnDeleteExerciseDataResolverFn/SubscriptionOnDeleteExerciseDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononDeleteExerciseResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "onDeleteExercise",
         "Kind": "PIPELINE",
@@ -1903,7 +1903,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteExercise\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1915,7 +1915,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1927,11 +1927,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1941,17 +1941,17 @@
         "TypeName": "Subscription"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/subscriptionOnDeleteExerciseResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/subscriptionOnDeleteExerciseResolver"
       }
     },
     "ExerciseOwnerDataResolverFnExerciseOwnerDataResolverFnAppSyncFunction8652EC02": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPINONEDSD2CC3624Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "ExerciseOwnerDataResolverFn",
@@ -1963,14 +1963,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/ExerciseOwnerDataResolverFn/ExerciseOwnerDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/ExerciseOwnerDataResolverFn/ExerciseOwnerDataResolverFn.AppSyncFunction"
       }
     },
     "ExerciseownerResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+          "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
         },
         "FieldName": "owner",
         "Kind": "PIPELINE",
@@ -1990,7 +1990,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Exercise\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -2002,7 +2002,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -2014,11 +2014,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2028,7 +2028,7 @@
         "TypeName": "Exercise"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/exerciseOwnerResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/exerciseOwnerResolver"
       }
     },
     "CDKMetadata": {
@@ -2037,17 +2037,17 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X31OtoD7uuoB63CXavTGJQCjgodlpViHefoFOnnX5/8if7zyA7HGC3wZtsreu2va9h+iBRcpWi7Uze8BdGHEgpLpAHdl59YFOShBQtmTyJhuEPG37OeJPz5O6MQ3A1fGPd0xGFjMcBpjL0Dzv0NBscR7mzhalY9aIuULF6nvxPp8R2KZEHbnybIq6Nfj/3V4qzkf0ZRUgF3pcwsodjsh3pUmBe3M+kY1KzrivF1nM7Gw6O4CIv1yyD1zfYbS7i/TYmVj8QlI/8AVayTVs2AQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/data/amplifyData/Exercise/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/data/amplifyData/Exercise/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
   },
   "Outputs": {
-    "GetAttExerciseTableStreamArn": {
+    "GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "ExerciseTable",
+          "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
           "TableStreamArn"
         ]
       },
@@ -2057,32 +2057,32 @@
             ":",
             [
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
-              "GetAtt:ExerciseTable:StreamArn"
+              "GetAtt:5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttExerciseTableName": {
+    "GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main",
+      "Value": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName",
       "Export": {
         "Name": {
           "Fn::Join": [
             ":",
             [
               {
-                "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+                "Ref": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
               },
-              "GetAtt:ExerciseTable:Name"
+              "GetAtt:5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name:Name"
             ]
           ]
         }
       }
     },
-    "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name": {
+    "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name": {
       "Value": {
         "Fn::GetAtt": [
           "ExerciseDataSource",
@@ -2090,10 +2090,10 @@
         ]
       }
     },
-    "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseTableA7BD0631TableArn": {
+    "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn": {
       "Value": {
         "Fn::GetAtt": [
-          "ExerciseTable",
+          "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
           "TableArn"
         ]
       }

@@ -1,62 +1,62 @@
 [
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaConfiguration",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaConfiguration",
     "OutputValue": "OFF"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CsocialProviders",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CsocialProviders",
     "OutputValue": "[]"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CverificationMechanisms",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CverificationMechanisms",
     "OutputValue": "[\"email\"]"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain",
-    "OutputValue": ".auth.us-east-1.amazoncognito.com"
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain",
+    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CallowUnauthenticatedIdentities",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CallowUnauthenticatedIdentities",
     "OutputValue": "true"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthResponseType",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthResponseType",
     "OutputValue": ""
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthScope",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthScope",
     "OutputValue": "[]"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
-    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
+    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignIn",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignIn",
     "OutputValue": ""
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaTypes",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaTypes",
     "OutputValue": "[]"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignOut",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignOut",
     "OutputValue": ""
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyRequirements",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyRequirements",
     "OutputValue": "[]"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CusernameAttributes",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CusernameAttributes",
     "OutputValue": "[\"email\"]"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyMinLength",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyMinLength",
     "OutputValue": "8"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CsignupAttributes",
+    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CsignupAttributes",
     "OutputValue": "[\"sub\",\"email\"]"
   }
 ]

@@ -1,11 +1,11 @@
 [
   {
     "Source": {
-      "StackName": "amplify-discussions-main-c39a5-storagebookmarks-B7BEMLBCHV3W",
+      "StackName": "b77cc5b997.StackName-storagebookmarks-B7BEMLBCHV3W",
       "LogicalResourceId": "DynamoDBTable"
     },
     "Destination": {
-      "StackName": "amplify-discussions-gen2main-branch-a27e51c30a-storagebookmarks210DAF62-135V889SZ0ORT",
+      "StackName": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a-storagebookmarks210DAF62-135V889SZ0ORT",
       "LogicalResourceId": "bookmarksA4548304"
     }
   }

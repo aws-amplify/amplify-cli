@@ -1,17 +1,17 @@
 [
   {
     "OutputKey": "ApiName",
-    "OutputValue": "api.api.adminapi.ApiName.ApiName",
+    "OutputValue": "api.d809bc5a09.ApiName.ApiName",
     "Description": "API Friendly name"
   },
   {
     "OutputKey": "RootUrl",
-    "OutputValue": "api.api.api.adminapi.ApiName.ApiName.RootUrl",
+    "OutputValue": "api.api.d809bc5a09.ApiName.ApiName.RootUrl",
     "Description": "Root URL of the API gateway"
   },
   {
     "OutputKey": "ApiId",
-    "OutputValue": "api.api.api.adminapi.ApiName.ApiName.ApiId",
+    "OutputValue": "api.api.d809bc5a09.ApiName.ApiName.ApiId",
     "Description": "API ID (prefix of API URL)"
   }
 ]

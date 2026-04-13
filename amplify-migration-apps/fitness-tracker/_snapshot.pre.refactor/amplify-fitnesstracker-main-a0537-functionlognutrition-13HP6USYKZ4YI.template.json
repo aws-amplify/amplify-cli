@@ -76,7 +76,7 @@
             },
             "API_FITNESSTRACKER_MEALTABLE_NAME": {
               "Fn::ImportValue": {
-                "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:MealTable:Name"
+                "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
               }
             },
             "API_FITNESSTRACKER_MEALTABLE_ARN": {
@@ -94,7 +94,7 @@
                   ":table/",
                   {
                     "Fn::ImportValue": {
-                      "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:MealTable:Name"
+                      "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
                     }
                   }
                 ]
@@ -249,7 +249,7 @@
                       ":table/",
                       {
                         "Fn::ImportValue": {
-                          "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:MealTable:Name"
+                          "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
                         }
                       }
                     ]
@@ -270,7 +270,7 @@
                       ":table/",
                       {
                         "Fn::ImportValue": {
-                          "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:MealTable:Name"
+                          "Fn::Sub": "${apifitnesstrackerGraphQLAPIIdOutput}:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
                         }
                       },
                       "/index/*"

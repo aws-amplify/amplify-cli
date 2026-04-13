@@ -11,10 +11,10 @@
     "env": {
       "Type": "String"
     },
-    "api.api.nutritionapi.ApiName.ApiName": {
+    "api.5c8596b905.ApiName.ApiName": {
       "Type": "String"
     },
-    "api.api.adminapi.ApiName.ApiName": {
+    "api.d809bc5a09.ApiName.ApiName": {
       "Type": "String"
     }
   },
@@ -55,7 +55,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -85,7 +85,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {

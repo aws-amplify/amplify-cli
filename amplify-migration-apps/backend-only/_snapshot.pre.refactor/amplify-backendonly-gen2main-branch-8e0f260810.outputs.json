@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "55m5602upkjiv7819hcf2ht5v3"
+    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc"
+    "OutputValue": "eec8895ed8.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810storagebackendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket8CDA8E49Ref"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "55m5602upkjiv7819hcf2ht5v3"
+    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -41,7 +41,7 @@
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+    "OutputValue": "c0d444ea7b.awsAppsyncAdditionalAuthenticationTypes"
   },
   {
     "OutputKey": "mfaTypes",
@@ -61,15 +61,15 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputValue": "api.backendonly.GraphQLAPIKeyOutput"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "API_KEY"
+    "OutputValue": "c0d444ea7b.awsAppsyncAuthenticationType"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "https://example.com"
+    "OutputValue": "c0d444ea7b.oauthRedirectSignIn"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://6dzlmk7dbjfr3gls7n6lw7hunq.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9GraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "pjpnolkqdzf57jyueue5dlgyam"
+    "OutputValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-gen2-main\\\",\\\"bucketName\\\":\\\"eec8895ed8.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810storagebackendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket8CDA8E49Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-backendonly-ge-amplifydataamplifycodege-dpqe8qgqodjl/model-schema.graphql"
+    "OutputValue": "c0d444ea7b.amplifyApiModelSchemaS3Uri"
   },
   {
     "OutputKey": "groups",
@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"quotegeneratorbe-gen2-main\"]"
+    "OutputValue": "[\"d397fdbf5d.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810functionquotegeneratorbegen2mainlambda13CCA9BBRef\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -113,7 +113,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "branch"
+    "OutputValue": "c0d444ea7b.deploymentType"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_W9u2NBSRe"
+    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5"
+    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef"
   },
   {
     "OutputKey": "verificationMechanisms",

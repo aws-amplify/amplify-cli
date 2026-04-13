@@ -187,7 +187,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "storage.s338e5b439.BucketName"
+      "Value": "3db57fd977.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -208,7 +208,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-productcatalog-main-31323-storages338e5b439-DQ7IMC8LEGGI"
+                      "4c3f39313a.StackName-storages338e5b439-DQ7IMC8LEGGI"
                     ]
                   }
                 ]
@@ -249,11 +249,11 @@
           "LambdaConfigurations": [
             {
               "Event": "s3:ObjectCreated:*",
-              "Function": "function.S3Trigger1ef46783.Arn"
+              "Function": "2a52e89b9c.Arn"
             },
             {
               "Event": "s3:ObjectRemoved:*",
-              "Function": "function.S3Trigger1ef46783.Arn"
+              "Function": "2a52e89b9c.Arn"
             }
           ]
         },
@@ -274,7 +274,7 @@
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": "function.S3Trigger1ef46783.Name",
+        "FunctionName": "2a52e89b9c.Name",
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {
           "Ref": "AWS::AccountId"
@@ -299,7 +299,7 @@
                             {
                               "Fn::Split": [
                                 "-",
-                                "amplify-productcatalog-main-31323-storages338e5b439-DQ7IMC8LEGGI"
+                                "4c3f39313a.StackName-storages338e5b439-DQ7IMC8LEGGI"
                               ]
                             }
                           ]
@@ -336,7 +336,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -347,7 +347,7 @@
         },
         "PolicyName": "Public_policy_38e5b439",
         "Roles": [
-          "amplify-productcatalog-main-31323-authRole"
+          "4c3f39313a.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -372,7 +372,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -383,7 +383,7 @@
         },
         "PolicyName": "Protected_policy_38e5b439",
         "Roles": [
-          "amplify-productcatalog-main-31323-authRole"
+          "4c3f39313a.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -408,7 +408,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -419,7 +419,7 @@
         },
         "PolicyName": "Private_policy_38e5b439",
         "Roles": [
-          "amplify-productcatalog-main-31323-authRole"
+          "4c3f39313a.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -444,7 +444,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -455,7 +455,7 @@
         },
         "PolicyName": "Uploads_policy_38e5b439",
         "Roles": [
-          "amplify-productcatalog-main-31323-authRole"
+          "4c3f39313a.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -473,7 +473,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.s338e5b439.BucketName",
+                    "3db57fd977.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -499,7 +499,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.s338e5b439.BucketName"
+                    "3db57fd977.BucketName"
                   ]
                 ]
               }
@@ -509,7 +509,7 @@
         },
         "PolicyName": "read_policy_38e5b439",
         "Roles": [
-          "amplify-productcatalog-main-31323-authRole"
+          "4c3f39313a.AuthRoleName"
         ]
       },
       "Condition": "AuthReadAndList"
@@ -531,7 +531,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName"
+                      "3db57fd977.BucketName"
                     ]
                   ]
                 }
@@ -551,7 +551,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/*"
                     ]
                   ]
@@ -562,7 +562,7 @@
         },
         "PolicyName": "amplify-lambda-execution-policy-storage",
         "Roles": [
-          "function.S3Trigger1ef46783.LambdaExecutionRole"
+          "2a52e89b9c.LambdaExecutionRole"
         ]
       }
     }

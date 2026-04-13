@@ -100,12 +100,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -114,7 +114,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaServiceRole9040D551"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaServiceRole9040D551"
       }
     },
     "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369D308393B": {
@@ -151,7 +151,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":geofence-collection/storeLocatorGeofence-gen2-main"
+                    ":geofence-collection/19bf0e623d.Name"
                   ]
                 ]
               }
@@ -167,7 +167,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369"
       }
     },
     "storeLocatorGeofenceCustomGeofenceCollectionLambdaCA3D002BC8592787": {
@@ -190,12 +190,12 @@
             "Value": "storelocator"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:38b5101cfb.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "38b5101cfb.deploymentType"
           },
           {
             "Key": "created-by",
@@ -209,7 +209,7 @@
         "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369D308393B"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaCA3D002B"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaCA3D002B"
       }
     },
     "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D": {
@@ -221,7 +221,7 @@
             "Arn"
           ]
         },
-        "collectionName": "storeLocatorGeofence-gen2-main",
+        "collectionName": "19bf0e623d.Name",
         "region": {
           "Fn::FindInMap": [
             "storeLocatorGeofenceRegionMapping9D9BCEA8",
@@ -235,7 +235,7 @@
       },
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollection"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollection"
       }
     },
     "storeLocatorGeofencestoreLocatorAdminGeofenceCollectionPolicy34A5CD0F": {
@@ -284,15 +284,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storeLocatorAdminstoreLocatorGeofence-gen2-mainPolicy",
+        "PolicyName": "storeLocatorAdmin19bf0e623d.NamePolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
+            "Ref": "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/storeLocatorAdminGeofenceCollectionPolicy"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence/storeLocatorGeofence/storeLocatorAdminGeofenceCollectionPolicy"
       }
     },
     "CDKMetadata": {
@@ -301,7 +301,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQ6DIBBA4bO4x6klLron6a4/sQdoRsBmFAYiUNMY797Yrt7iy5Mg2xaaCpdUazPVjnpYrzZlax4Z9STUwBeMkfglcEnPldDDqgbugrM73oMj/dmEQ98bBDXwubDOFHjbWZWUg+9sCmXWv+FWcix5ExyMhTEd3lLC8QRNNSaiei6cyVvo/v0C08sIKp8AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorGeofence/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-storelocator-gen2main-38b5101cfb.deploymentType-62d6167d4c/geostoreLocatorGeofence/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -356,7 +356,7 @@
         ]
       }
     },
-    "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName": {
+    "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
@@ -632,7 +632,7 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
+    "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
       "Type": "String"
     }
   }

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-authRole"
+    "ParameterValue": "b77cc5b997.AuthRoleArn"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -93,7 +93,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "auth.discussionsc578c16ec578c16e.UserPoolName"
+    "ParameterValue": "3641aeee95.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -141,7 +141,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-unauthRole"
+    "ParameterValue": "b77cc5b997.UnauthRoleArn"
   },
   {
     "ParameterKey": "requiredAttributes",

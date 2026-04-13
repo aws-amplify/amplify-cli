@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "UnauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-unauthRole"
+    "ParameterValue": "b3b1865edc.UnauthRoleArn"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fAppClientID",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "AuthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-authRole"
+    "ParameterValue": "b3b1865edc.AuthRoleArn"
   },
   {
     "ParameterKey": "env",

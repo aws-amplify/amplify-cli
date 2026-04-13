@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "AuthRoleName",
+    "OutputValue": "6df4025c53.AuthRoleName"
+  },
+  {
+    "OutputKey": "UnauthRoleArn",
+    "OutputValue": "6df4025c53.UnauthRoleArn"
+  },
+  {
+    "OutputKey": "AuthRoleArn",
+    "OutputValue": "6df4025c53.AuthRoleArn"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1",
+    "Description": "CloudFormation provider root stack Region",
+    "ExportName": "6df4025c53.StackName-Region"
+  },
+  {
+    "OutputKey": "DeploymentBucketName",
+    "OutputValue": "6df4025c53.DeploymentBucketName",
+    "Description": "CloudFormation provider root stack deployment bucket name",
+    "ExportName": "6df4025c53.StackName-DeploymentBucketName"
+  },
+  {
+    "OutputKey": "UnauthRoleName",
+    "OutputValue": "6df4025c53.UnauthRoleName"
+  },
+  {
+    "OutputKey": "StackName",
+    "OutputValue": "6df4025c53.StackName",
+    "Description": "CloudFormation provider root stack ID",
+    "ExportName": "6df4025c53.StackName-StackName"
+  },
+  {
+    "OutputKey": "StackId",
+    "OutputValue": "6df4025c53.StackId",
+    "Description": "CloudFormation provider root stack name",
+    "ExportName": "6df4025c53.StackName-StackId"
+  }
+]

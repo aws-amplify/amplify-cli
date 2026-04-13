@@ -180,7 +180,7 @@
           "Fn::Join": [
             "",
             [
-              "auth.fitnesstracker33f5545533f55455.UserPoolName",
+              "ea8f06a449.UserPoolName",
               "-",
               "main"
             ]
@@ -199,7 +199,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+        "UserPoolId": "ea8f06a449.UserPoolId"
       }
     },
     "UserPoolClient": {
@@ -211,7 +211,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+        "UserPoolId": "ea8f06a449.UserPoolId"
       }
     },
     "UserPoolClientRole": {
@@ -240,7 +240,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-fitnesstracker-main-a0537-authfitnesstracker33f5545533f55455-1DWODNQZOZ508"
+                      "e6829a95b8.StackName-authfitnesstracker33f5545533f55455-1DWODNQZOZ508"
                     ]
                   }
                 ]
@@ -258,7 +258,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "auth.fitnesstracker33f5545533f55455.AppClientID",
+            "ClientId": "ea8f06a449.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -266,13 +266,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+                  "client": "ea8f06a449.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb",
+            "ClientId": "ea8f06a449.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -280,7 +280,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+                  "client": "ea8f06a449.UserPoolId"
                 }
               ]
             }
@@ -300,7 +300,7 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "auth.fitnesstracker33f5545533f55455.IdentityPoolId",
+        "IdentityPoolId": "ea8f06a449.IdentityPoolId",
         "RoleMappings": {
           "UserPoolClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -311,8 +311,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "auth.fitnesstracker33f5545533f55455.UserPoolId",
-                  "client": "auth.fitnesstracker33f5545533f55455.AppClientID"
+                  "userPool": "ea8f06a449.UserPoolId",
+                  "client": "ea8f06a449.AppClientID"
                 }
               ]
             },
@@ -327,8 +327,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "auth.fitnesstracker33f5545533f55455.UserPoolId",
-                  "webClient": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb"
+                  "userPool": "ea8f06a449.UserPoolId",
+                  "webClient": "ea8f06a449.AppClientIDWeb"
                 }
               ]
             },
@@ -336,8 +336,8 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-unauthRole",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-authRole"
+          "unauthenticated": "e6829a95b8.UnauthRoleArn",
+          "authenticated": "e6829a95b8.AuthRoleArn"
         }
       }
     }
@@ -345,29 +345,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "auth.fitnesstracker33f5545533f55455.IdentityPoolId"
+      "Value": "ea8f06a449.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "auth.fitnesstracker33f5545533f55455.IdentityPoolName"
+      "Value": "ea8f06a449.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+      "Value": "ea8f06a449.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "auth.fitnesstracker33f5545533f55455.UserPoolArn"
+      "Value": "ea8f06a449.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "auth.fitnesstracker33f5545533f55455.UserPoolName"
+      "Value": "ea8f06a449.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb"
+      "Value": "ea8f06a449.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "auth.fitnesstracker33f5545533f55455.AppClientID"
+      "Value": "ea8f06a449.AppClientID"
     }
   }
 }

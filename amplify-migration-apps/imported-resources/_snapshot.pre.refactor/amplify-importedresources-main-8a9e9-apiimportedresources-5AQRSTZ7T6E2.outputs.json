@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.importedresources.GraphQLAPIIdOutput",
+    "OutputValue": "fe17e54548.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-importedresources-main-8a9e9-apiimportedresources-5AQRSTZ7T6E2:GraphQLApiId"
+    "ExportName": "8d0d0cbe70.StackName-apiimportedresources-5AQRSTZ7T6E2:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.importedresources.GraphQLAPIEndpointOutput",
+    "OutputValue": "fe17e54548.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
-    "ExportName": "amplify-importedresources-main-8a9e9-apiimportedresources-5AQRSTZ7T6E2:GraphQLApiEndpoint"
+    "ExportName": "8d0d0cbe70.StackName-apiimportedresources-5AQRSTZ7T6E2:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "da2-fakeapikey00000000000000",
+    "OutputValue": "api.importedresources.GraphQLAPIKeyOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-importedresources-main-8a9e9-apiimportedresources-5AQRSTZ7T6E2:GraphQLApiKey"
+    "ExportName": "8d0d0cbe70.StackName-apiimportedresources-5AQRSTZ7T6E2:GraphQLApiKey"
   }
 ]

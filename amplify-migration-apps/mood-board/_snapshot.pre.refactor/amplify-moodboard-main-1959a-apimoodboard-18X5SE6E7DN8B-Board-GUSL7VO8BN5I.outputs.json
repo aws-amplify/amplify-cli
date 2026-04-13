@@ -1,28 +1,28 @@
 [
   {
-    "OutputKey": "GetAttBoardTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-api.moodboard.GraphQLAPIIdOutput-main/stream/2026-03-08T17:04:46.147",
+    "OutputKey": "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameStreamArn",
+    "OutputValue": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:BoardTable:StreamArn"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:StreamArn"
   },
   {
     "OutputKey": "GetAttBoardDataSourceName",
-    "OutputValue": "BoardTable",
+    "OutputValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:BoardDataSource:Name"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:BoardDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackBoardBoardDataSource99BFC69FName",
-    "OutputValue": "BoardTable"
+    "OutputValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
   },
   {
-    "OutputKey": "GetAttBoardTableName",
-    "OutputValue": "Board-api.moodboard.GraphQLAPIIdOutput-main",
+    "OutputKey": "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName",
+    "OutputValue": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:BoardTable:Name"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:Name"
   },
   {
-    "OutputKey": "transformerrootstackBoardBoardTable30788E07Ref",
-    "OutputValue": "Board-api.moodboard.GraphQLAPIIdOutput-main"
+    "OutputKey": "transformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref",
+    "OutputValue": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName"
   }
 ]

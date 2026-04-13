@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "api.projectboards.GraphQLAPIIdOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "6df4025c53.StackName-apiprojectboards-15FKVIF6IO9MO:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "api.projectboards.GraphQLAPIEndpointOutput",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "6df4025c53.StackName-apiprojectboards-15FKVIF6IO9MO:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "api.projectboards.GraphQLAPIKeyOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "6df4025c53.StackName-apiprojectboards-15FKVIF6IO9MO:GraphQLApiKey"
+  }
+]

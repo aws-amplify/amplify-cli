@@ -4,7 +4,7 @@
     "apiName": "moodboard",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "API_KEY",
+      "mode": "383edf5091.awsAppsyncAuthenticationType",
       "expirationTime": 365,
       "apiKeyExpirationDate": "2027-03-08T17:00:39.856Z",
       "keyDescription": "moodBoard API Key"

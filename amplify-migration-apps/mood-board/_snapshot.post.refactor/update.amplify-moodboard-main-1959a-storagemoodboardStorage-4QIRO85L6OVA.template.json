@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "storage.moodboardStorage.BucketName"
+      "Value": "8a5916c5d3.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -193,7 +193,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-moodboard-main-1959a-storagemoodboardStorage-4QIRO85L6OVA"
+                      "1133a3293d.StackName-storagemoodboardStorage-4QIRO85L6OVA"
                     ]
                   }
                 ]
@@ -263,7 +263,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.moodboardStorage.BucketName",
+                      "8a5916c5d3.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -274,7 +274,7 @@
         },
         "PolicyName": "Public_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "1133a3293d.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -299,7 +299,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.moodboardStorage.BucketName",
+                      "8a5916c5d3.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -310,7 +310,7 @@
         },
         "PolicyName": "Protected_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "1133a3293d.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -335,7 +335,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.moodboardStorage.BucketName",
+                      "8a5916c5d3.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -346,7 +346,7 @@
         },
         "PolicyName": "Private_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "1133a3293d.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -371,7 +371,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.moodboardStorage.BucketName",
+                      "8a5916c5d3.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -382,7 +382,7 @@
         },
         "PolicyName": "Uploads_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "1133a3293d.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -407,7 +407,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.moodboardStorage.BucketName",
+                      "8a5916c5d3.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -418,7 +418,7 @@
         },
         "PolicyName": "Public_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-unauthRole"
+          "1133a3293d.UnauthRoleName"
         ]
       },
       "Condition": "CreateGuestPublic"
@@ -436,7 +436,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.moodboardStorage.BucketName",
+                    "8a5916c5d3.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -462,7 +462,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.moodboardStorage.BucketName"
+                    "8a5916c5d3.BucketName"
                   ]
                 ]
               }
@@ -472,7 +472,7 @@
         },
         "PolicyName": "read_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "1133a3293d.AuthRoleName"
         ]
       },
       "Condition": "AuthReadAndList"
@@ -490,7 +490,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.moodboardStorage.BucketName",
+                    "8a5916c5d3.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -514,7 +514,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.moodboardStorage.BucketName"
+                    "8a5916c5d3.BucketName"
                   ]
                 ]
               }
@@ -524,7 +524,7 @@
         },
         "PolicyName": "read_policy_206c638b",
         "Roles": [
-          "amplify-moodboard-main-1959a-unauthRole"
+          "1133a3293d.UnauthRoleName"
         ]
       },
       "Condition": "GuestReadAndList"

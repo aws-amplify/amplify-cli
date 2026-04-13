@@ -49,8 +49,8 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     },
   },
 ];
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.S3Trigger1ef46783.resources.cfnResources.cfnFunction.functionName = `S3Trigger1ef46783-${branchName}`;
+const 40f1c9f949.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.S3Trigger1ef46783.resources.cfnResources.cfnFunction.functionName = `S3Trigger1ef46783-${40f1c9f949.deploymentTypeName}`;
 backend.S3Trigger1ef46783.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
   backend.data.apiKey!
@@ -66,7 +66,7 @@ backend.S3Trigger1ef46783.addEnvironment(
 backend.data.resources.graphqlApi.grantMutation(
   backend.S3Trigger1ef46783.resources.lambda
 );
-backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${branchName}`;
+backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${40f1c9f949.deploymentTypeName}`;
 backend.lowstockproducts.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
   backend.data.apiKey!
@@ -84,7 +84,7 @@ backend.data.resources.graphqlApi.grantQuery(
 );
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'storage.s338e5b439.BucketName';
+// s3Bucket.bucketName = '3db57fd977.BucketName';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

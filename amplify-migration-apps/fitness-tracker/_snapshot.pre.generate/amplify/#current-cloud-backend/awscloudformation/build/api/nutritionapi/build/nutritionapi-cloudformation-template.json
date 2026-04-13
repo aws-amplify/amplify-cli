@@ -46,7 +46,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -76,7 +76,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -106,7 +106,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -136,7 +136,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -166,7 +166,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -196,7 +196,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -226,7 +226,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -256,7 +256,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -286,7 +286,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -316,7 +316,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                        "Ref": "api.5c8596b905.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -337,7 +337,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "api.api.nutritionapi.ApiName.ApiName-nutritionlog-Admin-group-policy",
+        "PolicyName": "api.5c8596b905.ApiName.ApiName-nutritionlog-Admin-group-policy",
         "Roles": [
           {
             "Fn::Join": [
@@ -353,7 +353,7 @@
         ]
       }
     },
-    "functionlognutritionPermissionapi.api.nutritionapi.ApiName.ApiName": {
+    "functionlognutritionPermissionapi.5c8596b905.ApiName.ApiName": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -375,7 +375,7 @@
               },
               ":",
               {
-                "Ref": "api.api.nutritionapi.ApiName.ApiName"
+                "Ref": "api.5c8596b905.ApiName.ApiName"
               },
               "/*/*/*"
             ]
@@ -383,14 +383,14 @@
         }
       }
     },
-    "api.api.nutritionapi.ApiName.ApiName": {
+    "api.5c8596b905.ApiName.ApiName": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Body": {
           "swagger": "2.0",
           "info": {
             "version": "2018-05-24T17:52:00Z",
-            "title": "api.api.nutritionapi.ApiName.ApiName"
+            "title": "api.5c8596b905.ApiName.ApiName"
           },
           "host": {
             "Fn::Join": [
@@ -663,10 +663,10 @@
         },
         "Description": "",
         "FailOnWarnings": true,
-        "Name": "api.api.nutritionapi.ApiName.ApiName"
+        "Name": "api.5c8596b905.ApiName.ApiName"
       }
     },
-    "api.api.nutritionapi.ApiName.ApiNameDefault4XXResponsef55128fc": {
+    "api.5c8596b905.ApiName.ApiNameDefault4XXResponsef55128fc": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -677,11 +677,11 @@
         },
         "ResponseType": "DEFAULT_4XX",
         "RestApiId": {
-          "Ref": "api.api.nutritionapi.ApiName.ApiName"
+          "Ref": "api.5c8596b905.ApiName.ApiName"
         }
       }
     },
-    "api.api.nutritionapi.ApiName.ApiNameDefault5XXResponsef55128fc": {
+    "api.5c8596b905.ApiName.ApiNameDefault5XXResponsef55128fc": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -692,16 +692,16 @@
         },
         "ResponseType": "DEFAULT_5XX",
         "RestApiId": {
-          "Ref": "api.api.nutritionapi.ApiName.ApiName"
+          "Ref": "api.5c8596b905.ApiName.ApiName"
         }
       }
     },
-    "DeploymentAPIGWapi.api.nutritionapi.ApiName.ApiName5caf0abc": {
+    "DeploymentAPIGWapi.5c8596b905.ApiName.ApiName5caf0abc": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
         "RestApiId": {
-          "Ref": "api.api.nutritionapi.ApiName.ApiName"
+          "Ref": "api.5c8596b905.ApiName.ApiName"
         },
         "StageName": {
           "Fn::If": [
@@ -714,8 +714,8 @@
         }
       },
       "DependsOn": [
-        "api.api.nutritionapi.ApiName.ApiNameDefault4XXResponsef55128fc",
-        "api.api.nutritionapi.ApiName.ApiNameDefault5XXResponsef55128fc"
+        "api.5c8596b905.ApiName.ApiNameDefault4XXResponsef55128fc",
+        "api.5c8596b905.ApiName.ApiNameDefault5XXResponsef55128fc"
       ]
     }
   },
@@ -738,7 +738,7 @@
           [
             "https://",
             {
-              "Ref": "api.api.nutritionapi.ApiName.ApiName"
+              "Ref": "api.5c8596b905.ApiName.ApiName"
             },
             ".execute-api.",
             {
@@ -760,12 +760,12 @@
     },
     "ApiName": {
       "Description": "API Friendly name",
-      "Value": "api.api.nutritionapi.ApiName.ApiName"
+      "Value": "api.5c8596b905.ApiName.ApiName"
     },
     "ApiId": {
       "Description": "API ID (prefix of API URL)",
       "Value": {
-        "Ref": "api.api.nutritionapi.ApiName.ApiName"
+        "Ref": "api.5c8596b905.ApiName.ApiName"
       }
     }
   }

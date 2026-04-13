@@ -110,7 +110,7 @@
     }
   },
   "Resources": {
-    "ProductTable": {
+    "b3e773b37b.GetAttProductDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -321,7 +321,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "ProductTable",
+                    "b3e773b37b.GetAttProductDataSourceName",
                     "Arn"
                   ]
                 },
@@ -352,10 +352,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "ProductTable"
+            "Ref": "b3e773b37b.GetAttProductDataSourceName"
           }
         },
-        "Name": "ProductTable",
+        "Name": "b3e773b37b.GetAttProductDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "ProductIAMRole3DD24A40",
@@ -486,7 +486,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProductTable"
+                "Ref": "b3e773b37b.GetAttProductDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -504,7 +504,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -600,7 +600,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProductTable"
+                "Ref": "b3e773b37b.GetAttProductDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -618,7 +618,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -747,7 +747,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProductTable"
+                "Ref": "b3e773b37b.GetAttProductDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -765,7 +765,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -915,7 +915,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProductTable"
+                "Ref": "b3e773b37b.GetAttProductDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -933,7 +933,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1080,7 +1080,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProductTable"
+                "Ref": "b3e773b37b.GetAttProductDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -1098,7 +1098,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1184,7 +1184,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1240,7 +1240,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1296,7 +1296,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1306,11 +1306,11 @@
     }
   },
   "Outputs": {
-    "GetAttProductTableStreamArn": {
+    "GetAttb3e773b37b.GetAttProductDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "ProductTable",
+          "b3e773b37b.GetAttProductDataSourceName",
           "StreamArn"
         ]
       },
@@ -1322,16 +1322,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:ProductTable:StreamArn"
+              "GetAtt:b3e773b37b.GetAttProductDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttProductTableName": {
+    "GetAttb3e773b37b.GetAttProductDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "ProductTable"
+        "Ref": "b3e773b37b.GetAttProductDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1341,7 +1341,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:ProductTable:Name"
+              "GetAtt:b3e773b37b.GetAttProductDataSourceName:Name"
             ]
           ]
         }

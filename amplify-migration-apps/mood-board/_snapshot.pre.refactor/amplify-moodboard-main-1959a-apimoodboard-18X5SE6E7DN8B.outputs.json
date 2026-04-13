@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.moodboard.GraphQLAPIIdOutput",
+    "OutputValue": "5494e94a79.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-moodboard-main-1959a-apimoodboard-18X5SE6E7DN8B:GraphQLApiId"
+    "ExportName": "1133a3293d.StackName-apimoodboard-18X5SE6E7DN8B:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.moodboard.GraphQLAPIEndpointOutput",
+    "OutputValue": "5494e94a79.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
-    "ExportName": "amplify-moodboard-main-1959a-apimoodboard-18X5SE6E7DN8B:GraphQLApiEndpoint"
+    "ExportName": "1133a3293d.StackName-apimoodboard-18X5SE6E7DN8B:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "da2-fakeapikey00000000000000",
+    "OutputValue": "api.moodboard.GraphQLAPIKeyOutput",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-moodboard-main-1959a-apimoodboard-18X5SE6E7DN8B:GraphQLApiKey"
+    "ExportName": "1133a3293d.StackName-apimoodboard-18X5SE6E7DN8B:GraphQLApiKey"
   }
 ]

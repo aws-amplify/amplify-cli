@@ -299,12 +299,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:40f1c9f949.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "40f1c9f949.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -317,7 +317,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2MainLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2MainLambdaDataSource/ServiceRole/Resource"
       }
     },
     "LowstockproductsGen2MainLambdaDataSourceServiceRoleDefaultPolicyEFAB1392": {
@@ -334,12 +334,12 @@
                     "HasEnvironmentParameter",
                     {
                       "Fn::Sub": [
-                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lowstockproducts-gen2-main",
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref",
                         {}
                       ]
                     },
                     {
-                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lowstockproducts-gen2-main"
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
                     }
                   ]
                 },
@@ -352,12 +352,12 @@
                           "HasEnvironmentParameter",
                           {
                             "Fn::Sub": [
-                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lowstockproducts-gen2-main",
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref",
                               {}
                             ]
                           },
                           {
-                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lowstockproducts-gen2-main"
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
                           }
                         ]
                       },
@@ -378,14 +378,14 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "LowstockproductsGen2MainLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+          "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -393,12 +393,12 @@
               "HasEnvironmentParameter",
               {
                 "Fn::Sub": [
-                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lowstockproducts-gen2-main",
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref",
                   {}
                 ]
               },
               {
-                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lowstockproducts-gen2-main"
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
               }
             ]
           }
@@ -413,14 +413,14 @@
         "Type": "AWS_LAMBDA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2MainLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2MainLambdaDataSource/Resource"
       }
     },
     "InvokeLowstockproductsGen2MainLambdaDataSourceInvokeLowstockproductsGen2MainLambdaDataSourceAppSyncFunction518A14DE": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+          "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -441,14 +441,14 @@
         "LowstockproductsGen2MainLambdaDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/InvokeLowstockproductsGen2MainLambdaDataSource/InvokeLowstockproductsGen2MainLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/InvokeLowstockproductsGen2MainLambdaDataSource/InvokeLowstockproductsGen2MainLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerycheckLowStockResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+          "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
         },
         "FieldName": "checkLowStock",
         "Kind": "PIPELINE",
@@ -478,7 +478,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
+                "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -486,11 +486,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef"
+                "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+                "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -502,17 +502,17 @@
         "TypeName": "Query"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/queryCheckLowStockResolver"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/queryCheckLowStockResolver"
       }
     },
     "QueryCheckLowStockAuthFNQueryCheckLowStockAuthFNAppSyncFunction691D681D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+          "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPINONEDSC7F42872Name"
+          "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPINONEDSC7F42872Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryCheckLowStockAuthFN",
@@ -522,7 +522,7 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/QueryCheckLowStockAuthFN/QueryCheckLowStockAuthFN.AppSyncFunction"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/QueryCheckLowStockAuthFN/QueryCheckLowStockAuthFN.AppSyncFunction"
       }
     },
     "CDKMetadata": {
@@ -531,25 +531,25 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQW/CMAyFfwv31IPCYdfRaadpmtofgEziVqapg+oEhKr+d5SgHXb6/J79nlxDfdjBdoN3rawbK89nWH5II7kuoh1N00sTxHHkIAbvelo8TmeH8JXEZvOISgavV32IheW7LD8xYhfSbCnn/6u/XBOk5yHNWJqbXlrS4G80r4ZxgqUNvtwX/gbP9pHla1qN7k+oSlHhI8PoHo7JjhTzP6spZhdxYBlWI8ERXPTtVtewe4ft5qLM1Zwk8kTQvvgElyxBfQsBAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
   },
   "Parameters": {
-    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId": {
+    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
+    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
+    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
+    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPINONEDSC7F42872Name": {
+    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPINONEDSC7F42872Name": {
       "Type": "String"
     }
   }

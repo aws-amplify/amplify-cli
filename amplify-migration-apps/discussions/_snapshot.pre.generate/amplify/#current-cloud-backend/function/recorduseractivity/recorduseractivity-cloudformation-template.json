@@ -275,7 +275,7 @@
               ],
               "Resource": {
                 "Fn::ImportValue": {
-                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:TopicTable:StreamArn"
+                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:StreamArn"
                 }
               }
             }
@@ -294,7 +294,7 @@
         "Enabled": true,
         "EventSourceArn": {
           "Fn::ImportValue": {
-            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:TopicTable:StreamArn"
+            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:StreamArn"
           }
         },
         "FunctionName": {
@@ -331,7 +331,7 @@
               ],
               "Resource": {
                 "Fn::ImportValue": {
-                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:PostTable:StreamArn"
+                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name:StreamArn"
                 }
               }
             }
@@ -350,7 +350,7 @@
         "Enabled": true,
         "EventSourceArn": {
           "Fn::ImportValue": {
-            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:PostTable:StreamArn"
+            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name:StreamArn"
           }
         },
         "FunctionName": {
@@ -387,7 +387,7 @@
               ],
               "Resource": {
                 "Fn::ImportValue": {
-                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:CommentTable:StreamArn"
+                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name:StreamArn"
                 }
               }
             }
@@ -406,7 +406,7 @@
         "Enabled": true,
         "EventSourceArn": {
           "Fn::ImportValue": {
-            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:CommentTable:StreamArn"
+            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name:StreamArn"
           }
         },
         "FunctionName": {

@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-importedresources-main-8a9e9-deployment"
+    "ParameterValue": "8d0d0cbe70.DeploymentBucketName"
   },
   {
     "ParameterKey": "env",

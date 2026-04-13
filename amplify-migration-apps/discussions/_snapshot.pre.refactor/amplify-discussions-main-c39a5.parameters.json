@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "amplify-discussions-main-c39a5-authRole"
+    "ParameterValue": "b77cc5b997.AuthRoleName"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
+    "ParameterValue": "b77cc5b997.DeploymentBucketName"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "amplify-discussions-main-c39a5-unauthRole"
+    "ParameterValue": "b77cc5b997.UnauthRoleName"
   }
 ]

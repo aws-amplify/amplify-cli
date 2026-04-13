@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "amplify-fitnesstracker-main-a0537-authRole"
+    "ParameterValue": "e6829a95b8.AuthRoleName"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
+    "ParameterValue": "e6829a95b8.DeploymentBucketName"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "amplify-fitnesstracker-main-a0537-unauthRole"
+    "ParameterValue": "e6829a95b8.UnauthRoleName"
   }
 ]

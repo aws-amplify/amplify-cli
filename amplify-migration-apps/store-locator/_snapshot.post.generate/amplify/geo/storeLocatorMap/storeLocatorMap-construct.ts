@@ -27,7 +27,7 @@ export interface geostoreLocatorMapProps {
   readonly isDefault: string;
   /**
    */
-  readonly branchName: string;
+  readonly 38b5101cfb.deploymentTypeName: string;
 }
 
 /**
@@ -158,7 +158,7 @@ export class geostoreLocatorMap extends Construct {
                 'locationServiceRegion'
               )}:${cdk.Stack.of(this).account}:map/${[
                 props.mapName!,
-                props.branchName!,
+                props.38b5101cfb.deploymentTypeName!,
               ].join('-')}`,
             },
           ],
@@ -194,7 +194,7 @@ export class geostoreLocatorMap extends Construct {
     customMap.addOverride('Type', 'Custom::LambdaCallout');
     customMap.addPropertyOverride(
       'mapName',
-      [props.mapName!, props.branchName!].join('-')
+      [props.mapName!, props.38b5101cfb.deploymentTypeName!].join('-')
     );
     customMap.addPropertyOverride('mapStyle', props.mapStyle!);
     customMap.addPropertyOverride(
@@ -204,7 +204,7 @@ export class geostoreLocatorMap extends Construct {
         'locationServiceRegion'
       )
     );
-    customMap.addPropertyOverride('env', props.branchName!);
+    customMap.addPropertyOverride('env', props.38b5101cfb.deploymentTypeName!);
     customMap.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.DELETE;
 
     const mapPolicy = new iam.CfnPolicy(this, 'MapPolicy', {
@@ -224,7 +224,7 @@ export class geostoreLocatorMap extends Construct {
         Version: '2012-10-17',
       },
       policyName: [
-        [props.mapName!, props.branchName!].join('-'),
+        [props.mapName!, props.38b5101cfb.deploymentTypeName!].join('-'),
         'Policy',
       ].join(''),
       roles: [

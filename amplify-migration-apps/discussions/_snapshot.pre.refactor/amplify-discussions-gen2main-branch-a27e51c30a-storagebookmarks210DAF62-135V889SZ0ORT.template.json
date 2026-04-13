@@ -6,11 +6,11 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "storage.activity.SortKeyName",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.bookmarks.SortKeyName",
+            "AttributeName": "bff98da81e.SortKeyName",
             "AttributeType": "S"
           }
         ],
@@ -19,7 +19,7 @@
             "IndexName": "byPost",
             "KeySchema": [
               {
-                "AttributeName": "storage.bookmarks.SortKeyName",
+                "AttributeName": "bff98da81e.SortKeyName",
                 "KeyType": "HASH"
               }
             ],
@@ -34,11 +34,11 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "storage.activity.SortKeyName",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.bookmarks.SortKeyName",
+            "AttributeName": "bff98da81e.SortKeyName",
             "KeyType": "RANGE"
           }
         ],
@@ -55,12 +55,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:da5e56ee3d.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "da5e56ee3d.deploymentType"
           },
           {
             "Key": "created-by",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storagebookmarks/bookmarks/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storagebookmarks/bookmarks/Resource"
       }
     },
     "CDKMetadata": {
@@ -80,7 +80,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ7MaLOztt1B7mWRGiJ8EnERZxLsvaPWeAVPXUBZ4ina06NVbuL4sialP6BaFp4z0C7hFsnANaFdW7RSe3KpjiXl3fKsQiWGWz2EMVA2UxSze6z2H5DeG7vUPAxTDOW4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storagebookmarks/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storagebookmarks/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }

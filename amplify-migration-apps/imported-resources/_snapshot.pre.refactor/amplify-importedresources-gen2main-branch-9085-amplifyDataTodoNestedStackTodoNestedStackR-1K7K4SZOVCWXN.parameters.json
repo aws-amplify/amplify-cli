@@ -12,8 +12,8 @@
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
-    "ParameterValue": "wl2oasglxvbnza7q3obncdxijq"
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
+    "ParameterValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -24,11 +24,11 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource1677455BOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataAmplifyTableManagerTableMa593D9686",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-importedresources-ge-TableManagerCustomProvid-Hm4FhFmwgqLs"
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource1677455BOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerTableMa593D9686",
+    "ParameterValue": "7e6312c2e6.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventEB1D7325Arn"
   },
   {
-    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName",
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName",
     "ParameterValue": "NONE_DS"
   }
 ]

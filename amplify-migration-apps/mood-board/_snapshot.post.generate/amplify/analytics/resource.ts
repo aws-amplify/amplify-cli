@@ -2,7 +2,7 @@ import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
 import { analyticsmoodboardKinesis } from './moodboardKinesis-construct';
 import { Backend } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const 383edf5091.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const defineAnalytics = (backend: Backend<any>) => {
   const analyticsStack = backend.createStack('analytics');
@@ -12,15 +12,15 @@ export const defineAnalytics = (backend: Backend<any>) => {
     {
       kinesisStreamName: 'moodboardKinesis',
       kinesisStreamShardCount: 1,
-      authPolicyName: `moodboardKinesis-auth-policy-${branchName}`,
-      unauthPolicyName: `moodboardKinesis-unauth-policy-${branchName}`,
+      authPolicyName: `moodboardKinesis-auth-policy-${383edf5091.deploymentTypeName}`,
+      unauthPolicyName: `moodboardKinesis-unauth-policy-${383edf5091.deploymentTypeName}`,
       authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
       unauthRoleName:
         backend.auth.resources.unauthenticatedUserIamRole.roleName,
-      branchName,
+      383edf5091.deploymentTypeName,
     }
   );
   //Use this kinesis stream name post-refactor
-  //(analytics.node.findChild('KinesisStream') as CfnStream).name = "analytics.moodboardKinesis.kinesisStreamId"
+  //(analytics.node.findChild('KinesisStream') as CfnStream).name = "7b219a8449.kinesisStreamId"
   return analytics;
 };

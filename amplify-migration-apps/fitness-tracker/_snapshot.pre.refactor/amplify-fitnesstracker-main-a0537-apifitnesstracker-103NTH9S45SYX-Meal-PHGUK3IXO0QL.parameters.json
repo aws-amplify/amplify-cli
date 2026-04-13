@@ -17,19 +17,19 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
+    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
-    "ParameterValue": "azpojmlshjb33hbzmjtsne6eke"
+    "ParameterValue": "a519ab46e6.transformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
-    "ParameterValue": "fws4doskqbag7dbslx7eygyckq"
+    "ParameterValue": "a519ab46e6.transformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
-    "ParameterValue": "cdecyw7rljhx7kqioiulvfozuq"
+    "ParameterValue": "a519ab46e6.transformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -45,7 +45,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
+    "ParameterValue": "e6829a95b8.DeploymentBucketName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
@@ -53,6 +53,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
-    "ParameterValue": "bsbxi7b5m5hnjh55tvtvnd55tq"
+    "ParameterValue": "a519ab46e6.transformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyncFunctionE9212A4DFunctionId"
   }
 ]

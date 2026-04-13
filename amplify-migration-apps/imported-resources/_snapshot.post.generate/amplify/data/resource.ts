@@ -1,6 +1,6 @@
 import { defineData } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const c643a9b272.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type QuoteResponse {
   message: String! @auth(rules: [{ allow: public }])
   quote: String! @auth(rules: [{ allow: public }])
@@ -10,7 +10,7 @@ const schema = `type QuoteResponse {
 }
 
 type Query {
-  getRandomQuote: QuoteResponse @function(name: "quotegenerator-${branchName}") @auth(rules: [{ allow: public }])
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator-${c643a9b272.deploymentTypeName}") @auth(rules: [{ allow: public }])
 }
 
 enum ProjectStatus {
@@ -48,11 +48,11 @@ type Todo @model @auth(rules: [
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-      branchName: 'main',
+      //The "c643a9b272.deploymentTypename" variable needs to be the same as your deployment c643a9b272.deploymentType if you want to reuse your Gen1 app tables
+      c643a9b272.deploymentTypeName: 'main',
       modelNameToTableNameMapping: {
-        Project: 'Project-api.importedresources.GraphQLAPIIdOutput-main',
-        Todo: 'Todo-api.importedresources.GraphQLAPIIdOutput-main',
+        Project: '8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName',
+        Todo: 'ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName',
       },
     },
   ],

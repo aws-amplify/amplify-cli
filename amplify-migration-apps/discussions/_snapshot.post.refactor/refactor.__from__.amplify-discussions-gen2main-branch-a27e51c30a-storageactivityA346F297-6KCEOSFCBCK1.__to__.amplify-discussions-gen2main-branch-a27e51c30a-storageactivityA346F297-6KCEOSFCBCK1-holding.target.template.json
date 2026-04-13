@@ -11,7 +11,7 @@
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "storage.activity.SortKeyName",
             "AttributeType": "S"
           },
           {
@@ -24,7 +24,7 @@
             "IndexName": "byUserId",
             "KeySchema": [
               {
-                "AttributeName": "storage.bookmarks.PartitionKeyName",
+                "AttributeName": "storage.activity.SortKeyName",
                 "KeyType": "HASH"
               },
               {
@@ -47,7 +47,7 @@
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "storage.activity.SortKeyName",
             "KeyType": "RANGE"
           }
         ],
@@ -64,12 +64,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:da5e56ee3d.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "da5e56ee3d.deploymentType"
           },
           {
             "Key": "created-by",
@@ -80,7 +80,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storageactivity/activity/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storageactivity/activity/Resource"
       }
     }
   },

@@ -186,7 +186,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                      "b77cc5b997.StackName-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
                     ]
                   }
                 ]
@@ -231,7 +231,7 @@
         "SmsAuthenticationMessage": "Your authentication code is {####}",
         "SmsConfiguration": {
           "ExternalId": "discusc578c16e_role_external_id",
-          "SnsCallerArn": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
+          "SnsCallerArn": "3641aeee95.CreatedSNSRole"
         },
         "SmsVerificationMessage": "Your verification code is {####}",
         "UserAttributeUpdateSettings": {
@@ -243,7 +243,7 @@
           "Fn::Join": [
             "",
             [
-              "auth.discussionsc578c16ec578c16e.UserPoolName",
+              "3641aeee95.UserPoolName",
               "-",
               "main"
             ]
@@ -265,7 +265,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
+        "UserPoolId": "3641aeee95.UserPoolId"
       }
     },
     "UserPoolClient": {
@@ -277,7 +277,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
+        "UserPoolId": "3641aeee95.UserPoolId"
       }
     },
     "UserPoolClientRole": {
@@ -306,7 +306,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                      "b77cc5b997.StackName-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
                     ]
                   }
                 ]
@@ -324,7 +324,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientID",
+            "ClientId": "3641aeee95.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -332,13 +332,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
+                  "client": "3641aeee95.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
+            "ClientId": "3641aeee95.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -346,7 +346,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
+                  "client": "3641aeee95.UserPoolId"
                 }
               ]
             }
@@ -366,10 +366,10 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
+        "IdentityPoolId": "3641aeee95.IdentityPoolId",
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-unauthRole",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-authRole"
+          "unauthenticated": "b77cc5b997.UnauthRoleArn",
+          "authenticated": "b77cc5b997.AuthRoleArn"
         }
       }
     }
@@ -377,33 +377,33 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolId"
+      "Value": "3641aeee95.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolName"
+      "Value": "3641aeee95.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "auth.discussionsc578c16ec578c16e.UserPoolId"
+      "Value": "3641aeee95.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "auth.discussionsc578c16ec578c16e.UserPoolArn"
+      "Value": "3641aeee95.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "auth.discussionsc578c16ec578c16e.UserPoolName"
+      "Value": "3641aeee95.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "auth.discussionsc578c16ec578c16e.AppClientIDWeb"
+      "Value": "3641aeee95.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "auth.discussionsc578c16ec578c16e.AppClientID"
+      "Value": "3641aeee95.AppClientID"
     },
     "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
+      "Value": "3641aeee95.CreatedSNSRole"
     }
   }
 }

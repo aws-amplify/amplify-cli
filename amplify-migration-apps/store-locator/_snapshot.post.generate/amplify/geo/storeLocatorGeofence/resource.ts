@@ -1,7 +1,7 @@
 import { geostoreLocatorGeofence } from './storeLocatorGeofence-construct';
 import { Backend } from '@aws-amplify/backend';
 
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+const 38b5101cfb.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
   const storeLocatorGeofenceStack = backend.createStack(
@@ -16,7 +16,7 @@ export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
       authuserPoolGroupsstoreLocatorAdminGroupRole:
         backend.auth.resources.groups['storeLocatorAdmin'].role.roleName,
       collectionName: 'storeLocatorGeofence',
-      branchName,
+      38b5101cfb.deploymentTypeName,
       isDefault: 'true',
     }
   );

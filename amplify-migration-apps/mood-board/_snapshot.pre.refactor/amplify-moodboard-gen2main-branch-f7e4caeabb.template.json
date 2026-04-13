@@ -63,7 +63,7 @@
   },
   "Outputs": {
     "deploymentType": {
-      "Value": "branch"
+      "Value": "383edf5091.deploymentType"
     },
     "region": {
       "Value": {
@@ -74,7 +74,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
         ]
       }
     },
@@ -82,7 +82,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
         ]
       }
     },
@@ -90,7 +90,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
         ]
       }
     },
@@ -136,7 +136,7 @@
       "Value": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
     },
     "oauthRedirectSignIn": {
-      "Value": "https://example.com"
+      "Value": "383edf5091.oauthRedirectSignIn"
     },
     "oauthRedirectSignOut": {
       "Value": ""
@@ -148,7 +148,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
         ]
       }
     },
@@ -159,7 +159,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
         ]
       }
     },
@@ -167,12 +167,12 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl"
         ]
       }
     },
     "awsAppsyncAuthenticationType": {
-      "Value": "API_KEY"
+      "Value": "383edf5091.awsAppsyncAuthenticationType"
     },
     "awsAppsyncRegion": {
       "Value": {
@@ -200,7 +200,7 @@
                             {
                               "Fn::GetAtt": [
                                 "data7552DF31",
-                                "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0881F041DestinationBucketArn"
+                                "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0881F041DestinationBucketArn"
                               ]
                             }
                           ]
@@ -220,12 +220,12 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
         ]
       }
     },
     "awsAppsyncAdditionalAuthenticationTypes": {
-      "Value": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+      "Value": "383edf5091.awsAppsyncAdditionalAuthenticationTypes"
     },
     "definedFunctions": {
       "Value": {
@@ -236,14 +236,14 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbfunctionmoodboardGetRandomEmojigen2mainlambda76EFC76ERef"
+                "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardGetRandomEmojigen2mainlambda76EFC76ERef"
               ]
             },
             "\",\"",
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbfunctionmoodboardKinesisReadergen2mainlambda6E070627Ref"
+                "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardKinesisReadergen2mainlambda6E070627Ref"
               ]
             },
             "\"]"
@@ -260,7 +260,7 @@
       "Value": {
         "Fn::GetAtt": [
           "storage0EC3F24A",
-          "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
+          "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
         ]
       }
     },
@@ -273,7 +273,7 @@
             {
               "Fn::GetAtt": [
                 "storage0EC3F24A",
-                "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
+                "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
               ]
             },
             "\\\",\\\"storageRegion\\\":\\\"",
@@ -322,12 +322,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -336,7 +336,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceLambdaServiceRoleDefaultPolicy86099CA1": {
@@ -350,7 +350,7 @@
                 "amplify:UpdateBranch"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:amplify:*:*:apps/moodboard/branches/gen2-main"
+              "Resource": "arn:aws:amplify:*:*:apps/moodboard/383edf5091.deploymentTypees/gen2-main"
             }
           ],
           "Version": "2012-10-17"
@@ -363,7 +363,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceLambda582AC093": {
@@ -389,12 +389,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -408,7 +408,7 @@
         "AmplifyBranchLinkerCustomResourceLambdaServiceRole3DDCBC03"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceLambda/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceLambda/Resource",
         "aws:asset:path": "asset.1a757fd2e48bffd6245369585c61b0ce615ce78053da4f4387a9c069127512c0",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -449,12 +449,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -463,7 +463,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy38AAE412": {
@@ -518,7 +518,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceProviderframeworkonEvent3B23F900": {
@@ -530,7 +530,7 @@
           },
           "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
         },
-        "Description": "AWS CDK resource provider framework - onEvent (amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -559,12 +559,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -578,7 +578,7 @@
         "AmplifyBranchLinkerCustomResourceProviderframeworkonEventServiceRole92A035EB"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -594,12 +594,12 @@
           ]
         },
         "appId": "moodboard",
-        "branchName": "gen2-main"
+        "383edf5091.deploymentTypeName": "gen2-main"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/AmplifyBranchLinker/CustomResource/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/AmplifyBranchLinker/CustomResource/Default"
       }
     },
     "auth179371D7": {
@@ -611,12 +611,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -647,8 +647,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbauth0E22629C.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/auth.NestedStack/auth.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauth0E22629C.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -656,28 +656,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAE38F854Ref": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
             ]
           }
         },
@@ -687,12 +687,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -723,8 +723,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/data.NestedStack/data.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbdata56E569FA.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data.NestedStack/data.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdata56E569FA.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -732,16 +732,16 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
             ]
           }
         },
@@ -751,12 +751,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -787,8 +787,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage.NestedStack/storage.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbstorageB0992CC3.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/storage.NestedStack/storage.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstorageB0992CC3.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -796,10 +796,10 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbanalyticsNestedStackanalyticsNestedStackResourceB580ACE1Outputsamplifymoodboardgen2mainbranchf7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsNestedStackanalyticsNestedStackResourceB580ACE1Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn": {
             "Fn::GetAtt": [
               "analytics5794DE4A",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
             ]
           }
         },
@@ -809,12 +809,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -845,8 +845,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/function.NestedStack/function.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbfunctionE7206F93.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/function.NestedStack/function.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionE7206F93.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -854,16 +854,16 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
             ]
           },
-          "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+          "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+              "Outputs.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
             ]
           }
         },
@@ -873,12 +873,12 @@
             "Value": "moodboard"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:383edf5091.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "383edf5091.deploymentType"
           },
           {
             "Key": "created-by",
@@ -909,8 +909,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics.NestedStack/analytics.NestedStackResource",
-        "aws:asset:path": "amplifymoodboardgen2mainbranchf7e4caeabbanalytics47DFCADD.nested.template.json",
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/analytics.NestedStack/analytics.NestedStackResource",
+        "aws:asset:path": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalytics47DFCADD.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -920,7 +920,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PzWrDQAyEnyV3WU2cHHptDD22wXkAo6yVIP/slpU2oRi/e/C6LT19I4YZNCWWhx1uN/TQwrV9McgFp7OR66G6+s9kX8mAHtpMA42XlhofWu4UPzLek3cmwYPQiFMdBl5SmacwiPtezlXNoPuGVNkU3xaA7vGYXM92JGVY63Gqrv6v9VfMM+TI2egm/gYuqYWxiawhRceKpxju0nKEKjv1j5Gf+afzrhmWCdjpy70scfeK202nIkVM3mRkrFc+AUTtSG0ZAQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }

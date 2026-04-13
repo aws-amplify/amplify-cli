@@ -1,24 +1,24 @@
 {
   "main": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-importedresources-main-8a9e9-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-importedresources-main-8a9e9-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-importedresources-main-8a9e9-authRole",
+      "AuthRoleName": "8d0d0cbe70.AuthRoleName",
+      "UnauthRoleArn": "8d0d0cbe70.UnauthRoleArn",
+      "AuthRoleArn": "8d0d0cbe70.AuthRoleArn",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-importedresources-main-8a9e9-deployment",
-      "UnauthRoleName": "amplify-importedresources-main-8a9e9-unauthRole",
-      "StackName": "amplify-importedresources-main-8a9e9",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-importedresources-main-8a9e9/5c5e4ec0-2a0a-11f1-8859-126d6e2516bf",
+      "DeploymentBucketName": "8d0d0cbe70.DeploymentBucketName",
+      "UnauthRoleName": "8d0d0cbe70.UnauthRoleName",
+      "StackName": "8d0d0cbe70.StackName",
+      "StackId": "8d0d0cbe70.StackId",
       "AmplifyAppId": "importedresources"
     },
     "categories": {
       "auth": {
         "importedresources2c7c1c40": {
-          "userPoolId": "auth.importedresources2c7c1c40.UserPoolId",
+          "userPoolId": "c643a9b272.userPoolId",
           "userPoolName": "auth.importedresources2c7c1c40.UserPoolName",
-          "webClientId": "auth.importedresources2c7c1c40.AppClientIDWeb",
+          "webClientId": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
           "nativeClientId": "auth.importedresources2c7c1c40.AppClientID",
-          "identityPoolId": "auth.importedresources2c7c1c40.IdentityPoolId",
+          "identityPoolId": "c643a9b272.identityPoolId",
           "identityPoolName": "auth.importedresources2c7c1c40.IdentityPoolName",
           "allowUnauthenticatedIdentities": true,
           "authRoleArn": "arn:aws:iam::123456789012:role/importedresources-auth-role",
@@ -29,7 +29,7 @@
       },
       "function": {
         "importedresourcequotegenerator": {
-          "deploymentBucketName": "amplify-importedresources-main-8a9e9-deployment",
+          "deploymentBucketName": "8d0d0cbe70.DeploymentBucketName",
           "s3Key": "amplify-builds/importedresourcequotegenerator-564649317a6f53484f35-build.zip"
         }
       },
