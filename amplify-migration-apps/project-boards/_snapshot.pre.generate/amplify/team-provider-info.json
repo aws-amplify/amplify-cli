@@ -1,14 +1,14 @@
 {
-  "x": {
+  "rtepwflgza": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-projectboards-x-x-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole",
+      "AuthRoleName": "amplify-projectboa2604131624-rtepwflgza-425cf-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboa2604131624-rtepwflgza-425cf-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboa2604131624-rtepwflgza-425cf-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "1cbef42f68.DeploymentBucketName",
-      "UnauthRoleName": "amplify-projectboards-x-x-unauthRole",
-      "StackName": "amplify-projectboards-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/768dab20-3760-11f1-a3c5-0e1376cd60ad",
+      "DeploymentBucketName": "amplify-projectboa2604131624-rtepwflgza-425cf-deployment",
+      "UnauthRoleName": "amplify-projectboa2604131624-rtepwflgza-425cf-unauthRole",
+      "StackName": "amplify-projectboa2604131624-rtepwflgza-425cf",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604131624-rtepwflgza-425cf/bb4054a0-3776-11f1-a45e-0affc2b0c8cd",
       "AmplifyAppId": "projectboards"
     },
     "categories": {
@@ -17,7 +17,7 @@
       },
       "function": {
         "quotegenerator": {
-          "deploymentBucketName": "1cbef42f68.DeploymentBucketName",
+          "deploymentBucketName": "amplify-projectboa2604131624-rtepwflgza-425cf-deployment",
           "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip"
         }
       },
