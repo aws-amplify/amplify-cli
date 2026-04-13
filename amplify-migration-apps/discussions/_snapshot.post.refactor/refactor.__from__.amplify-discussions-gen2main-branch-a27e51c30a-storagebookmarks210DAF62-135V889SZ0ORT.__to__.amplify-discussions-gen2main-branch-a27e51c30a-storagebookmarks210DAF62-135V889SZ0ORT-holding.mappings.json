@@ -1,11 +1,11 @@
 [
   {
     "Source": {
-      "StackName": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a-storagebookmarks210DAF62-135V889SZ0ORT",
+      "StackName": "amplify-discussions-gen2main-branch-a27e51c30a-storagebookmarks210DAF62-135V889SZ0ORT",
       "LogicalResourceId": "bookmarksA4548304"
     },
     "Destination": {
-      "StackName": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a-storagebookmarks210DAF62-135V889SZ0ORT-holding",
+      "StackName": "amplify-discussions-gen2main-branch-a27e51c30a-storagebookmarks210DAF62-135V889SZ0ORT-holding",
       "LogicalResourceId": "bookmarksA4548304"
     }
   }

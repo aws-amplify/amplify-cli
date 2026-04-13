@@ -28,29 +28,29 @@ const activity = new Table(storageActivityStack, 'activity', {
   readCapacity: 5,
   writeCapacity: 5,
   stream: StreamViewType.NEW_IMAGE,
-  sortKey: { name: 'storage.bookmarks.PartitionKeyName', type: AttributeType.STRING },
+  sortKey: { name: 'userId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'storage.activity.Name'
+// Add this property to the Table above post refactor: tableName: 'activity-main'
 activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
-  partitionKey: { name: 'storage.bookmarks.PartitionKeyName', type: AttributeType.STRING },
+  partitionKey: { name: 'userId', type: AttributeType.STRING },
   sortKey: { name: 'timestamp', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });
 const storageBookmarksStack = backend.createStack('storagebookmarks');
 const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
-  partitionKey: { name: 'storage.bookmarks.PartitionKeyName', type: AttributeType.STRING },
+  partitionKey: { name: 'userId', type: AttributeType.STRING },
   billingMode: BillingMode.PROVISIONED,
   readCapacity: 5,
   writeCapacity: 5,
   stream: StreamViewType.NEW_IMAGE,
-  sortKey: { name: 'storage.bookmarks.SortKeyName', type: AttributeType.STRING },
+  sortKey: { name: 'postId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'storage.bookmarks.Name'
+// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
 bookmarks.addGlobalSecondaryIndex({
   indexName: 'byPost',
-  partitionKey: { name: 'storage.bookmarks.SortKeyName', type: AttributeType.STRING },
+  partitionKey: { name: 'postId', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });
@@ -77,8 +77,8 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
-const da5e56ee3d.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${da5e56ee3d.deploymentTypeName}`;
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
 backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_STREAMARN',
   activity.tableStreamArn!
@@ -101,7 +101,7 @@ activity.grant(
   'dynamodb:Query',
   'dynamodb:PartiQLSelect'
 );
-backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${da5e56ee3d.deploymentTypeName}`;
+backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
 backend.recorduseractivity.addEnvironment(
   'STORAGE_ACTIVITY_STREAMARN',
   activity.tableStreamArn!
@@ -145,7 +145,7 @@ for (const model of ['Topic', 'Post', 'Comment']) {
 }
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'b13c4c6060.BucketName';
+// s3Bucket.bucketName = 'discus-avatarsc39a5-main';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

@@ -12,7 +12,7 @@
                 "Ref": "AWS::Region"
               },
               "UserPoolId": {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthUserPool82221E95Ref"
               }
             }
           },
@@ -20,7 +20,7 @@
             "AuthenticationType": "AWS_IAM"
           }
         ],
-        "AuthenticationType": "da5e56ee3d.awsAppsyncAuthenticationType",
+        "AuthenticationType": "API_KEY",
         "Name": "amplifyData",
         "Tags": [
           {
@@ -28,12 +28,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -46,7 +46,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/GraphQLAPI/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/GraphQLAPI/Resource"
       }
     },
     "amplifyDataGraphQLAPITransformerSchemaFF50A789": {
@@ -63,7 +63,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/GraphQLAPI/TransformerSchema"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/GraphQLAPI/TransformerSchema"
       }
     },
     "amplifyDataGraphQLAPIDefaultApiKey1C8ED374": {
@@ -78,7 +78,7 @@
         "Expires": 1774647640
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/GraphQLAPI/DefaultApiKey"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/GraphQLAPI/DefaultApiKey"
       }
     },
     "amplifyDataGraphQLAPINONEDS684BF699": {
@@ -94,14 +94,14 @@
         "Type": "NONE"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/GraphQLAPI/NONE_DS/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/GraphQLAPI/NONE_DS/Resource"
       }
     },
     "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
@@ -114,12 +114,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -154,8 +154,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager.NestedStack/AmplifyTableManager.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManager5B4040D6.nested.template.json",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager.NestedStack/AmplifyTableManager.NestedStackResource",
+        "aws:asset:path": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManager5B4040D6.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -178,32 +178,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
           }
         },
         "Tags": [
@@ -212,12 +212,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -255,8 +255,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/Topic.NestedStack/Topic.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic561410D7.nested.template.json",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/Topic.NestedStack/Topic.NestedStackResource",
+        "aws:asset:path": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopic561410D7.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -279,32 +279,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
           }
         },
         "Tags": [
@@ -313,12 +313,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -356,8 +356,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/Post.NestedStack/Post.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostF11F1ED4.nested.template.json",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/Post.NestedStack/Post.NestedStackResource",
+        "aws:asset:path": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostF11F1ED4.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -380,32 +380,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
           }
         },
         "Tags": [
@@ -414,12 +414,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -457,8 +457,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/Comment.NestedStack/Comment.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentB2DD7E34.nested.template.json",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/Comment.NestedStack/Comment.NestedStackResource",
+        "aws:asset:path": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentB2DD7E34.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -466,22 +466,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
@@ -494,12 +494,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -537,8 +537,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/FunctionDirectiveStack.NestedStack/FunctionDirectiveStack.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataFunctionDirectiveStackB704CB4B.nested.template.json",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/FunctionDirectiveStack.NestedStack/FunctionDirectiveStack.NestedStackResource",
+        "aws:asset:path": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataFunctionDirectiveStackB704CB4B.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -546,61 +546,61 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostDataSource1181B975Name": {
             "Fn::GetAtt": [
               "amplifyDataPostNestedStackPostNestedStackResourceB65AFCD3",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostDataSource1181B975Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn": {
             "Fn::GetAtt": [
               "amplifyDataPostNestedStackPostNestedStackResourceB65AFCD3",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name": {
             "Fn::GetAtt": [
               "amplifyDataCommentNestedStackCommentNestedStackResource87C7BB35",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableArn": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableArn": {
             "Fn::GetAtt": [
               "amplifyDataCommentNestedStackCommentNestedStackResource87C7BB35",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableArn"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableArn"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName": {
             "Fn::GetAtt": [
               "amplifyDataTopicNestedStackTopicNestedStackResource252EB182",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn": {
+          "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableArn": {
             "Fn::GetAtt": [
               "amplifyDataTopicNestedStackTopicNestedStackResource252EB182",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn"
+              "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableArn"
             ]
           }
         },
@@ -610,12 +610,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -656,8 +656,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack.NestedStack/ConnectionStack.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataConnectionStack83594073.nested.template.json",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack.NestedStack/ConnectionStack.NestedStackResource",
+        "aws:asset:path": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataConnectionStack83594073.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -689,7 +689,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ActivityIdDataResolverFn/ActivityIdDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ActivityIdDataResolverFn/ActivityIdDataResolverFn.AppSyncFunction"
       }
     },
     "ActivityidResolver": {
@@ -734,7 +734,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -746,11 +746,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -763,7 +763,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/activityIdResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/activityIdResolver"
       }
     },
     "amplifyDataActivityUserIdDataResolverFnActivityUserIdDataResolverFnAppSyncFunction66B67EF4": {
@@ -794,10 +794,10 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ActivityUserIdDataResolverFn/ActivityUserIdDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ActivityUserIdDataResolverFn/ActivityUserIdDataResolverFn.AppSyncFunction"
       }
     },
-    "Activitystorage.bookmarks.PartitionKeyNameResolver": {
+    "ActivityuserIdResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -806,7 +806,7 @@
             "ApiId"
           ]
         },
-        "FieldName": "storage.bookmarks.PartitionKeyName",
+        "FieldName": "userId",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
@@ -822,7 +822,7 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"storage.bookmarks.PartitionKeyName\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"userId\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Fn::GetAtt": [
                   "amplifyDataGraphQLAPI42A6FA33",
@@ -839,7 +839,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -851,11 +851,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -868,7 +868,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/activityUserIdResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/activityUserIdResolver"
       }
     },
     "amplifyDataActivityActivityTypeDataResolverFnActivityActivityTypeDataResolverFnAppSyncFunctionF6BB5E26": {
@@ -899,7 +899,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ActivityActivityTypeDataResolverFn/ActivityActivityTypeDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ActivityActivityTypeDataResolverFn/ActivityActivityTypeDataResolverFn.AppSyncFunction"
       }
     },
     "ActivityactivityTypeResolver": {
@@ -944,7 +944,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -956,11 +956,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -973,7 +973,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/activityActivityTypeResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/activityActivityTypeResolver"
       }
     },
     "amplifyDataActivityTimestampDataResolverFnActivityTimestampDataResolverFnAppSyncFunctionBFF6218D": {
@@ -1004,7 +1004,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ActivityTimestampDataResolverFn/ActivityTimestampDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ActivityTimestampDataResolverFn/ActivityTimestampDataResolverFn.AppSyncFunction"
       }
     },
     "ActivitytimestampResolver": {
@@ -1049,7 +1049,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1061,11 +1061,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1078,7 +1078,7 @@
         "amplifyDataGraphQLAPITransformerSchemaFF50A789"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/activityTimestampResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/activityTimestampResolver"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucket9CCB4ACA": {
@@ -1117,12 +1117,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -1145,7 +1145,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Resource"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucketPolicyF1C1C548": {
@@ -1200,7 +1200,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Policy/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/Policy/Resource"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsBucketAutoDeleteObjectsCustomResource437F26F5": {
@@ -1222,7 +1222,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsBucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentAwsCliLayerE322F905": {
@@ -1237,7 +1237,7 @@
         "Description": "/opt/awscli/aws"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/AwsCliLayer/Resource",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/AwsCliLayer/Resource",
         "aws:asset:path": "asset.0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Content"
@@ -1279,7 +1279,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/CustomResource-1536MiB/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyCodegenAssets/AmplifyCodegenAssetsDeployment/CustomResource-1536MiB/Default"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
@@ -1304,7 +1304,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
@@ -1343,7 +1343,7 @@
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
         "aws:asset:property": "Code"
       }
@@ -1383,12 +1383,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -1397,7 +1397,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/Resource"
       }
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBServiceRoleDefaultPolicyFF1C635B": {
@@ -1531,7 +1531,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBC5D8AB21": {
@@ -1568,12 +1568,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -1587,7 +1587,7 @@
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiBServiceRoleA41FC8C2"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/Resource",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1536MiB/Resource",
         "aws:asset:path": "asset.3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -1602,12 +1602,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -1626,7 +1626,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/modelIntrospectionSchemaBucket/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/modelIntrospectionSchemaBucket/Resource"
       }
     },
     "modelIntrospectionSchemaBucketPolicy4DAB0D15": {
@@ -1715,7 +1715,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/modelIntrospectionSchemaBucket/Policy/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/modelIntrospectionSchemaBucket/Policy/Resource"
       }
     },
     "modelIntrospectionSchemaBucketAutoDeleteObjectsCustomResourceFE57309F": {
@@ -1737,7 +1737,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/modelIntrospectionSchemaBucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/modelIntrospectionSchemaBucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "modelIntrospectionSchemaBucketDeploymentAwsCliLayer13C432F7": {
@@ -1752,7 +1752,7 @@
         "Description": "/opt/awscli/aws"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/modelIntrospectionSchemaBucketDeployment/AwsCliLayer/Resource",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/modelIntrospectionSchemaBucketDeployment/AwsCliLayer/Resource",
         "aws:asset:path": "asset.0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Content"
@@ -1788,17 +1788,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/modelIntrospectionSchemaBucketDeployment/CustomResource-1536MiB/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/modelIntrospectionSchemaBucketDeployment/CustomResource-1536MiB/Default"
       }
     },
     "AMPLIFYDATAGRAPHQLENDPOINTParameter1C2CBB16": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/discussions/gen2main-da5e56ee3d.deploymentType-a27e51c30a/AMPLIFY_DATA_GRAPHQL_ENDPOINT",
+        "Name": "/amplify/resource_reference/discussions/gen2main-branch-a27e51c30a/AMPLIFY_DATA_GRAPHQL_ENDPOINT",
         "Tags": {
           "amplify:app-id": "discussions",
-          "amplify:da5e56ee3d.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "da5e56ee3d.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "created-by": "amplify"
         },
         "Type": "String",
@@ -1810,17 +1810,17 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/AMPLIFY_DATA_GRAPHQL_ENDPOINTParameter/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/AMPLIFY_DATA_GRAPHQL_ENDPOINTParameter/Resource"
       }
     },
     "AMPLIFYDATAMODELINTROSPECTIONSCHEMABUCKETNAMEParameter47BF4F44": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/discussions/gen2main-da5e56ee3d.deploymentType-a27e51c30a/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/discussions/gen2main-branch-a27e51c30a/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAME",
         "Tags": {
           "amplify:app-id": "discussions",
-          "amplify:da5e56ee3d.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "da5e56ee3d.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "created-by": "amplify"
         },
         "Type": "String",
@@ -1829,41 +1829,41 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_BUCKET_NAMEParameter/Resource"
       }
     },
     "AMPLIFYDATAMODELINTROSPECTIONSCHEMAKEYParameterB6AEAE8A": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/discussions/gen2main-da5e56ee3d.deploymentType-a27e51c30a/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEY",
+        "Name": "/amplify/resource_reference/discussions/gen2main-branch-a27e51c30a/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEY",
         "Tags": {
           "amplify:app-id": "discussions",
-          "amplify:da5e56ee3d.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "da5e56ee3d.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": "modelIntrospectionSchema.json"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEYParameter/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/AMPLIFY_DATA_MODEL_INTROSPECTION_SCHEMA_KEYParameter/Resource"
       }
     },
     "AMPLIFYDATADEFAULTNAMEParameterE7C23CC4": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/discussions/gen2main-da5e56ee3d.deploymentType-a27e51c30a/AMPLIFY_DATA_DEFAULT_NAME",
+        "Name": "/amplify/resource_reference/discussions/gen2main-branch-a27e51c30a/AMPLIFY_DATA_DEFAULT_NAME",
         "Tags": {
           "amplify:app-id": "discussions",
-          "amplify:da5e56ee3d.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "da5e56ee3d.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": "amplifyData"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/AMPLIFY_DATA_DEFAULT_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/AMPLIFY_DATA_DEFAULT_NAMEParameter/Resource"
       }
     },
     "CDKMetadata": {
@@ -1872,7 +1872,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/6VSTW/bMAz9Lc1ZUdu0h2E310F3WNFlMdDLUASMzLhM9OGJcjJD8H8fZGVpup6KnshHig+PepzJ2e2tvLqAA09VvZtqWsv4iBywrgKonVgiu84rFHDgVYS25d4qGb95aF9+66KlO2AU5caOlZ8PRUtnqFIvaCAVipa+Yy8encU5BKgyabmxb9F9Z1UgZ0tnN9R0HhJIjaRD79EPgm9WEZgxsCxSEDW22vUGbZB3ndphmJ8K6bWMuToKzWkizNmvODH0h+zk6+T8C9KyfCPHFh9Ziy64OWoM+GO9RRV4MohPTT8f1SycJtW/asr4A8ryQBUgYFr6Y8LeDz8PQoNZ1yBjubEP0KN/Qs/JiIpsozG4k0/ilJyZNwgCI+PS6dHTMb4umbNBMBsZq+DJNgvwYDCgH/v/wDCI0eAqQEO2Sb18k2XHwZnTZR6vY8yz8JVOoldwYKVJFgcuNY17vOH/j2fh3Z5q9OlOBmFdjXLLl/vZTF5/kVcXWyaa+s4GMiiXOf4FCBed+D4DAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -1915,16 +1915,16 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthUserPool82221E95Ref": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
       "Type": "String"
     }
   },
@@ -2195,7 +2195,7 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPI42A6FA33",
@@ -2203,7 +2203,7 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21GraphQLUrl": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21GraphQLUrl": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPI42A6FA33",
@@ -2211,7 +2211,7 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBABCA4586DestinationBucketArn": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBABCA4586DestinationBucketArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB21775929",
@@ -2219,7 +2219,7 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPIDefaultApiKey1C8ED374",
@@ -2227,27 +2227,27 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataTopicNestedStackTopicNestedStackResource252EB182",
-          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn"
+          "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableStreamArn"
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableStreamArn": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataPostNestedStackPostNestedStackResourceB65AFCD3",
-          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableStreamArn"
+          "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableStreamArn"
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataCommentNestedStackCommentNestedStackResource87C7BB35",
-          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn"
+          "Outputs.amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableStreamArn"
         ]
       }
     }

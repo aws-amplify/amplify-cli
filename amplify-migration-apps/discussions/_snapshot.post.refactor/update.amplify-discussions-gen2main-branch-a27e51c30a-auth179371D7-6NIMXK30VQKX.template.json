@@ -51,8 +51,8 @@
         },
         "UserPoolTags": {
           "amplify:app-id": "discussions",
-          "amplify:da5e56ee3d.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "da5e56ee3d.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "amplify:friendly-name": "amplifyAuth",
           "created-by": "amplify"
         },
@@ -72,7 +72,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -90,10 +90,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+        "UserPoolId": "us-east-1_I3YejOBUa"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -111,7 +111,7 @@
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "da5e56ee3d.oauthRedirectSignIn"
+          "https://example.com"
         ],
         "ExplicitAuthFlows": [
           "ALLOW_CUSTOM_AUTH",
@@ -122,10 +122,10 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+        "UserPoolId": "us-east-1_I3YejOBUa"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -134,7 +134,7 @@
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref",
+            "ClientId": "3mosah7bsr7412hqq9soj1j2pp",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -144,7 +144,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+                  "us-east-1_I3YejOBUa"
                 ]
               ]
             }
@@ -156,12 +156,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -175,7 +175,7 @@
         "SupportedLoginProviders": {}
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
@@ -187,7 +187,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:d48cd035-0397-46c6-b39a-19514b421022"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -207,12 +207,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -225,7 +225,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -237,7 +237,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:d48cd035-0397-46c6-b39a-19514b421022"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -257,12 +257,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -275,13 +275,13 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref",
+        "IdentityPoolId": "us-east-1:d48cd035-0397-46c6-b39a-19514b421022",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -294,9 +294,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref",
+                  "us-east-1_I3YejOBUa",
                   ":",
-                  "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
+                  "3mosah7bsr7412hqq9soj1j2pp"
                 ]
               ]
             },
@@ -304,12 +304,12 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef",
-          "authenticated": "arn:aws:iam::123456789012:role/5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-discussions-ge-amplifyAuthunauthenticate-iYWdMAuszYuZ",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-discussions-ge-amplifyAuthauthenticatedU-fjzgnNdQ7Oe2"
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     },
     "CDKMetadata": {
@@ -318,7 +318,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK2hB6/SkxeRimeJyarbphtoVouE/LsUqXqamTczGnRdQ1WYKZbW9aWnC6Q9RkF3FGN7ZaZ4TjbcmCRAOkUcDyF41Vz56xfTeEKW/+pHdg5ZSF7L+T+3weNWxNj7gCxZkRkgzXAezppzVhwcQhdXT61hvYGq6CJROT5YaEBoP/oGtzQ+/84AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -590,20 +590,20 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+    "amplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthUserPool82221E95Ref": {
+      "Value": "us-east-1_I3YejOBUa"
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
+    "amplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref": {
+      "Value": "3mosah7bsr7412hqq9soj1j2pp"
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+    "amplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+      "Value": "us-east-1:d48cd035-0397-46c6-b39a-19514b421022"
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+    "amplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+      "Value": "amplify-discussions-ge-amplifyAuthauthenticatedU-fjzgnNdQ7Oe2"
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+    "amplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+      "Value": "amplify-discussions-ge-amplifyAuthunauthenticate-iYWdMAuszYuZ"
     }
   }
 }

@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "b13c4c6060.BucketName"
+      "Value": "discus-avatarsc39a5-main"
     },
     "Region": {
       "Value": "us-east-1"
@@ -193,7 +193,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "b77cc5b997.StackName-storageavatars-1BVCGXECPBEMB"
+                      "amplify-discussions-main-c39a5-storageavatars-1BVCGXECPBEMB"
                     ]
                   }
                 ]
@@ -263,7 +263,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "b13c4c6060.BucketName",
+                      "discus-avatarsc39a5-main",
                       "/public/*"
                     ]
                   ]
@@ -274,7 +274,7 @@
         },
         "PolicyName": "Public_policy_bf41454d",
         "Roles": [
-          "b77cc5b997.AuthRoleName"
+          "amplify-discussions-main-c39a5-authRole"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -299,7 +299,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "b13c4c6060.BucketName",
+                      "discus-avatarsc39a5-main",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -310,7 +310,7 @@
         },
         "PolicyName": "Protected_policy_bf41454d",
         "Roles": [
-          "b77cc5b997.AuthRoleName"
+          "amplify-discussions-main-c39a5-authRole"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -335,7 +335,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "b13c4c6060.BucketName",
+                      "discus-avatarsc39a5-main",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -346,7 +346,7 @@
         },
         "PolicyName": "Private_policy_bf41454d",
         "Roles": [
-          "b77cc5b997.AuthRoleName"
+          "amplify-discussions-main-c39a5-authRole"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -371,7 +371,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "b13c4c6060.BucketName",
+                      "discus-avatarsc39a5-main",
                       "/uploads/*"
                     ]
                   ]
@@ -382,7 +382,7 @@
         },
         "PolicyName": "Uploads_policy_bf41454d",
         "Roles": [
-          "b77cc5b997.AuthRoleName"
+          "amplify-discussions-main-c39a5-authRole"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -400,7 +400,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "b13c4c6060.BucketName",
+                    "discus-avatarsc39a5-main",
                     "/protected/*"
                   ]
                 ]
@@ -426,7 +426,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "b13c4c6060.BucketName"
+                    "discus-avatarsc39a5-main"
                   ]
                 ]
               }
@@ -436,7 +436,7 @@
         },
         "PolicyName": "read_policy_bf41454d",
         "Roles": [
-          "b77cc5b997.AuthRoleName"
+          "amplify-discussions-main-c39a5-authRole"
         ]
       },
       "Condition": "AuthReadAndList"

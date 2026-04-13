@@ -29,7 +29,7 @@ type Comment {
 }
 
 type Query {
-  fetchUserActivity(storage.bookmarks.PartitionKeyName: ID!): [Activity]
+  fetchUserActivity(userId: ID!): [Activity]
   getTopic(id: ID!): Topic
   listTopics(filter: ModelTopicFilterInput, limit: Int, nextToken: String): ModelTopicConnection
   getPost(id: ID!): Post
@@ -40,7 +40,7 @@ type Query {
 
 type Activity {
   id: ID!
-  storage.bookmarks.PartitionKeyName: ID!
+  userId: ID!
   activityType: String!
   timestamp: String!
 }

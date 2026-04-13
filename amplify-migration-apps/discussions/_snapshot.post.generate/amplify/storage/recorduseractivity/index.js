@@ -28,13 +28,13 @@ exports.handler = async (event) => {
   }
 };
 
-async function recordUserActivity(storage.bookmarks.PartitionKeyName, activityType) {
+async function recordUserActivity(userId, activityType) {
 
   const timestamp = new Date().toISOString();
 
   await dynamoDB.send(new PutCommand({
     TableName: TABLE_NAME,
-    Item: { id: crypto.randomUUID(), storage.bookmarks.PartitionKeyName, activityType, timestamp }
+    Item: { id: crypto.randomUUID(), userId, activityType, timestamp }
   }));
 
 }

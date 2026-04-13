@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+                            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
+                          "tableName": "Topic-u3jn2qbupzbyhc3h53673wdvim-main"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName"
+                          "tableName": "Post-u3jn2qbupzbyhc3h53673wdvim-main"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
+                          "tableName": "Comment-u3jn2qbupzbyhc3h53673wdvim-main"
                         }
                       ]
                     }
@@ -108,12 +108,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -126,7 +126,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleB4E71DEA": {
@@ -183,7 +183,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+                            "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -193,7 +193,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
+                          "tableName": "Topic-u3jn2qbupzbyhc3h53673wdvim-main"
                         }
                       ]
                     },
@@ -201,7 +201,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName"
+                          "tableName": "Post-u3jn2qbupzbyhc3h53673wdvim-main"
                         }
                       ]
                     },
@@ -209,7 +209,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
+                          "tableName": "Comment-u3jn2qbupzbyhc3h53673wdvim-main"
                         }
                       ]
                     }
@@ -237,12 +237,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -255,7 +255,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6": {
@@ -281,7 +281,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
       }
     },
     "TableManagerCustomProviderframeworkonEvent1DFC2ECC": {
@@ -293,7 +293,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - onEvent (amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - onEvent (amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Environment": {
           "Variables": {
             "WAITER_STATE_MACHINE_ARN": {
@@ -315,12 +315,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -338,7 +338,7 @@
         "AmplifyManagedTableOnEventRoleB4E71DEA"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -353,7 +353,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - isComplete (amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - isComplete (amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Handler": "amplify-table-manager-handler.isComplete",
         "Role": {
           "Fn::GetAtt": [
@@ -368,12 +368,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -390,7 +390,7 @@
         "AmplifyManagedTableIsCompleteRoleF825222C"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -417,12 +417,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -435,7 +435,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
       }
     },
     "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A": {
@@ -480,7 +480,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "AmplifyTableWaiterStateMachine060600BC": {
@@ -513,7 +513,7 @@
         "AmplifyTableWaiterStateMachineRole470BE899"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
       }
     },
     "CDKMetadata": {
@@ -522,7 +522,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNQQ6CMBBFz8K+jAgs3IqJS2PgAGRoR1IobcIUiWl6dwPo6r2ft/g55GUJWYIrp1KNqdEdhAexJ9V4lKPAldugcYJQO0Pi9rI7n85o+dnmYVEYnDqFEO6LlV47u7W/R8FFi8zkGa4bBBdQLXIkXyFTFDWxW2ZJYq+Nx17bfj/7hSisUwQDn955DucLZMnAWqfzYr2eCOqDX96JKODPAAAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -794,12 +794,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn": {
+    "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent7EFC42D0Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

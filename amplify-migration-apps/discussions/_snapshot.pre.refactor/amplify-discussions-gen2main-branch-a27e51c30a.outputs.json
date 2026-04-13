@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
+    "OutputValue": "3mosah7bsr7412hqq9soj1j2pp"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef"
+    "OutputValue": "amplify-discussions-ge-discusavatarsc39a5gen2ma-tofeojsv2jx4"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
+    "OutputValue": "3mosah7bsr7412hqq9soj1j2pp"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -41,7 +41,7 @@
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "da5e56ee3d.awsAppsyncAdditionalAuthenticationTypes"
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
   },
   {
     "OutputKey": "mfaTypes",
@@ -61,15 +61,15 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey"
+    "OutputValue": "da2-fakeapikey00000000000000"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "da5e56ee3d.awsAppsyncAuthenticationType"
+    "OutputValue": "API_KEY"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "da5e56ee3d.oauthRedirectSignIn"
+    "OutputValue": "https://example.com"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21GraphQLUrl"
+    "OutputValue": "https://auprb5ishbhltcshr2palt65ka.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+    "OutputValue": "33zwnmmin5anviw7lh6x2wxanq"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"discus-avatarsc39a5-gen2-main\\\",\\\"bucketName\\\":\\\"ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"discus-avatarsc39a5-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-discussions-ge-discusavatarsc39a5gen2ma-tofeojsv2jx4\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "da5e56ee3d.amplifyApiModelSchemaS3Uri"
+    "OutputValue": "s3://amplify-discussions-ge-amplifydataamplifycodege-jxzg53vmja75/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionfetchuseractivitygen2mainlambda502480EDRef\",\"5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref\"]"
+    "OutputValue": "[\"fetchuseractivity-gen2-main\",\"recorduseractivity-gen2-main\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -113,7 +113,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "da5e56ee3d.deploymentType"
+    "OutputValue": "branch"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+    "OutputValue": "us-east-1_I3YejOBUa"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+    "OutputValue": "us-east-1:d48cd035-0397-46c6-b39a-19514b421022"
   },
   {
     "OutputKey": "verificationMechanisms",

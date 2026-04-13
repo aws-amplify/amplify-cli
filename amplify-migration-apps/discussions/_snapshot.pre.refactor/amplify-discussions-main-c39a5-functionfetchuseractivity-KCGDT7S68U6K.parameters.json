@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storageactivityName",
-    "ParameterValue": "storage.activity.Name"
+    "ParameterValue": "activity-main"
   },
   {
     "ParameterKey": "s3Key",
@@ -13,11 +13,11 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "b77cc5b997.DeploymentBucketName"
+    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "storage.activity.StreamArn"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-20T21:19:57.516"
   },
   {
     "ParameterKey": "env",
@@ -25,6 +25,6 @@
   },
   {
     "ParameterKey": "storageactivityArn",
-    "ParameterValue": "storage.activity.Arn"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
   }
 ]

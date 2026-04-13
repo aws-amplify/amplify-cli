@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Topicpostsauth0Function",
@@ -17,17 +17,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/Topicpostsauth0Function/Topicpostsauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/Topicpostsauth0Function/Topicpostsauth0Function.AppSyncFunction"
       }
     },
     "TopicPostsDataResolverFnTopicPostsDataResolverFnAppSyncFunctionBB79629F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostDataSource1181B975Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "TopicPostsDataResolverFn",
@@ -39,14 +39,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/TopicPostsDataResolverFn/TopicPostsDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/TopicPostsDataResolverFn/TopicPostsDataResolverFn.AppSyncFunction"
       }
     },
     "TopicpostsResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "FieldName": "posts",
         "Kind": "PIPELINE",
@@ -72,7 +72,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Topic\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"posts\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn"
+                                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn"
                               }
                             ]
                           }
@@ -108,7 +108,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -120,11 +120,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -134,17 +134,17 @@
         "TypeName": "Topic"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/topicPostsResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/topicPostsResolver"
       }
     },
     "Postcommentsauth0FunctionPostcommentsauth0FunctionAppSyncFunction0DA41083": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Postcommentsauth0Function",
@@ -154,17 +154,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/Postcommentsauth0Function/Postcommentsauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/Postcommentsauth0Function/Postcommentsauth0Function.AppSyncFunction"
       }
     },
     "PostCommentsDataResolverFnPostCommentsDataResolverFnAppSyncFunction87EBA9A8": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "PostCommentsDataResolverFn",
@@ -176,14 +176,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/PostCommentsDataResolverFn/PostCommentsDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/PostCommentsDataResolverFn/PostCommentsDataResolverFn.AppSyncFunction"
       }
     },
     "PostcommentsResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "FieldName": "comments",
         "Kind": "PIPELINE",
@@ -209,7 +209,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Post\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"comments\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -225,7 +225,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableArn"
+                                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableArn"
                               }
                             ]
                           }
@@ -245,7 +245,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -257,11 +257,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -271,17 +271,17 @@
         "TypeName": "Post"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/postCommentsResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/postCommentsResolver"
       }
     },
     "Posttopicauth0FunctionPosttopicauth0FunctionAppSyncFunctionFCD7294D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Posttopicauth0Function",
@@ -291,17 +291,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/Posttopicauth0Function/Posttopicauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/Posttopicauth0Function/Posttopicauth0Function.AppSyncFunction"
       }
     },
     "PostTopicDataResolverFnPostTopicDataResolverFnAppSyncFunctionEF6EA503": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "PostTopicDataResolverFn",
@@ -313,14 +313,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/PostTopicDataResolverFn/PostTopicDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/PostTopicDataResolverFn/PostTopicDataResolverFn.AppSyncFunction"
       }
     },
     "PosttopicResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "FieldName": "topic",
         "Kind": "PIPELINE",
@@ -346,7 +346,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Post\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"topic\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -362,7 +362,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn"
+                                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableArn"
                               }
                             ]
                           }
@@ -382,7 +382,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -394,11 +394,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -408,17 +408,17 @@
         "TypeName": "Post"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/postTopicResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/postTopicResolver"
       }
     },
     "Commentpostauth0FunctionCommentpostauth0FunctionAppSyncFunction99E13BF9": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Commentpostauth0Function",
@@ -428,17 +428,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/Commentpostauth0Function/Commentpostauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/Commentpostauth0Function/Commentpostauth0Function.AppSyncFunction"
       }
     },
     "CommentPostDataResolverFnCommentPostDataResolverFnAppSyncFunction20ABACCE": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostDataSource1181B975Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "CommentPostDataResolverFn",
@@ -450,14 +450,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/CommentPostDataResolverFn/CommentPostDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/CommentPostDataResolverFn/CommentPostDataResolverFn.AppSyncFunction"
       }
     },
     "CommentpostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+          "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
         },
         "FieldName": "post",
         "Kind": "PIPELINE",
@@ -483,7 +483,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Comment\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"post\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -499,7 +499,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn"
+                                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn"
                               }
                             ]
                           }
@@ -519,7 +519,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -531,11 +531,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                "Ref": "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -545,7 +545,7 @@
         "TypeName": "Comment"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/commentPostResolver"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/commentPostResolver"
       }
     },
     "CDKMetadata": {
@@ -554,7 +554,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMsQ6CMBCA4WdhLycWBlchcXSAByBnOUgBr6TXQgzh3Q06ffmXX4MuCsgS3CQ13ZTO9gX7kyRQ1wQ0k8JN2l3yFkUoCNxPlORQRjNRKFFI4bLIhw3sVc+PyCZYx5Xj3g7R4xmq6rkmcfNK/jjU79EEHCwPh2LXEYxyWbWG6w2yZBRrUx852DdB/fcLf5ddvqcAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ConnectionStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ConnectionStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -826,37 +826,37 @@
     }
   },
   "Parameters": {
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostDataSource1181B975Name": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainbrancha27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableArn": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableArn": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn": {
+    "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableArn": {
       "Type": "String"
     }
   }

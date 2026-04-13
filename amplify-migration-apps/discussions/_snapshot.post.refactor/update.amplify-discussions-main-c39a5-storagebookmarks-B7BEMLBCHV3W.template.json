@@ -35,11 +35,11 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.bookmarks.SortKeyName",
+            "AttributeName": "postId",
             "AttributeType": "S"
           }
         ],
@@ -48,7 +48,7 @@
             "IndexName": "byPost",
             "KeySchema": [
               {
-                "AttributeName": "storage.bookmarks.SortKeyName",
+                "AttributeName": "postId",
                 "KeyType": "HASH"
               }
             ],
@@ -63,11 +63,11 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.bookmarks.SortKeyName",
+            "AttributeName": "postId",
             "KeyType": "RANGE"
           }
         ],
@@ -97,22 +97,22 @@
   },
   "Outputs": {
     "Name": {
-      "Value": "storage.bookmarks.Name"
+      "Value": "bookmarks-main"
     },
     "Arn": {
-      "Value": "storage.bookmarks.Arn"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main"
     },
     "StreamArn": {
-      "Value": "storage.bookmarks.StreamArn"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main/stream/2026-03-20T21:19:57.495"
     },
     "PartitionKeyName": {
-      "Value": "storage.bookmarks.PartitionKeyName"
+      "Value": "userId"
     },
     "PartitionKeyType": {
       "Value": "S"
     },
     "SortKeyName": {
-      "Value": "storage.bookmarks.SortKeyName"
+      "Value": "postId"
     },
     "SortKeyType": {
       "Value": "S"

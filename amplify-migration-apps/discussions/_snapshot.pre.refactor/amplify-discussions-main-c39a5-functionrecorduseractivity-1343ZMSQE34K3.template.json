@@ -275,7 +275,7 @@
               ],
               "Resource": {
                 "Fn::ImportValue": {
-                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
+                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:TopicTable:StreamArn"
                 }
               }
             }
@@ -294,7 +294,7 @@
         "Enabled": true,
         "EventSourceArn": {
           "Fn::ImportValue": {
-            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
+            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:TopicTable:StreamArn"
           }
         },
         "FunctionName": {
@@ -331,7 +331,7 @@
               ],
               "Resource": {
                 "Fn::ImportValue": {
-                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:b7c107d03f.GetAttPostDataSourceName:StreamArn"
+                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:PostTable:StreamArn"
                 }
               }
             }
@@ -350,7 +350,7 @@
         "Enabled": true,
         "EventSourceArn": {
           "Fn::ImportValue": {
-            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:b7c107d03f.GetAttPostDataSourceName:StreamArn"
+            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:PostTable:StreamArn"
           }
         },
         "FunctionName": {
@@ -387,7 +387,7 @@
               ],
               "Resource": {
                 "Fn::ImportValue": {
-                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:StreamArn"
+                  "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:CommentTable:StreamArn"
                 }
               }
             }
@@ -406,7 +406,7 @@
         "Enabled": true,
         "EventSourceArn": {
           "Fn::ImportValue": {
-            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:StreamArn"
+            "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:CommentTable:StreamArn"
           }
         },
         "FunctionName": {

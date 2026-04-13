@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "44f5eef0ce.GetAttTopicDataSourceName": {
+    "TopicTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -303,7 +303,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "44f5eef0ce.GetAttTopicDataSourceName",
+                    "TopicTable",
                     "Arn"
                   ]
                 },
@@ -334,10 +334,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+            "Ref": "TopicTable"
           }
         },
-        "Name": "44f5eef0ce.GetAttTopicDataSourceName",
+        "Name": "TopicTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "TopicIAMRoleD9B4C845",
@@ -501,9 +501,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+                "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -602,9 +602,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+                "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -769,9 +769,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+                "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -957,9 +957,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+                "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1109,9 +1109,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+                "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1232,7 +1232,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1278,7 +1278,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1324,7 +1324,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1334,11 +1334,11 @@
     }
   },
   "Outputs": {
-    "GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn": {
+    "GetAttTopicTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "44f5eef0ce.GetAttTopicDataSourceName",
+          "TopicTable",
           "StreamArn"
         ]
       },
@@ -1350,16 +1350,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
+              "GetAtt:TopicTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt44f5eef0ce.GetAttTopicDataSourceNameName": {
+    "GetAttTopicTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+        "Ref": "TopicTable"
       },
       "Export": {
         "Name": {
@@ -1369,7 +1369,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:44f5eef0ce.GetAttTopicDataSourceName:Name"
+              "GetAtt:TopicTable:Name"
             ]
           ]
         }
@@ -1461,9 +1461,9 @@
         ]
       }
     },
-    "transformerrootstackTopic44f5eef0ce.GetAttTopicDataSourceNameFD91FB92Ref": {
+    "transformerrootstackTopicTopicTableFD91FB92Ref": {
       "Value": {
-        "Ref": "44f5eef0ce.GetAttTopicDataSourceName"
+        "Ref": "TopicTable"
       }
     }
   }

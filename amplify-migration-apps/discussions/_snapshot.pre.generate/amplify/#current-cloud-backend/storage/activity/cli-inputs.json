@@ -6,14 +6,14 @@
     "fieldType": "string"
   },
   "sortKey": {
-    "fieldName": "storage.bookmarks.PartitionKeyName",
+    "fieldName": "userId",
     "fieldType": "string"
   },
   "gsi": [
     {
       "name": "byUserId",
       "partitionKey": {
-        "fieldName": "storage.bookmarks.PartitionKeyName",
+        "fieldName": "userId",
         "fieldType": "string"
       },
       "sortKey": {

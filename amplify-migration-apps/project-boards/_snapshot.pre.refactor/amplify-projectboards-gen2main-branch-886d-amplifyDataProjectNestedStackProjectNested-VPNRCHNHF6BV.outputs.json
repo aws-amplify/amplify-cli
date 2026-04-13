@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "GetAttProjectTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-47mmg7n7zzcmnhcdcrkmgul4xe-main/stream/2026-03-07T02:15:48.574",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "y6mc7kazlnbphitea3lx7uhvcm:GetAtt:ProjectTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttProjectTableName",
+    "OutputValue": "Project-47mmg7n7zzcmnhcdcrkmgul4xe-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "y6mc7kazlnbphitea3lx7uhvcm:GetAtt:ProjectTable:Name"
+  }
+]

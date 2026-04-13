@@ -1,7 +1,7 @@
 {
   "tableName": "bookmarks",
-  "partitionKeyName": "storage.bookmarks.PartitionKeyName",
+  "partitionKeyName": "userId",
   "partitionKeyType": "S",
-  "sortKeyName": "storage.bookmarks.SortKeyName",
+  "sortKeyName": "postId",
   "sortKeyType": "S"
 }

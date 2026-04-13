@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "b77cc5b997.UnauthRoleName"
+    "ParameterValue": "amplify-discussions-main-c39a5-unauthRole"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -53,7 +53,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "b77cc5b997.AuthRoleName"
+    "ParameterValue": "amplify-discussions-main-c39a5-authRole"
   },
   {
     "ParameterKey": "GuestAllowList",

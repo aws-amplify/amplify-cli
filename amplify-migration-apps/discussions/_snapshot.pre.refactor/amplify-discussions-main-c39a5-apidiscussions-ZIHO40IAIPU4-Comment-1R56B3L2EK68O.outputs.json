@@ -1,28 +1,28 @@
 [
   {
     "OutputKey": "GetAttCommentDataSourceName",
-    "OutputValue": "fe019c2b9e.GetAttCommentDataSourceName",
+    "OutputValue": "CommentTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:CommentDataSource:Name"
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:CommentDataSource:Name"
   },
   {
-    "OutputKey": "GetAttfe019c2b9e.GetAttCommentDataSourceNameStreamArn",
-    "OutputValue": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn",
+    "OutputKey": "GetAttCommentTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.630",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:StreamArn"
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:CommentTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackCommentCommentDataSourceA0E54655Name",
-    "OutputValue": "fe019c2b9e.GetAttCommentDataSourceName"
+    "OutputValue": "CommentTable"
   },
   {
-    "OutputKey": "transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref",
-    "OutputValue": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
+    "OutputKey": "transformerrootstackCommentCommentTable5427FDE2Ref",
+    "OutputValue": "Comment-u3jn2qbupzbyhc3h53673wdvim-main"
   },
   {
-    "OutputKey": "GetAttfe019c2b9e.GetAttCommentDataSourceNameName",
-    "OutputValue": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref",
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "Comment-u3jn2qbupzbyhc3h53673wdvim-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:Name"
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:CommentTable:Name"
   }
 ]

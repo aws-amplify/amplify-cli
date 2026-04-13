@@ -4,7 +4,7 @@
     "apiName": "discussions",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "da5e56ee3d.awsAppsyncAuthenticationType",
+      "mode": "API_KEY",
       "expirationTime": 7
     }
   }

@@ -7,7 +7,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ7MaLOztt1B7mWRGiJ8EnERZxLsvaPWeAVPXUBZ4ina06NVbuL4sialP6BaFp4z0C7hFsnANaFdW7RSe3KpjiXl3fKsQiWGWz2EMVA2UxSze6z2H5DeG7vUPAxTDOW4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storageactivity/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storageactivity/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     },
@@ -20,7 +20,7 @@
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
@@ -33,7 +33,7 @@
             "IndexName": "byUserId",
             "KeySchema": [
               {
-                "AttributeName": "storage.bookmarks.PartitionKeyName",
+                "AttributeName": "userId",
                 "KeyType": "HASH"
               },
               {
@@ -56,7 +56,7 @@
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "userId",
             "KeyType": "RANGE"
           }
         ],
@@ -347,14 +347,14 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97Arn": {
-      "Value": "40a003ac52.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97Arn"
+    "amplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97Arn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-a27e51c30a-storageactivityA346F297-6KCEOSFCBCK1-activity1E902D9C-QYW2OKZ2EU7Z"
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97StreamArn": {
-      "Value": "40a003ac52.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97StreamArn"
+    "amplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97StreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-a27e51c30a-storageactivityA346F297-6KCEOSFCBCK1-activity1E902D9C-QYW2OKZ2EU7Z/stream/2026-03-20T21:41:02.189"
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97Ref": {
-      "Value": "40a003ac52.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astorageactivity9EDFFE97Ref"
+    "amplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97Ref": {
+      "Value": "amplify-discussions-gen2main-branch-a27e51c30a-storageactivityA346F297-6KCEOSFCBCK1-activity1E902D9C-QYW2OKZ2EU7Z"
     }
   }
 }

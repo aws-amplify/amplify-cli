@@ -1,10 +1,10 @@
 [
   {
-    "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionfetchuseractivitygen2mainlambda502480EDRef",
-    "OutputValue": "5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionfetchuseractivitygen2mainlambda502480EDRef"
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30afunctionfetchuseractivitygen2mainlambda502480EDRef",
+    "OutputValue": "fetchuseractivity-gen2-main"
   },
   {
-    "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref",
-    "OutputValue": "5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref"
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref",
+    "OutputValue": "recorduseractivity-gen2-main"
   }
 ]

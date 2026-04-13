@@ -110,7 +110,7 @@
     }
   },
   "Resources": {
-    "b7c107d03f.GetAttPostDataSourceName": {
+    "PostTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -355,7 +355,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "b7c107d03f.GetAttPostDataSourceName",
+                    "PostTable",
                     "Arn"
                   ]
                 },
@@ -365,7 +365,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "b7c107d03f.GetAttPostDataSourceName",
+                          "PostTable",
                           "Arn"
                         ]
                       },
@@ -397,10 +397,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "b7c107d03f.GetAttPostDataSourceName"
+            "Ref": "PostTable"
           }
         },
-        "Name": "b7c107d03f.GetAttPostDataSourceName",
+        "Name": "PostTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "PostIAMRole83BF708F",
@@ -498,9 +498,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "b7c107d03f.GetAttPostDataSourceName"
+                "Ref": "PostTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -593,9 +593,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "b7c107d03f.GetAttPostDataSourceName"
+                "Ref": "PostTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -691,9 +691,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "b7c107d03f.GetAttPostDataSourceName"
+                "Ref": "PostTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -843,9 +843,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "b7c107d03f.GetAttPostDataSourceName"
+                "Ref": "PostTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -992,9 +992,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "b7c107d03f.GetAttPostDataSourceName"
+                "Ref": "PostTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1031,7 +1031,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1068,7 +1068,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1105,7 +1105,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1115,11 +1115,11 @@
     }
   },
   "Outputs": {
-    "GetAttb7c107d03f.GetAttPostDataSourceNameStreamArn": {
+    "GetAttPostTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "b7c107d03f.GetAttPostDataSourceName",
+          "PostTable",
           "StreamArn"
         ]
       },
@@ -1131,16 +1131,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:b7c107d03f.GetAttPostDataSourceName:StreamArn"
+              "GetAtt:PostTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttb7c107d03f.GetAttPostDataSourceNameName": {
+    "GetAttPostTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "b7c107d03f.GetAttPostDataSourceName"
+        "Ref": "PostTable"
       },
       "Export": {
         "Name": {
@@ -1150,7 +1150,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:b7c107d03f.GetAttPostDataSourceName:Name"
+              "GetAtt:PostTable:Name"
             ]
           ]
         }
@@ -1186,9 +1186,9 @@
         ]
       }
     },
-    "transformerrootstackPostb7c107d03f.GetAttPostDataSourceName34CAE87BRef": {
+    "transformerrootstackPostPostTable34CAE87BRef": {
       "Value": {
-        "Ref": "b7c107d03f.GetAttPostDataSourceName"
+        "Ref": "PostTable"
       }
     }
   }

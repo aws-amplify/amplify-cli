@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "358c55d6a3.GraphQLAPIIdOutput",
+    "OutputValue": "u3jn2qbupzbyhc3h53673wdvim",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "b77cc5b997.StackName-apidiscussions-ZIHO40IAIPU4:GraphQLApiId"
+    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "358c55d6a3.GraphQLAPIEndpointOutput",
+    "OutputValue": "https://jsm5ex363jcy5fm2reylyox4te.appsync-api.us-east-1.amazonaws.com/graphql",
     "Description": "Your GraphQL API endpoint.",
-    "ExportName": "b77cc5b997.StackName-apidiscussions-ZIHO40IAIPU4:GraphQLApiEndpoint"
+    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "b77cc5b997.StackName-apidiscussions-ZIHO40IAIPU4:GraphQLApiKey"
+    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiKey"
   }
 ]

@@ -7,11 +7,11 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.bookmarks.SortKeyName",
+            "AttributeName": "postId",
             "AttributeType": "S"
           }
         ],
@@ -20,7 +20,7 @@
             "IndexName": "byPost",
             "KeySchema": [
               {
-                "AttributeName": "storage.bookmarks.SortKeyName",
+                "AttributeName": "postId",
                 "KeyType": "HASH"
               }
             ],
@@ -35,11 +35,11 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "storage.bookmarks.PartitionKeyName",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.bookmarks.SortKeyName",
+            "AttributeName": "postId",
             "KeyType": "RANGE"
           }
         ],
@@ -56,12 +56,12 @@
             "Value": "discussions"
           },
           {
-            "Key": "amplify:da5e56ee3d.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "da5e56ee3d.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -72,7 +72,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storagebookmarks/bookmarks/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storagebookmarks/bookmarks/Resource"
       }
     }
   },

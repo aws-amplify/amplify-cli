@@ -186,7 +186,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "b77cc5b997.StackName-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
                     ]
                   }
                 ]
@@ -224,7 +224,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "b77cc5b997.StackName-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
                     ]
                   }
                 ]
@@ -240,33 +240,33 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "3641aeee95.IdentityPoolId"
+      "Value": "us-east-1:d588cc58-4459-4b1b-ac91-307079a54464"
     },
     "IdentityPoolName": {
-      "Value": "3641aeee95.IdentityPoolName"
+      "Value": "discussionsc578c16e_identitypool_c578c16e__main"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "3641aeee95.UserPoolId"
+      "Value": "us-east-1_vv2HFjwRK"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "3641aeee95.UserPoolArn"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_vv2HFjwRK"
     },
     "UserPoolName": {
-      "Value": "3641aeee95.UserPoolName"
+      "Value": "discussionsc578c16e_userpool_c578c16e"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "3641aeee95.AppClientIDWeb"
+      "Value": "7nhjrv5jepqc7kacqiknlj0siu"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "3641aeee95.AppClientID"
+      "Value": "7tbnnc27p4edfrp7m6bqqkh0gq"
     },
     "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
+      "Value": "arn:aws:iam::123456789012:role/snsc578c16ec39a5-main"
     }
   }
 }

@@ -1,7 +1,7 @@
 [
   {
-    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopic44f5eef0ce.GetAttTopicDataSourceNameFD91FB92Ref",
-    "ParameterValue": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref",
+    "ParameterValue": "Topic-u3jn2qbupzbyhc3h53673wdvim-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -12,31 +12,31 @@
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostb7c107d03f.GetAttPostDataSourceName34CAE87BRef",
-    "ParameterValue": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName"
+    "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef",
+    "ParameterValue": "Post-u3jn2qbupzbyhc3h53673wdvim-main"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref",
-    "ParameterValue": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
+    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
+    "ParameterValue": "Comment-u3jn2qbupzbyhc3h53673wdvim-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "358c55d6a3.GraphQLAPIIdOutput"
+    "ParameterValue": "u3jn2qbupzbyhc3h53673wdvim"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",
-    "ParameterValue": "fe019c2b9e.GetAttCommentDataSourceName"
+    "ParameterValue": "CommentTable"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "b77cc5b997.DeploymentBucketName"
+    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostDataSource6998E105Name",
-    "ParameterValue": "b7c107d03f.GetAttPostDataSourceName"
+    "ParameterValue": "PostTable"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicDataSource63D2F34BName",
-    "ParameterValue": "44f5eef0ce.GetAttTopicDataSourceName"
+    "ParameterValue": "TopicTable"
   }
 ]

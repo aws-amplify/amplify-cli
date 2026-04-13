@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId"
+    "ParameterValue": "stocrj6wmnfwdc4rdkdv7z5t2u"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId"
+    "ParameterValue": "e4yi7ioceze5riv7y2vaozdoqu"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -21,15 +21,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "358c55d6a3.GraphQLAPIIdOutput"
+    "ParameterValue": "u3jn2qbupzbyhc3h53673wdvim"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId"
+    "ParameterValue": "gsc7uhamufgixefq3v5ucyfwua"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId"
+    "ParameterValue": "gb77pqdsqvfxlf43gz2ay4ll7a"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -37,7 +37,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId"
+    "ParameterValue": "27xllzlwpve67blxdyydbpfvzm"
   },
   {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
@@ -45,11 +45,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId"
+    "ParameterValue": "xpl3pgeq4fhwji3vgpzje5i7ky"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId",
-    "ParameterValue": "44f5eef0ce.transformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId"
+    "ParameterValue": "k6fcuyzzyja75po4s3jdi2odwe"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -57,7 +57,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "b77cc5b997.DeploymentBucketName"
+    "ParameterValue": "amplify-discussions-main-c39a5-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
