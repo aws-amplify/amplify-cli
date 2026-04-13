@@ -114,19 +114,28 @@ backend.removeuserfromgroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
-const REFACTORED_RESOURCE_TYPES = [
-  'AWS::Cognito::UserPool',
-  'AWS::Cognito::IdentityPool',
-  'AWS::Cognito::UserPoolClient',
-  'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolDomain',
-  'AWS::Cognito::UserPoolGroup',
-  'AWS::S3::Bucket',
-];
-for (const cfnResource of backend.stack.node
+for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter((n) => CfnResource.isCfnResource(n))) {
-  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
-    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+  if (
+    [
+      'AWS::Cognito::UserPool',
+      'AWS::Cognito::IdentityPool',
+      'AWS::Cognito::UserPoolClient',
+      'AWS::Cognito::IdentityPoolRoleAttachment',
+      'AWS::Cognito::UserPoolDomain',
+      'AWS::Cognito::UserPoolGroup',
+    ].includes(cfnResource.cfnResourceType)
+  ) {
+    cfnResource.addOverride('DeletionPolicy', 'Retain');
+    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
+  }
+}
+for (const cfnResource of backend.storage.stack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
+    cfnResource.addOverride('DeletionPolicy', 'Retain');
+    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
   }
 }

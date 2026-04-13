@@ -84,8 +84,8 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
-    const sourceDeletionPolicyOps = this.buildDeletionPolicyValidation(sourceStackId, sourceResources);
-    const targetDeletionPolicyOps = this.buildDeletionPolicyValidation(destStackId, targetResources);
+    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, sourceResources);
+    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, targetResources);
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
@@ -309,7 +309,7 @@ export abstract class CategoryRefactorer implements Planner {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
   }
 
-  private buildDeletionPolicyValidation(stackId: string, resources: Map<string, CFNResource>): AmplifyMigrationOperation {
+  private buildRemovalPolicyValidation(stackId: string, resources: Map<string, CFNResource>): AmplifyMigrationOperation {
     const stackName = extractStackNameFromId(stackId);
     let valid = true;
     const table = new CLITable({

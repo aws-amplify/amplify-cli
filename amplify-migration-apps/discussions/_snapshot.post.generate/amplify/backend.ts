@@ -38,6 +38,14 @@ activity.addGlobalSecondaryIndex({
   readCapacity: 5,
   writeCapacity: 5,
 });
+for (const cfnResource of storageActivityStack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (cfnResource.cfnResourceType === 'AWS::DynamoDB::Table') {
+    cfnResource.addOverride('DeletionPolicy', 'Retain');
+    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
+  }
+}
 const storageBookmarksStack = backend.createStack('storagebookmarks');
 const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
   partitionKey: { name: 'userId', type: AttributeType.STRING },
@@ -54,6 +62,14 @@ bookmarks.addGlobalSecondaryIndex({
   readCapacity: 5,
   writeCapacity: 5,
 });
+for (const cfnResource of storageBookmarksStack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (cfnResource.cfnResourceType === 'AWS::DynamoDB::Table') {
+    cfnResource.addOverride('DeletionPolicy', 'Retain');
+    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
+  }
+}
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['phone_number'];
 cfnUserPool.policies = {
@@ -156,30 +172,27 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const REFACTORED_RESOURCE_TYPES = [
-  'AWS::Cognito::UserPool',
-  'AWS::Cognito::IdentityPool',
-  'AWS::Cognito::UserPoolClient',
-  'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolDomain',
-  'AWS::Cognito::UserPoolGroup',
-  'AWS::DynamoDB::Table',
-  'AWS::S3::Bucket',
-];
-
-for (const cfnResource of backend.storage.stack.node
+for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter((n) => CfnResource.isCfnResource(n))) {
-  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
+  if (
+    [
+      'AWS::Cognito::UserPool',
+      'AWS::Cognito::IdentityPool',
+      'AWS::Cognito::UserPoolClient',
+      'AWS::Cognito::IdentityPoolRoleAttachment',
+      'AWS::Cognito::UserPoolDomain',
+      'AWS::Cognito::UserPoolGroup',
+    ].includes(cfnResource.cfnResourceType)
+  ) {
     cfnResource.addOverride('DeletionPolicy', 'Retain');
     cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
   }
 }
-
-for (const cfnResource of backend.auth.stack.node
+for (const cfnResource of backend.storage.stack.node
   .findAll()
   .filter((n) => CfnResource.isCfnResource(n))) {
-  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
+  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
     cfnResource.addOverride('DeletionPolicy', 'Retain');
     cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
   }

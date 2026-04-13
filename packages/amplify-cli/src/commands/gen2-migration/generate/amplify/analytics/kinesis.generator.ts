@@ -105,7 +105,6 @@ export class AnalyticsKinesisGenerator implements Planner {
               ),
             ),
           );
-          this.backendGenerator.addRefactoredResourceTypes(['AWS::Kinesis::Stream']);
         },
       },
     ];
