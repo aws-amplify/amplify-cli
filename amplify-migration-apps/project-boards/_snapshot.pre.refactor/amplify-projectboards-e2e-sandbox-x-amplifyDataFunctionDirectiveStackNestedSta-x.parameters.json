@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxe78a00d38aauthNestedStackauthNestedStackResource6B050D55Outputsamplifyprojectboardse2esandboxe78a00d38aauthamplifyAuthunauthenticatedUserRole63E0EA1BRef",
-    "ParameterValue": "amplify-projectboa2604122-amplifyAuthunauthenticate-t3bbylkpRqWh"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPI68531CF2ApiId",
+    "ParameterValue": "xzton3od6rephegoctq5bosqui"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxe78a00d38adataamplifyDataGraphQLAPI852CE36EApiId",
-    "ParameterValue": "cwwf2mmgcjhkdolfof6ucww7vu"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthauthenticatedUserRole0858348DRef",
+    "ParameterValue": "amplify-projectboa2604122-amplifyAuthauthenticatedU-Qgb0a7UiS0ux"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxe78a00d38adataamplifyDataGraphQLAPINONEDSC3FF237AName",
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthunauthenticatedUserRole59211B42Ref",
+    "ParameterValue": "amplify-projectboa2604122-amplifyAuthunauthenticate-gwju91IOD1wV"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPINONEDSD69F5B04Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxe78a00d38aauthNestedStackauthNestedStackResource6B050D55Outputsamplifyprojectboardse2esandboxe78a00d38aauthamplifyAuthauthenticatedUserRole8E600816Ref",
-    "ParameterValue": "amplify-projectboa2604122-amplifyAuthauthenticatedU-VR1jdTdSUzMr"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxe78a00d38aauthNestedStackauthNestedStackResource6B050D55Outputsamplifyprojectboardse2esandboxe78a00d38aauthamplifyAuthIdentityPool22D87C8DRef",
-    "ParameterValue": "us-east-1:68619146-383a-4913-891d-c544d6625c2e"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthIdentityPoolC09D0D9BRef",
+    "ParameterValue": "us-east-1:795217a2-e83f-4303-927d-8b9e437a56f2"
   }
 ]

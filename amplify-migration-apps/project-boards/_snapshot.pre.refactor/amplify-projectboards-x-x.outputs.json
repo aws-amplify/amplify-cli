@@ -35,7 +35,7 @@
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/3ad91d30-36d4-11f1-a02f-0e62e8499c29",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/8ff14440-36da-11f1-bde6-0ea087122545",
     "Description": "CloudFormation provider root stack name",
     "ExportName": "amplify-projectboards-x-x-StackId"
   }

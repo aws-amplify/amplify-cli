@@ -1,48 +1,48 @@
 [
   {
     "OutputKey": "transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",
-    "OutputValue": "5wkrvaojxvhp3mgxlxohssrceq"
+    "OutputValue": "exzqqenqofd4tb3c6etusuahjq"
   },
   {
     "OutputKey": "transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId",
-    "OutputValue": "tsphcwsarzavfgqulb2lquse5q"
+    "OutputValue": "m6rdxuk2b5gdvasvj5tze25gcu"
   },
   {
     "OutputKey": "transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId",
-    "OutputValue": "snfv6r6vfrh4zl225xwmh3ipu4"
+    "OutputValue": "ywwc554gjfed5chctsmb7pssym"
   },
   {
     "OutputKey": "transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId",
-    "OutputValue": "gdvseudxifhm3pouo4jid4nezi"
+    "OutputValue": "emz4sgzhxvfbthdavocbrwocdu"
   },
   {
     "OutputKey": "GetAttProjectDataSourceName",
     "OutputValue": "ProjectTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "xduk3bbnyjdqnhkahvhkluobdy:GetAtt:ProjectDataSource:Name"
+    "ExportName": "2te5q735fza7lme5dqdzmjsfzu:GetAtt:ProjectDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
-    "OutputValue": "eslr2h3ecvg3tldzzrnbhbhz2q"
+    "OutputValue": "7cec3gsyubeuplb3dppj6anovm"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId",
-    "OutputValue": "dr67xe2s65b6topf2mdvda36hu"
+    "OutputValue": "x2jrt632wjfzlc6edk2pvfdbxe"
   },
   {
     "OutputKey": "transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId",
-    "OutputValue": "pl26zwhemjanvjjjvxdbtah4uq"
+    "OutputValue": "t6bo6xiqv5aaffjny5ddchp6si"
   },
   {
     "OutputKey": "GetAttProjectTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-xduk3bbnyjdqnhkahvhkluobdy-x/stream/2026-04-13T01:03:07.923",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-2te5q735fza7lme5dqdzmjsfzu-x/stream/2026-04-13T01:48:31.727",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xduk3bbnyjdqnhkahvhkluobdy:GetAtt:ProjectTable:StreamArn"
+    "ExportName": "2te5q735fza7lme5dqdzmjsfzu:GetAtt:ProjectTable:StreamArn"
   },
   {
     "OutputKey": "GetAttProjectTableName",
-    "OutputValue": "Project-xduk3bbnyjdqnhkahvhkluobdy-x",
+    "OutputValue": "Project-2te5q735fza7lme5dqdzmjsfzu-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xduk3bbnyjdqnhkahvhkluobdy:GetAtt:ProjectTable:Name"
+    "ExportName": "2te5q735fza7lme5dqdzmjsfzu:GetAtt:ProjectTable:Name"
   }
 ]
