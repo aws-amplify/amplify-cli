@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "da2-fakeapikey00000000000000",
+    "OutputValue": "f4028f14c0.GraphQLAPIKeyOutput",
     "Description": "Your GraphQL API ID.",
     "ExportName": "amplify-projectboards-x-x-apiprojectboards-x:GraphQLApiKey"
   }
