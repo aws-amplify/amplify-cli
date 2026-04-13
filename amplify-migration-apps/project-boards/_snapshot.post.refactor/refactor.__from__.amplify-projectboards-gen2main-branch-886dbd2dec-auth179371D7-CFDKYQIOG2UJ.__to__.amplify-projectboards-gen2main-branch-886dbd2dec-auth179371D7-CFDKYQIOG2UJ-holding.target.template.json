@@ -47,8 +47,8 @@
         },
         "UserPoolTags": {
           "amplify:app-id": "projectboards",
-          "amplify:branch-name": "gen2-main",
-          "amplify:deployment-type": "branch",
+          "amplify:dc72c1d108.deploymentType-name": "gen2-main",
+          "amplify:deployment-type": "dc72c1d108.deploymentType",
           "amplify:friendly-name": "amplifyAuth",
           "created-by": "amplify"
         },
@@ -68,7 +68,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -86,10 +86,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_pXlpWF7QY"
+        "UserPoolId": "dc72c1d108.userPoolId"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -107,7 +107,7 @@
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "https://example.com"
+          "dc72c1d108.oauthRedirectSignIn"
         ],
         "ExplicitAuthFlows": [
           "ALLOW_CUSTOM_AUTH",
@@ -118,10 +118,10 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_pXlpWF7QY"
+        "UserPoolId": "dc72c1d108.userPoolId"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -130,7 +130,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "oqgm3faeod0cr1b4v63iv4a7a",
+            "ClientId": "dc72c1d108.webClientId",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -140,7 +140,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_pXlpWF7QY"
+                  "dc72c1d108.userPoolId"
                 ]
               ]
             }
@@ -152,12 +152,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:branch-name",
+            "Key": "amplify:dc72c1d108.deploymentType-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "branch"
+            "Value": "dc72c1d108.deploymentType"
           },
           {
             "Key": "amplify:friendly-name",
@@ -171,13 +171,13 @@
         "SupportedLoginProviders": {}
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba",
+        "IdentityPoolId": "dc72c1d108.identityPoolId",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -190,9 +190,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_pXlpWF7QY",
+                  "dc72c1d108.userPoolId",
                   ":",
-                  "oqgm3faeod0cr1b4v63iv4a7a"
+                  "dc72c1d108.webClientId"
                 ]
               ]
             },
@@ -200,12 +200,12 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-ge-amplifyAuthunauthenticate-GHLvLgqZHYnT",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
+          "unauthenticated": "arn:aws:iam::123456789012:role/51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
+          "authenticated": "arn:aws:iam::123456789012:role/51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef"
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     }
   },

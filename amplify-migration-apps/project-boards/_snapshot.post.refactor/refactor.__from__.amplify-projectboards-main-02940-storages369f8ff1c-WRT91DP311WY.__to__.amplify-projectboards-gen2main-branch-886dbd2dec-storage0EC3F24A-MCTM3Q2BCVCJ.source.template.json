@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "projectboards34b9a7f3c2ca489293910116c994688b02940-main"
+      "Value": "2ca2b28520.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -199,7 +199,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                      "2ca2b28520.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -210,7 +210,7 @@
         },
         "PolicyName": "Public_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-authRole"
+          "6df4025c53.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -235,7 +235,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                      "2ca2b28520.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -246,7 +246,7 @@
         },
         "PolicyName": "Protected_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-authRole"
+          "6df4025c53.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -271,7 +271,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                      "2ca2b28520.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -282,7 +282,7 @@
         },
         "PolicyName": "Private_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-authRole"
+          "6df4025c53.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -307,7 +307,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                      "2ca2b28520.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -318,7 +318,7 @@
         },
         "PolicyName": "Uploads_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-authRole"
+          "6df4025c53.AuthRoleName"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -343,7 +343,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                      "2ca2b28520.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -354,7 +354,7 @@
         },
         "PolicyName": "Public_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-unauthRole"
+          "6df4025c53.UnauthRoleName"
         ]
       },
       "Condition": "CreateGuestPublic"
@@ -372,7 +372,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                    "2ca2b28520.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -398,7 +398,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "projectboards34b9a7f3c2ca489293910116c994688b02940-main"
+                    "2ca2b28520.BucketName"
                   ]
                 ]
               }
@@ -408,7 +408,7 @@
         },
         "PolicyName": "read_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-authRole"
+          "6df4025c53.AuthRoleName"
         ]
       },
       "Condition": "AuthReadAndList"
@@ -426,7 +426,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "projectboards34b9a7f3c2ca489293910116c994688b02940-main",
+                    "2ca2b28520.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -450,7 +450,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "projectboards34b9a7f3c2ca489293910116c994688b02940-main"
+                    "2ca2b28520.BucketName"
                   ]
                 ]
               }
@@ -460,7 +460,7 @@
         },
         "PolicyName": "read_policy_69f8ff1c",
         "Roles": [
-          "amplify-projectboards-main-02940-unauthRole"
+          "6df4025c53.UnauthRoleName"
         ]
       },
       "Condition": "GuestReadAndList"
