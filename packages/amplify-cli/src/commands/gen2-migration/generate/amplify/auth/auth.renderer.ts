@@ -262,12 +262,12 @@ export class AuthRenderer {
   private static deriveExternalProviders(details?: readonly IdentityProviderType[]): {
     readonly oidcProviders: readonly OidcProviderConfig[];
     readonly samlProvider: SamlProviderConfig | undefined;
-    readonly attributeMappings: Readonly<Record<string, Record<string, string>>>;
+    readonly attributeMappings: Readonly<Record<string, { standard: Record<string, string>; custom: Record<string, string> }>>;
     readonly providerScopes: Readonly<Record<string, readonly string[]>>;
   } {
     const oidcProviders: OidcProviderConfig[] = [];
     let samlProvider: SamlProviderConfig | undefined;
-    const attributeMappings: Record<string, Record<string, string>> = {};
+    const attributeMappings: Record<string, { standard: Record<string, string>; custom: Record<string, string> }> = {};
     const providerScopes: Record<string, string[]> = {};
 
     if (!details) {
@@ -283,21 +283,23 @@ export class AuthRenderer {
           authorize_url && token_url && attributes_url && jwks_uri
             ? { authorization: authorize_url, token: token_url, userInfo: attributes_url, jwksUri: jwks_uri }
             : undefined;
+        const oidcMapping = AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined;
         oidcProviders.push({
           issuerUrl: oidc_issuer,
           name: ProviderName,
           endpoints,
-          attributeMapping: AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined,
+          attributeMapping: oidcMapping ? { ...oidcMapping.standard, ...oidcMapping.custom } : undefined,
         });
       } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
         const { metadataURL, metadataContent } = ProviderDetails;
+        const samlMapping = AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined;
         samlProvider = {
           metadata: {
             metadataContent: metadataURL || metadataContent,
             metadataType: metadataURL ? ('URL' as const) : ('FILE' as const),
           },
           name: ProviderName,
-          attributeMapping: AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined,
+          attributeMapping: samlMapping ? { ...samlMapping.standard, ...samlMapping.custom } : undefined,
         };
       } else {
         if (AttributeMapping) {
@@ -311,9 +313,7 @@ export class AuthRenderer {
         if (ProviderDetails) {
           const scopes = AuthRenderer.deriveProviderSpecificScopes(ProviderDetails);
           if (scopes.length > 0) {
-            const mapped = scopes
-              .map((scope) => (scope === 'public_profile' ? 'profile' : scope))
-              .filter((scope) => VALID_SCOPES.includes(scope));
+            const mapped = scopes.filter((scope) => scope.length > 0);
             if (mapped.length > 0 && ProviderType) {
               providerScopes[ProviderType] = mapped;
             }
@@ -445,7 +445,7 @@ export class AuthRenderer {
    * Extracts provider-specific scopes from provider details.
    */
   private static deriveProviderSpecificScopes(providerDetails: Record<string, string>): string[] {
-    const scopeFields = ['authorized_scopes', 'scope', 'scopes'];
+    const scopeFields = ['authorize_scopes', 'authorized_scopes', 'scope', 'scopes'];
     for (const field of scopeFields) {
       if (providerDetails[field]) {
         return providerDetails[field].split(/[\s,]+/).filter((scope) => scope.length > 0);
@@ -457,12 +457,22 @@ export class AuthRenderer {
   /**
    * Filters attribute mappings to only known standard attributes.
    */
-  private static filterAttributeMapping(attributeMapping: Record<string, string>): Record<string, string> {
-    return Object.fromEntries(
-      Object.entries(attributeMapping)
-        .filter(([key]) => Object.keys(MAPPED_USER_ATTRIBUTE_NAME).includes(key))
-        .map(([key, value]) => [MAPPED_USER_ATTRIBUTE_NAME[key], value]),
-    );
+  private static filterAttributeMapping(attributeMapping: Record<string, string>): {
+    standard: Record<string, string>;
+    custom: Record<string, string>;
+  } {
+    const standard: Record<string, string> = {};
+    const custom: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(attributeMapping)) {
+      if (key in MAPPED_USER_ATTRIBUTE_NAME) {
+        standard[MAPPED_USER_ATTRIBUTE_NAME[key]] = value;
+      } else {
+        custom[key] = value;
+      }
+    }
+
+    return { standard, custom };
   }
 
   // ── AST rendering helpers ────────────────────────────────────────
@@ -653,7 +663,7 @@ export class AuthRenderer {
     externalProviders: {
       readonly oidcProviders: readonly OidcProviderConfig[];
       readonly samlProvider: SamlProviderConfig | undefined;
-      readonly attributeMappings: Readonly<Record<string, Record<string, string>>>;
+      readonly attributeMappings: Readonly<Record<string, { standard: Record<string, string>; custom: Record<string, string> }>>;
       readonly providerScopes: Readonly<Record<string, readonly string[]>>;
     },
     callbackUrls?: readonly string[],
@@ -844,7 +854,7 @@ export class AuthRenderer {
 
   private static createProviderConfig(
     config: Record<string, string>,
-    attributeMapping: Record<string, string> | undefined,
+    attributeMapping: { standard: Record<string, string>; custom: Record<string, string> } | undefined,
   ): ts.ObjectLiteralElementLike[] {
     const properties: ts.ObjectLiteralElementLike[] = [];
 
@@ -870,9 +880,22 @@ export class AuthRenderer {
     if (attributeMapping) {
       const mappingProperties: ts.ObjectLiteralElementLike[] = [];
 
-      Object.entries(attributeMapping).forEach(([key, value]) =>
+      Object.entries(attributeMapping.standard).forEach(([key, value]) =>
         mappingProperties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))),
       );
+
+      if (Object.keys(attributeMapping.custom).length > 0) {
+        const customProperties: ts.ObjectLiteralElementLike[] = [];
+        Object.entries(attributeMapping.custom).forEach(([key, value]) =>
+          customProperties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))),
+        );
+        mappingProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('custom'),
+            factory.createObjectLiteralExpression(customProperties, true),
+          ),
+        );
+      }
 
       properties.push(
         factory.createPropertyAssignment(
@@ -888,7 +911,7 @@ export class AuthRenderer {
   private static createProviderPropertyAssignment(
     name: string,
     config: Record<string, string>,
-    attributeMapping: Record<string, string> | undefined,
+    attributeMapping: { standard: Record<string, string>; custom: Record<string, string> } | undefined,
   ): PropertyAssignment {
     return factory.createPropertyAssignment(
       factory.createIdentifier(name),
