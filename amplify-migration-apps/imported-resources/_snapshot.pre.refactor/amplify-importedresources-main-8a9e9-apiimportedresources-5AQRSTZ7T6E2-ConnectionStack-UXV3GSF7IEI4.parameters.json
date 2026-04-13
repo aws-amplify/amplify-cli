@@ -9,18 +9,18 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "fe17e54548.GraphQLAPIIdOutput"
+    "ParameterValue": "api.importedresources.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
     "ParameterValue": "8d0d0cbe70.DeploymentBucketName"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameC67E79C2Ref",
-    "ParameterValue": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName"
+    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo01f772aca2.GetAttTodoDataSourceNameC67E79C2Ref",
+    "ParameterValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName",
-    "ParameterValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName"
+    "ParameterValue": "01f772aca2.GetAttTodoDataSourceName"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn",
-    "ParameterValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn"
+    "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn",
+    "ParameterValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn"
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref",
@@ -9,19 +9,19 @@
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
-    "ParameterValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+    "ParameterValue": "2a2fe43672.GetAttBoardDataSourceName"
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName2DB74480TableArn",
-    "ParameterValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName2DB74480TableArn"
+    "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem1230b2630f.GetAttMoodItemDataSourceName2DB74480TableArn",
+    "ParameterValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem1230b2630f.GetAttMoodItemDataSourceName2DB74480TableArn"
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef",
-    "ParameterValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+    "ParameterValue": "383edf5091.identityPoolId"
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef",
@@ -29,10 +29,10 @@
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId",
-    "ParameterValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+    "ParameterValue": "383edf5091.awsAppsyncApiId"
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName",
-    "ParameterValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName"
+    "ParameterValue": "1230b2630f.GetAttMoodItemDataSourceName"
   }
 ]

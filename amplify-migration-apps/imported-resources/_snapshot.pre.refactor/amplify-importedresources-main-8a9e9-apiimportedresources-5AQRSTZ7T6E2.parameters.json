@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "c643a9b272.userPoolId"
+    "ParameterValue": "auth.importedresources2c7c1c40.UserPoolId"
   }
 ]

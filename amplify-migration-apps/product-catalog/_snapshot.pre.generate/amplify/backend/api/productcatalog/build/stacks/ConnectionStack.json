@@ -109,7 +109,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName5427FDE2Ref"
+                "Ref": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
               {
@@ -127,7 +127,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"2a52e89b9c.Name\",\"65e5289b51.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -152,7 +152,7 @@
     "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name": {
       "Type": "String"
     },
-    "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName5427FDE2Ref": {
+    "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref": {
       "Type": "String"
     },
     "referencetotransformerrootstackauthRoleNameFB872D50Ref": {

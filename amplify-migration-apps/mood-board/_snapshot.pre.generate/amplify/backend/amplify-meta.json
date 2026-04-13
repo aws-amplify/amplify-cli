@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "UserPoolId": "5b400a3a3b.UserPoolId",
-        "AppClientIDWeb": "5b400a3a3b.AppClientIDWeb",
-        "AppClientID": "5b400a3a3b.AppClientID",
-        "IdentityPoolId": "5b400a3a3b.IdentityPoolId",
-        "UserPoolArn": "5b400a3a3b.UserPoolArn",
-        "IdentityPoolName": "5b400a3a3b.IdentityPoolName",
-        "UserPoolName": "5b400a3a3b.UserPoolName"
+        "UserPoolId": "auth.moodboard759ae00a.UserPoolId",
+        "AppClientIDWeb": "auth.moodboard759ae00a.AppClientIDWeb",
+        "AppClientID": "auth.moodboard759ae00a.AppClientID",
+        "IdentityPoolId": "auth.moodboard759ae00a.IdentityPoolId",
+        "UserPoolArn": "auth.moodboard759ae00a.UserPoolArn",
+        "IdentityPoolName": "auth.moodboard759ae00a.IdentityPoolName",
+        "UserPoolName": "auth.moodboard759ae00a.UserPoolName"
       },
       "lastPushDirHash": "YoAgoR9zujggRkSUxqGO4UbI+Og="
     }
@@ -87,9 +87,9 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "5494e94a79.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "5494e94a79.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "api.moodboard.GraphQLAPIKeyOutput"
+        "GraphQLAPIIdOutput": "api.moodboard.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.moodboard.GraphQLAPIEndpointOutput",
+        "GraphQLAPIKeyOutput": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/1133a3293d.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
@@ -110,7 +110,7 @@
         "logicalId": "storagemoodboardStorage"
       },
       "output": {
-        "BucketName": "8a5916c5d3.BucketName",
+        "BucketName": "storage.moodboardStorage.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "z3bRVMUaOPcCXFeBaOqmzI2Vp0M="
@@ -135,11 +135,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "LambdaExecutionRoleArn": "f29a544073.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.moodboardGetRandomEmoji.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "f29a544073.Arn",
-        "Name": "f29a544073.Name",
-        "LambdaExecutionRole": "f29a544073.LambdaExecutionRole"
+        "Arn": "function.moodboardGetRandomEmoji.Arn",
+        "Name": "function.moodboardGetRandomEmoji.Name",
+        "LambdaExecutionRole": "function.moodboardGetRandomEmoji.LambdaExecutionRole"
       },
       "lastPushDirHash": "K/RndAAIl0V/ON0s1svTQIR0HvE="
     },
@@ -170,11 +170,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "LambdaExecutionRoleArn": "785b18b7e5.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.moodboardKinesisReader.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "785b18b7e5.Arn",
-        "Name": "785b18b7e5.Name",
-        "LambdaExecutionRole": "785b18b7e5.LambdaExecutionRole"
+        "Arn": "function.moodboardKinesisReader.Arn",
+        "Name": "function.moodboardKinesisReader.Name",
+        "LambdaExecutionRole": "function.moodboardKinesisReader.LambdaExecutionRole"
       },
       "lastPushDirHash": "Hm1fZAAyF9uAjfeygeDAxRhFnjI="
     }
@@ -189,9 +189,9 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:29.513Z",
       "output": {
-        "kinesisStreamId": "7b219a8449.kinesisStreamId",
+        "kinesisStreamId": "analytics.moodboardKinesis.kinesisStreamId",
         "kinesisStreamShardCount": "1",
-        "kinesisStreamArn": "7b219a8449.kinesisStreamArn"
+        "kinesisStreamArn": "analytics.moodboardKinesis.kinesisStreamArn"
       },
       "lastPushDirHash": "IxnZjkEVCO8rMzaALT+khby+HWU="
     }

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRoleArn"
+    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.NameArn"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.Arn"
+    "OutputValue": "d8066ec12f.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole"
+    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole"
+    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
   }
 ]

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storageactivityName",
-    "ParameterValue": "293f068c38.Name"
+    "ParameterValue": "storage.activity.Name"
   },
   {
     "ParameterKey": "s3Key",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "293f068c38.StreamArn"
+    "ParameterValue": "storage.activity.StreamArn"
   },
   {
     "ParameterKey": "env",
@@ -25,6 +25,6 @@
   },
   {
     "ParameterKey": "storageactivityArn",
-    "ParameterValue": "293f068c38.Arn"
+    "ParameterValue": "storage.activity.Arn"
   }
 ]

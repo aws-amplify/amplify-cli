@@ -86,7 +86,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef"
+        "UserPoolId": "c0d444ea7b.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
@@ -118,7 +118,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef"
+        "UserPoolId": "c0d444ea7b.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-c0d444ea7b.deploymentType-8e0f260810/auth/amplifyAuth/UserPoolAppClient/Resource"
@@ -130,7 +130,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref",
+            "ClientId": "c0d444ea7b.webClientId",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -140,7 +140,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef"
+                  "c0d444ea7b.userPoolId"
                 ]
               ]
             }
@@ -177,7 +177,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef",
+        "IdentityPoolId": "c0d444ea7b.identityPoolId",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -190,9 +190,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef",
+                  "c0d444ea7b.userPoolId",
                   ":",
-                  "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref"
+                  "c0d444ea7b.webClientId"
                 ]
               ]
             },

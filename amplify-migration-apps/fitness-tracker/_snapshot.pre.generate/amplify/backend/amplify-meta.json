@@ -36,7 +36,7 @@
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "AdminGroupRole": "e412d83835.AdminGroupRole"
+        "AdminGroupRole": "auth.userPoolGroups.AdminGroupRole"
       },
       "lastPushDirHash": "5G4uAlMxN8rsFD1jyeLTya9ahFM="
     },
@@ -79,13 +79,13 @@
       },
       "lastPushTimeStamp": "2026-03-24T03:10:58.631Z",
       "output": {
-        "UserPoolId": "ea8f06a449.UserPoolId",
-        "AppClientIDWeb": "ea8f06a449.AppClientIDWeb",
-        "AppClientID": "ea8f06a449.AppClientID",
-        "IdentityPoolId": "ea8f06a449.IdentityPoolId",
-        "UserPoolArn": "ea8f06a449.UserPoolArn",
-        "IdentityPoolName": "ea8f06a449.IdentityPoolName",
-        "UserPoolName": "ea8f06a449.UserPoolName"
+        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId",
+        "AppClientIDWeb": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb",
+        "AppClientID": "auth.fitnesstracker33f5545533f55455.AppClientID",
+        "IdentityPoolId": "auth.fitnesstracker33f5545533f55455.IdentityPoolId",
+        "UserPoolArn": "auth.fitnesstracker33f5545533f55455.UserPoolArn",
+        "IdentityPoolName": "auth.fitnesstracker33f5545533f55455.IdentityPoolName",
+        "UserPoolName": "auth.fitnesstracker33f5545533f55455.UserPoolName"
       },
       "lastPushDirHash": "0UqXAz+SYrchlHkWJtyjmhwNAyw="
     }
@@ -109,11 +109,11 @@
       },
       "lastPushTimeStamp": "2026-03-24T03:10:58.631Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.fitnesstracker33f5545533f55455PreSignup.NameArn",
+        "LambdaExecutionRoleArn": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "314e6b42b0.Arn",
-        "Name": "function.fitnesstracker33f5545533f55455PreSignup.Name",
-        "LambdaExecutionRole": "function.fitnesstracker33f5545533f55455PreSignup.Name"
+        "Arn": "function.fitnesstracker33f5545533f55455PreSignup.Arn",
+        "Name": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRole",
+        "LambdaExecutionRole": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRole"
       },
       "lastPushDirHash": "kHZgvjW478Vk1rWRqWN9hZbma+U="
     },
@@ -144,11 +144,11 @@
       },
       "lastPushTimeStamp": "2026-03-24T03:10:58.631Z",
       "output": {
-        "LambdaExecutionRoleArn": "e36d705715.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.lognutrition.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "e36d705715.Arn",
-        "Name": "e36d705715.Name",
-        "LambdaExecutionRole": "e36d705715.LambdaExecutionRole"
+        "Arn": "function.lognutrition.Arn",
+        "Name": "function.lognutrition.Name",
+        "LambdaExecutionRole": "function.lognutrition.LambdaExecutionRole"
       },
       "lastPushDirHash": "KAgg7Tg7xQWrkPA+Y7AX2th1kaI="
     },
@@ -179,11 +179,11 @@
       },
       "lastPushTimeStamp": "2026-03-24T03:10:58.631Z",
       "output": {
-        "LambdaExecutionRoleArn": "82a4635bb2.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.admin.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "82a4635bb2.Arn",
-        "Name": "82a4635bb2.Name",
-        "LambdaExecutionRole": "82a4635bb2.LambdaExecutionRole"
+        "Arn": "function.admin.Arn",
+        "Name": "function.admin.Name",
+        "LambdaExecutionRole": "function.admin.LambdaExecutionRole"
       },
       "lastPushDirHash": "20iOEIOvyMwayeWUC08s9NsJkTA="
     }
@@ -220,9 +220,9 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "fe37f7bbef.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "fe37f7bbef.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "api.fitnesstracker.GraphQLAPIKeyOutput"
+        "GraphQLAPIIdOutput": "api.fitnesstracker.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.fitnesstracker.GraphQLAPIEndpointOutput",
+        "GraphQLAPIKeyOutput": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIDefaultApiKey7DAA10FCApiKey"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/e6829a95b8.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
@@ -266,7 +266,7 @@
       "output": {
         "ApiName": "api.5c8596b905.ApiName.ApiName",
         "RootUrl": "api.api.5c8596b905.ApiName.ApiName.RootUrl",
-        "ApiId": "api.5c8596b905.ApiName.ApiId"
+        "ApiId": "5c8596b905.ApiId"
       },
       "lastPushDirHash": "5JwuGoxSHfV3nT5/dIukaklIOKI="
     },

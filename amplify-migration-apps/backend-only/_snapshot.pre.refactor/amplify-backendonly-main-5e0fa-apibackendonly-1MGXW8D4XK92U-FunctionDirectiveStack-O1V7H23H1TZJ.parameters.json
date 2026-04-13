@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "994414bf7a.GraphQLAPIIdOutput"
+    "ParameterValue": "api.backendonly.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",

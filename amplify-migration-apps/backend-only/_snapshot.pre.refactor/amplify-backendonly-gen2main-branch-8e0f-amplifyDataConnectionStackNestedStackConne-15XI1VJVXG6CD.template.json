@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn"
+                                "Ref": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo273e28bfb9.GetAttTodoDataSourceName43ECE720TableArn"
                               }
                             ]
                           }
@@ -424,7 +424,7 @@
     "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn": {
+    "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo273e28bfb9.GetAttTodoDataSourceName43ECE720TableArn": {
       "Type": "String"
     },
     "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef": {

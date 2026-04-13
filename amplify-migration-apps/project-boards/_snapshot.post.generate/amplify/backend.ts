@@ -44,7 +44,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'storage.s369f8ff1c.BucketName';
+// s3Bucket.bucketName = '2ca2b28520.BucketName';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

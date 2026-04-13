@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "bb968f9dc3.BucketName"
+      "Value": "storage.s3c31471c3.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -199,7 +199,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "storage.s3c31471c3.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -235,7 +235,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "storage.s3c31471c3.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -271,7 +271,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "storage.s3c31471c3.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -307,7 +307,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "storage.s3c31471c3.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -343,7 +343,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "storage.s3c31471c3.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -372,7 +372,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName",
+                    "storage.s3c31471c3.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -398,7 +398,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName"
+                    "storage.s3c31471c3.BucketName"
                   ]
                 ]
               }
@@ -426,7 +426,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName",
+                    "storage.s3c31471c3.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -450,7 +450,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName"
+                    "storage.s3c31471c3.BucketName"
                   ]
                 ]
               }

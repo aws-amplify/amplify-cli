@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "2dfb8ed9d7.IdentityPoolId"
+      "Value": "auth.backendonlyf8c4c57b.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "2dfb8ed9d7.IdentityPoolName"
+      "Value": "auth.backendonlyf8c4c57b.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "2dfb8ed9d7.UserPoolId"
+      "Value": "auth.backendonlyf8c4c57b.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "2dfb8ed9d7.UserPoolArn"
+      "Value": "auth.backendonlyf8c4c57b.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "2dfb8ed9d7.UserPoolName"
+      "Value": "auth.backendonlyf8c4c57b.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "2dfb8ed9d7.AppClientIDWeb"
+      "Value": "auth.backendonlyf8c4c57b.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "2dfb8ed9d7.AppClientID"
+      "Value": "auth.backendonlyf8c4c57b.AppClientID"
     }
   }
 }

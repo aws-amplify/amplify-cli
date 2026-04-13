@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentNestedStackCommentNestedStackResource7E5BA67DOutputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName6DCC82BATableArn"
+                                "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentNestedStackCommentNestedStackResource7E5BA67DOutputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentc9925b369b.GetAttCommentDataSourceName6DCC82BATableArn"
                               }
                             ]
                           }
@@ -424,7 +424,7 @@
     "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentNestedStackCommentNestedStackResource7E5BA67DOutputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentNestedStackCommentNestedStackResource7E5BA67DOutputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName6DCC82BATableArn": {
+    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentNestedStackCommentNestedStackResource7E5BA67DOutputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentc9925b369b.GetAttCommentDataSourceName6DCC82BATableArn": {
       "Type": "String"
     },
     "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {

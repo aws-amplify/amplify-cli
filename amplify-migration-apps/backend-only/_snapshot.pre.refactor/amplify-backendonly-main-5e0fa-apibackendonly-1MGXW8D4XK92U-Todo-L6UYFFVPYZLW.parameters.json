@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "994414bf7a.GraphQLAPIIdOutput"
+    "ParameterValue": "api.backendonly.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",

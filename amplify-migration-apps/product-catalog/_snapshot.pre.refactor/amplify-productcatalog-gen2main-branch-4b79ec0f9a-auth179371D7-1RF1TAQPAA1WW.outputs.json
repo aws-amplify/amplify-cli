@@ -1,11 +1,11 @@
 [
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef",
-    "OutputValue": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+    "OutputValue": "40f1c9f949.identityPoolId"
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef",
-    "OutputValue": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
+    "OutputValue": "40f1c9f949.webClientId"
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef",
-    "OutputValue": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
+    "OutputValue": "40f1c9f949.userPoolId"
   }
 ]

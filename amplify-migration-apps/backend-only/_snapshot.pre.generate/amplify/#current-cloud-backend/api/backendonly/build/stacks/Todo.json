@@ -113,7 +113,7 @@
     }
   },
   "Resources": {
-    "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName": {
+    "273e28bfb9.GetAttTodoDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -358,7 +358,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
+                    "273e28bfb9.GetAttTodoDataSourceName",
                     "Arn"
                   ]
                 },
@@ -368,7 +368,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
+                          "273e28bfb9.GetAttTodoDataSourceName",
                           "Arn"
                         ]
                       },
@@ -400,10 +400,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+            "Ref": "273e28bfb9.GetAttTodoDataSourceName"
           }
         },
-        "Name": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
+        "Name": "273e28bfb9.GetAttTodoDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "TodoIAMRole2DA8E66E",
@@ -501,7 +501,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+                "Ref": "273e28bfb9.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -596,7 +596,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+                "Ref": "273e28bfb9.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -727,7 +727,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+                "Ref": "273e28bfb9.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -879,7 +879,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+                "Ref": "273e28bfb9.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1028,7 +1028,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+                "Ref": "273e28bfb9.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1182,11 +1182,11 @@
     }
   },
   "Outputs": {
-    "GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameStreamArn": {
+    "GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
+          "273e28bfb9.GetAttTodoDataSourceName",
           "StreamArn"
         ]
       },
@@ -1198,16 +1198,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName:StreamArn"
+              "GetAtt:273e28bfb9.GetAttTodoDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameName": {
+    "GetAtt273e28bfb9.GetAttTodoDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+        "Ref": "273e28bfb9.GetAttTodoDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1217,7 +1217,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName:Name"
+              "GetAtt:273e28bfb9.GetAttTodoDataSourceName:Name"
             ]
           ]
         }
@@ -1253,9 +1253,9 @@
         ]
       }
     },
-    "transformerrootstackTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameC67E79C2Ref": {
+    "transformerrootstackTodo273e28bfb9.GetAttTodoDataSourceNameC67E79C2Ref": {
       "Value": {
-        "Ref": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+        "Ref": "273e28bfb9.GetAttTodoDataSourceName"
       }
     }
   }

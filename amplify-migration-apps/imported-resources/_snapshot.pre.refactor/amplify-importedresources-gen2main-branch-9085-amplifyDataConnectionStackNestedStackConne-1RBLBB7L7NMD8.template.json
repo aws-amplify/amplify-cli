@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn"
+                                "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn"
                               }
                             ]
                           }
@@ -114,7 +114,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -412,7 +412,7 @@
     "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName": {
       "Type": "String"
     },
-    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn": {
+    "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn": {
       "Type": "String"
     }
   }

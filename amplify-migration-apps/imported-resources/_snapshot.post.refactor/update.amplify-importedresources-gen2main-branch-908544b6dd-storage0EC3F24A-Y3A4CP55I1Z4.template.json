@@ -76,7 +76,7 @@
     "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucketPolicy7B9EE8DA": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+        "Bucket": "c643a9b272.bucketName",
         "PolicyDocument": {
           "Statement": [
             {
@@ -91,12 +91,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                "arn:aws:s3:::c643a9b272.bucketName",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/*"
                     ]
                   ]
@@ -115,12 +115,12 @@
                 "AWS": "arn:aws:iam::123456789012:role/amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd-storage0EC3F24A-Y3A4CP55I1Z4/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                "arn:aws:s3:::c643a9b272.bucketName",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/*"
                     ]
                   ]
@@ -139,7 +139,7 @@
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd-storage0EC3F24A-Y3A4CP55I1Z4/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
+        "BucketName": "c643a9b272.bucketName"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -191,7 +191,7 @@
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+              "c643a9b272.bucketName",
               " S3 bucket."
             ]
           ]
@@ -214,7 +214,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
+        "Value": "c643a9b272.bucketName"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/storage/IMPORTEDRESOURCES_8_C_81_D_8_D_7_EDE_741_F_3_B_102_B_3_E_1686_ABE_8_A_9_E_9_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
@@ -232,7 +232,7 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                    "arn:aws:s3:::c643a9b272.bucketName",
                     "/public/*"
                   ]
                 ]
@@ -249,7 +249,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
+              "Resource": "arn:aws:s3:::c643a9b272.bucketName"
             }
           ],
           "Version": "2012-10-17"
@@ -276,7 +276,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/public/*"
                     ]
                   ]
@@ -285,7 +285,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/protected/*"
                     ]
                   ]
@@ -294,7 +294,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/private/*"
                     ]
                   ]
@@ -309,7 +309,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/public/*"
                     ]
                   ]
@@ -318,7 +318,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/protected/*"
                     ]
                   ]
@@ -327,7 +327,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/private/*"
                     ]
                   ]
@@ -349,7 +349,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
+              "Resource": "arn:aws:s3:::c643a9b272.bucketName"
             },
             {
               "Action": "s3:DeleteObject",
@@ -359,7 +359,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/public/*"
                     ]
                   ]
@@ -368,7 +368,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/protected/*"
                     ]
                   ]
@@ -377,7 +377,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref",
+                      "arn:aws:s3:::c643a9b272.bucketName",
                       "/private/*"
                     ]
                   ]
@@ -675,7 +675,7 @@
   },
   "Outputs": {
     "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref": {
-      "Value": "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
+      "Value": "c643a9b272.bucketName"
     }
   }
 }

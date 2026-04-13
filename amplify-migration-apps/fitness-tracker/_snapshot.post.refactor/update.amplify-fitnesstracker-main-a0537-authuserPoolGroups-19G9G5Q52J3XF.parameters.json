@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455IdentityPoolId",
-    "ParameterValue": "ea8f06a449.IdentityPoolId"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.IdentityPoolId"
   },
   {
     "ParameterKey": "AuthRoleArn",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "ea8f06a449.UserPoolId"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolId"
   },
   {
     "ParameterKey": "env",
@@ -21,10 +21,10 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455AppClientIDWeb",
-    "ParameterValue": "ea8f06a449.AppClientIDWeb"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455AppClientID",
-    "ParameterValue": "ea8f06a449.AppClientID"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.AppClientID"
   }
 ]

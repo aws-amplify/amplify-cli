@@ -120,8 +120,8 @@ const gen1api.5c8596b905.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
   api.5c8596b905.ApiName.ApiNameStack,
   'Gen1api.5c8596b905.ApiName.ApiNameApi',
   {
-    restApiId: 'api.5c8596b905.ApiName.ApiId',
-    rootResourceId: 'api.5c8596b905.ApiName.ApiId-root',
+    restApiId: '5c8596b905.ApiId',
+    rootResourceId: '5c8596b905.ApiId-root',
   }
 );
 const gen1api.5c8596b905.ApiName.ApiNamePolicy = new Policy(

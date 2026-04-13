@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId",
-    "ParameterValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId"
+    "ParameterValue": "dc72c1d108.awsAppsyncApiId"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
@@ -17,14 +17,14 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref",
-    "ParameterValue": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref"
+    "ParameterValue": "dc72c1d108.identityPoolId"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoNestedStackTodoNestedStackResource853946D7Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodo4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName729B81E3TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-main"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoNestedStackTodoNestedStackResource853946D7Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoa76e5151a3.GetAttTodoDataSourceName729B81E3TableArn",
+    "ParameterValue": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodo4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName729B81E3TableArn"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoNestedStackTodoNestedStackResource853946D7Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName",
-    "ParameterValue": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+    "ParameterValue": "a76e5151a3.GetAttTodoDataSourceName"
   }
 ]

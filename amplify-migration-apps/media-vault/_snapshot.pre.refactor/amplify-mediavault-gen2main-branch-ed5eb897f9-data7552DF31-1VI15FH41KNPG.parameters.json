@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPool9F5CB443Ref",
-    "ParameterValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPool9F5CB443Ref"
+    "ParameterValue": "7e048d04ad.userPoolId"
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref",
-    "ParameterValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+    "ParameterValue": "7e048d04ad.identityPoolId"
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref",

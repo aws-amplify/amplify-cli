@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "38b5101cfb.webClientId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "38b5101cfb.webClientId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -49,7 +49,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"a5e76e9278.Name\":{\"style\":\"geo.storeLocatorMap.Style\"}},\"default\":\"a5e76e9278.Name\"},\"search_indices\":{\"items\":[\"2d8904d0a4.Name\"],\"default\":\"2d8904d0a4.Name\"},\"geofence_collections\":{\"items\":[\"19bf0e623d.Name\"],\"default\":\"19bf0e623d.Name\"}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName\":{\"style\":\"a5e76e9278.Style\"}},\"default\":\"a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName\"},\"search_indices\":{\"items\":[\"2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName\"],\"default\":\"2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName\"},\"geofence_collections\":{\"items\":[\"19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName\"],\"default\":\"19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName\"}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "38b5101cfb.userPoolId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolE0F0BF85Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "38b5101cfb.identityPoolId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthIdentityPool537188CARef"
   },
   {
     "OutputKey": "verificationMechanisms",

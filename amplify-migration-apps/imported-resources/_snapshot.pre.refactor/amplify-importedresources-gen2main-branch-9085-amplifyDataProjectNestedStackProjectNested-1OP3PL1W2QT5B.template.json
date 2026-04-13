@@ -346,7 +346,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource1677455BOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerTableMa593D9686"
         },
-        "tableName": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
+        "tableName": "6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -452,7 +452,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName"
+                          "tablename": "6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameName"
                         }
                       ]
                     },
@@ -460,7 +460,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName"
+                          "tablename": "6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameName"
                         }
                       ]
                     }
@@ -713,7 +713,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -873,7 +873,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1059,7 +1059,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1253,7 +1253,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1421,7 +1421,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1548,7 +1548,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1675,7 +1675,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1802,7 +1802,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1877,7 +1877,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1924,7 +1924,7 @@
     },
     "GetAtt6fe1426d26.GetAttProjectDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
+      "Value": "6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [

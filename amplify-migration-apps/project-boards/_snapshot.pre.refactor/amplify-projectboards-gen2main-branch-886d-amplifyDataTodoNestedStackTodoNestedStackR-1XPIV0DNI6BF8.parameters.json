@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId",
-    "ParameterValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId"
+    "ParameterValue": "dc72c1d108.awsAppsyncApiId"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref",
-    "ParameterValue": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref"
+    "ParameterValue": "dc72c1d108.identityPoolId"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",

@@ -5,11 +5,11 @@
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref",
-    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref"
+    "OutputValue": "c0d444ea7b.webClientId"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef",
-    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef"
+    "OutputValue": "c0d444ea7b.identityPoolId"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef",
-    "OutputValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthUserPoolACA7606BRef"
+    "OutputValue": "c0d444ea7b.userPoolId"
   }
 ]

@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain",
-    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain"
+    "OutputValue": "c643a9b272.oauthCognitoDomain"
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CallowUnauthenticatedIdentities",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
-    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
+    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignIn",

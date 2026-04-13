@@ -564,10 +564,10 @@
               "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableArn": {
+          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn": {
             "Fn::GetAtt": [
               "amplifyDataPostNestedStackPostNestedStackResourceB65AFCD3",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableArn"
+              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableArn"
             ]
           },
           "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
@@ -585,10 +585,10 @@
               "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name4FC8AE39TableArn": {
+          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableArn": {
             "Fn::GetAtt": [
               "amplifyDataCommentNestedStackCommentNestedStackResource87C7BB35",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name4FC8AE39TableArn"
+              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableArn"
             ]
           },
           "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName": {
@@ -597,10 +597,10 @@
               "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
             ]
           },
-          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableArn": {
+          "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn": {
             "Fn::GetAtt": [
               "amplifyDataTopicNestedStackTopicNestedStackResource252EB182",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableArn"
+              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn"
             ]
           }
         },
@@ -797,7 +797,7 @@
         "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/ActivityUserIdDataResolverFn/ActivityUserIdDataResolverFn.AppSyncFunction"
       }
     },
-    "Activitystorage.activity.SortKeyNameResolver": {
+    "Activitystorage.bookmarks.PartitionKeyNameResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -806,7 +806,7 @@
             "ApiId"
           ]
         },
-        "FieldName": "storage.activity.SortKeyName",
+        "FieldName": "storage.bookmarks.PartitionKeyName",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
@@ -822,7 +822,7 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"storage.activity.SortKeyName\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"storage.bookmarks.PartitionKeyName\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Fn::GetAtt": [
                   "amplifyDataGraphQLAPI42A6FA33",
@@ -2227,27 +2227,27 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataTopicNestedStackTopicNestedStackResource252EB182",
-          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn"
+          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn"
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableStreamArn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataPostNestedStackPostNestedStackResourceB65AFCD3",
-          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableStreamArn"
+          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableStreamArn"
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name4FC8AE39TableStreamArn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataCommentNestedStackCommentNestedStackResource87C7BB35",
-          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name4FC8AE39TableStreamArn"
+          "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn"
         ]
       }
     }

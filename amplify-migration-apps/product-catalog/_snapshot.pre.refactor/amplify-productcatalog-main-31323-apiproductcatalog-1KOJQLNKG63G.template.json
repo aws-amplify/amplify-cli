@@ -518,10 +518,10 @@
               "Outputs.transformerrootstackCommentCommentDataSourceA0E54655Name"
             ]
           },
-          "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName5427FDE2Ref": {
+          "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref": {
             "Fn::GetAtt": [
               "Comment",
-              "Outputs.transformerrootstackComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName5427FDE2Ref"
+              "Outputs.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
             ]
           },
           "referencetotransformerrootstackauthRoleNameFB872D50Ref": {

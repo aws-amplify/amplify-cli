@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
+    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",

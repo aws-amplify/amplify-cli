@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8"
         },
-        "tableName": "873b7248e8.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
+        "tableName": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "873b7248e8.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName"
+                          "tablename": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "873b7248e8.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName"
+                          "tablename": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName"
                         }
                       ]
                     }
@@ -2041,7 +2041,7 @@
     },
     "GetAtt8febe7e2a6.GetAttNoteDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "873b7248e8.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
+      "Value": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [

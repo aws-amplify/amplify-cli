@@ -109,7 +109,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameC67E79C2Ref"
+                "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoa76e5151a3.GetAttTodoDataSourceNameC67E79C2Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -136,7 +136,7 @@
     "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName": {
       "Type": "String"
     },
-    "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameC67E79C2Ref": {
+    "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoa76e5151a3.GetAttTodoDataSourceNameC67E79C2Ref": {
       "Type": "String"
     }
   }

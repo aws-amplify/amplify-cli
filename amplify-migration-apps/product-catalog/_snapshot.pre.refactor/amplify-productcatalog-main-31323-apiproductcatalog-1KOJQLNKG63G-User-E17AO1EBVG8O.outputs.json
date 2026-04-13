@@ -1,9 +1,9 @@
 [
   {
     "OutputKey": "GetAttc29f8ec2f7.GetAttUserDataSourceNameName",
-    "OutputValue": "a5f188ad45.GetAttc29f8ec2f7.GetAttUserDataSourceNameName",
+    "OutputValue": "c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "8dcbe94f9b.GraphQLAPIIdOutput:GetAtt:c29f8ec2f7.GetAttUserDataSourceName:Name"
+    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:c29f8ec2f7.GetAttUserDataSourceName:Name"
   },
   {
     "OutputKey": "transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
@@ -21,13 +21,13 @@
     "OutputKey": "GetAttUserDataSourceName",
     "OutputValue": "c29f8ec2f7.GetAttUserDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "8dcbe94f9b.GraphQLAPIIdOutput:GetAtt:UserDataSource:Name"
+    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:UserDataSource:Name"
   },
   {
     "OutputKey": "GetAttc29f8ec2f7.GetAttUserDataSourceNameStreamArn",
-    "OutputValue": "a5f188ad45.GetAttc29f8ec2f7.GetAttUserDataSourceNameStreamArn",
+    "OutputValue": "c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "8dcbe94f9b.GraphQLAPIIdOutput:GetAtt:c29f8ec2f7.GetAttUserDataSourceName:StreamArn"
+    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:c29f8ec2f7.GetAttUserDataSourceName:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",

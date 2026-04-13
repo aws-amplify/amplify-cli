@@ -1,28 +1,28 @@
 [
   {
     "OutputKey": "GetAttPostDataSourceName",
-    "OutputValue": "d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name",
+    "OutputValue": "b7c107d03f.GetAttPostDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:PostDataSource:Name"
+    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:PostDataSource:Name"
   },
   {
-    "OutputKey": "GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameStreamArn",
-    "OutputValue": "d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableStreamArn",
+    "OutputKey": "GetAttb7c107d03f.GetAttPostDataSourceNameStreamArn",
+    "OutputValue": "d7cb664f4a.GetAttb7c107d03f.GetAttPostDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name:StreamArn"
+    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:b7c107d03f.GetAttPostDataSourceName:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackPostPostDataSource6998E105Name",
-    "OutputValue": "d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name"
+    "OutputValue": "b7c107d03f.GetAttPostDataSourceName"
   },
   {
-    "OutputKey": "GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName",
-    "OutputValue": "d7cb664f4a.GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName",
+    "OutputKey": "GetAttb7c107d03f.GetAttPostDataSourceNameName",
+    "OutputValue": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:d7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name:Name"
+    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:b7c107d03f.GetAttPostDataSourceName:Name"
   },
   {
-    "OutputKey": "transformerrootstackPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name34CAE87BRef",
-    "OutputValue": "d7cb664f4a.GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName"
+    "OutputKey": "transformerrootstackPostb7c107d03f.GetAttPostDataSourceName34CAE87BRef",
+    "OutputValue": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName"
   }
 ]

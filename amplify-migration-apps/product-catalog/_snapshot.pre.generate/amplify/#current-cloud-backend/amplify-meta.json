@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-07T14:20:36.895Z",
       "output": {
-        "UserPoolId": "8563cd35c0.UserPoolId",
-        "AppClientIDWeb": "8563cd35c0.AppClientIDWeb",
-        "AppClientID": "8563cd35c0.AppClientID",
-        "IdentityPoolId": "8563cd35c0.IdentityPoolId",
-        "UserPoolArn": "8563cd35c0.UserPoolArn",
-        "IdentityPoolName": "8563cd35c0.IdentityPoolName",
-        "UserPoolName": "8563cd35c0.UserPoolName"
+        "UserPoolId": "auth.productcatalog90174ac4.UserPoolId",
+        "AppClientIDWeb": "auth.productcatalog90174ac4.AppClientIDWeb",
+        "AppClientID": "auth.productcatalog90174ac4.AppClientID",
+        "IdentityPoolId": "auth.productcatalog90174ac4.IdentityPoolId",
+        "UserPoolArn": "auth.productcatalog90174ac4.UserPoolArn",
+        "IdentityPoolName": "auth.productcatalog90174ac4.IdentityPoolName",
+        "UserPoolName": "auth.productcatalog90174ac4.UserPoolName"
       },
       "lastPushDirHash": "vwfsguBCYhmnChi8OJsiaEhZfwA="
     }
@@ -90,9 +90,9 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "8dcbe94f9b.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "8dcbe94f9b.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "api.productcatalog.GraphQLAPIKeyOutput"
+        "GraphQLAPIIdOutput": "api.productcatalog.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.productcatalog.GraphQLAPIEndpointOutput",
+        "GraphQLAPIKeyOutput": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/4c3f39313a.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
@@ -132,11 +132,11 @@
         "logicalId": "functionS3Trigger1ef46783"
       },
       "output": {
-        "LambdaExecutionRoleArn": "2a52e89b9c.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.S3Trigger1ef46783.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "2a52e89b9c.Arn",
-        "Name": "2a52e89b9c.Name",
-        "LambdaExecutionRole": "2a52e89b9c.LambdaExecutionRole"
+        "Arn": "function.S3Trigger1ef46783.Arn",
+        "Name": "function.S3Trigger1ef46783.Name",
+        "LambdaExecutionRole": "function.S3Trigger1ef46783.LambdaExecutionRole"
       },
       "lastPushDirHash": "2Yp8qReEPNjxqPd0IEURpkIBCjs="
     },
@@ -169,11 +169,11 @@
       },
       "lastPushTimeStamp": "2026-03-07T14:20:36.895Z",
       "output": {
-        "LambdaExecutionRoleArn": "65e5289b51.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.lowstockproducts.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "65e5289b51.Arn",
-        "Name": "65e5289b51.Name",
-        "LambdaExecutionRole": "65e5289b51.LambdaExecutionRole"
+        "Arn": "function.lowstockproducts.Arn",
+        "Name": "function.lowstockproducts.Name",
+        "LambdaExecutionRole": "function.lowstockproducts.LambdaExecutionRole"
       },
       "lastPushDirHash": "v+3Ew5vm+8e5EPfjKY08keb4p0w="
     }
@@ -199,7 +199,7 @@
         "logicalId": "storages338e5b439"
       },
       "output": {
-        "BucketName": "3db57fd977.BucketName",
+        "BucketName": "storage.s338e5b439.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "wE6Y7huJNaslBLmQHoL6Q0+9Yj4="

@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameStreamArn",
-    "OutputValue": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameStreamArn",
+    "OutputKey": "GetAttc9925b369b.GetAttCommentDataSourceNameStreamArn",
+    "OutputValue": "c9925b369b.GetAttc9925b369b.GetAttCommentDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId:GetAtt:5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName:StreamArn"
+    "ExportName": "40f1c9f949.awsAppsyncApiId:GetAtt:c9925b369b.GetAttCommentDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName6DCC82BATableArn",
-    "OutputValue": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName6DCC82BATableArn"
+    "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentc9925b369b.GetAttCommentDataSourceName6DCC82BATableArn",
+    "OutputValue": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentc9925b369b.GetAttCommentDataSourceName6DCC82BATableArn"
   },
   {
-    "OutputKey": "GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName",
-    "OutputValue": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName",
+    "OutputKey": "GetAttc9925b369b.GetAttCommentDataSourceNameName",
+    "OutputValue": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId:GetAtt:5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName:Name"
+    "ExportName": "40f1c9f949.awsAppsyncApiId:GetAtt:c9925b369b.GetAttCommentDataSourceName:Name"
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
-    "OutputValue": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
+    "OutputValue": "c9925b369b.GetAttCommentDataSourceName"
   }
 ]

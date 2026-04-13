@@ -1,15 +1,15 @@
 [
   {
-    "OutputKey": "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameStreamArn",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn",
+    "OutputKey": "GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn",
+    "OutputValue": "e9a3818d7e.GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:StreamArn"
+    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
-    "OutputValue": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
+    "OutputKey": "GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
+    "OutputValue": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:Name"
+    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:Name"
   },
   {
     "OutputKey": "transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
@@ -25,17 +25,17 @@
   },
   {
     "OutputKey": "GetAttTopicDataSourceName",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+    "OutputValue": "44f5eef0ce.GetAttTopicDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
+    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameFD91FB92Ref",
-    "OutputValue": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName"
+    "OutputKey": "transformerrootstackTopic44f5eef0ce.GetAttTopicDataSourceNameFD91FB92Ref",
+    "OutputValue": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
   },
   {
     "OutputKey": "transformerrootstackTopicTopicDataSource63D2F34BName",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
+    "OutputValue": "44f5eef0ce.GetAttTopicDataSourceName"
   },
   {
     "OutputKey": "transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",

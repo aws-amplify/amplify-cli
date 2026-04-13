@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "5494e94a79.GraphQLAPIIdOutput"
+    "ParameterValue": "api.moodboard.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

@@ -250,7 +250,7 @@
           "identityPoolName": "storelocator41a9495f_identitypool_41a9495f",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "storel41a9495f",
-          "userPoolName": "auth.storelocator41a9495f41a9495f.UserPoolName",
+          "userPoolName": "455111189d.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -397,7 +397,7 @@
             "Ref": "UnauthRoleName"
           },
           "mapName": "storeLocatorMap",
-          "mapStyle": "geo.storeLocatorMap.Style",
+          "mapStyle": "a5e76e9278.Style",
           "isDefault": true,
           "authstorelocator41a9495f41a9495fUserPoolId": {
             "Fn::GetAtt": [

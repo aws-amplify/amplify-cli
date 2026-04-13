@@ -109,7 +109,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName5135EED9Ref"
+                "Ref": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -198,7 +198,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref"
+                "Ref": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -225,13 +225,13 @@
     "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName": {
       "Type": "String"
     },
-    "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName5135EED9Ref": {
+    "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref": {
       "Type": "String"
     },
     "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName": {
       "Type": "String"
     },
-    "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref": {
+    "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref": {
       "Type": "String"
     }
   }

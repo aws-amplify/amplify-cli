@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAtt7a51ff3517.GetAttProjectDataSourceNameStreamArn",
-    "OutputValue": "286a0ee155.GetAtt7a51ff3517.GetAttProjectDataSourceNameStreamArn",
+    "OutputValue": "7a51ff3517.GetAtt7a51ff3517.GetAttProjectDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:7a51ff3517.GetAttProjectDataSourceName:StreamArn"
+    "ExportName": "c0d444ea7b.awsAppsyncApiId:GetAtt:7a51ff3517.GetAttProjectDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAtt7a51ff3517.GetAttProjectDataSourceNameName",
-    "OutputValue": "286a0ee155.GetAtt7a51ff3517.GetAttProjectDataSourceNameName",
+    "OutputValue": "7a51ff3517.GetAtt7a51ff3517.GetAttProjectDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:7a51ff3517.GetAttProjectDataSourceName:Name"
+    "ExportName": "c0d444ea7b.awsAppsyncApiId:GetAtt:7a51ff3517.GetAttProjectDataSourceName:Name"
   }
 ]

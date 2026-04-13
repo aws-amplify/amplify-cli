@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "fe17e54548.GraphQLAPIIdOutput"
+    "ParameterValue": "api.importedresources.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

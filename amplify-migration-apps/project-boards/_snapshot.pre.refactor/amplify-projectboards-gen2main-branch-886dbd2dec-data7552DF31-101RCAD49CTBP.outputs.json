@@ -5,14 +5,14 @@
   },
   {
     "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIDefaultApiKey8E86CD59ApiKey",
-    "OutputValue": "api.projectboards.GraphQLAPIKeyOutput"
+    "OutputValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIDefaultApiKey8E86CD59ApiKey"
   },
   {
     "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId",
-    "OutputValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId"
+    "OutputValue": "dc72c1d108.awsAppsyncApiId"
   },
   {
     "OutputKey": "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BGraphQLUrl",
-    "OutputValue": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BGraphQLUrl"
+    "OutputValue": "dc72c1d108.awsAppsyncApiEndpoint"
   }
 ]

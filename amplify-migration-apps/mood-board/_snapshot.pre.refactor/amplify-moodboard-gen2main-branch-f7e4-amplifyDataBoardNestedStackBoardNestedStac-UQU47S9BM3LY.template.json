@@ -349,13 +349,13 @@
     }
   },
   "Resources": {
-    "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name": {
+    "2a2fe43672.GetAttBoardDataSourceName": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
           "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC"
         },
-        "tableName": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName",
+        "tableName": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -418,7 +418,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/Board/0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name/Default/Default"
+        "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/data/amplifyData/Board/2a2fe43672.GetAttBoardDataSourceName/Default/Default"
       }
     },
     "BoardIAMRole2AFA0B47": {
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName"
+                          "tablename": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName"
+                          "tablename": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName"
                         }
                       ]
                     }
@@ -544,7 +544,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                              "2a2fe43672.GetAttBoardDataSourceName",
                               "TableArn"
                             ]
                           }
@@ -557,7 +557,7 @@
             ]
           }
         },
-        "Name": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+        "Name": "2a2fe43672.GetAttBoardDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "BoardIAMRole2AFA0B47",
@@ -694,7 +694,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                                  "2a2fe43672.GetAttBoardDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -866,7 +866,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                                  "2a2fe43672.GetAttBoardDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1064,7 +1064,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                                  "2a2fe43672.GetAttBoardDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1270,7 +1270,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                                  "2a2fe43672.GetAttBoardDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1450,7 +1450,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                                  "2a2fe43672.GetAttBoardDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1930,11 +1930,11 @@
     }
   },
   "Outputs": {
-    "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameStreamArn": {
+    "GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+          "2a2fe43672.GetAttBoardDataSourceName",
           "TableStreamArn"
         ]
       },
@@ -1946,15 +1946,15 @@
               {
                 "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
               },
-              "GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:StreamArn"
+              "GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName": {
+    "GetAtt2a2fe43672.GetAttBoardDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName",
+      "Value": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [
@@ -1963,7 +1963,7 @@
               {
                 "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
               },
-              "GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:Name"
+              "GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
             ]
           ]
         }
@@ -1977,10 +1977,10 @@
         ]
       }
     },
-    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn": {
+    "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn": {
       "Value": {
         "Fn::GetAtt": [
-          "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+          "2a2fe43672.GetAttBoardDataSourceName",
           "TableArn"
         ]
       }

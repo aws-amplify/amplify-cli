@@ -406,7 +406,7 @@
         "aws:asset:property": "Code"
       }
     },
-    "recorduseractivitygen2mainlambdaDynamoDBEventSourceamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicCustomTablee9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameE55B550AF3E0087C": {
+    "recorduseractivitygen2mainlambdaDynamoDBEventSourceamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicCustomTable44f5eef0ce.GetAttTopicDataSourceNameE55B550AF3E0087C": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "BatchSize": 100,
@@ -441,10 +441,10 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/function/5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref-lambda/DynamoDBEventSource:amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicCustomTablee9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameE55B550A/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/function/5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref-lambda/DynamoDBEventSource:amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicCustomTable44f5eef0ce.GetAttTopicDataSourceNameE55B550A/Resource"
       }
     },
-    "recorduseractivitygen2mainlambdaDynamoDBEventSourceamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostCustomTabled7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name0DC0D4A00E4DC807": {
+    "recorduseractivitygen2mainlambdaDynamoDBEventSourceamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostCustomTableb7c107d03f.GetAttPostDataSourceName0DC0D4A00E4DC807": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "BatchSize": 100,
@@ -479,10 +479,10 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/function/5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref-lambda/DynamoDBEventSource:amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostCustomTabled7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name0DC0D4A0/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/function/5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref-lambda/DynamoDBEventSource:amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostCustomTableb7c107d03f.GetAttPostDataSourceName0DC0D4A0/Resource"
       }
     },
-    "recorduseractivitygen2mainlambdaDynamoDBEventSourceamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCustomTable89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name963074804FFC242E": {
+    "recorduseractivitygen2mainlambdaDynamoDBEventSourceamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCustomTablefe019c2b9e.GetAttCommentDataSourceName963074804FFC242E": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "BatchSize": 100,
@@ -517,7 +517,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/function/5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref-lambda/DynamoDBEventSource:amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCustomTable89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name96307480/Resource"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/function/5a57304257.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30afunctionrecorduseractivitygen2mainlambdaE5320324Ref-lambda/DynamoDBEventSource:amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCustomTablefe019c2b9e.GetAttCommentDataSourceName96307480/Resource"
       }
     },
     "CDKMetadata": {

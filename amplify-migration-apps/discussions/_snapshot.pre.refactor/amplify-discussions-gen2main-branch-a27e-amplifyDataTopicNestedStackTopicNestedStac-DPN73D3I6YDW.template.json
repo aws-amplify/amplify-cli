@@ -349,13 +349,13 @@
     }
   },
   "Resources": {
-    "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName": {
+    "44f5eef0ce.GetAttTopicDataSourceName": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
           "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource72A5C49BOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataAmplifyTableManagerTableMaAF5EF112"
         },
-        "tableName": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
+        "tableName": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -418,7 +418,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/Topic/e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName/Default/Default"
+        "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/data/amplifyData/Topic/44f5eef0ce.GetAttTopicDataSourceName/Default/Default"
       }
     },
     "TopicIAMRoleD9B4C845": {
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName"
+                          "tablename": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName"
+                          "tablename": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
                         }
                       ]
                     }
@@ -544,7 +544,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+                              "44f5eef0ce.GetAttTopicDataSourceName",
                               "TableArn"
                             ]
                           }
@@ -557,7 +557,7 @@
             ]
           }
         },
-        "Name": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+        "Name": "44f5eef0ce.GetAttTopicDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "TopicIAMRoleD9B4C845",
@@ -694,7 +694,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+                                  "44f5eef0ce.GetAttTopicDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -866,7 +866,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+                                  "44f5eef0ce.GetAttTopicDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1064,7 +1064,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+                                  "44f5eef0ce.GetAttTopicDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1270,7 +1270,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+                                  "44f5eef0ce.GetAttTopicDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1450,7 +1450,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+                                  "44f5eef0ce.GetAttTopicDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1930,11 +1930,11 @@
     }
   },
   "Outputs": {
-    "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameStreamArn": {
+    "GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+          "44f5eef0ce.GetAttTopicDataSourceName",
           "TableStreamArn"
         ]
       },
@@ -1946,15 +1946,15 @@
               {
                 "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
               },
-              "GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:StreamArn"
+              "GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName": {
+    "GetAtt44f5eef0ce.GetAttTopicDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
+      "Value": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [
@@ -1963,7 +1963,7 @@
               {
                 "Ref": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId"
               },
-              "GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:Name"
+              "GetAtt:44f5eef0ce.GetAttTopicDataSourceName:Name"
             ]
           ]
         }
@@ -1977,18 +1977,18 @@
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableArn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn": {
       "Value": {
         "Fn::GetAtt": [
-          "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+          "44f5eef0ce.GetAttTopicDataSourceName",
           "TableArn"
         ]
       }
     },
-    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn": {
+    "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
-          "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
+          "44f5eef0ce.GetAttTopicDataSourceName",
           "TableStreamArn"
         ]
       }

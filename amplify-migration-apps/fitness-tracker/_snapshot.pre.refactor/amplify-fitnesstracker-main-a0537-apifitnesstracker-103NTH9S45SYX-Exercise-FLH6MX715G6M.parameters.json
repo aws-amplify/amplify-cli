@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
+    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",

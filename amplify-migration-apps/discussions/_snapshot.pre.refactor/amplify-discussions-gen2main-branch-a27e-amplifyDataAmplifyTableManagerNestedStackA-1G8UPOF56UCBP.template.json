@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName"
+                          "tableName": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "d7cb664f4a.GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName"
+                          "tableName": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "89544babf0.GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameName"
+                          "tableName": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
                         }
                       ]
                     }
@@ -193,7 +193,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName"
+                          "tableName": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName"
                         }
                       ]
                     },
@@ -201,7 +201,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "d7cb664f4a.GetAttd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975NameName"
+                          "tableName": "b7c107d03f.GetAttb7c107d03f.GetAttPostDataSourceNameName"
                         }
                       ]
                     },
@@ -209,7 +209,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "89544babf0.GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameName"
+                          "tableName": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
                         }
                       ]
                     }

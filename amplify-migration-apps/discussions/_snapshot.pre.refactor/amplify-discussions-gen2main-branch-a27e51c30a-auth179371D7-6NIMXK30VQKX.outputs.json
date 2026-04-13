@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+    "OutputValue": "da5e56ee3d.userPoolId"
   },
   {
     "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef",
@@ -9,7 +9,7 @@
   },
   {
     "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
+    "OutputValue": "da5e56ee3d.webClientId"
   },
   {
     "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthunauthenticatedUserRole2C26C54ERef",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref",
-    "OutputValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+    "OutputValue": "da5e56ee3d.identityPoolId"
   }
 ]

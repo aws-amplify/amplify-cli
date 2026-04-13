@@ -246,7 +246,7 @@
           "identityPoolName": "moodboard759ae00a_identitypool_759ae00a",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "moodbo759ae00a",
-          "userPoolName": "5b400a3a3b.UserPoolName",
+          "userPoolName": "auth.moodboard759ae00a.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",

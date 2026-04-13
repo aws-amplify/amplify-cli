@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "Style",
-    "OutputValue": "geo.storeLocatorMap.Style"
+    "OutputValue": "a5e76e9278.Style"
   },
   {
     "OutputKey": "Region",
@@ -9,7 +9,7 @@
   },
   {
     "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName",
-    "OutputValue": "a5e76e9278.Name"
+    "OutputValue": "a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
   },
   {
     "OutputKey": "Arn",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "a5e76e9278.Name"
+    "OutputValue": "a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
   }
 ]

@@ -110,7 +110,7 @@
     }
   },
   "Resources": {
-    "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name": {
+    "2a2fe43672.GetAttBoardDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -321,7 +321,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+                    "2a2fe43672.GetAttBoardDataSourceName",
                     "Arn"
                   ]
                 },
@@ -352,10 +352,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+            "Ref": "2a2fe43672.GetAttBoardDataSourceName"
           }
         },
-        "Name": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+        "Name": "2a2fe43672.GetAttBoardDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "BoardIAMRole2AFA0B47",
@@ -453,7 +453,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -548,7 +548,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -646,7 +646,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -798,7 +798,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -947,7 +947,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1070,11 +1070,11 @@
     }
   },
   "Outputs": {
-    "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameStreamArn": {
+    "GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
+          "2a2fe43672.GetAttBoardDataSourceName",
           "StreamArn"
         ]
       },
@@ -1086,16 +1086,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:StreamArn"
+              "GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName": {
+    "GetAtt2a2fe43672.GetAttBoardDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+        "Ref": "2a2fe43672.GetAttBoardDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1105,7 +1105,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:Name"
+              "GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
             ]
           ]
         }
@@ -1141,9 +1141,9 @@
         ]
       }
     },
-    "transformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref": {
+    "transformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref": {
       "Value": {
-        "Ref": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+        "Ref": "2a2fe43672.GetAttBoardDataSourceName"
       }
     }
   }

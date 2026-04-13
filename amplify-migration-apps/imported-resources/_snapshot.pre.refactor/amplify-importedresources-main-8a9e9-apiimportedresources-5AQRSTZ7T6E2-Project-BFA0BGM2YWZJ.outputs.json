@@ -19,7 +19,7 @@
     "OutputKey": "GetAttProjectDataSourceName",
     "OutputValue": "6fe1426d26.GetAttProjectDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
@@ -35,14 +35,14 @@
   },
   {
     "OutputKey": "GetAtt6fe1426d26.GetAttProjectDataSourceNameStreamArn",
-    "OutputValue": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameStreamArn",
+    "OutputValue": "6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:6fe1426d26.GetAttProjectDataSourceName:StreamArn"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:6fe1426d26.GetAttProjectDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
-    "OutputValue": "8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
+    "OutputValue": "6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:6fe1426d26.GetAttProjectDataSourceName:Name"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:6fe1426d26.GetAttProjectDataSourceName:Name"
   }
 ]

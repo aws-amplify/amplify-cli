@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef",
-    "ParameterValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+    "ParameterValue": "383edf5091.identityPoolId"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -41,6 +41,6 @@
   },
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId",
-    "ParameterValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+    "ParameterValue": "383edf5091.awsAppsyncApiId"
   }
 ]

@@ -1,26 +1,26 @@
 [
   {
     "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName"
+    "OutputValue": "44f5eef0ce.GetAttTopicDataSourceName"
   },
   {
-    "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn"
+    "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn",
+    "OutputValue": "e9a3818d7e.GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn"
   },
   {
-    "OutputKey": "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameStreamArn",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn",
+    "OutputKey": "GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn",
+    "OutputValue": "e9a3818d7e.GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:StreamArn"
+    "ExportName": "da5e56ee3d.awsAppsyncApiId:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
-    "OutputValue": "e9a3818d7e.GetAtte9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCNameName",
+    "OutputKey": "GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
+    "OutputValue": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId:GetAtt:e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName:Name"
+    "ExportName": "da5e56ee3d.awsAppsyncApiId:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:Name"
   },
   {
-    "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableArn",
-    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableArn"
+    "OutputKey": "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn",
+    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableArn"
   }
 ]

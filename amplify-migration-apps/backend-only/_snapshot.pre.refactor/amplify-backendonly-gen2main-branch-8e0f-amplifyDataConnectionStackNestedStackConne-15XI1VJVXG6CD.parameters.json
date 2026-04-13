@@ -9,15 +9,15 @@
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef",
-    "ParameterValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef"
+    "ParameterValue": "c0d444ea7b.identityPoolId"
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
-    "ParameterValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+    "ParameterValue": "273e28bfb9.GetAttTodoDataSourceName"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn",
-    "ParameterValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn"
+    "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo273e28bfb9.GetAttTodoDataSourceName43ECE720TableArn",
+    "ParameterValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo273e28bfb9.GetAttTodoDataSourceName43ECE720TableArn"
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref",
@@ -25,6 +25,6 @@
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId",
-    "ParameterValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
+    "ParameterValue": "c0d444ea7b.awsAppsyncApiId"
   }
 ]

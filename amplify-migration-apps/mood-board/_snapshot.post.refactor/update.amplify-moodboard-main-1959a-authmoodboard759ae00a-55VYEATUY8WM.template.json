@@ -154,7 +154,7 @@
           "Fn::Join": [
             "",
             [
-              "5b400a3a3b.UserPoolName",
+              "auth.moodboard759ae00a.UserPoolName",
               "-",
               "main"
             ]
@@ -176,7 +176,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "5b400a3a3b.UserPoolId"
+        "UserPoolId": "auth.moodboard759ae00a.UserPoolId"
       }
     },
     "UserPoolClient": {
@@ -188,7 +188,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "5b400a3a3b.UserPoolId"
+        "UserPoolId": "auth.moodboard759ae00a.UserPoolId"
       }
     },
     "UserPoolClientRole": {
@@ -235,7 +235,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "5b400a3a3b.AppClientID",
+            "ClientId": "auth.moodboard759ae00a.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -243,13 +243,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "5b400a3a3b.UserPoolId"
+                  "client": "auth.moodboard759ae00a.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "5b400a3a3b.AppClientIDWeb",
+            "ClientId": "auth.moodboard759ae00a.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -257,7 +257,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "5b400a3a3b.UserPoolId"
+                  "client": "auth.moodboard759ae00a.UserPoolId"
                 }
               ]
             }
@@ -277,7 +277,7 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "5b400a3a3b.IdentityPoolId",
+        "IdentityPoolId": "auth.moodboard759ae00a.IdentityPoolId",
         "Roles": {
           "unauthenticated": "1133a3293d.UnauthRoleArn",
           "authenticated": "1133a3293d.AuthRoleArn"
@@ -288,29 +288,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "5b400a3a3b.IdentityPoolId"
+      "Value": "auth.moodboard759ae00a.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "5b400a3a3b.IdentityPoolName"
+      "Value": "auth.moodboard759ae00a.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "5b400a3a3b.UserPoolId"
+      "Value": "auth.moodboard759ae00a.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "5b400a3a3b.UserPoolArn"
+      "Value": "auth.moodboard759ae00a.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "5b400a3a3b.UserPoolName"
+      "Value": "auth.moodboard759ae00a.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "5b400a3a3b.AppClientIDWeb"
+      "Value": "auth.moodboard759ae00a.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "5b400a3a3b.AppClientID"
+      "Value": "auth.moodboard759ae00a.AppClientID"
     }
   }
 }

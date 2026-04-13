@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef",
-    "OutputValue": "1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef"
+    "OutputValue": "7e048d04ad.bucketName"
   },
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef",

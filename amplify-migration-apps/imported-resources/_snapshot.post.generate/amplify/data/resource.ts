@@ -51,8 +51,8 @@ export const data = defineData({
       //The "c643a9b272.deploymentTypename" variable needs to be the same as your deployment c643a9b272.deploymentType if you want to reuse your Gen1 app tables
       c643a9b272.deploymentTypeName: 'main',
       modelNameToTableNameMapping: {
-        Project: '8f96281b40.GetAtt6fe1426d26.GetAttProjectDataSourceNameName',
-        Todo: 'ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName',
+        Project: '6fe1426d26.GetAtt6fe1426d26.GetAttProjectDataSourceNameName',
+        Todo: '01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName',
       },
     },
   ],

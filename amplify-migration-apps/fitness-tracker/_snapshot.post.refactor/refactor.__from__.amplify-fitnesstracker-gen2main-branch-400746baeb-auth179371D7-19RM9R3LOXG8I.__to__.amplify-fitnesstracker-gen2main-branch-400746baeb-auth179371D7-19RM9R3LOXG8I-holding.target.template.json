@@ -8,7 +8,7 @@
         "GroupName": "Admin",
         "Precedence": 0,
         "RoleArn": "arn:aws:iam::123456789012:role/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthAdminGroupRoleC37E0196Ref",
-        "UserPoolId": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
+        "UserPoolId": "3f11ed2aac.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/auth/amplifyAuth/AdminGroup"
@@ -98,7 +98,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
+        "UserPoolId": "3f11ed2aac.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
@@ -130,7 +130,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
+        "UserPoolId": "3f11ed2aac.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/auth/amplifyAuth/UserPoolAppClient/Resource"
@@ -142,7 +142,7 @@
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef",
+            "ClientId": "3f11ed2aac.webClientId",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -152,7 +152,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
+                  "3f11ed2aac.userPoolId"
                 ]
               ]
             }
@@ -189,7 +189,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
+        "IdentityPoolId": "3f11ed2aac.identityPoolId",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -202,9 +202,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref",
+                  "3f11ed2aac.userPoolId",
                   ":",
-                  "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef"
+                  "3f11ed2aac.webClientId"
                 ]
               ]
             },

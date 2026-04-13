@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
+    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

@@ -9,7 +9,7 @@
   },
   {
     "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolE0F0BF85Ref",
-    "OutputValue": "38b5101cfb.userPoolId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolE0F0BF85Ref"
   },
   {
     "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthstorelocator41a9495f41a9495fPostConfirmationgen2mainlambda5D769661Ref",
@@ -17,11 +17,11 @@
   },
   {
     "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthIdentityPool537188CARef",
-    "OutputValue": "38b5101cfb.identityPoolId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthIdentityPool537188CARef"
   },
   {
     "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef",
-    "OutputValue": "38b5101cfb.webClientId"
+    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
   },
   {
     "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref",

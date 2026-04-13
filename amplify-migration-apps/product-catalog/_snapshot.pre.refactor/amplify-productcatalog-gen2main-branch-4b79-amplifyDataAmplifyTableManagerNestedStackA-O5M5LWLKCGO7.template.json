@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "a5f188ad45.GetAttc29f8ec2f7.GetAttUserDataSourceNameName"
+                          "tableName": "c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameName"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName"
+                          "tableName": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName"
+                          "tableName": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
                         }
                       ]
                     }
@@ -193,7 +193,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "a5f188ad45.GetAttc29f8ec2f7.GetAttUserDataSourceNameName"
+                          "tableName": "c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameName"
                         }
                       ]
                     },
@@ -201,7 +201,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName"
+                          "tableName": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName"
                         }
                       ]
                     },
@@ -209,7 +209,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName"
+                          "tableName": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
                         }
                       ]
                     }

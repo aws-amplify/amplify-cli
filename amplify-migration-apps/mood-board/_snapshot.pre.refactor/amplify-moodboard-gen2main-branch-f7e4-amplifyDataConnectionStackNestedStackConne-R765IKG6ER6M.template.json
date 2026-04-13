@@ -88,7 +88,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName2DB74480TableArn"
+                                "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem1230b2630f.GetAttMoodItemDataSourceName2DB74480TableArn"
                               }
                             ]
                           }
@@ -225,7 +225,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn"
+                                "Ref": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn"
                               }
                             ]
                           }
@@ -561,7 +561,7 @@
     "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName": {
       "Type": "String"
     },
-    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName2DB74480TableArn": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemNestedStackMoodItemNestedStackResource4E691658Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem1230b2630f.GetAttMoodItemDataSourceName2DB74480TableArn": {
       "Type": "String"
     },
     "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
@@ -576,7 +576,7 @@
     "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name": {
       "Type": "String"
     },
-    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn": {
+    "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardNestedStackBoardNestedStackResource0021E276Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn": {
       "Type": "String"
     }
   }

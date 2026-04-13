@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "Style",
-    "OutputValue": "geo.storeLocatorMap.Style"
+    "OutputValue": "a5e76e9278.Style"
   },
   {
     "OutputKey": "Region",
@@ -9,10 +9,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "geo.storeLocatorMap.Arn"
+    "OutputValue": "e9f06e9cd3.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "geo.storeLocatorMap.Name"
+    "OutputValue": "e9f06e9cd3.Name"
   }
 ]

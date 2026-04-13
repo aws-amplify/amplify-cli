@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAtt13e1e0cc1e.GetAttProjectDataSourceNameStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-api.projectboards.GraphQLAPIIdOutput-main/stream/2026-03-07T02:15:48.574",
+    "OutputValue": "53f41c8436.GetAtt13e1e0cc1e.GetAttProjectDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId:GetAtt:13e1e0cc1e.GetAttProjectDataSourceName:StreamArn"
+    "ExportName": "dc72c1d108.awsAppsyncApiId:GetAtt:13e1e0cc1e.GetAttProjectDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAtt13e1e0cc1e.GetAttProjectDataSourceNameName",
-    "OutputValue": "Project-api.projectboards.GraphQLAPIIdOutput-main",
+    "OutputValue": "53f41c8436.GetAtt13e1e0cc1e.GetAttProjectDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIEB59D93BApiId:GetAtt:13e1e0cc1e.GetAttProjectDataSourceName:Name"
+    "ExportName": "dc72c1d108.awsAppsyncApiId:GetAtt:13e1e0cc1e.GetAttProjectDataSourceName:Name"
   }
 ]

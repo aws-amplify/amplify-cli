@@ -5,14 +5,14 @@
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl",
-    "OutputValue": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
+    "OutputValue": "40f1c9f949.awsAppsyncApiEndpoint"
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId",
-    "OutputValue": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+    "OutputValue": "40f1c9f949.awsAppsyncApiId"
   },
   {
     "OutputKey": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey",
-    "OutputValue": "api.productcatalog.GraphQLAPIKeyOutput"
+    "OutputValue": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
   }
 ]

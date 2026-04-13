@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIKeyOutput",
-    "ParameterValue": "api.productcatalog.GraphQLAPIKeyOutput"
+    "ParameterValue": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIEndpointOutput"
+    "ParameterValue": "api.productcatalog.GraphQLAPIEndpointOutput"
   },
   {
     "ParameterKey": "env",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
+    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
   }
 ]

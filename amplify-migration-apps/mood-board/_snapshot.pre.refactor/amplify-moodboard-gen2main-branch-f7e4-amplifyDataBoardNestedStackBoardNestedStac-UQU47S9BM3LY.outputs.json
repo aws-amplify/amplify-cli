@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameStreamArn",
-    "OutputValue": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameStreamArn",
+    "OutputKey": "GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn",
+    "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId:GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:StreamArn"
+    "ExportName": "383edf5091.awsAppsyncApiId:GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn",
-    "OutputValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name0122C8B9TableArn"
+    "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn",
+    "OutputValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn"
   },
   {
-    "OutputKey": "GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName",
-    "OutputValue": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName",
+    "OutputKey": "GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
+    "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId:GetAtt:0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name:Name"
+    "ExportName": "383edf5091.awsAppsyncApiId:GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",
-    "OutputValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+    "OutputValue": "2a2fe43672.GetAttBoardDataSourceName"
   }
 ]

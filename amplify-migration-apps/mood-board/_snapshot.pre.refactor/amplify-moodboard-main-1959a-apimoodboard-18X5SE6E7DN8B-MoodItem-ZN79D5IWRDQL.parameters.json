@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "5494e94a79.GraphQLAPIIdOutput"
+    "ParameterValue": "api.moodboard.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

@@ -154,7 +154,7 @@
           "Fn::Join": [
             "",
             [
-              "2dfb8ed9d7.UserPoolName",
+              "auth.backendonlyf8c4c57b.UserPoolName",
               "-",
               "main"
             ]
@@ -176,7 +176,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "2dfb8ed9d7.UserPoolId"
+        "UserPoolId": "auth.backendonlyf8c4c57b.UserPoolId"
       }
     },
     "UserPoolClient": {
@@ -188,7 +188,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "2dfb8ed9d7.UserPoolId"
+        "UserPoolId": "auth.backendonlyf8c4c57b.UserPoolId"
       }
     },
     "UserPoolClientRole": {
@@ -235,7 +235,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "2dfb8ed9d7.AppClientID",
+            "ClientId": "auth.backendonlyf8c4c57b.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -243,13 +243,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "2dfb8ed9d7.UserPoolId"
+                  "client": "auth.backendonlyf8c4c57b.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "2dfb8ed9d7.AppClientIDWeb",
+            "ClientId": "auth.backendonlyf8c4c57b.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -257,7 +257,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "2dfb8ed9d7.UserPoolId"
+                  "client": "auth.backendonlyf8c4c57b.UserPoolId"
                 }
               ]
             }
@@ -277,7 +277,7 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "2dfb8ed9d7.IdentityPoolId",
+        "IdentityPoolId": "auth.backendonlyf8c4c57b.IdentityPoolId",
         "Roles": {
           "unauthenticated": "a46443d3d7.UnauthRoleArn",
           "authenticated": "a46443d3d7.AuthRoleArn"
@@ -288,29 +288,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "2dfb8ed9d7.IdentityPoolId"
+      "Value": "auth.backendonlyf8c4c57b.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "2dfb8ed9d7.IdentityPoolName"
+      "Value": "auth.backendonlyf8c4c57b.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "2dfb8ed9d7.UserPoolId"
+      "Value": "auth.backendonlyf8c4c57b.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "2dfb8ed9d7.UserPoolArn"
+      "Value": "auth.backendonlyf8c4c57b.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "2dfb8ed9d7.UserPoolName"
+      "Value": "auth.backendonlyf8c4c57b.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "2dfb8ed9d7.AppClientIDWeb"
+      "Value": "auth.backendonlyf8c4c57b.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "2dfb8ed9d7.AppClientID"
+      "Value": "auth.backendonlyf8c4c57b.AppClientID"
     }
   }
 }

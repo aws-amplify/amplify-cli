@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "ea8f06a449.UserPoolId"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolId"
   }
 ]

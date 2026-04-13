@@ -340,13 +340,13 @@
     }
   },
   "Resources": {
-    "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName": {
+    "01f772aca2.GetAttTodoDataSourceName": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
           "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource1677455BOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyTableManagerTableMa593D9686"
         },
-        "tableName": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName",
+        "tableName": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -435,7 +435,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/Todo/ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName/Default/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/data/amplifyData/Todo/01f772aca2.GetAttTodoDataSourceName/Default/Default"
       }
     },
     "TodoIAMRole2DA8E66E": {
@@ -478,7 +478,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName"
+                          "tablename": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName"
                         }
                       ]
                     },
@@ -486,7 +486,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName"
+                          "tablename": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName"
                         }
                       ]
                     }
@@ -561,7 +561,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+                              "01f772aca2.GetAttTodoDataSourceName",
                               "TableArn"
                             ]
                           }
@@ -574,7 +574,7 @@
             ]
           }
         },
-        "Name": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+        "Name": "01f772aca2.GetAttTodoDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "TodoIAMRole2DA8E66E",
@@ -711,7 +711,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+                                  "01f772aca2.GetAttTodoDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -739,7 +739,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -871,7 +871,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+                                  "01f772aca2.GetAttTodoDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -899,7 +899,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1057,7 +1057,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+                                  "01f772aca2.GetAttTodoDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1085,7 +1085,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1251,7 +1251,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+                                  "01f772aca2.GetAttTodoDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1279,7 +1279,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1419,7 +1419,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+                                  "01f772aca2.GetAttTodoDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1447,7 +1447,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1574,7 +1574,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1701,7 +1701,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1828,7 +1828,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1903,7 +1903,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"c643a9b272.identityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              ":assumed-role/importedresources-unauth-role/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.importedresources2c7c1c40.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1926,11 +1926,11 @@
     }
   },
   "Outputs": {
-    "GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameStreamArn": {
+    "GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+          "01f772aca2.GetAttTodoDataSourceName",
           "TableStreamArn"
         ]
       },
@@ -1942,15 +1942,15 @@
               {
                 "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
               },
-              "GetAtt:ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName:StreamArn"
+              "GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName": {
+    "GetAtt01f772aca2.GetAttTodoDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName",
+      "Value": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [
@@ -1959,7 +1959,7 @@
               {
                 "Ref": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
               },
-              "GetAtt:ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName:Name"
+              "GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
             ]
           ]
         }
@@ -1973,10 +1973,10 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn": {
+    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn": {
       "Value": {
         "Fn::GetAtt": [
-          "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+          "01f772aca2.GetAttTodoDataSourceName",
           "TableArn"
         ]
       }

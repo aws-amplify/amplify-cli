@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "16892071e0.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName"
+                          "tableName": "a519ab46e6.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName"
+                          "tableName": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameName"
+                          "tableName": "c3c677ee62.GetAttc3c677ee62.GetAttMealDataSourceNameName"
                         }
                       ]
                     }
@@ -193,7 +193,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "16892071e0.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName"
+                          "tableName": "a519ab46e6.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName"
                         }
                       ]
                     },
@@ -201,7 +201,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName"
+                          "tableName": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName"
                         }
                       ]
                     },
@@ -209,7 +209,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameName"
+                          "tableName": "c3c677ee62.GetAttc3c677ee62.GetAttMealDataSourceNameName"
                         }
                       ]
                     }

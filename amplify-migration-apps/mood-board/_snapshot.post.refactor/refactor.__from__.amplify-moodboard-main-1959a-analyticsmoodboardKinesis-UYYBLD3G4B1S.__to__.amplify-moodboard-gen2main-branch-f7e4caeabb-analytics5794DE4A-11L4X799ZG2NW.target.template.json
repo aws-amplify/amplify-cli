@@ -13,7 +13,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+              "Resource": "ffc70d1b3b.kinesisStreamArn"
             }
           ]
         },
@@ -40,7 +40,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+              "Resource": "ffc70d1b3b.kinesisStreamArn"
             }
           ]
         },
@@ -83,7 +83,7 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+      "Value": "ffc70d1b3b.kinesisStreamArn"
     },
     "kinesisStreamId": {
       "Value": "ffc70d1b3b.kinesisStreamId"
@@ -92,7 +92,7 @@
       "Value": "1"
     },
     "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn": {
-      "Value": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+      "Value": "ffc70d1b3b.kinesisStreamArn"
     }
   },
   "Conditions": {

@@ -5,10 +5,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "geo.storeLocatorGeofence.Arn"
+    "OutputValue": "307f10bb39.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "geo.storeLocatorGeofence.Name"
+    "OutputValue": "307f10bb39.Name"
   }
 ]

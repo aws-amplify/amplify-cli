@@ -50,7 +50,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "7b219a8449.kinesisStreamArn"
+              "Resource": "analytics.moodboardKinesis.kinesisStreamArn"
             }
           ]
         }
@@ -72,7 +72,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "7b219a8449.kinesisStreamArn"
+              "Resource": "analytics.moodboardKinesis.kinesisStreamArn"
             }
           ]
         }
@@ -81,10 +81,10 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "7b219a8449.kinesisStreamArn"
+      "Value": "analytics.moodboardKinesis.kinesisStreamArn"
     },
     "kinesisStreamId": {
-      "Value": "7b219a8449.kinesisStreamId"
+      "Value": "analytics.moodboardKinesis.kinesisStreamId"
     },
     "kinesisStreamShardCount": {
       "Value": "1"

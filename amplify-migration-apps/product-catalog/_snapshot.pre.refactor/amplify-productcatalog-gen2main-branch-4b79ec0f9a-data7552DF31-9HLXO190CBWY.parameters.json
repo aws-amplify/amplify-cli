@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef",
-    "ParameterValue": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+    "ParameterValue": "40f1c9f949.identityPoolId"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef",
-    "ParameterValue": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
+    "ParameterValue": "40f1c9f949.userPoolId"
   },
   {
     "ParameterKey": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef",

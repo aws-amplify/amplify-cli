@@ -1,19 +1,19 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "fe37f7bbef.GraphQLAPIIdOutput",
+    "OutputValue": "api.fitnesstracker.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
     "ExportName": "e6829a95b8.StackName-apifitnesstracker-103NTH9S45SYX:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "fe37f7bbef.GraphQLAPIEndpointOutput",
+    "OutputValue": "api.fitnesstracker.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "e6829a95b8.StackName-apifitnesstracker-103NTH9S45SYX:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
-    "OutputValue": "api.fitnesstracker.GraphQLAPIKeyOutput",
+    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIDefaultApiKey7DAA10FCApiKey",
     "Description": "Your GraphQL API ID.",
     "ExportName": "e6829a95b8.StackName-apifitnesstracker-103NTH9S45SYX:GraphQLApiKey"
   }

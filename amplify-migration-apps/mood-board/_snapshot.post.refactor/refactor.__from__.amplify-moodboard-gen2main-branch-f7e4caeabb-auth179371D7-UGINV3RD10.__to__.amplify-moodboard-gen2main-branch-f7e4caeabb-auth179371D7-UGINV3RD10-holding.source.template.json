@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+                  "cognito-identity.amazonaws.com:aud": "383edf5091.identityPoolId"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -60,7 +60,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+                  "cognito-identity.amazonaws.com:aud": "383edf5091.identityPoolId"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -380,13 +380,13 @@
   },
   "Outputs": {
     "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref": {
-      "Value": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+      "Value": "383edf5091.userPoolId"
     },
     "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref": {
-      "Value": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+      "Value": "383edf5091.webClientId"
     },
     "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
-      "Value": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+      "Value": "383edf5091.identityPoolId"
     },
     "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
       "Value": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"

@@ -1,28 +1,28 @@
 [
   {
     "OutputKey": "transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
-    "OutputValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name"
+    "OutputValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
   },
   {
-    "OutputKey": "GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName",
-    "OutputValue": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName",
+    "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
+    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name:Name"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:Name"
   },
   {
     "OutputKey": "GetAttExerciseDataSourceName",
-    "OutputValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
+    "OutputValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
     "Description": "Your model DataSource name.",
-    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:ExerciseDataSource:Name"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:ExerciseDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name2F3E478ERef",
-    "OutputValue": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName"
+    "OutputKey": "transformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef",
+    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName"
   },
   {
-    "OutputKey": "GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameStreamArn",
-    "OutputValue": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameStreamArn",
+    "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
+    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name:StreamArn"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:StreamArn"
   }
 ]

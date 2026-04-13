@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "5b400a3a3b.IdentityPoolId"
+      "Value": "auth.moodboard759ae00a.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "5b400a3a3b.IdentityPoolName"
+      "Value": "auth.moodboard759ae00a.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "5b400a3a3b.UserPoolId"
+      "Value": "auth.moodboard759ae00a.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "5b400a3a3b.UserPoolArn"
+      "Value": "auth.moodboard759ae00a.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "5b400a3a3b.UserPoolName"
+      "Value": "auth.moodboard759ae00a.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "5b400a3a3b.AppClientIDWeb"
+      "Value": "auth.moodboard759ae00a.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "5b400a3a3b.AppClientID"
+      "Value": "auth.moodboard759ae00a.AppClientID"
     }
   }
 }

@@ -1,9 +1,9 @@
 [
   {
     "OutputKey": "GetAttc3c677ee62.GetAttMealDataSourceNameName",
-    "OutputValue": "36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameName",
+    "OutputValue": "c3c677ee62.GetAttc3c677ee62.GetAttMealDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
+    "ExportName": "3f11ed2aac.awsAppsyncApiId:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataMealc3c677ee62.GetAttMealDataSourceName5D540888TableArn",
@@ -11,8 +11,8 @@
   },
   {
     "OutputKey": "GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
-    "OutputValue": "36aeb2a522.GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
+    "OutputValue": "c3c677ee62.GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
+    "ExportName": "3f11ed2aac.awsAppsyncApiId:GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
   }
 ]

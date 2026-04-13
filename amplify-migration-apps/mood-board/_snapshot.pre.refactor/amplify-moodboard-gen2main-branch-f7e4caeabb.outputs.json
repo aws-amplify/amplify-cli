@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+    "OutputValue": "383edf5091.webClientId"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
+    "OutputValue": "383edf5091.bucketName"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+    "OutputValue": "383edf5091.webClientId"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "api.moodboard.GraphQLAPIKeyOutput"
+    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl"
+    "OutputValue": "383edf5091.awsAppsyncApiEndpoint"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+    "OutputValue": "383edf5091.awsAppsyncApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main\\\",\\\"bucketName\\\":\\\"db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main\\\",\\\"bucketName\\\":\\\"383edf5091.bucketName\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+    "OutputValue": "383edf5091.userPoolId"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+    "OutputValue": "383edf5091.identityPoolId"
   },
   {
     "OutputKey": "verificationMechanisms",

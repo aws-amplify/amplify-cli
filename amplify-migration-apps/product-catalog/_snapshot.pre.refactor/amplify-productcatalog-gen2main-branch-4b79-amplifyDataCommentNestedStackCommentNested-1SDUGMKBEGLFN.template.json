@@ -349,13 +349,13 @@
     }
   },
   "Resources": {
-    "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName": {
+    "c9925b369b.GetAttCommentDataSourceName": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
           "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource48E34D24Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataAmplifyTableManagerTableMa77FBE8F3"
         },
-        "tableName": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName",
+        "tableName": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -444,7 +444,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/Comment/5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName/Default/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data/amplifyData/Comment/c9925b369b.GetAttCommentDataSourceName/Default/Default"
       }
     },
     "CommentIAMRoleD5EC5F51": {
@@ -487,7 +487,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName"
+                          "tablename": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
                         }
                       ]
                     },
@@ -495,7 +495,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName"
+                          "tablename": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
                         }
                       ]
                     }
@@ -570,7 +570,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                              "c9925b369b.GetAttCommentDataSourceName",
                               "TableArn"
                             ]
                           }
@@ -583,7 +583,7 @@
             ]
           }
         },
-        "Name": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+        "Name": "c9925b369b.GetAttCommentDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "CommentIAMRoleD5EC5F51",
@@ -720,7 +720,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                                  "c9925b369b.GetAttCommentDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -892,7 +892,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                                  "c9925b369b.GetAttCommentDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1090,7 +1090,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                                  "c9925b369b.GetAttCommentDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1296,7 +1296,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                                  "c9925b369b.GetAttCommentDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1476,7 +1476,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                                  "c9925b369b.GetAttCommentDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -2065,7 +2065,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+                                  "c9925b369b.GetAttCommentDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -2215,11 +2215,11 @@
     }
   },
   "Outputs": {
-    "GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameStreamArn": {
+    "GetAttc9925b369b.GetAttCommentDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+          "c9925b369b.GetAttCommentDataSourceName",
           "TableStreamArn"
         ]
       },
@@ -2231,15 +2231,15 @@
               {
                 "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
               },
-              "GetAtt:5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName:StreamArn"
+              "GetAtt:c9925b369b.GetAttCommentDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName": {
+    "GetAttc9925b369b.GetAttCommentDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName",
+      "Value": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref",
       "Export": {
         "Name": {
           "Fn::Join": [
@@ -2248,7 +2248,7 @@
               {
                 "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
               },
-              "GetAtt:5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName:Name"
+              "GetAtt:c9925b369b.GetAttCommentDataSourceName:Name"
             ]
           ]
         }
@@ -2262,10 +2262,10 @@
         ]
       }
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName6DCC82BATableArn": {
+    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentc9925b369b.GetAttCommentDataSourceName6DCC82BATableArn": {
       "Value": {
         "Fn::GetAtt": [
-          "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName",
+          "c9925b369b.GetAttCommentDataSourceName",
           "TableArn"
         ]
       }

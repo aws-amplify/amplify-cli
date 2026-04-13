@@ -207,7 +207,7 @@
           "identityPoolName": "projectboards54040ecc_identitypool_54040ecc",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "projec54040ecc",
-          "userPoolName": "auth.projectboards54040ecc.UserPoolName",
+          "userPoolName": "be9cbe94cd.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",

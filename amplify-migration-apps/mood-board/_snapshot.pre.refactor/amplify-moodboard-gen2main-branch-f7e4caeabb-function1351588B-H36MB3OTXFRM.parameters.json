@@ -1,6 +1,6 @@
 [
   {
     "ParameterKey": "referencetoamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsNestedStackanalyticsNestedStackResourceB580ACE1Outputsamplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn",
-    "ParameterValue": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+    "ParameterValue": "ffc70d1b3b.kinesisStreamArn"
   }
 ]

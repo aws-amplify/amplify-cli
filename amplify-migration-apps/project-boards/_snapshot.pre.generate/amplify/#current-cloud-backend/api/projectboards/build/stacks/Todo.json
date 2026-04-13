@@ -113,7 +113,7 @@
     }
   },
   "Resources": {
-    "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName": {
+    "a76e5151a3.GetAttTodoDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -358,7 +358,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName",
+                    "a76e5151a3.GetAttTodoDataSourceName",
                     "Arn"
                   ]
                 },
@@ -368,7 +368,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName",
+                          "a76e5151a3.GetAttTodoDataSourceName",
                           "Arn"
                         ]
                       },
@@ -400,10 +400,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+            "Ref": "a76e5151a3.GetAttTodoDataSourceName"
           }
         },
-        "Name": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName",
+        "Name": "a76e5151a3.GetAttTodoDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "TodoIAMRole2DA8E66E",
@@ -501,7 +501,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+                "Ref": "a76e5151a3.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -596,7 +596,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+                "Ref": "a76e5151a3.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -727,7 +727,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+                "Ref": "a76e5151a3.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -879,7 +879,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+                "Ref": "a76e5151a3.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1028,7 +1028,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+                "Ref": "a76e5151a3.GetAttTodoDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1182,11 +1182,11 @@
     }
   },
   "Outputs": {
-    "GetAtt4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameStreamArn": {
+    "GetAtta76e5151a3.GetAttTodoDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName",
+          "a76e5151a3.GetAttTodoDataSourceName",
           "StreamArn"
         ]
       },
@@ -1198,16 +1198,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName:StreamArn"
+              "GetAtt:a76e5151a3.GetAttTodoDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameName": {
+    "GetAtta76e5151a3.GetAttTodoDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+        "Ref": "a76e5151a3.GetAttTodoDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1217,7 +1217,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName:Name"
+              "GetAtt:a76e5151a3.GetAttTodoDataSourceName:Name"
             ]
           ]
         }
@@ -1253,9 +1253,9 @@
         ]
       }
     },
-    "transformerrootstackTodo4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameC67E79C2Ref": {
+    "transformerrootstackTodoa76e5151a3.GetAttTodoDataSourceNameC67E79C2Ref": {
       "Value": {
-        "Ref": "4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FName"
+        "Ref": "a76e5151a3.GetAttTodoDataSourceName"
       }
     }
   }

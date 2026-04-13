@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storageactivityName",
-    "ParameterValue": "293f068c38.Name"
+    "ParameterValue": "storage.activity.Name"
   },
   {
     "ParameterKey": "s3Key",
@@ -17,15 +17,15 @@
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
-    "ParameterValue": "358c55d6a3.GraphQLAPIEndpointOutput"
+    "ParameterValue": "api.discussions.GraphQLAPIEndpointOutput"
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
-    "ParameterValue": "358c55d6a3.GraphQLAPIIdOutput"
+    "ParameterValue": "api.discussions.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "293f068c38.StreamArn"
+    "ParameterValue": "storage.activity.StreamArn"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "storageactivityArn",
-    "ParameterValue": "293f068c38.Arn"
+    "ParameterValue": "storage.activity.Arn"
   }
 ]

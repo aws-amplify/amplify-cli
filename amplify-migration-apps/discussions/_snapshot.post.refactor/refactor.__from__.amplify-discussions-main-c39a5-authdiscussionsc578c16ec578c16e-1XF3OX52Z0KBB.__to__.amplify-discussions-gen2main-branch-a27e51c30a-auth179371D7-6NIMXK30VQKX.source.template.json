@@ -240,33 +240,33 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "3641aeee95.IdentityPoolId"
+      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "3641aeee95.IdentityPoolName"
+      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "3641aeee95.UserPoolId"
+      "Value": "auth.discussionsc578c16ec578c16e.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "3641aeee95.UserPoolArn"
+      "Value": "auth.discussionsc578c16ec578c16e.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "3641aeee95.UserPoolName"
+      "Value": "auth.discussionsc578c16ec578c16e.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "3641aeee95.AppClientIDWeb"
+      "Value": "auth.discussionsc578c16ec578c16e.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "3641aeee95.AppClientID"
+      "Value": "auth.discussionsc578c16ec578c16e.AppClientID"
     },
     "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": "3641aeee95.CreatedSNSRole"
+      "Value": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
     }
   }
 }

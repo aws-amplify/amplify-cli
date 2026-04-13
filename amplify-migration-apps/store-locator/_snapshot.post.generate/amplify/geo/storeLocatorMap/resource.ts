@@ -17,7 +17,7 @@ export const defineStoreLocatorMap = (backend: Backend<any>) => {
       authuserPoolGroupsstoreLocatorAdminGroupRole:
         backend.auth.resources.groups['storeLocatorAdmin'].role.roleName,
       mapName: 'storeLocatorMap',
-      mapStyle: 'geo.storeLocatorMap.Style',
+      mapStyle: 'a5e76e9278.Style',
       38b5101cfb.deploymentTypeName,
       isDefault: 'true',
     }

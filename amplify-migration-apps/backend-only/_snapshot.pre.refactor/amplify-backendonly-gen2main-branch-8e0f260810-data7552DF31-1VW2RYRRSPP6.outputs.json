@@ -1,15 +1,15 @@
 [
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9GraphQLUrl",
-    "OutputValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9GraphQLUrl"
+    "OutputValue": "c0d444ea7b.awsAppsyncApiEndpoint"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIDefaultApiKeyA92FFACFApiKey",
-    "OutputValue": "api.backendonly.GraphQLAPIKeyOutput"
+    "OutputValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIDefaultApiKeyA92FFACFApiKey"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId",
-    "OutputValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
+    "OutputValue": "c0d444ea7b.awsAppsyncApiId"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB9671EA91DestinationBucketArn",

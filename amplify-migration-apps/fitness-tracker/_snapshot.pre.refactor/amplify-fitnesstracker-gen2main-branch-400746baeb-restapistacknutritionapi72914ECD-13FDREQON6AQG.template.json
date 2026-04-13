@@ -592,7 +592,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":api.5c8596b905.ApiName.ApiId/*/POST/*"
+                      ":5c8596b905.ApiId/*/POST/*"
                     ]
                   ]
                 },
@@ -612,7 +612,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":api.5c8596b905.ApiName.ApiId/*/GET/*"
+                      ":5c8596b905.ApiId/*/GET/*"
                     ]
                   ]
                 },
@@ -632,7 +632,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":api.5c8596b905.ApiName.ApiId/*/PUT/*"
+                      ":5c8596b905.ApiId/*/PUT/*"
                     ]
                   ]
                 },
@@ -652,7 +652,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":api.5c8596b905.ApiName.ApiId/*/DELETE/*"
+                      ":5c8596b905.ApiId/*/DELETE/*"
                     ]
                   ]
                 }

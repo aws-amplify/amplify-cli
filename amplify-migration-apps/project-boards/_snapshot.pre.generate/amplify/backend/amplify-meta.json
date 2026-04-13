@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-07T02:19:47.726Z",
       "output": {
-        "UserPoolId": "auth.projectboards54040ecc.UserPoolId",
-        "AppClientIDWeb": "auth.projectboards54040ecc.AppClientIDWeb",
-        "AppClientID": "auth.projectboards54040ecc.AppClientID",
-        "IdentityPoolId": "auth.projectboards54040ecc.IdentityPoolId",
-        "UserPoolArn": "auth.projectboards54040ecc.UserPoolArn",
-        "IdentityPoolName": "auth.projectboards54040ecc.IdentityPoolName",
-        "UserPoolName": "auth.projectboards54040ecc.UserPoolName"
+        "UserPoolId": "be9cbe94cd.UserPoolId",
+        "AppClientIDWeb": "be9cbe94cd.AppClientIDWeb",
+        "AppClientID": "be9cbe94cd.AppClientID",
+        "IdentityPoolId": "be9cbe94cd.IdentityPoolId",
+        "UserPoolArn": "be9cbe94cd.UserPoolArn",
+        "IdentityPoolName": "be9cbe94cd.IdentityPoolName",
+        "UserPoolName": "be9cbe94cd.UserPoolName"
       },
       "lastPushDirHash": "E3+cSQzjNpCq8eW8BAT1Q2+3/EQ="
     }
@@ -85,9 +85,9 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "api.projectboards.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.projectboards.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "api.projectboards.GraphQLAPIKeyOutput"
+        "GraphQLAPIIdOutput": "5b8d2d3f79.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "5b8d2d3f79.GraphQLAPIEndpointOutput",
+        "GraphQLAPIKeyOutput": "89e0a56c5f.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataGraphQLAPIDefaultApiKey8E86CD59ApiKey"
       },
       "lastPushTimeStamp": "2026-03-07T02:19:47.726Z",
       "providerMetadata": {
@@ -108,7 +108,7 @@
         "logicalId": "storages369f8ff1c"
       },
       "output": {
-        "BucketName": "storage.s369f8ff1c.BucketName",
+        "BucketName": "2ca2b28520.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "u4iGgqx/vZoQIk/sJXOHoJlvkjc="
@@ -133,11 +133,11 @@
       },
       "lastPushTimeStamp": "2026-03-07T02:19:47.726Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.quotegenerator.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "211d934f0c.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "function.quotegenerator.Arn",
-        "Name": "function.quotegenerator.Name",
-        "LambdaExecutionRole": "function.quotegenerator.LambdaExecutionRole"
+        "Arn": "211d934f0c.Arn",
+        "Name": "211d934f0c.Name",
+        "LambdaExecutionRole": "211d934f0c.LambdaExecutionRole"
       },
       "lastPushDirHash": "rmG4tVJKaeLg6WPjY18l2OAzag4="
     }

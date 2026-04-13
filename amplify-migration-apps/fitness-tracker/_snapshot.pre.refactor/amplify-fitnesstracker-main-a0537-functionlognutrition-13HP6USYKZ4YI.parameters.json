@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "apifitnesstrackerGraphQLAPIIdOutput",
-    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
+    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "s3Key",

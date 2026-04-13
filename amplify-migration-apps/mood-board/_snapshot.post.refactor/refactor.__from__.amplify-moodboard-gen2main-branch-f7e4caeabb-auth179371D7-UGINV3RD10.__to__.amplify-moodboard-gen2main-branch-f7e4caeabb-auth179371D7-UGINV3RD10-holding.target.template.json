@@ -86,7 +86,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+        "UserPoolId": "383edf5091.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
@@ -118,7 +118,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+        "UserPoolId": "383edf5091.userPoolId"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/auth/amplifyAuth/UserPoolAppClient/Resource"
@@ -130,7 +130,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref",
+            "ClientId": "383edf5091.webClientId",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -140,7 +140,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+                  "383edf5091.userPoolId"
                 ]
               ]
             }
@@ -177,7 +177,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef",
+        "IdentityPoolId": "383edf5091.identityPoolId",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -190,9 +190,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref",
+                  "383edf5091.userPoolId",
                   ":",
-                  "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+                  "383edf5091.webClientId"
                 ]
               ]
             },

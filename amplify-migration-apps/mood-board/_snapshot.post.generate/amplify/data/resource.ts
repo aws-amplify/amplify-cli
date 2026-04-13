@@ -28,8 +28,8 @@ export const data = defineData({
       //The "383edf5091.deploymentTypename" variable needs to be the same as your deployment 383edf5091.deploymentType if you want to reuse your Gen1 app tables
       383edf5091.deploymentTypeName: 'main',
       modelNameToTableNameMapping: {
-        MoodItem: '79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName',
-        Board: '0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName',
+        MoodItem: '1230b2630f.transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref',
+        Board: '2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName',
       },
     },
   ],

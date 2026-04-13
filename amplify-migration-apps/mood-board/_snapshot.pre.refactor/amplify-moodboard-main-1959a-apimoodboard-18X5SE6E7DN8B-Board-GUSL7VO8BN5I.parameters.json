@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "5494e94a79.GraphQLAPIIdOutput"
+    "ParameterValue": "api.moodboard.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId",

@@ -811,19 +811,19 @@
           "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataNestedStackdataNestedStackResource907A4719Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifyd2l28aset733CD677": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopice9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicTopicDataSource5289BBFCName0F7B351ATableStreamArn"
+              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn"
             ]
           },
           "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataNestedStackdataNestedStackResource907A4719Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifyd2l28asetq99E749BF8": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostd7cb664f4a.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostPostDataSource1181B975Name3FE3EB5DTableStreamArn"
+              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataPostb7c107d03f.GetAttPostDataSourceName3FE3EB5DTableStreamArn"
             ]
           },
           "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataNestedStackdataNestedStackResource907A4719Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifyd2l28483C8589": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name4FC8AE39TableStreamArn"
+              "Outputs.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn"
             ]
           }
         },

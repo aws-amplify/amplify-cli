@@ -1,11 +1,11 @@
 [
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
-    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+    "OutputValue": "c643a9b272.awsAppsyncApiId"
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl",
-    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl"
+    "OutputValue": "c643a9b272.awsAppsyncApiEndpoint"
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB60E2BFEADestinationBucketArn",
@@ -13,6 +13,6 @@
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey",
-    "OutputValue": "api.importedresources.GraphQLAPIKeyOutput"
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey"
   }
 ]

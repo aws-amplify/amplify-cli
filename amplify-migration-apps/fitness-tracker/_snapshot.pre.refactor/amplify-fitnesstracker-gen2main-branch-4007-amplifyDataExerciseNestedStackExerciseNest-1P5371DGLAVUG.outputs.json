@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName",
-    "OutputValue": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName",
+    "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
+    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name:Name"
+    "ExportName": "3f11ed2aac.awsAppsyncApiId:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:Name"
   },
   {
-    "OutputKey": "GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameStreamArn",
-    "OutputValue": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameStreamArn",
+    "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
+    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name:StreamArn"
+    "ExportName": "3f11ed2aac.awsAppsyncApiId:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:StreamArn"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn",
-    "OutputValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameA7BD0631TableArn"
+    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameA7BD0631TableArn",
+    "OutputValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameA7BD0631TableArn"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
-    "OutputValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name"
+    "OutputValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
   }
 ]

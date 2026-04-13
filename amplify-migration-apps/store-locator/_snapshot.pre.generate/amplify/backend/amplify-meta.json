@@ -35,7 +35,7 @@
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "storeLocatorAdminGroupRole": "auth.userPoolGroups.storeLocatorAdminGroupRole"
+        "storeLocatorAdminGroupRole": "959c1c2a71.storeLocatorAdminGroupRole"
       },
       "lastPushDirHash": "aY2fv0JwB9V2Pnq+Iavglw2oGVE="
     },
@@ -80,13 +80,13 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "UserPoolId": "auth.storelocator41a9495f41a9495f.UserPoolId",
-        "AppClientIDWeb": "auth.storelocator41a9495f41a9495f.AppClientIDWeb",
-        "AppClientID": "auth.storelocator41a9495f41a9495f.AppClientID",
-        "IdentityPoolId": "auth.storelocator41a9495f41a9495f.IdentityPoolId",
-        "UserPoolArn": "auth.storelocator41a9495f41a9495f.UserPoolArn",
-        "IdentityPoolName": "auth.storelocator41a9495f41a9495f.IdentityPoolName",
-        "UserPoolName": "auth.storelocator41a9495f41a9495f.UserPoolName"
+        "UserPoolId": "455111189d.UserPoolId",
+        "AppClientIDWeb": "455111189d.AppClientIDWeb",
+        "AppClientID": "455111189d.AppClientID",
+        "IdentityPoolId": "455111189d.IdentityPoolId",
+        "UserPoolArn": "455111189d.UserPoolArn",
+        "IdentityPoolName": "455111189d.IdentityPoolName",
+        "UserPoolName": "455111189d.UserPoolName"
       },
       "lastPushDirHash": "BhovtRkLGtk84r9ocO7d+lsB8TQ="
     }
@@ -110,11 +110,11 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.storelocator41a9495f41a9495fPostConfirmation.NameArn",
         "Region": "us-east-1",
-        "Arn": "function.storelocator41a9495f41a9495fPostConfirmation.Arn",
-        "Name": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole",
-        "LambdaExecutionRole": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole"
+        "Arn": "d8066ec12f.Arn",
+        "Name": "function.storelocator41a9495f41a9495fPostConfirmation.Name",
+        "LambdaExecutionRole": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
       },
       "lastPushDirHash": "6EQkwiPaTbkyYCg4JDkMQiOWz8g="
     }
@@ -124,7 +124,7 @@
       "isDefault": true,
       "providerPlugin": "awscloudformation",
       "service": "Map",
-      "mapStyle": "geo.storeLocatorMap.Style",
+      "mapStyle": "a5e76e9278.Style",
       "accessType": "AuthorizedAndGuestUsers",
       "dependsOn": [
         {
@@ -148,10 +148,10 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "Style": "geo.storeLocatorMap.Style",
+        "Style": "a5e76e9278.Style",
         "Region": "us-east-1",
-        "Arn": "geo.storeLocatorMap.Arn",
-        "Name": "geo.storeLocatorMap.Name"
+        "Arn": "e9f06e9cd3.Arn",
+        "Name": "e9f06e9cd3.Name"
       },
       "lastPushDirHash": "f6hS2nqVgBHpibNEdmumaRgBCRM="
     },
@@ -185,8 +185,8 @@
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
         "Region": "us-east-1",
-        "Arn": "geo.storeLocatorSearch.Arn",
-        "Name": "geo.storeLocatorSearch.Name"
+        "Arn": "5467492e30.Arn",
+        "Name": "5467492e30.Name"
       },
       "lastPushDirHash": "DcWb0RNLHGk1nlEWvQI8kcmIhuw="
     },
@@ -218,8 +218,8 @@
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
         "Region": "us-east-1",
-        "Arn": "geo.storeLocatorGeofence.Arn",
-        "Name": "geo.storeLocatorGeofence.Name"
+        "Arn": "307f10bb39.Arn",
+        "Name": "307f10bb39.Name"
       },
       "lastPushDirHash": "qBxz5+dofKzvXa0AVAS5tnATCqA="
     }

@@ -12,16 +12,16 @@
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackComment5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName5427FDE2Ref",
-    "ParameterValue": "5df949fab3.GetAtt5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FNameName"
+    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref",
+    "ParameterValue": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
+    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",
-    "ParameterValue": "5df949fab3.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataCommentCommentDataSource7F5D9C3FName"
+    "ParameterValue": "c9925b369b.GetAttCommentDataSourceName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",

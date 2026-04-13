@@ -110,7 +110,7 @@
     }
   },
   "Resources": {
-    "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name": {
+    "fe019c2b9e.GetAttCommentDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -355,7 +355,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name",
+                    "fe019c2b9e.GetAttCommentDataSourceName",
                     "Arn"
                   ]
                 },
@@ -365,7 +365,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name",
+                          "fe019c2b9e.GetAttCommentDataSourceName",
                           "Arn"
                         ]
                       },
@@ -397,10 +397,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+            "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
           }
         },
-        "Name": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name",
+        "Name": "fe019c2b9e.GetAttCommentDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "CommentIAMRoleD5EC5F51",
@@ -498,9 +498,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+                "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -593,9 +593,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+                "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -691,9 +691,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+                "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -843,9 +843,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+                "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -992,9 +992,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+                "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1031,7 +1031,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1068,7 +1068,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1105,7 +1105,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"995ae072ea.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1115,11 +1115,11 @@
     }
   },
   "Outputs": {
-    "GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameStreamArn": {
+    "GetAttfe019c2b9e.GetAttCommentDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name",
+          "fe019c2b9e.GetAttCommentDataSourceName",
           "StreamArn"
         ]
       },
@@ -1131,16 +1131,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name:StreamArn"
+              "GetAtt:fe019c2b9e.GetAttCommentDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91NameName": {
+    "GetAttfe019c2b9e.GetAttCommentDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+        "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1150,7 +1150,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name:Name"
+              "GetAtt:fe019c2b9e.GetAttCommentDataSourceName:Name"
             ]
           ]
         }
@@ -1186,9 +1186,9 @@
         ]
       }
     },
-    "transformerrootstackComment89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name5427FDE2Ref": {
+    "transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref": {
       "Value": {
-        "Ref": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name"
+        "Ref": "fe019c2b9e.GetAttCommentDataSourceName"
       }
     }
   }

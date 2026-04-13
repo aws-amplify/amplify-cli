@@ -153,10 +153,10 @@
       "Value": "[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"]"
     },
     "oauthRedirectSignIn": {
-      "Value": "7e048d04ad.oauthRedirectSignOut"
+      "Value": "7e048d04ad.oauthRedirectSignIn"
     },
     "oauthRedirectSignOut": {
-      "Value": "7e048d04ad.oauthRedirectSignOut"
+      "Value": "7e048d04ad.oauthRedirectSignIn"
     },
     "oauthResponseType": {
       "Value": "code"

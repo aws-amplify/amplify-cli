@@ -231,7 +231,7 @@
         "SmsAuthenticationMessage": "Your authentication code is {####}",
         "SmsConfiguration": {
           "ExternalId": "discusc578c16e_role_external_id",
-          "SnsCallerArn": "3641aeee95.CreatedSNSRole"
+          "SnsCallerArn": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
         },
         "SmsVerificationMessage": "Your verification code is {####}",
         "UserAttributeUpdateSettings": {
@@ -243,7 +243,7 @@
           "Fn::Join": [
             "",
             [
-              "3641aeee95.UserPoolName",
+              "auth.discussionsc578c16ec578c16e.UserPoolName",
               "-",
               "main"
             ]
@@ -265,7 +265,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "3641aeee95.UserPoolId"
+        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
       }
     },
     "UserPoolClient": {
@@ -277,7 +277,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "3641aeee95.UserPoolId"
+        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
       }
     },
     "UserPoolClientRole": {
@@ -324,7 +324,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "3641aeee95.AppClientID",
+            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -332,13 +332,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "3641aeee95.UserPoolId"
+                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "3641aeee95.AppClientIDWeb",
+            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -346,7 +346,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "3641aeee95.UserPoolId"
+                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
                 }
               ]
             }
@@ -366,7 +366,7 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "3641aeee95.IdentityPoolId",
+        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
         "Roles": {
           "unauthenticated": "b77cc5b997.UnauthRoleArn",
           "authenticated": "b77cc5b997.AuthRoleArn"
@@ -377,33 +377,33 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "3641aeee95.IdentityPoolId"
+      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "3641aeee95.IdentityPoolName"
+      "Value": "auth.discussionsc578c16ec578c16e.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "3641aeee95.UserPoolId"
+      "Value": "auth.discussionsc578c16ec578c16e.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "3641aeee95.UserPoolArn"
+      "Value": "auth.discussionsc578c16ec578c16e.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "3641aeee95.UserPoolName"
+      "Value": "auth.discussionsc578c16ec578c16e.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "3641aeee95.AppClientIDWeb"
+      "Value": "auth.discussionsc578c16ec578c16e.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "3641aeee95.AppClientID"
+      "Value": "auth.discussionsc578c16ec578c16e.AppClientID"
     },
     "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": "3641aeee95.CreatedSNSRole"
+      "Value": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
     }
   }
 }

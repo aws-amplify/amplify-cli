@@ -151,7 +151,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":place-index/2d8904d0a4.Name"
+                    ":place-index/2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
                   ]
                 ]
               }
@@ -221,7 +221,7 @@
             "Arn"
           ]
         },
-        "indexName": "2d8904d0a4.Name",
+        "indexName": "2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName",
         "dataSource": "Here",
         "dataSourceIntendedUse": "SingleUse",
         "region": {
@@ -263,7 +263,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "2d8904d0a4.NamePolicy",
+        "PolicyName": "2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexNamePolicy",
         "Roles": [
           {
             "Ref": "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref"

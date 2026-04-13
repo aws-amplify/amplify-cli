@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "994414bf7a.GraphQLAPIIdOutput"
+    "ParameterValue": "api.backendonly.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

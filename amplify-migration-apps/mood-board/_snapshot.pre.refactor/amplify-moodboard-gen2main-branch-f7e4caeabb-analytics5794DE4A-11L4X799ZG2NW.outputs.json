@@ -5,7 +5,7 @@
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn",
-    "OutputValue": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+    "OutputValue": "ffc70d1b3b.kinesisStreamArn"
   },
   {
     "OutputKey": "kinesisStreamShardCount",
@@ -13,6 +13,6 @@
   },
   {
     "OutputKey": "kinesisStreamArn",
-    "OutputValue": "ffc70d1b3b.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn"
+    "OutputValue": "ffc70d1b3b.kinesisStreamArn"
   }
 ]

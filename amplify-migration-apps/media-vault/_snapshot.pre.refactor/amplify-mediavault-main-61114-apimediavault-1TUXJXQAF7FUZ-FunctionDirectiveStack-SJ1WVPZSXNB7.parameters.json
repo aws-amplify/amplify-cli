@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "5d5520c8f1.GraphQLAPIIdOutput"
+    "ParameterValue": "api.mediavault.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",

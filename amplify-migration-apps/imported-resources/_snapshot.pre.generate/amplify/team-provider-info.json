@@ -14,11 +14,11 @@
     "categories": {
       "auth": {
         "importedresources2c7c1c40": {
-          "userPoolId": "c643a9b272.userPoolId",
+          "userPoolId": "auth.importedresources2c7c1c40.UserPoolId",
           "userPoolName": "auth.importedresources2c7c1c40.UserPoolName",
-          "webClientId": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
+          "webClientId": "auth.importedresources2c7c1c40.AppClientIDWeb",
           "nativeClientId": "auth.importedresources2c7c1c40.AppClientID",
-          "identityPoolId": "c643a9b272.identityPoolId",
+          "identityPoolId": "auth.importedresources2c7c1c40.IdentityPoolId",
           "identityPoolName": "auth.importedresources2c7c1c40.IdentityPoolName",
           "allowUnauthenticatedIdentities": true,
           "authRoleArn": "arn:aws:iam::123456789012:role/importedresources-auth-role",

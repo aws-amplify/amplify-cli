@@ -20,7 +20,7 @@
             "AttributeType": "S"
           },
           {
-            "AttributeName": "storage.activity.SortKeyName",
+            "AttributeName": "storage.bookmarks.PartitionKeyName",
             "AttributeType": "S"
           },
           {
@@ -33,7 +33,7 @@
             "IndexName": "byUserId",
             "KeySchema": [
               {
-                "AttributeName": "storage.activity.SortKeyName",
+                "AttributeName": "storage.bookmarks.PartitionKeyName",
                 "KeyType": "HASH"
               },
               {
@@ -56,7 +56,7 @@
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "storage.activity.SortKeyName",
+            "AttributeName": "storage.bookmarks.PartitionKeyName",
             "KeyType": "RANGE"
           }
         ],

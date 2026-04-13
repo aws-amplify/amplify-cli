@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "analyticsmoodboardKinesiskinesisStreamArn",
-    "ParameterValue": "7b219a8449.kinesisStreamArn"
+    "ParameterValue": "analytics.moodboardKinesis.kinesisStreamArn"
   },
   {
     "ParameterKey": "deploymentBucketName",

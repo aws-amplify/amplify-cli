@@ -9,9 +9,9 @@
   },
   {
     "OutputKey": "GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameStreamArn",
-    "OutputValue": "16892071e0.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameStreamArn",
+    "OutputValue": "a519ab46e6.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:StreamArn"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
@@ -19,9 +19,9 @@
   },
   {
     "OutputKey": "GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName",
-    "OutputValue": "16892071e0.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName",
+    "OutputValue": "a519ab46e6.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:Name"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:Name"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramWorkoutProgramOwnerDataResolverFnWorkoutProgramOwnerDataResolverFnAppSyncFunctionB902B95DFunctionId",
@@ -31,7 +31,7 @@
     "OutputKey": "GetAttWorkoutProgramDataSourceName",
     "OutputValue": "a519ab46e6.GetAttWorkoutProgramDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:WorkoutProgramDataSource:Name"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:WorkoutProgramDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",

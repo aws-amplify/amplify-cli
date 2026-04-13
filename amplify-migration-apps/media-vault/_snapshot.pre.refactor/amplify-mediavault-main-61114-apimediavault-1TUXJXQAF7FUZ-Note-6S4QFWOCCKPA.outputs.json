@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn",
-    "OutputValue": "873b7248e8.GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn",
+    "OutputValue": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "5d5520c8f1.GraphQLAPIIdOutput:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
+    "ExportName": "api.mediavault.GraphQLAPIIdOutput:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAttNoteDataSourceName",
     "OutputValue": "8febe7e2a6.GetAttNoteDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "5d5520c8f1.GraphQLAPIIdOutput:GetAtt:NoteDataSource:Name"
+    "ExportName": "api.mediavault.GraphQLAPIIdOutput:GetAtt:NoteDataSource:Name"
   },
   {
     "OutputKey": "GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
-    "OutputValue": "873b7248e8.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
+    "OutputValue": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "5d5520c8f1.GraphQLAPIIdOutput:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
+    "ExportName": "api.mediavault.GraphQLAPIIdOutput:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
   }
 ]

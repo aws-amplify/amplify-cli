@@ -408,10 +408,10 @@
               "Outputs.transformerrootstackTodoTodoDataSourceBD713D7DName"
             ]
           },
-          "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameC67E79C2Ref": {
+          "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo273e28bfb9.GetAttTodoDataSourceNameC67E79C2Ref": {
             "Fn::GetAtt": [
               "Todo",
-              "Outputs.transformerrootstackTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameC67E79C2Ref"
+              "Outputs.transformerrootstackTodo273e28bfb9.GetAttTodoDataSourceNameC67E79C2Ref"
             ]
           }
         },

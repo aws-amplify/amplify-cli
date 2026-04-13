@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                  "cognito-identity.amazonaws.com:aud": "da5e56ee3d.identityPoolId"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -60,7 +60,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+                  "cognito-identity.amazonaws.com:aud": "da5e56ee3d.identityPoolId"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -380,13 +380,13 @@
   },
   "Outputs": {
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
+      "Value": "da5e56ee3d.userPoolId"
     },
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
+      "Value": "da5e56ee3d.webClientId"
     },
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
+      "Value": "da5e56ee3d.identityPoolId"
     },
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
       "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"

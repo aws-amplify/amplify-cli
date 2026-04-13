@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref",
-    "ParameterValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+    "ParameterValue": "7e048d04ad.identityPoolId"
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId",
-    "ParameterValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+    "ParameterValue": "7e048d04ad.awsAppsyncApiId"
   },
   {
     "ParameterKey": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name",

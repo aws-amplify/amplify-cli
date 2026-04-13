@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "8563cd35c0.IdentityPoolId"
+      "Value": "auth.productcatalog90174ac4.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "8563cd35c0.IdentityPoolName"
+      "Value": "auth.productcatalog90174ac4.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "8563cd35c0.UserPoolId"
+      "Value": "auth.productcatalog90174ac4.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "8563cd35c0.UserPoolArn"
+      "Value": "auth.productcatalog90174ac4.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "8563cd35c0.UserPoolName"
+      "Value": "auth.productcatalog90174ac4.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "8563cd35c0.AppClientIDWeb"
+      "Value": "auth.productcatalog90174ac4.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "8563cd35c0.AppClientID"
+      "Value": "auth.productcatalog90174ac4.AppClientID"
     }
   }
 }

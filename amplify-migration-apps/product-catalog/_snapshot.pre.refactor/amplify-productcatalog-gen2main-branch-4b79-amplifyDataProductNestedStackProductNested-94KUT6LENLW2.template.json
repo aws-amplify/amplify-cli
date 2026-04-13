@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource48E34D24Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataAmplifyTableManagerTableMa77FBE8F3"
         },
-        "tableName": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName",
+        "tableName": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName"
+                          "tablename": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName"
+                          "tablename": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName"
                         }
                       ]
                     }
@@ -1954,7 +1954,7 @@
     },
     "GetAttb3e773b37b.GetAttProductDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "e57abaeb89.GetAttb3e773b37b.GetAttProductDataSourceNameName",
+      "Value": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [

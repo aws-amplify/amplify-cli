@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "5b400a3a3b.UserPoolId"
+    "ParameterValue": "auth.moodboard759ae00a.UserPoolId"
   }
 ]

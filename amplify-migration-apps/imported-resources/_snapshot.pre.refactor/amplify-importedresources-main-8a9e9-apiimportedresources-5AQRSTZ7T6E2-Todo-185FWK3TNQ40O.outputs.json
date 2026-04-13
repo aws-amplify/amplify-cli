@@ -1,28 +1,28 @@
 [
   {
-    "OutputKey": "GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName",
-    "OutputValue": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName",
+    "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameName",
+    "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName:Name"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
   },
   {
     "OutputKey": "GetAttTodoDataSourceName",
-    "OutputValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+    "OutputValue": "01f772aca2.GetAttTodoDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameC67E79C2Ref",
-    "OutputValue": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameName"
+    "OutputKey": "transformerrootstackTodo01f772aca2.GetAttTodoDataSourceNameC67E79C2Ref",
+    "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName"
   },
   {
-    "OutputKey": "GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameStreamArn",
-    "OutputValue": "ea7297173c.GetAttea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BNameStreamArn",
+    "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
+    "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName:StreamArn"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackTodoTodoDataSourceBD713D7DName",
-    "OutputValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName"
+    "OutputValue": "01f772aca2.GetAttTodoDataSourceName"
   }
 ]

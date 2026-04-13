@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783Name",
-    "ParameterValue": "2a52e89b9c.Name"
+    "ParameterValue": "function.S3Trigger1ef46783.Name"
   },
   {
     "ParameterKey": "s3PublicPolicy",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783LambdaExecutionRole",
-    "ParameterValue": "2a52e89b9c.LambdaExecutionRole"
+    "ParameterValue": "function.S3Trigger1ef46783.LambdaExecutionRole"
   },
   {
     "ParameterKey": "unauthRoleName",
@@ -45,7 +45,7 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783Arn",
-    "ParameterValue": "2a52e89b9c.Arn"
+    "ParameterValue": "function.S3Trigger1ef46783.Arn"
   },
   {
     "ParameterKey": "s3PermissionsAuthenticatedProtected",

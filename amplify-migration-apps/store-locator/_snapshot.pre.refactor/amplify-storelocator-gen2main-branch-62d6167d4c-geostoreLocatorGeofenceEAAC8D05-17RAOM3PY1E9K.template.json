@@ -151,7 +151,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":geofence-collection/19bf0e623d.Name"
+                    ":geofence-collection/19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName"
                   ]
                 ]
               }
@@ -221,7 +221,7 @@
             "Arn"
           ]
         },
-        "collectionName": "19bf0e623d.Name",
+        "collectionName": "19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName",
         "region": {
           "Fn::FindInMap": [
             "storeLocatorGeofenceRegionMapping9D9BCEA8",
@@ -284,7 +284,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storeLocatorAdmin19bf0e623d.NamePolicy",
+        "PolicyName": "storeLocatorAdmin19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionNamePolicy",
         "Roles": [
           {
             "Ref": "referencetoamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"

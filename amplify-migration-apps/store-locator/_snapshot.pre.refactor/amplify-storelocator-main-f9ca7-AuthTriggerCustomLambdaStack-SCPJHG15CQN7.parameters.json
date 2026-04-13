@@ -1,15 +1,15 @@
 [
   {
     "ParameterKey": "userpoolId",
-    "ParameterValue": "auth.storelocator41a9495f41a9495f.UserPoolId"
+    "ParameterValue": "455111189d.UserPoolId"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationLambdaExecutionRole",
-    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRoleArn"
+    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.NameArn"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationArn",
-    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.Arn"
+    "ParameterValue": "d8066ec12f.Arn"
   },
   {
     "ParameterKey": "env",
@@ -17,10 +17,10 @@
   },
   {
     "ParameterKey": "userpoolArn",
-    "ParameterValue": "auth.storelocator41a9495f41a9495f.UserPoolArn"
+    "ParameterValue": "455111189d.UserPoolArn"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",
-    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole"
+    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
   }
 ]

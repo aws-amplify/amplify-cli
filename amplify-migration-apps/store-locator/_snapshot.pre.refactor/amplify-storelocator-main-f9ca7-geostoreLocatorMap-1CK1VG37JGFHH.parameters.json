@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "authuserPoolGroupsstoreLocatorAdminGroupRole",
-    "ParameterValue": "auth.userPoolGroups.storeLocatorAdminGroupRole"
+    "ParameterValue": "959c1c2a71.storeLocatorAdminGroupRole"
   },
   {
     "ParameterKey": "isDefault",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "mapStyle",
-    "ParameterValue": "geo.storeLocatorMap.Style"
+    "ParameterValue": "a5e76e9278.Style"
   },
   {
     "ParameterKey": "mapName",
@@ -29,6 +29,6 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
-    "ParameterValue": "auth.storelocator41a9495f41a9495f.UserPoolId"
+    "ParameterValue": "455111189d.UserPoolId"
   }
 ]

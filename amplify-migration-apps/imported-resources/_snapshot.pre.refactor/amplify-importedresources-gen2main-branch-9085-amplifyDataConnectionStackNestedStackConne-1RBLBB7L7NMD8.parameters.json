@@ -1,18 +1,18 @@
 [
   {
     "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
-    "ParameterValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+    "ParameterValue": "c643a9b272.awsAppsyncApiId"
   },
   {
     "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
-    "ParameterValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName"
+    "ParameterValue": "01f772aca2.GetAttTodoDataSourceName"
   },
   {
     "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn",
-    "ParameterValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName2DD94F95TableArn"
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn",
+    "ParameterValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn"
   }
 ]

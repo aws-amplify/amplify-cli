@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameName",
-    "OutputValue": "052354d56a.GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameName",
+    "OutputKey": "GetAtt273e28bfb9.GetAttTodoDataSourceNameName",
+    "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName:Name"
+    "ExportName": "c0d444ea7b.awsAppsyncApiId:GetAtt:273e28bfb9.GetAttTodoDataSourceName:Name"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
-    "OutputValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName"
+    "OutputValue": "273e28bfb9.GetAttTodoDataSourceName"
   },
   {
-    "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn",
-    "OutputValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName43ECE720TableArn"
+    "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo273e28bfb9.GetAttTodoDataSourceName43ECE720TableArn",
+    "OutputValue": "052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodo273e28bfb9.GetAttTodoDataSourceName43ECE720TableArn"
   },
   {
-    "OutputKey": "GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameStreamArn",
-    "OutputValue": "052354d56a.GetAtt052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35ANameStreamArn",
+    "OutputKey": "GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn",
+    "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:052354d56a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName:StreamArn"
+    "ExportName": "c0d444ea7b.awsAppsyncApiId:GetAtt:273e28bfb9.GetAttTodoDataSourceName:StreamArn"
   }
 ]

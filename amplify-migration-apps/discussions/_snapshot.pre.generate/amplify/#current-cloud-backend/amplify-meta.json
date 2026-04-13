@@ -25,9 +25,9 @@
             "authenticationType": "da5e56ee3d.awsAppsyncAuthenticationType"
           }
         },
-        "GraphQLAPIIdOutput": "358c55d6a3.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "358c55d6a3.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "api.discussions.GraphQLAPIKeyOutput"
+        "GraphQLAPIIdOutput": "api.discussions.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.discussions.GraphQLAPIEndpointOutput",
+        "GraphQLAPIKeyOutput": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey"
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync",
@@ -72,14 +72,14 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "CreatedSNSRole": "3641aeee95.CreatedSNSRole",
-        "UserPoolId": "3641aeee95.UserPoolId",
-        "AppClientIDWeb": "3641aeee95.AppClientIDWeb",
-        "AppClientID": "3641aeee95.AppClientID",
-        "IdentityPoolId": "3641aeee95.IdentityPoolId",
-        "UserPoolArn": "3641aeee95.UserPoolArn",
-        "IdentityPoolName": "3641aeee95.IdentityPoolName",
-        "UserPoolName": "3641aeee95.UserPoolName"
+        "CreatedSNSRole": "auth.discussionsc578c16ec578c16e.CreatedSNSRole",
+        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId",
+        "AppClientIDWeb": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
+        "AppClientID": "auth.discussionsc578c16ec578c16e.AppClientID",
+        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
+        "UserPoolArn": "auth.discussionsc578c16ec578c16e.UserPoolArn",
+        "IdentityPoolName": "auth.discussionsc578c16ec578c16e.IdentityPoolName",
+        "UserPoolName": "auth.discussionsc578c16ec578c16e.UserPoolName"
       },
       "lastPushDirHash": "mPKsrH+CL3NCuCtTWB9nkOHB7ls="
     }
@@ -114,11 +114,11 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "LambdaExecutionRoleArn": "562ead0cd7.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.fetchuseractivity.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "562ead0cd7.Arn",
-        "Name": "562ead0cd7.Name",
-        "LambdaExecutionRole": "562ead0cd7.LambdaExecutionRole"
+        "Arn": "function.fetchuseractivity.Arn",
+        "Name": "function.fetchuseractivity.Name",
+        "LambdaExecutionRole": "function.fetchuseractivity.LambdaExecutionRole"
       },
       "lastPushDirHash": "R64T5GvXPz84ttStgLRDEvqSeOg="
     },
@@ -159,11 +159,11 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "LambdaExecutionRoleArn": "995ae072ea.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.recorduseractivity.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "995ae072ea.Arn",
-        "Name": "995ae072ea.Name",
-        "LambdaExecutionRole": "995ae072ea.LambdaExecutionRole"
+        "Arn": "function.recorduseractivity.Arn",
+        "Name": "function.recorduseractivity.Name",
+        "LambdaExecutionRole": "function.recorduseractivity.LambdaExecutionRole"
       },
       "lastPushDirHash": "wpepR6GRBy0XTCEXNmYdMZdmEvM="
     }
@@ -179,13 +179,13 @@
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
         "PartitionKeyName": "id",
-        "SortKeyName": "storage.activity.SortKeyName",
+        "SortKeyName": "storage.bookmarks.PartitionKeyName",
         "SortKeyType": "S",
         "Region": "us-east-1",
-        "Arn": "293f068c38.Arn",
-        "StreamArn": "293f068c38.StreamArn",
+        "Arn": "storage.activity.Arn",
+        "StreamArn": "storage.activity.StreamArn",
         "PartitionKeyType": "S",
-        "Name": "293f068c38.Name"
+        "Name": "storage.activity.Name"
       },
       "lastPushDirHash": "LKrx9n9rI5MFeuTLmyTA2Bho0zg="
     },
@@ -199,7 +199,7 @@
         "logicalId": "storageavatars"
       },
       "output": {
-        "BucketName": "b13c4c6060.BucketName",
+        "BucketName": "storage.avatars.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "rNwwRZG31h4CJSNavssQfx7X9sQ="
@@ -213,14 +213,14 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "PartitionKeyName": "storage.activity.SortKeyName",
-        "SortKeyName": "bff98da81e.SortKeyName",
+        "PartitionKeyName": "storage.bookmarks.PartitionKeyName",
+        "SortKeyName": "storage.bookmarks.SortKeyName",
         "SortKeyType": "S",
         "Region": "us-east-1",
-        "Arn": "bff98da81e.Arn",
-        "StreamArn": "bff98da81e.StreamArn",
+        "Arn": "storage.bookmarks.Arn",
+        "StreamArn": "storage.bookmarks.StreamArn",
         "PartitionKeyType": "S",
-        "Name": "bff98da81e.Name"
+        "Name": "storage.bookmarks.Name"
       },
       "lastPushDirHash": "UcosRNORY7WR8bi+QNNLl+eX+Eo="
     }

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
+    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref"
+    "OutputValue": "c643a9b272.bucketName"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
+    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "oauthCognitoDomain",
-    "OutputValue": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain"
+    "OutputValue": "c643a9b272.oauthCognitoDomain"
   },
   {
     "OutputKey": "oauthScope",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "api.importedresources.GraphQLAPIKeyOutput"
+    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3GraphQLUrl"
+    "OutputValue": "c643a9b272.awsAppsyncApiEndpoint"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId"
+    "OutputValue": "c643a9b272.awsAppsyncApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main\\\",\\\"bucketName\\\":\\\"675e32dc54.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddstorageimportedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket2829DA26Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main\\\",\\\"bucketName\\\":\\\"c643a9b272.bucketName\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -117,11 +117,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "c643a9b272.userPoolId"
+    "OutputValue": "auth.importedresources2c7c1c40.UserPoolId"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "c643a9b272.identityPoolId"
+    "OutputValue": "auth.importedresources2c7c1c40.IdentityPoolId"
   },
   {
     "OutputKey": "verificationMechanisms",

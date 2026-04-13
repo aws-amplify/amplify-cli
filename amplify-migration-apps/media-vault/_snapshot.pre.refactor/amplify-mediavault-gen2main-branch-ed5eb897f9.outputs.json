@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref"
+    "OutputValue": "7e048d04ad.webClientId"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef"
+    "OutputValue": "7e048d04ad.bucketName"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref"
+    "OutputValue": "7e048d04ad.webClientId"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -37,7 +37,7 @@
   },
   {
     "OutputKey": "oauthRedirectSignOut",
-    "OutputValue": "7e048d04ad.oauthRedirectSignOut"
+    "OutputValue": "7e048d04ad.oauthRedirectSignIn"
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "api.mediavault.GraphQLAPIKeyOutput"
+    "OutputValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPIDefaultApiKey6A29A072ApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -69,7 +69,7 @@
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "7e048d04ad.oauthRedirectSignOut"
+    "OutputValue": "7e048d04ad.oauthRedirectSignIn"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833GraphQLUrl"
+    "OutputValue": "7e048d04ad.awsAppsyncApiEndpoint"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+    "OutputValue": "7e048d04ad.awsAppsyncApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main\\\",\\\"bucketName\\\":\\\"1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main\\\",\\\"bucketName\\\":\\\"7e048d04ad.bucketName\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPool9F5CB443Ref"
+    "OutputValue": "7e048d04ad.userPoolId"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+    "OutputValue": "7e048d04ad.identityPoolId"
   },
   {
     "OutputKey": "verificationMechanisms",

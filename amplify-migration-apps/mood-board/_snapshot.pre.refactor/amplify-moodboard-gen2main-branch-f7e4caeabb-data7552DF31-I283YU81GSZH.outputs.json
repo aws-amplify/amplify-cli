@@ -5,14 +5,14 @@
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey",
-    "OutputValue": "api.moodboard.GraphQLAPIKeyOutput"
+    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+    "OutputValue": "383edf5091.awsAppsyncApiId"
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl"
+    "OutputValue": "383edf5091.awsAppsyncApiEndpoint"
   }
 ]

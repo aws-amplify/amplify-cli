@@ -356,7 +356,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.mediavault1f08412d.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -453,7 +453,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.mediavault1f08412d.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -496,7 +496,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.mediavault1f08412d.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -539,7 +539,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.mediavault1f08412d.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -582,7 +582,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.mediavault1f08412d.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -625,7 +625,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"a902e5815d.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.mediavault1f08412d.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
             ]
           ]
         },

@@ -221,7 +221,7 @@
           "identityPoolName": "discussionsc578c16e_identitypool_c578c16e",
           "allowUnauthenticatedIdentities": false,
           "resourceNameTruncated": "discusc578c16e",
-          "userPoolName": "3641aeee95.UserPoolName",
+          "userPoolName": "auth.discussionsc578c16ec578c16e.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -350,7 +350,7 @@
           "tableName": "activity",
           "partitionKeyName": "id",
           "partitionKeyType": "S",
-          "sortKeyName": "storage.activity.SortKeyName",
+          "sortKeyName": "storage.bookmarks.PartitionKeyName",
           "sortKeyType": "S",
           "env": "main"
         }
@@ -395,9 +395,9 @@
         "TemplateURL": "https://s3.amazonaws.com/b77cc5b997.DeploymentBucketName/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
         "Parameters": {
           "tableName": "bookmarks",
-          "partitionKeyName": "storage.activity.SortKeyName",
+          "partitionKeyName": "storage.bookmarks.PartitionKeyName",
           "partitionKeyType": "S",
-          "sortKeyName": "bff98da81e.SortKeyName",
+          "sortKeyName": "storage.bookmarks.SortKeyName",
           "sortKeyType": "S",
           "env": "main"
         }

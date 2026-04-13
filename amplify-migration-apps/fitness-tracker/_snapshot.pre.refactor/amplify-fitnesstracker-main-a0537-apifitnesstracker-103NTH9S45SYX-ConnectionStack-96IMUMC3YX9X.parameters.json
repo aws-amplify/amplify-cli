@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
+    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExercise5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name2F3E478ERef",
-    "ParameterValue": "5b75fea289.GetAtt5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05NameName"
+    "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef",
+    "ParameterValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseDataSourceE8B787D0Name",
-    "ParameterValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name"
+    "ParameterValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
   }
 ]

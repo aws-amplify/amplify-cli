@@ -6,11 +6,11 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "storage.activity.SortKeyName",
+            "AttributeName": "storage.bookmarks.PartitionKeyName",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "bff98da81e.SortKeyName",
+            "AttributeName": "storage.bookmarks.SortKeyName",
             "AttributeType": "S"
           }
         ],
@@ -19,7 +19,7 @@
             "IndexName": "byPost",
             "KeySchema": [
               {
-                "AttributeName": "bff98da81e.SortKeyName",
+                "AttributeName": "storage.bookmarks.SortKeyName",
                 "KeyType": "HASH"
               }
             ],
@@ -34,11 +34,11 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "storage.activity.SortKeyName",
+            "AttributeName": "storage.bookmarks.PartitionKeyName",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "bff98da81e.SortKeyName",
+            "AttributeName": "storage.bookmarks.SortKeyName",
             "KeyType": "RANGE"
           }
         ],

@@ -48,15 +48,15 @@
         "logicalId": "authmediavault1f08412d"
       },
       "output": {
-        "UserPoolId": "1e7e367f51.UserPoolId",
-        "AppClientIDWeb": "1e7e367f51.AppClientIDWeb",
-        "AppClientID": "1e7e367f51.AppClientID",
-        "HostedUIDomain": "1e7e367f51.HostedUIDomain",
-        "IdentityPoolId": "1e7e367f51.IdentityPoolId",
-        "UserPoolArn": "1e7e367f51.UserPoolArn",
-        "IdentityPoolName": "1e7e367f51.IdentityPoolName",
+        "UserPoolId": "auth.mediavault1f08412d.UserPoolId",
+        "AppClientIDWeb": "auth.mediavault1f08412d.AppClientIDWeb",
+        "AppClientID": "auth.mediavault1f08412d.AppClientID",
+        "HostedUIDomain": "auth.mediavault1f08412d.HostedUIDomain",
+        "IdentityPoolId": "auth.mediavault1f08412d.IdentityPoolId",
+        "UserPoolArn": "auth.mediavault1f08412d.UserPoolArn",
+        "IdentityPoolName": "auth.mediavault1f08412d.IdentityPoolName",
         "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.mediavault.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.mediavault.amplifyapp.com/\"]}",
-        "UserPoolName": "1e7e367f51.UserPoolName"
+        "UserPoolName": "auth.mediavault1f08412d.UserPoolName"
       },
       "lastPushDirHash": "AwgYGHx+9uNagQUFkaFFMHBwgGg="
     },
@@ -81,8 +81,8 @@
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "BasicGroupRole": "1b879f7717.BasicGroupRole",
-        "AdminGroupRole": "1b879f7717.AdminGroupRole"
+        "BasicGroupRole": "auth.userPoolGroups.BasicGroupRole",
+        "AdminGroupRole": "auth.userPoolGroups.AdminGroupRole"
       },
       "lastPushDirHash": "YX53bt9uz7MT/9eaBZUPoOBEDvI="
     }
@@ -119,9 +119,9 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "5d5520c8f1.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "5d5520c8f1.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "api.mediavault.GraphQLAPIKeyOutput"
+        "GraphQLAPIIdOutput": "api.mediavault.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.mediavault.GraphQLAPIEndpointOutput",
+        "GraphQLAPIKeyOutput": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPIDefaultApiKey6A29A072ApiKey"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/6b2a52a982.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
@@ -164,7 +164,7 @@
         "logicalId": "storagemediavault"
       },
       "output": {
-        "BucketName": "3ae948247d.BucketName",
+        "BucketName": "storage.mediavault.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "o0jh/VhjpuADeT4UovxNATt4O5k="
@@ -198,11 +198,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T14:56:48.425Z",
       "output": {
-        "LambdaExecutionRoleArn": "a902e5815d.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.thumbnailgen.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "a902e5815d.Arn",
-        "Name": "a902e5815d.Name",
-        "LambdaExecutionRole": "a902e5815d.LambdaExecutionRole"
+        "Arn": "function.thumbnailgen.Arn",
+        "Name": "function.thumbnailgen.Name",
+        "LambdaExecutionRole": "function.thumbnailgen.LambdaExecutionRole"
       },
       "lastPushDirHash": "MCIFtnBrU9B5/8k3oUOw3xcrIso="
     },
@@ -233,11 +233,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T14:56:48.425Z",
       "output": {
-        "LambdaExecutionRoleArn": "51b6aa8206.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.addusertogroup.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "51b6aa8206.Arn",
-        "Name": "51b6aa8206.Name",
-        "LambdaExecutionRole": "51b6aa8206.LambdaExecutionRole"
+        "Arn": "function.addusertogroup.Arn",
+        "Name": "function.addusertogroup.Name",
+        "LambdaExecutionRole": "function.addusertogroup.LambdaExecutionRole"
       },
       "lastPushDirHash": "2cztNkTtJknQAlYwuF/tARdhsYw="
     },
@@ -268,11 +268,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T14:56:48.425Z",
       "output": {
-        "LambdaExecutionRoleArn": "cb0797a992.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "function.removeuserfromgroup.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "cb0797a992.Arn",
-        "Name": "cb0797a992.Name",
-        "LambdaExecutionRole": "cb0797a992.LambdaExecutionRole"
+        "Arn": "function.removeuserfromgroup.Arn",
+        "Name": "function.removeuserfromgroup.Name",
+        "LambdaExecutionRole": "function.removeuserfromgroup.LambdaExecutionRole"
       },
       "lastPushDirHash": "pbsv/8VfvBGo0DKSDeXe4+eqw1Y="
     }

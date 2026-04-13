@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName",
-    "ParameterValue": "0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name"
+    "ParameterValue": "2a2fe43672.GetAttBoardDataSourceName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -13,15 +13,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "5494e94a79.GraphQLAPIIdOutput"
+    "ParameterValue": "api.moodboard.GraphQLAPIIdOutput"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name30788E07Ref",
-    "ParameterValue": "0ccbfc84ee.GetAtt0ccbfc84ee.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2NameName"
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref",
+    "ParameterValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName5135EED9Ref",
-    "ParameterValue": "79926af416.GetAtt79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADNameName"
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref",
+    "ParameterValue": "1230b2630f.transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
@@ -29,6 +29,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName",
-    "ParameterValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName"
+    "ParameterValue": "1230b2630f.GetAttMoodItemDataSourceName"
   }
 ]
