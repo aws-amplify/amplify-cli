@@ -24,12 +24,12 @@ type Comment @model @auth(rules: [{ allow: public }]){
 }
 
 type Query {
-  fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
+  fetchUserActivity(storage.bookmarks.PartitionKeyName: ID!): [Activity] @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
 }
 
 type Activity {
   id: ID! @auth(rules: [{ allow: public }])
-  userId: ID! @auth(rules: [{ allow: public }])
+  storage.bookmarks.PartitionKeyName: ID! @auth(rules: [{ allow: public }])
   activityType: String! @auth(rules: [{ allow: public }])
   timestamp: String! @auth(rules: [{ allow: public }])
 }
@@ -41,9 +41,9 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'main',
       modelNameToTableNameMapping: {
-        Topic: 'Topic-u3jn2qbupzbyhc3h53673wdvim-main',
-        Post: 'Post-u3jn2qbupzbyhc3h53673wdvim-main',
-        Comment: 'Comment-u3jn2qbupzbyhc3h53673wdvim-main',
+        Topic: 'Topic-api.discussions.GraphQLAPIIdOutput-main',
+        Post: 'Post-api.discussions.GraphQLAPIIdOutput-main',
+        Comment: 'Comment-api.discussions.GraphQLAPIIdOutput-main',
       },
     },
   ],

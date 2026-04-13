@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "u3jn2qbupzbyhc3h53673wdvim"
+    "ParameterValue": "api.discussions.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

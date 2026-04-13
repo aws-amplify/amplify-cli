@@ -37,13 +37,13 @@
   },
   "Outputs": {
     "Name": {
-      "Value": "activity-main"
+      "Value": "storage.activity.Name"
     },
     "Arn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
+      "Value": "storage.activity.Arn"
     },
     "StreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-20T21:19:57.516"
+      "Value": "storage.activity.StreamArn"
     },
     "PartitionKeyName": {
       "Value": "id"
@@ -52,7 +52,7 @@
       "Value": "S"
     },
     "SortKeyName": {
-      "Value": "userId"
+      "Value": "storage.bookmarks.PartitionKeyName"
     },
     "SortKeyType": {
       "Value": "S"

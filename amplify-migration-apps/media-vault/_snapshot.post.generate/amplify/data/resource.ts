@@ -35,7 +35,7 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'main',
       modelNameToTableNameMapping: {
-        Note: 'Note-5aahjbxypzan3jqab7lbquus4m-main',
+        Note: 'Note-api.mediavault.GraphQLAPIIdOutput-main',
       },
     },
   ],

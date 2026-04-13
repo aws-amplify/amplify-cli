@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-api.discussions.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentDataSource55E61D91Name",
@@ -33,11 +33,11 @@
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-u3jn2qbupzbyhc3h53673wdvim-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-api.discussions.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-u3jn2qbupzbyhc3h53673wdvim-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-api.discussions.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPINONEDS8BC5D31EName",

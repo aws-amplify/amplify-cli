@@ -145,7 +145,7 @@
           "Fn::Join": [
             "",
             [
-              "moodboard759ae00a_userpool_759ae00a",
+              "auth.moodboard759ae00a.UserPoolName",
               "-",
               "main"
             ]
@@ -167,7 +167,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_Cwvqs93Nc"
+        "UserPoolId": "auth.moodboard759ae00a.UserPoolId"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -179,7 +179,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_Cwvqs93Nc"
+        "UserPoolId": "auth.moodboard759ae00a.UserPoolId"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -188,7 +188,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "1ssdipb0d8rfa77rq3o7u8t16c",
+            "ClientId": "auth.moodboard759ae00a.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -196,13 +196,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_Cwvqs93Nc"
+                  "client": "auth.moodboard759ae00a.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "5t2df7ru217mr5ar6r44r61uqg",
+            "ClientId": "auth.moodboard759ae00a.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -210,7 +210,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_Cwvqs93Nc"
+                  "client": "auth.moodboard759ae00a.UserPoolId"
                 }
               ]
             }
@@ -230,7 +230,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:a39e734d-ac34-43c7-8303-67512f010f0d",
+        "IdentityPoolId": "auth.moodboard759ae00a.IdentityPoolId",
         "Roles": {
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-authRole"

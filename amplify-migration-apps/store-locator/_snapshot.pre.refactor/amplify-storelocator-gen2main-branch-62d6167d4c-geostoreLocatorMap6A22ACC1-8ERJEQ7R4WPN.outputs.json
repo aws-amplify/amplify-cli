@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "Style",
-    "OutputValue": "VectorEsriStreets"
+    "OutputValue": "geo.storeLocatorMap.Style"
   },
   {
     "OutputKey": "Region",

@@ -93,7 +93,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "discussionsc578c16e_userpool_c578c16e"
+    "ParameterValue": "auth.discussionsc578c16ec578c16e.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",

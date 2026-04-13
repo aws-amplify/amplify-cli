@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseNestedStackExerciseNestedStackResourceA766B8C6Outputsamplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseTableA7BD0631TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef",

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "discus-avatarsc39a5-main",
+    "OutputValue": "storage.avatars.BucketName",
     "Description": "Bucket name for the S3 bucket"
   },
   {

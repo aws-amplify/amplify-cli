@@ -97,7 +97,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "fitnesstracker33f55455_userpool_33f55455"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",

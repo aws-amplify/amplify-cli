@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "authuserPoolGroupsstoreLocatorAdminGroupRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_R1pdziFVe-storeLocatorAdminGroupRole"
+    "ParameterValue": "auth.userPoolGroups.storeLocatorAdminGroupRole"
   },
   {
     "ParameterKey": "isDefault",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "mapStyle",
-    "ParameterValue": "VectorEsriStreets"
+    "ParameterValue": "geo.storeLocatorMap.Style"
   },
   {
     "ParameterKey": "mapName",
@@ -29,6 +29,6 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
-    "ParameterValue": "us-east-1_R1pdziFVe"
+    "ParameterValue": "auth.storelocator41a9495f41a9495f.UserPoolId"
   }
 ]

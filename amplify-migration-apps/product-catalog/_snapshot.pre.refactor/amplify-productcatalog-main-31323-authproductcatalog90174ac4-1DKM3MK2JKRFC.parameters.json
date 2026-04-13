@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "productcatalog90174ac4_userpool_90174ac4"
+    "ParameterValue": "auth.productcatalog90174ac4.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",

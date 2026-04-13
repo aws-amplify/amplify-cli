@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "jzwb5p2vcbd2ldlnlxokgjcjby"
+    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

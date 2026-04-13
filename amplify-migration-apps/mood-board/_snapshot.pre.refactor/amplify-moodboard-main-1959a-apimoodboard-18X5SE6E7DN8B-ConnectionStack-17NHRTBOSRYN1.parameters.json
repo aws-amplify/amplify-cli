@@ -13,15 +13,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "vsozkn3hbzdjppzyf7xtf2f4sy"
+    "ParameterValue": "api.moodboard.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
-    "ParameterValue": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+    "ParameterValue": "Board-api.moodboard.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
-    "ParameterValue": "MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+    "ParameterValue": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",

@@ -261,11 +261,11 @@
         "Fn::Join": [
           "",
           [
-            "{\"custom\":{\"API\":{\"adminapi-gen2-main\":{\"endpoint\":\"https://",
+            "{\"custom\":{\"API\":{\"api.api.adminapi.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://",
             {
               "Fn::GetAtt": [
-                "restapistackadminapi43EA27F6",
-                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistackadminapiRestApi15E05C08Ref"
+                "restapistackapi.api.adminapi.ApiName.ApiName43EA27F6",
+                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiNameRestApi15E05C08Ref"
               ]
             },
             ".execute-api.",
@@ -279,19 +279,19 @@
             "/",
             {
               "Fn::GetAtt": [
-                "restapistackadminapi43EA27F6",
-                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistackadminapiRestApiDeploymentStageprodB49BA490Ref"
+                "restapistackapi.api.adminapi.ApiName.ApiName43EA27F6",
+                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiNameRestApiDeploymentStageprodB49BA490Ref"
               ]
             },
             "\",\"region\":\"",
             {
               "Ref": "AWS::Region"
             },
-            "\",\"apiName\":\"adminapi-gen2-main\"},\"nutritionapi-gen2-main\":{\"endpoint\":\"https://",
+            "\",\"apiName\":\"api.api.adminapi.ApiName.ApiName-gen2-main\"},\"api.api.nutritionapi.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://",
             {
               "Fn::GetAtt": [
-                "restapistacknutritionapi72914ECD",
-                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiEC7FBBC7Ref"
+                "restapistackapi.api.nutritionapi.ApiName.ApiName72914ECD",
+                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApiEC7FBBC7Ref"
               ]
             },
             ".execute-api.",
@@ -305,15 +305,15 @@
             "/",
             {
               "Fn::GetAtt": [
-                "restapistacknutritionapi72914ECD",
-                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiDeploymentStageprod41F1D9FFRef"
+                "restapistackapi.api.nutritionapi.ApiName.ApiName72914ECD",
+                "Outputs.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApiDeploymentStageprod41F1D9FFRef"
               ]
             },
             "\",\"region\":\"",
             {
               "Ref": "AWS::Region"
             },
-            "\",\"apiName\":\"nutritionapi-gen2-main\"}}},\"version\":\"1.4\"}"
+            "\",\"apiName\":\"api.api.nutritionapi.ApiName.ApiName-gen2-main\"}}},\"version\":\"1.4\"}"
           ]
         ]
       }
@@ -761,7 +761,7 @@
         "aws:asset:property": "TemplateURL"
       }
     },
-    "restapistackadminapi43EA27F6": {
+    "restapistackapi.api.adminapi.ApiName.ApiName43EA27F6": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
@@ -826,12 +826,12 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-adminapi.NestedStack/rest-api-stack-adminapi.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackadminapi4B6BAEAB.nested.template.json",
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.adminapi.ApiName.ApiName.NestedStack/rest-api-stack-api.api.adminapi.ApiName.ApiName.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiName4B6BAEAB.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
-    "restapistacknutritionapi72914ECD": {
+    "restapistackapi.api.nutritionapi.ApiName.ApiName72914ECD": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
@@ -896,8 +896,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi.NestedStack/rest-api-stack-nutritionapi.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapi29813263.nested.template.json",
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName.NestedStack/rest-api-stack-api.api.nutritionapi.ApiName.ApiName.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiName29813263.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },

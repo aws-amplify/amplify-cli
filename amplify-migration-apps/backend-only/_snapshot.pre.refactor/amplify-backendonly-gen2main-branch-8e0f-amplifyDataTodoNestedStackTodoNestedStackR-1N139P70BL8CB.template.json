@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource10281D13Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataAmplifyTableManagerTableMa0FF916B6"
         },
-        "tableName": "Todo-sgumi4ggubb4jdo6i54km7skka-main",
+        "tableName": "Todo-api.backendonly.GraphQLAPIIdOutput-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -487,7 +487,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Todo-sgumi4ggubb4jdo6i54km7skka-main"
+                          "tablename": "Todo-api.backendonly.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -495,7 +495,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Todo-sgumi4ggubb4jdo6i54km7skka-main"
+                          "tablename": "Todo-api.backendonly.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -2067,7 +2067,7 @@
     },
     "GetAttTodoTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Todo-sgumi4ggubb4jdo6i54km7skka-main",
+      "Value": "Todo-api.backendonly.GraphQLAPIIdOutput-main",
       "Export": {
         "Name": {
           "Fn::Join": [

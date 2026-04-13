@@ -1,6 +1,6 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiEC7FBBC7Ref",
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApiEC7FBBC7Ref",
     "OutputValue": "klqsuoycl8"
   },
   {
@@ -8,7 +8,7 @@
     "OutputValue": "https://klqsuoycl8.execute-api.us-east-1.amazonaws.com/prod/"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiDeploymentStageprod41F1D9FFRef",
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApiDeploymentStageprod41F1D9FFRef",
     "OutputValue": "prod"
   }
 ]

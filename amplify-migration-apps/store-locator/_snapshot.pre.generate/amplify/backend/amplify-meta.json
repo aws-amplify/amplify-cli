@@ -35,7 +35,7 @@
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "storeLocatorAdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_R1pdziFVe-storeLocatorAdminGroupRole"
+        "storeLocatorAdminGroupRole": "auth.userPoolGroups.storeLocatorAdminGroupRole"
       },
       "lastPushDirHash": "aY2fv0JwB9V2Pnq+Iavglw2oGVE="
     },
@@ -80,13 +80,13 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "UserPoolId": "us-east-1_R1pdziFVe",
-        "AppClientIDWeb": "6am6ldh23n8ke819nuvk51cddq",
-        "AppClientID": "5ppvpdo9dmkrj55qi8h865lt34",
-        "IdentityPoolId": "us-east-1:4ea514e6-bc16-4990-a5ea-cefe84c3050d",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_R1pdziFVe",
-        "IdentityPoolName": "storelocator41a9495f_identitypool_41a9495f__main",
-        "UserPoolName": "storelocator41a9495f_userpool_41a9495f"
+        "UserPoolId": "auth.storelocator41a9495f41a9495f.UserPoolId",
+        "AppClientIDWeb": "auth.storelocator41a9495f41a9495f.AppClientIDWeb",
+        "AppClientID": "auth.storelocator41a9495f41a9495f.AppClientID",
+        "IdentityPoolId": "auth.storelocator41a9495f41a9495f.IdentityPoolId",
+        "UserPoolArn": "auth.storelocator41a9495f41a9495f.UserPoolArn",
+        "IdentityPoolName": "auth.storelocator41a9495f41a9495f.IdentityPoolName",
+        "UserPoolName": "auth.storelocator41a9495f41a9495f.UserPoolName"
       },
       "lastPushDirHash": "BhovtRkLGtk84r9ocO7d+lsB8TQ="
     }
@@ -110,11 +110,11 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/storelocator41a9495f41a9495fPostConfirmation-main",
+        "LambdaExecutionRoleArn": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-main",
-        "Name": "storelocator41a9495f41a9495fPostConfirmation-main",
-        "LambdaExecutionRole": "storelocator41a9495f41a9495fPostConfirmation-main"
+        "Arn": "function.storelocator41a9495f41a9495fPostConfirmation.Arn",
+        "Name": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole",
+        "LambdaExecutionRole": "function.storelocator41a9495f41a9495fPostConfirmation.LambdaExecutionRole"
       },
       "lastPushDirHash": "6EQkwiPaTbkyYCg4JDkMQiOWz8g="
     }
@@ -124,7 +124,7 @@
       "isDefault": true,
       "providerPlugin": "awscloudformation",
       "service": "Map",
-      "mapStyle": "VectorEsriStreets",
+      "mapStyle": "geo.storeLocatorMap.Style",
       "accessType": "AuthorizedAndGuestUsers",
       "dependsOn": [
         {
@@ -148,10 +148,10 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "Style": "VectorEsriStreets",
+        "Style": "geo.storeLocatorMap.Style",
         "Region": "us-east-1",
-        "Arn": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-main",
-        "Name": "storeLocatorMap-main"
+        "Arn": "geo.storeLocatorMap.Arn",
+        "Name": "geo.storeLocatorMap.Name"
       },
       "lastPushDirHash": "f6hS2nqVgBHpibNEdmumaRgBCRM="
     },
@@ -185,8 +185,8 @@
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
         "Region": "us-east-1",
-        "Arn": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-main",
-        "Name": "storeLocatorSearch-main"
+        "Arn": "geo.storeLocatorSearch.Arn",
+        "Name": "geo.storeLocatorSearch.Name"
       },
       "lastPushDirHash": "DcWb0RNLHGk1nlEWvQI8kcmIhuw="
     },
@@ -218,8 +218,8 @@
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
         "Region": "us-east-1",
-        "Arn": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-main",
-        "Name": "storeLocatorGeofence-main"
+        "Arn": "geo.storeLocatorGeofence.Arn",
+        "Name": "geo.storeLocatorGeofence.Name"
       },
       "lastPushDirHash": "qBxz5+dofKzvXa0AVAS5tnATCqA="
     }

@@ -9,9 +9,9 @@
   },
   {
     "OutputKey": "GetAttWorkoutProgramTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/WorkoutProgram-jzwb5p2vcbd2ldlnlxokgjcjby-main/stream/2026-03-24T03:04:23.623",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/WorkoutProgram-api.fitnesstracker.GraphQLAPIIdOutput-main/stream/2026-03-24T03:04:23.623",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "jzwb5p2vcbd2ldlnlxokgjcjby:GetAtt:WorkoutProgramTable:StreamArn"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:WorkoutProgramTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
@@ -19,9 +19,9 @@
   },
   {
     "OutputKey": "GetAttWorkoutProgramTableName",
-    "OutputValue": "WorkoutProgram-jzwb5p2vcbd2ldlnlxokgjcjby-main",
+    "OutputValue": "WorkoutProgram-api.fitnesstracker.GraphQLAPIIdOutput-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "jzwb5p2vcbd2ldlnlxokgjcjby:GetAtt:WorkoutProgramTable:Name"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:WorkoutProgramTable:Name"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramWorkoutProgramOwnerDataResolverFnWorkoutProgramOwnerDataResolverFnAppSyncFunctionB902B95DFunctionId",
@@ -31,7 +31,7 @@
     "OutputKey": "GetAttWorkoutProgramDataSourceName",
     "OutputValue": "WorkoutProgramTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "jzwb5p2vcbd2ldlnlxokgjcjby:GetAtt:WorkoutProgramDataSource:Name"
+    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:WorkoutProgramDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",

@@ -17,7 +17,7 @@ export const defineStoreLocatorMap = (backend: Backend<any>) => {
       authuserPoolGroupsstoreLocatorAdminGroupRole:
         backend.auth.resources.groups['storeLocatorAdmin'].role.roleName,
       mapName: 'storeLocatorMap',
-      mapStyle: 'VectorEsriStreets',
+      mapStyle: 'geo.storeLocatorMap.Style',
       branchName,
       isDefault: 'true',
     }

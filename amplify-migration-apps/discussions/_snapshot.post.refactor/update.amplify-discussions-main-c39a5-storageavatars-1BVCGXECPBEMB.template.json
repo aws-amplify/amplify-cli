@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "discus-avatarsc39a5-main"
+      "Value": "storage.avatars.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -263,7 +263,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatarsc39a5-main",
+                      "storage.avatars.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -299,7 +299,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatarsc39a5-main",
+                      "storage.avatars.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -335,7 +335,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatarsc39a5-main",
+                      "storage.avatars.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -371,7 +371,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatarsc39a5-main",
+                      "storage.avatars.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -400,7 +400,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "discus-avatarsc39a5-main",
+                    "storage.avatars.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -426,7 +426,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "discus-avatarsc39a5-main"
+                    "storage.avatars.BucketName"
                   ]
                 ]
               }

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "kinesisStreamId",
-    "OutputValue": "moodboardKinesis-main"
+    "OutputValue": "analytics.moodboardKinesis.kinesisStreamId"
   },
   {
     "OutputKey": "kinesisStreamShardCount",
@@ -9,6 +9,6 @@
   },
   {
     "OutputKey": "kinesisStreamArn",
-    "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+    "OutputValue": "analytics.moodboardKinesis.kinesisStreamArn"
   }
 ]

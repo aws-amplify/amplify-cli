@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource10281D13Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataAmplifyTableManagerTableMa0FF916B6"
         },
-        "tableName": "Project-sgumi4ggubb4jdo6i54km7skka-main",
+        "tableName": "Project-api.backendonly.GraphQLAPIIdOutput-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Project-sgumi4ggubb4jdo6i54km7skka-main"
+                          "tablename": "Project-api.backendonly.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Project-sgumi4ggubb4jdo6i54km7skka-main"
+                          "tablename": "Project-api.backendonly.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -2041,7 +2041,7 @@
     },
     "GetAttProjectTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Project-sgumi4ggubb4jdo6i54km7skka-main",
+      "Value": "Project-api.backendonly.GraphQLAPIIdOutput-main",
       "Export": {
         "Name": {
           "Fn::Join": [

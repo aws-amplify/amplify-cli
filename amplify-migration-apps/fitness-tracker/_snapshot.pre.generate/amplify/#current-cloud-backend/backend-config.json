@@ -1,6 +1,6 @@
 {
   "api": {
-    "adminapi": {
+    "api.api.adminapi.ApiName.ApiName": {
       "dependsOn": [
         {
           "attributes": [
@@ -61,7 +61,7 @@
       "providerPlugin": "awscloudformation",
       "service": "AppSync"
     },
-    "nutritionapi": {
+    "api.api.nutritionapi.ApiName.ApiName": {
       "dependsOn": [
         {
           "attributes": [

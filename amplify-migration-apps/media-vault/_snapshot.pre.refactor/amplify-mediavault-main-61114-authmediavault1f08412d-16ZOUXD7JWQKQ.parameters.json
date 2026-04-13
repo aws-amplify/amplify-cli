@@ -93,7 +93,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "mediavault1f08412d_userpool_1f08412d"
+    "ParameterValue": "auth.mediavault1f08412d.UserPoolName"
   },
   {
     "ParameterKey": "hostedUIProviderMeta",

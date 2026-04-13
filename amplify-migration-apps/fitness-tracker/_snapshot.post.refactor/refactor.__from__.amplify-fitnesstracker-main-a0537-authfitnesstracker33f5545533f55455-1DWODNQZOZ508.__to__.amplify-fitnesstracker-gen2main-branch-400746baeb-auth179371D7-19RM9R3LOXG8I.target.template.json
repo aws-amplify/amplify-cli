@@ -640,8 +640,8 @@
         "Description": "override success",
         "GroupName": "Admin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_iguxCIcMS-AdminGroupRole",
-        "UserPoolId": "us-east-1_iguxCIcMS"
+        "RoleArn": "auth.userPoolGroups.AdminGroupRole",
+        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
       }
     },
     "amplifyAuthUserPool4BA7F805": {
@@ -678,7 +678,7 @@
           "Fn::Join": [
             "",
             [
-              "fitnesstracker33f55455_userpool_33f55455",
+              "auth.fitnesstracker33f5545533f55455.UserPoolName",
               "-",
               "main"
             ]
@@ -697,7 +697,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_iguxCIcMS"
+        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -709,7 +709,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_iguxCIcMS"
+        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -718,7 +718,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "3s8jcv7nflisr91emephrr2a9s",
+            "ClientId": "auth.fitnesstracker33f5545533f55455.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -726,13 +726,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_iguxCIcMS"
+                  "client": "auth.fitnesstracker33f5545533f55455.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "29bubgvfbbqkp4k60rl7oaqd8s",
+            "ClientId": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -740,7 +740,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_iguxCIcMS"
+                  "client": "auth.fitnesstracker33f5545533f55455.UserPoolId"
                 }
               ]
             }
@@ -760,7 +760,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022",
+        "IdentityPoolId": "auth.fitnesstracker33f5545533f55455.IdentityPoolId",
         "RoleMappings": {
           "UserPoolClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -771,8 +771,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "us-east-1_iguxCIcMS",
-                  "client": "3s8jcv7nflisr91emephrr2a9s"
+                  "userPool": "auth.fitnesstracker33f5545533f55455.UserPoolId",
+                  "client": "auth.fitnesstracker33f5545533f55455.AppClientID"
                 }
               ]
             },
@@ -787,8 +787,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "us-east-1_iguxCIcMS",
-                  "webClient": "29bubgvfbbqkp4k60rl7oaqd8s"
+                  "userPool": "auth.fitnesstracker33f5545533f55455.UserPoolId",
+                  "webClient": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb"
                 }
               ]
             },

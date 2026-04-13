@@ -35,8 +35,8 @@
       },
       "api": {
         "fitnesstracker": {},
-        "nutritionapi": {},
-        "adminapi": {}
+        "api.api.nutritionapi.ApiName.ApiName": {},
+        "api.api.adminapi.ApiName.ApiName": {}
       }
     }
   }

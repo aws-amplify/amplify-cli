@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storageactivityName",
-    "ParameterValue": "activity-main"
+    "ParameterValue": "storage.activity.Name"
   },
   {
     "ParameterKey": "s3Key",
@@ -17,15 +17,15 @@
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://jsm5ex363jcy5fm2reylyox4te.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "api.discussions.GraphQLAPIEndpointOutput"
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
-    "ParameterValue": "u3jn2qbupzbyhc3h53673wdvim"
+    "ParameterValue": "api.discussions.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-20T21:19:57.516"
+    "ParameterValue": "storage.activity.StreamArn"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "storageactivityArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
+    "ParameterValue": "storage.activity.Arn"
   }
 ]

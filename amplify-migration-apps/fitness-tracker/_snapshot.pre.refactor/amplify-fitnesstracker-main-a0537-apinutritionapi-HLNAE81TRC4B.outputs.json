@@ -1,17 +1,17 @@
 [
   {
     "OutputKey": "ApiName",
-    "OutputValue": "nutritionapi",
+    "OutputValue": "api.api.nutritionapi.ApiName.ApiName",
     "Description": "API Friendly name"
   },
   {
     "OutputKey": "RootUrl",
-    "OutputValue": "https://hmydcaubcb.execute-api.us-east-1.amazonaws.com/main",
+    "OutputValue": "api.api.api.nutritionapi.ApiName.ApiName.RootUrl",
     "Description": "Root URL of the API gateway"
   },
   {
     "OutputKey": "ApiId",
-    "OutputValue": "hmydcaubcb",
+    "OutputValue": "api.api.nutritionapi.ApiName.ApiId",
     "Description": "API ID (prefix of API URL)"
   }
 ]

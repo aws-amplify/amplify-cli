@@ -25,8 +25,8 @@
             "authenticationType": "API_KEY"
           }
         },
-        "GraphQLAPIIdOutput": "u3jn2qbupzbyhc3h53673wdvim",
-        "GraphQLAPIEndpointOutput": "https://jsm5ex363jcy5fm2reylyox4te.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "api.discussions.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.discussions.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "providerPlugin": "awscloudformation",
@@ -72,14 +72,14 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "CreatedSNSRole": "arn:aws:iam::123456789012:role/snsc578c16ec39a5-main",
-        "UserPoolId": "us-east-1_vv2HFjwRK",
-        "AppClientIDWeb": "7nhjrv5jepqc7kacqiknlj0siu",
-        "AppClientID": "7tbnnc27p4edfrp7m6bqqkh0gq",
-        "IdentityPoolId": "us-east-1:d588cc58-4459-4b1b-ac91-307079a54464",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_vv2HFjwRK",
-        "IdentityPoolName": "discussionsc578c16e_identitypool_c578c16e__main",
-        "UserPoolName": "discussionsc578c16e_userpool_c578c16e"
+        "CreatedSNSRole": "auth.discussionsc578c16ec578c16e.CreatedSNSRole",
+        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId",
+        "AppClientIDWeb": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
+        "AppClientID": "auth.discussionsc578c16ec578c16e.AppClientID",
+        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
+        "UserPoolArn": "auth.discussionsc578c16ec578c16e.UserPoolArn",
+        "IdentityPoolName": "auth.discussionsc578c16ec578c16e.IdentityPoolName",
+        "UserPoolName": "auth.discussionsc578c16ec578c16e.UserPoolName"
       },
       "lastPushDirHash": "mPKsrH+CL3NCuCtTWB9nkOHB7ls="
     }
@@ -114,11 +114,11 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/discussionsLambdaRole44bd86bc-main",
+        "LambdaExecutionRoleArn": "function.fetchuseractivity.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:fetchuseractivity-main",
-        "Name": "fetchuseractivity-main",
-        "LambdaExecutionRole": "discussionsLambdaRole44bd86bc-main"
+        "Arn": "function.fetchuseractivity.Arn",
+        "Name": "function.fetchuseractivity.Name",
+        "LambdaExecutionRole": "function.fetchuseractivity.LambdaExecutionRole"
       },
       "lastPushDirHash": "R64T5GvXPz84ttStgLRDEvqSeOg="
     },
@@ -159,11 +159,11 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/discussionsLambdaRole62a425ae-main",
+        "LambdaExecutionRoleArn": "function.recorduseractivity.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:recorduseractivity-main",
-        "Name": "recorduseractivity-main",
-        "LambdaExecutionRole": "discussionsLambdaRole62a425ae-main"
+        "Arn": "function.recorduseractivity.Arn",
+        "Name": "function.recorduseractivity.Name",
+        "LambdaExecutionRole": "function.recorduseractivity.LambdaExecutionRole"
       },
       "lastPushDirHash": "wpepR6GRBy0XTCEXNmYdMZdmEvM="
     }
@@ -179,13 +179,13 @@
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
         "PartitionKeyName": "id",
-        "SortKeyName": "userId",
+        "SortKeyName": "storage.bookmarks.PartitionKeyName",
         "SortKeyType": "S",
         "Region": "us-east-1",
-        "Arn": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main",
-        "StreamArn": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-20T21:19:57.516",
+        "Arn": "storage.activity.Arn",
+        "StreamArn": "storage.activity.StreamArn",
         "PartitionKeyType": "S",
-        "Name": "activity-main"
+        "Name": "storage.activity.Name"
       },
       "lastPushDirHash": "LKrx9n9rI5MFeuTLmyTA2Bho0zg="
     },
@@ -199,7 +199,7 @@
         "logicalId": "storageavatars"
       },
       "output": {
-        "BucketName": "discus-avatarsc39a5-main",
+        "BucketName": "storage.avatars.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "rNwwRZG31h4CJSNavssQfx7X9sQ="
@@ -213,14 +213,14 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "PartitionKeyName": "userId",
-        "SortKeyName": "postId",
+        "PartitionKeyName": "storage.bookmarks.PartitionKeyName",
+        "SortKeyName": "storage.bookmarks.SortKeyName",
         "SortKeyType": "S",
         "Region": "us-east-1",
-        "Arn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main",
-        "StreamArn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main/stream/2026-03-20T21:19:57.495",
+        "Arn": "storage.bookmarks.Arn",
+        "StreamArn": "storage.bookmarks.StreamArn",
         "PartitionKeyType": "S",
-        "Name": "bookmarks-main"
+        "Name": "storage.bookmarks.Name"
       },
       "lastPushDirHash": "UcosRNORY7WR8bi+QNNLl+eX+Eo="
     }

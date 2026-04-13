@@ -37,22 +37,22 @@
   },
   "Outputs": {
     "Name": {
-      "Value": "bookmarks-main"
+      "Value": "storage.bookmarks.Name"
     },
     "Arn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main"
+      "Value": "storage.bookmarks.Arn"
     },
     "StreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main/stream/2026-03-20T21:19:57.495"
+      "Value": "storage.bookmarks.StreamArn"
     },
     "PartitionKeyName": {
-      "Value": "userId"
+      "Value": "storage.bookmarks.PartitionKeyName"
     },
     "PartitionKeyType": {
       "Value": "S"
     },
     "SortKeyName": {
-      "Value": "postId"
+      "Value": "storage.bookmarks.SortKeyName"
     },
     "SortKeyType": {
       "Value": "S"

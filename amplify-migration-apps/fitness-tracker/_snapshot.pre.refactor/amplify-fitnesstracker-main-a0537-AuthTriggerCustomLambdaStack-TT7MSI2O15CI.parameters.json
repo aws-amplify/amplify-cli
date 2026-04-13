@@ -1,19 +1,19 @@
 [
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupLambdaExecutionRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/fitnesstracker33f5545533f55455PreSignup-main"
+    "ParameterValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRoleArn"
   },
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupName",
-    "ParameterValue": "fitnesstracker33f5545533f55455PreSignup-main"
+    "ParameterValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRole"
   },
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupArn",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:fitnesstracker33f5545533f55455PreSignup-main"
+    "ParameterValue": "function.fitnesstracker33f5545533f55455PreSignup.Arn"
   },
   {
     "ParameterKey": "userpoolId",
-    "ParameterValue": "us-east-1_iguxCIcMS"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolId"
   },
   {
     "ParameterKey": "env",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "userpoolArn",
-    "ParameterValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_iguxCIcMS"
+    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolArn"
   }
 ]

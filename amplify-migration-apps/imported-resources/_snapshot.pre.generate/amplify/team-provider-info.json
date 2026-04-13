@@ -14,12 +14,12 @@
     "categories": {
       "auth": {
         "importedresources2c7c1c40": {
-          "userPoolId": "us-east-1_8feoXFV6v",
-          "userPoolName": "importedresources_userpool",
-          "webClientId": "2oi4chvjmec9shclb000688s9a",
-          "nativeClientId": "33ifnqdr402dggr73sf2d2c182",
-          "identityPoolId": "us-east-1:12def580-cd20-405f-accf-51c866797e48",
-          "identityPoolName": "importedresources_identitypool",
+          "userPoolId": "auth.importedresources2c7c1c40.UserPoolId",
+          "userPoolName": "auth.importedresources2c7c1c40.UserPoolName",
+          "webClientId": "auth.importedresources2c7c1c40.AppClientIDWeb",
+          "nativeClientId": "auth.importedresources2c7c1c40.AppClientID",
+          "identityPoolId": "auth.importedresources2c7c1c40.IdentityPoolId",
+          "identityPoolName": "auth.importedresources2c7c1c40.IdentityPoolName",
           "allowUnauthenticatedIdentities": true,
           "authRoleArn": "arn:aws:iam::123456789012:role/importedresources-auth-role",
           "authRoleName": "importedresources-auth-role",

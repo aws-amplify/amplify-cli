@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storagemediavaultBucketName",
-    "ParameterValue": "mediavaultb574f210f1634e3a8d1934f263da5bed61114-main"
+    "ParameterValue": "storage.mediavault.BucketName"
   },
   {
     "ParameterKey": "s3Key",

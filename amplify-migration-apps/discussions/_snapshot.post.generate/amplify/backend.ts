@@ -28,29 +28,29 @@ const activity = new Table(storageActivityStack, 'activity', {
   readCapacity: 5,
   writeCapacity: 5,
   stream: StreamViewType.NEW_IMAGE,
-  sortKey: { name: 'userId', type: AttributeType.STRING },
+  sortKey: { name: 'storage.bookmarks.PartitionKeyName', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'activity-main'
+// Add this property to the Table above post refactor: tableName: 'storage.activity.Name'
 activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
-  partitionKey: { name: 'userId', type: AttributeType.STRING },
+  partitionKey: { name: 'storage.bookmarks.PartitionKeyName', type: AttributeType.STRING },
   sortKey: { name: 'timestamp', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });
 const storageBookmarksStack = backend.createStack('storagebookmarks');
 const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
-  partitionKey: { name: 'userId', type: AttributeType.STRING },
+  partitionKey: { name: 'storage.bookmarks.PartitionKeyName', type: AttributeType.STRING },
   billingMode: BillingMode.PROVISIONED,
   readCapacity: 5,
   writeCapacity: 5,
   stream: StreamViewType.NEW_IMAGE,
-  sortKey: { name: 'postId', type: AttributeType.STRING },
+  sortKey: { name: 'storage.bookmarks.SortKeyName', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
+// Add this property to the Table above post refactor: tableName: 'storage.bookmarks.Name'
 bookmarks.addGlobalSecondaryIndex({
   indexName: 'byPost',
-  partitionKey: { name: 'postId', type: AttributeType.STRING },
+  partitionKey: { name: 'storage.bookmarks.SortKeyName', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });
@@ -145,7 +145,7 @@ for (const model of ['Topic', 'Post', 'Comment']) {
 }
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'discus-avatarsc39a5-main';
+// s3Bucket.bucketName = 'storage.avatars.BucketName';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

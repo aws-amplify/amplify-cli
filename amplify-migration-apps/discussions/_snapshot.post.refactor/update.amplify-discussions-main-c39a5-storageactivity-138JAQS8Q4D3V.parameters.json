@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "sortKeyName",
-    "ParameterValue": "userId"
+    "ParameterValue": "storage.bookmarks.PartitionKeyName"
   },
   {
     "ParameterKey": "sortKeyType",

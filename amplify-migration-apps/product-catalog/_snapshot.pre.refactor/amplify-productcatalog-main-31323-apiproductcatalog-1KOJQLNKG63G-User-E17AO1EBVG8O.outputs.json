@@ -1,9 +1,9 @@
 [
   {
     "OutputKey": "GetAttUserTableName",
-    "OutputValue": "User-3oy6oxkj6ffojmc2upd52ftdsq-main",
+    "OutputValue": "User-api.productcatalog.GraphQLAPIIdOutput-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "3oy6oxkj6ffojmc2upd52ftdsq:GetAtt:UserTable:Name"
+    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:UserTable:Name"
   },
   {
     "OutputKey": "transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
@@ -21,13 +21,13 @@
     "OutputKey": "GetAttUserDataSourceName",
     "OutputValue": "UserTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "3oy6oxkj6ffojmc2upd52ftdsq:GetAtt:UserDataSource:Name"
+    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:UserDataSource:Name"
   },
   {
     "OutputKey": "GetAttUserTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-3oy6oxkj6ffojmc2upd52ftdsq-main/stream/2026-03-07T14:15:18.466",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-api.productcatalog.GraphQLAPIIdOutput-main/stream/2026-03-07T14:15:18.466",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "3oy6oxkj6ffojmc2upd52ftdsq:GetAtt:UserTable:StreamArn"
+    "ExportName": "api.productcatalog.GraphQLAPIIdOutput:GetAtt:UserTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",

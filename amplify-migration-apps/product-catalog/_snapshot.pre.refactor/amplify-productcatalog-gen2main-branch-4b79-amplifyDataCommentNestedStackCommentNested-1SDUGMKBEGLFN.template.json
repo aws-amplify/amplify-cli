@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource48E34D24Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataAmplifyTableManagerTableMa77FBE8F3"
         },
-        "tableName": "Comment-3oy6oxkj6ffojmc2upd52ftdsq-main",
+        "tableName": "Comment-api.productcatalog.GraphQLAPIIdOutput-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -487,7 +487,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Comment-3oy6oxkj6ffojmc2upd52ftdsq-main"
+                          "tablename": "Comment-api.productcatalog.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -495,7 +495,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Comment-3oy6oxkj6ffojmc2upd52ftdsq-main"
+                          "tablename": "Comment-api.productcatalog.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -2239,7 +2239,7 @@
     },
     "GetAttCommentTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Comment-3oy6oxkj6ffojmc2upd52ftdsq-main",
+      "Value": "Comment-api.productcatalog.GraphQLAPIIdOutput-main",
       "Export": {
         "Name": {
           "Fn::Join": [

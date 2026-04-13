@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "us-east-1_gekM9OHb7"
+    "ParameterValue": "auth.mediavault1f08412d.UserPoolId"
   },
   {
     "ParameterKey": "env",

@@ -1,35 +1,35 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "us-east-1_iguxCIcMS",
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "29bubgvfbbqkp4k60rl7oaqd8s",
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "3s8jcv7nflisr91emephrr2a9s",
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.AppClientID",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022",
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_iguxCIcMS",
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "fitnesstracker33f55455_identitypool_33f55455__main"
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.IdentityPoolName"
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "fitnesstracker33f55455_userpool_33f55455"
+    "OutputValue": "auth.fitnesstracker33f5545533f55455.UserPoolName"
   }
 ]

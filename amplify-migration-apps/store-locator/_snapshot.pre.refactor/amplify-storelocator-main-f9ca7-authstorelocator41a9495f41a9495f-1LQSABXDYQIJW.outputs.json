@@ -1,35 +1,35 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "us-east-1_R1pdziFVe",
+    "OutputValue": "auth.storelocator41a9495f41a9495f.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "6am6ldh23n8ke819nuvk51cddq",
+    "OutputValue": "auth.storelocator41a9495f41a9495f.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "5ppvpdo9dmkrj55qi8h865lt34",
+    "OutputValue": "auth.storelocator41a9495f41a9495f.AppClientID",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "us-east-1:4ea514e6-bc16-4990-a5ea-cefe84c3050d",
+    "OutputValue": "auth.storelocator41a9495f41a9495f.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_R1pdziFVe",
+    "OutputValue": "auth.storelocator41a9495f41a9495f.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "storelocator41a9495f_identitypool_41a9495f__main"
+    "OutputValue": "auth.storelocator41a9495f41a9495f.IdentityPoolName"
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "storelocator41a9495f_userpool_41a9495f"
+    "OutputValue": "auth.storelocator41a9495f41a9495f.UserPoolName"
   }
 ]

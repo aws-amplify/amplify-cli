@@ -4,7 +4,7 @@
     "RestApi0C43BF4B": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "nutritionapi-gen2-main",
+        "Name": "api.api.nutritionapi.ApiName.ApiName-gen2-main",
         "Tags": [
           {
             "Key": "amplify:app-id",
@@ -25,7 +25,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Resource"
       }
     },
     "RestApiCloudWatchRoleE3ED6605": {
@@ -79,7 +79,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/CloudWatchRole/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/CloudWatchRole/Resource"
       }
     },
     "RestApiAccount7C83CF5A": {
@@ -98,7 +98,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Account"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Account"
       }
     },
     "RestApiDeployment180EC50372b8910fb447646fe0ec851ddd88eb80": {
@@ -121,7 +121,7 @@
         "RestApiDefault5XXD8CFC37C"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Deployment/Resource",
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Deployment/Resource",
         "aws:cdk:do-not-refactor": true
       }
     },
@@ -158,7 +158,7 @@
         "RestApiAccount7C83CF5A"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/DeploymentStage.prod/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/DeploymentStage.prod/Resource"
       }
     },
     "RestApinutrition3942DEFC": {
@@ -176,7 +176,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/Resource"
       }
     },
     "RestApinutritionlog525763DE": {
@@ -191,7 +191,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/Resource"
       }
     },
     "RestApinutritionlogOPTIONS0916370A": {
@@ -234,10 +234,10 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/OPTIONS/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/OPTIONS/Resource"
       }
     },
-    "RestApinutritionlogANYApiPermissionamplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17ANYnutritionlog0E7B0360": {
+    "RestApinutritionlogANYApiPermissionamplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17ANYnutritionlog0E7B0360": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -275,10 +275,10 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/ApiPermission.amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17.ANY..nutrition.log"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/ANY/ApiPermission.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17.ANY..nutrition.log"
       }
     },
-    "RestApinutritionlogANYApiPermissionTestamplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17ANYnutritionlogC943788E": {
+    "RestApinutritionlogANYApiPermissionTestamplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17ANYnutritionlogC943788E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -312,7 +312,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/ApiPermission.Test.amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17.ANY..nutrition.log"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/ANY/ApiPermission.Test.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17.ANY..nutrition.log"
       }
     },
     "RestApinutritionlogANY08C15E55": {
@@ -352,7 +352,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/ANY/Resource"
       }
     },
     "RestApinutritionlogproxyA0E81954": {
@@ -367,7 +367,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/{proxy+}/Resource"
       }
     },
     "RestApinutritionlogproxyOPTIONS695D781E": {
@@ -410,10 +410,10 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/OPTIONS/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/{proxy+}/OPTIONS/Resource"
       }
     },
-    "RestApinutritionlogproxyANYApiPermissionamplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17ANYnutritionlogproxy30B465F0": {
+    "RestApinutritionlogproxyANYApiPermissionamplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17ANYnutritionlogproxy30B465F0": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -451,10 +451,10 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17.ANY..nutrition.log.{proxy+}"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17.ANY..nutrition.log.{proxy+}"
       }
     },
-    "RestApinutritionlogproxyANYApiPermissionTestamplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17ANYnutritionlogproxy7276060A": {
+    "RestApinutritionlogproxyANYApiPermissionTestamplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17ANYnutritionlogproxy7276060A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -488,7 +488,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.Test.amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApi56F22D17.ANY..nutrition.log.{proxy+}"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.Test.amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApi56F22D17.ANY..nutrition.log.{proxy+}"
       }
     },
     "RestApinutritionlogproxyANY89358520": {
@@ -528,7 +528,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default/nutrition/log/{proxy+}/ANY/Resource"
       }
     },
     "RestApiDefault4XX291F46B7": {
@@ -546,7 +546,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default4XX/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default4XX/Resource"
       }
     },
     "RestApiDefault5XXD8CFC37C": {
@@ -564,10 +564,10 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/RestApi/Default5XX/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/RestApi/Default5XX/Resource"
       }
     },
-    "Gen1nutritionapiPolicyAC846721": {
+    "Gen1api.api.nutritionapi.ApiName.ApiNamePolicyAC846721": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -592,7 +592,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":hmydcaubcb/*/POST/*"
+                      ":api.api.nutritionapi.ApiName.ApiId/*/POST/*"
                     ]
                   ]
                 },
@@ -612,7 +612,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":hmydcaubcb/*/GET/*"
+                      ":api.api.nutritionapi.ApiName.ApiId/*/GET/*"
                     ]
                   ]
                 },
@@ -632,7 +632,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":hmydcaubcb/*/PUT/*"
+                      ":api.api.nutritionapi.ApiName.ApiId/*/PUT/*"
                     ]
                   ]
                 },
@@ -652,7 +652,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":hmydcaubcb/*/DELETE/*"
+                      ":api.api.nutritionapi.ApiName.ApiId/*/DELETE/*"
                     ]
                   ]
                 }
@@ -661,7 +661,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "Gen1nutritionapiPolicyAC846721",
+        "PolicyName": "Gen1api.api.nutritionapi.ApiName.ApiNamePolicyAC846721",
         "Roles": [
           {
             "Ref": "referencetoamplifyfitnesstrackergen2mainbranch400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
@@ -669,7 +669,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/Gen1nutritionapiPolicy/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/Gen1api.api.nutritionapi.ApiName.ApiNamePolicy/Resource"
       }
     },
     "nutritionlogAuthPolicyF60C3901": {
@@ -886,7 +886,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/nutritionlogAuthPolicy/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/nutritionlogAuthPolicy/Resource"
       }
     },
     "nutritionlogAdminPolicy5FCB013F": {
@@ -1103,7 +1103,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/nutritionlogAdminPolicy/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/nutritionlogAdminPolicy/Resource"
       }
     },
     "CDKMetadata": {
@@ -1112,7 +1112,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/12Oz07DMAyHn2X3NIxqh10HSJyAKXsA5CVmeMs/1S5dVfXdUUgFEyd/vy927Fa3m41er2DgxrpL4+mop1dkQXcQsBcFA79PkOkEggOMejLIssukHj/iDe6sTX0U9YTZpzFglGJv0kHghMVVMMip7yw+AP+F5c/KLyifyRW10L5L1/H3+bneY5Bzivwz+l8t55UVsyIIejLJ1yWl7pMnO5ZYaVYewtGBLga7QMyU4lwa3nrJvcwqJof6zHdfbavvt3q9OjNR0/VRKKA2tX4D1w/yhFMBAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-nutritionapi/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/rest-api-stack-api.api.nutritionapi.ApiName.ApiName/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -1144,12 +1144,12 @@
         ]
       }
     },
-    "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiEC7FBBC7Ref": {
+    "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApiEC7FBBC7Ref": {
       "Value": {
         "Ref": "RestApi0C43BF4B"
       }
     },
-    "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiDeploymentStageprod41F1D9FFRef": {
+    "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.nutritionapi.ApiName.ApiNameRestApiDeploymentStageprod41F1D9FFRef": {
       "Value": {
         "Ref": "RestApiDeploymentStageprod3855DE66"
       }

@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC"
         },
-        "tableName": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main",
+        "tableName": "Board-api.moodboard.GraphQLAPIIdOutput-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+                          "tablename": "Board-api.moodboard.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+                          "tablename": "Board-api.moodboard.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -1954,7 +1954,7 @@
     },
     "GetAttBoardTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main",
+      "Value": "Board-api.moodboard.GraphQLAPIIdOutput-main",
       "Export": {
         "Name": {
           "Fn::Join": [

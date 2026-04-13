@@ -1,25 +1,25 @@
 [
   {
     "OutputKey": "GetAttTodoTableName",
-    "OutputValue": "Todo-xzx4nj36zzemlloxzhpkicpa7i-main",
+    "OutputValue": "Todo-api.importedresources.GraphQLAPIIdOutput-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xzx4nj36zzemlloxzhpkicpa7i:GetAtt:TodoTable:Name"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:TodoTable:Name"
   },
   {
     "OutputKey": "GetAttTodoDataSourceName",
     "OutputValue": "TodoTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "xzx4nj36zzemlloxzhpkicpa7i:GetAtt:TodoDataSource:Name"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackTodoTodoTableC67E79C2Ref",
-    "OutputValue": "Todo-xzx4nj36zzemlloxzhpkicpa7i-main"
+    "OutputValue": "Todo-api.importedresources.GraphQLAPIIdOutput-main"
   },
   {
     "OutputKey": "GetAttTodoTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-xzx4nj36zzemlloxzhpkicpa7i-main/stream/2026-03-27T18:36:27.813",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.importedresources.GraphQLAPIIdOutput-main/stream/2026-03-27T18:36:27.813",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xzx4nj36zzemlloxzhpkicpa7i:GetAtt:TodoTable:StreamArn"
+    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:TodoTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackTodoTodoDataSourceBD713D7DName",

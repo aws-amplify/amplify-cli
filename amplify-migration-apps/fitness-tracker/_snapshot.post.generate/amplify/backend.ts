@@ -89,11 +89,11 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     authenticationType: 'API_KEY',
   },
 ];
-const nutritionapiStack = backend.createStack('rest-api-stack-nutritionapi');
-const nutritionapiApi = new RestApi(nutritionapiStack, 'RestApi', {
-  restApiName: `nutritionapi-${branchName}`,
+const api.api.nutritionapi.ApiName.ApiNameStack = backend.createStack('rest-api-stack-api.api.nutritionapi.ApiName.ApiName');
+const api.api.nutritionapi.ApiName.ApiNameApi = new RestApi(api.api.nutritionapi.ApiName.ApiNameStack, 'RestApi', {
+  restApiName: `api.api.nutritionapi.ApiName.ApiName-${branchName}`,
 });
-nutritionapiApi.addGatewayResponse('Default4XX', {
+api.api.nutritionapi.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
   type: ResponseType.DEFAULT_4XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -103,7 +103,7 @@ nutritionapiApi.addGatewayResponse('Default4XX', {
     'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
   },
 });
-nutritionapiApi.addGatewayResponse('Default5XX', {
+api.api.nutritionapi.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
   type: ResponseType.DEFAULT_5XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -116,35 +116,35 @@ nutritionapiApi.addGatewayResponse('Default5XX', {
 const lognutritionIntegration = new LambdaIntegration(
   backend.lognutrition.resources.lambda
 );
-const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
-  nutritionapiStack,
-  'Gen1nutritionapiApi',
+const gen1api.api.nutritionapi.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
+  api.api.nutritionapi.ApiName.ApiNameStack,
+  'Gen1api.api.nutritionapi.ApiName.ApiNameApi',
   {
-    restApiId: 'hmydcaubcb',
-    rootResourceId: 'hmydcaubcb-root',
+    restApiId: 'api.api.nutritionapi.ApiName.ApiId',
+    rootResourceId: 'api.api.nutritionapi.ApiName.ApiId-root',
   }
 );
-const gen1nutritionapiPolicy = new Policy(
-  nutritionapiStack,
-  'Gen1nutritionapiPolicy',
+const gen1api.api.nutritionapi.ApiName.ApiNamePolicy = new Policy(
+  api.api.nutritionapi.ApiName.ApiNameStack,
+  'Gen1api.api.nutritionapi.ApiName.ApiNamePolicy',
   {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          `${gen1nutritionapiApi.arnForExecuteApi('POST', '/*')}`,
-          `${gen1nutritionapiApi.arnForExecuteApi('GET', '/*')}`,
-          `${gen1nutritionapiApi.arnForExecuteApi('PUT', '/*')}`,
-          `${gen1nutritionapiApi.arnForExecuteApi('DELETE', '/*')}`,
+          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/*')}`,
+          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/*')}`,
+          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/*')}`,
+          `${gen1api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/*')}`,
         ],
       }),
     ],
   }
 );
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  gen1nutritionapiPolicy
+  gen1api.api.nutritionapi.ApiName.ApiNamePolicy
 );
-const nutritionlog = nutritionapiApi.root
+const nutritionlog = api.api.nutritionapi.ApiName.ApiNameApi.root
   .addResource('nutrition')
   .addResource('log', {
     defaultMethodOptions: {
@@ -171,19 +171,19 @@ nutritionlog.addProxy({
 });
 // /nutrition/log - all authenticated users
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  new Policy(nutritionapiStack, 'nutritionlogAuthPolicy', {
+  new Policy(api.api.nutritionapi.ApiName.ApiNameStack, 'nutritionlogAuthPolicy', {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log/*'),
-          nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log/*'),
-          nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
-          nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
         ],
       }),
     ],
@@ -191,19 +191,19 @@ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
 );
 // /nutrition/log - Admin group only
 backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(nutritionapiStack, 'nutritionlogAdminPolicy', {
+  new Policy(api.api.nutritionapi.ApiName.ApiNameStack, 'nutritionlogAdminPolicy', {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log/*'),
-          nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log/*'),
-          nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
-          nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log'),
-          nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('POST', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log'),
+          api.api.nutritionapi.ApiName.ApiNameApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
         ],
       }),
     ],
@@ -212,19 +212,19 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
 backend.addOutput({
   custom: {
     API: {
-      [nutritionapiApi.restApiName]: {
-        endpoint: nutritionapiApi.url.slice(0, -1),
-        region: Stack.of(nutritionapiApi).region,
-        apiName: nutritionapiApi.restApiName,
+      [api.api.nutritionapi.ApiName.ApiNameApi.restApiName]: {
+        endpoint: api.api.nutritionapi.ApiName.ApiNameApi.url.slice(0, -1),
+        region: Stack.of(api.api.nutritionapi.ApiName.ApiNameApi).region,
+        apiName: api.api.nutritionapi.ApiName.ApiNameApi.restApiName,
       },
     },
   },
 });
-const adminapiStack = backend.createStack('rest-api-stack-adminapi');
-const adminapiApi = new RestApi(adminapiStack, 'RestApi', {
-  restApiName: `adminapi-${branchName}`,
+const api.api.adminapi.ApiName.ApiNameStack = backend.createStack('rest-api-stack-api.api.adminapi.ApiName.ApiName');
+const api.api.adminapi.ApiName.ApiNameApi = new RestApi(api.api.adminapi.ApiName.ApiNameStack, 'RestApi', {
+  restApiName: `api.api.adminapi.ApiName.ApiName-${branchName}`,
 });
-adminapiApi.addGatewayResponse('Default4XX', {
+api.api.adminapi.ApiName.ApiNameApi.addGatewayResponse('Default4XX', {
   type: ResponseType.DEFAULT_4XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -234,7 +234,7 @@ adminapiApi.addGatewayResponse('Default4XX', {
     'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
   },
 });
-adminapiApi.addGatewayResponse('Default5XX', {
+api.api.adminapi.ApiName.ApiNameApi.addGatewayResponse('Default5XX', {
   type: ResponseType.DEFAULT_5XX,
   responseHeaders: {
     'Access-Control-Allow-Origin': "'*'",
@@ -245,26 +245,26 @@ adminapiApi.addGatewayResponse('Default5XX', {
   },
 });
 const adminIntegration = new LambdaIntegration(backend.admin.resources.lambda);
-const gen1adminapiApi = RestApi.fromRestApiAttributes(
-  adminapiStack,
-  'Gen1adminapiApi',
+const gen1api.api.adminapi.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
+  api.api.adminapi.ApiName.ApiNameStack,
+  'Gen1api.api.adminapi.ApiName.ApiNameApi',
   {
-    restApiId: 'oxq86r59h6',
-    rootResourceId: 'oxq86r59h6-root',
+    restApiId: 'api.api.api.adminapi.ApiName.ApiName.ApiId',
+    rootResourceId: 'api.api.api.adminapi.ApiName.ApiName.ApiId-root',
   }
 );
-const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
+const gen1api.api.adminapi.ApiName.ApiNamePolicy = new Policy(api.api.adminapi.ApiName.ApiNameStack, 'Gen1api.api.adminapi.ApiName.ApiNamePolicy', {
   statements: [
     new PolicyStatement({
       actions: ['execute-api:Invoke'],
-      resources: [`${gen1adminapiApi.arnForExecuteApi('GET', '/*')}`],
+      resources: [`${gen1api.api.adminapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/*')}`],
     }),
   ],
 });
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  gen1adminapiPolicy
+  gen1api.api.adminapi.ApiName.ApiNamePolicy
 );
-const adminResource = adminapiApi.root.addResource('admin', {
+const adminResource = api.api.adminapi.ApiName.ApiNameApi.root.addResource('admin', {
   defaultMethodOptions: {
     authorizationType: AuthorizationType.IAM,
   },
@@ -289,13 +289,13 @@ adminResource.addProxy({
 });
 // /admin - Admin group only
 backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(adminapiStack, 'adminAdminPolicy', {
+  new Policy(api.api.adminapi.ApiName.ApiNameStack, 'adminAdminPolicy', {
     statements: [
       new PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [
-          adminapiApi.arnForExecuteApi('GET', '/admin'),
-          adminapiApi.arnForExecuteApi('GET', '/admin/*'),
+          api.api.adminapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/admin'),
+          api.api.adminapi.ApiName.ApiNameApi.arnForExecuteApi('GET', '/admin/*'),
         ],
       }),
     ],
@@ -304,10 +304,10 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
 backend.addOutput({
   custom: {
     API: {
-      [adminapiApi.restApiName]: {
-        endpoint: adminapiApi.url.slice(0, -1),
-        region: Stack.of(adminapiApi).region,
-        apiName: adminapiApi.restApiName,
+      [api.api.adminapi.ApiName.ApiNameApi.restApiName]: {
+        endpoint: api.api.adminapi.ApiName.ApiNameApi.url.slice(0, -1),
+        region: Stack.of(api.api.adminapi.ApiName.ApiNameApi).region,
+        apiName: api.api.adminapi.ApiName.ApiNameApi.restApiName,
       },
     },
   },

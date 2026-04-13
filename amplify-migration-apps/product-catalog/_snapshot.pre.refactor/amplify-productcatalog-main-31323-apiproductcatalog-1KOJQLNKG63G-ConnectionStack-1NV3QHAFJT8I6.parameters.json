@@ -13,11 +13,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
-    "ParameterValue": "Comment-3oy6oxkj6ffojmc2upd52ftdsq-main"
+    "ParameterValue": "Comment-api.productcatalog.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "3oy6oxkj6ffojmc2upd52ftdsq"
+    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",

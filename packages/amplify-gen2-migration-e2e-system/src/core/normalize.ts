@@ -61,12 +61,14 @@ export function normalize(appName: string, appDir: string): void {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-')[4];
     renameFile(appDir, `${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
+    rewriteContent(appDir, `${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-').reverse()[0];
     if ([...hash].every((c) => c === 'x')) continue;
     renameFile(appDir, `-${hash}`, '-x');
+    rewriteContent(appDir, `-${hash}`, '-x');
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
@@ -77,6 +79,7 @@ export function normalize(appName: string, appDir: string): void {
     const hash = parts[5];
     if ([...hash].every((c) => c === 'x')) continue;
     renameFile(appDir, `-${hash}-`, '-x-');
+    rewriteContent(appDir, `-${hash}-`, '-x-');
   }
 }
 

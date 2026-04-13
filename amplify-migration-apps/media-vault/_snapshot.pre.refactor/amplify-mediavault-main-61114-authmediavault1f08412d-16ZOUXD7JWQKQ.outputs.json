@@ -1,36 +1,36 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "us-east-1_gekM9OHb7",
+    "OutputValue": "auth.mediavault1f08412d.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "1hq2dgt1ct4f6b812o4ell2b4u",
+    "OutputValue": "auth.mediavault1f08412d.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "74dj0ooish8us4g47hk169p8jq",
+    "OutputValue": "auth.mediavault1f08412d.AppClientID",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "HostedUIDomain",
-    "OutputValue": "mediavault1f08412d-1f08412d-main"
+    "OutputValue": "auth.mediavault1f08412d.HostedUIDomain"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1",
+    "OutputValue": "auth.mediavault1f08412d.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_gekM9OHb7",
+    "OutputValue": "auth.mediavault1f08412d.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "mediavault1f08412d_identitypool_1f08412d__main"
+    "OutputValue": "auth.mediavault1f08412d.IdentityPoolName"
   },
   {
     "OutputKey": "OAuthMetadata",
@@ -38,6 +38,6 @@
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "mediavault1f08412d_userpool_1f08412d"
+    "OutputValue": "auth.mediavault1f08412d.UserPoolName"
   }
 ]

@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "moodboard20e29595008142e3ad16f01c4066e1c41959a-main"
+      "Value": "storage.moodboardStorage.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -199,7 +199,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                      "storage.moodboardStorage.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -235,7 +235,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                      "storage.moodboardStorage.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -271,7 +271,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                      "storage.moodboardStorage.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -307,7 +307,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                      "storage.moodboardStorage.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -343,7 +343,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                      "storage.moodboardStorage.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -372,7 +372,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                    "storage.moodboardStorage.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -398,7 +398,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c41959a-main"
+                    "storage.moodboardStorage.BucketName"
                   ]
                 ]
               }
@@ -426,7 +426,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+                    "storage.moodboardStorage.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -450,7 +450,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c41959a-main"
+                    "storage.moodboardStorage.BucketName"
                   ]
                 ]
               }

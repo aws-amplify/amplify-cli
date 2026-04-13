@@ -211,15 +211,15 @@
             "Ref": "UnauthRoleName"
           },
           "env": "main",
-          "adminapi": {
+          "api.api.adminapi.ApiName.ApiName": {
             "Fn::GetAtt": [
-              "apiadminapi",
+              "apiapi.api.adminapi.ApiName.ApiName",
               "Outputs.ApiId"
             ]
           },
-          "nutritionapi": {
+          "api.api.nutritionapi.ApiName.ApiName": {
             "Fn::GetAtt": [
-              "apinutritionapi",
+              "apiapi.api.nutritionapi.ApiName.ApiName",
               "Outputs.ApiId"
             ]
           }
@@ -269,10 +269,10 @@
         "functionfitnesstracker33f5545533f55455PreSignup"
       ]
     },
-    "apiadminapi": {
+    "apiapi.api.adminapi.ApiName.ApiName": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/adminapi-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/api.api.adminapi.ApiName.ApiName-cloudformation-template.json",
         "Parameters": {
           "functionadminName": {
             "Fn::GetAtt": [
@@ -322,10 +322,10 @@
         }
       }
     },
-    "apinutritionapi": {
+    "apiapi.api.nutritionapi.ApiName.ApiName": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/nutritionapi-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/api.api.nutritionapi.ApiName.ApiName-cloudformation-template.json",
         "Parameters": {
           "functionlognutritionName": {
             "Fn::GetAtt": [
@@ -363,7 +363,7 @@
           "identityPoolName": "fitnesstracker33f55455_identitypool_33f55455",
           "allowUnauthenticatedIdentities": false,
           "resourceNameTruncated": "fitnes33f55455",
-          "userPoolName": "fitnesstracker33f55455_userpool_33f55455",
+          "userPoolName": "auth.fitnesstracker33f5545533f55455.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",

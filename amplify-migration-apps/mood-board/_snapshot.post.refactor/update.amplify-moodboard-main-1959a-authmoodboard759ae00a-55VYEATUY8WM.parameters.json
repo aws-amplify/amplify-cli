@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "moodboard759ae00a_userpool_759ae00a"
+    "ParameterValue": "auth.moodboard759ae00a.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/S3Trigger1ef46783LambdaRole1ef46783-main"
+    "OutputValue": "function.S3Trigger1ef46783.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-main"
+    "OutputValue": "function.S3Trigger1ef46783.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "S3Trigger1ef46783-main"
+    "OutputValue": "function.S3Trigger1ef46783.Name"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "S3Trigger1ef46783LambdaRole1ef46783-main"
+    "OutputValue": "function.S3Trigger1ef46783.LambdaExecutionRole"
   }
 ]

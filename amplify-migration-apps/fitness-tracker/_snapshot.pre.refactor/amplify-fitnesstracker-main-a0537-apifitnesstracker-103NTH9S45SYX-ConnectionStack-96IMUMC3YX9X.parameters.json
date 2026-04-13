@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "jzwb5p2vcbd2ldlnlxokgjcjby"
+    "ParameterValue": "api.fitnesstracker.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef",
-    "ParameterValue": "Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+    "ParameterValue": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",

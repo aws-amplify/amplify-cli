@@ -20,12 +20,12 @@
       "dependsOn": [],
       "customAuth": false,
       "output": {
-        "UserPoolId": "us-east-1_8feoXFV6v",
-        "UserPoolName": "importedresources_userpool",
-        "AppClientID": "33ifnqdr402dggr73sf2d2c182",
-        "AppClientIDWeb": "2oi4chvjmec9shclb000688s9a",
-        "IdentityPoolId": "us-east-1:12def580-cd20-405f-accf-51c866797e48",
-        "IdentityPoolName": "importedresources_identitypool"
+        "UserPoolId": "auth.importedresources2c7c1c40.UserPoolId",
+        "UserPoolName": "auth.importedresources2c7c1c40.UserPoolName",
+        "AppClientID": "auth.importedresources2c7c1c40.AppClientID",
+        "AppClientIDWeb": "auth.importedresources2c7c1c40.AppClientIDWeb",
+        "IdentityPoolId": "auth.importedresources2c7c1c40.IdentityPoolId",
+        "IdentityPoolName": "auth.importedresources2c7c1c40.IdentityPoolName"
       },
       "frontendAuthConfig": {
         "socialProviders": [],
@@ -78,8 +78,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "xzx4nj36zzemlloxzhpkicpa7i",
-        "GraphQLAPIEndpointOutput": "https://f3k4fuhaxfcjpnrojgtaox3kiy.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "api.importedresources.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.importedresources.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
@@ -101,7 +101,7 @@
         "logicalId": "storages34ebf8874"
       },
       "output": {
-        "BucketName": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
+        "BucketName": "storage.s34ebf8874.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "I7JSG1NRrCOgPEsHiLRnxnZfqdk="
@@ -126,11 +126,11 @@
       },
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/importedresourcesLambdaRole7bd99cfb-main",
+        "LambdaExecutionRoleArn": "function.importedresourcequotegenerator.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:importedresourcequotegenerator-main",
-        "Name": "importedresourcequotegenerator-main",
-        "LambdaExecutionRole": "importedresourcesLambdaRole7bd99cfb-main"
+        "Arn": "function.importedresourcequotegenerator.Arn",
+        "Name": "function.importedresourcequotegenerator.Name",
+        "LambdaExecutionRole": "function.importedresourcequotegenerator.LambdaExecutionRole"
       },
       "lastPushDirHash": "kMMjdXBOJoAlVxAgQJIqYD2PuGc="
     }

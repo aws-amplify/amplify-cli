@@ -6,6 +6,6 @@
     "Ref": "UnauthRoleName"
   },
   "mapName": "storeLocatorMap",
-  "mapStyle": "VectorEsriStreets",
+  "mapStyle": "geo.storeLocatorMap.Style",
   "isDefault": true
 }

@@ -69,13 +69,13 @@
       }
     },
     "userPoolId": {
-      "Value": "us-east-1_8feoXFV6v"
+      "Value": "auth.importedresources2c7c1c40.UserPoolId"
     },
     "webClientId": {
-      "Value": "2oi4chvjmec9shclb000688s9a"
+      "Value": "auth.importedresources2c7c1c40.AppClientIDWeb"
     },
     "identityPoolId": {
-      "Value": "us-east-1:12def580-cd20-405f-accf-51c866797e48"
+      "Value": "auth.importedresources2c7c1c40.IdentityPoolId"
     },
     "authRegion": {
       "Value": {

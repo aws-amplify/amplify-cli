@@ -2,18 +2,18 @@
   "resourceName": "bookmarks",
   "tableName": "bookmarks",
   "partitionKey": {
-    "fieldName": "userId",
+    "fieldName": "storage.bookmarks.PartitionKeyName",
     "fieldType": "string"
   },
   "sortKey": {
-    "fieldName": "postId",
+    "fieldName": "storage.bookmarks.SortKeyName",
     "fieldType": "string"
   },
   "gsi": [
     {
       "name": "byPost",
       "partitionKey": {
-        "fieldName": "postId",
+        "fieldName": "storage.bookmarks.SortKeyName",
         "fieldType": "string"
       }
     }

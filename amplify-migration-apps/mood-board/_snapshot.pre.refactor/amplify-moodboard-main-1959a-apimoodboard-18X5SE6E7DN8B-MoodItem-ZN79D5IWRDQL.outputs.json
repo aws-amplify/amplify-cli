@@ -1,19 +1,19 @@
 [
   {
     "OutputKey": "GetAttMoodItemTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main/stream/2026-03-08T17:03:43.962",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-api.moodboard.GraphQLAPIIdOutput-main/stream/2026-03-08T17:03:43.962",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "vsozkn3hbzdjppzyf7xtf2f4sy:GetAtt:MoodItemTable:StreamArn"
+    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemTable:StreamArn"
   },
   {
     "OutputKey": "GetAttMoodItemDataSourceName",
     "OutputValue": "MoodItemTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "vsozkn3hbzdjppzyf7xtf2f4sy:GetAtt:MoodItemDataSource:Name"
+    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMoodItemTable5135EED9Ref",
-    "OutputValue": "MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+    "OutputValue": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main"
   },
   {
     "OutputKey": "transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId",
@@ -45,9 +45,9 @@
   },
   {
     "OutputKey": "GetAttMoodItemTableName",
-    "OutputValue": "MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main",
+    "OutputValue": "MoodItem-api.moodboard.GraphQLAPIIdOutput-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "vsozkn3hbzdjppzyf7xtf2f4sy:GetAtt:MoodItemTable:Name"
+    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemTable:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",

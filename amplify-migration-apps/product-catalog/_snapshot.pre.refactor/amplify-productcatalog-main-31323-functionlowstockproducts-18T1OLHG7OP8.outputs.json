@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/productcatalogLambdaRole1ca4fb61-main"
+    "OutputValue": "function.lowstockproducts.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lowstockproducts-main"
+    "OutputValue": "function.lowstockproducts.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "lowstockproducts-main"
+    "OutputValue": "function.lowstockproducts.Name"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "productcatalogLambdaRole1ca4fb61-main"
+    "OutputValue": "function.lowstockproducts.LambdaExecutionRole"
   }
 ]

@@ -2,7 +2,7 @@
   "identityPoolName": "storelocator41a9495f_identitypool_41a9495f",
   "allowUnauthenticatedIdentities": true,
   "resourceNameTruncated": "storel41a9495f",
-  "userPoolName": "storelocator41a9495f_userpool_41a9495f",
+  "userPoolName": "auth.storelocator41a9495f41a9495f.UserPoolName",
   "autoVerifiedAttributes": [
     "email"
   ],

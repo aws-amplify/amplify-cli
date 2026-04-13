@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "UserPoolId": "us-east-1_Cwvqs93Nc",
-        "AppClientIDWeb": "5t2df7ru217mr5ar6r44r61uqg",
-        "AppClientID": "1ssdipb0d8rfa77rq3o7u8t16c",
-        "IdentityPoolId": "us-east-1:a39e734d-ac34-43c7-8303-67512f010f0d",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Cwvqs93Nc",
-        "IdentityPoolName": "moodboard759ae00a_identitypool_759ae00a__main",
-        "UserPoolName": "moodboard759ae00a_userpool_759ae00a"
+        "UserPoolId": "auth.moodboard759ae00a.UserPoolId",
+        "AppClientIDWeb": "auth.moodboard759ae00a.AppClientIDWeb",
+        "AppClientID": "auth.moodboard759ae00a.AppClientID",
+        "IdentityPoolId": "auth.moodboard759ae00a.IdentityPoolId",
+        "UserPoolArn": "auth.moodboard759ae00a.UserPoolArn",
+        "IdentityPoolName": "auth.moodboard759ae00a.IdentityPoolName",
+        "UserPoolName": "auth.moodboard759ae00a.UserPoolName"
       },
       "lastPushDirHash": "YoAgoR9zujggRkSUxqGO4UbI+Og="
     }
@@ -87,8 +87,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "vsozkn3hbzdjppzyf7xtf2f4sy",
-        "GraphQLAPIEndpointOutput": "https://5wsaacr225fc7hv4ajdtxbwo24.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "api.moodboard.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.moodboard.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "providerMetadata": {
@@ -110,7 +110,7 @@
         "logicalId": "storagemoodboardStorage"
       },
       "output": {
-        "BucketName": "moodboard20e29595008142e3ad16f01c4066e1c41959a-main",
+        "BucketName": "storage.moodboardStorage.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "z3bRVMUaOPcCXFeBaOqmzI2Vp0M="
@@ -135,11 +135,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/moodboardLambdaRolef849b419-main",
+        "LambdaExecutionRoleArn": "function.moodboardGetRandomEmoji.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:moodboardGetRandomEmoji-main",
-        "Name": "moodboardGetRandomEmoji-main",
-        "LambdaExecutionRole": "moodboardLambdaRolef849b419-main"
+        "Arn": "function.moodboardGetRandomEmoji.Arn",
+        "Name": "function.moodboardGetRandomEmoji.Name",
+        "LambdaExecutionRole": "function.moodboardGetRandomEmoji.LambdaExecutionRole"
       },
       "lastPushDirHash": "K/RndAAIl0V/ON0s1svTQIR0HvE="
     },
@@ -170,11 +170,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/moodboardLambdaRole1f55eecd-main",
+        "LambdaExecutionRoleArn": "function.moodboardKinesisReader.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:moodboardKinesisReader-main",
-        "Name": "moodboardKinesisReader-main",
-        "LambdaExecutionRole": "moodboardLambdaRole1f55eecd-main"
+        "Arn": "function.moodboardKinesisReader.Arn",
+        "Name": "function.moodboardKinesisReader.Name",
+        "LambdaExecutionRole": "function.moodboardKinesisReader.LambdaExecutionRole"
       },
       "lastPushDirHash": "Hm1fZAAyF9uAjfeygeDAxRhFnjI="
     }
@@ -189,9 +189,9 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:29.513Z",
       "output": {
-        "kinesisStreamId": "moodboardKinesis-main",
+        "kinesisStreamId": "analytics.moodboardKinesis.kinesisStreamId",
         "kinesisStreamShardCount": "1",
-        "kinesisStreamArn": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+        "kinesisStreamArn": "analytics.moodboardKinesis.kinesisStreamArn"
       },
       "lastPushDirHash": "IxnZjkEVCO8rMzaALT+khby+HWU="
     }

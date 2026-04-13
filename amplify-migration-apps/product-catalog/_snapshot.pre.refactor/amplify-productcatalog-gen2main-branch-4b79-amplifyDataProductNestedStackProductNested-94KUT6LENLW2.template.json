@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource48E34D24Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataAmplifyTableManagerTableMa77FBE8F3"
         },
-        "tableName": "Product-3oy6oxkj6ffojmc2upd52ftdsq-main",
+        "tableName": "Product-api.productcatalog.GraphQLAPIIdOutput-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Product-3oy6oxkj6ffojmc2upd52ftdsq-main"
+                          "tablename": "Product-api.productcatalog.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Product-3oy6oxkj6ffojmc2upd52ftdsq-main"
+                          "tablename": "Product-api.productcatalog.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -1954,7 +1954,7 @@
     },
     "GetAttProductTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Product-3oy6oxkj6ffojmc2upd52ftdsq-main",
+      "Value": "Product-api.productcatalog.GraphQLAPIIdOutput-main",
       "Export": {
         "Name": {
           "Fn::Join": [

@@ -144,7 +144,7 @@
         "SmsAuthenticationMessage": "Your authentication code is {####}",
         "SmsConfiguration": {
           "ExternalId": "discusc578c16e_role_external_id",
-          "SnsCallerArn": "arn:aws:iam::123456789012:role/snsc578c16ec39a5-main"
+          "SnsCallerArn": "auth.discussionsc578c16ec578c16e.CreatedSNSRole"
         },
         "SmsVerificationMessage": "Your verification code is {####}",
         "UserAttributeUpdateSettings": {
@@ -156,7 +156,7 @@
           "Fn::Join": [
             "",
             [
-              "discussionsc578c16e_userpool_c578c16e",
+              "auth.discussionsc578c16ec578c16e.UserPoolName",
               "-",
               "main"
             ]
@@ -178,7 +178,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_vv2HFjwRK"
+        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -190,7 +190,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_vv2HFjwRK"
+        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -199,7 +199,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "7tbnnc27p4edfrp7m6bqqkh0gq",
+            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -207,13 +207,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_vv2HFjwRK"
+                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "7nhjrv5jepqc7kacqiknlj0siu",
+            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -221,7 +221,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_vv2HFjwRK"
+                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
                 }
               ]
             }
@@ -241,7 +241,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:d588cc58-4459-4b1b-ac91-307079a54464",
+        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
         "Roles": {
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-authRole"

@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "output": {
-        "UserPoolId": "us-east-1_1rvCNKN5B",
-        "AppClientIDWeb": "2udsup370on7n0b1gdf8hpijc6",
-        "AppClientID": "773c808k3864f2k0sqk4j71gsj",
-        "IdentityPoolId": "us-east-1:3d2fd52c-2247-42b8-8773-3102fce814b8",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_1rvCNKN5B",
-        "IdentityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b__main",
-        "UserPoolName": "backendonlyf8c4c57b_userpool_f8c4c57b"
+        "UserPoolId": "auth.backendonlyf8c4c57b.UserPoolId",
+        "AppClientIDWeb": "auth.backendonlyf8c4c57b.AppClientIDWeb",
+        "AppClientID": "auth.backendonlyf8c4c57b.AppClientID",
+        "IdentityPoolId": "auth.backendonlyf8c4c57b.IdentityPoolId",
+        "UserPoolArn": "auth.backendonlyf8c4c57b.UserPoolArn",
+        "IdentityPoolName": "auth.backendonlyf8c4c57b.IdentityPoolName",
+        "UserPoolName": "auth.backendonlyf8c4c57b.UserPoolName"
       },
       "lastPushDirHash": "686H3dissPlXxzTHFb9vBmwM2jw="
     }
@@ -85,8 +85,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "sgumi4ggubb4jdo6i54km7skka",
-        "GraphQLAPIEndpointOutput": "https://24agelrb6rgfrcvxhfwq53ge7a.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "api.backendonly.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.backendonly.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
@@ -108,7 +108,7 @@
         "logicalId": "storages3c31471c3"
       },
       "output": {
-        "BucketName": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
+        "BucketName": "storage.s3c31471c3.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "5S73DL/tGImodFS4Yhe8QtAEepc="
@@ -133,11 +133,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/backendonlyLambdaRole8a0d8e62-main",
+        "LambdaExecutionRoleArn": "function.quotegeneratorbe.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:quotegeneratorbe-main",
-        "Name": "quotegeneratorbe-main",
-        "LambdaExecutionRole": "backendonlyLambdaRole8a0d8e62-main"
+        "Arn": "function.quotegeneratorbe.Arn",
+        "Name": "function.quotegeneratorbe.Name",
+        "LambdaExecutionRole": "function.quotegeneratorbe.LambdaExecutionRole"
       },
       "lastPushDirHash": "g+QSHqf0IzubQUzZPRqNTEsEhkI="
     }

@@ -11,10 +11,10 @@
     "env": {
       "Type": "String"
     },
-    "nutritionapi": {
+    "api.api.nutritionapi.ApiName.ApiName": {
       "Type": "String"
     },
-    "adminapi": {
+    "api.api.adminapi.ApiName.ApiName": {
       "Type": "String"
     }
   },
@@ -55,7 +55,7 @@
                       },
                       ":",
                       {
-                        "Ref": "nutritionapi"
+                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
                       },
                       "/",
                       {
@@ -85,7 +85,7 @@
                       },
                       ":",
                       {
-                        "Ref": "nutritionapi"
+                        "Ref": "api.api.nutritionapi.ApiName.ApiName"
                       },
                       "/",
                       {

@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"custom\":{\"API\":{\"adminapi-gen2-main\":{\"endpoint\":\"https://3tygfqh1kh.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"adminapi-gen2-main\"},\"nutritionapi-gen2-main\":{\"endpoint\":\"https://klqsuoycl8.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"nutritionapi-gen2-main\"}}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"custom\":{\"API\":{\"api.api.adminapi.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://3tygfqh1kh.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"api.api.adminapi.ApiName.ApiName-gen2-main\"},\"api.api.nutritionapi.ApiName.ApiName-gen2-main\":{\"endpoint\":\"https://klqsuoycl8.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"api.api.nutritionapi.ApiName.ApiName-gen2-main\"}}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",

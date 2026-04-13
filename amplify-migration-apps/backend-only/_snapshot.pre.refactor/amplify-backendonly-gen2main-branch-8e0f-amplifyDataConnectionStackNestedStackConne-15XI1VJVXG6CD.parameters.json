@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoNestedStackTodoNestedStackResourceD9086696Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataTodoTodoTable43ECE720TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-sgumi4ggubb4jdo6i54km7skka-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.backendonly.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref",

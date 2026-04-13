@@ -1,6 +1,6 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackadminapiRestApi15E05C08Ref",
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiNameRestApi15E05C08Ref",
     "OutputValue": "3tygfqh1kh"
   },
   {
@@ -8,7 +8,7 @@
     "OutputValue": "https://3tygfqh1kh.execute-api.us-east-1.amazonaws.com/prod/"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackadminapiRestApiDeploymentStageprodB49BA490Ref",
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistackapi.api.adminapi.ApiName.ApiNameRestApiDeploymentStageprodB49BA490Ref",
     "OutputValue": "prod"
   }
 ]

@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "WorkoutProgram-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+                          "tableName": "WorkoutProgram-api.fitnesstracker.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+                          "tableName": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Meal-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+                          "tableName": "Meal-api.fitnesstracker.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -193,7 +193,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "WorkoutProgram-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+                          "tableName": "WorkoutProgram-api.fitnesstracker.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -201,7 +201,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+                          "tableName": "Exercise-api.fitnesstracker.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -209,7 +209,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Meal-jzwb5p2vcbd2ldlnlxokgjcjby-main"
+                          "tableName": "Meal-api.fitnesstracker.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }

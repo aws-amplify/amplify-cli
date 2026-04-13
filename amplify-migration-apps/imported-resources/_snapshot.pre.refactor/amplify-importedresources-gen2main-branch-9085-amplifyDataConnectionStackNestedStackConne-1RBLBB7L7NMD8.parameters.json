@@ -13,6 +13,6 @@
   },
   {
     "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoTable2DD94F95TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-xzx4nj36zzemlloxzhpkicpa7i-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.importedresources.GraphQLAPIIdOutput-main"
   }
 ]

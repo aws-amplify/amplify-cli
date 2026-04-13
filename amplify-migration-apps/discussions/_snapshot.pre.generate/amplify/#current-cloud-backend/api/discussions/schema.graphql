@@ -21,12 +21,12 @@ type Comment @model @auth(rules: [{ allow: public }]){
 }
 
 type Query {
-  fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${env}") @auth(rules: [{ allow: public }])
+  fetchUserActivity(storage.bookmarks.PartitionKeyName: ID!): [Activity] @function(name: "fetchuseractivity-${env}") @auth(rules: [{ allow: public }])
 }
 
 type Activity {
   id: ID! @auth(rules: [{ allow: public }])
-  userId: ID! @auth(rules: [{ allow: public }])
+  storage.bookmarks.PartitionKeyName: ID! @auth(rules: [{ allow: public }])
   activityType: String! @auth(rules: [{ allow: public }])
   timestamp: String! @auth(rules: [{ allow: public }])
 }

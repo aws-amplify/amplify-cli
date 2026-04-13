@@ -6,11 +6,11 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "storage.bookmarks.PartitionKeyName",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "postId",
+            "AttributeName": "storage.bookmarks.SortKeyName",
             "AttributeType": "S"
           }
         ],
@@ -19,7 +19,7 @@
             "IndexName": "byPost",
             "KeySchema": [
               {
-                "AttributeName": "postId",
+                "AttributeName": "storage.bookmarks.SortKeyName",
                 "KeyType": "HASH"
               }
             ],
@@ -34,11 +34,11 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "storage.bookmarks.PartitionKeyName",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "postId",
+            "AttributeName": "storage.bookmarks.SortKeyName",
             "KeyType": "RANGE"
           }
         ],

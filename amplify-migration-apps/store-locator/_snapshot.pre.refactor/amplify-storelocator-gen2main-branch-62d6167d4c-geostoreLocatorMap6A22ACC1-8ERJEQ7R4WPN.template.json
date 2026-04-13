@@ -222,7 +222,7 @@
           ]
         },
         "mapName": "storeLocatorMap-gen2-main",
-        "mapStyle": "VectorEsriStreets",
+        "mapStyle": "geo.storeLocatorMap.Style",
         "region": {
           "Fn::FindInMap": [
             "storeLocatorMapRegionMapping7E708396",
@@ -300,7 +300,7 @@
       }
     },
     "Style": {
-      "Value": "VectorEsriStreets"
+      "Value": "geo.storeLocatorMap.Style"
     },
     "Region": {
       "Value": {

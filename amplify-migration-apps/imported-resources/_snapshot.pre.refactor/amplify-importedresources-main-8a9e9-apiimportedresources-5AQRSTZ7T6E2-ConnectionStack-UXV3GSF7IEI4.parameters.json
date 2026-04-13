@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "xzx4nj36zzemlloxzhpkicpa7i"
+    "ParameterValue": "api.importedresources.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref",
-    "ParameterValue": "Todo-xzx4nj36zzemlloxzhpkicpa7i-main"
+    "ParameterValue": "Todo-api.importedresources.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName",

@@ -797,7 +797,7 @@
         "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/data/amplifyData/ActivityUserIdDataResolverFn/ActivityUserIdDataResolverFn.AppSyncFunction"
       }
     },
-    "ActivityuserIdResolver": {
+    "Activitystorage.bookmarks.PartitionKeyNameResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -806,7 +806,7 @@
             "ApiId"
           ]
         },
-        "FieldName": "userId",
+        "FieldName": "storage.bookmarks.PartitionKeyName",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
@@ -822,7 +822,7 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"userId\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Activity\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"storage.bookmarks.PartitionKeyName\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Fn::GetAtt": [
                   "amplifyDataGraphQLAPI42A6FA33",

@@ -250,7 +250,7 @@
           "identityPoolName": "storelocator41a9495f_identitypool_41a9495f",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "storel41a9495f",
-          "userPoolName": "storelocator41a9495f_userpool_41a9495f",
+          "userPoolName": "auth.storelocator41a9495f41a9495f.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -397,7 +397,7 @@
             "Ref": "UnauthRoleName"
           },
           "mapName": "storeLocatorMap",
-          "mapStyle": "VectorEsriStreets",
+          "mapStyle": "geo.storeLocatorMap.Style",
           "isDefault": true,
           "authstorelocator41a9495f41a9495fUserPoolId": {
             "Fn::GetAtt": [

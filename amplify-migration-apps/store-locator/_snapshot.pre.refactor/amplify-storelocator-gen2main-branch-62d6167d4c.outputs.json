@@ -49,7 +49,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-main\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-main\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-main\"],\"default\":\"storeLocatorSearch-gen2-main\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-main\"],\"default\":\"storeLocatorGeofence-gen2-main\"}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-main\":{\"style\":\"geo.storeLocatorMap.Style\"}},\"default\":\"storeLocatorMap-gen2-main\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-main\"],\"default\":\"storeLocatorSearch-gen2-main\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-main\"],\"default\":\"storeLocatorGeofence-gen2-main\"}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/moodboardLambdaRolef849b419-main"
+    "OutputValue": "function.moodboardGetRandomEmoji.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:moodboardGetRandomEmoji-main"
+    "OutputValue": "function.moodboardGetRandomEmoji.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "moodboardGetRandomEmoji-main"
+    "OutputValue": "function.moodboardGetRandomEmoji.Name"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "moodboardLambdaRolef849b419-main"
+    "OutputValue": "function.moodboardGetRandomEmoji.LambdaExecutionRole"
   }
 ]

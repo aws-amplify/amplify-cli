@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "5aahjbxypzan3jqab7lbquus4m"
+    "ParameterValue": "api.mediavault.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

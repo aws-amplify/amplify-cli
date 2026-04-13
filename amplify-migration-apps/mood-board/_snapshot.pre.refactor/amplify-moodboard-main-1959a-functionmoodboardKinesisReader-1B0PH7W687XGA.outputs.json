@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/moodboardLambdaRole1f55eecd-main"
+    "OutputValue": "function.moodboardKinesisReader.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:moodboardKinesisReader-main"
+    "OutputValue": "function.moodboardKinesisReader.Arn"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "moodboardKinesisReader-main"
+    "OutputValue": "function.moodboardKinesisReader.Name"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "moodboardLambdaRole1f55eecd-main"
+    "OutputValue": "function.moodboardKinesisReader.LambdaExecutionRole"
   }
 ]

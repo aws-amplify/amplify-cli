@@ -640,8 +640,8 @@
         "Description": "override success",
         "GroupName": "Admin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_iguxCIcMS-AdminGroupRole",
-        "UserPoolId": "us-east-1_iguxCIcMS"
+        "RoleArn": "auth.userPoolGroups.AdminGroupRole",
+        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
       }
     }
   },

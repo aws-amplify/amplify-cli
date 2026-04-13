@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "2oi4chvjmec9shclb000688s9a"
+    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
   },
   {
     "OutputKey": "socialProviders",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "2oi4chvjmec9shclb000688s9a"
+    "OutputValue": "auth.importedresources2c7c1c40.AppClientIDWeb"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -117,11 +117,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_8feoXFV6v"
+    "OutputValue": "auth.importedresources2c7c1c40.UserPoolId"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:12def580-cd20-405f-accf-51c866797e48"
+    "OutputValue": "auth.importedresources2c7c1c40.IdentityPoolId"
   },
   {
     "OutputKey": "verificationMechanisms",

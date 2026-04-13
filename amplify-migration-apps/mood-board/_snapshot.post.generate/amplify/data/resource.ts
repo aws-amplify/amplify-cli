@@ -28,8 +28,8 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'main',
       modelNameToTableNameMapping: {
-        MoodItem: 'MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main',
-        Board: 'Board-vsozkn3hbzdjppzyf7xtf2f4sy-main',
+        MoodItem: 'MoodItem-api.moodboard.GraphQLAPIIdOutput-main',
+        Board: 'Board-api.moodboard.GraphQLAPIIdOutput-main',
       },
     },
   ],

@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8"
         },
-        "tableName": "Note-5aahjbxypzan3jqab7lbquus4m-main",
+        "tableName": "Note-api.mediavault.GraphQLAPIIdOutput-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Note-5aahjbxypzan3jqab7lbquus4m-main"
+                          "tablename": "Note-api.mediavault.GraphQLAPIIdOutput-main"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Note-5aahjbxypzan3jqab7lbquus4m-main"
+                          "tablename": "Note-api.mediavault.GraphQLAPIIdOutput-main"
                         }
                       ]
                     }
@@ -2041,7 +2041,7 @@
     },
     "GetAttNoteTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Note-5aahjbxypzan3jqab7lbquus4m-main",
+      "Value": "Note-api.mediavault.GraphQLAPIIdOutput-main",
       "Export": {
         "Name": {
           "Fn::Join": [

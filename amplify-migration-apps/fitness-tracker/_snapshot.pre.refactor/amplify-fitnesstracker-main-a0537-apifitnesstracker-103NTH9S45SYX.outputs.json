@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "jzwb5p2vcbd2ldlnlxokgjcjby",
+    "OutputValue": "api.fitnesstracker.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
     "ExportName": "amplify-fitnesstracker-main-a0537-apifitnesstracker-103NTH9S45SYX:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "https://lqftdnws2zb75jcuwdcmx23wdi.appsync-api.us-east-1.amazonaws.com/graphql",
+    "OutputValue": "api.fitnesstracker.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "amplify-fitnesstracker-main-a0537-apifitnesstracker-103NTH9S45SYX:GraphQLApiEndpoint"
   },

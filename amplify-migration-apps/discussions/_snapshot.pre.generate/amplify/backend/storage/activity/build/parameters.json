@@ -2,6 +2,6 @@
   "tableName": "activity",
   "partitionKeyName": "id",
   "partitionKeyType": "S",
-  "sortKeyName": "userId",
+  "sortKeyName": "storage.bookmarks.PartitionKeyName",
   "sortKeyType": "S"
 }

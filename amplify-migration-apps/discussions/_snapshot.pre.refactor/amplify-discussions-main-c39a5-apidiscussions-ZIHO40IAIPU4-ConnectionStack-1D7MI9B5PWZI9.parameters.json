@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref",
-    "ParameterValue": "Topic-u3jn2qbupzbyhc3h53673wdvim-main"
+    "ParameterValue": "Topic-api.discussions.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -13,15 +13,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef",
-    "ParameterValue": "Post-u3jn2qbupzbyhc3h53673wdvim-main"
+    "ParameterValue": "Post-api.discussions.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
-    "ParameterValue": "Comment-u3jn2qbupzbyhc3h53673wdvim-main"
+    "ParameterValue": "Comment-api.discussions.GraphQLAPIIdOutput-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "u3jn2qbupzbyhc3h53673wdvim"
+    "ParameterValue": "api.discussions.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",

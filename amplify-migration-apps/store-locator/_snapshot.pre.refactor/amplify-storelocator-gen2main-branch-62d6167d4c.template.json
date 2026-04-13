@@ -180,7 +180,7 @@
                 "Outputs.amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
               ]
             },
-            "\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"",
+            "\":{\"style\":\"geo.storeLocatorMap.Style\"}},\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorMap6A22ACC1",

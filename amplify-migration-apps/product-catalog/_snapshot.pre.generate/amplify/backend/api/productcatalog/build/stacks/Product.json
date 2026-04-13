@@ -504,7 +504,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -618,7 +618,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -765,7 +765,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -933,7 +933,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1098,7 +1098,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1184,7 +1184,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1240,7 +1240,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1296,7 +1296,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.S3Trigger1ef46783.Name\",\"function.lowstockproducts.Name\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },

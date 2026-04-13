@@ -40,6 +40,54 @@ function extractGen1ApiKey(meta: any): string | null {
   return meta.api[firstApiResource]?.output?.GraphQLAPIKeyOutput ?? null;
 }
 
+/** Categories in amplify-meta.json that contain resources with output values. */
+const AMPLIFY_META_CATEGORIES = [
+  'auth',
+  'api',
+  'storage',
+  'function',
+  'analytics',
+  'hosting',
+  'interactions',
+  'predictions',
+  'geo',
+  'custom',
+];
+
+/**
+ * Extracts all string output values from the amplify-meta.json, paired with
+ * a sanitized placeholder of the form `<category>.<resourceName>.<outputKey>`.
+ *
+ * Skips non-string values (nested objects like authConfig), values that are
+ * too short to safely replace via global string substitution, and AWS region
+ * strings that appear as substrings throughout unrelated content.
+ */
+const AWS_REGION_PATTERN = /^[a-z]{2}(-[a-z]+-\d+)$/;
+
+function extractOutputReplacements(meta: any): { value: string; placeholder: string }[] {
+  const replacements: { value: string; placeholder: string }[] = [];
+
+  for (const category of AMPLIFY_META_CATEGORIES) {
+    if (!meta[category]) continue;
+    for (const resourceName of Object.keys(meta[category])) {
+      const output = meta[category][resourceName]?.output;
+      if (!output) continue;
+      for (const outputKey of Object.keys(output)) {
+        const outputValue = output[outputKey];
+        if (typeof outputValue !== 'string') continue;
+        if (outputValue.length < 5) continue;
+        if (AWS_REGION_PATTERN.test(outputValue)) continue;
+        replacements.push({ value: outputValue, placeholder: `${category}.${resourceName}.${outputKey}` });
+      }
+    }
+  }
+
+  // Sort by value length descending so longer strings are replaced first,
+  // preventing partial matches when one value is a substring of another.
+  replacements.sort((a, b) => b.value.length - a.value.length);
+  return replacements;
+}
+
 function extractGen2ApiKey(appDir: string): string | null {
   const preRefactor = path.join(appDir, '_snapshot.pre.refactor');
   for (const outputsFile of fs.readdirSync(preRefactor).filter((f) => f.endsWith('outputs.json'))) {
@@ -103,12 +151,15 @@ function getAllFiles(dir: string): string[] {
  * - AWS Account ID (from providers.awscloudformation AuthRoleArn) → replaced with 123456789012
  * - Amplify App ID (from providers.awscloudformation) → replaced with app name (dashes removed)
  * - AppSync API Key (from api output, if present) → replaced with da2-fakeapikey00000000000000
+ * - All string output values from resource categories → replaced with <category>.<resourceName>.<outputKey>
  */
 export function sanitize(appName: string, appDir: string): void {
   const appNameNoDashes = appName.replaceAll('-', '');
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
   const values = extractSensitiveValues(amplifyMeta, appDir);
+
+  const outputReplacements = extractOutputReplacements(amplifyMeta);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
@@ -125,6 +176,10 @@ export function sanitize(appName: string, appDir: string): void {
 
     if (values.gen2ApiKey) {
       content = content.replaceAll(values.gen2ApiKey, 'da2-fakeapikey00000000000000');
+    }
+
+    for (const { value, placeholder } of outputReplacements) {
+      content = content.replaceAll(value, placeholder);
     }
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);

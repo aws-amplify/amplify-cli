@@ -111,7 +111,7 @@
               {
                 "Ref": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
             ]
           ]
         },

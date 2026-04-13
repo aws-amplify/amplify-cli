@@ -207,7 +207,7 @@
           "identityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "backenf8c4c57b",
-          "userPoolName": "backendonlyf8c4c57b_userpool_f8c4c57b",
+          "userPoolName": "auth.backendonlyf8c4c57b.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",

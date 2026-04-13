@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "analyticsmoodboardKinesiskinesisStreamArn",
-    "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+    "ParameterValue": "analytics.moodboardKinesis.kinesisStreamArn"
   },
   {
     "ParameterKey": "deploymentBucketName",
