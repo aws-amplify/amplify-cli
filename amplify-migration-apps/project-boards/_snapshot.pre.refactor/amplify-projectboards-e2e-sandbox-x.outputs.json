@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "55ncp06rfk4pe5m5b0aul2rvcv"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolAppClient164B3806Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-projectboa2604122-projectboards34b9a7f3c2c-jlfg2untypau"
+    "OutputValue": "33a07aa830.amplifyprojectboardse2esandbox0404234937storageprojectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketEB8DD64DRef"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "55ncp06rfk4pe5m5b0aul2rvcv"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolAppClient164B3806Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -41,7 +41,7 @@
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+    "OutputValue": "f1ff14e009.awsAppsyncAdditionalAuthenticationTypes"
   },
   {
     "OutputKey": "mfaTypes",
@@ -61,15 +61,15 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputValue": "api.projectboards.GraphQLAPIKeyOutput"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "API_KEY"
+    "OutputValue": "f1ff14e009.awsAppsyncAuthenticationType"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "https://example.com"
+    "OutputValue": "f1ff14e009.oauthRedirectSignIn"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://wqb4ripmfffelgbrw5r7xgdfyi.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBGraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "7naflquhsnh45misw742dluuoe"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"projectboards34b9a7f3c2ca489293910116c994688bx-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-projectboa2604122-projectboards34b9a7f3c2c-jlfg2untypau\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"projectboards34b9a7f3c2ca489293910116c994688bx-gen2-x\\\",\\\"bucketName\\\":\\\"33a07aa830.amplifyprojectboardse2esandbox0404234937storageprojectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketEB8DD64DRef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-projectboa2604122-amplifydataamplifycodege-tamukoiwshla/model-schema.graphql"
+    "OutputValue": "f1ff14e009.amplifyApiModelSchemaS3Uri"
   },
   {
     "OutputKey": "groups",
@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"quotegenerator-gen2-x\"]"
+    "OutputValue": "[\"0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_6qE6AKdWE"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolCDDC6529Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:c76a647c-6daf-4022-a2c8-c4fcab253f6d"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
   },
   {
     "OutputKey": "verificationMechanisms",

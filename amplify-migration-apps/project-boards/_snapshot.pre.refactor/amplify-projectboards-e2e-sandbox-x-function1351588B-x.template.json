@@ -37,7 +37,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "quotegenerator-gen2-x"
+            "Value": "0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref"
           },
           {
             "Key": "created-by",
@@ -48,7 +48,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/quotegenerator-gen2-x-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref-lambda/ServiceRole/Resource"
       }
     },
     "quotegeneratorgen2xlambda2CAD5E08": {
@@ -73,7 +73,7 @@
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "quotegenerator-gen2-x",
+        "FunctionName": "0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref",
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {
@@ -90,7 +90,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "quotegenerator-gen2-x"
+            "Value": "0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref"
           },
           {
             "Key": "created-by",
@@ -105,7 +105,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/quotegenerator-gen2-x-lambda/Resource",
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref-lambda/Resource",
         "aws:asset:path": "asset.fd074b3886f6db127f8e75b0559d79e1102ff783c2bf96cfd44c9a5822ccf1a8",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"

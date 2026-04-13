@@ -349,13 +349,13 @@
     }
   },
   "Resources": {
-    "ProjectTable": {
+    "a7e707e99e.GetAttProjectDataSourceName": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
           "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA862DC87Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerTab8275BDD1"
         },
-        "tableName": "Project-api.projectboards.GraphQLAPIIdOutput-x",
+        "tableName": "e36cd6b3cb.GetAtta7e707e99e.GetAttProjectDataSourceNameName",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -418,7 +418,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/Project/ProjectTable/Default/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/Project/a7e707e99e.GetAttProjectDataSourceName/Default/Default"
       }
     },
     "ProjectIAMRole928454B5": {
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Project-api.projectboards.GraphQLAPIIdOutput-x"
+                          "tablename": "e36cd6b3cb.GetAtta7e707e99e.GetAttProjectDataSourceNameName"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Project-api.projectboards.GraphQLAPIIdOutput-x"
+                          "tablename": "e36cd6b3cb.GetAtta7e707e99e.GetAttProjectDataSourceNameName"
                         }
                       ]
                     }
@@ -538,7 +538,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "ProjectTable",
+                              "a7e707e99e.GetAttProjectDataSourceName",
                               "TableArn"
                             ]
                           }
@@ -551,7 +551,7 @@
             ]
           }
         },
-        "Name": "ProjectTable",
+        "Name": "a7e707e99e.GetAttProjectDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "ProjectIAMRole928454B5",
@@ -696,7 +696,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "a7e707e99e.GetAttProjectDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -876,7 +876,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "a7e707e99e.GetAttProjectDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1084,7 +1084,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "a7e707e99e.GetAttProjectDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1300,7 +1300,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "a7e707e99e.GetAttProjectDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -1488,7 +1488,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "a7e707e99e.GetAttProjectDataSourceName",
                                   "TableArn"
                                 ]
                               }
@@ -2085,11 +2085,11 @@
     }
   },
   "Outputs": {
-    "GetAttProjectTableStreamArn": {
+    "GetAtta7e707e99e.GetAttProjectDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "ProjectTable",
+          "a7e707e99e.GetAttProjectDataSourceName",
           "TableStreamArn"
         ]
       },
@@ -2101,15 +2101,15 @@
               {
                 "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
               },
-              "GetAtt:ProjectTable:StreamArn"
+              "GetAtt:a7e707e99e.GetAttProjectDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttProjectTableName": {
+    "GetAtta7e707e99e.GetAttProjectDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Project-api.projectboards.GraphQLAPIIdOutput-x",
+      "Value": "e36cd6b3cb.GetAtta7e707e99e.GetAttProjectDataSourceNameName",
       "Export": {
         "Name": {
           "Fn::Join": [
@@ -2118,7 +2118,7 @@
               {
                 "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
               },
-              "GetAtt:ProjectTable:Name"
+              "GetAtt:a7e707e99e.GetAttProjectDataSourceName:Name"
             ]
           ]
         }

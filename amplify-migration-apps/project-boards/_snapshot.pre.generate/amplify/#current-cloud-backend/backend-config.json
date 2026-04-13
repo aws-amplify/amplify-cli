@@ -24,7 +24,7 @@
             "apiKeyConfig": {
               "apiKeyExpirationDays": 7
             },
-            "authenticationType": "API_KEY"
+            "authenticationType": "f1ff14e009.awsAppsyncAuthenticationType"
           }
         }
       },

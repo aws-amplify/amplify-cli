@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:c76a647c-6daf-4022-a2c8-c4fcab253f6d"
+                  "cognito-identity.amazonaws.com:aud": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:c76a647c-6daf-4022-a2c8-c4fcab253f6d"
+                  "cognito-identity.amazonaws.com:aud": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -133,7 +133,7 @@
           "Fn::Join": [
             "",
             [
-              "auth.projectboards54040ecc.UserPoolName",
+              "fbc019a445.UserPoolName",
               "-",
               "x"
             ]
@@ -155,7 +155,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.projectboards54040ecc.UserPoolId"
+        "UserPoolId": "fbc019a445.UserPoolId"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -167,7 +167,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.projectboards54040ecc.UserPoolId"
+        "UserPoolId": "fbc019a445.UserPoolId"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -176,7 +176,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "auth.projectboards54040ecc.AppClientID",
+            "ClientId": "fbc019a445.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -184,13 +184,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.projectboards54040ecc.UserPoolId"
+                  "client": "fbc019a445.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "auth.projectboards54040ecc.AppClientIDWeb",
+            "ClientId": "fbc019a445.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -198,7 +198,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.projectboards54040ecc.UserPoolId"
+                  "client": "fbc019a445.UserPoolId"
                 }
               ]
             }
@@ -218,10 +218,10 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "auth.projectboards54040ecc.IdentityPoolId",
+        "IdentityPoolId": "fbc019a445.IdentityPoolId",
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole"
+          "unauthenticated": "1cbef42f68.UnauthRoleArn",
+          "authenticated": "1cbef42f68.AuthRoleArn"
         }
       }
     }
@@ -494,19 +494,19 @@
   },
   "Outputs": {
     "amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolCDDC6529Ref": {
-      "Value": "us-east-1_6qE6AKdWE"
+      "Value": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolCDDC6529Ref"
     },
     "amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolAppClient164B3806Ref": {
-      "Value": "55ncp06rfk4pe5m5b0aul2rvcv"
+      "Value": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolAppClient164B3806Ref"
     },
     "amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref": {
-      "Value": "us-east-1:c76a647c-6daf-4022-a2c8-c4fcab253f6d"
+      "Value": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
     },
     "amplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef": {
-      "Value": "amplify-projectboa2604122-amplifyAuthauthenticatedU-usKx3FuYNOsN"
+      "Value": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef"
     },
     "amplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef": {
-      "Value": "amplify-projectboa2604122-amplifyAuthunauthenticate-SJZmotWjL7Qy"
+      "Value": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef"
     }
   }
 }

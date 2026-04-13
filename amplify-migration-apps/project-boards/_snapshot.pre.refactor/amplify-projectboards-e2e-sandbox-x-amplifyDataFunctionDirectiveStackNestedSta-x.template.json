@@ -328,12 +328,12 @@
                     "HasEnvironmentParameter",
                     {
                       "Fn::Sub": [
-                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x",
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref",
                         {}
                       ]
                     },
                     {
-                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x"
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref"
                     }
                   ]
                 },
@@ -346,12 +346,12 @@
                           "HasEnvironmentParameter",
                           {
                             "Fn::Sub": [
-                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x",
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref",
                               {}
                             ]
                           },
                           {
-                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x"
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref"
                           }
                         ]
                       },
@@ -389,12 +389,12 @@
               "HasEnvironmentParameter",
               {
                 "Fn::Sub": [
-                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x",
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref",
                   {}
                 ]
               },
               {
-                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x"
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:0a48be75ff.amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref"
               }
             ]
           }

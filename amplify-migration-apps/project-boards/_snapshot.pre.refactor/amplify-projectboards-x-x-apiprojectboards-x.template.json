@@ -74,7 +74,7 @@
             }
           }
         ],
-        "AuthenticationType": "API_KEY",
+        "AuthenticationType": "f1ff14e009.awsAppsyncAuthenticationType",
         "Name": {
           "Fn::Join": [
             "",
@@ -408,10 +408,10 @@
               "Outputs.transformerrootstackTodoTodoDataSourceBD713D7DName"
             ]
           },
-          "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref": {
+          "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameC67E79C2Ref": {
             "Fn::GetAtt": [
               "Todo",
-              "Outputs.transformerrootstackTodoTodoTableC67E79C2Ref"
+              "Outputs.transformerrootstackTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameC67E79C2Ref"
             ]
           }
         },

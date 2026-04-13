@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAttTodoTableName",
-    "OutputValue": "Todo-api.projectboards.GraphQLAPIIdOutput-x",
+    "OutputKey": "GetAtt5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameName",
+    "OutputValue": "5c1e28b4a7.GetAtt5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "7naflquhsnh45misw742dluuoe:GetAtt:TodoTable:Name"
+    "ExportName": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId:GetAtt:5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName:Name"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-x"
+    "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameF8EFD7EETableArn",
+    "OutputValue": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameF8EFD7EETableArn"
   },
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
-    "OutputValue": "TodoTable"
+    "OutputValue": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
   },
   {
-    "OutputKey": "GetAttTodoTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-x/stream/2026-04-13T02:34:31.661",
+    "OutputKey": "GetAtt5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameStreamArn",
+    "OutputValue": "5c1e28b4a7.GetAtt5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "7naflquhsnh45misw742dluuoe:GetAtt:TodoTable:StreamArn"
+    "ExportName": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId:GetAtt:5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName:StreamArn"
   }
 ]

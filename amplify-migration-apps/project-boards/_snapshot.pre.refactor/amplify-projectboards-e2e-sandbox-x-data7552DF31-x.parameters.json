@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef",
-    "ParameterValue": "amplify-projectboa2604122-amplifyAuthunauthenticate-SJZmotWjL7Qy"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref",
-    "ParameterValue": "us-east-1:c76a647c-6daf-4022-a2c8-c4fcab253f6d"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
   },
   {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef",
-    "ParameterValue": "amplify-projectboa2604122-amplifyAuthauthenticatedU-usKx3FuYNOsN"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolCDDC6529Ref",
-    "ParameterValue": "us-east-1_6qE6AKdWE"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthUserPoolCDDC6529Ref"
   }
 ]

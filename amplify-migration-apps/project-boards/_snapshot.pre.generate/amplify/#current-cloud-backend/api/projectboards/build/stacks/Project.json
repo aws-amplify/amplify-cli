@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "ProjectTable": {
+    "a7e707e99e.GetAttProjectDataSourceName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -303,7 +303,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "ProjectTable",
+                    "a7e707e99e.GetAttProjectDataSourceName",
                     "Arn"
                   ]
                 },
@@ -334,10 +334,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "ProjectTable"
+            "Ref": "a7e707e99e.GetAttProjectDataSourceName"
           }
         },
-        "Name": "ProjectTable",
+        "Name": "a7e707e99e.GetAttProjectDataSourceName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "ProjectIAMRole928454B5",
@@ -501,7 +501,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProjectTable"
+                "Ref": "a7e707e99e.GetAttProjectDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -602,7 +602,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProjectTable"
+                "Ref": "a7e707e99e.GetAttProjectDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -769,7 +769,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProjectTable"
+                "Ref": "a7e707e99e.GetAttProjectDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -957,7 +957,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProjectTable"
+                "Ref": "a7e707e99e.GetAttProjectDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1109,7 +1109,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "ProjectTable"
+                "Ref": "a7e707e99e.GetAttProjectDataSourceName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1413,11 +1413,11 @@
     }
   },
   "Outputs": {
-    "GetAttProjectTableStreamArn": {
+    "GetAtta7e707e99e.GetAttProjectDataSourceNameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "ProjectTable",
+          "a7e707e99e.GetAttProjectDataSourceName",
           "StreamArn"
         ]
       },
@@ -1429,16 +1429,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:ProjectTable:StreamArn"
+              "GetAtt:a7e707e99e.GetAttProjectDataSourceName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttProjectTableName": {
+    "GetAtta7e707e99e.GetAttProjectDataSourceNameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "ProjectTable"
+        "Ref": "a7e707e99e.GetAttProjectDataSourceName"
       },
       "Export": {
         "Name": {
@@ -1448,7 +1448,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:ProjectTable:Name"
+              "GetAtt:a7e707e99e.GetAttProjectDataSourceName:Name"
             ]
           ]
         }

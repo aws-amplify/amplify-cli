@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef",
-    "ParameterValue": "amplify-projectboa2604122-amplifyAuthunauthenticate-SJZmotWjL7Qy"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPINONEDSB0B262EAName",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref",
-    "ParameterValue": "us-east-1:c76a647c-6daf-4022-a2c8-c4fcab253f6d"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
   },
   {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
@@ -29,15 +29,15 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId",
-    "ParameterValue": "7naflquhsnh45misw742dluuoe"
+    "ParameterValue": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef",
-    "ParameterValue": "amplify-projectboa2604122-amplifyAuthauthenticatedU-usKx3FuYNOsN"
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA862DC87Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerTab8275BDD1",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-projectboa2604122-TableManagerCustomProvid-rUiJXk07RTII"
+    "ParameterValue": "96a0d6671d.amplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent8E126D29Arn"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

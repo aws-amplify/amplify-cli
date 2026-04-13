@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole"
+    "ParameterValue": "1cbef42f68.AuthRoleArn"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "auth.projectboards54040ecc.UserPoolName"
+    "ParameterValue": "fbc019a445.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole"
+    "ParameterValue": "1cbef42f68.UnauthRoleArn"
   },
   {
     "ParameterKey": "requiredAttributes",

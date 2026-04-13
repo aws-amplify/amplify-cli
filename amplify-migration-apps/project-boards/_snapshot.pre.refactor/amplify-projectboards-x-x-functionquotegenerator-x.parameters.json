@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-projectboards-x-x-deployment"
+    "ParameterValue": "1cbef42f68.DeploymentBucketName"
   },
   {
     "ParameterKey": "env",

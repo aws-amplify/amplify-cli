@@ -136,7 +136,7 @@
       "Value": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
     },
     "oauthRedirectSignIn": {
-      "Value": "https://example.com"
+      "Value": "f1ff14e009.oauthRedirectSignIn"
     },
     "oauthRedirectSignOut": {
       "Value": ""
@@ -172,7 +172,7 @@
       }
     },
     "awsAppsyncAuthenticationType": {
-      "Value": "API_KEY"
+      "Value": "f1ff14e009.awsAppsyncAuthenticationType"
     },
     "awsAppsyncRegion": {
       "Value": {
@@ -225,7 +225,7 @@
       }
     },
     "awsAppsyncAdditionalAuthenticationTypes": {
-      "Value": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+      "Value": "f1ff14e009.awsAppsyncAdditionalAuthenticationTypes"
     },
     "definedFunctions": {
       "Value": {

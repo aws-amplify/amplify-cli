@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-projectboards-x-x-deployment"
+    "ParameterValue": "1cbef42f68.DeploymentBucketName"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "api.projectboards.GraphQLAPIIdOutput"
+    "ParameterValue": "f4028f14c0.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",

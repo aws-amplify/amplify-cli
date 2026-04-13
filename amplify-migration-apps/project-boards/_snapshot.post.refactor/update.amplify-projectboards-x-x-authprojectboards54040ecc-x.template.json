@@ -154,7 +154,7 @@
           "Fn::Join": [
             "",
             [
-              "auth.projectboards54040ecc.UserPoolName",
+              "fbc019a445.UserPoolName",
               "-",
               "x"
             ]
@@ -176,7 +176,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.projectboards54040ecc.UserPoolId"
+        "UserPoolId": "fbc019a445.UserPoolId"
       }
     },
     "UserPoolClient": {
@@ -188,7 +188,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.projectboards54040ecc.UserPoolId"
+        "UserPoolId": "fbc019a445.UserPoolId"
       }
     },
     "UserPoolClientRole": {
@@ -217,7 +217,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-projectboards-x-x-authprojectboards54040ecc-x"
+                      "1cbef42f68.StackName-authprojectboards54040ecc-x"
                     ]
                   }
                 ]
@@ -235,7 +235,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "auth.projectboards54040ecc.AppClientID",
+            "ClientId": "fbc019a445.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -243,13 +243,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.projectboards54040ecc.UserPoolId"
+                  "client": "fbc019a445.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "auth.projectboards54040ecc.AppClientIDWeb",
+            "ClientId": "fbc019a445.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -257,7 +257,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.projectboards54040ecc.UserPoolId"
+                  "client": "fbc019a445.UserPoolId"
                 }
               ]
             }
@@ -277,10 +277,10 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "auth.projectboards54040ecc.IdentityPoolId",
+        "IdentityPoolId": "fbc019a445.IdentityPoolId",
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole"
+          "unauthenticated": "1cbef42f68.UnauthRoleArn",
+          "authenticated": "1cbef42f68.AuthRoleArn"
         }
       }
     }
@@ -288,29 +288,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "auth.projectboards54040ecc.IdentityPoolId"
+      "Value": "fbc019a445.IdentityPoolId"
     },
     "IdentityPoolName": {
-      "Value": "auth.projectboards54040ecc.IdentityPoolName"
+      "Value": "fbc019a445.IdentityPoolName"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "auth.projectboards54040ecc.UserPoolId"
+      "Value": "fbc019a445.UserPoolId"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "auth.projectboards54040ecc.UserPoolArn"
+      "Value": "fbc019a445.UserPoolArn"
     },
     "UserPoolName": {
-      "Value": "auth.projectboards54040ecc.UserPoolName"
+      "Value": "fbc019a445.UserPoolName"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "auth.projectboards54040ecc.AppClientIDWeb"
+      "Value": "fbc019a445.AppClientIDWeb"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "auth.projectboards54040ecc.AppClientID"
+      "Value": "fbc019a445.AppClientID"
     }
   }
 }

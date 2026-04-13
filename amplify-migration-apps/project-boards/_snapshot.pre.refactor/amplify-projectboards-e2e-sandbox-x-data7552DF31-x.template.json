@@ -17,7 +17,7 @@
             }
           }
         ],
-        "AuthenticationType": "API_KEY",
+        "AuthenticationType": "f1ff14e009.awsAppsyncAuthenticationType",
         "Name": "amplifyData",
         "Tags": [
           {
@@ -428,10 +428,10 @@
               "Outputs.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
             ]
           },
-          "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn": {
+          "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameF8EFD7EETableArn": {
             "Fn::GetAtt": [
               "amplifyDataTodoNestedStackTodoNestedStackResource551CEA56",
-              "Outputs.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn"
+              "Outputs.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameF8EFD7EETableArn"
             ]
           },
           "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef": {

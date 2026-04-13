@@ -108,7 +108,7 @@
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "https://example.com"
+          "f1ff14e009.oauthRedirectSignIn"
         ],
         "ExplicitAuthFlows": [
           "ALLOW_CUSTOM_AUTH",

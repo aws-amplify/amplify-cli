@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "api.projectboards.GraphQLAPIIdOutput"
+    "ParameterValue": "f4028f14c0.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-projectboards-x-x-deployment"
+    "ParameterValue": "1cbef42f68.DeploymentBucketName"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

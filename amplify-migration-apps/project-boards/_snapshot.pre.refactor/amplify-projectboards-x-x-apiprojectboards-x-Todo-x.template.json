@@ -113,7 +113,7 @@
     }
   },
   "Resources": {
-    "TodoTable": {
+    "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -358,7 +358,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "TodoTable",
+                    "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
                     "Arn"
                   ]
                 },
@@ -368,7 +368,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "TodoTable",
+                          "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
                           "Arn"
                         ]
                       },
@@ -400,10 +400,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "TodoTable"
+            "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
           }
         },
-        "Name": "TodoTable",
+        "Name": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "TodoIAMRole2DA8E66E",
@@ -501,7 +501,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -596,7 +596,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -727,7 +727,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -879,7 +879,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1028,7 +1028,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
               },
               "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:8369c5e6-2073-42ae-8a72-64d879300a6c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1182,11 +1182,11 @@
     }
   },
   "Outputs": {
-    "GetAttTodoTableStreamArn": {
+    "GetAtt5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "TodoTable",
+          "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
           "StreamArn"
         ]
       },
@@ -1198,16 +1198,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:TodoTable:StreamArn"
+              "GetAtt:5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttTodoTableName": {
+    "GetAtt5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "TodoTable"
+        "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
       },
       "Export": {
         "Name": {
@@ -1217,7 +1217,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:TodoTable:Name"
+              "GetAtt:5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName:Name"
             ]
           ]
         }
@@ -1253,9 +1253,9 @@
         ]
       }
     },
-    "transformerrootstackTodoTodoTableC67E79C2Ref": {
+    "transformerrootstackTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameC67E79C2Ref": {
       "Value": {
-        "Ref": "TodoTable"
+        "Ref": "5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
       }
     }
   }

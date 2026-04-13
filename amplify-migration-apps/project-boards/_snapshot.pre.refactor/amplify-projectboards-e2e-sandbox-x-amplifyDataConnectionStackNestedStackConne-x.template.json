@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn"
+                                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameF8EFD7EETableArn"
                               }
                             ]
                           }
@@ -430,7 +430,7 @@
     "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn": {
+    "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodo5c1e28b4a7.amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DANameF8EFD7EETableArn": {
       "Type": "String"
     },
     "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef": {

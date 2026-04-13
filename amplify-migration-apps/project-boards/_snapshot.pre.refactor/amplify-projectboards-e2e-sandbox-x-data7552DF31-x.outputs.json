@@ -1,18 +1,18 @@
 [
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId",
-    "OutputValue": "7naflquhsnh45misw742dluuoe"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
   },
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBGraphQLUrl",
-    "OutputValue": "https://wqb4ripmfffelgbrw5r7xgdfyi.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBGraphQLUrl"
   },
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPIDefaultApiKey2E50DA98ApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputValue": "api.projectboards.GraphQLAPIKeyOutput"
   },
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB745D26D9DestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-projectboa2604122-amplifydataamplifycodege-tamukoiwshla"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB745D26D9DestinationBucketArn"
   }
 ]

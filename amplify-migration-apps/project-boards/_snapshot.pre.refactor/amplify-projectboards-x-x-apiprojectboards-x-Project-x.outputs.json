@@ -1,48 +1,48 @@
 [
   {
     "OutputKey": "transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",
-    "OutputValue": "53vn63xxgfciva2jb7whvf4kbi"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId",
-    "OutputValue": "4hbb3zkzqjfuliusi4jf6lt6xi"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId",
-    "OutputValue": "7ylmwemnuncvflhla3oqj2pfde"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId",
-    "OutputValue": "ehq2r4ierrfenk5pxudwklzzle"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId"
   },
   {
     "OutputKey": "GetAttProjectDataSourceName",
-    "OutputValue": "ProjectTable",
+    "OutputValue": "a7e707e99e.GetAttProjectDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.projectboards.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
+    "ExportName": "f4028f14c0.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
-    "OutputValue": "ezrrrzn2cnbq3ofhezumbrmdli"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId",
-    "OutputValue": "kct4stti7bdvthepdmoylan4au"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId"
   },
   {
     "OutputKey": "transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId",
-    "OutputValue": "vviy4rdg55hlpkqvnsa4w5hz2m"
+    "OutputValue": "a7e707e99e.transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId"
   },
   {
-    "OutputKey": "GetAttProjectTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-api.projectboards.GraphQLAPIIdOutput-x/stream/2026-04-13T02:33:43.835",
+    "OutputKey": "GetAtta7e707e99e.GetAttProjectDataSourceNameStreamArn",
+    "OutputValue": "e36cd6b3cb.GetAtta7e707e99e.GetAttProjectDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.projectboards.GraphQLAPIIdOutput:GetAtt:ProjectTable:StreamArn"
+    "ExportName": "f4028f14c0.GraphQLAPIIdOutput:GetAtt:a7e707e99e.GetAttProjectDataSourceName:StreamArn"
   },
   {
-    "OutputKey": "GetAttProjectTableName",
-    "OutputValue": "Project-api.projectboards.GraphQLAPIIdOutput-x",
+    "OutputKey": "GetAtta7e707e99e.GetAttProjectDataSourceNameName",
+    "OutputValue": "e36cd6b3cb.GetAtta7e707e99e.GetAttProjectDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.projectboards.GraphQLAPIIdOutput:GetAtt:ProjectTable:Name"
+    "ExportName": "f4028f14c0.GraphQLAPIIdOutput:GetAtt:a7e707e99e.GetAttProjectDataSourceName:Name"
   }
 ]

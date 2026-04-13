@@ -1,7 +1,7 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/1cbef42f68.StackName-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
       "LogicalResourceId": "UserPool"
     },
     "Destination": {
@@ -11,7 +11,7 @@
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/1cbef42f68.StackName-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
       "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
@@ -21,7 +21,7 @@
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/1cbef42f68.StackName-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
       "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
@@ -31,7 +31,7 @@
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/1cbef42f68.StackName-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
       "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
@@ -41,7 +41,7 @@
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/1cbef42f68.StackName-authprojectboards54040ecc-x/0ca24a60-36e1-11f1-b255-0eb95eda6921",
       "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
