@@ -608,14 +608,7 @@ export class FunctionGenerator implements Planner {
   private extractAuthTriggerCfnPermissions(): AuthPermissions {
     if (this.category !== 'auth') return {};
 
-    let authResourceName: string;
-    try {
-      authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
-    } catch {
-      // No Cognito resource found — nothing to extract.
-      return {};
-    }
-
+    const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
     if (!this.gen1App.fileExists(templatePath)) return {};
 
