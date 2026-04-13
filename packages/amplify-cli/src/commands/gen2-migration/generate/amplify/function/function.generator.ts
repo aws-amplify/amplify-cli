@@ -1228,17 +1228,9 @@ const AUTH_TRIGGER_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions
 function resolveAuthTriggerAccess(cognitoActions: string[]): AuthPermissions {
   if (cognitoActions.length === 0) return {};
   const result: Record<string, boolean> = {};
-  const covered = new Set<string>();
-
-  for (const [group, required] of Object.entries(GROUPED_AUTH_PERMISSIONS)) {
-    if (required.every((a) => cognitoActions.includes(a))) {
-      result[group] = true;
-      for (const a of required) covered.add(a);
-    }
-  }
 
   for (const action of cognitoActions) {
-    if (!covered.has(action) && AUTH_TRIGGER_ACTION_MAPPING[action]) {
+    if (AUTH_TRIGGER_ACTION_MAPPING[action]) {
       result[AUTH_TRIGGER_ACTION_MAPPING[action]] = true;
     }
   }
