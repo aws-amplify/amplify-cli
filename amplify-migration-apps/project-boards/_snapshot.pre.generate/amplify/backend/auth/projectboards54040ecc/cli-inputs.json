@@ -4,7 +4,7 @@
     "identityPoolName": "projectboards54040ecc_identitypool_54040ecc",
     "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "projec54040ecc",
-    "userPoolName": "projectboards54040ecc_userpool_54040ecc",
+    "userPoolName": "fbc019a445.UserPoolName",
     "autoVerifiedAttributes": [
       "email"
     ],

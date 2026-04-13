@@ -1,0 +1,1 @@
+{"createdOn":"Mac","createdBy":"AmplifySandbox","createdWith":"1.11.2","stackType":"auth-Cognito","metadata":{}}
