@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Geo } from '@aws-amplify/geo';
 import { signIn, signOut } from 'aws-amplify/auth';
-import { signUp, addToAdminGroup, config } from './signup';
+import { signUp, addToAdminGroup, configureAmplify } from './signup';
 
 const MIDTOWN_COORDINATES: [number, number] = [-73.9857, 40.7484];
 const TEST_GEOFENCE_POLYGON: [number, number][] = [
@@ -16,6 +16,7 @@ let username: string;
 let password: string;
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   username = creds.username;
   password = creds.password;
