@@ -1,14 +1,14 @@
 {
-  "xxxxxxxxxx": {
+  "x": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-projectboards-xxxxxxxxxx-xxxxx-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-xxxxxxxxxx-xxxxx-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-xxxxxxxxxx-xxxxx-authRole",
+      "AuthRoleName": "amplify-projectboards-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-projectboards-xxxxxxxxxx-xxxxx-deployment",
-      "UnauthRoleName": "amplify-projectboards-xxxxxxxxxx-xxxxx-unauthRole",
-      "StackName": "amplify-projectboards-xxxxxxxxxx-xxxxx",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-xxxxxxxxxx-xxxxx/d5b8b6c0-36bc-11f1-acb1-0affc5aebf57",
+      "DeploymentBucketName": "amplify-projectboards-x-x-deployment",
+      "UnauthRoleName": "amplify-projectboards-x-x-unauthRole",
+      "StackName": "amplify-projectboards-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/3ad91d30-36d4-11f1-a02f-0e62e8499c29",
       "AmplifyAppId": "projectboards"
     },
     "categories": {
@@ -17,7 +17,7 @@
       },
       "function": {
         "quotegenerator": {
-          "deploymentBucketName": "amplify-projectboards-xxxxxxxxxx-xxxxx-deployment",
+          "deploymentBucketName": "amplify-projectboards-x-x-deployment",
           "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip"
         }
       },
