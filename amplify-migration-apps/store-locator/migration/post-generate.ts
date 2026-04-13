@@ -6,8 +6,7 @@
  * 1. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 2. Convert PostConfirmation trigger index.js from CommonJS to ESM
  * 3. Convert PostConfirmation trigger add-to-group.js from CommonJS to ESM
- * 4. Add auth resource access for the PostConfirmation trigger
- * 5. Update PostConfirmation resource.ts (memoryMB, resourceGroupName)
+ * 4. Update PostConfirmation resource.ts (memoryMB, resourceGroupName)
  */
 
 import fs from 'fs/promises';
@@ -77,24 +76,6 @@ async function convertAddToGroupToESM(appPath: string, dirName: string): Promise
   await fs.writeFile(filePath, updated, 'utf-8');
 }
 
-async function addAuthResourceAccess(appPath: string, dirName: string): Promise<void> {
-  const resourcePath = path.join(appPath, 'amplify', 'auth', 'resource.ts');
-
-  const content = await fs.readFile(resourcePath, 'utf-8');
-
-  // Find the variable name from the import statement
-  const importMatch = content.match(/import\s*\{\s*(\w+)\s*\}\s*from\s*['"]\.\//);
-  const fnName = importMatch ? importMatch[1] : dirName;
-
-  // Add access block after the triggers block
-  const updated = content.replace(
-    /(triggers:\s*\{[^}]*\},?)/,
-    `$1\n  access: (allow) => [\n    allow.resource(${fnName}).to([\n      "addUserToGroup",\n      "manageGroups",\n    ]),\n  ],`,
-  );
-
-  await fs.writeFile(resourcePath, updated, 'utf-8');
-}
-
 async function updatePostConfirmationResource(appPath: string, dirName: string): Promise<void> {
   const resourcePath = path.join(appPath, 'amplify', 'auth', dirName, 'resource.ts');
   let content = await fs.readFile(resourcePath, 'utf-8');
@@ -118,7 +99,6 @@ export async function postGenerate(appPath: string): Promise<void> {
   await updateFrontendConfig(appPath);
   await convertIndexToESM(appPath, dirName);
   await convertAddToGroupToESM(appPath, dirName);
-  await addAuthResourceAccess(appPath, dirName);
   await updatePostConfirmationResource(appPath, dirName);
 }
 

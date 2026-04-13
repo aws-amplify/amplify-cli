@@ -177,7 +177,11 @@ export class FunctionGenerator implements Planner {
     const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
 
     // Extract DynamoDB/Kinesis actions and GraphQL API permissions from the function's CloudFormation template
-    const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess } = this.extractCfnPermissions();
+    const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess: cfnAuthAccess } = this.extractCfnPermissions();
+
+    // For auth trigger functions, also extract permissions from the auth-trigger CFN template.
+    const triggerAuthAccess = this.extractAuthTriggerCfnPermissions();
+    const authAccess = { ...cfnAuthAccess, ...triggerAuthAccess };
 
     return {
       resourceName: this.resource.resourceName,
@@ -591,6 +595,54 @@ export class FunctionGenerator implements Planner {
 
     const authAccess = resolveAuthAccess(cognitoActions);
     return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery }, authAccess };
+  }
+
+  /**
+   * Extracts auth permissions from the auth-trigger CFN template for auth trigger functions.
+   *
+   * Gen1 auth trigger IAM permissions live in a separate nested stack
+   * (`auth-trigger-cloudformation-template.json`), not in the function's own template.
+   * This method reads that template and extracts cognito-idp actions from IAM policies
+   * that reference this function.
+   */
+  private extractAuthTriggerCfnPermissions(): AuthPermissions {
+    if (this.category !== 'auth') return {};
+
+    let authResourceName: string;
+    try {
+      authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
+    } catch {
+      // No Cognito resource found — nothing to extract.
+      return {};
+    }
+
+    const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
+    if (!this.gen1App.fileExists(templatePath)) return {};
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = this.gen1App.json(templatePath);
+    const resources = template.Resources ?? {};
+    const cognitoActions: string[] = [];
+
+    for (const [logicalId, resource] of Object.entries(resources)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation resource
+      const res = resource as any;
+      if (res.Type !== 'AWS::IAM::Policy') continue;
+      // Match policies whose logical ID contains this function's resource name.
+      if (!logicalId.includes(this.resource.resourceName)) continue;
+
+      const statements = res.Properties?.PolicyDocument?.Statement ?? [];
+      for (const stmt of statements) {
+        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+        for (const action of actions) {
+          if (typeof action === 'string' && action.startsWith('cognito-idp:') && !cognitoActions.includes(action)) {
+            cognitoActions.push(action);
+          }
+        }
+      }
+    }
+
+    return resolveAuthTriggerAccess(cognitoActions);
   }
 
   /**
@@ -1151,6 +1203,43 @@ function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
   for (const action of cognitoActions) {
     if (!covered.has(action) && AUTH_ACTION_MAPPING[action]) {
       result[AUTH_ACTION_MAPPING[action]] = true;
+    }
+  }
+
+  return result as AuthPermissions;
+}
+
+/**
+ * Maps cognito-idp IAM actions from auth-trigger CFN templates to Gen2 auth permissions.
+ *
+ * Auth trigger policies (e.g., "Add User To Group") use actions like `GetGroup` and
+ * `CreateGroup` that aren't in the standard `AUTH_ACTION_MAPPING` (which covers actions
+ * from function-level `AmplifyResourcesPolicy`). This function extends the base mapping
+ * with trigger-specific actions that map to `manageGroups`.
+ */
+const AUTH_TRIGGER_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
+  ...AUTH_ACTION_MAPPING,
+  'cognito-idp:GetGroup': 'manageGroups',
+  'cognito-idp:CreateGroup': 'manageGroups',
+  'cognito-idp:DeleteGroup': 'manageGroups',
+  'cognito-idp:UpdateGroup': 'manageGroups',
+};
+
+function resolveAuthTriggerAccess(cognitoActions: string[]): AuthPermissions {
+  if (cognitoActions.length === 0) return {};
+  const result: Record<string, boolean> = {};
+  const covered = new Set<string>();
+
+  for (const [group, required] of Object.entries(GROUPED_AUTH_PERMISSIONS)) {
+    if (required.every((a) => cognitoActions.includes(a))) {
+      result[group] = true;
+      for (const a of required) covered.add(a);
+    }
+  }
+
+  for (const action of cognitoActions) {
+    if (!covered.has(action) && AUTH_TRIGGER_ACTION_MAPPING[action]) {
+      result[AUTH_TRIGGER_ACTION_MAPPING[action]] = true;
     }
   }
 
