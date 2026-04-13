@@ -48,25 +48,25 @@ export function normalize(appName: string, appDir: string): void {
   const envHash = stackName.split('-')[3];
 
   rewriteContent(appDir, deploymentName, appNameNoDashes);
-  rewriteContent(appDir, envName, 'x'.repeat(envName.length));
-  rewriteContent(appDir, envHash, 'x'.repeat(envHash.length));
+  rewriteContent(appDir, envName, 'x');
+  rewriteContent(appDir, envHash, 'x');
 
   renameFile(appDir, deploymentName, appNameNoDashes);
-  renameFile(appDir, envName, 'x'.repeat(envName.length));
-  renameFile(appDir, envHash, 'x'.repeat(envHash.length));
+  renameFile(appDir, envName, 'x');
+  renameFile(appDir, envHash, 'x');
 
   const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
   const sandboxSegment = '-sandbox-';
   for (const file of fs.readdirSync(preRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-')[4];
-    renameFile(appDir, `${sandboxSegment}${hash}-`, `${sandboxSegment}${`x`.repeat(hash.length)}-`);
+    renameFile(appDir, `${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-').reverse()[0];
     if ([...hash].every((c) => c === 'x')) continue;
-    renameFile(appDir, `-${hash}`, `-${`x`.repeat(hash.length)}`);
+    renameFile(appDir, `-${hash}`, '-x');
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
@@ -76,7 +76,7 @@ export function normalize(appName: string, appDir: string): void {
     }
     const hash = parts[5];
     if ([...hash].every((c) => c === 'x')) continue;
-    renameFile(appDir, `-${hash}-`, `-${`x`.repeat(hash.length)}-`);
+    renameFile(appDir, `-${hash}-`, '-x-');
   }
 }
 
