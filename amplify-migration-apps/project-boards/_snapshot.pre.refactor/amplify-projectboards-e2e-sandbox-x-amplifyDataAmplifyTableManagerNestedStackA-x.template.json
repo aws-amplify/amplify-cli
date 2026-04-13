@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Project-jop2dzgimjfxvkc3relx4lvs5i-x"
+                          "tableName": "Project-api.projectboards.GraphQLAPIIdOutput-x"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Todo-jop2dzgimjfxvkc3relx4lvs5i-x"
+                          "tableName": "Todo-api.projectboards.GraphQLAPIIdOutput-x"
                         }
                       ]
                     }
@@ -179,7 +179,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Project-jop2dzgimjfxvkc3relx4lvs5i-x"
+                          "tableName": "Project-api.projectboards.GraphQLAPIIdOutput-x"
                         }
                       ]
                     },
@@ -187,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Todo-jop2dzgimjfxvkc3relx4lvs5i-x"
+                          "tableName": "Todo-api.projectboards.GraphQLAPIIdOutput-x"
                         }
                       ]
                     }

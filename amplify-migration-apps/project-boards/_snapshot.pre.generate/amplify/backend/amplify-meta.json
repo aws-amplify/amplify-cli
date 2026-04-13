@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-04-13T02:36:06.191Z",
       "output": {
-        "UserPoolId": "us-east-1_e73thLtHW",
-        "AppClientIDWeb": "5dga0q4lbut93lqgijj8shi9fe",
-        "AppClientID": "4lo3sqkelenqt1m7tb96fd4dq2",
-        "IdentityPoolId": "us-east-1:d9eca2fa-fb00-44e7-b59b-30588dbc82f7",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_e73thLtHW",
-        "IdentityPoolName": "projectboards54040ecc_identitypool_54040ecc__x",
-        "UserPoolName": "projectboards54040ecc_userpool_54040ecc"
+        "UserPoolId": "auth.projectboards54040ecc.UserPoolId",
+        "AppClientIDWeb": "auth.projectboards54040ecc.AppClientIDWeb",
+        "AppClientID": "auth.projectboards54040ecc.AppClientID",
+        "IdentityPoolId": "auth.projectboards54040ecc.IdentityPoolId",
+        "UserPoolArn": "auth.projectboards54040ecc.UserPoolArn",
+        "IdentityPoolName": "auth.projectboards54040ecc.IdentityPoolName",
+        "UserPoolName": "auth.projectboards54040ecc.UserPoolName"
       },
       "lastPushDirHash": "E3+cSQzjNpCq8eW8BAT1Q2+3/EQ="
     }
@@ -85,8 +85,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "jop2dzgimjfxvkc3relx4lvs5i",
-        "GraphQLAPIEndpointOutput": "https://7bvmnl7uebh25ndtg6brou6a6e.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "api.projectboards.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "api.projectboards.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "lastPushTimeStamp": "2026-04-13T02:36:06.191Z",
@@ -108,7 +108,7 @@
         "logicalId": "storages369f8ff1c"
       },
       "output": {
-        "BucketName": "projectboards34b9a7f3c2ca489293910116c994688bx-x",
+        "BucketName": "storage.s369f8ff1c.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "u4iGgqx/vZoQIk/sJXOHoJlvkjc="
@@ -133,11 +133,11 @@
       },
       "lastPushTimeStamp": "2026-04-13T02:36:06.191Z",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/projectboardsLambdaRolef283f87f-x",
+        "LambdaExecutionRoleArn": "function.quotegenerator.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:quotegenerator-x",
-        "Name": "quotegenerator-x",
-        "LambdaExecutionRole": "projectboardsLambdaRolef283f87f-x"
+        "Arn": "function.quotegenerator.Arn",
+        "Name": "function.quotegenerator.Name",
+        "LambdaExecutionRole": "function.quotegenerator.LambdaExecutionRole"
       },
       "lastPushDirHash": "rmG4tVJKaeLg6WPjY18l2OAzag4="
     }

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "projectboards34b9a7f3c2ca489293910116c994688bx-x",
+    "OutputValue": "storage.s369f8ff1c.BucketName",
     "Description": "Bucket name for the S3 bucket"
   },
   {

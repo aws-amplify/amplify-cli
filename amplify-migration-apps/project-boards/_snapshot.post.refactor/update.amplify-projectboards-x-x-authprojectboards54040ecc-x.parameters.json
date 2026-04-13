@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "projectboards54040ecc_userpool_54040ecc"
+    "ParameterValue": "auth.projectboards54040ecc.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",

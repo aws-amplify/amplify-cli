@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-jop2dzgimjfxvkc3relx4lvs5i-x"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-x"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref",

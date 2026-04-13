@@ -133,7 +133,7 @@
           "Fn::Join": [
             "",
             [
-              "projectboards54040ecc_userpool_54040ecc",
+              "auth.projectboards54040ecc.UserPoolName",
               "-",
               "x"
             ]
@@ -155,7 +155,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_e73thLtHW"
+        "UserPoolId": "auth.projectboards54040ecc.UserPoolId"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -167,7 +167,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_e73thLtHW"
+        "UserPoolId": "auth.projectboards54040ecc.UserPoolId"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -176,7 +176,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "4lo3sqkelenqt1m7tb96fd4dq2",
+            "ClientId": "auth.projectboards54040ecc.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -184,13 +184,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_e73thLtHW"
+                  "client": "auth.projectboards54040ecc.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "5dga0q4lbut93lqgijj8shi9fe",
+            "ClientId": "auth.projectboards54040ecc.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -198,7 +198,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_e73thLtHW"
+                  "client": "auth.projectboards54040ecc.UserPoolId"
                 }
               ]
             }
@@ -218,7 +218,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:d9eca2fa-fb00-44e7-b59b-30588dbc82f7",
+        "IdentityPoolId": "auth.projectboards54040ecc.IdentityPoolId",
         "Roles": {
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole"

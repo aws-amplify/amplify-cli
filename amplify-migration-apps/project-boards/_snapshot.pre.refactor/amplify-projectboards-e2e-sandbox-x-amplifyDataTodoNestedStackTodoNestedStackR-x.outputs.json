@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GetAttTodoTableName",
-    "OutputValue": "Todo-jop2dzgimjfxvkc3relx4lvs5i-x",
+    "OutputValue": "Todo-api.projectboards.GraphQLAPIIdOutput-x",
     "Description": "Your DynamoDB table name.",
     "ExportName": "7naflquhsnh45misw742dluuoe:GetAtt:TodoTable:Name"
   },
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-jop2dzgimjfxvkc3relx4lvs5i-x"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-x"
   },
   {
     "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
@@ -15,7 +15,7 @@
   },
   {
     "OutputKey": "GetAttTodoTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-jop2dzgimjfxvkc3relx4lvs5i-x/stream/2026-04-13T02:34:31.661",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-api.projectboards.GraphQLAPIIdOutput-x/stream/2026-04-13T02:34:31.661",
     "Description": "Your DynamoDB table StreamArn.",
     "ExportName": "7naflquhsnh45misw742dluuoe:GetAtt:TodoTable:StreamArn"
   }

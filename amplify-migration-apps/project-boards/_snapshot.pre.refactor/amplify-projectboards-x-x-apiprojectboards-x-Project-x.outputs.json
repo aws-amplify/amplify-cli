@@ -19,7 +19,7 @@
     "OutputKey": "GetAttProjectDataSourceName",
     "OutputValue": "ProjectTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "jop2dzgimjfxvkc3relx4lvs5i:GetAtt:ProjectDataSource:Name"
+    "ExportName": "api.projectboards.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
@@ -35,14 +35,14 @@
   },
   {
     "OutputKey": "GetAttProjectTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-jop2dzgimjfxvkc3relx4lvs5i-x/stream/2026-04-13T02:33:43.835",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-api.projectboards.GraphQLAPIIdOutput-x/stream/2026-04-13T02:33:43.835",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "jop2dzgimjfxvkc3relx4lvs5i:GetAtt:ProjectTable:StreamArn"
+    "ExportName": "api.projectboards.GraphQLAPIIdOutput:GetAtt:ProjectTable:StreamArn"
   },
   {
     "OutputKey": "GetAttProjectTableName",
-    "OutputValue": "Project-jop2dzgimjfxvkc3relx4lvs5i-x",
+    "OutputValue": "Project-api.projectboards.GraphQLAPIIdOutput-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "jop2dzgimjfxvkc3relx4lvs5i:GetAtt:ProjectTable:Name"
+    "ExportName": "api.projectboards.GraphQLAPIIdOutput:GetAtt:ProjectTable:Name"
   }
 ]

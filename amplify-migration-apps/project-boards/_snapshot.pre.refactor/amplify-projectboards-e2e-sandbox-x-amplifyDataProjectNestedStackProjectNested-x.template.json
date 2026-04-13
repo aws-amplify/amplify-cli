@@ -355,7 +355,7 @@
         "ServiceToken": {
           "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA862DC87Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataAmplifyTableManagerTab8275BDD1"
         },
-        "tableName": "Project-jop2dzgimjfxvkc3relx4lvs5i-x",
+        "tableName": "Project-api.projectboards.GraphQLAPIIdOutput-x",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Project-jop2dzgimjfxvkc3relx4lvs5i-x"
+                          "tablename": "Project-api.projectboards.GraphQLAPIIdOutput-x"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Project-jop2dzgimjfxvkc3relx4lvs5i-x"
+                          "tablename": "Project-api.projectboards.GraphQLAPIIdOutput-x"
                         }
                       ]
                     }
@@ -2109,7 +2109,7 @@
     },
     "GetAttProjectTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Project-jop2dzgimjfxvkc3relx4lvs5i-x",
+      "Value": "Project-api.projectboards.GraphQLAPIIdOutput-x",
       "Export": {
         "Name": {
           "Fn::Join": [

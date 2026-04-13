@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "jop2dzgimjfxvkc3relx4lvs5i"
+    "ParameterValue": "api.projectboards.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "env",
