@@ -94,7 +94,6 @@ function extractRefactorOutputReplacements(appDir: string): { value: string; pla
     .readdirSync(preRefactor)
     .sort()
     .filter((f) => f.endsWith('.outputs.json'))) {
-    console.log(fileName);
     const hash = crypto.createHash('sha256').update(fileName).digest('hex').slice(0, 10);
     const outputs: any[] = JSON.parse(fs.readFileSync(path.join(preRefactor, fileName), { encoding: 'utf-8' }));
     for (const output of outputs) {
@@ -172,21 +171,17 @@ export function sanitize(appName: string, appDir: string): void {
   const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
 
   for (const file of files) {
-    for (const { value, placeholder } of refactorOutputReplacements) {
-      let content = fs.readFileSync(file, 'utf-8');
-      content = content.replaceAll(value, placeholder);
-      fs.writeFileSync(file, content, 'utf-8');
-    }
-  }
-
-  for (const file of files) {
     let content = fs.readFileSync(file, 'utf-8');
 
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, appNameNoDashes);
 
-    if (values.gen1ApiKey) {
+    if (values.gen1ApiKey && values.gen1ApiKey.startsWith('da2-')) {
       content = content.replaceAll(values.gen1ApiKey, 'da2-fakeapikey00000000000000');
+    }
+
+    for (const { value, placeholder } of refactorOutputReplacements) {
+      content = content.replaceAll(value, placeholder);
     }
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);
