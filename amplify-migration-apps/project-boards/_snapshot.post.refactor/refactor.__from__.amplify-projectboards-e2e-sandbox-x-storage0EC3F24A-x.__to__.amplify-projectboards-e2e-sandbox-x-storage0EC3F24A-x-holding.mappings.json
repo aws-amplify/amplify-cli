@@ -1,12 +1,12 @@
 [
   {
     "Source": {
-      "StackName": "amplify-projectboards-e2e-sandbox-3e6a256bf6-storage0EC3F24A-1CAH3C4ZY82NP",
-      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket1D4B60A1"
+      "StackName": "amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketF95381FD"
     },
     "Destination": {
-      "StackName": "amplify-projectboards-e2e-sandbox-3e6a256bf6-storage0EC3F24A-1CAH3C4ZY82NP-holding",
-      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket1D4B60A1"
+      "StackName": "amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x-holding",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketF95381FD"
     }
   }
 ]

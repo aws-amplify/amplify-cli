@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "quotegeneratorgen2xlambdaServiceRoleADBC5FA0": {
+    "quotegeneratorgen2xlambdaServiceRoleF0D925DA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -48,10 +48,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/function/quotegenerator-gen2-x-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/quotegenerator-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "quotegeneratorgen2xlambda10D7E45A": {
+    "quotegeneratorgen2xlambda2CAD5E08": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -78,7 +78,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "quotegeneratorgen2xlambdaServiceRoleADBC5FA0",
+            "quotegeneratorgen2xlambdaServiceRoleF0D925DA",
             "Arn"
           ]
         },
@@ -100,12 +100,12 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "quotegeneratorgen2xlambdaServiceRoleADBC5FA0"
+        "quotegeneratorgen2xlambdaServiceRoleF0D925DA"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/function/quotegenerator-gen2-x-lambda/Resource",
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/quotegenerator-gen2-x-lambda/Resource",
         "aws:asset:path": "asset.fd074b3886f6db127f8e75b0559d79e1102ff783c2bf96cfd44c9a5822ccf1a8",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -117,7 +117,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNuwqDQBCF4WexHydmDSFtDKS00AeQcXeU9TJCZo2F+O5BJdXXHP5j0NwemES0aGxdHw++xjVnDezKQLYHWrRaBxprR5VMjjvF/OA9iw1+EvA04lpMA8Orkd0NNK1IlYPicwc0xWy2PYeMlOGs4auRf2ODY1cGar20G+xH2Onlawxe75hEnXoff2YJfmQsTn89eEV1uwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/function/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -389,9 +389,9 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandbox3e6a256bf6functionquotegeneratorgen2xlambda176BA1C5Ref": {
+    "amplifyprojectboardse2esandbox0404234937functionquotegeneratorgen2xlambda50B0A0A9Ref": {
       "Value": {
-        "Ref": "quotegeneratorgen2xlambda10D7E45A"
+        "Ref": "quotegeneratorgen2xlambda2CAD5E08"
       }
     }
   }

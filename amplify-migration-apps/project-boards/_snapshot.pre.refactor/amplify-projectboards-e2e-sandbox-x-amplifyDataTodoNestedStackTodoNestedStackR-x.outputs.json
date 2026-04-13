@@ -1,22 +1,22 @@
 [
   {
     "OutputKey": "GetAttTodoTableName",
-    "OutputValue": "Todo-2te5q735fza7lme5dqdzmjsfzu-x",
+    "OutputValue": "Todo-jop2dzgimjfxvkc3relx4lvs5i-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xzton3od6rephegoctq5bosqui:GetAtt:TodoTable:Name"
+    "ExportName": "7naflquhsnh45misw742dluuoe:GetAtt:TodoTable:Name"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoTodoTableF4D75A5ETableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-2te5q735fza7lme5dqdzmjsfzu-x"
+    "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-jop2dzgimjfxvkc3relx4lvs5i-x"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoTodoDataSource692DE79FName",
+    "OutputKey": "amplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName",
     "OutputValue": "TodoTable"
   },
   {
     "OutputKey": "GetAttTodoTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-2te5q735fza7lme5dqdzmjsfzu-x/stream/2026-04-13T01:49:19.488",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-jop2dzgimjfxvkc3relx4lvs5i-x/stream/2026-04-13T02:34:31.661",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xzton3od6rephegoctq5bosqui:GetAtt:TodoTable:StreamArn"
+    "ExportName": "7naflquhsnh45misw742dluuoe:GetAtt:TodoTable:StreamArn"
   }
 ]

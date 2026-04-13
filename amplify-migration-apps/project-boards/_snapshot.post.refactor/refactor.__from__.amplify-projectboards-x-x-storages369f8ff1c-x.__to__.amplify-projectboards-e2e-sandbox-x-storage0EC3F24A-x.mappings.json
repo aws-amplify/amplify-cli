@@ -1,12 +1,12 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-storages369f8ff1c-1E6SZ0CX45BFN/bbd86ed0-36da-11f1-8282-12c8af93ad29",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x-storages369f8ff1c-x/0c5b7d60-36e1-11f1-bfe9-0e9e47edfca5",
       "LogicalResourceId": "S3Bucket"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-e2e-sandbox-3e6a256bf6-storage0EC3F24A-1CAH3C4ZY82NP/5518a6e0-36dc-11f1-8d9d-12eb91268ec5",
-      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket1D4B60A1"
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x/84f84d10-36e2-11f1-8c4e-0e8cdf4ffbd5",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketF95381FD"
     }
   }
 ]

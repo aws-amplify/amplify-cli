@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPI68531CF2ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPINONEDSD69F5B04Name"
+          "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPINONEDSB0B262EAName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Projecttodosauth0Function",
@@ -19,17 +19,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/data/amplifyData/ConnectionStack/Projecttodosauth0Function/Projecttodosauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/ConnectionStack/Projecttodosauth0Function/Projecttodosauth0Function.AppSyncFunction"
       }
     },
     "ProjectTodosDataResolverFnProjectTodosDataResolverFnAppSyncFunction6418E519": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPI68531CF2ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoNestedStackTodoNestedStackResource91589EA9Outputsamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoTodoDataSource692DE79FName"
+          "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "ProjectTodosDataResolverFn",
@@ -43,14 +43,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/data/amplifyData/ConnectionStack/ProjectTodosDataResolverFn/ProjectTodosDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/ConnectionStack/ProjectTodosDataResolverFn/ProjectTodosDataResolverFn.AppSyncFunction"
       }
     },
     "ProjecttodosResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPI68531CF2ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
         },
         "FieldName": "todos",
         "Kind": "PIPELINE",
@@ -76,7 +76,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"todos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPI68531CF2ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoNestedStackTodoNestedStackResource91589EA9Outputsamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoTodoTableF4D75A5ETableArn"
+                                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn"
                               }
                             ]
                           }
@@ -112,7 +112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthauthenticatedUserRole0858348DRef"
+                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -124,11 +124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthunauthenticatedUserRole59211B42Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthIdentityPoolC09D0D9BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -140,7 +140,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/data/amplifyData/ConnectionStack/projectTodosResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/ConnectionStack/projectTodosResolver"
       }
     },
     "CDKMetadata": {
@@ -149,7 +149,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMQQ6CMBBA0bOwLyMWY9wKiUsXcAAyloEUcEo6LcQQ7m7Q1cvffA36coMswVVS047pZF+wPUkCtXVAMypcpdkkb1CEgsD9QEkORTQjhQKFFM6zfNjAVnb8iGyCdVw67mwfPR6hyo4rEjct5Pdd/R51wN5yvyt2LcEgp0VrOF8hSwaxNvWRg30TVH+//xKkKKcAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-3e6a256bf6/data/amplifyData/ConnectionStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/ConnectionStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -421,25 +421,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPI68531CF2ApiId": {
+    "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPI39386FEBApiId": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataGraphQLAPINONEDSD69F5B04Name": {
+    "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataGraphQLAPINONEDSB0B262EAName": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoNestedStackTodoNestedStackResource91589EA9Outputsamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoTodoDataSource692DE79FName": {
+    "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoDataSourceE4A2C3DAName": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoNestedStackTodoNestedStackResource91589EA9Outputsamplifyprojectboardse2esandbox3e6a256bf6dataamplifyDataTodoTodoTableF4D75A5ETableArn": {
+    "referencetoamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoNestedStackTodoNestedStackResource23A50B80Outputsamplifyprojectboardse2esandbox0404234937dataamplifyDataTodoTodoTableF8EFD7EETableArn": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthauthenticatedUserRole0858348DRef": {
+    "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthauthenticatedUserRoleAAE6A3DBRef": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthunauthenticatedUserRole59211B42Ref": {
+    "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthunauthenticatedUserRoleA73B856FRef": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandbox3e6a256bf6authNestedStackauthNestedStackResource8EA85995Outputsamplifyprojectboardse2esandbox3e6a256bf6authamplifyAuthIdentityPoolC09D0D9BRef": {
+    "referencetoamplifyprojectboardse2esandbox0404234937authNestedStackauthNestedStackResource3E63BCEFOutputsamplifyprojectboardse2esandbox0404234937authamplifyAuthIdentityPoolB0CE4BF2Ref": {
       "Type": "String"
     }
   }
