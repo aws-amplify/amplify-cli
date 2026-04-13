@@ -46,8 +46,8 @@
         },
         "UserPoolTags": {
           "amplify:app-id": "projectboards",
-          "amplify:dc72c1d108.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "dc72c1d108.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "amplify:friendly-name": "amplifyAuth",
           "created-by": "amplify"
         },
@@ -67,7 +67,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -90,7 +90,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -108,7 +108,7 @@
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "dc72c1d108.oauthRedirectSignIn"
+          "https://example.com"
         ],
         "ExplicitAuthFlows": [
           "ALLOW_CUSTOM_AUTH",
@@ -124,7 +124,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -159,12 +159,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -178,7 +178,7 @@
         "SupportedLoginProviders": {}
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
@@ -212,12 +212,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -230,7 +230,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -264,12 +264,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -282,7 +282,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
@@ -336,7 +336,7 @@
         "amplifyAuthUserPoolAppClient2626C6F8"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     },
     "CDKMetadata": {
@@ -345,7 +345,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv8V7urbBg1fpyYtIxbPEZNVt0w00q0VC/l2KVHuamTczGvSmgnJlxlhY1xWerpAOGAXdSYztlBnjJdlwZ5IA6RxxOIbgVX3jn59N7QlZltWf7B2ykLzn8zI3weNOxNhHjyxZkekhTXAaTppzVhwcQhvXL62h2kK5aiNRMTxZqEdovvoBH9Args4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -617,27 +617,27 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthUserPool33BA12FBRef": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPool33BA12FBRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthUserPoolAppClient0435B83FRef": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPoolAppClient0435B83FRef": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthIdentityPool16941F52Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

@@ -4,7 +4,7 @@
     "apiName": "projectboards",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "dc72c1d108.awsAppsyncAuthenticationType",
+      "mode": "API_KEY",
       "expirationTime": 7
     },
     "additionalAuthTypes": [

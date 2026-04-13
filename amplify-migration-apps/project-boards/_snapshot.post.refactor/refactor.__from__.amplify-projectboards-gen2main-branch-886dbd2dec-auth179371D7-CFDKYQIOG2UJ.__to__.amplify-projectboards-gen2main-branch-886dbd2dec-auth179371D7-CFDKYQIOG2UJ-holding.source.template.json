@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "dc72c1d108.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -30,12 +30,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -48,7 +48,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -60,7 +60,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "dc72c1d108.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -80,12 +80,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -98,7 +98,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "CDKMetadata": {
@@ -107,7 +107,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv8V7urbBg1fpyYtIxbPEZNVt0w00q0VC/l2KVHuamTczGvSmgnJlxlhY1xWerpAOGAXdSYztlBnjJdlwZ5IA6RxxOIbgVX3jn59N7QlZltWf7B2ykLzn8zI3weNOxNhHjyxZkekhTXAaTppzVhwcQhvXL62h2kK5aiNRMTxZqEdovvoBH9Args4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -379,20 +379,20 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthUserPool33BA12FBRef": {
-      "Value": "dc72c1d108.userPoolId"
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPool33BA12FBRef": {
+      "Value": "us-east-1_pXlpWF7QY"
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthUserPoolAppClient0435B83FRef": {
-      "Value": "dc72c1d108.webClientId"
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPoolAppClient0435B83FRef": {
+      "Value": "oqgm3faeod0cr1b4v63iv4a7a"
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref": {
-      "Value": "dc72c1d108.identityPoolId"
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthIdentityPool16941F52Ref": {
+      "Value": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef": {
-      "Value": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef"
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef": {
+      "Value": "amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
     },
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef": {
-      "Value": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef"
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef": {
+      "Value": "amplify-projectboards-ge-amplifyAuthunauthenticate-GHLvLgqZHYnT"
     }
   }
 }

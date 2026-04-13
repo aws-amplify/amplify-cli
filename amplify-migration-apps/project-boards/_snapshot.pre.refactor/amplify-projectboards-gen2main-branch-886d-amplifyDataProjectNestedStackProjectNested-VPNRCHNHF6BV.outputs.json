@@ -1,14 +1,14 @@
 [
   {
-    "OutputKey": "GetAtt13e1e0cc1e.GetAttProjectDataSourceNameStreamArn",
-    "OutputValue": "53f41c8436.GetAtt13e1e0cc1e.GetAttProjectDataSourceNameStreamArn",
+    "OutputKey": "GetAttProjectTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-47mmg7n7zzcmnhcdcrkmgul4xe-main/stream/2026-03-07T02:15:48.574",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "dc72c1d108.awsAppsyncApiId:GetAtt:13e1e0cc1e.GetAttProjectDataSourceName:StreamArn"
+    "ExportName": "y6mc7kazlnbphitea3lx7uhvcm:GetAtt:ProjectTable:StreamArn"
   },
   {
-    "OutputKey": "GetAtt13e1e0cc1e.GetAttProjectDataSourceNameName",
-    "OutputValue": "53f41c8436.GetAtt13e1e0cc1e.GetAttProjectDataSourceNameName",
+    "OutputKey": "GetAttProjectTableName",
+    "OutputValue": "Project-47mmg7n7zzcmnhcdcrkmgul4xe-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "dc72c1d108.awsAppsyncApiId:GetAtt:13e1e0cc1e.GetAttProjectDataSourceName:Name"
+    "ExportName": "y6mc7kazlnbphitea3lx7uhvcm:GetAtt:ProjectTable:Name"
   }
 ]

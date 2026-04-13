@@ -1,10 +1,10 @@
 [
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
-    "ParameterValue": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2mainbranch886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
+    "ParameterValue": "amplify-projectboards-ge-amplifyAuthunauthenticate-GHLvLgqZHYnT"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef",
-    "ParameterValue": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2mainbranch886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef",
+    "ParameterValue": "amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
   }
 ]

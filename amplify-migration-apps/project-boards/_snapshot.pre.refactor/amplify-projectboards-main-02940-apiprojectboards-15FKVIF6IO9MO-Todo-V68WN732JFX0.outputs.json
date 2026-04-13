@@ -1,28 +1,28 @@
 [
   {
-    "OutputKey": "GetAtta76e5151a3.GetAttTodoDataSourceNameName",
-    "OutputValue": "4062fc1049.GetAtt4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameName",
+    "OutputKey": "GetAttTodoTableName",
+    "OutputValue": "Todo-47mmg7n7zzcmnhcdcrkmgul4xe-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "5b8d2d3f79.GraphQLAPIIdOutput:GetAtt:a76e5151a3.GetAttTodoDataSourceName:Name"
+    "ExportName": "47mmg7n7zzcmnhcdcrkmgul4xe:GetAtt:TodoTable:Name"
   },
   {
     "OutputKey": "GetAttTodoDataSourceName",
-    "OutputValue": "a76e5151a3.GetAttTodoDataSourceName",
+    "OutputValue": "TodoTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "5b8d2d3f79.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
+    "ExportName": "47mmg7n7zzcmnhcdcrkmgul4xe:GetAtt:TodoDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackTodoa76e5151a3.GetAttTodoDataSourceNameC67E79C2Ref",
-    "OutputValue": "4062fc1049.GetAtt4062fc1049.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decdataamplifyDataTodoTodoDataSource8A47DF9FNameName"
+    "OutputKey": "transformerrootstackTodoTodoTableC67E79C2Ref",
+    "OutputValue": "Todo-47mmg7n7zzcmnhcdcrkmgul4xe-main"
   },
   {
-    "OutputKey": "GetAtta76e5151a3.GetAttTodoDataSourceNameStreamArn",
-    "OutputValue": "4062fc1049.GetAtta76e5151a3.GetAttTodoDataSourceNameStreamArn",
+    "OutputKey": "GetAttTodoTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-47mmg7n7zzcmnhcdcrkmgul4xe-main/stream/2026-03-07T02:16:37.111",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "5b8d2d3f79.GraphQLAPIIdOutput:GetAtt:a76e5151a3.GetAttTodoDataSourceName:StreamArn"
+    "ExportName": "47mmg7n7zzcmnhcdcrkmgul4xe:GetAtt:TodoTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackTodoTodoDataSourceBD713D7DName",
-    "OutputValue": "a76e5151a3.GetAttTodoDataSourceName"
+    "OutputValue": "TodoTable"
   }
 ]

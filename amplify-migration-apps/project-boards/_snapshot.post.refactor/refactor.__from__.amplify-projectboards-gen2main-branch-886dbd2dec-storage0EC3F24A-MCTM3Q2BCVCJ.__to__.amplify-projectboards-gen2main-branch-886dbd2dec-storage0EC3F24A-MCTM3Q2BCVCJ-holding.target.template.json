@@ -47,12 +47,12 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/storage/projectboards34b9a7f3c2ca489293910116c994688b02940-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/storage/projectboards34b9a7f3c2ca489293910116c994688b02940-gen2-main/Bucket/Resource"
       }
     }
   },

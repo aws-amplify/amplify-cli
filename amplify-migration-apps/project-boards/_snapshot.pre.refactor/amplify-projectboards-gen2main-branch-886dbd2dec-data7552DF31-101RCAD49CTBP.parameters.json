@@ -4,8 +4,8 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
-    "ParameterValue": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2mainbranch886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef",
+    "ParameterValue": "amplify-projectboards-ge-amplifyAuthunauthenticate-GHLvLgqZHYnT"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -16,12 +16,12 @@
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef",
-    "ParameterValue": "51793f6556.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2mainbranch886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef",
+    "ParameterValue": "amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthIdentityPool16941F52Ref",
-    "ParameterValue": "dc72c1d108.identityPoolId"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2mainbranch886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthIdentityPool16941F52Ref",
+    "ParameterValue": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -32,7 +32,7 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decauthamplifyAuthUserPool33BA12FBRef",
-    "ParameterValue": "dc72c1d108.userPoolId"
+    "ParameterKey": "referencetoamplifyprojectboardsgen2mainbranch886dbd2decauthNestedStackauthNestedStackResource2D260C73Outputsamplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPool33BA12FBRef",
+    "ParameterValue": "us-east-1_pXlpWF7QY"
   }
 ]

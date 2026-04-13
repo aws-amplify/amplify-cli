@@ -36,16 +36,16 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "839aa3aaff.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef"
+            "Value": "quotegenerator-gen2-main"
           },
           {
             "Key": "created-by",
@@ -54,7 +54,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/function/839aa3aaff.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/function/quotegenerator-gen2-main-lambda/ServiceRole/Resource"
       }
     },
     "quotegeneratorgen2mainlambda0173846D": {
@@ -79,7 +79,7 @@
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "839aa3aaff.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef",
+        "FunctionName": "quotegenerator-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {
@@ -95,16 +95,16 @@
             "Value": "projectboards"
           },
           {
-            "Key": "amplify:dc72c1d108.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "dc72c1d108.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "839aa3aaff.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef"
+            "Value": "quotegenerator-gen2-main"
           },
           {
             "Key": "created-by",
@@ -117,7 +117,7 @@
         "quotegeneratorgen2mainlambdaServiceRoleE63F5A39"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/function/839aa3aaff.amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef-lambda/Resource",
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/function/quotegenerator-gen2-main-lambda/Resource",
         "aws:asset:path": "asset.fd074b3886f6db127f8e75b0559d79e1102ff783c2bf96cfd44c9a5822ccf1a8",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -129,7 +129,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNOw6DQAxF0bXQG4cMKdIGpJQUsABkZgwaPkaKh1Ag9h4BSnWap/sMmscdk4hWja0b4tE3uBWsgV0VyA5Aq9bbSFPjqJbZca9YnLwXscHPAp4m3Mp5ZMhbOdxB05pUOSi+DkBTzBY7cMhIGa4a5q38GzucuypQ56Xb4TjCXm9fY/D+xCTq1fv4s0jwE2N5+QM4T7/LuwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-dc72c1d108.deploymentType-886dbd2dec/function/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/function/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -401,7 +401,7 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardsgen2maindc72c1d108.deploymentType886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decfunctionquotegeneratorgen2mainlambda63CF3D9ERef": {
       "Value": {
         "Ref": "quotegeneratorgen2mainlambda0173846D"
       }

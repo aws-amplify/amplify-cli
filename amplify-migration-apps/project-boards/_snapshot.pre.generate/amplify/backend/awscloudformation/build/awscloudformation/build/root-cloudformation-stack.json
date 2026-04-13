@@ -202,12 +202,12 @@
     "authprojectboards54040ecc": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/6df4025c53.DeploymentBucketName/amplify-cfn-templates/auth/projectboards54040ecc-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-02940-deployment/amplify-cfn-templates/auth/projectboards54040ecc-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "projectboards54040ecc_identitypool_54040ecc",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "projec54040ecc",
-          "userPoolName": "be9cbe94cd.UserPoolName",
+          "userPoolName": "projectboards54040ecc_userpool_54040ecc",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -256,7 +256,7 @@
     "apiprojectboards": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/6df4025c53.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-02940-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "projectboards",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
@@ -267,7 +267,7 @@
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "6df4025c53.DeploymentBucketName",
+          "S3DeploymentBucket": "amplify-projectboards-main-02940-deployment",
           "S3DeploymentRootKey": "amplify-appsync-files/182d69537a429ad74cd4e2ced5fdadbb4cbf17fc",
           "env": "main"
         }
@@ -276,7 +276,7 @@
     "storages369f8ff1c": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/6df4025c53.DeploymentBucketName/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-02940-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "projectboards34b9a7f3c2ca489293910116c994688b",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
@@ -309,9 +309,9 @@
     "functionquotegenerator": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/6df4025c53.DeploymentBucketName/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-02940-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "6df4025c53.DeploymentBucketName",
+          "deploymentBucketName": "amplify-projectboards-main-02940-deployment",
           "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip",
           "env": "main"
         }
