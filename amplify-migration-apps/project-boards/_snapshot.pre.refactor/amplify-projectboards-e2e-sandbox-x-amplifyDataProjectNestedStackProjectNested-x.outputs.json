@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "GetAttProjectTableStreamArn",
+    "OutputValue": "e36cd6b3cb.GetAttProjectTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId:GetAtt:ProjectTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttProjectTableName",
+    "OutputValue": "e36cd6b3cb.GetAttProjectTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId:GetAtt:ProjectTable:Name"
+  }
+]

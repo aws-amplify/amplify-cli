@@ -1,0 +1,48 @@
+[
+  {
+    "OutputKey": "transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",
+    "OutputValue": "3ulaugrtvnflnaltluky4vsiim"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId",
+    "OutputValue": "wpblmhhic5a7rjemdzgaontxxm"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId",
+    "OutputValue": "k5wxghriazdr3d7qoeedkj5mgy"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId",
+    "OutputValue": "ga44qvt5xbgnjlvjruytl4deou"
+  },
+  {
+    "OutputKey": "GetAttProjectDataSourceName",
+    "OutputValue": "ProjectTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "f4028f14c0.GraphQLAPIIdOutput:GetAtt:ProjectDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
+    "OutputValue": "t3afe7eqffhqhon2km4kb6dhce"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId",
+    "OutputValue": "dpoe27fiw5hmbjk7hxwj3rjy6i"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId",
+    "OutputValue": "625vkg56xzbdtfry4xobzedw4a"
+  },
+  {
+    "OutputKey": "GetAttProjectTableStreamArn",
+    "OutputValue": "e36cd6b3cb.GetAttProjectTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "f4028f14c0.GraphQLAPIIdOutput:GetAtt:ProjectTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttProjectTableName",
+    "OutputValue": "e36cd6b3cb.GetAttProjectTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "f4028f14c0.GraphQLAPIIdOutput:GetAtt:ProjectTable:Name"
+  }
+]
