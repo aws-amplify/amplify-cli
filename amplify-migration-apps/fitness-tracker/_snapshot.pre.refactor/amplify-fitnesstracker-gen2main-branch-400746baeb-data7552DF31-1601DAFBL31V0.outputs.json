@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId",
-    "OutputValue": "3f11ed2aac.awsAppsyncApiId"
+    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIDefaultApiKey7DAA10FCApiKey",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BGraphQLUrl",
-    "OutputValue": "3f11ed2aac.awsAppsyncApiEndpoint"
+    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BGraphQLUrl"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0917740FDestinationBucketArn",

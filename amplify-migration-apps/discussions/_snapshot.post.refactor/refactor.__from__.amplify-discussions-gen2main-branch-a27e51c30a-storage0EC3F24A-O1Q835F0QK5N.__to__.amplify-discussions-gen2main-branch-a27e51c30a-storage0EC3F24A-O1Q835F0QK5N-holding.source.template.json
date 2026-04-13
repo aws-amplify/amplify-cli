@@ -4,7 +4,7 @@
     "discusavatarsc39a5gen2mainBucketPolicy73EB7DB2": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": "da5e56ee3d.bucketName",
+        "Bucket": "ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
         "PolicyDocument": {
           "Statement": [
             {
@@ -19,12 +19,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                "arn:aws:s3:::da5e56ee3d.bucketName",
+                "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/*"
                     ]
                   ]
@@ -43,12 +43,12 @@
                 "AWS": "arn:aws:iam::123456789012:role/amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a-storage0EC3F24A-O1Q835F0QK5N/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                "arn:aws:s3:::da5e56ee3d.bucketName",
+                "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/*"
                     ]
                   ]
@@ -67,7 +67,7 @@
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a-storage0EC3F24A-O1Q835F0QK5N/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "da5e56ee3d.bucketName"
+        "BucketName": "ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -119,7 +119,7 @@
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              "da5e56ee3d.bucketName",
+              "ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
               " S3 bucket."
             ]
           ]
@@ -142,7 +142,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "da5e56ee3d.bucketName"
+        "Value": "ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-gen2main-da5e56ee3d.deploymentType-a27e51c30a/storage/DISCUS_AVATARSC_39_A_5_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
@@ -161,7 +161,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/public/*"
                     ]
                   ]
@@ -170,7 +170,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/protected/*"
                     ]
                   ]
@@ -179,7 +179,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/private/*"
                     ]
                   ]
@@ -194,7 +194,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/public/*"
                     ]
                   ]
@@ -203,7 +203,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/protected/*"
                     ]
                   ]
@@ -212,7 +212,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/private/*"
                     ]
                   ]
@@ -234,7 +234,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::da5e56ee3d.bucketName"
+              "Resource": "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef"
             },
             {
               "Action": "s3:DeleteObject",
@@ -244,7 +244,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/public/*"
                     ]
                   ]
@@ -253,7 +253,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/protected/*"
                     ]
                   ]
@@ -262,7 +262,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::da5e56ee3d.bucketName",
+                      "arn:aws:s3:::ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef",
                       "/private/*"
                     ]
                   ]
@@ -567,7 +567,7 @@
   },
   "Outputs": {
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef": {
-      "Value": "da5e56ee3d.bucketName"
+      "Value": "ec04d4d124.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30astoragediscusavatarsc39a5gen2mainBucket0721E25ERef"
     }
   }
 }

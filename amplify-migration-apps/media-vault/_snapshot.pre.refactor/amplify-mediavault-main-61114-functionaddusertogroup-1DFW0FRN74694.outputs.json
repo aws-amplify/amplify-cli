@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.addusertogroup.LambdaExecutionRoleArn"
+    "OutputValue": "51b6aa8206.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.addusertogroup.LambdaExecutionRole"
+    "OutputValue": "51b6aa8206.LambdaExecutionRole"
   }
 ]

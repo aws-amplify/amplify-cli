@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationLambdaExecutionRole",
-    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.NameArn"
+    "ParameterValue": "d8066ec12f.LambdaExecutionRoleArn"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationArn",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",
-    "ParameterValue": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
+    "ParameterValue": "d8066ec12f.LambdaExecutionRole"
   }
 ]

@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
-    "ParameterValue": "api.productcatalog.GraphQLAPIEndpointOutput"
+    "ParameterValue": "8dcbe94f9b.GraphQLAPIEndpointOutput"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
-    "ParameterValue": "api.productcatalog.GraphQLAPIIdOutput"
+    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
   }
 ]

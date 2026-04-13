@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.NameArn"
+    "OutputValue": "d8066ec12f.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -13,10 +13,10 @@
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
+    "OutputValue": "d8066ec12f.LambdaExecutionRole"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
+    "OutputValue": "d8066ec12f.LambdaExecutionRole"
   }
 ]

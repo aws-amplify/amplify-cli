@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "functionS3Trigger1ef46783LambdaExecutionRole",
-    "ParameterValue": "function.S3Trigger1ef46783.LambdaExecutionRole"
+    "ParameterValue": "2a52e89b9c.LambdaExecutionRole"
   },
   {
     "ParameterKey": "unauthRoleName",

@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef",
-    "ParameterValue": "c0d444ea7b.identityPoolId"
+    "ParameterValue": "d78697e39a.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthIdentityPool91CBC3ADRef"
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref",
@@ -17,6 +17,6 @@
   },
   {
     "ParameterKey": "referencetoamplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId",
-    "ParameterValue": "c0d444ea7b.awsAppsyncApiId"
+    "ParameterValue": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId"
   }
 ]

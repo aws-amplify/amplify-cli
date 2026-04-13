@@ -5,7 +5,7 @@
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref",
-    "OutputValue": "3f11ed2aac.userPoolId"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthAdminGroupRoleC37E0196Ref",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
-    "OutputValue": "3f11ed2aac.identityPoolId"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthadmingen2mainlambda19698385Ref",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef",
-    "OutputValue": "3f11ed2aac.webClientId"
+    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef"
   },
   {
     "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref",

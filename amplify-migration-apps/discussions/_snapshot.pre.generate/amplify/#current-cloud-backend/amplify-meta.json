@@ -25,8 +25,8 @@
             "authenticationType": "da5e56ee3d.awsAppsyncAuthenticationType"
           }
         },
-        "GraphQLAPIIdOutput": "api.discussions.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.discussions.GraphQLAPIEndpointOutput",
+        "GraphQLAPIIdOutput": "358c55d6a3.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "358c55d6a3.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "1251fc5ff2.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey"
       },
       "providerPlugin": "awscloudformation",
@@ -73,13 +73,13 @@
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
         "CreatedSNSRole": "auth.discussionsc578c16ec578c16e.CreatedSNSRole",
-        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId",
-        "AppClientIDWeb": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
-        "AppClientID": "auth.discussionsc578c16ec578c16e.AppClientID",
-        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
-        "UserPoolArn": "auth.discussionsc578c16ec578c16e.UserPoolArn",
-        "IdentityPoolName": "auth.discussionsc578c16ec578c16e.IdentityPoolName",
-        "UserPoolName": "auth.discussionsc578c16ec578c16e.UserPoolName"
+        "UserPoolId": "3641aeee95.UserPoolId",
+        "AppClientIDWeb": "3641aeee95.AppClientIDWeb",
+        "AppClientID": "3641aeee95.AppClientID",
+        "IdentityPoolId": "3641aeee95.IdentityPoolId",
+        "UserPoolArn": "3641aeee95.UserPoolArn",
+        "IdentityPoolName": "3641aeee95.IdentityPoolName",
+        "UserPoolName": "3641aeee95.UserPoolName"
       },
       "lastPushDirHash": "mPKsrH+CL3NCuCtTWB9nkOHB7ls="
     }
@@ -114,11 +114,11 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.fetchuseractivity.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "562ead0cd7.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.fetchuseractivity.Arn",
         "Name": "function.fetchuseractivity.Name",
-        "LambdaExecutionRole": "function.fetchuseractivity.LambdaExecutionRole"
+        "LambdaExecutionRole": "562ead0cd7.LambdaExecutionRole"
       },
       "lastPushDirHash": "R64T5GvXPz84ttStgLRDEvqSeOg="
     },
@@ -159,11 +159,11 @@
       },
       "lastPushTimeStamp": "2026-03-20T21:24:14.059Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.recorduseractivity.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "995ae072ea.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.recorduseractivity.Arn",
         "Name": "function.recorduseractivity.Name",
-        "LambdaExecutionRole": "function.recorduseractivity.LambdaExecutionRole"
+        "LambdaExecutionRole": "995ae072ea.LambdaExecutionRole"
       },
       "lastPushDirHash": "wpepR6GRBy0XTCEXNmYdMZdmEvM="
     }
@@ -199,7 +199,7 @@
         "logicalId": "storageavatars"
       },
       "output": {
-        "BucketName": "storage.avatars.BucketName",
+        "BucketName": "b13c4c6060.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "rNwwRZG31h4CJSNavssQfx7X9sQ="

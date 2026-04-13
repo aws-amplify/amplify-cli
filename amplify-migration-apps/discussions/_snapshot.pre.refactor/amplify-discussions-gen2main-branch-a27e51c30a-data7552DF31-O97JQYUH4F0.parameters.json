@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref",
-    "ParameterValue": "da5e56ee3d.identityPoolId"
+    "ParameterValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "referencetoamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthNestedStackauthNestedStackResource71073350Outputsamplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref",
-    "ParameterValue": "da5e56ee3d.userPoolId"
+    "ParameterValue": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

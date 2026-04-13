@@ -1,17 +1,17 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "auth.mediavault1f08412d.UserPoolId",
+    "OutputValue": "1e7e367f51.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "auth.mediavault1f08412d.AppClientIDWeb",
+    "OutputValue": "1e7e367f51.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "auth.mediavault1f08412d.AppClientID",
+    "OutputValue": "1e7e367f51.AppClientID",
     "Description": "The user pool app client id"
   },
   {
@@ -20,17 +20,17 @@
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "auth.mediavault1f08412d.IdentityPoolId",
+    "OutputValue": "1e7e367f51.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "auth.mediavault1f08412d.UserPoolArn",
+    "OutputValue": "1e7e367f51.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "auth.mediavault1f08412d.IdentityPoolName"
+    "OutputValue": "1e7e367f51.IdentityPoolName"
   },
   {
     "OutputKey": "OAuthMetadata",
@@ -38,6 +38,6 @@
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "auth.mediavault1f08412d.UserPoolName"
+    "OutputValue": "1e7e367f51.UserPoolName"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRoleArn"
+    "OutputValue": "314e6b42b0.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -13,10 +13,10 @@
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRole"
+    "OutputValue": "314e6b42b0.LambdaExecutionRole"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRole"
+    "OutputValue": "314e6b42b0.LambdaExecutionRole"
   }
 ]

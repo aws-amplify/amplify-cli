@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "da5e56ee3d.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -60,7 +60,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "da5e56ee3d.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -156,7 +156,7 @@
           "Fn::Join": [
             "",
             [
-              "auth.discussionsc578c16ec578c16e.UserPoolName",
+              "3641aeee95.UserPoolName",
               "-",
               "main"
             ]
@@ -178,7 +178,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
+        "UserPoolId": "3641aeee95.UserPoolId"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -190,7 +190,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "auth.discussionsc578c16ec578c16e.UserPoolId"
+        "UserPoolId": "3641aeee95.UserPoolId"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -199,7 +199,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientID",
+            "ClientId": "3641aeee95.AppClientID",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -207,13 +207,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
+                  "client": "3641aeee95.UserPoolId"
                 }
               ]
             }
           },
           {
-            "ClientId": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
+            "ClientId": "3641aeee95.AppClientIDWeb",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -221,7 +221,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "auth.discussionsc578c16ec578c16e.UserPoolId"
+                  "client": "3641aeee95.UserPoolId"
                 }
               ]
             }
@@ -241,7 +241,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
+        "IdentityPoolId": "3641aeee95.IdentityPoolId",
         "Roles": {
           "unauthenticated": "b77cc5b997.UnauthRoleArn",
           "authenticated": "b77cc5b997.AuthRoleArn"
@@ -517,13 +517,13 @@
   },
   "Outputs": {
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref": {
-      "Value": "da5e56ee3d.userPoolId"
+      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPool82221E95Ref"
     },
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref": {
-      "Value": "da5e56ee3d.webClientId"
+      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthUserPoolAppClientFFCC03B0Ref"
     },
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref": {
-      "Value": "da5e56ee3d.identityPoolId"
+      "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthIdentityPool08912074Ref"
     },
     "amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef": {
       "Value": "5304075c5e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30aauthamplifyAuthauthenticatedUserRoleF8A310BARef"

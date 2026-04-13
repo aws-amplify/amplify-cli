@@ -3,18 +3,18 @@
     "OutputKey": "GetAttc3c677ee62.GetAttMealDataSourceNameName",
     "OutputValue": "c3c677ee62.GetAttc3c677ee62.GetAttMealDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
   },
   {
     "OutputKey": "GetAttMealDataSourceName",
     "OutputValue": "c3c677ee62.GetAttMealDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:MealDataSource:Name"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:MealDataSource:Name"
   },
   {
     "OutputKey": "GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
     "OutputValue": "c3c677ee62.GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
   }
 ]

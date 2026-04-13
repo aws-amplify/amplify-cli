@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "40f1c9f949.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -71,7 +71,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/api.productcatalog.GraphQLAPIIdOutput/*"
+                    ":apis/8dcbe94f9b.GraphQLAPIIdOutput/*"
                   ]
                 ]
               }
@@ -97,7 +97,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "40f1c9f949.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -417,13 +417,13 @@
   },
   "Outputs": {
     "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
-      "Value": "40f1c9f949.userPoolId"
+      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
     },
     "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef": {
-      "Value": "40f1c9f949.webClientId"
+      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
     },
     "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
-      "Value": "40f1c9f949.identityPoolId"
+      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
     },
     "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
       "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"

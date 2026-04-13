@@ -1,35 +1,35 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "auth.moodboard759ae00a.UserPoolId",
+    "OutputValue": "5b400a3a3b.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "auth.moodboard759ae00a.AppClientIDWeb",
+    "OutputValue": "5b400a3a3b.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "auth.moodboard759ae00a.AppClientID",
+    "OutputValue": "5b400a3a3b.AppClientID",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "auth.moodboard759ae00a.IdentityPoolId",
+    "OutputValue": "5b400a3a3b.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "auth.moodboard759ae00a.UserPoolArn",
+    "OutputValue": "5b400a3a3b.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "auth.moodboard759ae00a.IdentityPoolName"
+    "OutputValue": "5b400a3a3b.IdentityPoolName"
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "auth.moodboard759ae00a.UserPoolName"
+    "OutputValue": "5b400a3a3b.UserPoolName"
   }
 ]

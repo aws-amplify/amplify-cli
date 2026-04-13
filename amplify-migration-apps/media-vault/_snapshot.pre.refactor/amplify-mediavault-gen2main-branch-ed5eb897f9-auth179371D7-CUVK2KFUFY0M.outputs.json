@@ -5,7 +5,7 @@
   },
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPool9F5CB443Ref",
-    "OutputValue": "7e048d04ad.userPoolId"
+    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPool9F5CB443Ref"
   },
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolUserPoolDomainAC114943Ref",
@@ -17,11 +17,11 @@
   },
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref",
-    "OutputValue": "7e048d04ad.webClientId"
+    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref"
   },
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref",
-    "OutputValue": "7e048d04ad.identityPoolId"
+    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
   },
   {
     "OutputKey": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authremoveuserfromgroupgen2mainlambda5610FB1BRef",

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.importedresourcequotegenerator.LambdaExecutionRoleArn"
+    "OutputValue": "4647c67c14.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.importedresourcequotegenerator.LambdaExecutionRole"
+    "OutputValue": "4647c67c14.LambdaExecutionRole"
   }
 ]

@@ -4,7 +4,7 @@
     "productcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketPolicyF51DAA81": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": "40f1c9f949.bucketName",
+        "Bucket": "b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
         "PolicyDocument": {
           "Statement": [
             {
@@ -19,12 +19,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                "arn:aws:s3:::40f1c9f949.bucketName",
+                "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/*"
                     ]
                   ]
@@ -43,12 +43,12 @@
                 "AWS": "arn:aws:iam::123456789012:role/amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a-storage0EC3F24A-13PB5LDXDDFTY/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                "arn:aws:s3:::40f1c9f949.bucketName",
+                "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/*"
                     ]
                   ]
@@ -67,7 +67,7 @@
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a-storage0EC3F24A-13PB5LDXDDFTY/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "40f1c9f949.bucketName"
+        "BucketName": "b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -79,7 +79,7 @@
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a-storage0EC3F24A-13PB5LDXDDFTY/BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
-        "BucketName": "40f1c9f949.bucketName",
+        "BucketName": "b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
         "NotificationConfiguration": {
           "LambdaFunctionConfigurations": [
             {
@@ -118,7 +118,7 @@
         "SourceAccount": {
           "Ref": "AWS::AccountId"
         },
-        "SourceArn": "arn:aws:s3:::40f1c9f949.bucketName"
+        "SourceArn": "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/storage/productcatalogf95af07481f845caa6594c26ac9c8ed331323-gen2-main/Bucket/AllowBucketNotificationsToamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda8226525A"
@@ -168,7 +168,7 @@
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              "40f1c9f949.bucketName",
+              "b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
               " S3 bucket."
             ]
           ]
@@ -240,7 +240,7 @@
             {
               "Action": "s3:PutBucketNotification",
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::40f1c9f949.bucketName"
+              "Resource": "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -301,7 +301,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "40f1c9f949.bucketName"
+        "Value": "b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/storage/PRODUCTCATALOGF_95_AF_07481_F_845_CAA_6594_C_26_AC_9_C_8_ED_331323_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
@@ -320,7 +320,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/public/*"
                     ]
                   ]
@@ -329,7 +329,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/protected/*"
                     ]
                   ]
@@ -338,7 +338,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/private/*"
                     ]
                   ]
@@ -353,7 +353,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/public/*"
                     ]
                   ]
@@ -362,7 +362,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/protected/*"
                     ]
                   ]
@@ -371,7 +371,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/private/*"
                     ]
                   ]
@@ -393,7 +393,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::40f1c9f949.bucketName"
+              "Resource": "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
             },
             {
               "Action": "s3:DeleteObject",
@@ -403,7 +403,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/public/*"
                     ]
                   ]
@@ -412,7 +412,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/protected/*"
                     ]
                   ]
@@ -421,7 +421,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::40f1c9f949.bucketName",
+                      "arn:aws:s3:::b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref",
                       "/private/*"
                     ]
                   ]
@@ -729,7 +729,7 @@
   },
   "Outputs": {
     "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref": {
-      "Value": "40f1c9f949.bucketName"
+      "Value": "b501cdf3db.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
     }
   }
 }

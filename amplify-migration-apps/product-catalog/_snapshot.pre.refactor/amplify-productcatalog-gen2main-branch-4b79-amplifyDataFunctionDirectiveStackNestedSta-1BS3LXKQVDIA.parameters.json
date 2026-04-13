@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId",
-    "ParameterValue": "40f1c9f949.awsAppsyncApiId"
+    "ParameterValue": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
   },
   {
     "ParameterKey": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef",
-    "ParameterValue": "40f1c9f949.identityPoolId"
+    "ParameterValue": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
   },
   {
     "ParameterKey": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref",

@@ -187,7 +187,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "storage.s338e5b439.BucketName"
+      "Value": "3db57fd977.BucketName"
     },
     "Region": {
       "Value": "us-east-1"
@@ -336,7 +336,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/public/*"
                     ]
                   ]
@@ -372,7 +372,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -408,7 +408,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -444,7 +444,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/uploads/*"
                     ]
                   ]
@@ -473,7 +473,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.s338e5b439.BucketName",
+                    "3db57fd977.BucketName",
                     "/protected/*"
                   ]
                 ]
@@ -499,7 +499,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "storage.s338e5b439.BucketName"
+                    "3db57fd977.BucketName"
                   ]
                 ]
               }
@@ -531,7 +531,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName"
+                      "3db57fd977.BucketName"
                     ]
                   ]
                 }
@@ -551,7 +551,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "storage.s338e5b439.BucketName",
+                      "3db57fd977.BucketName",
                       "/*"
                     ]
                   ]
@@ -562,7 +562,7 @@
         },
         "PolicyName": "amplify-lambda-execution-policy-storage",
         "Roles": [
-          "function.S3Trigger1ef46783.LambdaExecutionRole"
+          "2a52e89b9c.LambdaExecutionRole"
         ]
       }
     }

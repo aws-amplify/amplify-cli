@@ -3,13 +3,13 @@
     "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameName",
     "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
+    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
   },
   {
     "OutputKey": "GetAttTodoDataSourceName",
     "OutputValue": "01f772aca2.GetAttTodoDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
+    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackTodo01f772aca2.GetAttTodoDataSourceNameC67E79C2Ref",
@@ -19,7 +19,7 @@
     "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
     "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.importedresources.GraphQLAPIIdOutput:GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
+    "ExportName": "fe17e54548.GraphQLAPIIdOutput:GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackTodoTodoDataSourceBD713D7DName",

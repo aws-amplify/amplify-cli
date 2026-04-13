@@ -69,13 +69,13 @@
       }
     },
     "userPoolId": {
-      "Value": "auth.importedresources2c7c1c40.UserPoolId"
+      "Value": "c643a9b272.userPoolId"
     },
     "webClientId": {
-      "Value": "auth.importedresources2c7c1c40.AppClientIDWeb"
+      "Value": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId"
     },
     "identityPoolId": {
-      "Value": "auth.importedresources2c7c1c40.IdentityPoolId"
+      "Value": "c643a9b272.identityPoolId"
     },
     "authRegion": {
       "Value": {

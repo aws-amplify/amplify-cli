@@ -249,8 +249,8 @@ const gen1api.d809bc5a09.ApiName.ApiNameApi = RestApi.fromRestApiAttributes(
   api.d809bc5a09.ApiName.ApiNameStack,
   'Gen1api.d809bc5a09.ApiName.ApiNameApi',
   {
-    restApiId: 'api.api.d809bc5a09.ApiName.ApiName.ApiId',
-    rootResourceId: 'api.api.d809bc5a09.ApiName.ApiName.ApiId-root',
+    restApiId: 'd809bc5a09.ApiId',
+    rootResourceId: 'd809bc5a09.ApiId-root',
   }
 );
 const gen1api.d809bc5a09.ApiName.ApiNamePolicy = new Policy(api.d809bc5a09.ApiName.ApiNameStack, 'Gen1api.d809bc5a09.ApiName.ApiNamePolicy', {

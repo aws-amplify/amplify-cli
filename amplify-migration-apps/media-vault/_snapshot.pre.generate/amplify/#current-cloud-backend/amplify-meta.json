@@ -48,15 +48,15 @@
         "logicalId": "authmediavault1f08412d"
       },
       "output": {
-        "UserPoolId": "auth.mediavault1f08412d.UserPoolId",
-        "AppClientIDWeb": "auth.mediavault1f08412d.AppClientIDWeb",
-        "AppClientID": "auth.mediavault1f08412d.AppClientID",
+        "UserPoolId": "1e7e367f51.UserPoolId",
+        "AppClientIDWeb": "1e7e367f51.AppClientIDWeb",
+        "AppClientID": "1e7e367f51.AppClientID",
         "HostedUIDomain": "auth.mediavault1f08412d.HostedUIDomain",
-        "IdentityPoolId": "auth.mediavault1f08412d.IdentityPoolId",
-        "UserPoolArn": "auth.mediavault1f08412d.UserPoolArn",
-        "IdentityPoolName": "auth.mediavault1f08412d.IdentityPoolName",
+        "IdentityPoolId": "1e7e367f51.IdentityPoolId",
+        "UserPoolArn": "1e7e367f51.UserPoolArn",
+        "IdentityPoolName": "1e7e367f51.IdentityPoolName",
         "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.mediavault.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.mediavault.amplifyapp.com/\"]}",
-        "UserPoolName": "auth.mediavault1f08412d.UserPoolName"
+        "UserPoolName": "1e7e367f51.UserPoolName"
       },
       "lastPushDirHash": "AwgYGHx+9uNagQUFkaFFMHBwgGg="
     },
@@ -119,8 +119,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "api.mediavault.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.mediavault.GraphQLAPIEndpointOutput",
+        "GraphQLAPIIdOutput": "5d5520c8f1.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "5d5520c8f1.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPIDefaultApiKey6A29A072ApiKey"
       },
       "providerMetadata": {
@@ -164,7 +164,7 @@
         "logicalId": "storagemediavault"
       },
       "output": {
-        "BucketName": "storage.mediavault.BucketName",
+        "BucketName": "3ae948247d.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "o0jh/VhjpuADeT4UovxNATt4O5k="
@@ -198,11 +198,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T14:56:48.425Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.thumbnailgen.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "a902e5815d.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.thumbnailgen.Arn",
         "Name": "function.thumbnailgen.Name",
-        "LambdaExecutionRole": "function.thumbnailgen.LambdaExecutionRole"
+        "LambdaExecutionRole": "a902e5815d.LambdaExecutionRole"
       },
       "lastPushDirHash": "MCIFtnBrU9B5/8k3oUOw3xcrIso="
     },
@@ -233,11 +233,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T14:56:48.425Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.addusertogroup.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "51b6aa8206.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.addusertogroup.Arn",
         "Name": "function.addusertogroup.Name",
-        "LambdaExecutionRole": "function.addusertogroup.LambdaExecutionRole"
+        "LambdaExecutionRole": "51b6aa8206.LambdaExecutionRole"
       },
       "lastPushDirHash": "2cztNkTtJknQAlYwuF/tARdhsYw="
     },
@@ -268,11 +268,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T14:56:48.425Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.removeuserfromgroup.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "cb0797a992.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.removeuserfromgroup.Arn",
         "Name": "function.removeuserfromgroup.Name",
-        "LambdaExecutionRole": "function.removeuserfromgroup.LambdaExecutionRole"
+        "LambdaExecutionRole": "cb0797a992.LambdaExecutionRole"
       },
       "lastPushDirHash": "pbsv/8VfvBGo0DKSDeXe4+eqw1Y="
     }

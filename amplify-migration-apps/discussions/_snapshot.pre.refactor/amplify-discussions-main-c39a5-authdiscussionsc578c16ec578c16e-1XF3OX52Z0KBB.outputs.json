@@ -6,35 +6,35 @@
   },
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.UserPoolId",
+    "OutputValue": "3641aeee95.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.AppClientIDWeb",
+    "OutputValue": "3641aeee95.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.AppClientID",
+    "OutputValue": "3641aeee95.AppClientID",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.IdentityPoolId",
+    "OutputValue": "3641aeee95.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.UserPoolArn",
+    "OutputValue": "3641aeee95.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.IdentityPoolName"
+    "OutputValue": "3641aeee95.IdentityPoolName"
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "auth.discussionsc578c16ec578c16e.UserPoolName"
+    "OutputValue": "3641aeee95.UserPoolName"
   }
 ]

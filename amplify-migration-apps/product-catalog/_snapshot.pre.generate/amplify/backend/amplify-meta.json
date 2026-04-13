@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-07T14:20:36.895Z",
       "output": {
-        "UserPoolId": "auth.productcatalog90174ac4.UserPoolId",
-        "AppClientIDWeb": "auth.productcatalog90174ac4.AppClientIDWeb",
-        "AppClientID": "auth.productcatalog90174ac4.AppClientID",
-        "IdentityPoolId": "auth.productcatalog90174ac4.IdentityPoolId",
-        "UserPoolArn": "auth.productcatalog90174ac4.UserPoolArn",
-        "IdentityPoolName": "auth.productcatalog90174ac4.IdentityPoolName",
-        "UserPoolName": "auth.productcatalog90174ac4.UserPoolName"
+        "UserPoolId": "8563cd35c0.UserPoolId",
+        "AppClientIDWeb": "8563cd35c0.AppClientIDWeb",
+        "AppClientID": "8563cd35c0.AppClientID",
+        "IdentityPoolId": "8563cd35c0.IdentityPoolId",
+        "UserPoolArn": "8563cd35c0.UserPoolArn",
+        "IdentityPoolName": "8563cd35c0.IdentityPoolName",
+        "UserPoolName": "8563cd35c0.UserPoolName"
       },
       "lastPushDirHash": "vwfsguBCYhmnChi8OJsiaEhZfwA="
     }
@@ -90,8 +90,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "api.productcatalog.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.productcatalog.GraphQLAPIEndpointOutput",
+        "GraphQLAPIIdOutput": "8dcbe94f9b.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "8dcbe94f9b.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
       },
       "providerMetadata": {
@@ -132,11 +132,11 @@
         "logicalId": "functionS3Trigger1ef46783"
       },
       "output": {
-        "LambdaExecutionRoleArn": "function.S3Trigger1ef46783.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "2a52e89b9c.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.S3Trigger1ef46783.Arn",
         "Name": "function.S3Trigger1ef46783.Name",
-        "LambdaExecutionRole": "function.S3Trigger1ef46783.LambdaExecutionRole"
+        "LambdaExecutionRole": "2a52e89b9c.LambdaExecutionRole"
       },
       "lastPushDirHash": "2Yp8qReEPNjxqPd0IEURpkIBCjs="
     },
@@ -169,11 +169,11 @@
       },
       "lastPushTimeStamp": "2026-03-07T14:20:36.895Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.lowstockproducts.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "65e5289b51.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.lowstockproducts.Arn",
         "Name": "function.lowstockproducts.Name",
-        "LambdaExecutionRole": "function.lowstockproducts.LambdaExecutionRole"
+        "LambdaExecutionRole": "65e5289b51.LambdaExecutionRole"
       },
       "lastPushDirHash": "v+3Ew5vm+8e5EPfjKY08keb4p0w="
     }
@@ -199,7 +199,7 @@
         "logicalId": "storages338e5b439"
       },
       "output": {
-        "BucketName": "storage.s338e5b439.BucketName",
+        "BucketName": "3db57fd977.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "wE6Y7huJNaslBLmQHoL6Q0+9Yj4="

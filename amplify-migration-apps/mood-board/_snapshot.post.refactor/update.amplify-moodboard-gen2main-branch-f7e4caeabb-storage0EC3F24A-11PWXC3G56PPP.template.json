@@ -76,7 +76,7 @@
     "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucketPolicy9A17D834": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": "383edf5091.bucketName",
+        "Bucket": "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
         "PolicyDocument": {
           "Statement": [
             {
@@ -91,12 +91,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                "arn:aws:s3:::383edf5091.bucketName",
+                "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/*"
                     ]
                   ]
@@ -115,12 +115,12 @@
                 "AWS": "arn:aws:iam::123456789012:role/amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                "arn:aws:s3:::383edf5091.bucketName",
+                "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/*"
                     ]
                   ]
@@ -139,7 +139,7 @@
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "383edf5091.bucketName"
+        "BucketName": "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -191,7 +191,7 @@
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              "383edf5091.bucketName",
+              "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
               " S3 bucket."
             ]
           ]
@@ -214,7 +214,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "383edf5091.bucketName"
+        "Value": "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-gen2main-383edf5091.deploymentType-f7e4caeabb/storage/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_41959_A_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
@@ -232,7 +232,7 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:s3:::383edf5091.bucketName",
+                    "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                     "/public/*"
                   ]
                 ]
@@ -249,7 +249,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::383edf5091.bucketName"
+              "Resource": "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -278,7 +278,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/public/*"
                     ]
                   ]
@@ -287,7 +287,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/protected/*"
                     ]
                   ]
@@ -296,7 +296,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/private/*"
                     ]
                   ]
@@ -311,7 +311,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/public/*"
                     ]
                   ]
@@ -320,7 +320,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/protected/*"
                     ]
                   ]
@@ -329,7 +329,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/private/*"
                     ]
                   ]
@@ -351,7 +351,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::383edf5091.bucketName"
+              "Resource": "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
             },
             {
               "Action": "s3:DeleteObject",
@@ -361,7 +361,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/public/*"
                     ]
                   ]
@@ -370,7 +370,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/protected/*"
                     ]
                   ]
@@ -379,7 +379,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::383edf5091.bucketName",
+                      "arn:aws:s3:::db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref",
                       "/private/*"
                     ]
                   ]
@@ -687,7 +687,7 @@
   },
   "Outputs": {
     "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref": {
-      "Value": "383edf5091.bucketName"
+      "Value": "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
     }
   }
 }

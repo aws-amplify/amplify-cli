@@ -145,7 +145,7 @@ for (const model of ['Topic', 'Post', 'Comment']) {
 }
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'storage.avatars.BucketName';
+// s3Bucket.bucketName = 'b13c4c6060.BucketName';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

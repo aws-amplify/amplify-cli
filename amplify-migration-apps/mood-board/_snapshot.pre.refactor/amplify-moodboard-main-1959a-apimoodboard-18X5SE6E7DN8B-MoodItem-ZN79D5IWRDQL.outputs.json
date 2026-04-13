@@ -3,13 +3,13 @@
     "OutputKey": "GetAtt1230b2630f.GetAttMoodItemDataSourceNameStreamArn",
     "OutputValue": "1230b2630f.GetAtt1230b2630f.GetAttMoodItemDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:1230b2630f.GetAttMoodItemDataSourceName:StreamArn"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:1230b2630f.GetAttMoodItemDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAttMoodItemDataSourceName",
     "OutputValue": "1230b2630f.GetAttMoodItemDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:MoodItemDataSource:Name"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:MoodItemDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref",
@@ -47,7 +47,7 @@
     "OutputKey": "GetAtt1230b2630f.GetAttMoodItemDataSourceNameName",
     "OutputValue": "1230b2630f.transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.moodboard.GraphQLAPIIdOutput:GetAtt:1230b2630f.GetAttMoodItemDataSourceName:Name"
+    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:1230b2630f.GetAttMoodItemDataSourceName:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",

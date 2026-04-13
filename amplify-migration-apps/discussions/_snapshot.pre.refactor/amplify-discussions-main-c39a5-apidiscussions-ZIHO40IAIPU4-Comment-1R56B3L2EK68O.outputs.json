@@ -3,13 +3,13 @@
     "OutputKey": "GetAttCommentDataSourceName",
     "OutputValue": "fe019c2b9e.GetAttCommentDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:CommentDataSource:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:CommentDataSource:Name"
   },
   {
     "OutputKey": "GetAttfe019c2b9e.GetAttCommentDataSourceNameStreamArn",
     "OutputValue": "89544babf0.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataCommentfe019c2b9e.GetAttCommentDataSourceName4FC8AE39TableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:StreamArn"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackCommentCommentDataSourceA0E54655Name",
@@ -23,6 +23,6 @@
     "OutputKey": "GetAttfe019c2b9e.GetAttCommentDataSourceNameName",
     "OutputValue": "fe019c2b9e.transformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:fe019c2b9e.GetAttCommentDataSourceName:Name"
   }
 ]

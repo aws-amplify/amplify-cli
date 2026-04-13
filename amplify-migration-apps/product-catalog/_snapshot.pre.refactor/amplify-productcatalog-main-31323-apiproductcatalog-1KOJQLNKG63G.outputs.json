@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.productcatalog.GraphQLAPIIdOutput",
+    "OutputValue": "8dcbe94f9b.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
     "ExportName": "4c3f39313a.StackName-apiproductcatalog-1KOJQLNKG63G:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.productcatalog.GraphQLAPIEndpointOutput",
+    "OutputValue": "8dcbe94f9b.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "4c3f39313a.StackName-apiproductcatalog-1KOJQLNKG63G:GraphQLApiEndpoint"
   },

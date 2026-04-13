@@ -3,7 +3,7 @@
     "OutputKey": "GetAtt273e28bfb9.GetAttTodoDataSourceNameName",
     "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "c0d444ea7b.awsAppsyncApiId:GetAtt:273e28bfb9.GetAttTodoDataSourceName:Name"
+    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:273e28bfb9.GetAttTodoDataSourceName:Name"
   },
   {
     "OutputKey": "amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataTodoTodoDataSourceB3ECF35AName",
@@ -17,6 +17,6 @@
     "OutputKey": "GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn",
     "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "c0d444ea7b.awsAppsyncApiId:GetAtt:273e28bfb9.GetAttTodoDataSourceName:StreamArn"
+    "ExportName": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId:GetAtt:273e28bfb9.GetAttTodoDataSourceName:StreamArn"
   }
 ]

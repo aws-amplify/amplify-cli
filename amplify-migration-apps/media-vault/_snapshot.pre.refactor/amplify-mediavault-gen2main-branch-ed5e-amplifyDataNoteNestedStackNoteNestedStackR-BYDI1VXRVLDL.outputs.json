@@ -3,12 +3,12 @@
     "OutputKey": "GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn",
     "OutputValue": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "7e048d04ad.awsAppsyncApiId:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
+    "ExportName": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
     "OutputValue": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "7e048d04ad.awsAppsyncApiId:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
+    "ExportName": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId:GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
   }
 ]

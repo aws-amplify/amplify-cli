@@ -111,7 +111,7 @@
               {
                 "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostb7c107d03f.GetAttPostDataSourceName34CAE87BRef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.discussionsc578c16ec578c16e.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"3641aeee95.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -200,7 +200,7 @@
               {
                 "Ref": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentfe019c2b9e.GetAttCommentDataSourceName5427FDE2Ref"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.discussionsc578c16ec578c16e.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"3641aeee95.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -289,7 +289,7 @@
               {
                 "Ref": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopic44f5eef0ce.GetAttTopicDataSourceNameFD91FB92Ref"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.discussionsc578c16ec578c16e.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"3641aeee95.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -378,7 +378,7 @@
               {
                 "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostb7c107d03f.GetAttPostDataSourceName34CAE87BRef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"auth.discussionsc578c16ec578c16e.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"3641aeee95.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.recorduseractivity.Name\"]))\n$util.toJson({})"
             ]
           ]
         },

@@ -110,11 +110,11 @@
       },
       "lastPushTimeStamp": "2026-03-24T16:38:00.639Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.storelocator41a9495f41a9495fPostConfirmation.NameArn",
+        "LambdaExecutionRoleArn": "d8066ec12f.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "d8066ec12f.Arn",
-        "Name": "function.storelocator41a9495f41a9495fPostConfirmation.Name",
-        "LambdaExecutionRole": "function.storelocator41a9495f41a9495fPostConfirmation.Name"
+        "Name": "d8066ec12f.LambdaExecutionRole",
+        "LambdaExecutionRole": "d8066ec12f.LambdaExecutionRole"
       },
       "lastPushDirHash": "6EQkwiPaTbkyYCg4JDkMQiOWz8g="
     }

@@ -207,7 +207,7 @@
           "identityPoolName": "mediavault1f08412d_identitypool_1f08412d",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "mediav1f08412d",
-          "userPoolName": "auth.mediavault1f08412d.UserPoolName",
+          "userPoolName": "1e7e367f51.UserPoolName",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",

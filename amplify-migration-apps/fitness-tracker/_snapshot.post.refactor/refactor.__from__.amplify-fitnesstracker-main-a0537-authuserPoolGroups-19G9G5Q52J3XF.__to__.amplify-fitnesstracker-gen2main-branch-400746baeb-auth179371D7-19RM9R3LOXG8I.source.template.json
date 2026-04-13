@@ -52,7 +52,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "auth.fitnesstracker33f5545533f55455.IdentityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "ea8f06a449.IdentityPoolId"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -65,7 +65,7 @@
           "Fn::Join": [
             "",
             [
-              "auth.fitnesstracker33f5545533f55455.UserPoolId",
+              "ea8f06a449.UserPoolId",
               "-AdminGroupRole"
             ]
           ]

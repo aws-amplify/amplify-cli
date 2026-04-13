@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.moodboardGetRandomEmoji.LambdaExecutionRoleArn"
+    "OutputValue": "f29a544073.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.moodboardGetRandomEmoji.LambdaExecutionRole"
+    "OutputValue": "f29a544073.LambdaExecutionRole"
   }
 ]

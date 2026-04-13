@@ -11,7 +11,7 @@
   },
   {
     "OutputKey": "ApiId",
-    "OutputValue": "api.api.d809bc5a09.ApiName.ApiName.ApiId",
+    "OutputValue": "d809bc5a09.ApiId",
     "Description": "API ID (prefix of API URL)"
   }
 ]

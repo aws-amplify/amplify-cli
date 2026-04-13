@@ -1,15 +1,15 @@
 [
   {
     "OutputKey": "GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn",
-    "OutputValue": "e9a3818d7e.GetAtt44f5eef0ce.GetAttTopicDataSourceNameStreamArn",
+    "OutputValue": "e9a3818d7e.amplifydiscussionsgen2mainda5e56ee3d.deploymentTypea27e51c30adataamplifyDataTopic44f5eef0ce.GetAttTopicDataSourceName0F7B351ATableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
     "OutputValue": "44f5eef0ce.GetAtt44f5eef0ce.GetAttTopicDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:44f5eef0ce.GetAttTopicDataSourceName:Name"
   },
   {
     "OutputKey": "transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
@@ -27,7 +27,7 @@
     "OutputKey": "GetAttTopicDataSourceName",
     "OutputValue": "44f5eef0ce.GetAttTopicDataSourceName",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.discussions.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
+    "ExportName": "358c55d6a3.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackTopic44f5eef0ce.GetAttTopicDataSourceNameFD91FB92Ref",

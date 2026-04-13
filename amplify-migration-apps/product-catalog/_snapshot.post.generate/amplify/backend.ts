@@ -84,7 +84,7 @@ backend.data.resources.graphqlApi.grantQuery(
 );
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'storage.s338e5b439.BucketName';
+// s3Bucket.bucketName = '3db57fd977.BucketName';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dIdentityPoolId",
-    "ParameterValue": "auth.mediavault1f08412d.IdentityPoolId"
+    "ParameterValue": "1e7e367f51.IdentityPoolId"
   },
   {
     "ParameterKey": "authmediavault1f08412dAppClientID",
-    "ParameterValue": "auth.mediavault1f08412d.AppClientID"
+    "ParameterValue": "1e7e367f51.AppClientID"
   },
   {
     "ParameterKey": "AuthRoleArn",
@@ -17,11 +17,11 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "auth.mediavault1f08412d.UserPoolId"
+    "ParameterValue": "1e7e367f51.UserPoolId"
   },
   {
     "ParameterKey": "authmediavault1f08412dAppClientIDWeb",
-    "ParameterValue": "auth.mediavault1f08412d.AppClientIDWeb"
+    "ParameterValue": "1e7e367f51.AppClientIDWeb"
   },
   {
     "ParameterKey": "env",

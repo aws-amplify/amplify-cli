@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "auth.mediavault1f08412d.UserPoolId"
+    "ParameterValue": "1e7e367f51.UserPoolId"
   }
 ]

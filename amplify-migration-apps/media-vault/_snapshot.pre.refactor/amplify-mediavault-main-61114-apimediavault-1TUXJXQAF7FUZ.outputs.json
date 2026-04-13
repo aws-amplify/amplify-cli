@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.mediavault.GraphQLAPIIdOutput",
+    "OutputValue": "5d5520c8f1.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
     "ExportName": "6b2a52a982.StackName-apimediavault-1TUXJXQAF7FUZ:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.mediavault.GraphQLAPIEndpointOutput",
+    "OutputValue": "5d5520c8f1.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "6b2a52a982.StackName-apimediavault-1TUXJXQAF7FUZ:GraphQLApiEndpoint"
   },

@@ -3,12 +3,12 @@
     "OutputKey": "GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameStreamArn",
     "OutputValue": "a519ab46e6.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "3f11ed2aac.awsAppsyncApiId:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:StreamArn"
+    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName",
     "OutputValue": "a519ab46e6.GetAtta519ab46e6.GetAttWorkoutProgramDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "3f11ed2aac.awsAppsyncApiId:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:Name"
+    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:a519ab46e6.GetAttWorkoutProgramDataSourceName:Name"
   }
 ]

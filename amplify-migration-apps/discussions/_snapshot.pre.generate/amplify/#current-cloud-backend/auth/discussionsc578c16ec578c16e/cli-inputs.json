@@ -4,7 +4,7 @@
     "identityPoolName": "discussionsc578c16e_identitypool_c578c16e",
     "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "discusc578c16e",
-    "userPoolName": "auth.discussionsc578c16ec578c16e.UserPoolName",
+    "userPoolName": "3641aeee95.UserPoolName",
     "autoVerifiedAttributes": [
       "email"
     ],

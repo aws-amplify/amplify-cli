@@ -2,7 +2,7 @@
   "identityPoolName": "fitnesstracker33f55455_identitypool_33f55455",
   "allowUnauthenticatedIdentities": false,
   "resourceNameTruncated": "fitnes33f55455",
-  "userPoolName": "auth.fitnesstracker33f5545533f55455.UserPoolName",
+  "userPoolName": "ea8f06a449.UserPoolName",
   "autoVerifiedAttributes": [
     "email"
   ],

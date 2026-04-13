@@ -4,7 +4,7 @@
     "identityPoolName": "moodboard759ae00a_identitypool_759ae00a",
     "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "moodbo759ae00a",
-    "userPoolName": "auth.moodboard759ae00a.UserPoolName",
+    "userPoolName": "5b400a3a3b.UserPoolName",
     "autoVerifiedAttributes": [
       "email"
     ],

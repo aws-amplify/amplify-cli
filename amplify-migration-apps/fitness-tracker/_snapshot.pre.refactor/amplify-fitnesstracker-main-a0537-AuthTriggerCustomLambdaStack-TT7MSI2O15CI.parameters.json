@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupLambdaExecutionRole",
-    "ParameterValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRoleArn"
+    "ParameterValue": "314e6b42b0.LambdaExecutionRoleArn"
   },
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupName",
-    "ParameterValue": "function.fitnesstracker33f5545533f55455PreSignup.LambdaExecutionRole"
+    "ParameterValue": "314e6b42b0.LambdaExecutionRole"
   },
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupArn",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "userpoolId",
-    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+    "ParameterValue": "ea8f06a449.UserPoolId"
   },
   {
     "ParameterKey": "env",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "userpoolArn",
-    "ParameterValue": "auth.fitnesstracker33f5545533f55455.UserPoolArn"
+    "ParameterValue": "ea8f06a449.UserPoolArn"
   }
 ]

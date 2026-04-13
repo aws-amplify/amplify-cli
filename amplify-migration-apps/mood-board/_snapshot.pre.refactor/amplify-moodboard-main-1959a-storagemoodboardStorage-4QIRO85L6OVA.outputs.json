@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "storage.moodboardStorage.BucketName",
+    "OutputValue": "8a5916c5d3.BucketName",
     "Description": "Bucket name for the S3 bucket"
   },
   {

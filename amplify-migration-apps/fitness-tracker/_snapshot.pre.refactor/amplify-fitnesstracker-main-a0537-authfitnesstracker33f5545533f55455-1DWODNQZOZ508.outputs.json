@@ -1,35 +1,35 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.UserPoolId",
+    "OutputValue": "ea8f06a449.UserPoolId",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.AppClientIDWeb",
+    "OutputValue": "ea8f06a449.AppClientIDWeb",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.AppClientID",
+    "OutputValue": "ea8f06a449.AppClientID",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.IdentityPoolId",
+    "OutputValue": "ea8f06a449.IdentityPoolId",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.UserPoolArn",
+    "OutputValue": "ea8f06a449.UserPoolArn",
     "Description": "Arn for the user pool"
   },
   {
     "OutputKey": "IdentityPoolName",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.IdentityPoolName"
+    "OutputValue": "ea8f06a449.IdentityPoolName"
   },
   {
     "OutputKey": "UserPoolName",
-    "OutputValue": "auth.fitnesstracker33f5545533f55455.UserPoolName"
+    "OutputValue": "ea8f06a449.UserPoolName"
   }
 ]

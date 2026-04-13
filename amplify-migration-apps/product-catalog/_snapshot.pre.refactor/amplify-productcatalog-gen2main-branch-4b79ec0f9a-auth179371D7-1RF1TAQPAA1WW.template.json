@@ -253,7 +253,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/api.productcatalog.GraphQLAPIIdOutput/*"
+                    ":apis/8dcbe94f9b.GraphQLAPIIdOutput/*"
                   ]
                 ]
               }

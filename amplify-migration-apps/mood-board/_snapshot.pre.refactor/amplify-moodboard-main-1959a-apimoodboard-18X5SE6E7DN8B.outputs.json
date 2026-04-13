@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "api.moodboard.GraphQLAPIIdOutput",
+    "OutputValue": "5494e94a79.GraphQLAPIIdOutput",
     "Description": "Your GraphQL API ID.",
     "ExportName": "1133a3293d.StackName-apimoodboard-18X5SE6E7DN8B:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "api.moodboard.GraphQLAPIEndpointOutput",
+    "OutputValue": "5494e94a79.GraphQLAPIEndpointOutput",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "1133a3293d.StackName-apimoodboard-18X5SE6E7DN8B:GraphQLApiEndpoint"
   },

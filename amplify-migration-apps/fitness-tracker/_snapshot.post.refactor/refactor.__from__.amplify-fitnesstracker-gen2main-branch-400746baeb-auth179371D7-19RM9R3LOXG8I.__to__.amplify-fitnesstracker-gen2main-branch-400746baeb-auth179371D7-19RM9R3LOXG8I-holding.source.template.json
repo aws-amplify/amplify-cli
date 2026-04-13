@@ -7,7 +7,7 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef",
         "Principal": "cognito-idp.amazonaws.com",
-        "SourceArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+        "SourceArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/auth/amplifyAuth/UserPool/PreSignUpCognito"
@@ -22,7 +22,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "3f11ed2aac.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -72,7 +72,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "3f11ed2aac.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -122,7 +122,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "3f11ed2aac.identityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -291,7 +291,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "3f11ed2aac.userPoolId"
+        "Value": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
@@ -414,7 +414,7 @@
             "REGION": "us-east-1",
             "AMPLIFY_SSM_ENV_CONFIG": "{\"AMPLIFY_AUTH_USERPOOL_ID\":{\"path\":\"/amplify/resource_reference/fitnesstracker/gen2main-3f11ed2aac.deploymentType-400746baeb/AMPLIFY_AUTH_USERPOOL_ID\"}}",
             "AMPLIFY_AUTH_USERPOOL_ID": "<value will be resolved during runtime>",
-            "AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID": "3f11ed2aac.userPoolId"
+            "AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
           }
         },
         "EphemeralStorage": {
@@ -464,7 +464,7 @@
             {
               "Action": "cognito-idp:AdminGetDevice",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -488,7 +488,7 @@
             {
               "Action": "cognito-idp:AdminGetUser",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -512,7 +512,7 @@
             {
               "Action": "cognito-idp:AdminListDevices",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -536,7 +536,7 @@
             {
               "Action": "cognito-idp:AdminListGroupsForUser",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -560,7 +560,7 @@
             {
               "Action": "cognito-idp:ListUsers",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -584,7 +584,7 @@
             {
               "Action": "cognito-idp:ListUsersInGroup",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -608,7 +608,7 @@
             {
               "Action": "cognito-idp:ListGroups",
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/3f11ed2aac.userPoolId"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
             }
           ],
           "Version": "2012-10-17"
@@ -641,7 +641,7 @@
         "GroupName": "Admin",
         "Precedence": 1,
         "RoleArn": "auth.userPoolGroups.AdminGroupRole",
-        "UserPoolId": "auth.fitnesstracker33f5545533f55455.UserPoolId"
+        "UserPoolId": "ea8f06a449.UserPoolId"
       }
     }
   },
@@ -913,13 +913,13 @@
   },
   "Outputs": {
     "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref": {
-      "Value": "3f11ed2aac.userPoolId"
+      "Value": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
     },
     "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef": {
-      "Value": "3f11ed2aac.webClientId"
+      "Value": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef"
     },
     "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref": {
-      "Value": "3f11ed2aac.identityPoolId"
+      "Value": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
     },
     "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef": {
       "Value": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef"

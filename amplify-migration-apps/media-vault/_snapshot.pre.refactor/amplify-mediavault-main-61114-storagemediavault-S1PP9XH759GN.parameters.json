@@ -73,7 +73,7 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "auth.mediavault1f08412d.UserPoolId"
+    "ParameterValue": "1e7e367f51.UserPoolId"
   },
   {
     "ParameterKey": "s3PermissionsAuthenticatedProtected",

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "storage.mediavault.BucketName",
+    "OutputValue": "3ae948247d.BucketName",
     "Description": "Bucket name for the S3 bucket"
   },
   {

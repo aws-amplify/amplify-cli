@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.removeuserfromgroup.LambdaExecutionRoleArn"
+    "OutputValue": "cb0797a992.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.removeuserfromgroup.LambdaExecutionRole"
+    "OutputValue": "cb0797a992.LambdaExecutionRole"
   }
 ]

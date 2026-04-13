@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "UserPoolId": "auth.moodboard759ae00a.UserPoolId",
-        "AppClientIDWeb": "auth.moodboard759ae00a.AppClientIDWeb",
-        "AppClientID": "auth.moodboard759ae00a.AppClientID",
-        "IdentityPoolId": "auth.moodboard759ae00a.IdentityPoolId",
-        "UserPoolArn": "auth.moodboard759ae00a.UserPoolArn",
-        "IdentityPoolName": "auth.moodboard759ae00a.IdentityPoolName",
-        "UserPoolName": "auth.moodboard759ae00a.UserPoolName"
+        "UserPoolId": "5b400a3a3b.UserPoolId",
+        "AppClientIDWeb": "5b400a3a3b.AppClientIDWeb",
+        "AppClientID": "5b400a3a3b.AppClientID",
+        "IdentityPoolId": "5b400a3a3b.IdentityPoolId",
+        "UserPoolArn": "5b400a3a3b.UserPoolArn",
+        "IdentityPoolName": "5b400a3a3b.IdentityPoolName",
+        "UserPoolName": "5b400a3a3b.UserPoolName"
       },
       "lastPushDirHash": "YoAgoR9zujggRkSUxqGO4UbI+Og="
     }
@@ -87,8 +87,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "api.moodboard.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.moodboard.GraphQLAPIEndpointOutput",
+        "GraphQLAPIIdOutput": "5494e94a79.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "5494e94a79.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
       },
       "providerMetadata": {
@@ -110,7 +110,7 @@
         "logicalId": "storagemoodboardStorage"
       },
       "output": {
-        "BucketName": "storage.moodboardStorage.BucketName",
+        "BucketName": "8a5916c5d3.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "z3bRVMUaOPcCXFeBaOqmzI2Vp0M="
@@ -135,11 +135,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.moodboardGetRandomEmoji.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "f29a544073.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.moodboardGetRandomEmoji.Arn",
         "Name": "function.moodboardGetRandomEmoji.Name",
-        "LambdaExecutionRole": "function.moodboardGetRandomEmoji.LambdaExecutionRole"
+        "LambdaExecutionRole": "f29a544073.LambdaExecutionRole"
       },
       "lastPushDirHash": "K/RndAAIl0V/ON0s1svTQIR0HvE="
     },
@@ -170,11 +170,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T17:07:28.971Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.moodboardKinesisReader.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "785b18b7e5.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.moodboardKinesisReader.Arn",
         "Name": "function.moodboardKinesisReader.Name",
-        "LambdaExecutionRole": "function.moodboardKinesisReader.LambdaExecutionRole"
+        "LambdaExecutionRole": "785b18b7e5.LambdaExecutionRole"
       },
       "lastPushDirHash": "Hm1fZAAyF9uAjfeygeDAxRhFnjI="
     }

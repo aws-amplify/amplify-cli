@@ -83,7 +83,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":userpool/auth.importedresources2c7c1c40.UserPoolId"
+                    ":userpool/c643a9b272.userPoolId"
                   ]
                 ]
               }
@@ -106,7 +106,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":identitypool/auth.importedresources2c7c1c40.IdentityPoolId"
+                    ":identitypool/c643a9b272.identityPoolId"
                   ]
                 ]
               }
@@ -352,9 +352,9 @@
             "Arn"
           ]
         },
-        "userPoolId": "auth.importedresources2c7c1c40.UserPoolId",
-        "identityPoolId": "auth.importedresources2c7c1c40.IdentityPoolId",
-        "userPoolClientId": "auth.importedresources2c7c1c40.AppClientIDWeb",
+        "userPoolId": "c643a9b272.userPoolId",
+        "identityPoolId": "c643a9b272.identityPoolId",
+        "userPoolClientId": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
         "authRoleArn": "arn:aws:iam::123456789012:role/importedresources-auth-role",
         "unauthRoleArn": "arn:aws:iam::123456789012:role/importedresources-unauth-role",
         "groups": {},

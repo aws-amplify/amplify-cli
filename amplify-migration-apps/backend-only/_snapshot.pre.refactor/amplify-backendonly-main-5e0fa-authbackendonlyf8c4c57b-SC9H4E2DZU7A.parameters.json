@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "auth.backendonlyf8c4c57b.UserPoolName"
+    "ParameterValue": "2dfb8ed9d7.UserPoolName"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",

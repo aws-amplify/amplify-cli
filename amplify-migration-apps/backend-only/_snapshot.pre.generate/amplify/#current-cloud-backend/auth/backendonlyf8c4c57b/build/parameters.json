@@ -2,7 +2,7 @@
   "identityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b",
   "allowUnauthenticatedIdentities": true,
   "resourceNameTruncated": "backenf8c4c57b",
-  "userPoolName": "auth.backendonlyf8c4c57b.UserPoolName",
+  "userPoolName": "2dfb8ed9d7.UserPoolName",
   "autoVerifiedAttributes": [
     "email"
   ],

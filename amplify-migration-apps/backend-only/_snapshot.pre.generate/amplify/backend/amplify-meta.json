@@ -44,13 +44,13 @@
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "output": {
-        "UserPoolId": "auth.backendonlyf8c4c57b.UserPoolId",
-        "AppClientIDWeb": "auth.backendonlyf8c4c57b.AppClientIDWeb",
-        "AppClientID": "auth.backendonlyf8c4c57b.AppClientID",
-        "IdentityPoolId": "auth.backendonlyf8c4c57b.IdentityPoolId",
-        "UserPoolArn": "auth.backendonlyf8c4c57b.UserPoolArn",
-        "IdentityPoolName": "auth.backendonlyf8c4c57b.IdentityPoolName",
-        "UserPoolName": "auth.backendonlyf8c4c57b.UserPoolName"
+        "UserPoolId": "2dfb8ed9d7.UserPoolId",
+        "AppClientIDWeb": "2dfb8ed9d7.AppClientIDWeb",
+        "AppClientID": "2dfb8ed9d7.AppClientID",
+        "IdentityPoolId": "2dfb8ed9d7.IdentityPoolId",
+        "UserPoolArn": "2dfb8ed9d7.UserPoolArn",
+        "IdentityPoolName": "2dfb8ed9d7.IdentityPoolName",
+        "UserPoolName": "2dfb8ed9d7.UserPoolName"
       },
       "lastPushDirHash": "686H3dissPlXxzTHFb9vBmwM2jw="
     }
@@ -85,8 +85,8 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "api.backendonly.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.backendonly.GraphQLAPIEndpointOutput",
+        "GraphQLAPIIdOutput": "994414bf7a.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "994414bf7a.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIDefaultApiKeyA92FFACFApiKey"
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
@@ -108,7 +108,7 @@
         "logicalId": "storages3c31471c3"
       },
       "output": {
-        "BucketName": "storage.s3c31471c3.BucketName",
+        "BucketName": "bb968f9dc3.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "5S73DL/tGImodFS4Yhe8QtAEepc="
@@ -133,11 +133,11 @@
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.quotegeneratorbe.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "e8bb2e75e8.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.quotegeneratorbe.Arn",
         "Name": "function.quotegeneratorbe.Name",
-        "LambdaExecutionRole": "function.quotegeneratorbe.LambdaExecutionRole"
+        "LambdaExecutionRole": "e8bb2e75e8.LambdaExecutionRole"
       },
       "lastPushDirHash": "g+QSHqf0IzubQUzZPRqNTEsEhkI="
     }

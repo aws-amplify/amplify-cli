@@ -575,7 +575,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":api.api.d809bc5a09.ApiName.ApiName.ApiId/*/GET/*"
+                    ":d809bc5a09.ApiId/*/GET/*"
                   ]
                 ]
               }

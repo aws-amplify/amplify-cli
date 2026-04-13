@@ -20,11 +20,11 @@
       "dependsOn": [],
       "customAuth": false,
       "output": {
-        "UserPoolId": "auth.importedresources2c7c1c40.UserPoolId",
+        "UserPoolId": "c643a9b272.userPoolId",
         "UserPoolName": "auth.importedresources2c7c1c40.UserPoolName",
         "AppClientID": "auth.importedresources2c7c1c40.AppClientID",
-        "AppClientIDWeb": "auth.importedresources2c7c1c40.AppClientIDWeb",
-        "IdentityPoolId": "auth.importedresources2c7c1c40.IdentityPoolId",
+        "AppClientIDWeb": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
+        "IdentityPoolId": "c643a9b272.identityPoolId",
         "IdentityPoolName": "auth.importedresources2c7c1c40.IdentityPoolName"
       },
       "frontendAuthConfig": {
@@ -73,13 +73,13 @@
             {
               "authenticationType": "AMAZON_COGNITO_USER_POOLS",
               "userPoolConfig": {
-                "userPoolId": "auth.importedresources2c7c1c40.UserPoolId"
+                "userPoolId": "c643a9b272.userPoolId"
               }
             }
           ]
         },
-        "GraphQLAPIIdOutput": "api.importedresources.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "api.importedresources.GraphQLAPIEndpointOutput",
+        "GraphQLAPIIdOutput": "fe17e54548.GraphQLAPIIdOutput",
+        "GraphQLAPIEndpointOutput": "fe17e54548.GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey"
       },
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
@@ -101,7 +101,7 @@
         "logicalId": "storages34ebf8874"
       },
       "output": {
-        "BucketName": "storage.s34ebf8874.BucketName",
+        "BucketName": "5cd5e4706d.BucketName",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "I7JSG1NRrCOgPEsHiLRnxnZfqdk="
@@ -126,11 +126,11 @@
       },
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
       "output": {
-        "LambdaExecutionRoleArn": "function.importedresourcequotegenerator.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "4647c67c14.LambdaExecutionRoleArn",
         "Region": "us-east-1",
         "Arn": "function.importedresourcequotegenerator.Arn",
         "Name": "function.importedresourcequotegenerator.Name",
-        "LambdaExecutionRole": "function.importedresourcequotegenerator.LambdaExecutionRole"
+        "LambdaExecutionRole": "4647c67c14.LambdaExecutionRole"
       },
       "lastPushDirHash": "kMMjdXBOJoAlVxAgQJIqYD2PuGc="
     }

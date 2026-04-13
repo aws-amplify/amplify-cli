@@ -3,7 +3,7 @@
     "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameName",
     "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "c643a9b272.awsAppsyncApiId:GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
+    "ExportName": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId:GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
   },
   {
     "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn",
@@ -17,6 +17,6 @@
     "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
     "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "c643a9b272.awsAppsyncApiId:GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
+    "ExportName": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId:GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
   }
 ]

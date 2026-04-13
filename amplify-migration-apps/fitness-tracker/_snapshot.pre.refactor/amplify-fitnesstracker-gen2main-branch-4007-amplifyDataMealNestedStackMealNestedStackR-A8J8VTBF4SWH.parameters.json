@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthNestedStackauthNestedStackResource5078865DOutputsamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
-    "ParameterValue": "3f11ed2aac.identityPoolId"
+    "ParameterValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId",
-    "ParameterValue": "3f11ed2aac.awsAppsyncApiId"
+    "ParameterValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

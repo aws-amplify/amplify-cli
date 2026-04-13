@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "function.lowstockproducts.LambdaExecutionRoleArn"
+    "OutputValue": "65e5289b51.LambdaExecutionRoleArn"
   },
   {
     "OutputKey": "Region",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "function.lowstockproducts.LambdaExecutionRole"
+    "OutputValue": "65e5289b51.LambdaExecutionRole"
   }
 ]

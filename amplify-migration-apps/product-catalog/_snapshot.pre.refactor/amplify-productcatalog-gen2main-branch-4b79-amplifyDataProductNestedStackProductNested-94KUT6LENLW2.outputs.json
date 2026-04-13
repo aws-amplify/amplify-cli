@@ -3,12 +3,12 @@
     "OutputKey": "GetAttb3e773b37b.GetAttProductDataSourceNameStreamArn",
     "OutputValue": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "40f1c9f949.awsAppsyncApiId:GetAtt:b3e773b37b.GetAttProductDataSourceName:StreamArn"
+    "ExportName": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId:GetAtt:b3e773b37b.GetAttProductDataSourceName:StreamArn"
   },
   {
     "OutputKey": "GetAttb3e773b37b.GetAttProductDataSourceNameName",
     "OutputValue": "b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "40f1c9f949.awsAppsyncApiId:GetAtt:b3e773b37b.GetAttProductDataSourceName:Name"
+    "ExportName": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId:GetAtt:b3e773b37b.GetAttProductDataSourceName:Name"
   }
 ]

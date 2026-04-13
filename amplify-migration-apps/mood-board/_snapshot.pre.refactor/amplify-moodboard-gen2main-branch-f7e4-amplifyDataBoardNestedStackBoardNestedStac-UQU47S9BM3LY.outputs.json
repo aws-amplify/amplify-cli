@@ -3,7 +3,7 @@
     "OutputKey": "GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn",
     "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "383edf5091.awsAppsyncApiId:GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
+    "ExportName": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId:GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoard2a2fe43672.GetAttBoardDataSourceName0122C8B9TableArn",
@@ -13,7 +13,7 @@
     "OutputKey": "GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
     "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "383edf5091.awsAppsyncApiId:GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
+    "ExportName": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId:GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
   },
   {
     "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataBoardBoardDataSource3085F3C2Name",

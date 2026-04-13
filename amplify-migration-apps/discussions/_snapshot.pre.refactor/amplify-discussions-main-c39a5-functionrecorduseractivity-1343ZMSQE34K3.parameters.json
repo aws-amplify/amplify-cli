@@ -17,11 +17,11 @@
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
-    "ParameterValue": "api.discussions.GraphQLAPIEndpointOutput"
+    "ParameterValue": "358c55d6a3.GraphQLAPIEndpointOutput"
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
-    "ParameterValue": "api.discussions.GraphQLAPIIdOutput"
+    "ParameterValue": "358c55d6a3.GraphQLAPIIdOutput"
   },
   {
     "ParameterKey": "storageactivityStreamArn",

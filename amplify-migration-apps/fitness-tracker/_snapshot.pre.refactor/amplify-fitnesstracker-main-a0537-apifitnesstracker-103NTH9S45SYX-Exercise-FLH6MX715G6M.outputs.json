@@ -7,13 +7,13 @@
     "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
     "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:Name"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:Name"
   },
   {
     "OutputKey": "GetAttExerciseDataSourceName",
     "OutputValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
     "Description": "Your model DataSource name.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:ExerciseDataSource:Name"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:ExerciseDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef",
@@ -23,6 +23,6 @@
     "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
     "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "api.fitnesstracker.GraphQLAPIIdOutput:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:StreamArn"
+    "ExportName": "fe37f7bbef.GraphQLAPIIdOutput:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:StreamArn"
   }
 ]
