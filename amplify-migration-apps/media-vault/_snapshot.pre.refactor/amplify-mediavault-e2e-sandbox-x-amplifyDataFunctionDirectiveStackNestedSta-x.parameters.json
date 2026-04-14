@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPINONEDSA56A9AC6Name",
+    "ParameterKey": "referencetoamplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPINONEDS2726B569Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbauthNestedStackauthNestedStackResource250D4630Outputsamplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref",
-    "ParameterValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref"
+    "ParameterKey": "referencetoamplifymediavaulte2esandboxa54b21defcauthNestedStackauthNestedStackResource62A0E7ACOutputsamplifymediavaulte2esandboxa54b21defcauthamplifyAuthIdentityPool4C287EB9Ref",
+    "ParameterValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthIdentityPool4C287EB9Ref"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId",
-    "ParameterValue": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId"
+    "ParameterKey": "referencetoamplifymediavaulte2esandboxa54b21defcauthNestedStackauthNestedStackResource62A0E7ACOutputsamplifymediavaulte2esandboxa54b21defcauthamplifyAuthunauthenticatedUserRole3322386FRef",
+    "ParameterValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthunauthenticatedUserRole3322386FRef"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbauthNestedStackauthNestedStackResource250D4630Outputsamplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref",
-    "ParameterValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref"
+    "ParameterKey": "referencetoamplifymediavaulte2esandboxa54b21defcauthNestedStackauthNestedStackResource62A0E7ACOutputsamplifymediavaulte2esandboxa54b21defcauthamplifyAuthauthenticatedUserRole6D815A02Ref",
+    "ParameterValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthauthenticatedUserRole6D815A02Ref"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbauthNestedStackauthNestedStackResource250D4630Outputsamplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref",
-    "ParameterValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref"
+    "ParameterKey": "referencetoamplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPI26F7BEF8ApiId",
+    "ParameterValue": "0680ada23e.amplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPI26F7BEF8ApiId"
   }
 ]

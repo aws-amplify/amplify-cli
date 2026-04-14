@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPoolAppClientBB09CDFBRef"
+    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPoolAppClientB3954B12Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "a098adc614.amplifyproductcataloge2esandboxb8db8f353dstorageproductcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucketD9B1E0FBRef"
+    "OutputValue": "a098adc614.amplifyproductcataloge2esandbox9aeae34b1cstorageproductcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucket0AA84836Ref"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPoolAppClientBB09CDFBRef"
+    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPoolAppClientB3954B12Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPIDefaultApiKeyF06C14B6ApiKey"
+    "OutputValue": "403ebe0d53.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPIDefaultApiKey8F79F99CApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42GraphQLUrl"
+    "OutputValue": "403ebe0d53.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPI0D76444FGraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId"
+    "OutputValue": "403ebe0d53.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPI0D76444FApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"productcatalogf95af07481f845caa6594c26ac9c8ed3x-gen2-x\\\",\\\"bucketName\\\":\\\"a098adc614.amplifyproductcataloge2esandboxb8db8f353dstorageproductcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucketD9B1E0FBRef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"productcatalogf95af07481f845caa6594c26ac9c8ed3x-gen2-x\\\",\\\"bucketName\\\":\\\"a098adc614.amplifyproductcataloge2esandbox9aeae34b1cstorageproductcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucket0AA84836Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPool61F19C61Ref"
+    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPool5DB03949Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
+    "OutputValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref"
   },
   {
     "OutputKey": "verificationMechanisms",

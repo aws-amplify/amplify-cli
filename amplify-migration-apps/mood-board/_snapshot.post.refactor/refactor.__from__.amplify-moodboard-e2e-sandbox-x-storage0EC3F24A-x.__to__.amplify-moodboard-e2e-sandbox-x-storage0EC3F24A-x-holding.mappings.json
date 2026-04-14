@@ -2,11 +2,11 @@
   {
     "Source": {
       "StackName": "amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x",
-      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket114E5ADC"
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket99DF9D98"
     },
     "Destination": {
       "StackName": "amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x-holding",
-      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket114E5ADC"
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket99DF9D98"
     }
   }
 ]

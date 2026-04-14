@@ -72,7 +72,7 @@
     "amplifyAuthUserPoolUserPoolDomain1F688B5B": {
       "Type": "AWS::Cognito::UserPoolDomain",
       "Properties": {
-        "Domain": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolUserPoolDomain38E249EERef",
+        "Domain": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPoolUserPoolDomainC35CE033Ref",
         "UserPoolId": {
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
@@ -573,7 +573,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
       }
     },
-    "addusertogroupgen2xlambdaServiceRoleFB73BA2C": {
+    "addusertogroupgen2xlambdaServiceRoleBFC8F5D3": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -623,7 +623,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/addusertogroup-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "addusertogroupgen2xlambdaServiceRoleDefaultPolicy371FE29B": {
+    "addusertogroupgen2xlambdaServiceRoleDefaultPolicy434949D7": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -655,10 +655,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "addusertogroupgen2xlambdaServiceRoleDefaultPolicy371FE29B",
+        "PolicyName": "addusertogroupgen2xlambdaServiceRoleDefaultPolicy434949D7",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -666,7 +666,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/addusertogroup-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "addusertogroupgen2xlambdaF1B6343C": {
+    "addusertogroupgen2xlambdaBE4C8A74": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -697,7 +697,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "addusertogroupgen2xlambdaServiceRoleFB73BA2C",
+            "addusertogroupgen2xlambdaServiceRoleBFC8F5D3",
             "Arn"
           ]
         },
@@ -719,7 +719,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+        "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -765,7 +765,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -799,7 +799,7 @@
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -835,7 +835,7 @@
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -869,7 +869,7 @@
         "PolicyName": "userpoolAccess4A84025C3",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -900,7 +900,7 @@
         "PolicyName": "userpoolAccess585E2FB32",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -931,7 +931,7 @@
         "PolicyName": "userpoolAccess600DA4CB0",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -962,7 +962,7 @@
         "PolicyName": "userpoolAccess76F9C91C1",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -993,7 +993,7 @@
         "PolicyName": "userpoolAccess85C1BE724",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -1024,7 +1024,7 @@
         "PolicyName": "userpoolAccess919BF17A1",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -1055,7 +1055,7 @@
         "PolicyName": "userpoolAccess103DE3A3DA",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -1086,7 +1086,7 @@
         "PolicyName": "userpoolAccess114E9EE2D5",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRoleFB73BA2C"
+            "Ref": "addusertogroupgen2xlambdaServiceRoleBFC8F5D3"
           }
         ]
       },
@@ -1096,7 +1096,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess11/Resource"
       }
     },
-    "removeuserfromgroupgen2xlambdaServiceRole02A24B36": {
+    "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1146,7 +1146,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/removeuserfromgroup-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy6CF52929": {
+    "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy68312929": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1178,10 +1178,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy6CF52929",
+        "PolicyName": "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy68312929",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1189,7 +1189,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/removeuserfromgroup-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "removeuserfromgroupgen2xlambda47C8D748": {
+    "removeuserfromgroupgen2xlambda600946DC": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -1220,7 +1220,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "removeuserfromgroupgen2xlambdaServiceRole02A24B36",
+            "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4",
             "Arn"
           ]
         },
@@ -1242,7 +1242,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+        "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -1288,7 +1288,7 @@
         "PolicyName": "userpoolAccess1268A998CE",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1322,7 +1322,7 @@
         "PolicyName": "userpoolAccess13BB9602E6",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1358,7 +1358,7 @@
         "PolicyName": "userpoolAccess140CE1F2B0",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1392,7 +1392,7 @@
         "PolicyName": "userpoolAccess1530C05CCB",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1423,7 +1423,7 @@
         "PolicyName": "userpoolAccess1676F22644",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1454,7 +1454,7 @@
         "PolicyName": "userpoolAccess17CAC1A603",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1485,7 +1485,7 @@
         "PolicyName": "userpoolAccess182B4CED9F",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1516,7 +1516,7 @@
         "PolicyName": "userpoolAccess1965647B18",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1547,7 +1547,7 @@
         "PolicyName": "userpoolAccess20B9A60CFD",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1578,7 +1578,7 @@
         "PolicyName": "userpoolAccess2154951E65",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1609,7 +1609,7 @@
         "PolicyName": "userpoolAccess226D8BB3D4",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole02A24B36"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleC9FFA1C4"
           }
         ]
       },
@@ -1897,52 +1897,52 @@
     }
   },
   "Outputs": {
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolCEF67AE8Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPool4C80FEE8Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolAppClient8C70A60CRef": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPoolAppClient48830998Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthIdentityPool4C287EB9Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolUserPoolDomain38E249EERef": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPoolUserPoolDomainC35CE033Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolUserPoolDomain1F688B5B"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthaddusertogroupgen2xlambda149E72C0Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthaddusertogroupgen2xlambda0961F70BRef": {
       "Value": {
-        "Ref": "addusertogroupgen2xlambdaF1B6343C"
+        "Ref": "addusertogroupgen2xlambdaBE4C8A74"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthremoveuserfromgroupgen2xlambda5AF4F689Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthremoveuserfromgroupgen2xlambda927265E9Ref": {
       "Value": {
-        "Ref": "removeuserfromgroupgen2xlambda47C8D748"
+        "Ref": "removeuserfromgroupgen2xlambda600946DC"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthauthenticatedUserRole6D815A02Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthunauthenticatedUserRole3322386FRef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthAdminGroupRoleD7AC5D73Ref": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthAdminGroupRoleF6B7AFEFRef": {
       "Value": {
         "Ref": "amplifyAuthAdminGroupRole766878DC"
       }
     },
-    "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthBasicGroupRoleD80411DARef": {
+    "amplifymediavaulte2esandboxa54b21defcauthamplifyAuthBasicGroupRole9EA0EDACRef": {
       "Value": {
         "Ref": "amplifyAuthBasicGroupRole77B9C0CB"
       }

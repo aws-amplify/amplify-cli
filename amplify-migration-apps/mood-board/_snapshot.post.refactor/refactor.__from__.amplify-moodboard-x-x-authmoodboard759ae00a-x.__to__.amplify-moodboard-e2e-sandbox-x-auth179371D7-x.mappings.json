@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/99f07ba0-37a2-11f1-8d9b-0affdc48cb85",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/3facdc90-37a9-11f1-8d64-12bdeb8afd65",
       "LogicalResourceId": "UserPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/26c58880-37a4-11f1-9fd8-0affc8025cf1",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/be56bec0-37aa-11f1-871a-12a1cd15527f",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/99f07ba0-37a2-11f1-8d9b-0affdc48cb85",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/3facdc90-37a9-11f1-8d64-12bdeb8afd65",
       "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/26c58880-37a4-11f1-9fd8-0affc8025cf1",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/be56bec0-37aa-11f1-871a-12a1cd15527f",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/99f07ba0-37a2-11f1-8d9b-0affdc48cb85",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/3facdc90-37a9-11f1-8d64-12bdeb8afd65",
       "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/26c58880-37a4-11f1-9fd8-0affc8025cf1",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/be56bec0-37aa-11f1-871a-12a1cd15527f",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/99f07ba0-37a2-11f1-8d9b-0affdc48cb85",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/3facdc90-37a9-11f1-8d64-12bdeb8afd65",
       "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/26c58880-37a4-11f1-9fd8-0affc8025cf1",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/be56bec0-37aa-11f1-871a-12a1cd15527f",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/99f07ba0-37a2-11f1-8d9b-0affdc48cb85",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-authmoodboard759ae00a-x/3facdc90-37a9-11f1-8d64-12bdeb8afd65",
       "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/26c58880-37a4-11f1-9fd8-0affc8025cf1",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-auth179371D7-x/be56bec0-37aa-11f1-871a-12a1cd15527f",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }

@@ -8,7 +8,7 @@
       "DeploymentBucketName": "449e3df2aa.DeploymentBucketName",
       "UnauthRoleName": "amplify-productcatalog-x-x-unauthRole",
       "StackName": "amplify-productcatalog-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/3de45d20-379f-11f1-9c77-0ea65033f48d",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/349561e0-37a6-11f1-8452-1293ba9f296f",
       "AmplifyAppId": "productcatalog"
     }
   },
@@ -42,7 +42,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/449e3df2aa.DeploymentBucketName/amplify-cfn-templates/auth/productcatalog90174ac4-cloudformation-template.json",
         "logicalId": "authproductcatalog90174ac4"
       },
-      "lastPushTimeStamp": "2026-04-14T01:20:35.083Z",
+      "lastPushTimeStamp": "2026-04-14T02:11:09.217Z",
       "output": {
         "UserPoolId": "e9f97e5724.UserPoolId",
         "AppClientIDWeb": "e9f97e5724.AppClientIDWeb",
@@ -52,7 +52,7 @@
         "IdentityPoolName": "e9f97e5724.IdentityPoolName",
         "UserPoolName": "e9f97e5724.UserPoolName"
       },
-      "lastPushDirHash": "vwfsguBCYhmnChi8OJsiaEhZfwA="
+      "lastPushDirHash": "Od+dmnsXx6blAjRyXU6hTNL4l8g="
     }
   },
   "api": {
@@ -98,7 +98,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/449e3df2aa.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiproductcatalog"
       },
-      "lastPushTimeStamp": "2026-04-14T01:20:35.083Z",
+      "lastPushTimeStamp": "2026-04-14T02:11:09.217Z",
       "lastPushDirHash": "M4Lv1myo82xasoYda8BR7zSbDl4="
     }
   },
@@ -118,10 +118,10 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-14T01:20:35.083Z",
-      "lastBuildTimeStamp": "2026-04-14T01:15:12.345Z",
+      "lastPushTimeStamp": "2026-04-14T02:11:09.217Z",
+      "lastBuildTimeStamp": "2026-04-14T02:05:05.350Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T01:15:13.974Z",
+      "lastPackageTimeStamp": "2026-04-14T02:05:06.914Z",
       "distZipFilename": "S3Trigger1ef46783-4b4665534739746b326e-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "449e3df2aa.DeploymentBucketName",
@@ -155,9 +155,9 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-14T01:15:17.169Z",
+      "lastBuildTimeStamp": "2026-04-14T02:05:08.781Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T01:15:19.208Z",
+      "lastPackageTimeStamp": "2026-04-14T02:05:10.773Z",
       "distZipFilename": "lowstockproducts-5148445a7a3964456a67-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "449e3df2aa.DeploymentBucketName",
@@ -167,7 +167,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/449e3df2aa.DeploymentBucketName/amplify-cfn-templates/function/lowstockproducts-cloudformation-template.json",
         "logicalId": "functionlowstockproducts"
       },
-      "lastPushTimeStamp": "2026-04-14T01:20:35.083Z",
+      "lastPushTimeStamp": "2026-04-14T02:11:09.217Z",
       "output": {
         "LambdaExecutionRoleArn": "80a94363d9.LambdaExecutionRoleArn",
         "Region": "us-east-1",
@@ -193,7 +193,7 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-14T01:20:35.083Z",
+      "lastPushTimeStamp": "2026-04-14T02:11:09.217Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/449e3df2aa.DeploymentBucketName/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages338e5b439"

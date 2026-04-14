@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthUserPoolAppClient1C6E3F01Ref"
+    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthUserPoolAppClient71D74FD0Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "160a4353e9.amplifymoodboarde2esandboxe3030ca4f4storagemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket1C9DFB43Ref"
+    "OutputValue": "160a4353e9.amplifymoodboarde2esandboxf428bfb5ffstoragemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket919C7067Ref"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthUserPoolAppClient1C6E3F01Ref"
+    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthUserPoolAppClient71D74FD0Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIDefaultApiKeyCA384BFDApiKey"
+    "OutputValue": "9634f00459.amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataGraphQLAPIDefaultApiKey457DDB2CApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FGraphQLUrl"
+    "OutputValue": "9634f00459.amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataGraphQLAPI00461B9DGraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId"
+    "OutputValue": "9634f00459.amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataGraphQLAPI00461B9DApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x\\\",\\\"bucketName\\\":\\\"160a4353e9.amplifymoodboarde2esandboxe3030ca4f4storagemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket1C9DFB43Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x\\\",\\\"bucketName\\\":\\\"160a4353e9.amplifymoodboarde2esandboxf428bfb5ffstoragemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket919C7067Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthUserPool3B20806CRef"
+    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthUserPool713DDA93Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthIdentityPool46EB4FECRef"
+    "OutputValue": "08a260dfcc.amplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthIdentityPool26F0B857Ref"
   },
   {
     "OutputKey": "verificationMechanisms",

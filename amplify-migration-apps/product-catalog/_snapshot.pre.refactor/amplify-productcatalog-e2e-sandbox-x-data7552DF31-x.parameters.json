@@ -8,10 +8,6 @@
     "ParameterValue": "true"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPool61F19C61Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPool61F19C61Ref"
-  },
-  {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
     "ParameterValue": "false"
   },
@@ -20,19 +16,23 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPool5DB03949Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPool5DB03949Ref"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthunauthenticatedUserRole6FC9E4A6Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthunauthenticatedUserRole6FC9E4A6Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolAppClient8C70A60CRef"
+    "OutputValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPoolAppClient48830998Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "4e3c4eeba5.amplifymediavaulte2esandbox7c7d118fbbstoragemediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucketF27BDA72Ref"
+    "OutputValue": "4e3c4eeba5.amplifymediavaulte2esandboxa54b21defcstoragemediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucket5925DE3BRef"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolAppClient8C70A60CRef"
+    "OutputValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPoolAppClient48830998Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "oauthCognitoDomain",
-    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolUserPoolDomain38E249EERef.auth.us-east-1.amazoncognito.com"
+    "OutputValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPoolUserPoolDomainC35CE033Ref.auth.us-east-1.amazoncognito.com"
   },
   {
     "OutputKey": "oauthScope",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDefaultApiKeyF7D4ED4EApiKey"
+    "OutputValue": "0680ada23e.amplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPIDefaultApiKeyCE27C282ApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9GraphQLUrl"
+    "OutputValue": "0680ada23e.amplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPI26F7BEF8GraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId"
+    "OutputValue": "0680ada23e.amplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPI26F7BEF8ApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bedx-gen2-x\\\",\\\"bucketName\\\":\\\"4e3c4eeba5.amplifymediavaulte2esandbox7c7d118fbbstoragemediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucketF27BDA72Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bedx-gen2-x\\\",\\\"bucketName\\\":\\\"4e3c4eeba5.amplifymediavaulte2esandboxa54b21defcstoragemediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucket5925DE3BRef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolCEF67AE8Ref"
+    "OutputValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthUserPool4C80FEE8Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref"
+    "OutputValue": "75fda31738.amplifymediavaulte2esandboxa54b21defcauthamplifyAuthIdentityPool4C287EB9Ref"
   },
   {
     "OutputKey": "verificationMechanisms",

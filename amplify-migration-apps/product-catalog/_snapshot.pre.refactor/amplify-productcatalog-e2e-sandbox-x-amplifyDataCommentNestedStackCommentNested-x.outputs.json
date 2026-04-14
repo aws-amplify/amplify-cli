@@ -3,20 +3,20 @@
     "OutputKey": "GetAttCommentTableStreamArn",
     "OutputValue": "6661c58358.GetAttCommentTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId:GetAtt:CommentTable:StreamArn"
+    "ExportName": "403ebe0d53.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPI0D76444FApiId:GetAtt:CommentTable:StreamArn"
   },
   {
-    "OutputKey": "amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentDataSourceEA566D86Name",
-    "OutputValue": "CommentTable"
-  },
-  {
-    "OutputKey": "amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentTableFF270716TableArn",
-    "OutputValue": "6661c58358.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentTableFF270716TableArn"
+    "OutputKey": "amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentCommentTable6599CF06TableArn",
+    "OutputValue": "6661c58358.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentCommentTable6599CF06TableArn"
   },
   {
     "OutputKey": "GetAttCommentTableName",
     "OutputValue": "6661c58358.GetAttCommentTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId:GetAtt:CommentTable:Name"
+    "ExportName": "403ebe0d53.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPI0D76444FApiId:GetAtt:CommentTable:Name"
+  },
+  {
+    "OutputKey": "amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentCommentDataSource8BC4F5E5Name",
+    "OutputValue": "CommentTable"
   }
 ]

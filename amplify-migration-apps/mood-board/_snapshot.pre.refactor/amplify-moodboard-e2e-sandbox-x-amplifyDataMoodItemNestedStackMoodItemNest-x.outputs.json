@@ -3,20 +3,20 @@
     "OutputKey": "GetAttMoodItemTableStreamArn",
     "OutputValue": "af391f9f22.GetAttMoodItemTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId:GetAtt:MoodItemTable:StreamArn"
+    "ExportName": "9634f00459.amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataGraphQLAPI00461B9DApiId:GetAtt:MoodItemTable:StreamArn"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemMoodItemTable251D595ETableArn",
-    "OutputValue": "af391f9f22.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemMoodItemTable251D595ETableArn"
+    "OutputKey": "amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataMoodItemMoodItemTable2FBDC8E8TableArn",
+    "OutputValue": "af391f9f22.amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataMoodItemMoodItemTable2FBDC8E8TableArn"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemMoodItemDataSource8A6C1FDBName",
+    "OutputKey": "amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataMoodItemMoodItemDataSource0A3B216EName",
     "OutputValue": "MoodItemTable"
   },
   {
     "OutputKey": "GetAttMoodItemTableName",
     "OutputValue": "af391f9f22.GetAttMoodItemTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId:GetAtt:MoodItemTable:Name"
+    "ExportName": "9634f00459.amplifymoodboarde2esandboxf428bfb5ffdataamplifyDataGraphQLAPI00461B9DApiId:GetAtt:MoodItemTable:Name"
   }
 ]

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",
-    "ParameterValue": "h5v2rxnmynchvlzzgqevftj2qu"
+    "ParameterValue": "ag7wkxeujbdpvhbry7p4byvrzi"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId",
-    "ParameterValue": "jr3pl3vprbe2hdvhnlr5rph3hu"
+    "ParameterValue": "7kqnkt2u3jbq7e5vq57atulizy"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -25,11 +25,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId",
-    "ParameterValue": "3ngvxmor5vagditk3akygfzpl4"
+    "ParameterValue": "xdy5ruhx7naqrkd7d4plgsfsf4"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationupdateMoodIteminit0FunctionMutationupdateMoodIteminit0FunctionAppSyncFunctionA5BB53A1FunctionId",
-    "ParameterValue": "7qrnjery3rcltdel44axbb3tce"
+    "ParameterValue": "ikgao6cxyrgdzpilkfh6gjfo3e"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -41,11 +41,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationcreateMoodItemauth0FunctionMutationcreateMoodItemauth0FunctionAppSyncFunction8743A884FunctionId",
-    "ParameterValue": "jcdjcjuvdnbvddzzuyafjnptqm"
+    "ParameterValue": "w7lhk7tmurbw3iqshynea4kb7a"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemSubscriptionOnCreateMoodItemDataResolverFnSubscriptionOnCreateMoodItemDataResolverFnAppSyncFunctionE0588344FunctionId",
-    "ParameterValue": "wstxjditevhhloiurtsgnfimtu"
+    "ParameterValue": "bvsj4hn2bnbatekduqaxdyoa7i"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -57,7 +57,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId",
-    "ParameterValue": "p7e22oret5etzlztfcjsu4rzla"
+    "ParameterValue": "js5g4etcibdtbeksjmnkgzxvja"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

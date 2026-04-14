@@ -20,7 +20,7 @@
         "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthauthenticatedUserRoleDF3FC0F0Ref"
+            "Ref": "referencetoamplifymoodboarde2esandboxf428bfb5ffauthNestedStackauthNestedStackResource51394B56Outputsamplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthauthenticatedUserRole5CE8E97BRef"
           }
         ]
       },
@@ -49,7 +49,7 @@
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthunauthenticatedUserRoleB5F10591Ref"
+            "Ref": "referencetoamplifymoodboarde2esandboxf428bfb5ffauthNestedStackauthNestedStackResource51394B56Outputsamplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthunauthenticatedUserRole1173CC05Ref"
           }
         ]
       },
@@ -80,7 +80,7 @@
     "kinesisStreamShardCount": {
       "Value": "1"
     },
-    "amplifymoodboarde2esandboxe3030ca4f4analyticsmoodboardKinesisKinesisStream200E3257Arn": {
+    "amplifymoodboarde2esandboxf428bfb5ffanalyticsmoodboardKinesisKinesisStream7C368816Arn": {
       "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
     }
   },
@@ -351,10 +351,10 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthauthenticatedUserRoleDF3FC0F0Ref": {
+    "referencetoamplifymoodboarde2esandboxf428bfb5ffauthNestedStackauthNestedStackResource51394B56Outputsamplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthauthenticatedUserRole5CE8E97BRef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthunauthenticatedUserRoleB5F10591Ref": {
+    "referencetoamplifymoodboarde2esandboxf428bfb5ffauthNestedStackauthNestedStackResource51394B56Outputsamplifymoodboarde2esandboxf428bfb5ffauthamplifyAuthunauthenticatedUserRole1173CC05Ref": {
       "Type": "String"
     }
   }

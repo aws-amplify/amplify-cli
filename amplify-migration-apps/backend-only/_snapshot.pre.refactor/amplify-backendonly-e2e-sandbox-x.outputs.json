@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPoolAppClient77A10B24Ref"
+    "OutputValue": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolAppClient77EC9510Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "7cf19337d5.amplifybackendonlye2esandbox8d9d627f93storagebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketB7003AA4Ref"
+    "OutputValue": "7cf19337d5.amplifybackendonlye2esandboxc817d6b5ffstoragebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketE4C8EC2BRef"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPoolAppClient77A10B24Ref"
+    "OutputValue": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolAppClient77EC9510Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "9aa5598e5d.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPIDefaultApiKey05A13EE8ApiKey"
+    "OutputValue": "9aa5598e5d.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPIDefaultApiKeyD7B21F6AApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "9aa5598e5d.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5GraphQLUrl"
+    "OutputValue": "9aa5598e5d.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969GraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "9aa5598e5d.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId"
+    "OutputValue": "9aa5598e5d.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969ApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x\\\",\\\"bucketName\\\":\\\"7cf19337d5.amplifybackendonlye2esandbox8d9d627f93storagebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketB7003AA4Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x\\\",\\\"bucketName\\\":\\\"7cf19337d5.amplifybackendonlye2esandboxc817d6b5ffstoragebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketE4C8EC2BRef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPool9A149F69Ref"
+    "OutputValue": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolA275592DRef"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+    "OutputValue": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef"
   },
   {
     "OutputKey": "verificationMechanisms",

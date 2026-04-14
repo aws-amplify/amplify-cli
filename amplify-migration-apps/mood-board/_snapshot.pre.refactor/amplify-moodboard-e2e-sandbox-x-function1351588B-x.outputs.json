@@ -1,10 +1,10 @@
 [
   {
-    "OutputKey": "amplifymoodboarde2esandboxe3030ca4f4functionmoodboardKinesisReadergen2xlambdaA3198D06Ref",
+    "OutputKey": "amplifymoodboarde2esandboxf428bfb5fffunctionmoodboardKinesisReadergen2xlambda1AF3B13DRef",
     "OutputValue": "moodboardKinesisReader-gen2-x"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandboxe3030ca4f4functionmoodboardGetRandomEmojigen2xlambdaE8AEE3EDRef",
+    "OutputKey": "amplifymoodboarde2esandboxf428bfb5fffunctionmoodboardGetRandomEmojigen2xlambda5FDCE597Ref",
     "OutputValue": "moodboardGetRandomEmoji-gen2-x"
   }
 ]

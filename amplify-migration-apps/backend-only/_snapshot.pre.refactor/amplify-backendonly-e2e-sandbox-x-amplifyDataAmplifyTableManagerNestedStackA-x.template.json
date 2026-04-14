@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId"
+                            "Ref": "referencetoamplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -169,7 +169,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId"
+                            "Ref": "referencetoamplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -754,12 +754,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId": {
+    "referencetoamplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifybackendonlye2esandbox8d9d627f93dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent0477C14DArn": {
+    "amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent0AB561DCArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

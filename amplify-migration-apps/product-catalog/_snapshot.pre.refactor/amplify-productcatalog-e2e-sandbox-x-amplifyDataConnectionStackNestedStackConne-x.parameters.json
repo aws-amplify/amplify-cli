@@ -1,30 +1,30 @@
 [
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentNestedStackCommentNestedStackResource28D7D195Outputsamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentTableFF270716TableArn",
-    "ParameterValue": "6661c58358.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentTableFF270716TableArn"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId",
-    "ParameterValue": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPINONEDSAFFD23ABName",
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPINONEDS1042BF6BName",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref",
-    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentNestedStackCommentNestedStackResource2E0CA61BOutputsamplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentCommentTable6599CF06TableArn",
+    "ParameterValue": "6661c58358.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentCommentTable6599CF06TableArn"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentNestedStackCommentNestedStackResource28D7D195Outputsamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentDataSourceEA566D86Name",
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPI0D76444FApiId",
+    "ParameterValue": "403ebe0d53.amplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataGraphQLAPI0D76444FApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentNestedStackCommentNestedStackResource2E0CA61BOutputsamplifyproductcataloge2esandbox9aeae34b1cdataamplifyDataCommentCommentDataSource8BC4F5E5Name",
     "ParameterValue": "CommentTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthunauthenticatedUserRole6FC9E4A6Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthunauthenticatedUserRole6FC9E4A6Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox9aeae34b1cauthNestedStackauthNestedStackResource31B4960COutputsamplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref"
   }
 ]

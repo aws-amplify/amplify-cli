@@ -3,12 +3,12 @@
     "OutputKey": "GetAttNoteTableStreamArn",
     "OutputValue": "fe2037a2c8.GetAttNoteTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId:GetAtt:NoteTable:StreamArn"
+    "ExportName": "0680ada23e.amplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPI26F7BEF8ApiId:GetAtt:NoteTable:StreamArn"
   },
   {
     "OutputKey": "GetAttNoteTableName",
     "OutputValue": "fe2037a2c8.GetAttNoteTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId:GetAtt:NoteTable:Name"
+    "ExportName": "0680ada23e.amplifymediavaulte2esandboxa54b21defcdataamplifyDataGraphQLAPI26F7BEF8ApiId:GetAtt:NoteTable:Name"
   }
 ]

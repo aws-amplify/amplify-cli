@@ -242,17 +242,17 @@ export class App {
     await this.testGen1();
     await this.testGen2();
 
-    if (this.skipRefactor) {
-      this.logger.info('Skipping refactor (configured in migration/config.json)');
-      return;
-    }
-
     const gen1StackName = await this.findGen1RootStack();
 
     this.logger.info(`Capturing pre.refactor snapshot`);
     console.log('');
     await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
     console.log('');
+
+    if (this.skipRefactor) {
+      this.logger.info('Skipping refactor (configured in migration/config.json)');
+      return;
+    }
 
     await this.git.checkout(this.gen1BranchName, false);
     await this.refactor(gen2StackName);

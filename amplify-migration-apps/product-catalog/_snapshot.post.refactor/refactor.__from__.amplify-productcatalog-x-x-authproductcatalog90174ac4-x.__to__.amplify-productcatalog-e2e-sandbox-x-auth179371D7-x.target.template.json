@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
+                  "cognito-identity.amazonaws.com:aud": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -75,7 +75,7 @@
         },
         "PolicyName": "amplifyAuthauthenticatedUserRoleDefaultPolicy82E52873",
         "Roles": [
-          "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref"
+          "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -93,7 +93,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
+                  "cognito-identity.amazonaws.com:aud": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -532,20 +532,20 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPool61F19C61Ref": {
-      "Value": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPool61F19C61Ref"
+    "amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPool5DB03949Ref": {
+      "Value": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPool5DB03949Ref"
     },
-    "amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPoolAppClientBB09CDFBRef": {
-      "Value": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthUserPoolAppClientBB09CDFBRef"
+    "amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPoolAppClientB3954B12Ref": {
+      "Value": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthUserPoolAppClientB3954B12Ref"
     },
-    "amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref": {
-      "Value": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
+    "amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref": {
+      "Value": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthIdentityPoolDA84F886Ref"
     },
-    "amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref": {
-      "Value": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref"
+    "amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref": {
+      "Value": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthauthenticatedUserRole784123C6Ref"
     },
-    "amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref": {
-      "Value": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref"
+    "amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthunauthenticatedUserRole6FC9E4A6Ref": {
+      "Value": "f55ea5a5a9.amplifyproductcataloge2esandbox9aeae34b1cauthamplifyAuthunauthenticatedUserRole6FC9E4A6Ref"
     }
   }
 }

@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+                  "cognito-identity.amazonaws.com:aud": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+                  "cognito-identity.amazonaws.com:aud": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -493,20 +493,20 @@
     }
   },
   "Outputs": {
-    "amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPool9A149F69Ref": {
-      "Value": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPool9A149F69Ref"
+    "amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolA275592DRef": {
+      "Value": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolA275592DRef"
     },
-    "amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPoolAppClient77A10B24Ref": {
-      "Value": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPoolAppClient77A10B24Ref"
+    "amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolAppClient77EC9510Ref": {
+      "Value": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolAppClient77EC9510Ref"
     },
-    "amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref": {
-      "Value": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+    "amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef": {
+      "Value": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef"
     },
-    "amplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref": {
-      "Value": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref"
+    "amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthauthenticatedUserRole117FC88CRef": {
+      "Value": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthauthenticatedUserRole117FC88CRef"
     },
-    "amplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef": {
-      "Value": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef"
+    "amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthunauthenticatedUserRole215A6DF1Ref": {
+      "Value": "2a1f245bde.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthunauthenticatedUserRole215A6DF1Ref"
     }
   }
 }

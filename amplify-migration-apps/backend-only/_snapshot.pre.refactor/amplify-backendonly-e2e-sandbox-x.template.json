@@ -74,7 +74,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPool9A149F69Ref"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolA275592DRef"
         ]
       }
     },
@@ -82,7 +82,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPoolAppClient77A10B24Ref"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolAppClient77EC9510Ref"
         ]
       }
     },
@@ -90,7 +90,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef"
         ]
       }
     },
@@ -148,7 +148,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPoolAppClient77A10B24Ref"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolAppClient77EC9510Ref"
         ]
       }
     },
@@ -159,7 +159,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969ApiId"
         ]
       }
     },
@@ -167,7 +167,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5GraphQLUrl"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPI15910969GraphQLUrl"
         ]
       }
     },
@@ -200,7 +200,7 @@
                             {
                               "Fn::GetAtt": [
                                 "data7552DF31",
-                                "Outputs.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB9C9450AEDestinationBucketArn"
+                                "Outputs.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBA28F1E7CDestinationBucketArn"
                               ]
                             }
                           ]
@@ -220,7 +220,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPIDefaultApiKey05A13EE8ApiKey"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffdataamplifyDataGraphQLAPIDefaultApiKeyD7B21F6AApiKey"
         ]
       }
     },
@@ -236,7 +236,7 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifybackendonlye2esandbox8d9d627f93functionquotegeneratorbegen2xlambda39B47B8FRef"
+                "Outputs.amplifybackendonlye2esandboxc817d6b5fffunctionquotegeneratorbegen2xlambda5609EC2ERef"
               ]
             },
             "\"]"
@@ -253,7 +253,7 @@
       "Value": {
         "Fn::GetAtt": [
           "storage0EC3F24A",
-          "Outputs.amplifybackendonlye2esandbox8d9d627f93storagebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketB7003AA4Ref"
+          "Outputs.amplifybackendonlye2esandboxc817d6b5ffstoragebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketE4C8EC2BRef"
         ]
       }
     },
@@ -266,7 +266,7 @@
             {
               "Fn::GetAtt": [
                 "storage0EC3F24A",
-                "Outputs.amplifybackendonlye2esandbox8d9d627f93storagebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketB7003AA4Ref"
+                "Outputs.amplifybackendonlye2esandboxc817d6b5ffstoragebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketE4C8EC2BRef"
               ]
             },
             "\\\",\\\"storageRegion\\\":\\\"",
@@ -309,7 +309,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/aecb77cf5472884793e75a8ee7124e67149e5db8bf973896d6fea82dde98db50.json"
+              "/8847171c53617cfe6b26cfbb122e6dfa9cc86ac888b3e3f501906257ab873d75.json"
             ]
           ]
         }
@@ -318,7 +318,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifybackendonlye2esandbox8d9d627f93auth08E22A91.nested.template.json",
+        "aws:asset:path": "amplifybackendonlye2esandboxc817d6b5ffauthB8632B87.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -326,28 +326,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPool9A149F69Ref": {
+          "referencetoamplifybackendonlye2esandboxc817d6b5ffauthNestedStackauthNestedStackResourceD023BDA4Outputsamplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolA275592DRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthUserPool9A149F69Ref"
+              "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthUserPoolA275592DRef"
             ]
           },
-          "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref": {
+          "referencetoamplifybackendonlye2esandboxc817d6b5ffauthNestedStackauthNestedStackResourceD023BDA4Outputsamplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthauthenticatedUserRole117FC88CRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref"
+              "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthauthenticatedUserRole117FC88CRef"
             ]
           },
-          "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef": {
+          "referencetoamplifybackendonlye2esandboxc817d6b5ffauthNestedStackauthNestedStackResourceD023BDA4Outputsamplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthunauthenticatedUserRole215A6DF1Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef"
+              "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthunauthenticatedUserRole215A6DF1Ref"
             ]
           },
-          "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref": {
+          "referencetoamplifybackendonlye2esandboxc817d6b5ffauthNestedStackauthNestedStackResourceD023BDA4Outputsamplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+              "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthIdentityPoolC2674B7ARef"
             ]
           }
         },
@@ -377,7 +377,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/5759c4f6ed8fb77cd798f440a6e629d1db41136f4385d436168aaa0394db90f5.json"
+              "/a32d98061691a0c0c1cbb0ddc4c2714cc31c4732cd6d9df89be1e1a91430119d.json"
             ]
           ]
         }
@@ -386,7 +386,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data.NestedStack/data.NestedStackResource",
-        "aws:asset:path": "amplifybackendonlye2esandbox8d9d627f93dataF4950FAC.nested.template.json",
+        "aws:asset:path": "amplifybackendonlye2esandboxc817d6b5ffdataFEC205B5.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -394,16 +394,16 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef": {
+          "referencetoamplifybackendonlye2esandboxc817d6b5ffauthNestedStackauthNestedStackResourceD023BDA4Outputsamplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthunauthenticatedUserRole215A6DF1Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef"
+              "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthunauthenticatedUserRole215A6DF1Ref"
             ]
           },
-          "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref": {
+          "referencetoamplifybackendonlye2esandboxc817d6b5ffauthNestedStackauthNestedStackResourceD023BDA4Outputsamplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthauthenticatedUserRole117FC88CRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref"
+              "Outputs.amplifybackendonlye2esandboxc817d6b5ffauthamplifyAuthauthenticatedUserRole117FC88CRef"
             ]
           }
         },
@@ -433,7 +433,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/705f5c3a3310864b5983d636ba2d844cb3c226ac13dd7f20aa179773df74c344.json"
+              "/82e6a4b8ad2da1be55c18738f00ece2121c4916b1fb40ed3d3d83cbb5a1a2f42.json"
             ]
           ]
         }
@@ -442,7 +442,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage.NestedStack/storage.NestedStackResource",
-        "aws:asset:path": "amplifybackendonlye2esandbox8d9d627f93storage744F520B.nested.template.json",
+        "aws:asset:path": "amplifybackendonlye2esandboxc817d6b5ffstorageC994F726.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -475,7 +475,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/a1e73e361fd1bccf323dc060f350d498cda9daf3fcf015c81eb5a0987d9e53f1.json"
+              "/3736b97d8325d69e8a6a570bd05e002b808fe97a785b57177881ab29da8ed3e2.json"
             ]
           ]
         }
@@ -484,7 +484,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function.NestedStack/function.NestedStackResource",
-        "aws:asset:path": "amplifybackendonlye2esandbox8d9d627f93function0B29C8EF.nested.template.json",
+        "aws:asset:path": "amplifybackendonlye2esandboxc817d6b5fffunction3524EA5A.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
-    "ParameterValue": "nsrisi2bczgdfd5o4x6mja325m"
+    "ParameterValue": "zpg75kbkz5ghpgfdbd6oq33yl4"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
-    "ParameterValue": "c7fqky5nwjbtnfw2q2kmq5v5vy"
+    "ParameterValue": "m7gp7dettrh5dabt7zvdvoourq"
   },
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
@@ -41,7 +41,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
-    "ParameterValue": "dma46oficbbgbb6t6sejhtrgiy"
+    "ParameterValue": "dgb6je3lmnhn7pcdgqbgmt7tdi"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -61,6 +61,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
-    "ParameterValue": "h3m2fbxoibcinofhns65hrldlq"
+    "ParameterValue": "ukcfxr5q2vhfnj6j5mx5nr3ai4"
   }
 ]
