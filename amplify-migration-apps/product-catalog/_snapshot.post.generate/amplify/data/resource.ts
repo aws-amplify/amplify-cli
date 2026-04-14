@@ -1,6 +1,6 @@
 import { defineData } from '@aws-amplify/backend';
 
-const 40f1c9f949.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `enum UserRole {
   ADMIN
   MANAGER
@@ -62,7 +62,7 @@ type LowStockResponse {
 }
 
 type Query {
-  checkLowStock: LowStockResponse @function(name: "lowstockproducts-${40f1c9f949.deploymentTypeName}") @auth(rules: [
+  checkLowStock: LowStockResponse @function(name: "lowstockproducts-${branchName}") @auth(rules: [
     { allow: private, provider: iam },
     { allow: public, provider: apiKey }
   ])
@@ -72,12 +72,12 @@ type Query {
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "40f1c9f949.deploymentTypename" variable needs to be the same as your deployment 40f1c9f949.deploymentType if you want to reuse your Gen1 app tables
-      40f1c9f949.deploymentTypeName: 'main',
+      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+      branchName: 'main',
       modelNameToTableNameMapping: {
-        User: 'c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameName',
-        Product: 'b3e773b37b.GetAttb3e773b37b.GetAttProductDataSourceNameName',
-        Comment: 'c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref',
+        User: 'User-3oy6oxkj6ffojmc2upd52ftdsq-main',
+        Product: 'Product-3oy6oxkj6ffojmc2upd52ftdsq-main',
+        Comment: 'Comment-3oy6oxkj6ffojmc2upd52ftdsq-main',
       },
     },
   ],

@@ -36,16 +36,16 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef"
+            "Value": "S3Trigger1ef46783-gen2-main"
           },
           {
             "Key": "created-by",
@@ -54,7 +54,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/S3Trigger1ef46783-gen2-main-lambda/ServiceRole/Resource"
       }
     },
     "S3Trigger1ef46783gen2mainlambdaServiceRoleDefaultPolicy7DA76D24": {
@@ -83,7 +83,7 @@
                     },
                     ":apis/",
                     {
-                      "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+                      "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
                     },
                     "/types/Mutation/*"
                   ]
@@ -101,7 +101,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/S3Trigger1ef46783-gen2-main-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "S3Trigger1ef46783gen2mainlambda72F51867": {
@@ -122,20 +122,20 @@
             "REGION": "us-east-1",
             "AMPLIFY_SSM_ENV_CONFIG": "{}",
             "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
+              "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": {
-              "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
+              "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+              "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
             }
           }
         },
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef",
+        "FunctionName": "S3Trigger1ef46783-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {
@@ -151,16 +151,16 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef"
+            "Value": "S3Trigger1ef46783-gen2-main"
           },
           {
             "Key": "created-by",
@@ -174,7 +174,7 @@
         "S3Trigger1ef46783gen2mainlambdaServiceRole086175AE"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef-lambda/Resource",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/S3Trigger1ef46783-gen2-main-lambda/Resource",
         "aws:asset:path": "asset.9e1eebe0706016d25a584ace537443d0f7bd169feac2d34f4a901c6f14badec3",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -215,16 +215,16 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
+            "Value": "lowstockproducts-gen2-main"
           },
           {
             "Key": "created-by",
@@ -233,7 +233,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/lowstockproducts-gen2-main-lambda/ServiceRole/Resource"
       }
     },
     "lowstockproductsgen2mainlambdaServiceRoleDefaultPolicy5EC00794": {
@@ -262,7 +262,7 @@
                     },
                     ":apis/",
                     {
-                      "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+                      "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
                     },
                     "/types/Query/*"
                   ]
@@ -289,7 +289,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":parameter/amplify/productcatalog/gen2main-40f1c9f949.deploymentType-4b79ec0f9a/PRODUCT_CATALOG_SECRET"
+                      ":parameter/amplify/productcatalog/gen2main-branch-4b79ec0f9a/PRODUCT_CATALOG_SECRET"
                     ]
                   ]
                 },
@@ -326,7 +326,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/lowstockproducts-gen2-main-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "lowstockproductsgen2mainlambda333CD17D": {
@@ -347,22 +347,22 @@
             "PRODUCT_CATALOG_SECRET": "<value will be resolved during runtime>",
             "ENV": "gen2-main",
             "REGION": "us-east-1",
-            "AMPLIFY_SSM_ENV_CONFIG": "{\"PRODUCT_CATALOG_SECRET\":{\"path\":\"/amplify/productcatalog/gen2main-40f1c9f949.deploymentType-4b79ec0f9a/PRODUCT_CATALOG_SECRET\",\"sharedPath\":\"/amplify/shared/productcatalog/PRODUCT_CATALOG_SECRET\"}}",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"PRODUCT_CATALOG_SECRET\":{\"path\":\"/amplify/productcatalog/gen2main-branch-4b79ec0f9a/PRODUCT_CATALOG_SECRET\",\"sharedPath\":\"/amplify/shared/productcatalog/PRODUCT_CATALOG_SECRET\"}}",
             "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
+              "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": {
-              "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
+              "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+              "Ref": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
             }
           }
         },
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref",
+        "FunctionName": "lowstockproducts-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {
@@ -378,16 +378,16 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
+            "Value": "lowstockproducts-gen2-main"
           },
           {
             "Key": "created-by",
@@ -401,7 +401,7 @@
         "lowstockproductsgen2mainlambdaServiceRole71006F75"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/3d13d28354.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref-lambda/Resource",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/lowstockproducts-gen2-main-lambda/Resource",
         "aws:asset:path": "asset.f925b7fab6d08d2101dd98b239dd11f6a9195d60dfcffa210bae8e3ea6b71a88",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -413,7 +413,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNwQqDMBBEv8X7urWxh16r0KMU/QBZk1WiMUI3Vor470WlpzcDwxuF6nbFJKJFYm2G2NkG14IlsKkC6QFokXp1NDaGaj8Z7gWLA8/Z62AnD5ZGXMvJMeStP/ianNXfvZ5pA0lrEuEg+NgBkmI264FDRsJw6jFv/V+6wbGrAnXWdxvsz9jL5aMUXu+YRL1YG79nH+zIWJ78AUYTNcnMAAAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -685,7 +685,7 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn": {
+    "amplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn": {
       "Value": {
         "Fn::GetAtt": [
           "S3Trigger1ef46783gen2mainlambda72F51867",
@@ -693,25 +693,25 @@
         ]
       }
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef": {
+    "amplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef": {
       "Value": {
         "Ref": "S3Trigger1ef46783gen2mainlambda72F51867"
       }
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref": {
+    "amplifyproductcataloggen2mainbranch4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref": {
       "Value": {
         "Ref": "lowstockproductsgen2mainlambda333CD17D"
       }
     }
   },
   "Parameters": {
-    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId": {
+    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey": {
+    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl": {
+    "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl": {
       "Type": "String"
     }
   }

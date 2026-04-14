@@ -29,7 +29,7 @@
             }
           ],
           "defaultAuthentication": {
-            "authenticationType": "40f1c9f949.awsAppsyncAuthenticationType"
+            "authenticationType": "AWS_IAM"
           }
         }
       },

@@ -13,15 +13,15 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "4c3f39313a.DeploymentBucketName"
+    "ParameterValue": "amplify-productcatalog-main-31323-deployment"
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIKeyOutput",
-    "ParameterValue": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
+    "ParameterValue": "da2-fakeapikey00000000000000"
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIEndpointOutput"
+    "ParameterValue": "https://vy5ne7iiovgsxdk3ke4itswbju.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
+    "ParameterValue": "3oy6oxkj6ffojmc2upd52ftdsq"
   }
 ]

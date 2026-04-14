@@ -1,14 +1,14 @@
 [
   {
-    "OutputKey": "GetAttc29f8ec2f7.GetAttUserDataSourceNameName",
-    "OutputValue": "c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameName",
+    "OutputKey": "GetAttUserTableName",
+    "OutputValue": "User-3oy6oxkj6ffojmc2upd52ftdsq-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId:GetAtt:c29f8ec2f7.GetAttUserDataSourceName:Name"
+    "ExportName": "3afyqracmndnzmjr344badj4ja:GetAtt:UserTable:Name"
   },
   {
-    "OutputKey": "GetAttc29f8ec2f7.GetAttUserDataSourceNameStreamArn",
-    "OutputValue": "c29f8ec2f7.GetAttc29f8ec2f7.GetAttUserDataSourceNameStreamArn",
+    "OutputKey": "GetAttUserTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-3oy6oxkj6ffojmc2upd52ftdsq-main/stream/2026-03-07T14:15:18.466",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "bd9fc8130a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId:GetAtt:c29f8ec2f7.GetAttUserDataSourceName:StreamArn"
+    "ExportName": "3afyqracmndnzmjr344badj4ja:GetAtt:UserTable:StreamArn"
   }
 ]

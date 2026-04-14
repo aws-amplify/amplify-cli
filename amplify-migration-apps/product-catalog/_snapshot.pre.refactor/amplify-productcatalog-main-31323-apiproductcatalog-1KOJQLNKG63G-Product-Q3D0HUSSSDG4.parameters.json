@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
-    "ParameterValue": "c29f8ec2f7.transformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId"
+    "ParameterValue": "ohgtfmzzb5fcbku37u4xxa3d54"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -21,15 +21,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
+    "ParameterValue": "3oy6oxkj6ffojmc2upd52ftdsq"
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
-    "ParameterValue": "c29f8ec2f7.transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId"
+    "ParameterValue": "eahdpvdvdjhw5ejcm6mzyp6lae"
   },
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
-    "ParameterValue": "4c3f39313a.UnauthRoleName"
+    "ParameterValue": "amplify-productcatalog-main-31323-unauthRole"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -41,7 +41,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
-    "ParameterValue": "c29f8ec2f7.transformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId"
+    "ParameterValue": "uduwhs6xxvf3ror7wbe7domohi"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -49,11 +49,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "4c3f39313a.DeploymentBucketName"
+    "ParameterValue": "amplify-productcatalog-main-31323-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
-    "ParameterValue": "4c3f39313a.AuthRoleName"
+    "ParameterValue": "amplify-productcatalog-main-31323-authRole"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
@@ -61,6 +61,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
-    "ParameterValue": "c29f8ec2f7.transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId"
+    "ParameterValue": "tbj7jtlninfzndyh3dmgps2snq"
   }
 ]

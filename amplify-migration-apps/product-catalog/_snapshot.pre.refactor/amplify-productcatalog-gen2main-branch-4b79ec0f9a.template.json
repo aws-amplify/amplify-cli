@@ -63,7 +63,7 @@
   },
   "Outputs": {
     "deploymentType": {
-      "Value": "40f1c9f949.deploymentType"
+      "Value": "branch"
     },
     "region": {
       "Value": {
@@ -74,7 +74,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
         ]
       }
     },
@@ -82,7 +82,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
         ]
       }
     },
@@ -90,7 +90,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
         ]
       }
     },
@@ -136,7 +136,7 @@
       "Value": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
     },
     "oauthRedirectSignIn": {
-      "Value": "40f1c9f949.oauthRedirectSignIn"
+      "Value": "https://example.com"
     },
     "oauthRedirectSignOut": {
       "Value": ""
@@ -148,7 +148,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
         ]
       }
     },
@@ -159,7 +159,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
         ]
       }
     },
@@ -167,12 +167,12 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
         ]
       }
     },
     "awsAppsyncAuthenticationType": {
-      "Value": "40f1c9f949.awsAppsyncAuthenticationType"
+      "Value": "AWS_IAM"
     },
     "awsAppsyncRegion": {
       "Value": {
@@ -200,7 +200,7 @@
                             {
                               "Fn::GetAtt": [
                                 "data7552DF31",
-                                "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBE3458598DestinationBucketArn"
+                                "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBE3458598DestinationBucketArn"
                               ]
                             }
                           ]
@@ -220,12 +220,12 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
         ]
       }
     },
     "awsAppsyncAdditionalAuthenticationTypes": {
-      "Value": "40f1c9f949.awsAppsyncAdditionalAuthenticationTypes"
+      "Value": "API_KEY,AMAZON_COGNITO_USER_POOLS"
     },
     "definedFunctions": {
       "Value": {
@@ -236,14 +236,14 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef"
+                "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef"
               ]
             },
             "\",\"",
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
+                "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref"
               ]
             },
             "\"]"
@@ -260,7 +260,7 @@
       "Value": {
         "Fn::GetAtt": [
           "storage0EC3F24A",
-          "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
+          "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
         ]
       }
     },
@@ -273,7 +273,7 @@
             {
               "Fn::GetAtt": [
                 "storage0EC3F24A",
-                "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
+                "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9astorageproductcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketBD2F9EF2Ref"
               ]
             },
             "\\\",\\\"storageRegion\\\":\\\"",
@@ -322,12 +322,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -336,7 +336,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceLambdaServiceRoleDefaultPolicy86099CA1": {
@@ -350,7 +350,7 @@
                 "amplify:UpdateBranch"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:amplify:*:*:apps/productcatalog/40f1c9f949.deploymentTypees/gen2-main"
+              "Resource": "arn:aws:amplify:*:*:apps/productcatalog/branches/gen2-main"
             }
           ],
           "Version": "2012-10-17"
@@ -363,7 +363,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceLambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceLambda582AC093": {
@@ -389,12 +389,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -408,7 +408,7 @@
         "AmplifyBranchLinkerCustomResourceLambdaServiceRole3DDCBC03"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceLambda/Resource",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceLambda/Resource",
         "aws:asset:path": "asset.a45f725f5c6f5b670043b803123ddc5a6a8314f6fcd79e4a859a026c0a31f3fd",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -449,12 +449,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -463,7 +463,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy38AAE412": {
@@ -518,7 +518,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyBranchLinkerCustomResourceProviderframeworkonEvent3B23F900": {
@@ -530,7 +530,7 @@
           },
           "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
         },
-        "Description": "AWS CDK resource provider framework - onEvent (amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -559,12 +559,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -578,7 +578,7 @@
         "AmplifyBranchLinkerCustomResourceProviderframeworkonEventServiceRole92A035EB"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResourceProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -594,12 +594,12 @@
           ]
         },
         "appId": "productcatalog",
-        "40f1c9f949.deploymentTypeName": "gen2-main"
+        "branchName": "gen2-main"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/AmplifyBranchLinker/CustomResource/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/AmplifyBranchLinker/CustomResource/Default"
       }
     },
     "auth179371D7": {
@@ -611,12 +611,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -647,8 +647,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthEC6EF783.nested.template.json",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth.NestedStack/auth.NestedStackResource",
+        "aws:asset:path": "amplifyproductcataloggen2mainbranch4b79ec0f9aauthEC6EF783.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -656,28 +656,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
             ]
           },
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
             ]
           },
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef"
             ]
           },
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
             ]
           }
         },
@@ -687,12 +687,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -723,8 +723,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/data.NestedStack/data.NestedStackResource",
-        "aws:asset:path": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adata7DA06D89.nested.template.json",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/data.NestedStack/data.NestedStackResource",
+        "aws:asset:path": "amplifyproductcataloggen2mainbranch4b79ec0f9adata7DA06D89.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -732,16 +732,16 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionNestedStackfunctionNestedStackResource6DAC5252Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9afunctionNestedStackfunctionNestedStackResource6DAC5252Outputsamplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn": {
             "Fn::GetAtt": [
               "function1351588B",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn"
             ]
           },
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9aauthNestedStackauthNestedStackResourceED3C90A5Outputsamplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
             ]
           }
         },
@@ -751,12 +751,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -787,8 +787,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/storage.NestedStack/storage.NestedStackResource",
-        "aws:asset:path": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9astorage5D5EB4EB.nested.template.json",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/storage.NestedStack/storage.NestedStackResource",
+        "aws:asset:path": "amplifyproductcataloggen2mainbranch4b79ec0f9astorage5D5EB4EB.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -796,22 +796,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId"
             ]
           },
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey"
             ]
           },
-          "referencetoamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl": {
+          "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
+              "Outputs.amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl"
             ]
           }
         },
@@ -821,12 +821,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -857,8 +857,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/function.NestedStack/function.NestedStackResource",
-        "aws:asset:path": "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9afunction4E040D0C.nested.template.json",
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/function.NestedStack/function.NestedStackResource",
+        "aws:asset:path": "amplifyproductcataloggen2mainbranch4b79ec0f9afunction4E040D0C.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -868,7 +868,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PzWrDQAyEnyV3WU2cHHptDD22wXkAo6yVIP/slpU2oRi/e/C6LT19I4YZNCWWhx1uN/TQwrV9McgFp7OR66G6+s9kX8mAHtpMA42XlhofWu4UPzLek3cmwYPQiFMdBl5SmacwiPtezlXNoPuGVNkU3xaA7vGYXM92JGVY63Gqrv6v9VfMM+TI2egm/gYuqYWxiawhRceKpxju0nKEKjv1j5Gf+afzrhmWCdjpy70scfeK202nIkVM3mRkrFc+AUTtSG0ZAQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }

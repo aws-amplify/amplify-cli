@@ -83,7 +83,7 @@
             }
           }
         ],
-        "AuthenticationType": "40f1c9f949.awsAppsyncAuthenticationType",
+        "AuthenticationType": "AWS_IAM",
         "Name": {
           "Fn::Join": [
             "",
@@ -518,10 +518,10 @@
               "Outputs.transformerrootstackCommentCommentDataSourceA0E54655Name"
             ]
           },
-          "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref": {
+          "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref": {
             "Fn::GetAtt": [
               "Comment",
-              "Outputs.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
+              "Outputs.transformerrootstackCommentCommentTable5427FDE2Ref"
             ]
           },
           "referencetotransformerrootstackauthRoleNameFB872D50Ref": {

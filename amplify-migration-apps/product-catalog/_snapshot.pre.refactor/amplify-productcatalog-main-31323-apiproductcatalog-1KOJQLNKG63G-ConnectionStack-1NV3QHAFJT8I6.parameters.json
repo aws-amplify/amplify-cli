@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
-    "ParameterValue": "4c3f39313a.UnauthRoleName"
+    "ParameterValue": "amplify-productcatalog-main-31323-unauthRole"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -12,23 +12,23 @@
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref",
-    "ParameterValue": "c9925b369b.transformerrootstackCommentc9925b369b.GetAttCommentDataSourceName5427FDE2Ref"
+    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
+    "ParameterValue": "Comment-3oy6oxkj6ffojmc2upd52ftdsq-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "8dcbe94f9b.GraphQLAPIIdOutput"
+    "ParameterValue": "3oy6oxkj6ffojmc2upd52ftdsq"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",
-    "ParameterValue": "c9925b369b.GetAttCommentDataSourceName"
+    "ParameterValue": "CommentTable"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "4c3f39313a.DeploymentBucketName"
+    "ParameterValue": "amplify-productcatalog-main-31323-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
-    "ParameterValue": "4c3f39313a.AuthRoleName"
+    "ParameterValue": "amplify-productcatalog-main-31323-authRole"
   }
 ]

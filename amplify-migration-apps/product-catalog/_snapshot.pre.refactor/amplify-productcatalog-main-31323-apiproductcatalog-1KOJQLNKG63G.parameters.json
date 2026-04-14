@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "4c3f39313a.AuthRoleName"
+    "ParameterValue": "amplify-productcatalog-main-31323-authRole"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "4c3f39313a.UnauthRoleName"
+    "ParameterValue": "amplify-productcatalog-main-31323-unauthRole"
   },
   {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "4c3f39313a.DeploymentBucketName"
+    "ParameterValue": "amplify-productcatalog-main-31323-deployment"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -45,6 +45,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "8563cd35c0.UserPoolId"
+    "ParameterValue": "us-east-1_66BkqNfdX"
   }
 ]

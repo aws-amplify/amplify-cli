@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "4c3f39313a.AuthRoleName"
+    "OutputValue": "amplify-productcatalog-main-31323-authRole"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "4c3f39313a.UnauthRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-productcatalog-main-31323-unauthRole"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "4c3f39313a.AuthRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-productcatalog-main-31323-authRole"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "4c3f39313a.StackName-Region"
+    "ExportName": "amplify-productcatalog-main-31323-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "4c3f39313a.DeploymentBucketName",
+    "OutputValue": "amplify-productcatalog-main-31323-deployment",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "4c3f39313a.StackName-DeploymentBucketName"
+    "ExportName": "amplify-productcatalog-main-31323-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "4c3f39313a.UnauthRoleName"
+    "OutputValue": "amplify-productcatalog-main-31323-unauthRole"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "4c3f39313a.StackName",
+    "OutputValue": "amplify-productcatalog-main-31323",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "4c3f39313a.StackName-StackName"
+    "ExportName": "amplify-productcatalog-main-31323-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "4c3f39313a.StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-main-31323/2d9bb0d0-1a2b-11f1-8beb-0affe952b47f",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "4c3f39313a.StackName-StackId"
+    "ExportName": "amplify-productcatalog-main-31323-StackId"
   }
 ]

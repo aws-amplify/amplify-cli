@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -30,12 +30,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -48,7 +48,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthauthenticatedUserRoleDefaultPolicy82E52873": {
@@ -71,7 +71,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/8dcbe94f9b.GraphQLAPIIdOutput/*"
+                    ":apis/3oy6oxkj6ffojmc2upd52ftdsq/*"
                   ]
                 ]
               }
@@ -81,11 +81,11 @@
         },
         "PolicyName": "amplifyAuthauthenticatedUserRoleDefaultPolicy82E52873",
         "Roles": [
-          "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
+          "amplify-productcatalog-ge-amplifyAuthauthenticatedU-7u6GoubHxSy7"
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/authenticatedUserRole/DefaultPolicy/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -97,7 +97,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -117,12 +117,12 @@
             "Value": "productcatalog"
           },
           {
-            "Key": "amplify:40f1c9f949.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "40f1c9f949.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -135,7 +135,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "CDKMetadata": {
@@ -144,7 +144,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LvQ6CMBSFn4W9XKFxcDVMLsZgnE1tr3qhtAm9SkjTdzdIUKbznT8JcltCkakh5Nq0uaUbxCMGRnNmpVuhhnCN2j8csYd4CdifvLeiursfL1BZQsfr6p8cDDomHpfz2tfe4p5Z6WeHjpMg1UGcwmn41ZO3pMfJzpRSEs4bhCZs3lJCuYMiawJR3r8cU4dQz/oBzysbsN8AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-gen2main-40f1c9f949.deploymentType-4b79ec0f9a/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -416,20 +416,20 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
-      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPool0E44954DRef"
+    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
+      "Value": "us-east-1_OFRBVzhq5"
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef": {
-      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef"
+    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef": {
+      "Value": "61e6oq3acg1at7f9da6cfna70d"
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
-      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef"
+    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
+      "Value": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f"
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
-      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref"
+    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
+      "Value": "amplify-productcatalog-ge-amplifyAuthauthenticatedU-7u6GoubHxSy7"
     },
-    "amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
-      "Value": "2d86fbb77a.amplifyproductcataloggen2main40f1c9f949.deploymentType4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef"
+    "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
+      "Value": "amplify-productcatalog-ge-amplifyAuthunauthenticate-JMPocA8XyO6M"
     }
   }
 }

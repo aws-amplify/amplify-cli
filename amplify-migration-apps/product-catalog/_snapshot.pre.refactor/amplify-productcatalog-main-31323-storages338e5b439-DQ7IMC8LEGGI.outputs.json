@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "3db57fd977.BucketName",
+    "OutputValue": "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
     "Description": "Bucket name for the S3 bucket"
   },
   {

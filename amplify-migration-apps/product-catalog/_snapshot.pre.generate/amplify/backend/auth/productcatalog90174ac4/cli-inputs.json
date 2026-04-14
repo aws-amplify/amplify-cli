@@ -4,7 +4,7 @@
     "identityPoolName": "productcatalog90174ac4_identitypool_90174ac4",
     "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "produc90174ac4",
-    "userPoolName": "8563cd35c0.UserPoolName",
+    "userPoolName": "productcatalog90174ac4_userpool_90174ac4",
     "autoVerifiedAttributes": [
       "email"
     ],
