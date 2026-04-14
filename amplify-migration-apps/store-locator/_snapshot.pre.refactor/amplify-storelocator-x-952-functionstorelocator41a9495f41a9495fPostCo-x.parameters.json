@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "GROUP",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "parentResource",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip"
+  },
+  {
+    "ParameterKey": "functionName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "parentStack",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-storelocat2604141246-xjattzuigl-952e4-deployment"
+  },
+  {
+    "ParameterKey": "roleName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "storelocator41a9495f41a9495fPostConfirmation"
+  },
+  {
+    "ParameterKey": "trigger",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "xjattzuigl"
+  },
+  {
+    "ParameterKey": "modules",
+    "ParameterValue": "add-to-group"
+  }
+]

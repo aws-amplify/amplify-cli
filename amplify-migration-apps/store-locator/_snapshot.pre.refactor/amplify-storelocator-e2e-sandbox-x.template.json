@@ -1,0 +1,816 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"root\",\"metadata\":{}}",
+  "Metadata": {
+    "AWS::Amplify::Platform": {
+      "version": "1",
+      "stackOutputs": [
+        "deploymentType",
+        "region"
+      ]
+    },
+    "AWS::Amplify::Auth": {
+      "version": "1",
+      "stackOutputs": [
+        "userPoolId",
+        "webClientId",
+        "identityPoolId",
+        "authRegion",
+        "allowUnauthenticatedIdentities",
+        "signupAttributes",
+        "usernameAttributes",
+        "verificationMechanisms",
+        "passwordPolicyMinLength",
+        "passwordPolicyRequirements",
+        "mfaConfiguration",
+        "mfaTypes",
+        "passwordlessOptions",
+        "socialProviders",
+        "oauthCognitoDomain",
+        "oauthScope",
+        "oauthRedirectSignIn",
+        "oauthRedirectSignOut",
+        "oauthResponseType",
+        "oauthClientId",
+        "groups"
+      ]
+    },
+    "AWS::Amplify::Function": {
+      "version": "1",
+      "stackOutputs": [
+        "definedFunctions"
+      ]
+    },
+    "AWS::Amplify::Custom": {
+      "version": "1",
+      "stackOutputs": [
+        "customOutputs"
+      ]
+    }
+  },
+  "Outputs": {
+    "deploymentType": {
+      "Value": "sandbox"
+    },
+    "region": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "userPoolId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthUserPool4A1AF33FRef"
+        ]
+      }
+    },
+    "webClientId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthUserPoolAppClient6EEEACB6Ref"
+        ]
+      }
+    },
+    "identityPoolId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthIdentityPool8DDCF004Ref"
+        ]
+      }
+    },
+    "authRegion": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "allowUnauthenticatedIdentities": {
+      "Value": "true"
+    },
+    "signupAttributes": {
+      "Value": "[\"email\"]"
+    },
+    "usernameAttributes": {
+      "Value": "[\"email\"]"
+    },
+    "verificationMechanisms": {
+      "Value": "[\"email\"]"
+    },
+    "passwordPolicyMinLength": {
+      "Value": "8"
+    },
+    "passwordPolicyRequirements": {
+      "Value": "[]"
+    },
+    "mfaConfiguration": {
+      "Value": "OFF"
+    },
+    "mfaTypes": {
+      "Value": "[]"
+    },
+    "passwordlessOptions": {
+      "Value": ""
+    },
+    "socialProviders": {
+      "Value": ""
+    },
+    "oauthCognitoDomain": {
+      "Value": ""
+    },
+    "oauthScope": {
+      "Value": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+    },
+    "oauthRedirectSignIn": {
+      "Value": "https://example.com"
+    },
+    "oauthRedirectSignOut": {
+      "Value": ""
+    },
+    "oauthResponseType": {
+      "Value": "code"
+    },
+    "oauthClientId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthUserPoolAppClient6EEEACB6Ref"
+        ]
+      }
+    },
+    "groups": {
+      "Value": "[{\"storeLocatorAdmin\":{\"precedence\":0}}]"
+    },
+    "definedFunctions": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "[\"",
+            {
+              "Fn::GetAtt": [
+                "auth179371D7",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authstorelocator41a9495f41a9495fPostConfirmationgen2xjattzuigllambda92602BF9Ref"
+              ]
+            },
+            "\"]"
+          ]
+        ]
+      }
+    },
+    "customOutputs": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "{\"geo\":{\"aws_region\":\"",
+            {
+              "Fn::FindInMap": [
+                "MappingCopyRegionMappingc8ef1b98623342d2e31bbce8a6a0404241325f1dc4",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "locationServiceRegion"
+              ]
+            },
+            "\",\"maps\":{\"items\":{\"",
+            {
+              "Fn::GetAtt": [
+                "geostoreLocatorMap6A22ACC1",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorMapCustomMapCDCED816MapName"
+              ]
+            },
+            "\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"",
+            {
+              "Fn::GetAtt": [
+                "geostoreLocatorMap6A22ACC1",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorMapCustomMapCDCED816MapName"
+              ]
+            },
+            "\"},\"search_indices\":{\"items\":[\"",
+            {
+              "Fn::GetAtt": [
+                "geostoreLocatorSearch516CF59F",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorSearchCustomPlaceIndex116BE7C7IndexName"
+              ]
+            },
+            "\"],\"default\":\"",
+            {
+              "Fn::GetAtt": [
+                "geostoreLocatorSearch516CF59F",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorSearchCustomPlaceIndex116BE7C7IndexName"
+              ]
+            },
+            "\"},\"geofence_collections\":{\"items\":[\"",
+            {
+              "Fn::GetAtt": [
+                "geostoreLocatorGeofenceEAAC8D05",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorGeofenceCustomGeofenceCollection701C8756CollectionName"
+              ]
+            },
+            "\"],\"default\":\"",
+            {
+              "Fn::GetAtt": [
+                "geostoreLocatorGeofenceEAAC8D05",
+                "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorGeofenceCustomGeofenceCollection701C8756CollectionName"
+              ]
+            },
+            "\"}},\"version\":\"1.4\"}"
+          ]
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "auth179371D7": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/1dcb25d0a356ec7a3a020c4b50ecfdc88f4a1a53f01826e01c57648b5de1533b.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth.NestedStack/auth.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141246e2esandbox278e4771d6auth448A90E0.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "geostoreLocatorMap6A22ACC1": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthauthenticatedUserRoleC6D3E88ARef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthauthenticatedUserRoleC6D3E88ARef"
+            ]
+          },
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthunauthenticatedUserRole50B73EFERef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthunauthenticatedUserRole50B73EFERef"
+            ]
+          },
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthstoreLocatorAdminGroupRole23A4FFF1Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthstoreLocatorAdminGroupRole23A4FFF1Ref"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/1510688e5e55ffd681485df37d56d614697693f4c585955e1ffa605cdc76d763.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/geostoreLocatorMap.NestedStack/geostoreLocatorMap.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorMapC8C5608E.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "geostoreLocatorSearch516CF59F": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthauthenticatedUserRoleC6D3E88ARef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthauthenticatedUserRoleC6D3E88ARef"
+            ]
+          },
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthunauthenticatedUserRole50B73EFERef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthunauthenticatedUserRole50B73EFERef"
+            ]
+          },
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthstoreLocatorAdminGroupRole23A4FFF1Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthstoreLocatorAdminGroupRole23A4FFF1Ref"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/e627fc88439dd56c2e526b1fc21d69acc2094687d1dea562a7eb53369aa3e3a0.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/geostoreLocatorSearch.NestedStack/geostoreLocatorSearch.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorSearchE288BD75.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "geostoreLocatorGeofenceEAAC8D05": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifystorelocat2604141246e2esandbox278e4771d6authNestedStackauthNestedStackResource7C89CF7FOutputsamplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthstoreLocatorAdminGroupRole23A4FFF1Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifystorelocat2604141246e2esandbox278e4771d6authamplifyAuthstoreLocatorAdminGroupRole23A4FFF1Ref"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/eff1fbb0b64baa7066549cccc5a26767cdd1a0307211f4a92e5c57a8f7039253.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/geostoreLocatorGeofence.NestedStack/geostoreLocatorGeofence.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorGeofence8A0F9C40.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzKx1DNQTCwv1k1OydbNyUzSqw4uSUzO1nFOy/MvLSkoLQGxwEK1Onn5Kal6WcX6ZUZGeoZmegaKWcWZmbpFpXklmbmpekEQGgDI4ZJeVAAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Mappings": {
+    "MappingCopyRegionMappingc8ef1b98623342d2e31bbce8a6a0404241325f1dc4": {
+      "us-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-east-2": {
+        "locationServiceRegion": "us-east-2"
+      },
+      "us-west-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-southeast-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      },
+      "ap-southeast-2": {
+        "locationServiceRegion": "ap-southeast-2"
+      },
+      "ap-northeast-1": {
+        "locationServiceRegion": "ap-northeast-1"
+      },
+      "eu-central-1": {
+        "locationServiceRegion": "eu-central-1"
+      },
+      "eu-north-1": {
+        "locationServiceRegion": "eu-north-1"
+      },
+      "eu-west-1": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "sa-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "ca-central-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-west-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-north-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-northwest-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-south-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-3": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "eu-west-2": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "eu-west-3": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "me-south-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}
