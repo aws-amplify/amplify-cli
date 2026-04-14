@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "fetchuseractivitygen2xlambdaServiceRoleDCB187E1": {
+    "fetchuseractivitygen2xlambdaServiceRole16AC5E4D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -51,7 +51,7 @@
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/fetchuseractivity-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "fetchuseractivitygen2xlambdaServiceRoleDefaultPolicyF4AFA2A8": {
+    "fetchuseractivitygen2xlambdaServiceRoleDefaultPolicyC91AB871": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -69,14 +69,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn"
+                  "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn"
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn"
+                        "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn"
                       },
                       "/index/*"
                     ]
@@ -87,10 +87,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "fetchuseractivitygen2xlambdaServiceRoleDefaultPolicyF4AFA2A8",
+        "PolicyName": "fetchuseractivitygen2xlambdaServiceRoleDefaultPolicyC91AB871",
         "Roles": [
           {
-            "Ref": "fetchuseractivitygen2xlambdaServiceRoleDCB187E1"
+            "Ref": "fetchuseractivitygen2xlambdaServiceRole16AC5E4D"
           }
         ]
       },
@@ -100,7 +100,7 @@
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/fetchuseractivity-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "fetchuseractivitygen2xlambda0019F643": {
+    "fetchuseractivitygen2xlambdaCF3A6222": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -118,13 +118,13 @@
             "REGION": "us-east-1",
             "AMPLIFY_SSM_ENV_CONFIG": "{}",
             "STORAGE_ACTIVITY_STREAMARN": {
-              "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DStreamArn"
+              "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BStreamArn"
             },
             "STORAGE_ACTIVITY_ARN": {
-              "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn"
+              "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn"
             },
             "STORAGE_ACTIVITY_NAME": {
-              "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DRef"
+              "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BRef"
             }
           }
         },
@@ -136,7 +136,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "fetchuseractivitygen2xlambdaServiceRoleDCB187E1",
+            "fetchuseractivitygen2xlambdaServiceRole16AC5E4D",
             "Arn"
           ]
         },
@@ -158,8 +158,8 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "fetchuseractivitygen2xlambdaServiceRoleDefaultPolicyF4AFA2A8",
-        "fetchuseractivitygen2xlambdaServiceRoleDCB187E1"
+        "fetchuseractivitygen2xlambdaServiceRoleDefaultPolicyC91AB871",
+        "fetchuseractivitygen2xlambdaServiceRole16AC5E4D"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -170,7 +170,7 @@
         "aws:asset:property": "Code"
       }
     },
-    "recorduseractivitygen2xlambdaServiceRoleBA5C699B": {
+    "recorduseractivitygen2xlambdaServiceRoleCB8F3D24": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -220,7 +220,7 @@
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "recorduseractivitygen2xlambdaServiceRoleDefaultPolicy34EC7F65": {
+    "recorduseractivitygen2xlambdaServiceRoleDefaultPolicy84047336": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -247,14 +247,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn"
+                  "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn"
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn"
+                        "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn"
                       },
                       "/index/*"
                     ]
@@ -275,7 +275,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscu6E066E10"
+                "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0OutputsamplifydiscuB278D7DA"
               }
             },
             {
@@ -286,7 +286,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscuss52F0A5F1"
+                "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1OutputsamplifydiscussCEDEB652"
               }
             },
             {
@@ -297,16 +297,16 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04OutputsamplifydE482973D"
+                "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifyd6C666143"
               }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "recorduseractivitygen2xlambdaServiceRoleDefaultPolicy34EC7F65",
+        "PolicyName": "recorduseractivitygen2xlambdaServiceRoleDefaultPolicy84047336",
         "Roles": [
           {
-            "Ref": "recorduseractivitygen2xlambdaServiceRoleBA5C699B"
+            "Ref": "recorduseractivitygen2xlambdaServiceRoleCB8F3D24"
           }
         ]
       },
@@ -316,7 +316,7 @@
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "recorduseractivitygen2xlambdaB2DEAD65": {
+    "recorduseractivitygen2xlambdaCA1AC858": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -334,13 +334,13 @@
             "REGION": "us-east-1",
             "AMPLIFY_SSM_ENV_CONFIG": "{}",
             "STORAGE_ACTIVITY_STREAMARN": {
-              "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DStreamArn"
+              "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BStreamArn"
             },
             "STORAGE_ACTIVITY_ARN": {
-              "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn"
+              "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn"
             },
             "STORAGE_ACTIVITY_NAME": {
-              "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DRef"
+              "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BRef"
             }
           }
         },
@@ -352,7 +352,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "recorduseractivitygen2xlambdaServiceRoleBA5C699B",
+            "recorduseractivitygen2xlambdaServiceRoleCB8F3D24",
             "Arn"
           ]
         },
@@ -374,8 +374,8 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "recorduseractivitygen2xlambdaServiceRoleDefaultPolicy34EC7F65",
-        "recorduseractivitygen2xlambdaServiceRoleBA5C699B"
+        "recorduseractivitygen2xlambdaServiceRoleDefaultPolicy84047336",
+        "recorduseractivitygen2xlambdaServiceRoleCB8F3D24"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -386,15 +386,15 @@
         "aws:asset:property": "Code"
       }
     },
-    "recorduseractivitygen2xlambdaDynamoDBEventSourceamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicCustomTableTopicTable919BA65266EB1C0E": {
+    "recorduseractivitygen2xlambdaDynamoDBEventSourceamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicCustomTableTopicTable721C16584EC9FB61": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "BatchSize": 100,
         "EventSourceArn": {
-          "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscu6E066E10"
+          "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0OutputsamplifydiscuB278D7DA"
         },
         "FunctionName": {
-          "Ref": "recorduseractivitygen2xlambdaB2DEAD65"
+          "Ref": "recorduseractivitygen2xlambdaCA1AC858"
         },
         "StartingPosition": "LATEST",
         "Tags": [
@@ -415,18 +415,18 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/DynamoDBEventSource:amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicCustomTableTopicTable919BA652/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/DynamoDBEventSource:amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicCustomTableTopicTable721C1658/Resource"
       }
     },
-    "recorduseractivitygen2xlambdaDynamoDBEventSourceamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostCustomTablePostTableDCE60D092E2BDA67": {
+    "recorduseractivitygen2xlambdaDynamoDBEventSourceamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostCustomTablePostTable0ADD9EE2808CEE50": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "BatchSize": 100,
         "EventSourceArn": {
-          "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscuss52F0A5F1"
+          "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1OutputsamplifydiscussCEDEB652"
         },
         "FunctionName": {
-          "Ref": "recorduseractivitygen2xlambdaB2DEAD65"
+          "Ref": "recorduseractivitygen2xlambdaCA1AC858"
         },
         "StartingPosition": "LATEST",
         "Tags": [
@@ -447,18 +447,18 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/DynamoDBEventSource:amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostCustomTablePostTableDCE60D09/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/DynamoDBEventSource:amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostCustomTablePostTable0ADD9EE2/Resource"
       }
     },
-    "recorduseractivitygen2xlambdaDynamoDBEventSourceamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCustomTableCommentTableC74AE1B1DBA4F987": {
+    "recorduseractivitygen2xlambdaDynamoDBEventSourceamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCustomTableCommentTable38B9FC4B22C741A4": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
         "BatchSize": 100,
         "EventSourceArn": {
-          "Ref": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04OutputsamplifydE482973D"
+          "Ref": "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifyd6C666143"
         },
         "FunctionName": {
-          "Ref": "recorduseractivitygen2xlambdaB2DEAD65"
+          "Ref": "recorduseractivitygen2xlambdaCA1AC858"
         },
         "StartingPosition": "LATEST",
         "Tags": [
@@ -479,7 +479,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/DynamoDBEventSource:amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCustomTableCommentTableC74AE1B1/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function/recorduseractivity-gen2-x-lambda/DynamoDBEventSource:amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCustomTableCommentTable38B9FC4B/Resource"
       }
     },
     "CDKMetadata": {
@@ -760,34 +760,34 @@
     }
   },
   "Parameters": {
-    "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DArn": {
+    "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BArn": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DStreamArn": {
+    "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BStreamArn": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox9b40c8c4e2storageactivityNestedStackstorageactivityNestedStackResourceCD535FB4Outputsamplifydiscussionse2esandbox9b40c8c4e2storageactivityB55F2B5DRef": {
+    "referencetoamplifydiscussionse2esandbox73b64377c8storageactivityNestedStackstorageactivityNestedStackResource7E02E1DCOutputsamplifydiscussionse2esandbox73b64377c8storageactivityC421F21BRef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscu6E066E10": {
+    "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0OutputsamplifydiscuB278D7DA": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscuss52F0A5F1": {
+    "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1OutputsamplifydiscussCEDEB652": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataNestedStackdataNestedStackResource07DD440DOutputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04OutputsamplifydE482973D": {
+    "referencetoamplifydiscussionse2esandbox73b64377c8dataNestedStackdataNestedStackResourceF990CEA5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifyd6C666143": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox9b40c8c4e2functionfetchuseractivitygen2xlambda87C67171Ref": {
+    "amplifydiscussionse2esandbox73b64377c8functionfetchuseractivitygen2xlambda4E0DE9ADRef": {
       "Value": {
-        "Ref": "fetchuseractivitygen2xlambda0019F643"
+        "Ref": "fetchuseractivitygen2xlambdaCF3A6222"
       }
     },
-    "amplifydiscussionse2esandbox9b40c8c4e2functionrecorduseractivitygen2xlambdaACB8B170Ref": {
+    "amplifydiscussionse2esandbox73b64377c8functionrecorduseractivitygen2xlambdaC65893EARef": {
       "Value": {
-        "Ref": "recorduseractivitygen2xlambdaB2DEAD65"
+        "Ref": "recorduseractivitygen2xlambdaCA1AC858"
       }
     }
   }

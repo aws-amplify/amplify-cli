@@ -1,11 +1,11 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x-storageactivity-x/ca2bf4e0-3791-11f1-9e0a-0affea15a0df",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x-storageactivity-x/89b831f0-3799-11f1-90bc-0afff98af577",
       "LogicalResourceId": "DynamoDBTable"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x/73aa0b00-3793-11f1-8452-1293ba9f296f",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x/57b69c80-379b-11f1-93cc-0e0ac5c526c7",
       "LogicalResourceId": "activity1E902D9C"
     }
   }

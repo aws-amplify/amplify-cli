@@ -1,46 +1,46 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId",
-    "ParameterValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostDataSourceD120BC00Name",
-    "ParameterValue": "PostTable"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2authNestedStackauthNestedStackResource98E4B422Outputsamplifydiscussionse2esandbox9b40c8c4e2authamplifyAuthauthenticatedUserRole7D8752C0Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox9b40c8c4e2authamplifyAuthauthenticatedUserRole7D8752C0Ref"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicDataSourceD1DF4E39Name",
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicDataSource91954AB8Name",
     "ParameterValue": "TopicTable"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentDataSourceD05DAE39Name",
-    "ParameterValue": "CommentTable"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId",
+    "ParameterValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2authNestedStackauthNestedStackResource98E4B422Outputsamplifydiscussionse2esandbox9b40c8c4e2authamplifyAuthIdentityPoolA6ED3759Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox9b40c8c4e2authamplifyAuthIdentityPoolA6ED3759Ref"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostDataSource3234496EName",
+    "ParameterValue": "PostTable"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPINONEDS7329A464Name",
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableArn",
+    "ParameterValue": "c177ecebaa.amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPINONEDS61A5340BName",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableArn",
-    "ParameterValue": "c177ecebaa.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableArn"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableArn",
+    "ParameterValue": "caf15f98bf.amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableArn"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableArn",
-    "ParameterValue": "caf15f98bf.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableArn"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthunauthenticatedUserRole1CB0ABB2Ref",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthunauthenticatedUserRole1CB0ABB2Ref"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableArn",
-    "ParameterValue": "88936db3f2.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableArn"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthIdentityPool3B6DB672Ref",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthIdentityPool3B6DB672Ref"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b40c8c4e2authNestedStackauthNestedStackResource98E4B422Outputsamplifydiscussionse2esandbox9b40c8c4e2authamplifyAuthunauthenticatedUserRole84BF37FBRef",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox9b40c8c4e2authamplifyAuthunauthenticatedUserRole84BF37FBRef"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentDataSourceD64CB0C5Name",
+    "ParameterValue": "CommentTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthauthenticatedUserRole62785719Ref",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthauthenticatedUserRole62785719Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableArn",
+    "ParameterValue": "88936db3f2.amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableArn"
   }
 ]

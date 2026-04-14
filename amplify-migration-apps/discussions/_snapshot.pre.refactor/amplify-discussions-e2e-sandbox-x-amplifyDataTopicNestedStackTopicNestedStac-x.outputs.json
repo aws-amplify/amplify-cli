@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicDataSourceD1DF4E39Name",
-    "OutputValue": "TopicTable"
-  },
-  {
     "OutputKey": "GetAttTopicTableStreamArn",
     "OutputValue": "88936db3f2.GetAttTopicTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId:GetAtt:TopicTable:StreamArn"
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId:GetAtt:TopicTable:StreamArn"
   },
   {
     "OutputKey": "GetAttTopicTableName",
     "OutputValue": "88936db3f2.GetAttTopicTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId:GetAtt:TopicTable:Name"
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId:GetAtt:TopicTable:Name"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableArn",
+    "OutputValue": "88936db3f2.amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableStreamArn",
     "OutputValue": "88936db3f2.GetAttTopicTableStreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableArn",
-    "OutputValue": "88936db3f2.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableArn"
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicDataSource91954AB8Name",
+    "OutputValue": "TopicTable"
   }
 ]

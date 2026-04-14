@@ -1,30 +1,30 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837GraphQLUrl",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837GraphQLUrl"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableStreamArn",
     "OutputValue": "caf15f98bf.GetAttPostTableStreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIDefaultApiKey4B940EB5ApiKey",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIDefaultApiKey4B940EB5ApiKey"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC1FC96BADestinationBucketArn",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC1FC96BADestinationBucketArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableStreamArn",
     "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableStreamArn",
     "OutputValue": "88936db3f2.GetAttTopicTableStreamArn"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25GraphQLUrl",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25GraphQLUrl"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBCE90A8CDDestinationBucketArn",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBCE90A8CDDestinationBucketArn"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPIDefaultApiKey5AB67691ApiKey",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPIDefaultApiKey5AB67691ApiKey"
   }
 ]
