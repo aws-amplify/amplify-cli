@@ -1,0 +1,48 @@
+[
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramQuerygetWorkoutProgramauth0FunctionQuerygetWorkoutProgramauth0FunctionAppSyncFunction8D95BFD8FunctionId",
+    "OutputValue": "bsylrjqx2bbbrk555xqaadbfkq"
+  },
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramSubscriptiononCreateWorkoutProgramauth0FunctionSubscriptiononCreateWorkoutProgramauth0FunctionAppSyncFunction55BF88AFFunctionId",
+    "OutputValue": "74emb2zyjzatzoi6bdzbkxuyau"
+  },
+  {
+    "OutputKey": "GetAttWorkoutProgramTableStreamArn",
+    "OutputValue": "716db13e26.GetAttWorkoutProgramTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "341d7a6343.GraphQLAPIIdOutput:GetAtt:WorkoutProgramTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
+    "OutputValue": "f6vjhrjvjvdybhskw626pzb3pa"
+  },
+  {
+    "OutputKey": "GetAttWorkoutProgramTableName",
+    "OutputValue": "716db13e26.GetAttWorkoutProgramTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "341d7a6343.GraphQLAPIIdOutput:GetAtt:WorkoutProgramTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramWorkoutProgramOwnerDataResolverFnWorkoutProgramOwnerDataResolverFnAppSyncFunctionB902B95DFunctionId",
+    "OutputValue": "wqd6cgmucfbn3matwpofqoz7ve"
+  },
+  {
+    "OutputKey": "GetAttWorkoutProgramDataSourceName",
+    "OutputValue": "WorkoutProgramTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "341d7a6343.GraphQLAPIIdOutput:GetAtt:WorkoutProgramDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
+    "OutputValue": "c4aywwbi2zds7iht5h6j2hqqy4"
+  },
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyncFunctionE9212A4DFunctionId",
+    "OutputValue": "nbxriy74uvbotpihql2n46prgi"
+  },
+  {
+    "OutputKey": "transformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
+    "OutputValue": "lurwwssal5ft7gczyqrfmf7ghq"
+  }
+]

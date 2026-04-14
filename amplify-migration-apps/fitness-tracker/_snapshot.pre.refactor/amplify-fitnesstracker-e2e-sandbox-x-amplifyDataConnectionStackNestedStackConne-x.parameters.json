@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseNestedStackExerciseNestedStackResource8508E9B4Outputsamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseExerciseTableD5E3CF27TableArn",
+    "ParameterValue": "6cff44a000.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseExerciseTableD5E3CF27TableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId",
+    "ParameterValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref",
+    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef",
+    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseNestedStackExerciseNestedStackResource8508E9B4Outputsamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseExerciseDataSource5C925C47Name",
+    "ParameterValue": "ExerciseTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref",
+    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+  }
+]

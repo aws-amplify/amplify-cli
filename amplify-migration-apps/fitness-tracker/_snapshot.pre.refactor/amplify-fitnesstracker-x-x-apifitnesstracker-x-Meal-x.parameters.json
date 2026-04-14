@@ -1,0 +1,58 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "341d7a6343.GraphQLAPIIdOutput"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
+    "ParameterValue": "c4aywwbi2zds7iht5h6j2hqqy4"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
+    "ParameterValue": "f6vjhrjvjvdybhskw626pzb3pa"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
+    "ParameterValue": "lurwwssal5ft7gczyqrfmf7ghq"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "dcdd8dfb43.DeploymentBucketName"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
+    "ParameterValue": "nbxriy74uvbotpihql2n46prgi"
+  }
+]

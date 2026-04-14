@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "341d7a6343.GraphQLAPIIdOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-fitnesstracker-x-x-apifitnesstracker-x:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "341d7a6343.GraphQLAPIEndpointOutput",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-fitnesstracker-x-x-apifitnesstracker-x:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "341d7a6343.GraphQLAPIKeyOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-fitnesstracker-x-x-apifitnesstracker-x:GraphQLApiKey"
+  }
+]

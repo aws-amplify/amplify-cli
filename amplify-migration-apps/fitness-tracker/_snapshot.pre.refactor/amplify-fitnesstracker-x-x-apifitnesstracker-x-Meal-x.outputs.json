@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GetAttMealTableName",
+    "OutputValue": "498da40b3c.GetAttMealTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "341d7a6343.GraphQLAPIIdOutput:GetAtt:MealTable:Name"
+  },
+  {
+    "OutputKey": "GetAttMealDataSourceName",
+    "OutputValue": "MealTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "341d7a6343.GraphQLAPIIdOutput:GetAtt:MealDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttMealTableStreamArn",
+    "OutputValue": "498da40b3c.GetAttMealTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "341d7a6343.GraphQLAPIIdOutput:GetAtt:MealTable:StreamArn"
+  }
+]

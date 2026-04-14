@@ -1,1 +1,0 @@
-{"createdOn":"Linux","createdBy":"AmplifyPipelineDeploy","createdWith":"1.21.0","stackType":"api-AppSync","metadata":{"dataSources":"dynamodb","authorizationModes":"amazon_cognito_identity_pools,amazon_cognito_user_pools,api_key,aws_iam","customOperations":""}}
