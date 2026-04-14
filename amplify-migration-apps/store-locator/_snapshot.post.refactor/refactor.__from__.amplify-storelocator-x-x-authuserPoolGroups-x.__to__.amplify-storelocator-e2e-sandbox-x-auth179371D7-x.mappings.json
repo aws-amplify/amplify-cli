@@ -1,11 +1,11 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141246-xjattzuigl-952e4-authuserPoolGroups-SELHCTKNQ8AW/afd871f0-3821-11f1-b834-0affdb5fc025",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141320-kghehxwhwe-f80eb-authuserPoolGroups-JIXEBPKRPXJ4/8d6f7280-3826-11f1-b89b-0e3d7d1da913",
       "LogicalResourceId": "storeLocatorAdminGroup"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ/abf85c20-3822-11f1-9581-0e52ad0757e1",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30/80d02280-3827-11f1-894a-0afff7d060f3",
       "LogicalResourceId": "amplifyAuthstoreLocatorAdminGroup85B78B77"
     }
   }

@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-xjattzuigl"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-kghehxwhwe"
   },
   {
-    "OutputKey": "amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorMapCustomMapCDCED816MapName",
-    "OutputValue": "storeLocatorMap-gen2-xjattzuigl"
+    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorMapCustomMapC3D32EB3MapName",
+    "OutputValue": "storeLocatorMap-gen2-kghehxwhwe"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorMap-gen2-xjattzuigl"
+    "OutputValue": "storeLocatorMap-gen2-kghehxwhwe"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
-    "OutputKey": "amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorSearchCustomPlaceIndex116BE7C7IndexName",
-    "OutputValue": "storeLocatorSearch-gen2-xjattzuigl"
+    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorSearchCustomPlaceIndex41A513ADIndexName",
+    "OutputValue": "storeLocatorSearch-gen2-kghehxwhwe"
   },
   {
     "OutputKey": "Region",
@@ -9,10 +9,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-xjattzuigl"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-kghehxwhwe"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorSearch-gen2-xjattzuigl"
+    "OutputValue": "storeLocatorSearch-gen2-kghehxwhwe"
   }
 ]

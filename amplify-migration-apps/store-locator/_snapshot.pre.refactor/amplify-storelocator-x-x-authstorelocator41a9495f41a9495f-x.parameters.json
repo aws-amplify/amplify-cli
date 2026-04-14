@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141246-xjattzuigl-952e4-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141320-kghehxwhwe-f80eb-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -129,7 +129,7 @@
   },
   {
     "ParameterKey": "env",
-    "ParameterValue": "xjattzuigl"
+    "ParameterValue": "kghehxwhwe"
   },
   {
     "ParameterKey": "triggers",
@@ -153,7 +153,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141246-xjattzuigl-952e4-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141320-kghehxwhwe-f80eb-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

@@ -1,18 +1,18 @@
 [
   {
+    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorGeofenceCustomGeofenceCollectionD3BD18C8CollectionName",
+    "OutputValue": "storeLocatorGeofence-gen2-kghehxwhwe"
+  },
+  {
     "OutputKey": "Region",
     "OutputValue": "us-east-1"
   },
   {
-    "OutputKey": "amplifystorelocat2604141246e2esandbox278e4771d6geostoreLocatorGeofenceCustomGeofenceCollection701C8756CollectionName",
-    "OutputValue": "storeLocatorGeofence-gen2-xjattzuigl"
-  },
-  {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-gen2-xjattzuigl"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-gen2-kghehxwhwe"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorGeofence-gen2-xjattzuigl"
+    "OutputValue": "storeLocatorGeofence-gen2-kghehxwhwe"
   }
 ]

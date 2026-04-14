@@ -143,7 +143,7 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        "xjattzuigl",
+        "kghehxwhwe",
         "NONE"
       ]
     }
@@ -175,13 +175,13 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-storelocat2604141246-xjattzuigl-952e4-authstorelocator41a9495f41a9495f-1AGRUQ8BM5SIC"
+                      "amplify-storelocat2604141320-kghehxwhwe-f80eb-authstorelocator41a9495f41a9495f-66A3HUIUJKAL"
                     ]
                   }
                 ]
               },
               "-",
-              "xjattzuigl"
+              "kghehxwhwe"
             ]
           ]
         }
@@ -191,29 +191,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:8a3e60db-ad9f-40b5-8c6e-d3b7a995cced"
+      "Value": "us-east-1:47f9370c-40b9-40ba-a1eb-04431fc16671"
     },
     "IdentityPoolName": {
-      "Value": "storelocator41a9495f_identitypool_41a9495f__xjattzuigl"
+      "Value": "storelocator41a9495f_identitypool_41a9495f__kghehxwhwe"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_3tOcQAdAm"
+      "Value": "us-east-1_sI5uPf6R3"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_3tOcQAdAm"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_sI5uPf6R3"
     },
     "UserPoolName": {
       "Value": "storelocator41a9495f_userpool_41a9495f"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "19p9fl5u2kbdcbov40ojdgc04r"
+      "Value": "nc1bq1e85f4ea8u24mfnu2fr9"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "4j7duk3n7dc4ls0g3oqo1vh93i"
+      "Value": "5egi2o3oc14m577v5cllf14ppu"
     }
   }
 }

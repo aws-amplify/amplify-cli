@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "52vc9kbiei3lack4tlj2j10fhn"
+    "OutputValue": "7utemp60o7c7i3ffem295jm3c6"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "52vc9kbiei3lack4tlj2j10fhn"
+    "OutputValue": "7utemp60o7c7i3ffem295jm3c6"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -49,7 +49,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-xjattzuigl\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-xjattzuigl\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-xjattzuigl\"],\"default\":\"storeLocatorSearch-gen2-xjattzuigl\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-xjattzuigl\"],\"default\":\"storeLocatorGeofence-gen2-xjattzuigl\"}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-kghehxwhwe\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-kghehxwhwe\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-kghehxwhwe\"],\"default\":\"storeLocatorSearch-gen2-kghehxwhwe\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-kghehxwhwe\"],\"default\":\"storeLocatorGeofence-gen2-kghehxwhwe\"}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
@@ -69,7 +69,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-xjattzuigl\"]"
+    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_WMeesnXBU"
+    "OutputValue": "us-east-1_JH3qi79KG"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:213a2341-5672-419d-a1b0-2788cd1ab15e"
+    "OutputValue": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43"
   },
   {
     "OutputKey": "verificationMechanisms",

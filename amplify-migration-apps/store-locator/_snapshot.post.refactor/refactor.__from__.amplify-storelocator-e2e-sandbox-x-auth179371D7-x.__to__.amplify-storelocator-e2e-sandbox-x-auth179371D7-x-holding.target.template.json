@@ -7,13 +7,13 @@
       "Properties": {
         "GroupName": "storeLocatorAdmin",
         "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthstoreLocatorAd-IkgttXDt5U10",
-        "UserPoolId": "us-east-1_WMeesnXBU"
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthstoreLocatorAd-HRSYuNgDRFUJ",
+        "UserPoolId": "us-east-1_JH3qi79KG"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth/amplifyAuth/storeLocatorAdminGroup"
+        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/storeLocatorAdminGroup"
       }
     },
     "amplifyAuthUserPool4BA7F805": {
@@ -36,7 +36,7 @@
         "EmailVerificationMessage": "Your verification code is {####}",
         "EmailVerificationSubject": "Your verification code",
         "LambdaConfig": {
-          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-xjattzuigl"
+          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe"
         },
         "MfaConfiguration": "OFF",
         "Policies": {
@@ -83,7 +83,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -101,12 +101,12 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_WMeesnXBU"
+        "UserPoolId": "us-east-1_JH3qi79KG"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -135,12 +135,12 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_WMeesnXBU"
+        "UserPoolId": "us-east-1_JH3qi79KG"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -149,7 +149,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "52vc9kbiei3lack4tlj2j10fhn",
+            "ClientId": "7utemp60o7c7i3ffem295jm3c6",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -159,7 +159,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_WMeesnXBU"
+                  "us-east-1_JH3qi79KG"
                 ]
               ]
             }
@@ -184,13 +184,13 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:213a2341-5672-419d-a1b0-2788cd1ab15e",
+        "IdentityPoolId": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -203,9 +203,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_WMeesnXBU",
+                  "us-east-1_JH3qi79KG",
                   ":",
-                  "52vc9kbiei3lack4tlj2j10fhn"
+                  "7utemp60o7c7i3ffem295jm3c6"
                 ]
               ]
             },
@@ -213,14 +213,14 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthunauthenticate-Qxzp6Oe7CZHJ",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthauthenticatedU-C0QaLSPXQe7G"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthunauthenticate-nPiIvjy3BKf9",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthauthenticatedU-n26R4tQRnkfj"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     }
   },

@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     },
     "Destination": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ-holding",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30-holding",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     },
     "Destination": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ-holding",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30-holding",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     },
     "Destination": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ-holding",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30-holding",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     },
     "Destination": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ-holding",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30-holding",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     },
     "Destination": {
-      "StackName": "amplify-storelocat2604141246-e2e-sandbox-278e4771d6-auth179371D7-1KLWBWLB475LQ-holding",
+      "StackName": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188-auth179371D7-UJOZQ5I7NT30-holding",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }
