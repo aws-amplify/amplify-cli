@@ -37,22 +37,22 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource73BB5A4DOutputsamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerTab9BE53249": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource0B2732F7Outputsamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerTab3F888D98": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref": {
       "Type": "String"
     }
   },
@@ -353,7 +353,7 @@
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource73BB5A4DOutputsamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerTab9BE53249"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource0B2732F7Outputsamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerTab3F888D98"
         },
         "tableName": "498da40b3c.GetAttMealTableName",
         "attributeDefinitions": [
@@ -487,7 +487,7 @@
             [
               "MealIAMRole54b7fd-",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "-NONE"
             ]
@@ -518,7 +518,7 @@
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DynamoDBConfig": {
           "AwsRegion": {
@@ -573,10 +573,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetMealauth0Function",
@@ -595,10 +595,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetMealpostAuth0Function",
@@ -617,7 +617,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -647,7 +647,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "getMeal",
         "Kind": "PIPELINE",
@@ -679,7 +679,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -718,7 +718,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -730,11 +730,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -753,10 +753,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistMealsauth0Function",
@@ -775,10 +775,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistMealspostAuth0Function",
@@ -797,7 +797,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -827,7 +827,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "listMeals",
         "Kind": "PIPELINE",
@@ -859,7 +859,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listMeals\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -898,7 +898,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -910,11 +910,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -933,10 +933,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateMealinit0Function",
@@ -955,10 +955,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateMealauth0Function",
@@ -977,10 +977,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateMealpostAuth0Function",
@@ -999,7 +999,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1029,7 +1029,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "createMeal",
         "Kind": "PIPELINE",
@@ -1067,7 +1067,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1106,7 +1106,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1118,11 +1118,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1141,10 +1141,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateMealinit0Function",
@@ -1163,7 +1163,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1193,10 +1193,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateMealpostAuth0Function",
@@ -1215,7 +1215,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1245,7 +1245,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "updateMeal",
         "Kind": "PIPELINE",
@@ -1283,7 +1283,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1322,7 +1322,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1334,11 +1334,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1357,7 +1357,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1387,10 +1387,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationdeleteMealpostAuth0Function",
@@ -1409,7 +1409,7 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1439,7 +1439,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "deleteMeal",
         "Kind": "PIPELINE",
@@ -1471,7 +1471,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1510,7 +1510,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1522,11 +1522,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1545,10 +1545,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateMealauth0Function",
@@ -1567,10 +1567,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateMealpostAuth0Function",
@@ -1589,10 +1589,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnCreateMealDataResolverFn",
@@ -1613,7 +1613,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "onCreateMeal",
         "Kind": "PIPELINE",
@@ -1645,7 +1645,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1657,7 +1657,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1669,11 +1669,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1692,10 +1692,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateMealauth0Function",
@@ -1714,10 +1714,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateMealpostAuth0Function",
@@ -1736,10 +1736,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnUpdateMealDataResolverFn",
@@ -1760,7 +1760,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "onUpdateMeal",
         "Kind": "PIPELINE",
@@ -1792,7 +1792,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1804,7 +1804,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1816,11 +1816,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1839,10 +1839,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteMealauth0Function",
@@ -1861,10 +1861,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteMealpostAuth0Function",
@@ -1883,10 +1883,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnDeleteMealDataResolverFn",
@@ -1907,7 +1907,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
         },
         "FieldName": "onDeleteMeal",
         "Kind": "PIPELINE",
@@ -1939,7 +1939,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1951,7 +1951,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1963,11 +1963,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2008,7 +2008,7 @@
             ":",
             [
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "GetAtt:MealTable:StreamArn"
             ]
@@ -2025,7 +2025,7 @@
             ":",
             [
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
               },
               "GetAtt:MealTable:Name"
             ]
@@ -2033,7 +2033,7 @@
         }
       }
     },
-    "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataMealMealTable6B3BE540TableArn": {
+    "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataMealMealTableB5264DC7TableArn": {
       "Value": {
         "Fn::GetAtt": [
           "MealTable",

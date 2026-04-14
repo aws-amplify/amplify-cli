@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthUserPoolAppClientA0FAF09ARef"
+    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthUserPoolAppClient296AA784Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthUserPoolAppClientA0FAF09ARef"
+    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthUserPoolAppClient296AA784Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -53,7 +53,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPIDefaultApiKeyC8B93DB6ApiKey"
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIDefaultApiKey7A348D73ApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"custom\":{\"API\":{\"nutritionapi-gen2-x\":{\"endpoint\":\"https://2ba53b6kpj.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"nutritionapi-gen2-x\"},\"adminapi-gen2-x\":{\"endpoint\":\"https://332p9n41ji.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"adminapi-gen2-x\"}}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"custom\":{\"API\":{\"nutritionapi-gen2-x\":{\"endpoint\":\"https://l1egvmrqxa.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"nutritionapi-gen2-x\"},\"adminapi-gen2-x\":{\"endpoint\":\"https://1807yxki6b.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"adminapi-gen2-x\"}}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
@@ -73,11 +73,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459GraphQLUrl"
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977GraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -117,11 +117,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthUserPoolC3388357Ref"
+    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthUserPool56504FC7Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+    "OutputValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
   },
   {
     "OutputKey": "verificationMechanisms",

@@ -3,16 +3,16 @@
     "OutputKey": "GetAttMealTableName",
     "OutputValue": "498da40b3c.GetAttMealTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId:GetAtt:MealTable:Name"
+    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId:GetAtt:MealTable:Name"
   },
   {
     "OutputKey": "GetAttMealTableStreamArn",
     "OutputValue": "498da40b3c.GetAttMealTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId:GetAtt:MealTable:StreamArn"
+    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId:GetAtt:MealTable:StreamArn"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataMealMealTable6B3BE540TableArn",
-    "OutputValue": "498da40b3c.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataMealMealTable6B3BE540TableArn"
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataMealMealTableB5264DC7TableArn",
+    "OutputValue": "498da40b3c.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataMealMealTableB5264DC7TableArn"
   }
 ]

@@ -8,7 +8,7 @@
       "DeploymentBucketName": "dcdd8dfb43.DeploymentBucketName",
       "UnauthRoleName": "amplify-fitnesstracker-x-x-unauthRole",
       "StackName": "amplify-fitnesstracker-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/5f3930a0-379e-11f1-8884-0e4068cff20f",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/b7c69330-37a2-11f1-a89a-12d4bb1e164d",
       "AmplifyAppId": "fitnesstracker",
       "APIGatewayAuthURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/api/APIGatewayAuthStack.json",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"

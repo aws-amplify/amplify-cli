@@ -8,7 +8,7 @@
       "DeploymentBucketName": "dcdd8dfb43.DeploymentBucketName",
       "UnauthRoleName": "amplify-fitnesstracker-x-x-unauthRole",
       "StackName": "amplify-fitnesstracker-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/5f3930a0-379e-11f1-8884-0e4068cff20f",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/b7c69330-37a2-11f1-a89a-12d4bb1e164d",
       "AmplifyAppId": "fitnesstracker",
       "APIGatewayAuthURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/api/APIGatewayAuthStack.json",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
@@ -30,7 +30,7 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "logicalId": "authuserPoolGroups"
@@ -77,7 +77,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/auth/fitnesstracker33f5545533f55455-cloudformation-template.json",
         "logicalId": "authfitnesstracker33f5545533f55455"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "output": {
         "UserPoolId": "e2e2116184.UserPoolId",
         "AppClientIDWeb": "e2e2116184.AppClientIDWeb",
@@ -87,7 +87,7 @@
         "IdentityPoolName": "e2e2116184.IdentityPoolName",
         "UserPoolName": "e2e2116184.UserPoolName"
       },
-      "lastPushDirHash": "0UqXAz+SYrchlHkWJtyjmhwNAyw="
+      "lastPushDirHash": "2EeiX+E/FLCiAuT/hBm5N7s3voQ="
     }
   },
   "function": {
@@ -95,9 +95,9 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-04-14T01:08:44.884Z",
+      "lastBuildTimeStamp": "2026-04-14T01:40:00.363Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T01:08:44.901Z",
+      "lastPackageTimeStamp": "2026-04-14T01:40:00.387Z",
       "distZipFilename": "fitnesstracker33f5545533f55455PreSignup-68374859444c45627749-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "dcdd8dfb43.DeploymentBucketName",
@@ -107,13 +107,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/function/fitnesstracker33f5545533f55455PreSignup-cloudformation-template.json",
         "logicalId": "functionfitnesstracker33f5545533f55455PreSignup"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "output": {
-        "LambdaExecutionRoleArn": "7d13c19541.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "6829d682df.LambdaExecutionRoleArn",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:7d13c19541.LambdaExecutionRole",
-        "Name": "7d13c19541.LambdaExecutionRole",
-        "LambdaExecutionRole": "7d13c19541.LambdaExecutionRole"
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:6829d682df.LambdaExecutionRole",
+        "Name": "6829d682df.LambdaExecutionRole",
+        "LambdaExecutionRole": "6829d682df.LambdaExecutionRole"
       },
       "lastPushDirHash": "kHZgvjW478Vk1rWRqWN9hZbma+U="
     },
@@ -130,9 +130,9 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-14T01:08:46.651Z",
+      "lastBuildTimeStamp": "2026-04-14T01:40:01.061Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T01:08:47.030Z",
+      "lastPackageTimeStamp": "2026-04-14T01:40:01.435Z",
       "distZipFilename": "lognutrition-4d67766f675761365161-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "dcdd8dfb43.DeploymentBucketName",
@@ -142,7 +142,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/function/lognutrition-cloudformation-template.json",
         "logicalId": "functionlognutrition"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "output": {
         "LambdaExecutionRoleArn": "aecb5bd721.LambdaExecutionRoleArn",
         "Region": "us-east-1",
@@ -165,9 +165,9 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-14T01:08:49.653Z",
+      "lastBuildTimeStamp": "2026-04-14T01:40:02.783Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T01:08:51.076Z",
+      "lastPackageTimeStamp": "2026-04-14T01:40:04.499Z",
       "distZipFilename": "admin-2f397a7163426d447a6b-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "dcdd8dfb43.DeploymentBucketName",
@@ -177,7 +177,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/function/admin-cloudformation-template.json",
         "logicalId": "functionadmin"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "output": {
         "LambdaExecutionRoleArn": "605dff5817.LambdaExecutionRoleArn",
         "Region": "us-east-1",
@@ -228,7 +228,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apifitnesstracker"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "lastPushDirHash": "RCtlX/RFS23/RTpTpKEuv4XLh08="
     },
     "nutritionapi": {
@@ -262,7 +262,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/api/nutritionapi-cloudformation-template.json",
         "logicalId": "apinutritionapi"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "output": {
         "ApiName": "nutritionapi",
         "RootUrl": "https://5a616091b3.ApiId.execute-api.us-east-1.amazonaws.com/x",
@@ -301,7 +301,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/dcdd8dfb43.DeploymentBucketName/amplify-cfn-templates/api/adminapi-cloudformation-template.json",
         "logicalId": "apiadminapi"
       },
-      "lastPushTimeStamp": "2026-04-14T01:15:39.534Z",
+      "lastPushTimeStamp": "2026-04-14T01:46:52.979Z",
       "output": {
         "ApiName": "adminapi",
         "RootUrl": "https://38692749e5.ApiId.execute-api.us-east-1.amazonaws.com/x",

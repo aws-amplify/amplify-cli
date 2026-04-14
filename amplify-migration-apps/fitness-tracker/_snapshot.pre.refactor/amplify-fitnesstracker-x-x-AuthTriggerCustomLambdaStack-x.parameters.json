@@ -1,15 +1,15 @@
 [
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupLambdaExecutionRole",
-    "ParameterValue": "7d13c19541.LambdaExecutionRoleArn"
+    "ParameterValue": "6829d682df.LambdaExecutionRoleArn"
   },
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupName",
-    "ParameterValue": "7d13c19541.LambdaExecutionRole"
+    "ParameterValue": "6829d682df.LambdaExecutionRole"
   },
   {
     "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupArn",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:7d13c19541.LambdaExecutionRole"
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:6829d682df.LambdaExecutionRole"
   },
   {
     "ParameterKey": "userpoolId",

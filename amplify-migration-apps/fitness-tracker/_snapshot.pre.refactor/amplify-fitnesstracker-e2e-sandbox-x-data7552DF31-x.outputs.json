@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848datalognutritiongen2xlambdaBE0872F6Ref",
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977GraphQLUrl",
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977GraphQLUrl"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId",
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdatalognutritiongen2xlambda6214E268Ref",
     "OutputValue": "lognutrition-gen2-x"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB069656DEDestinationBucketArn",
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB069656DEDestinationBucketArn"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848datalognutritiongen2xlambdaBE0872F6Arn",
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIDefaultApiKey7A348D73ApiKey",
+    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIDefaultApiKey7A348D73ApiKey"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdatalognutritiongen2xlambda6214E268Arn",
     "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-x"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB423BC812DestinationBucketArn",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB423BC812DestinationBucketArn"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459GraphQLUrl",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459GraphQLUrl"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPIDefaultApiKeyC8B93DB6ApiKey",
-    "OutputValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPIDefaultApiKeyC8B93DB6ApiKey"
   }
 ]

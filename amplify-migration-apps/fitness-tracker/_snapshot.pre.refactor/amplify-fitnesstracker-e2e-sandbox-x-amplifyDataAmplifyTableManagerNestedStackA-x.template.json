@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                            "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -177,7 +177,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+                            "Ref": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -770,12 +770,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId": {
+    "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent505F19FAArn": {
+    "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent65C150B5Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

@@ -4,8 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId",
-    "ParameterValue": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPINONEDS95ABB663Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref",
+    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthunauthenticatedUserRole8D107B19Ref"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -16,31 +20,27 @@
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref",
-    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthunauthenticatedUserRoleDD7D4292Ref"
-  },
-  {
     "ParameterKey": "DynamoDBBillingMode",
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource73BB5A4DOutputsamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataAmplifyTableManagerTab9BE53249",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-fitnesstra2604132-TableManagerCustomProvid-fkz3syMZAHx9"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId",
+    "ParameterValue": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPINONEDS42166044Name",
-    "ParameterValue": "NONE_DS"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource0B2732F7Outputsamplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataAmplifyTableManagerTab3F888D98",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-fitnesstra2604132-TableManagerCustomProvid-9cMmKtxxgMpZ"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef",
-    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthauthenticatedUserRole8D40E2CBRef"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref",
+    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthIdentityPool53F0EBF8Ref"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxdfb4ee4848authNestedStackauthNestedStackResource4814F7D2Outputsamplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref",
-    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandboxdfb4ee4848authamplifyAuthIdentityPool8A3154A5Ref"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox4d064ec92cauthNestedStackauthNestedStackResource1347A64COutputsamplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef",
+    "ParameterValue": "a4c58accd5.amplifyfitnesstrackere2esandbox4d064ec92cauthamplifyAuthauthenticatedUserRoleAB298ADERef"
   }
 ]

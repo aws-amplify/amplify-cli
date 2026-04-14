@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseExerciseDataSource5C925C47Name",
-    "OutputValue": "ExerciseTable"
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataExerciseExerciseTableB92EF2AFTableArn",
+    "OutputValue": "6cff44a000.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataExerciseExerciseTableB92EF2AFTableArn"
   },
   {
     "OutputKey": "GetAttExerciseTableName",
     "OutputValue": "6cff44a000.GetAttExerciseTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId:GetAtt:ExerciseTable:Name"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseExerciseTableD5E3CF27TableArn",
-    "OutputValue": "6cff44a000.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataExerciseExerciseTableD5E3CF27TableArn"
+    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId:GetAtt:ExerciseTable:Name"
   },
   {
     "OutputKey": "GetAttExerciseTableStreamArn",
     "OutputValue": "6cff44a000.GetAttExerciseTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandboxdfb4ee4848dataamplifyDataGraphQLAPI5D8A9459ApiId:GetAtt:ExerciseTable:StreamArn"
+    "ExportName": "b9ef1bd238.amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataGraphQLAPIAE63C977ApiId:GetAtt:ExerciseTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox4d064ec92cdataamplifyDataExerciseExerciseDataSource83E1B807Name",
+    "OutputValue": "ExerciseTable"
   }
 ]

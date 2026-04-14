@@ -1,11 +1,11 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x-authuserPoolGroups-x/982184d0-379e-11f1-b2df-0afff0bc1c09",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x-authuserPoolGroups-x/f4affd40-37a2-11f1-bbc1-0e77ca9cb95b",
       "LogicalResourceId": "AdminGroup"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/37dcfa80-37a0-11f1-908d-0affd4c21c25",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/97308660-37a4-11f1-9475-0affe47e9d61",
       "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04"
     }
   }
