@@ -145,7 +145,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":geofence-collection/storeLocatorGeofence-gen2-rbroqinlsf"
+                    ":geofence-collection/storeLocatorGeofence-gen2-x"
                   ]
                 ]
               }
@@ -211,7 +211,7 @@
             "Arn"
           ]
         },
-        "collectionName": "storeLocatorGeofence-gen2-rbroqinlsf",
+        "collectionName": "storeLocatorGeofence-gen2-x",
         "region": {
           "Fn::FindInMap": [
             "storeLocatorGeofenceRegionMapping9D9BCEA8",
@@ -221,7 +221,7 @@
             "locationServiceRegion"
           ]
         },
-        "env": "gen2-rbroqinlsf"
+        "env": "gen2-x"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -275,7 +275,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storeLocatorAdminstoreLocatorGeofence-gen2-rbroqinlsfPolicy",
+        "PolicyName": "storeLocatorAdminstoreLocatorGeofence-gen2-xPolicy",
         "Roles": [
           {
             "Ref": "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref"

@@ -36,7 +36,18 @@ function getFilesRecursive(dir: string): string[] {
  *   5. git commit hash (Amplify hosting branch hash)
  *   6. CFN nested stack hashes (CloudFormation physical resource IDs)
  */
-function extractReplacements(appName: string, appDir: string): { before: string; after: string }[] {
+interface NormalizeReplacements {
+  /**
+   * All replacements to apply to filenames.
+   */
+  readonly filenameReplacements: { before: string; after: string }[];
+  /**
+   * The environment name replacement — also applied to file content.
+   */
+  readonly envNameReplacement: { before: string; after: string };
+}
+
+function extractReplacements(appName: string, appDir: string): NormalizeReplacements {
   const appNameNoDashes = appName.replaceAll('-', '');
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
@@ -56,7 +67,8 @@ function extractReplacements(appName: string, appDir: string): { before: string;
   const envHash = stackName.split('-')[3];
 
   add(deploymentName, appNameNoDashes);
-  add(envName, 'x');
+  const envNameReplacement = { before: envName, after: 'x' };
+  add(envNameReplacement.before, envNameReplacement.after);
   add(envHash, 'x');
 
   const sandboxSegment = '-sandbox-';
@@ -65,20 +77,31 @@ function extractReplacements(appName: string, appDir: string): { before: string;
     const hash = file.split('.')[0].split('-')[4];
     add(`${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
   }
+
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
-    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
+    if (file.includes(sandboxSegment)) continue;
+
+    // all gen1 stacks start with these four parts
+    // e.g amplify-storelocat2604141401-rbroqinlsf-9bc6f
+    // here we replace the last (4th) part only since the 3rd
+    // is the environment name, which is replaced sooner.
+    const hash = file.split('.')[0][3];
+    add(`-${hash}-`, '-x-');
+  }
+
+  for (const file of fs.readdirSync(preRefactorSnapshot)) {
     const hash = file.split('.')[0].split('-').reverse()[0];
     add(`-${hash}`, '-x');
   }
+
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
-    // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
     const parts = file.split('.')[0].split('-');
     if (parts.length !== 8) continue;
     const hash = parts[5];
     add(`-${hash}-`, '-x-');
   }
 
-  return replacements;
+  return { filenameReplacements: replacements, envNameReplacement };
 }
 
 export function normalize(appName: string, appDir: string): void {
@@ -87,22 +110,57 @@ export function normalize(appName: string, appDir: string): void {
     throw new Error(`Expected _snapshot.pre.refactor to exist at ${preRefactorSnapshot}`);
   }
 
-  const replacements = extractReplacements(appName, appDir);
+  const { filenameReplacements, envNameReplacement } = extractReplacements(appName, appDir);
 
-  // Single pass: rename each file once with all replacements applied.
+  // Rename each file once with all replacements applied.
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
 
   for (const file of files) {
     let basename = path.basename(file);
 
-    for (const { before, after } of replacements) {
+    for (const { before, after } of filenameReplacements) {
       basename = basename.replaceAll(before, after);
     }
 
     const newPath = path.join(path.dirname(file), basename);
     if (newPath !== file) {
       fs.renameSync(file, newPath);
+    }
+  }
+
+  // Override the "name" field in snapshot package.json files so that
+  // the name is stable across runs regardless of the deployment name.
+  for (const snapshot of ['_snapshot.pre.generate', '_snapshot.post.generate']) {
+    const pkgPath = path.join(appDir, snapshot, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    pkg.name = `@amplify-migration-apps/${appName}-snapshot`;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+  }
+
+  // Apply the same replacements to amplify-meta.json and team-provider-info.json
+  // content so that stack names inside these files match the renamed filenames.
+  const preGenerate = path.join(appDir, '_snapshot.pre.generate');
+  const metaFiles = [
+    path.join(preGenerate, 'amplify', 'backend', 'amplify-meta.json'),
+    path.join(preGenerate, 'amplify', '#current-cloud-backend', 'amplify-meta.json'),
+    path.join(preGenerate, 'amplify', 'team-provider-info.json'),
+  ];
+  for (const metaFile of metaFiles) {
+    let content = fs.readFileSync(metaFile, 'utf-8');
+    for (const { before, after } of filenameReplacements) {
+      content = content.replaceAll(before, after);
+    }
+    fs.writeFileSync(metaFile, content, 'utf-8');
+  }
+
+  // Replace the environment name in all file content.
+  const renamedFiles = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
+  for (const file of renamedFiles) {
+    const content = fs.readFileSync(file, 'utf-8');
+    const replaced = content.replaceAll(envNameReplacement.before, envNameReplacement.after);
+    if (replaced !== content) {
+      fs.writeFileSync(file, replaced, 'utf-8');
     }
   }
 }

@@ -5,10 +5,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-rbroqinlsf"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-x"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorSearch-rbroqinlsf"
+    "OutputValue": "storeLocatorSearch-x"
   }
 ]

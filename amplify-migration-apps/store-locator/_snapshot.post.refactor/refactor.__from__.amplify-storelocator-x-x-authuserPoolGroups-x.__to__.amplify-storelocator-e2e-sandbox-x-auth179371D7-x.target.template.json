@@ -21,7 +21,7 @@
         "EmailVerificationMessage": "Your verification code is {####}",
         "EmailVerificationSubject": "Your verification code",
         "LambdaConfig": {
-          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
+          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-x"
         },
         "MfaConfiguration": "OFF",
         "Policies": {
@@ -75,7 +75,7 @@
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf",
+        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-x",
         "Principal": "cognito-idp.amazonaws.com",
         "SourceArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_0BR3dEawx"
       },
@@ -354,7 +354,7 @@
         "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/storeLocatorAdminGroupRole/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRole0A5D975F": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole0A5D975F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -390,7 +390,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
+            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-x"
           },
           {
             "Key": "created-by",
@@ -401,10 +401,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRoleDefaultPolicyCD888872": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicyCD888872": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -436,18 +436,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRoleDefaultPolicyCD888872",
+        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicyCD888872",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRole0A5D975F"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole0A5D975F"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda5D363B0B": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambda5D363B0B": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -463,7 +463,7 @@
           "Variables": {
             "GROUP": "",
             "MODULES": "add-to-group",
-            "ENV": "gen2-rbroqinlsf",
+            "ENV": "gen2-x",
             "REGION": "us-east-1",
             "AMPLIFY_SSM_ENV_CONFIG": "{\"AMPLIFY_AUTH_USERPOOL_ID\":{\"path\":\"/amplify/resource_reference/storelocat2604141401/e2e-sandbox-a2d2be7e95/AMPLIFY_AUTH_USERPOOL_ID\"}}",
             "AMPLIFY_AUTH_USERPOOL_ID": "<value will be resolved during runtime>"
@@ -472,7 +472,7 @@
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf",
+        "FunctionName": "storelocator41a9495f41a9495fPostConfirmation-gen2-x",
         "Handler": "index.handler",
         "MemorySize": 512,
         "Role": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-storelocator41a9495f41a94-CYBHaOJKpvND",
@@ -484,7 +484,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
+            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-x"
           },
           {
             "Key": "created-by",
@@ -496,7 +496,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf-lambda/Resource",
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/Resource",
         "aws:asset:path": "asset.160afe14228f538544d3f57eba2a67b081afe243d3926aab05a998f3553f00e0",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -542,7 +542,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRole0A5D975F"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole0A5D975F"
           }
         ]
       },
@@ -849,8 +849,8 @@
     "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthIdentityPool59D0B764Ref": {
       "Value": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
     },
-    "amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda02482847Ref": {
-      "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2xlambda02482847Ref": {
+      "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-x"
     },
     "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref": {
       "Value": "amplify-storelocat2604141-amplifyAuthauthenticatedU-07X2CzBJ7RpS"

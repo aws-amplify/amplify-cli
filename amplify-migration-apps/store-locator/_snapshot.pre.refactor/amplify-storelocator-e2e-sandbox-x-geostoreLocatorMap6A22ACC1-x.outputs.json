@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorMapCustomMap81AEC47CMapName",
-    "OutputValue": "storeLocatorMap-gen2-rbroqinlsf"
+    "OutputValue": "storeLocatorMap-gen2-x"
   },
   {
     "OutputKey": "Style",
@@ -13,10 +13,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-rbroqinlsf"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-x"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorMap-gen2-rbroqinlsf"
+    "OutputValue": "storeLocatorMap-gen2-x"
   }
 ]

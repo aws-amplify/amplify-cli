@@ -337,7 +337,6 @@ export class MigrationApp {
   private prePopulateCloudFormationResources(): void {
     const registerStack = (stackName: string) => {
       const templatePath = this.templatePathForStack(stackName);
-      if (!fs.existsSync(templatePath)) return;
       const template = JSONUtilities.readJson<any>(templatePath);
       for (const logicalId of Object.keys(template.Resources ?? {})) {
         const resource = template.Resources[logicalId];
@@ -439,10 +438,14 @@ export class MigrationApp {
     // nestedStackName = 'amplify-productcatalog-main-31323-apiproductcatalog-1KOJQLNKG63-FunctionDirectiveStack-1X1DEXAOL9FGJ'
     //
     // notice the hash in the parent is longer than the hash in the nested stack.
+
+    // the stack name may not contain the full logicalId because it also contains
+    // the envname which may overflow. empirecally 40 characters should do it.
+    const trimmedLogicalId = logicalId.substring(0, Math.min(logicalId.length, 40));
     const parentStackBaseName = parentStackName.split('-').slice(0, 5).join('-');
     const candidates = fs
       .readdirSync(this.snapshots.refactor.props.inputPath)
-      .filter((f) => f.startsWith(parentStackBaseName) && f.includes(logicalId) && f.endsWith('.template.json'))
+      .filter((f) => f.startsWith(parentStackBaseName) && f.includes(trimmedLogicalId) && f.endsWith('.template.json'))
       .sort((a, b) => a.length - b.length);
     if (candidates.length === 0) {
       throw new Error(`Unable to find candidates for nested ${logicalId} of parent stack ${parentStackName}`);

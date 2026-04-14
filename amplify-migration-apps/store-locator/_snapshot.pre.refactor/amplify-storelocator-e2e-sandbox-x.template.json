@@ -150,7 +150,7 @@
             {
               "Fn::GetAtt": [
                 "auth179371D7",
-                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda02482847Ref"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2xlambda02482847Ref"
               ]
             },
             "\"]"

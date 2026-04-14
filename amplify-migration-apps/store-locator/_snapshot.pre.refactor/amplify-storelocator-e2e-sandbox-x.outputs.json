@@ -49,7 +49,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-rbroqinlsf\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-rbroqinlsf\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-rbroqinlsf\"],\"default\":\"storeLocatorSearch-gen2-rbroqinlsf\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-rbroqinlsf\"],\"default\":\"storeLocatorGeofence-gen2-rbroqinlsf\"}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-x\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-x\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-x\"],\"default\":\"storeLocatorSearch-gen2-x\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-x\"],\"default\":\"storeLocatorGeofence-gen2-x\"}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
@@ -69,7 +69,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf\"]"
+    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-x\"]"
   },
   {
     "OutputKey": "passwordlessOptions",

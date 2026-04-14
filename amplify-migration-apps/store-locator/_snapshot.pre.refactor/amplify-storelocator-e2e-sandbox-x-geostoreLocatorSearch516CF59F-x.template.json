@@ -145,7 +145,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":place-index/storeLocatorSearch-gen2-rbroqinlsf"
+                    ":place-index/storeLocatorSearch-gen2-x"
                   ]
                 ]
               }
@@ -211,7 +211,7 @@
             "Arn"
           ]
         },
-        "indexName": "storeLocatorSearch-gen2-rbroqinlsf",
+        "indexName": "storeLocatorSearch-gen2-x",
         "dataSource": "Here",
         "dataSourceIntendedUse": "SingleUse",
         "region": {
@@ -223,7 +223,7 @@
             "locationServiceRegion"
           ]
         },
-        "env": "gen2-rbroqinlsf"
+        "env": "gen2-x"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -254,7 +254,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storeLocatorSearch-gen2-rbroqinlsfPolicy",
+        "PolicyName": "storeLocatorSearch-gen2-xPolicy",
         "Roles": [
           {
             "Ref": "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref"

@@ -145,7 +145,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":map/storeLocatorMap-gen2-rbroqinlsf"
+                    ":map/storeLocatorMap-gen2-x"
                   ]
                 ]
               }
@@ -211,7 +211,7 @@
             "Arn"
           ]
         },
-        "mapName": "storeLocatorMap-gen2-rbroqinlsf",
+        "mapName": "storeLocatorMap-gen2-x",
         "mapStyle": "VectorEsriStreets",
         "region": {
           "Fn::FindInMap": [
@@ -222,7 +222,7 @@
             "locationServiceRegion"
           ]
         },
-        "env": "gen2-rbroqinlsf"
+        "env": "gen2-x"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -253,7 +253,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storeLocatorMap-gen2-rbroqinlsfPolicy",
+        "PolicyName": "storeLocatorMap-gen2-xPolicy",
         "Roles": [
           {
             "Ref": "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref"

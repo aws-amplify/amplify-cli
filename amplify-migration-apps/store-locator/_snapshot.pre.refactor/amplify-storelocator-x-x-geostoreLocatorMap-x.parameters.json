@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-authRole"
+    "ParameterValue": "amplify-storelocat2604141401-x-9bc6f-authRole"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-unauthRole"
+    "ParameterValue": "amplify-storelocat2604141401-x-9bc6f-unauthRole"
   },
   {
     "ParameterKey": "mapStyle",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "env",
-    "ParameterValue": "rbroqinlsf"
+    "ParameterValue": "x"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",

@@ -36,7 +36,7 @@
         "EmailVerificationMessage": "Your verification code is {####}",
         "EmailVerificationSubject": "Your verification code",
         "LambdaConfig": {
-          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
+          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-x"
         },
         "MfaConfiguration": "OFF",
         "Policies": {

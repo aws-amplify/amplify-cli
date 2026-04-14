@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-deployment"
+    "ParameterValue": "amplify-storelocat2604141401-x-9bc6f-deployment"
   },
   {
     "ParameterKey": "roleName",
@@ -37,7 +37,7 @@
   },
   {
     "ParameterKey": "env",
-    "ParameterValue": "rbroqinlsf"
+    "ParameterValue": "x"
   },
   {
     "ParameterKey": "modules",

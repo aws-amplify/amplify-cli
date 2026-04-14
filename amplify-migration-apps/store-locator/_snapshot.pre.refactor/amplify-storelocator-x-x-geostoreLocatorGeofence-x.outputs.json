@@ -5,10 +5,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-rbroqinlsf"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-x"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorGeofence-rbroqinlsf"
+    "OutputValue": "storeLocatorGeofence-x"
   }
 ]
