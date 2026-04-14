@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "quotegeneratorgen2xlambdaServiceRole99590082": {
+    "quotegeneratorgen2xlambdaServiceRoleD390CBF0": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -51,7 +51,7 @@
         "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/function/quotegenerator-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "quotegeneratorgen2xlambdaE551AE5C": {
+    "quotegeneratorgen2xlambda700FEE6D": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -78,7 +78,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "quotegeneratorgen2xlambdaServiceRole99590082",
+            "quotegeneratorgen2xlambdaServiceRoleD390CBF0",
             "Arn"
           ]
         },
@@ -100,7 +100,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "quotegeneratorgen2xlambdaServiceRole99590082"
+        "quotegeneratorgen2xlambdaServiceRoleD390CBF0"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -389,9 +389,9 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandbox5b4484c5e5functionquotegeneratorgen2xlambda46006BB0Ref": {
+    "amplifyprojectboardse2esandboxdb84d1ad4afunctionquotegeneratorgen2xlambda19F549EFRef": {
       "Value": {
-        "Ref": "quotegeneratorgen2xlambdaE551AE5C"
+        "Ref": "quotegeneratorgen2xlambda700FEE6D"
       }
     }
   }

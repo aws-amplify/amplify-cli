@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef"
+                  "cognito-identity.amazonaws.com:aud": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef"
+                  "cognito-identity.amazonaws.com:aud": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -367,20 +367,20 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPool73E143AERef": {
-      "Value": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPool73E143AERef"
+    "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref": {
+      "Value": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref"
     },
-    "amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPoolAppClient146FF4BERef": {
-      "Value": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPoolAppClient146FF4BERef"
+    "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPoolAppClient71A9EB50Ref": {
+      "Value": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPoolAppClient71A9EB50Ref"
     },
-    "amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef": {
-      "Value": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef"
+    "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef": {
+      "Value": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
     },
-    "amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthauthenticatedUserRole9708AECCRef": {
-      "Value": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthauthenticatedUserRole9708AECCRef"
+    "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef": {
+      "Value": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef"
     },
-    "amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthunauthenticatedUserRole67B32B69Ref": {
-      "Value": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthunauthenticatedUserRole67B32B69Ref"
+    "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref": {
+      "Value": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref"
     }
   }
 }

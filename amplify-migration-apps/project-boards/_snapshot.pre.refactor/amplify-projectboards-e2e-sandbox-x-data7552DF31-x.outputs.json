@@ -1,18 +1,18 @@
 [
   {
-    "OutputKey": "amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId"
+    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB340F51D8DestinationBucketArn",
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB340F51D8DestinationBucketArn"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPIDefaultApiKeyE23380AEApiKey",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPIDefaultApiKeyE23380AEApiKey"
+    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId",
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBEB8F3DBEDestinationBucketArn",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBEB8F3DBEDestinationBucketArn"
+    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832GraphQLUrl",
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832GraphQLUrl"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FGraphQLUrl",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FGraphQLUrl"
+    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIDefaultApiKey0E7814D4ApiKey",
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIDefaultApiKey0E7814D4ApiKey"
   }
 ]

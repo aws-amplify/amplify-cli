@@ -3,20 +3,20 @@
     "OutputKey": "GetAttTodoTableName",
     "OutputValue": "5c1e28b4a7.GetAttTodoTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId:GetAtt:TodoTable:Name"
+    "ExportName": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId:GetAtt:TodoTable:Name"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataTodoTodoTable90807DD8TableArn",
-    "OutputValue": "5c1e28b4a7.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataTodoTodoTable90807DD8TableArn"
-  },
-  {
-    "OutputKey": "amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataTodoTodoDataSource5DD11F47Name",
+    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoTodoDataSource0372474CName",
     "OutputValue": "TodoTable"
+  },
+  {
+    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoTodoTable35F1344DTableArn",
+    "OutputValue": "5c1e28b4a7.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoTodoTable35F1344DTableArn"
   },
   {
     "OutputKey": "GetAttTodoTableStreamArn",
     "OutputValue": "5c1e28b4a7.GetAttTodoTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId:GetAtt:TodoTable:StreamArn"
+    "ExportName": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId:GetAtt:TodoTable:StreamArn"
   }
 ]

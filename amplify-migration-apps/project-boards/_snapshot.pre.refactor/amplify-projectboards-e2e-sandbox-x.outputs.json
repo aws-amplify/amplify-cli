@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPoolAppClient146FF4BERef"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPoolAppClient71A9EB50Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "33a07aa830.amplifyprojectboardse2esandbox5b4484c5e5storageprojectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketC229D7E3Ref"
+    "OutputValue": "33a07aa830.amplifyprojectboardse2esandboxdb84d1ad4astorageprojectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket627F1643Ref"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPoolAppClient146FF4BERef"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPoolAppClient71A9EB50Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPIDefaultApiKeyE23380AEApiKey"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIDefaultApiKey0E7814D4ApiKey"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FGraphQLUrl"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832GraphQLUrl"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "98b70a6375.amplifyprojectboardse2esandbox5b4484c5e5dataamplifyDataGraphQLAPI2A47C82FApiId"
+    "OutputValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId"
   },
   {
     "OutputKey": "authRegion",
@@ -89,7 +89,7 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"projectboards34b9a7f3c2ca489293910116c994688bx-gen2-x\\\",\\\"bucketName\\\":\\\"33a07aa830.amplifyprojectboardse2esandbox5b4484c5e5storageprojectboards34b9a7f3c2ca489293910116c994688bxgen2xBucketC229D7E3Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"projectboards34b9a7f3c2ca489293910116c994688bx-gen2-x\\\",\\\"bucketName\\\":\\\"33a07aa830.amplifyprojectboardse2esandboxdb84d1ad4astorageprojectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket627F1643Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPool73E143AERef"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef"
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
   },
   {
     "OutputKey": "verificationMechanisms",

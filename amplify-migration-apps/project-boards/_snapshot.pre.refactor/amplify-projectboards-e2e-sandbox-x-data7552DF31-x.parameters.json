@@ -4,16 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox5b4484c5e5authNestedStackauthNestedStackResourceA16B9034Outputsamplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthauthenticatedUserRole9708AECCRef",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthauthenticatedUserRole9708AECCRef"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox5b4484c5e5authNestedStackauthNestedStackResourceA16B9034Outputsamplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthunauthenticatedUserRole67B32B69Ref",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthunauthenticatedUserRole67B32B69Ref"
-  },
-  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef"
   },
   {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
@@ -24,15 +20,19 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox5b4484c5e5authNestedStackauthNestedStackResourceA16B9034Outputsamplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPool73E143AERef",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthUserPool73E143AERef"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox5b4484c5e5authNestedStackauthNestedStackResourceA16B9034Outputsamplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandbox5b4484c5e5authamplifyAuthIdentityPoolF16606ACRef"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
   }
 ]
