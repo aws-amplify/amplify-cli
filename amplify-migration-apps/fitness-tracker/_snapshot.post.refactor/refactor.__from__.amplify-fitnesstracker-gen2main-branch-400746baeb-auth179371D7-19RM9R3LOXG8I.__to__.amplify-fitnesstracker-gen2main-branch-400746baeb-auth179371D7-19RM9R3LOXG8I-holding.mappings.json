@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I-holding",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }

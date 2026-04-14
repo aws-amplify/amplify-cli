@@ -52,7 +52,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "ea8f06a449.IdentityPoolId"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -65,7 +65,7 @@
           "Fn::Join": [
             "",
             [
-              "ea8f06a449.UserPoolId",
+              "us-east-1_iguxCIcMS",
               "-AdminGroupRole"
             ]
           ]
@@ -75,7 +75,7 @@
   },
   "Outputs": {
     "AdminGroupRole": {
-      "Value": "auth.userPoolGroups.AdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_iguxCIcMS-AdminGroupRole"
     }
   }
 }

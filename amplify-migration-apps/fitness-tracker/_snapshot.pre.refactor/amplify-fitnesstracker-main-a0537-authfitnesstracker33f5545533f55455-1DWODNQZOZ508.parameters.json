@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "e6829a95b8.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -97,7 +97,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "ea8f06a449.UserPoolName"
+    "ParameterValue": "fitnesstracker33f55455_userpool_33f55455"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -149,7 +149,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "e6829a95b8.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

@@ -1,11 +1,11 @@
 [
   {
     "Source": {
-      "StackName": "e6829a95b8.StackName-authuserPoolGroups-19G9G5Q52J3XF",
+      "StackName": "amplify-fitnesstracker-main-a0537-authuserPoolGroups-19G9G5Q52J3XF",
       "LogicalResourceId": "AdminGroup"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstracker-gen2main-3f11ed2aac.deploymentType-400746baeb-auth179371D7-19RM9R3LOXG8I",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I",
       "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04"
     }
   }

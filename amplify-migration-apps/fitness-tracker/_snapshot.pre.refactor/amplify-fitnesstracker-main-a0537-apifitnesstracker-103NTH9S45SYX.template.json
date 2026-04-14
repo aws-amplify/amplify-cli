@@ -66,7 +66,7 @@
             "AuthenticationType": "API_KEY"
           }
         ],
-        "AuthenticationType": "3f11ed2aac.awsAppsyncAuthenticationType",
+        "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
         "Name": {
           "Fn::Join": [
             "",
@@ -450,10 +450,10 @@
               "Outputs.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
             ]
           },
-          "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef": {
+          "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef": {
             "Fn::GetAtt": [
               "Exercise",
-              "Outputs.transformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef"
+              "Outputs.transformerrootstackExerciseExerciseTable2F3E478ERef"
             ]
           }
         },

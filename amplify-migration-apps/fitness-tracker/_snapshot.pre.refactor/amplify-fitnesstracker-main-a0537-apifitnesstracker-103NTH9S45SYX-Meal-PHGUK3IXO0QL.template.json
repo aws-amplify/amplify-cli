@@ -104,7 +104,7 @@
     }
   },
   "Resources": {
-    "c3c677ee62.GetAttMealDataSourceName": {
+    "MealTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -315,7 +315,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "c3c677ee62.GetAttMealDataSourceName",
+                    "MealTable",
                     "Arn"
                   ]
                 },
@@ -346,10 +346,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "c3c677ee62.GetAttMealDataSourceName"
+            "Ref": "MealTable"
           }
         },
-        "Name": "c3c677ee62.GetAttMealDataSourceName",
+        "Name": "MealTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "MealIAMRoleEDE19E15",
@@ -480,9 +480,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "c3c677ee62.GetAttMealDataSourceName"
+                "Ref": "MealTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -578,9 +578,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "c3c677ee62.GetAttMealDataSourceName"
+                "Ref": "MealTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -709,9 +709,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "c3c677ee62.GetAttMealDataSourceName"
+                "Ref": "MealTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -861,9 +861,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "c3c677ee62.GetAttMealDataSourceName"
+                "Ref": "MealTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1010,9 +1010,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "c3c677ee62.GetAttMealDataSourceName"
+                "Ref": "MealTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1082,7 +1082,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1122,7 +1122,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1162,7 +1162,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"ea8f06a449.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1172,11 +1172,11 @@
     }
   },
   "Outputs": {
-    "GetAttc3c677ee62.GetAttMealDataSourceNameStreamArn": {
+    "GetAttMealTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "c3c677ee62.GetAttMealDataSourceName",
+          "MealTable",
           "StreamArn"
         ]
       },
@@ -1188,16 +1188,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:c3c677ee62.GetAttMealDataSourceName:StreamArn"
+              "GetAtt:MealTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttc3c677ee62.GetAttMealDataSourceNameName": {
+    "GetAttMealTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "c3c677ee62.GetAttMealDataSourceName"
+        "Ref": "MealTable"
       },
       "Export": {
         "Name": {
@@ -1207,7 +1207,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:c3c677ee62.GetAttMealDataSourceName:Name"
+              "GetAtt:MealTable:Name"
             ]
           ]
         }

@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "e6829a95b8.DeploymentBucketName"
+    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "ea8f06a449.UserPoolId"
+    "ParameterValue": "us-east-1_iguxCIcMS"
   }
 ]

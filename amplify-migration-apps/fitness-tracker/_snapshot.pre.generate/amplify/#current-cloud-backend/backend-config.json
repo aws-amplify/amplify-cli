@@ -1,6 +1,6 @@
 {
   "api": {
-    "api.d809bc5a09.ApiName.ApiName": {
+    "adminapi": {
       "dependsOn": [
         {
           "attributes": [
@@ -51,7 +51,7 @@
             }
           ],
           "defaultAuthentication": {
-            "authenticationType": "3f11ed2aac.awsAppsyncAuthenticationType",
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
               "userPoolId": "authfitnesstracker33f5545533f55455"
             }
@@ -61,7 +61,7 @@
       "providerPlugin": "awscloudformation",
       "service": "AppSync"
     },
-    "api.5c8596b905.ApiName.ApiName": {
+    "nutritionapi": {
       "dependsOn": [
         {
           "attributes": [

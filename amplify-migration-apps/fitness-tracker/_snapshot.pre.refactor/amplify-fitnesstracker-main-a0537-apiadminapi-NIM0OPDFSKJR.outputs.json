@@ -1,17 +1,17 @@
 [
   {
     "OutputKey": "ApiName",
-    "OutputValue": "api.d809bc5a09.ApiName.ApiName",
+    "OutputValue": "adminapi",
     "Description": "API Friendly name"
   },
   {
     "OutputKey": "RootUrl",
-    "OutputValue": "api.api.d809bc5a09.ApiName.ApiName.RootUrl",
+    "OutputValue": "https://oxq86r59h6.execute-api.us-east-1.amazonaws.com/main",
     "Description": "Root URL of the API gateway"
   },
   {
     "OutputKey": "ApiId",
-    "OutputValue": "d809bc5a09.ApiId",
+    "OutputValue": "oxq86r59h6",
     "Description": "API ID (prefix of API URL)"
   }
 ]

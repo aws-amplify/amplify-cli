@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId",
-    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId",
+    "OutputValue": "jrmmxaml4ndpxmx4pmyk3bgv7u"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIDefaultApiKey7DAA10FCApiKey",
-    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIDefaultApiKey7DAA10FCApiKey"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIDefaultApiKey7DAA10FCApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdatalognutritiongen2mainlambda08A76FE8Arn",
-    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdatalognutritiongen2mainlambda08A76FE8Arn"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdatalognutritiongen2mainlambda08A76FE8Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-main"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BGraphQLUrl",
-    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BGraphQLUrl"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataGraphQLAPIEBB08D7BGraphQLUrl",
+    "OutputValue": "https://lpsucva2qjdofmkpzenwokjsue.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0917740FDestinationBucketArn",
-    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0917740FDestinationBucketArn"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB0917740FDestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstracker-ge-amplifydataamplifycodege-qcmnmg6hhy5m"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdatalognutritiongen2mainlambda08A76FE8Ref",
-    "OutputValue": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdatalognutritiongen2mainlambda08A76FE8Ref"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdatalognutritiongen2mainlambda08A76FE8Ref",
+    "OutputValue": "lognutrition-gen2-main"
   }
 ]

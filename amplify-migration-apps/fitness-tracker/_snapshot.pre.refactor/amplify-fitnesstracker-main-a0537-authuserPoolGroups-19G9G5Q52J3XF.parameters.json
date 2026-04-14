@@ -1,19 +1,19 @@
 [
   {
     "ParameterKey": "UnauthRoleArn",
-    "ParameterValue": "e6829a95b8.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-unauthRole"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455IdentityPoolId",
-    "ParameterValue": "ea8f06a449.IdentityPoolId"
+    "ParameterValue": "us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022"
   },
   {
     "ParameterKey": "AuthRoleArn",
-    "ParameterValue": "e6829a95b8.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-authRole"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "ea8f06a449.UserPoolId"
+    "ParameterValue": "us-east-1_iguxCIcMS"
   },
   {
     "ParameterKey": "env",
@@ -21,10 +21,10 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455AppClientIDWeb",
-    "ParameterValue": "ea8f06a449.AppClientIDWeb"
+    "ParameterValue": "29bubgvfbbqkp4k60rl7oaqd8s"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455AppClientID",
-    "ParameterValue": "ea8f06a449.AppClientID"
+    "ParameterValue": "3s8jcv7nflisr91emephrr2a9s"
   }
 ]

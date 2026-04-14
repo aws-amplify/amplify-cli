@@ -1,38 +1,38 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthadmingen2mainlambda19698385Arn",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthadmingen2mainlambda19698385Arn"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthadmingen2mainlambda19698385Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-main"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolBF05A444Ref"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthUserPoolBF05A444Ref",
+    "OutputValue": "us-east-1_KGveHFLxc"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthAdminGroupRoleC37E0196Ref",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthAdminGroupRoleC37E0196Ref"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthAdminGroupRoleC37E0196Ref",
+    "OutputValue": "amplify-fitnesstracker-ge-amplifyAuthAdminGroupRole-jIdkeXSZarK4"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthIdentityPoolFB6D4845Ref"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthIdentityPoolFB6D4845Ref",
+    "OutputValue": "us-east-1:b0685620-d814-422e-830f-b0f30f6900f3"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthadmingen2mainlambda19698385Ref",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthadmingen2mainlambda19698385Ref"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthadmingen2mainlambda19698385Ref",
+    "OutputValue": "admin-gen2-main"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthunauthenticatedUserRole444B7AFERef",
+    "OutputValue": "amplify-fitnesstracker-ge-amplifyAuthunauthenticate-RtuRf8ygfomA"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthfitnesstracker33f5545533f55455PreSignupgen2mainlambda2B17C7BARef",
+    "OutputValue": "fitnesstracker33f5545533f55455PreSignup-gen2-main"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthUserPoolAppClient1903AFDARef"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthUserPoolAppClient1903AFDARef",
+    "OutputValue": "1o40oi80febsgsdamen2i1gnfd"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref",
-    "OutputValue": "5d99df58cf.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebauthamplifyAuthauthenticatedUserRole924DCF20Ref",
+    "OutputValue": "amplify-fitnesstracker-ge-amplifyAuthauthenticatedU-fF1WwIKcoHtV"
   }
 ]

@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
-    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName",
+    "OutputKey": "GetAttExerciseTableName",
+    "OutputValue": "Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:Name"
+    "ExportName": "jrmmxaml4ndpxmx4pmyk3bgv7u:GetAtt:ExerciseTable:Name"
   },
   {
-    "OutputKey": "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
-    "OutputValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn",
+    "OutputKey": "GetAttExerciseTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main/stream/2026-03-24T03:05:11.212",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "f529832ab0.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataGraphQLAPIEBB08D7BApiId:GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:StreamArn"
+    "ExportName": "jrmmxaml4ndpxmx4pmyk3bgv7u:GetAtt:ExerciseTable:StreamArn"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameA7BD0631TableArn",
-    "OutputValue": "5b75fea289.amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameA7BD0631TableArn"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseTableA7BD0631TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main"
   },
   {
-    "OutputKey": "amplifyfitnesstrackergen2main3f11ed2aac.deploymentType400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
-    "OutputValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebdataamplifyDataExerciseExerciseDataSourceA366FC05Name",
+    "OutputValue": "ExerciseTable"
   }
 ]

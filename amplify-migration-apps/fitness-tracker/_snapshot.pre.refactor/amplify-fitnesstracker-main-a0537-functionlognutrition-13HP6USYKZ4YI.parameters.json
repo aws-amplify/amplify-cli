@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "apifitnesstrackerGraphQLAPIIdOutput",
-    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
+    "ParameterValue": "jzwb5p2vcbd2ldlnlxokgjcjby"
   },
   {
     "ParameterKey": "s3Key",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "e6829a95b8.DeploymentBucketName"
+    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
   },
   {
     "ParameterKey": "env",

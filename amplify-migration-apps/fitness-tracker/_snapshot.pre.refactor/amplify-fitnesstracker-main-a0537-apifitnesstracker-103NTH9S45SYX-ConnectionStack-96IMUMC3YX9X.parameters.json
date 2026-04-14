@@ -9,18 +9,18 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "fe37f7bbef.GraphQLAPIIdOutput"
+    "ParameterValue": "jzwb5p2vcbd2ldlnlxokgjcjby"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef",
-    "ParameterValue": "59b1ed8bf0.GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName"
+    "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef",
+    "ParameterValue": "Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "e6829a95b8.DeploymentBucketName"
+    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseDataSourceE8B787D0Name",
-    "ParameterValue": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+    "ParameterValue": "ExerciseTable"
   }
 ]

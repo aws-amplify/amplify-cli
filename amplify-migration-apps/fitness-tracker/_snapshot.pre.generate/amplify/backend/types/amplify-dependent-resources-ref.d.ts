@@ -1,6 +1,6 @@
 export type AmplifyDependentResourcesAttributes = {
   "api": {
-    "api.d809bc5a09.ApiName.ApiName": {
+    "adminapi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
@@ -10,7 +10,7 @@ export type AmplifyDependentResourcesAttributes = {
       "GraphQLAPIIdOutput": "string",
       "GraphQLAPIKeyOutput": "string"
     },
-    "api.5c8596b905.ApiName.ApiName": {
+    "nutritionapi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"

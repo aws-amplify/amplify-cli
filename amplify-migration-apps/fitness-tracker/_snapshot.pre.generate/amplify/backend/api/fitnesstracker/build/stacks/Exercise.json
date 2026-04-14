@@ -113,7 +113,7 @@
     }
   },
   "Resources": {
-    "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name": {
+    "ExerciseTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -358,7 +358,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
+                    "ExerciseTable",
                     "Arn"
                   ]
                 },
@@ -368,7 +368,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
+                          "ExerciseTable",
                           "Arn"
                         ]
                       },
@@ -400,10 +400,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+            "Ref": "ExerciseTable"
           }
         },
-        "Name": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
+        "Name": "ExerciseTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "ExerciseIAMRole28D09384",
@@ -501,9 +501,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+                "Ref": "ExerciseTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -596,9 +596,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+                "Ref": "ExerciseTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -727,9 +727,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+                "Ref": "ExerciseTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -879,9 +879,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+                "Ref": "ExerciseTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1028,9 +1028,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+                "Ref": "ExerciseTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1067,7 +1067,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1104,7 +1104,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1141,7 +1141,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1172,7 +1172,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.lognutrition.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1182,11 +1182,11 @@
     }
   },
   "Outputs": {
-    "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameStreamArn": {
+    "GetAttExerciseTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
+          "ExerciseTable",
           "StreamArn"
         ]
       },
@@ -1198,16 +1198,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:StreamArn"
+              "GetAtt:ExerciseTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0NameName": {
+    "GetAttExerciseTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+        "Ref": "ExerciseTable"
       },
       "Export": {
         "Name": {
@@ -1217,7 +1217,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name:Name"
+              "GetAtt:ExerciseTable:Name"
             ]
           ]
         }
@@ -1253,9 +1253,9 @@
         ]
       }
     },
-    "transformerrootstackExercise59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name2F3E478ERef": {
+    "transformerrootstackExerciseExerciseTable2F3E478ERef": {
       "Value": {
-        "Ref": "59b1ed8bf0.transformerrootstackExerciseExerciseDataSourceE8B787D0Name"
+        "Ref": "ExerciseTable"
       }
     }
   }

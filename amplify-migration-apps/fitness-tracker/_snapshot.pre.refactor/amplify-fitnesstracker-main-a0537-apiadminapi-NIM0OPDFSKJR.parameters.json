@@ -1,15 +1,15 @@
 [
   {
     "ParameterKey": "functionadminArn",
-    "ParameterValue": "function.admin.Arn"
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-main"
   },
   {
     "ParameterKey": "functionadminName",
-    "ParameterValue": "function.admin.Name"
+    "ParameterValue": "admin-main"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "ea8f06a449.UserPoolId"
+    "ParameterValue": "us-east-1_iguxCIcMS"
   },
   {
     "ParameterKey": "env",
@@ -17,6 +17,6 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsAdminGroupRole",
-    "ParameterValue": "auth.userPoolGroups.AdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_iguxCIcMS-AdminGroupRole"
   }
 ]

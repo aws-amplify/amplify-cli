@@ -4,7 +4,7 @@
     "apiName": "fitnesstracker",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "3f11ed2aac.awsAppsyncAuthenticationType",
+      "mode": "AMAZON_COGNITO_USER_POOLS",
       "cognitoUserPoolId": "authfitnesstracker33f5545533f55455"
     },
     "additionalAuthTypes": [

@@ -46,7 +46,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.d809bc5a09.ApiName.ApiName"
+                        "Ref": "adminapi"
                       },
                       "/",
                       {
@@ -76,7 +76,7 @@
                       },
                       ":",
                       {
-                        "Ref": "api.d809bc5a09.ApiName.ApiName"
+                        "Ref": "adminapi"
                       },
                       "/",
                       {
@@ -97,7 +97,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "api.d809bc5a09.ApiName.ApiName-admin-Admin-group-policy",
+        "PolicyName": "adminapi-admin-Admin-group-policy",
         "Roles": [
           {
             "Fn::Join": [
@@ -113,7 +113,7 @@
         ]
       }
     },
-    "functionadminPermissionapi.d809bc5a09.ApiName.ApiName": {
+    "functionadminPermissionadminapi": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -135,7 +135,7 @@
               },
               ":",
               {
-                "Ref": "api.d809bc5a09.ApiName.ApiName"
+                "Ref": "adminapi"
               },
               "/*/*/*"
             ]
@@ -143,14 +143,14 @@
         }
       }
     },
-    "api.d809bc5a09.ApiName.ApiName": {
+    "adminapi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Body": {
           "swagger": "2.0",
           "info": {
             "version": "2018-05-24T17:52:00Z",
-            "title": "api.d809bc5a09.ApiName.ApiName"
+            "title": "adminapi"
           },
           "host": {
             "Fn::Join": [
@@ -423,10 +423,10 @@
         },
         "Description": "",
         "FailOnWarnings": true,
-        "Name": "api.d809bc5a09.ApiName.ApiName"
+        "Name": "adminapi"
       }
     },
-    "api.d809bc5a09.ApiName.ApiNameDefault4XXResponse1cf3cfdc": {
+    "adminapiDefault4XXResponse1cf3cfdc": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -437,11 +437,11 @@
         },
         "ResponseType": "DEFAULT_4XX",
         "RestApiId": {
-          "Ref": "api.d809bc5a09.ApiName.ApiName"
+          "Ref": "adminapi"
         }
       }
     },
-    "api.d809bc5a09.ApiName.ApiNameDefault5XXResponse1cf3cfdc": {
+    "adminapiDefault5XXResponse1cf3cfdc": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -452,16 +452,16 @@
         },
         "ResponseType": "DEFAULT_5XX",
         "RestApiId": {
-          "Ref": "api.d809bc5a09.ApiName.ApiName"
+          "Ref": "adminapi"
         }
       }
     },
-    "DeploymentAPIGWapi.d809bc5a09.ApiName.ApiName1af07a4b": {
+    "DeploymentAPIGWadminapi1af07a4b": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
         "RestApiId": {
-          "Ref": "api.d809bc5a09.ApiName.ApiName"
+          "Ref": "adminapi"
         },
         "StageName": {
           "Fn::If": [
@@ -474,8 +474,8 @@
         }
       },
       "DependsOn": [
-        "api.d809bc5a09.ApiName.ApiNameDefault4XXResponse1cf3cfdc",
-        "api.d809bc5a09.ApiName.ApiNameDefault5XXResponse1cf3cfdc"
+        "adminapiDefault4XXResponse1cf3cfdc",
+        "adminapiDefault5XXResponse1cf3cfdc"
       ]
     }
   },
@@ -498,7 +498,7 @@
           [
             "https://",
             {
-              "Ref": "api.d809bc5a09.ApiName.ApiName"
+              "Ref": "adminapi"
             },
             ".execute-api.",
             {
@@ -520,12 +520,12 @@
     },
     "ApiName": {
       "Description": "API Friendly name",
-      "Value": "api.d809bc5a09.ApiName.ApiName"
+      "Value": "adminapi"
     },
     "ApiId": {
       "Description": "API ID (prefix of API URL)",
       "Value": {
-        "Ref": "api.d809bc5a09.ApiName.ApiName"
+        "Ref": "adminapi"
       }
     }
   }

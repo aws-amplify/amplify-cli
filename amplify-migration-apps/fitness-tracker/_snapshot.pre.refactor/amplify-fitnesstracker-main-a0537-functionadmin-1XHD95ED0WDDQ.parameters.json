@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "e6829a95b8.DeploymentBucketName"
+    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "ea8f06a449.UserPoolId"
+    "ParameterValue": "us-east-1_iguxCIcMS"
   },
   {
     "ParameterKey": "env",

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "82a4635bb2.LambdaExecutionRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/fitnesstrackerLambdaRole4a08108a-main"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "function.admin.Arn"
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-main"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "function.admin.Name"
+    "OutputValue": "admin-main"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "82a4635bb2.LambdaExecutionRole"
+    "OutputValue": "fitnesstrackerLambdaRole4a08108a-main"
   }
 ]
