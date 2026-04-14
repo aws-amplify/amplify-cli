@@ -1,0 +1,1439 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
+  "Resources": {
+    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x"
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x/Bucket/Resource"
+      }
+    },
+    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucketPolicy8D02EF73": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x/Bucket/Policy/Resource"
+      }
+    },
+    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucketAutoDeleteObjectsCustomResource7F540864": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+        }
+      },
+      "DependsOn": [
+        "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucketPolicy8D02EF73"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "aws:asset:property": "Code"
+      }
+    },
+    "MEDIAVAULTB574F210F1634E3A8D1934F263DA5BEDC529CGEN2ZREBVLAVOGBUCKETNAMEParameter671C205D": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/mediavault2604141556/e2e-sandbox-ee9ada15ef/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME",
+        "Tags": {
+          "amplify:deployment-type": "sandbox",
+          "created-by": "amplify"
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAMEParameter/Resource"
+      }
+    },
+    "thumbnailgengen2xlambdaServiceRoleDAC329D4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "thumbnailgen-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/thumbnailgen-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "thumbnailgengen2xlambdaServiceRoleDefaultPolicy68D95C45": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameters",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/amplify/resource_reference/mediavault2604141556/e2e-sandbox-ee9ada15ef/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "thumbnailgengen2xlambdaServiceRoleDefaultPolicy68D95C45",
+        "Roles": [
+          {
+            "Ref": "thumbnailgengen2xlambdaServiceRoleDAC329D4"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/thumbnailgen-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "thumbnailgengen2xlambdaA0DF74F3": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "c58dbd5561089b6980a71917af7086867587b41a7657c1ef33109378e90e319c.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME\":{\"path\":\"/amplify/resource_reference/mediavault2604141556/e2e-sandbox-ee9ada15ef/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME\"}}",
+            "MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME": "<value will be resolved during runtime>",
+            "STORAGE_MEDIAVAULT_BUCKETNAME": {
+              "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "thumbnailgen-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "thumbnailgengen2xlambdaServiceRoleDAC329D4",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "thumbnailgen-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "thumbnailgengen2xlambdaServiceRoleDAC329D4"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/thumbnailgen-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.c58dbd5561089b6980a71917af7086867587b41a7657c1ef33109378e90e319c",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess5D5103D90": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                        "Arn"
+                      ]
+                    },
+                    "/public/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess5D5103D90",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthunauthenticatedUserRoleF6CEAA65Ref"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess5/Resource"
+      }
+    },
+    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess6C7C35ABC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess6C7C35ABC",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthauthenticatedUserRole44A9CD26Ref"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess6/Resource"
+      }
+    },
+    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess7A4171422": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess7A4171422",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthAdminGroupRole9A66B9E9Ref"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess7/Resource"
+      }
+    },
+    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess81D0DE89A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess81D0DE89A",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthBasicGroupRoleDE3FFCFARef"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess8/Resource"
+      }
+    },
+    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess9EBD2BDD2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess9EBD2BDD2",
+        "Roles": [
+          {
+            "Ref": "thumbnailgengen2xlambdaServiceRoleDAC329D4"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess9/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WOQU+DQBCFf0s5L2MFY6K3FuOxEjgaQ5ZlShbY3WRnaDWE/25gta1HT+9N3rxvJoHk4Qm2G3mmWDV9POgapgMSY1OyVL2QZ6omSmHaj6pHFtnRBvc+RUZ/ahs9R7flZZ9SWCOCsLob2b3ggIxvdYeKKZo/RIhyN2j1daWG+R/sUChZMhq0t+i9JJwFkYGpZK9tm0svDTL65dxlmMUgTd3IyroGO4LDKq+jVaydFVoamAo34FJa9fpycLOgtJJEyAS7RX6AkB3tL2YW2UjsTIHkRq8C7OL/RLl3J92gX94XK69k2WrbzmL5EDq6OyUJ3D/CdtOR1rEfLWuDUAT9BnilPXnSAQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "amplifymediavault2604141556e2esandboxee9ada15efstoragethumbnailgengen2xlambda7D04D45DRef": {
+      "Value": {
+        "Ref": "thumbnailgengen2xlambdaA0DF74F3"
+      }
+    },
+    "amplifymediavault2604141556e2esandboxee9ada15efstoragemediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket169E4DD7Ref": {
+      "Value": {
+        "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+      }
+    }
+  },
+  "Parameters": {
+    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthunauthenticatedUserRoleF6CEAA65Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthauthenticatedUserRole44A9CD26Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthAdminGroupRole9A66B9E9Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthBasicGroupRoleDE3FFCFARef": {
+      "Type": "String"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthUserPoolUserPoolDomainE22147D6Ref",
+    "OutputValue": "a4c26ec7eefa1f70df8c"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthremoveuserfromgroupgen2xlambda34BE2C43Ref",
+    "OutputValue": "removeuserfromgroup-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthUserPoolAppClient510BC3A2Ref",
+    "OutputValue": "1m4mjs0fme0a7n72n581h3ihl8"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthIdentityPoolB3B373ECRef",
+    "OutputValue": "us-east-1:ebcdec2b-4ba5-4fd4-977e-ac05e616f4a2"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthunauthenticatedUserRoleF6CEAA65Ref",
+    "OutputValue": "amplify-mediavault2604141-amplifyAuthunauthenticate-f3LV6NvETe0j"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthUserPoolA3844A5CRef",
+    "OutputValue": "us-east-1_4vLT6YINL"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthauthenticatedUserRole44A9CD26Ref",
+    "OutputValue": "amplify-mediavault2604141-amplifyAuthauthenticatedU-5uRWhwP71C78"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthAdminGroupRole9A66B9E9Ref",
+    "OutputValue": "amplify-mediavault2604141-amplifyAuthAdminGroupRole-cVSQgs7FmBDX"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthaddusertogroupgen2xlambda10EB8DA0Ref",
+    "OutputValue": "addusertogroup-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthBasicGroupRoleDE3FFCFARef",
+    "OutputValue": "amplify-mediavault2604141-amplifyAuthBasicGroupRole-AB1y2KdlXtLJ"
+  }
+]

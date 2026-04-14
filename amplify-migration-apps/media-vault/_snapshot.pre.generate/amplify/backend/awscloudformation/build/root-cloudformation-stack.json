@@ -202,7 +202,7 @@
     "authmediavault1f08412d": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/auth/mediavault1f08412d-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/auth/mediavault1f08412d-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "mediavault1f08412d_identitypool_1f08412d",
           "allowUnauthenticatedIdentities": true,
@@ -254,15 +254,15 @@
           "breakCircularDependency": true,
           "dependsOn": "",
           "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.mediavault.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.mediavault.amplifyapp.com/\"]}",
-          "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"SECRET\",\"client_secret\":\"SECRET\"},{\"ProviderName\":\"Google\",\"client_id\":\"SECRET\",\"client_secret\":\"SECRET\"}]",
-          "env": "main"
+          "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"dummy-facebook-id\",\"client_secret\":\"dummy-facebook-secret\"},{\"ProviderName\":\"Google\",\"client_id\":\"dummy-google-id\",\"client_secret\":\"dummy-google-secret\"}]",
+          "env": "x"
         }
       }
     },
     "authuserPoolGroups": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "Parameters": {
           "AuthRoleArn": {
             "Fn::GetAtt": [
@@ -300,14 +300,14 @@
               "Outputs.IdentityPoolId"
             ]
           },
-          "env": "main"
+          "env": "x"
         }
       }
     },
     "apimediavault": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "mediavault",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
@@ -318,16 +318,16 @@
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "amplify-mediavault-main-61114-deployment",
+          "S3DeploymentBucket": "amplify-mediavault2604141556-x-c529c-deployment",
           "S3DeploymentRootKey": "amplify-appsync-files/a9caa2a9280aa728b448533b4b7827dcc2cbf238",
-          "env": "main"
+          "env": "x"
         }
       }
     },
     "storagemediavault": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "mediavaultb574f210f1634e3a8d1934f263da5bed",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
@@ -371,16 +371,16 @@
               "Outputs.BasicGroupRole"
             ]
           },
-          "env": "main"
+          "env": "x"
         }
       }
     },
     "functionthumbnailgen": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/function/thumbnailgen-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/function/thumbnailgen-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-mediavault-main-61114-deployment",
+          "deploymentBucketName": "amplify-mediavault2604141556-x-c529c-deployment",
           "s3Key": "amplify-builds/thumbnailgen-714677357a74314e2b59-build.zip",
           "storagemediavaultBucketName": {
             "Fn::GetAtt": [
@@ -388,41 +388,41 @@
               "Outputs.BucketName"
             ]
           },
-          "env": "main"
+          "env": "x"
         }
       }
     },
     "functionaddusertogroup": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/function/addusertogroup-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/function/addusertogroup-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-mediavault-main-61114-deployment",
-          "s3Key": "amplify-builds/addusertogroup-75335545303076734834-build.zip",
+          "deploymentBucketName": "amplify-mediavault2604141556-x-c529c-deployment",
+          "s3Key": "amplify-builds/addusertogroup-374b6158625065387750-build.zip",
           "authmediavault1f08412dUserPoolId": {
             "Fn::GetAtt": [
               "authmediavault1f08412d",
               "Outputs.UserPoolId"
             ]
           },
-          "env": "main"
+          "env": "x"
         }
       }
     },
     "functionremoveuserfromgroup": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-main-61114-deployment/amplify-cfn-templates/function/removeuserfromgroup-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-mediavault2604141556-x-c529c-deployment/amplify-cfn-templates/function/removeuserfromgroup-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-mediavault-main-61114-deployment",
-          "s3Key": "amplify-builds/removeuserfromgroup-7a4c47616747764e436c-build.zip",
+          "deploymentBucketName": "amplify-mediavault2604141556-x-c529c-deployment",
+          "s3Key": "amplify-builds/removeuserfromgroup-6d6f39557861676c6c56-build.zip",
           "authmediavault1f08412dUserPoolId": {
             "Fn::GetAtt": [
               "authmediavault1f08412d",
               "Outputs.UserPoolId"
             ]
           },
-          "env": "main"
+          "env": "x"
         }
       }
     },

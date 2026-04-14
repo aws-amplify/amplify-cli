@@ -1,6 +1,6 @@
 {
   "whyContinueWithGen1": "Prefer not to answer",
-  "projectName": "mediavault",
+  "projectName": "mediavault2604141556",
   "version": "3.1",
   "frontend": "javascript",
   "javascript": {
@@ -8,7 +8,7 @@
     "config": {
       "SourceDir": "src",
       "DistributionDir": "dist",
-      "BuildCommand": "npm run-script build",
+      "BuildCommand": "npm run build",
       "StartCommand": "npm run-script start"
     }
   },

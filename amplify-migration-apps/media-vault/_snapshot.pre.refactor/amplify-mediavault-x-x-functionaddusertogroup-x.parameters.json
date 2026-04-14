@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/addusertogroup-374b6158625065387750-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-mediavault2604141556-x-c529c-deployment"
+  },
+  {
+    "ParameterKey": "authmediavault1f08412dUserPoolId",
+    "ParameterValue": "us-east-1_AIdVOMj0t"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]

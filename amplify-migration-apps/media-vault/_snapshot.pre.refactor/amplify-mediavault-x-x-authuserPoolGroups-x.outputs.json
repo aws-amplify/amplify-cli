@@ -1,0 +1,10 @@
+[
+  {
+    "OutputKey": "BasicGroupRole",
+    "OutputValue": "arn:aws:iam::123456789012:role/us-east-1_AIdVOMj0t-BasicGroupRole"
+  },
+  {
+    "OutputKey": "AdminGroupRole",
+    "OutputValue": "arn:aws:iam::123456789012:role/us-east-1_AIdVOMj0t-AdminGroupRole"
+  }
+]
