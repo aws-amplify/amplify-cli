@@ -1,0 +1,17 @@
+[
+  {
+    "OutputKey": "ApiName",
+    "OutputValue": "adminapi",
+    "Description": "API Friendly name"
+  },
+  {
+    "OutputKey": "RootUrl",
+    "OutputValue": "https://va98c9bf4h.execute-api.us-east-1.amazonaws.com/x",
+    "Description": "Root URL of the API gateway"
+  },
+  {
+    "OutputKey": "ApiId",
+    "OutputValue": "va98c9bf4h",
+    "Description": "API ID (prefix of API URL)"
+  }
+]

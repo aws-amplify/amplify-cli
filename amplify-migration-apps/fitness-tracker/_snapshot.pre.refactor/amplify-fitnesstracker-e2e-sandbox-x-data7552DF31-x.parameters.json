@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthunauthenticatedUserRole7A7B748ARef",
+    "ParameterValue": "amplify-fitnesstra2604141-amplifyAuthunauthenticate-jZqY0hlY3tqb"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthUserPoolDEAF9AB6Ref",
+    "ParameterValue": "us-east-1_KSGIBuFxP"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthIdentityPool289A3103Ref",
+    "ParameterValue": "us-east-1:27969919-a87f-4628-93c0-82ca0ca0ca8d"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthauthenticatedUserRole4E61C272Ref",
+    "ParameterValue": "amplify-fitnesstra2604141-amplifyAuthauthenticatedU-eAbsSNPT21ru"
+  }
+]

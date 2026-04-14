@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26restapistackadminapiRestApiDeploymentStageprod2AAF3604Ref",
+    "OutputValue": "prod"
+  },
+  {
+    "OutputKey": "RestApiEndpoint0551178A",
+    "OutputValue": "https://r5ekb8d00e.execute-api.us-east-1.amazonaws.com/prod/"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26restapistackadminapiRestApi37DFB966Ref",
+    "OutputValue": "r5ekb8d00e"
+  }
+]

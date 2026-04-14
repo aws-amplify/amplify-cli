@@ -1,0 +1,35 @@
+[
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_x7JXn9m7Y",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "2mp6qo4mgstntulpvcrmh8eqql",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "6sgrsst0a519s4is59in56tr0s",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:288277bf-a7fc-4932-b533-1dc0ccb1c16e",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_x7JXn9m7Y",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "fitnesstracker33f55455_identitypool_33f55455__x"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "fitnesstracker33f55455_userpool_33f55455"
+  }
+]

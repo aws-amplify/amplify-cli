@@ -1,0 +1,38 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthUserPoolDEAF9AB6Ref",
+    "OutputValue": "us-east-1_KSGIBuFxP"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthUserPoolAppClient9FE7FDCARef",
+    "OutputValue": "37ra1q9uq94arb6i1jjmo04v76"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthIdentityPool289A3103Ref",
+    "OutputValue": "us-east-1:27969919-a87f-4628-93c0-82ca0ca0ca8d"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authadmingen2xlambda63D7C9A6Ref",
+    "OutputValue": "admin-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authfitnesstracker33f5545533f55455PreSignupgen2xlambdaA9112649Ref",
+    "OutputValue": "fitnesstracker33f5545533f55455PreSignup-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authadmingen2xlambda63D7C9A6Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthunauthenticatedUserRole7A7B748ARef",
+    "OutputValue": "amplify-fitnesstra2604141-amplifyAuthunauthenticate-jZqY0hlY3tqb"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthAdminGroupRoleC441080DRef",
+    "OutputValue": "amplify-fitnesstra2604141-amplifyAuthAdminGroupRole-p8dqVx2w8DTh"
+  },
+  {
+    "OutputKey": "amplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthauthenticatedUserRole4E61C272Ref",
+    "OutputValue": "amplify-fitnesstra2604141-amplifyAuthauthenticatedU-eAbsSNPT21ru"
+  }
+]

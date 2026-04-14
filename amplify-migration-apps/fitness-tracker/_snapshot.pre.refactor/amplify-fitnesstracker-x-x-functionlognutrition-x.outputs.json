@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/fitnesstrackerLambdaRole2824d4b4-x"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "lognutrition-x"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "fitnesstrackerLambdaRole2824d4b4-x"
+  }
+]

@@ -426,7 +426,7 @@
         "Name": "adminapi"
       }
     },
-    "adminapiDefault4XXResponse0e27c647": {
+    "adminapiDefault4XXResponsef3348da5": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -441,7 +441,7 @@
         }
       }
     },
-    "adminapiDefault5XXResponse0e27c647": {
+    "adminapiDefault5XXResponsef3348da5": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -456,7 +456,7 @@
         }
       }
     },
-    "DeploymentAPIGWadminapiad7711e6": {
+    "DeploymentAPIGWadminapia5e2b93e": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
@@ -474,8 +474,8 @@
         }
       },
       "DependsOn": [
-        "adminapiDefault4XXResponse0e27c647",
-        "adminapiDefault5XXResponse0e27c647"
+        "adminapiDefault4XXResponsef3348da5",
+        "adminapiDefault5XXResponsef3348da5"
       ]
     }
   },
