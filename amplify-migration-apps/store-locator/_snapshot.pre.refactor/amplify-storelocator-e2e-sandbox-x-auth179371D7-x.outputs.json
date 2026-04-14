@@ -1,30 +1,30 @@
 [
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref",
-    "OutputValue": "amplify-storelocat2604141-amplifyAuthstoreLocatorAd-HRSYuNgDRFUJ"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef",
+    "OutputValue": "amplify-storelocat2604141-amplifyAuthunauthenticate-D4gNY4N0a2XU"
   },
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthIdentityPool2C01BDB1Ref",
-    "OutputValue": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref",
+    "OutputValue": "amplify-storelocat2604141-amplifyAuthstoreLocatorAd-uOq1IDgNXoe3"
   },
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authstorelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambda60AEE02FRef",
-    "OutputValue": "storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda02482847Ref",
+    "OutputValue": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
   },
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolAppClient3B9C5E79Ref",
-    "OutputValue": "7utemp60o7c7i3ffem295jm3c6"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPool66E805C5Ref",
+    "OutputValue": "us-east-1_0BR3dEawx"
   },
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolC9AD7681Ref",
-    "OutputValue": "us-east-1_JH3qi79KG"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPoolAppClient07C98E08Ref",
+    "OutputValue": "635genchrcmt5d9t2osf8c01sp"
   },
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef",
-    "OutputValue": "amplify-storelocat2604141-amplifyAuthauthenticatedU-n26R4tQRnkfj"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthIdentityPool59D0B764Ref",
+    "OutputValue": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
   },
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef",
-    "OutputValue": "amplify-storelocat2604141-amplifyAuthunauthenticate-nPiIvjy3BKf9"
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref",
+    "OutputValue": "amplify-storelocat2604141-amplifyAuthauthenticatedU-07X2CzBJ7RpS"
   }
 ]

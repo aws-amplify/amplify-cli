@@ -9,10 +9,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-kghehxwhwe"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-rbroqinlsf"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorMap-kghehxwhwe"
+    "OutputValue": "storeLocatorMap-rbroqinlsf"
   }
 ]

@@ -31,7 +31,7 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        "kghehxwhwe",
+        "rbroqinlsf",
         "NONE"
       ]
     }
@@ -52,7 +52,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:47f9370c-40b9-40ba-a1eb-04431fc16671"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:2f960112-b5ca-48c4-b929-a4eb7bbf1b26"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -65,7 +65,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_sI5uPf6R3",
+              "us-east-1_KG33XJlke",
               "-storeLocatorAdminGroupRole"
             ]
           ]
@@ -75,7 +75,7 @@
   },
   "Outputs": {
     "storeLocatorAdminGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_sI5uPf6R3-storeLocatorAdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_KG33XJlke-storeLocatorAdminGroupRole"
     }
   }
 }

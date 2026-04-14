@@ -108,7 +108,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap/storeLocatorMap/CustomMapLambdaServiceRole4EE7732C"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap/storeLocatorMap/CustomMapLambdaServiceRole4EE7732C"
       }
     },
     "storeLocatorMapCustomMapLambdaServiceRoleDefaultPolicy983FDD4ECEADC647": {
@@ -145,7 +145,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":map/storeLocatorMap-gen2-kghehxwhwe"
+                    ":map/storeLocatorMap-gen2-rbroqinlsf"
                   ]
                 ]
               }
@@ -163,7 +163,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap/storeLocatorMap/CustomMapLambdaServiceRoleDefaultPolicy983FDD4E"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap/storeLocatorMap/CustomMapLambdaServiceRoleDefaultPolicy983FDD4E"
       }
     },
     "storeLocatorMapCustomMapLambda51D5D43019B4B7E6": {
@@ -199,7 +199,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap/storeLocatorMap/CustomMapLambda51D5D430"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap/storeLocatorMap/CustomMapLambda51D5D430"
       }
     },
     "storeLocatorMapCustomMap3D69EC7C": {
@@ -211,7 +211,7 @@
             "Arn"
           ]
         },
-        "mapName": "storeLocatorMap-gen2-kghehxwhwe",
+        "mapName": "storeLocatorMap-gen2-rbroqinlsf",
         "mapStyle": "VectorEsriStreets",
         "region": {
           "Fn::FindInMap": [
@@ -222,12 +222,12 @@
             "locationServiceRegion"
           ]
         },
-        "env": "gen2-kghehxwhwe"
+        "env": "gen2-rbroqinlsf"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap/storeLocatorMap/CustomMap"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap/storeLocatorMap/CustomMap"
       }
     },
     "storeLocatorMapMapPolicy388540F3": {
@@ -253,23 +253,23 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storeLocatorMap-gen2-kghehxwhwePolicy",
+        "PolicyName": "storeLocatorMap-gen2-rbroqinlsfPolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef"
+            "Ref": "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref"
           },
           {
-            "Ref": "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef"
+            "Ref": "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef"
           },
           {
-            "Ref": "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref"
+            "Ref": "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap/storeLocatorMap/MapPolicy"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap/storeLocatorMap/MapPolicy"
       }
     },
     "CDKMetadata": {
@@ -278,7 +278,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQrCMBBA4bN0n441iOA64M4f6gEkTVKZNpmUZmKR0LtLdfUWH0+CPJygqfSSamPH2mMH5eoSO/tgbUaherroaUJ6Cb2kZ0EdoKie2ujdhvfo0XxW4XXorAbV0zmTYYy0bqxy4hhal2KezW+4ZZ4yr4KidTCk3VtK2B+hqYaEWM+ZGIOD9t8vaxBJhJ8AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -314,7 +314,7 @@
         ]
       }
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorMapCustomMapC3D32EB3MapName": {
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorMapCustomMap81AEC47CMapName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorMapCustomMap3D69EC7C",
@@ -590,13 +590,13 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef": {
+    "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref": {
       "Type": "String"
     },
-    "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef": {
+    "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef": {
       "Type": "String"
     },
-    "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref": {
+    "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref": {
       "Type": "String"
     }
   }

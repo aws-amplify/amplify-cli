@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-storelocat2604141320-kghehxwhwe-f80eb-authRole"
+    "OutputValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-authRole"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141320-kghehxwhwe-f80eb-unauthRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141401-rbroqinlsf-9bc6f-unauthRole"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141320-kghehxwhwe-f80eb-authRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141401-rbroqinlsf-9bc6f-authRole"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-Region"
+    "ExportName": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-storelocat2604141320-kghehxwhwe-f80eb-deployment",
+    "OutputValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-deployment",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-DeploymentBucketName"
+    "ExportName": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-storelocat2604141320-kghehxwhwe-f80eb-unauthRole"
+    "OutputValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-unauthRole"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-storelocat2604141320-kghehxwhwe-f80eb",
+    "OutputValue": "amplify-storelocat2604141401-rbroqinlsf-9bc6f",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-StackName"
+    "ExportName": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141320-kghehxwhwe-f80eb/4f5acee0-3826-11f1-a08c-12e0028cc147",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-rbroqinlsf-9bc6f/f9f9c180-382b-11f1-ae48-129146347ba5",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-StackId"
+    "ExportName": "amplify-storelocat2604141401-rbroqinlsf-9bc6f-StackId"
   }
 ]

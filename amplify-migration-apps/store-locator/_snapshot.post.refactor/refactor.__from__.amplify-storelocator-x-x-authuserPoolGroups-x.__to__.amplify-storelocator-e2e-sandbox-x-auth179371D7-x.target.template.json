@@ -21,7 +21,7 @@
         "EmailVerificationMessage": "Your verification code is {####}",
         "EmailVerificationSubject": "Your verification code",
         "LambdaConfig": {
-          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe"
+          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
         },
         "MfaConfiguration": "OFF",
         "Policies": {
@@ -68,21 +68,21 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolPostConfirmationCognitoE7E727CF": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe",
+        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf",
         "Principal": "cognito-idp.amazonaws.com",
-        "SourceArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_JH3qi79KG"
+        "SourceArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_0BR3dEawx"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPool/PostConfirmationCognito"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/UserPool/PostConfirmationCognito"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -100,12 +100,12 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_JH3qi79KG"
+        "UserPoolId": "us-east-1_0BR3dEawx"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -134,12 +134,12 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_JH3qi79KG"
+        "UserPoolId": "us-east-1_0BR3dEawx"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -148,7 +148,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "7utemp60o7c7i3ffem295jm3c6",
+            "ClientId": "635genchrcmt5d9t2osf8c01sp",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -158,7 +158,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_JH3qi79KG"
+                  "us-east-1_0BR3dEawx"
                 ]
               ]
             }
@@ -183,7 +183,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
@@ -195,7 +195,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -227,7 +227,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -239,7 +239,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -271,13 +271,13 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43",
+        "IdentityPoolId": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -290,9 +290,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_JH3qi79KG",
+                  "us-east-1_0BR3dEawx",
                   ":",
-                  "7utemp60o7c7i3ffem295jm3c6"
+                  "635genchrcmt5d9t2osf8c01sp"
                 ]
               ]
             },
@@ -300,14 +300,14 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthunauthenticate-nPiIvjy3BKf9",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthauthenticatedU-n26R4tQRnkfj"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthunauthenticate-D4gNY4N0a2XU",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-amplifyAuthauthenticatedU-07X2CzBJ7RpS"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     },
     "amplifyAuthstoreLocatorAdminGroupRoleDECAB489": {
@@ -319,7 +319,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -351,10 +351,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/amplifyAuth/storeLocatorAdminGroupRole/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/amplifyAuth/storeLocatorAdminGroupRole/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambdaServiceRoleCD911C10": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRole0A5D975F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -390,7 +390,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe"
+            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
           },
           {
             "Key": "created-by",
@@ -401,10 +401,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf-lambda/ServiceRole/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambdaServiceRoleDefaultPolicy86D7CB05": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRoleDefaultPolicyCD888872": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -428,7 +428,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter/amplify/resource_reference/storelocat2604141320/e2e-sandbox-2703ad8188/AMPLIFY_AUTH_USERPOOL_ID"
+                    ":parameter/amplify/resource_reference/storelocat2604141401/e2e-sandbox-a2d2be7e95/AMPLIFY_AUTH_USERPOOL_ID"
                   ]
                 ]
               }
@@ -436,18 +436,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambdaServiceRoleDefaultPolicy86D7CB05",
+        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRoleDefaultPolicyCD888872",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambdaServiceRoleCD911C10"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRole0A5D975F"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambdaE4829A3E": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda5D363B0B": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -463,19 +463,19 @@
           "Variables": {
             "GROUP": "",
             "MODULES": "add-to-group",
-            "ENV": "gen2-kghehxwhwe",
+            "ENV": "gen2-rbroqinlsf",
             "REGION": "us-east-1",
-            "AMPLIFY_SSM_ENV_CONFIG": "{\"AMPLIFY_AUTH_USERPOOL_ID\":{\"path\":\"/amplify/resource_reference/storelocat2604141320/e2e-sandbox-2703ad8188/AMPLIFY_AUTH_USERPOOL_ID\"}}",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"AMPLIFY_AUTH_USERPOOL_ID\":{\"path\":\"/amplify/resource_reference/storelocat2604141401/e2e-sandbox-a2d2be7e95/AMPLIFY_AUTH_USERPOOL_ID\"}}",
             "AMPLIFY_AUTH_USERPOOL_ID": "<value will be resolved during runtime>"
           }
         },
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe",
+        "FunctionName": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf",
         "Handler": "index.handler",
         "MemorySize": 512,
-        "Role": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-storelocator41a9495f41a94-KSFPnS9QkWRJ",
+        "Role": "arn:aws:iam::123456789012:role/amplify-storelocat2604141-storelocator41a9495f41a94-CYBHaOJKpvND",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -484,7 +484,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe"
+            "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
           },
           {
             "Key": "created-by",
@@ -496,7 +496,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe-lambda/Resource",
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf-lambda/Resource",
         "aws:asset:path": "asset.160afe14228f538544d3f57eba2a67b081afe243d3926aab05a998f3553f00e0",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -505,18 +505,18 @@
     "AMPLIFYAUTHUSERPOOLIDParameterCC466CA3": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/storelocat2604141320/e2e-sandbox-2703ad8188/AMPLIFY_AUTH_USERPOOL_ID",
+        "Name": "/amplify/resource_reference/storelocat2604141401/e2e-sandbox-a2d2be7e95/AMPLIFY_AUTH_USERPOOL_ID",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "us-east-1_JH3qi79KG"
+        "Value": "us-east-1_0BR3dEawx"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
       }
     },
     "userpoolAccess13FEE5419": {
@@ -534,7 +534,7 @@
                 "cognito-idp:UpdateGroup"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_JH3qi79KG"
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_0BR3dEawx"
             }
           ],
           "Version": "2012-10-17"
@@ -542,14 +542,14 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambdaServiceRoleCD911C10"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambdaServiceRole0A5D975F"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/userpoolAccess1/Resource"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/userpoolAccess1/Resource"
       }
     },
     "CDKMetadata": {
@@ -558,7 +558,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/12NzWrDQAyEnyX3tZo6pdBjEmjpJZiYns1mrbiy96es5Iaw+N3LOrgNPc2MpPlUQvn0AuuVvnBh2qGwdIJ0QBZsa9FmUPrCTTKh8yQB0gdjrEKwan/2v34xe0vo5X71N3lv0QvJdSnf52OwuBXR5tP967/FMH5Nymp3ajWk/dlXGB0xU/D57nX0Rij4SZF2kDIoj2etgiVzzfHmFkzjQ4s9w2GWhaB402hmFIZtFsUb2I1mQNlpRsXsINUSyXeVjtqhYJzRS5gmNfdq0R35blL5C/T88F2W8PgM61XPREUcvZBDON70B8a/xNt+AQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     },
@@ -568,8 +568,8 @@
         "Description": "override success",
         "GroupName": "storeLocatorAdmin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_sI5uPf6R3-storeLocatorAdminGroupRole",
-        "UserPoolId": "us-east-1_sI5uPf6R3"
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_KG33XJlke-storeLocatorAdminGroupRole",
+        "UserPoolId": "us-east-1_KG33XJlke"
       }
     }
   },
@@ -840,26 +840,26 @@
     }
   },
   "Outputs": {
-    "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolC9AD7681Ref": {
-      "Value": "us-east-1_JH3qi79KG"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPool66E805C5Ref": {
+      "Value": "us-east-1_0BR3dEawx"
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolAppClient3B9C5E79Ref": {
-      "Value": "7utemp60o7c7i3ffem295jm3c6"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPoolAppClient07C98E08Ref": {
+      "Value": "635genchrcmt5d9t2osf8c01sp"
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthIdentityPool2C01BDB1Ref": {
-      "Value": "us-east-1:afecf7ea-0d92-45b5-a82b-1994d09b4e43"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthIdentityPool59D0B764Ref": {
+      "Value": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188authstorelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambda60AEE02FRef": {
-      "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-kghehxwhwe"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda02482847Ref": {
+      "Value": "storelocator41a9495f41a9495fPostConfirmation-gen2-rbroqinlsf"
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef": {
-      "Value": "amplify-storelocat2604141-amplifyAuthauthenticatedU-n26R4tQRnkfj"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref": {
+      "Value": "amplify-storelocat2604141-amplifyAuthauthenticatedU-07X2CzBJ7RpS"
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef": {
-      "Value": "amplify-storelocat2604141-amplifyAuthunauthenticate-nPiIvjy3BKf9"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef": {
+      "Value": "amplify-storelocat2604141-amplifyAuthunauthenticate-D4gNY4N0a2XU"
     },
-    "amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref": {
-      "Value": "amplify-storelocat2604141-amplifyAuthstoreLocatorAd-HRSYuNgDRFUJ"
+    "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref": {
+      "Value": "amplify-storelocat2604141-amplifyAuthstoreLocatorAd-uOq1IDgNXoe3"
     }
   }
 }

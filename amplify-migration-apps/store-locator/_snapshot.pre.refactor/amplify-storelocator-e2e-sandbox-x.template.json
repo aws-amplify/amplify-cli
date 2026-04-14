@@ -60,7 +60,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolC9AD7681Ref"
+          "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPool66E805C5Ref"
         ]
       }
     },
@@ -68,7 +68,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolAppClient3B9C5E79Ref"
+          "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPoolAppClient07C98E08Ref"
         ]
       }
     },
@@ -76,7 +76,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthIdentityPool2C01BDB1Ref"
+          "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthIdentityPool59D0B764Ref"
         ]
       }
     },
@@ -134,7 +134,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthUserPoolAppClient3B9C5E79Ref"
+          "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPoolAppClient07C98E08Ref"
         ]
       }
     },
@@ -150,7 +150,7 @@
             {
               "Fn::GetAtt": [
                 "auth179371D7",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authstorelocator41a9495f41a9495fPostConfirmationgen2kghehxwhwelambda60AEE02FRef"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2rbroqinlsflambda02482847Ref"
               ]
             },
             "\"]"
@@ -166,7 +166,7 @@
             "{\"geo\":{\"aws_region\":\"",
             {
               "Fn::FindInMap": [
-                "MappingCopyRegionMappingc8714f4ce27ffbeffb72a88787df036ab2d29a6b0a",
+                "MappingCopyRegionMappingc83cad6bf4db2574f6ccd27822b390db07766e6923",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -177,42 +177,42 @@
             {
               "Fn::GetAtt": [
                 "geostoreLocatorMap6A22ACC1",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorMapCustomMapC3D32EB3MapName"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorMapCustomMap81AEC47CMapName"
               ]
             },
             "\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorMap6A22ACC1",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorMapCustomMapC3D32EB3MapName"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorMapCustomMap81AEC47CMapName"
               ]
             },
             "\"},\"search_indices\":{\"items\":[\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorSearch516CF59F",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorSearchCustomPlaceIndex41A513ADIndexName"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorSearchCustomPlaceIndexE0C4C1CDIndexName"
               ]
             },
             "\"],\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorSearch516CF59F",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorSearchCustomPlaceIndex41A513ADIndexName"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorSearchCustomPlaceIndexE0C4C1CDIndexName"
               ]
             },
             "\"},\"geofence_collections\":{\"items\":[\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorGeofenceEAAC8D05",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorGeofenceCustomGeofenceCollectionD3BD18C8CollectionName"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorGeofenceCustomGeofenceCollection6945292DCollectionName"
               ]
             },
             "\"],\"default\":\"",
             {
               "Fn::GetAtt": [
                 "geostoreLocatorGeofenceEAAC8D05",
-                "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorGeofenceCustomGeofenceCollectionD3BD18C8CollectionName"
+                "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorGeofenceCustomGeofenceCollection6945292DCollectionName"
               ]
             },
             "\"}},\"version\":\"1.4\"}"
@@ -251,7 +251,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/7b779b23c5c7d52caf30690311db6c494f9d7a1b6a540e3cb7fcc9a8c210aaf5.json"
+              "/1300573d0188f52d35e6bb32a390d3a251a00df0233aee1a237eaca25f5166c0.json"
             ]
           ]
         }
@@ -259,8 +259,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifystorelocat2604141320e2esandbox2703ad8188auth6FC259F3.nested.template.json",
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/auth.NestedStack/auth.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141401e2esandboxa2d2be7e95auth1CF95E18.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -268,22 +268,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref"
             ]
           },
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef"
             ]
           },
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref"
             ]
           }
         },
@@ -313,7 +313,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/01ad5aa5786f309b401ee55943887ee52cbc6dd101065a66b85a87054b9d2324.json"
+              "/534446be518edc47ee529391f5f90f14b6ab4b68a1a884f2a77d2fd2c541a876.json"
             ]
           ]
         }
@@ -321,8 +321,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorMap.NestedStack/geostoreLocatorMap.NestedStackResource",
-        "aws:asset:path": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorMap36D8677D.nested.template.json",
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorMap.NestedStack/geostoreLocatorMap.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorMapEFD54E08.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -330,22 +330,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthauthenticatedUserRole40BD317DRef"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref"
             ]
           },
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthunauthenticatedUserRoleF63ED37BRef"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef"
             ]
           },
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref"
             ]
           }
         },
@@ -375,7 +375,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/08d7824c67bad79c12e91e9f33a64c745b60fd7c4a4dfd31a04e5bc5056941b4.json"
+              "/62d97a26d0dfec08f8dc57bfad72aea7fd207ef1198202007ffc950e935571ca.json"
             ]
           ]
         }
@@ -383,8 +383,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorSearch.NestedStack/geostoreLocatorSearch.NestedStackResource",
-        "aws:asset:path": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorSearch01ED04C6.nested.template.json",
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorSearch.NestedStack/geostoreLocatorSearch.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorSearchDD7BCC23.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -392,10 +392,10 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifystorelocat2604141320e2esandbox2703ad8188authNestedStackauthNestedStackResource39CF5A0COutputsamplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref": {
+          "referencetoamplifystorelocat2604141401e2esandboxa2d2be7e95authNestedStackauthNestedStackResource84005F6AOutputsamplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifystorelocat2604141320e2esandbox2703ad8188authamplifyAuthstoreLocatorAdminGroupRole9B296F58Ref"
+              "Outputs.amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref"
             ]
           }
         },
@@ -425,7 +425,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/89e2a3457029f166e80ba048e624b21383865595d1b1fe17b166d48ff58b9a84.json"
+              "/c7d72f60de525362ae57410c30e0b4ec24b52c1ad47409999316d92053f7face.json"
             ]
           ]
         }
@@ -433,8 +433,8 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/geostoreLocatorGeofence.NestedStack/geostoreLocatorGeofence.NestedStackResource",
-        "aws:asset:path": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorGeofenceB9CE1850.nested.template.json",
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/geostoreLocatorGeofence.NestedStack/geostoreLocatorGeofence.NestedStackResource",
+        "aws:asset:path": "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorGeofence68F65A11.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -444,7 +444,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzKx1DNQTCwv1k1OydbNyUzSqw4uSUzO1nFOy/MvLSkoLQGxwEK1Onn5Kal6WcX6ZUZGeoZmegaKWcWZmbpFpXklmbmpekEQGgDI4ZJeVAAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-storelocat2604141320-e2e-sandbox-2703ad8188/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -716,7 +716,7 @@
     }
   },
   "Mappings": {
-    "MappingCopyRegionMappingc8714f4ce27ffbeffb72a88787df036ab2d29a6b0a": {
+    "MappingCopyRegionMappingc83cad6bf4db2574f6ccd27822b390db07766e6923": {
       "us-east-1": {
         "locationServiceRegion": "us-east-1"
       },

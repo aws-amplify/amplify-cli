@@ -1,5 +1,9 @@
 [
   {
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorMapCustomMap81AEC47CMapName",
+    "OutputValue": "storeLocatorMap-gen2-rbroqinlsf"
+  },
+  {
     "OutputKey": "Style",
     "OutputValue": "VectorEsriStreets"
   },
@@ -9,14 +13,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-kghehxwhwe"
-  },
-  {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorMapCustomMapC3D32EB3MapName",
-    "OutputValue": "storeLocatorMap-gen2-kghehxwhwe"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-rbroqinlsf"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorMap-gen2-kghehxwhwe"
+    "OutputValue": "storeLocatorMap-gen2-rbroqinlsf"
   }
 ]

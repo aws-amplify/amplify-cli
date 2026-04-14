@@ -1,18 +1,18 @@
 [
   {
-    "OutputKey": "amplifystorelocat2604141320e2esandbox2703ad8188geostoreLocatorSearchCustomPlaceIndex41A513ADIndexName",
-    "OutputValue": "storeLocatorSearch-gen2-kghehxwhwe"
-  },
-  {
     "OutputKey": "Region",
     "OutputValue": "us-east-1"
   },
   {
+    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95geostoreLocatorSearchCustomPlaceIndexE0C4C1CDIndexName",
+    "OutputValue": "storeLocatorSearch-gen2-rbroqinlsf"
+  },
+  {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-kghehxwhwe"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-rbroqinlsf"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "storeLocatorSearch-gen2-kghehxwhwe"
+    "OutputValue": "storeLocatorSearch-gen2-rbroqinlsf"
   }
 ]

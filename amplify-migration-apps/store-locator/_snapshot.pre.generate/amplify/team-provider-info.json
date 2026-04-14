@@ -1,16 +1,16 @@
 {
-  "kghehxwhwe": {
+  "x": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604141320-kghehxwhwe-f80eb-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604141320-kghehxwhwe-f80eb-authRole",
+      "AuthRoleName": "amplify-storelocator-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-deployment",
-      "UnauthRoleName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-unauthRole",
-      "StackName": "amplify-storelocat2604141320-kghehxwhwe-f80eb",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141320-kghehxwhwe-f80eb/4f5acee0-3826-11f1-a08c-12e0028cc147",
+      "DeploymentBucketName": "amplify-storelocator-x-x-deployment",
+      "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
+      "StackName": "amplify-storelocator-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/f9f9c180-382b-11f1-ae48-129146347ba5",
       "AmplifyAppId": "storelocator",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocat2604141320-kghehxwhwe-f80eb-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
@@ -19,7 +19,7 @@
       },
       "function": {
         "storelocator41a9495f41a9495fPostConfirmation": {
-          "deploymentBucketName": "amplify-storelocat2604141320-kghehxwhwe-f80eb-deployment",
+          "deploymentBucketName": "amplify-storelocator-x-x-deployment",
           "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip"
         }
       },
