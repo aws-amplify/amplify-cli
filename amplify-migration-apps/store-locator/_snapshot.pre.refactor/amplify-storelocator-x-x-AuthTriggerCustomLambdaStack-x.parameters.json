@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "userpoolId",
+    "ParameterValue": "14974b1dfe.UserPoolId"
+  },
+  {
+    "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationLambdaExecutionRole",
+    "ParameterValue": "e4977f9816.LambdaExecutionRoleArn"
+  },
+  {
+    "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:e4977f9816.LambdaExecutionRole"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "userpoolArn",
+    "ParameterValue": "14974b1dfe.UserPoolArn"
+  },
+  {
+    "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",
+    "ParameterValue": "e4977f9816.LambdaExecutionRole"
+  }
+]

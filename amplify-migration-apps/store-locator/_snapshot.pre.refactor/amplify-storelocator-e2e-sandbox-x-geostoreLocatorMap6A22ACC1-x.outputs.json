@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "Style",
+    "OutputValue": "VectorEsriStreets"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "storeLocatorMap-gen2-x"
+  },
+  {
+    "OutputKey": "amplifystorelocatore2esandbox72bbda7fbageostoreLocatorMapCustomMap4AAC468FMapName",
+    "OutputValue": "storeLocatorMap-gen2-x"
+  }
+]

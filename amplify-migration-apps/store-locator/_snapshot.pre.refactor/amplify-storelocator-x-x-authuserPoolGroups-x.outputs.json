@@ -1,0 +1,6 @@
+[
+  {
+    "OutputKey": "storeLocatorAdminGroupRole",
+    "OutputValue": "arn:aws:iam::123456789012:role/14974b1dfe.UserPoolId-storeLocatorAdminGroupRole"
+  }
+]
