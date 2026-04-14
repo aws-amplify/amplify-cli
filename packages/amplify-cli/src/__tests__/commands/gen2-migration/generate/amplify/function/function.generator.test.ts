@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { FunctionGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/function/function.generator';
+import { FunctionGenerator, extractLayers } from '../../../../../../commands/gen2-migration/generate/amplify/function/function.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
@@ -188,6 +188,69 @@ describe('FunctionGenerator', () => {
         expect.any(String),
         expect.objectContaining({ recursive: true }),
       );
+    });
+  });
+});
+
+describe('extractLayers', () => {
+  it('returns undefined for undefined input', () => {
+    expect(extractLayers(undefined)).toBeUndefined();
+  });
+
+  it('returns undefined for an empty array', () => {
+    expect(extractLayers([])).toBeUndefined();
+  });
+
+  it('skips layers with missing Arn and returns undefined when no valid layers remain', () => {
+    expect(extractLayers([{ CodeSize: 100 }])).toBeUndefined();
+  });
+
+  it('skips layers with missing Arn while still extracting valid ones', () => {
+    const result = extractLayers([{ CodeSize: 100 }, { Arn: 'arn:aws:lambda:us-east-1:123456789012:layer:ValidLayer:1', CodeSize: 200 }]);
+    expect(result).toEqual({ ValidLayer: 'arn:aws:lambda:us-east-1:123456789012:layer:ValidLayer:1' });
+  });
+
+  it('throws on malformed ARN with too few segments', () => {
+    expect(() => extractLayers([{ Arn: 'arn:aws:lambda:us-east-1:123456789012:layer', CodeSize: 0 }])).toThrow(
+      'Malformed Lambda layer ARN (expected at least 8 colon-delimited segments)',
+    );
+  });
+
+  it('throws when ARN resource type is not "layer"', () => {
+    expect(() => extractLayers([{ Arn: 'arn:aws:lambda:us-east-1:123456789012:function:myFunc:1', CodeSize: 0 }])).toThrow(
+      "Expected Lambda layer ARN but got resource type 'function'",
+    );
+  });
+
+  it('throws on duplicate layer names with a descriptive message', () => {
+    expect(() =>
+      extractLayers([
+        { Arn: 'arn:aws:lambda:us-east-1:111111111111:layer:SharedUtils:1', CodeSize: 0 },
+        { Arn: 'arn:aws:lambda:us-east-1:222222222222:layer:SharedUtils:2', CodeSize: 0 },
+      ]),
+    ).toThrow("Duplicate layer name 'SharedUtils' detected");
+  });
+
+  it('extracts up to 5 layers (AWS maximum)', () => {
+    const layers = Array.from({ length: 5 }, (_, i) => ({
+      Arn: `arn:aws:lambda:us-east-1:123456789012:layer:Layer${i}:1`,
+      CodeSize: i * 100,
+    }));
+    const result = extractLayers(layers);
+    expect(Object.keys(result!)).toHaveLength(5);
+    for (let i = 0; i < 5; i++) {
+      expect(result![`Layer${i}`]).toBe(`arn:aws:lambda:us-east-1:123456789012:layer:Layer${i}:1`);
+    }
+  });
+
+  it('extracts layer name and full ARN in the happy path', () => {
+    const result = extractLayers([
+      { Arn: 'arn:aws:lambda:us-east-1:123456789012:layer:SharedUtils:3', CodeSize: 1024 },
+      { Arn: 'arn:aws:lambda:us-east-1:123456789012:layer:CommonDeps:1', CodeSize: 2048 },
+    ]);
+    expect(result).toEqual({
+      SharedUtils: 'arn:aws:lambda:us-east-1:123456789012:layer:SharedUtils:3',
+      CommonDeps: 'arn:aws:lambda:us-east-1:123456789012:layer:CommonDeps:1',
     });
   });
 });

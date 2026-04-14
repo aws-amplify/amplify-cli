@@ -15,6 +15,11 @@ export interface RenderDefineFunctionOptions {
   readonly runtime?: string;
   readonly schedule?: string;
   readonly environment?: Readonly<Record<string, string>>;
+  /**
+   * Lambda layer ARNs keyed by the layer name extracted from the ARN.
+   * Undefined when the function has no attached layers.
+   */
+  readonly layers?: Readonly<Record<string, string>>;
 }
 
 /**
@@ -68,6 +73,9 @@ export class FunctionRenderer {
 
     // environment
     this.renderEnvironment(properties, namedImports, opts);
+
+    // layers
+    this.renderLayers(properties, opts.layers);
 
     // runtime
     this.renderRuntime(properties, opts.runtime);
@@ -134,6 +142,16 @@ export class FunctionRenderer {
     if (converted) {
       target.push(factory.createPropertyAssignment('schedule', factory.createStringLiteral(converted)));
     }
+  }
+
+  private renderLayers(target: ObjectLiteralElementLike[], layers?: Readonly<Record<string, string>>): void {
+    if (!layers || Object.keys(layers).length === 0) return;
+
+    const layerProps = Object.entries(layers).map(([key, value]) =>
+      factory.createPropertyAssignment(factory.createStringLiteral(key), factory.createStringLiteral(value)),
+    );
+
+    target.push(factory.createPropertyAssignment('layers', factory.createObjectLiteralExpression(layerProps, true)));
   }
 }
 

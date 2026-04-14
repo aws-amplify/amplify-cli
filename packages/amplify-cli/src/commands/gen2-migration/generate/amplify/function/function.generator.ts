@@ -39,6 +39,12 @@ interface ResolvedFunction {
   readonly runtime?: string;
   readonly schedule?: string;
   readonly environment?: Readonly<Record<string, string>>;
+  /**
+   * Lambda layer ARNs keyed by the layer name extracted from the ARN.
+   * Undefined when the function has no attached layers.
+   */
+  readonly layers?: Readonly<Record<string, string>>;
+
   readonly escapeHatches: readonly EnvVarEscapeHatch[];
   readonly dynamoActions: readonly string[];
   readonly kinesisActions: readonly string[];
@@ -175,6 +181,8 @@ export class FunctionGenerator implements Planner {
     // Extract DynamoDB/Kinesis actions and GraphQL API permissions from the function's CloudFormation template
     const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess } = this.extractCfnPermissions();
 
+    const layers = extractLayers(config.Layers);
+
     return {
       resourceName: this.resource.resourceName,
       category: this.category,
@@ -185,6 +193,7 @@ export class FunctionGenerator implements Planner {
       runtime,
       schedule,
       environment: Object.keys(retained).length > 0 ? retained : undefined,
+      layers,
       escapeHatches,
       dynamoActions,
       kinesisActions,
@@ -208,6 +217,7 @@ export class FunctionGenerator implements Planner {
       runtime: func.runtime,
       schedule: func.schedule,
       environment: func.environment,
+      layers: func.layers,
     };
 
     const nodes = this.renderer.render(renderOpts);
@@ -860,6 +870,56 @@ function classifyEnvVars(variables: Record<string, string>): {
   }
 
   return { retained, escapeHatches };
+}
+
+/**
+ * Extracts Lambda layer ARNs into a `Record<string, string>` for use in
+ * `defineFunction({ layers })`.
+ *
+ * The key is the layer name parsed from the ARN (e.g. `SharedUtils`), and
+ * the value is the full layer version ARN. Layers with missing ARNs are
+ * skipped.
+ *
+ * @param sdkLayers - The `Layers` array from `FunctionConfiguration`.
+ * @returns A layers record, or `undefined` if no valid layers exist.
+ * @throws Error if an ARN is malformed, not a layer ARN, or if two layers
+ *   share the same name.
+ */
+export function extractLayers(
+  sdkLayers: ReadonlyArray<{ Arn?: string; CodeSize?: number }> | undefined,
+): Readonly<Record<string, string>> | undefined {
+  if (!sdkLayers || sdkLayers.length === 0) return undefined;
+
+  const result: Record<string, string> = {};
+  for (const layer of sdkLayers) {
+    if (!layer.Arn) continue;
+
+    // ARN format: arn:aws:lambda:<region>:<account>:layer:<layerName>:<version>
+    const parts = layer.Arn.split(':');
+    if (parts.length < 8) {
+      throw new Error(`Malformed Lambda layer ARN (expected at least 8 colon-delimited segments): ${layer.Arn}`);
+    }
+    if (parts[5] !== 'layer') {
+      throw new Error(`Expected Lambda layer ARN but got resource type '${parts[5]}': ${layer.Arn}`);
+    }
+
+    const layerName = parts[6];
+    if (!layerName) {
+      throw new Error(`Lambda layer ARN missing layer name: ${layer.Arn}`);
+    }
+
+    if (result[layerName]) {
+      throw new Error(
+        `Duplicate layer name '${layerName}' detected. ` +
+          `Existing: ${result[layerName]}, New: ${layer.Arn}. ` +
+          `Manual resolution required — rename one layer key in the Gen2 defineFunction() output.`,
+      );
+    }
+
+    result[layerName] = layer.Arn;
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 /**
