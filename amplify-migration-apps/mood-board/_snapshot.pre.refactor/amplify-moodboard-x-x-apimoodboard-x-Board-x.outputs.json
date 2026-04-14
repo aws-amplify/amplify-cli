@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttBoardTableStreamArn",
+    "OutputValue": "1156e2eacd.GetAttBoardTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "f1fc6ea83a.GraphQLAPIIdOutput:GetAtt:BoardTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttBoardDataSourceName",
+    "OutputValue": "BoardTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "f1fc6ea83a.GraphQLAPIIdOutput:GetAtt:BoardDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackBoardBoardDataSource99BFC69FName",
+    "OutputValue": "BoardTable"
+  },
+  {
+    "OutputKey": "GetAttBoardTableName",
+    "OutputValue": "1156e2eacd.GetAttBoardTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "f1fc6ea83a.GraphQLAPIIdOutput:GetAtt:BoardTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackBoardBoardTable30788E07Ref",
+    "OutputValue": "1156e2eacd.GetAttBoardTableName"
+  }
+]

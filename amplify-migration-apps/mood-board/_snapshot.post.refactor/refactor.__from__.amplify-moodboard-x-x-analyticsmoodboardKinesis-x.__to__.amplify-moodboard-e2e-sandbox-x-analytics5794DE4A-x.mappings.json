@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x-analyticsmoodboardKinesis-x/997be7e0-37a2-11f1-a8f6-0affc54321a7",
+      "LogicalResourceId": "KinesisStream"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x/3b921670-37a4-11f1-a03f-122d36348c2f",
+      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+    }
+  }
+]

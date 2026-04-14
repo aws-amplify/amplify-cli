@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardBoardTable665B2E33TableArn",
+    "OutputValue": "1156e2eacd.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardBoardTable665B2E33TableArn"
+  },
+  {
+    "OutputKey": "GetAttBoardTableStreamArn",
+    "OutputValue": "1156e2eacd.GetAttBoardTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId:GetAtt:BoardTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttBoardTableName",
+    "OutputValue": "1156e2eacd.GetAttBoardTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId:GetAtt:BoardTable:Name"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardBoardDataSource4FC911CDName",
+    "OutputValue": "BoardTable"
+  }
+]

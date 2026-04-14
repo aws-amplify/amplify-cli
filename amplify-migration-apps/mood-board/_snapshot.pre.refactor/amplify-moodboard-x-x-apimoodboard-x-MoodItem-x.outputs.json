@@ -1,0 +1,56 @@
+[
+  {
+    "OutputKey": "GetAttMoodItemTableStreamArn",
+    "OutputValue": "af391f9f22.GetAttMoodItemTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "f1fc6ea83a.GraphQLAPIIdOutput:GetAtt:MoodItemTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttMoodItemDataSourceName",
+    "OutputValue": "MoodItemTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "f1fc6ea83a.GraphQLAPIIdOutput:GetAtt:MoodItemDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemMoodItemTable5135EED9Ref",
+    "OutputValue": "af391f9f22.GetAttMoodItemTableName"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId",
+    "OutputValue": "jr3pl3vprbe2hdvhnlr5rph3hu"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemSubscriptionOnCreateMoodItemDataResolverFnSubscriptionOnCreateMoodItemDataResolverFnAppSyncFunctionE0588344FunctionId",
+    "OutputValue": "wstxjditevhhloiurtsgnfimtu"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemMoodItemDataSource0777FF0CName",
+    "OutputValue": "MoodItemTable"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId",
+    "OutputValue": "p7e22oret5etzlztfcjsu4rzla"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemMutationupdateMoodIteminit0FunctionMutationupdateMoodIteminit0FunctionAppSyncFunctionA5BB53A1FunctionId",
+    "OutputValue": "7qrnjery3rcltdel44axbb3tce"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId",
+    "OutputValue": "3ngvxmor5vagditk3akygfzpl4"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemMutationcreateMoodItemauth0FunctionMutationcreateMoodItemauth0FunctionAppSyncFunction8743A884FunctionId",
+    "OutputValue": "jcdjcjuvdnbvddzzuyafjnptqm"
+  },
+  {
+    "OutputKey": "GetAttMoodItemTableName",
+    "OutputValue": "af391f9f22.GetAttMoodItemTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "f1fc6ea83a.GraphQLAPIIdOutput:GetAtt:MoodItemTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",
+    "OutputValue": "h5v2rxnmynchvlzzgqevftj2qu"
+  }
+]

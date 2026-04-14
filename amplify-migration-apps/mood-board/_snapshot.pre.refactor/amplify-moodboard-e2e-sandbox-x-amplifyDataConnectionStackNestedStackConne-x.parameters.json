@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardNestedStackBoardNestedStackResource8BB89F54Outputsamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardBoardDataSource4FC911CDName",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardNestedStackBoardNestedStackResource8BB89F54Outputsamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardBoardTable665B2E33TableArn",
+    "ParameterValue": "1156e2eacd.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataBoardBoardTable665B2E33TableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthIdentityPool46EB4FECRef",
+    "ParameterValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthIdentityPool46EB4FECRef"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPINONEDS8232E4CDName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource5EC9167BOutputsamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemMoodItemDataSource8A6C1FDBName",
+    "ParameterValue": "MoodItemTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthauthenticatedUserRoleDF3FC0F0Ref",
+    "ParameterValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthauthenticatedUserRoleDF3FC0F0Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId",
+    "ParameterValue": "9634f00459.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataGraphQLAPIA993688FApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource5EC9167BOutputsamplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemMoodItemTable251D595ETableArn",
+    "ParameterValue": "af391f9f22.amplifymoodboarde2esandboxe3030ca4f4dataamplifyDataMoodItemMoodItemTable251D595ETableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandboxe3030ca4f4authNestedStackauthNestedStackResource12EBC95AOutputsamplifymoodboarde2esandboxe3030ca4f4authamplifyAuthunauthenticatedUserRoleB5F10591Ref",
+    "ParameterValue": "08a260dfcc.amplifymoodboarde2esandboxe3030ca4f4authamplifyAuthunauthenticatedUserRoleB5F10591Ref"
+  }
+]
