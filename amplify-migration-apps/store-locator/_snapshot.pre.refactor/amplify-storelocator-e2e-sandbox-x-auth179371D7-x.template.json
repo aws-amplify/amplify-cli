@@ -23,7 +23,7 @@
         "LambdaConfig": {
           "PostConfirmation": {
             "Fn::GetAtt": [
-              "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0AC379F1",
+              "storelocator41a9495f41a9495fPostConfirmationgen2xlambda20A18471",
               "Arn"
             ]
           }
@@ -82,7 +82,7 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0AC379F1",
+            "storelocator41a9495f41a9495fPostConfirmationgen2xlambda20A18471",
             "Arn"
           ]
         },
@@ -424,7 +424,7 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/storeLocatorAdminGroup"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole676C1B76": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleA023C0DA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -474,7 +474,7 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy4B208F17": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy69EAB318": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -506,10 +506,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy4B208F17",
+        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy69EAB318",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole676C1B76"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleA023C0DA"
           }
         ]
       },
@@ -517,7 +517,7 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0AC379F1": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambda20A18471": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -547,7 +547,7 @@
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole676C1B76",
+            "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleA023C0DA",
             "Arn"
           ]
         },
@@ -569,7 +569,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole676C1B76"
+        "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleA023C0DA"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -627,7 +627,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole676C1B76"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleA023C0DA"
           }
         ]
       },
@@ -915,37 +915,37 @@
     }
   },
   "Outputs": {
-    "amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef": {
+    "amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPoolAppClient05441DFFRef": {
+    "amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPoolAppClientCAF3C2C1Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthIdentityPoolCF1E7E92Ref": {
+    "amplifystorelocatore2esandbox67f8357920authamplifyAuthIdentityPool7446C0FARef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbaauthstorelocator41a9495f41a9495fPostConfirmationgen2xlambdaC2039477Ref": {
+    "amplifystorelocatore2esandbox67f8357920authstorelocator41a9495f41a9495fPostConfirmationgen2xlambda0D81B40FRef": {
       "Value": {
-        "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0AC379F1"
+        "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambda20A18471"
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthauthenticatedUserRole3F42FC10Ref": {
+    "amplifystorelocatore2esandbox67f8357920authamplifyAuthauthenticatedUserRole6E909F50Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthunauthenticatedUserRoleD2514EFDRef": {
+    "amplifystorelocatore2esandbox67f8357920authamplifyAuthunauthenticatedUserRole2A60C2ADRef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthstoreLocatorAdminGroupRole944C5DA8Ref": {
+    "amplifystorelocatore2esandbox67f8357920authamplifyAuthstoreLocatorAdminGroupRole46D4B581Ref": {
       "Value": {
         "Ref": "amplifyAuthstoreLocatorAdminGroupRoleDECAB489"
       }

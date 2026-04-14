@@ -7,8 +7,8 @@
       "Properties": {
         "GroupName": "storeLocatorAdmin",
         "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604132-amplifyAuthstoreLocatorAd-NwFTaZY4UMO0",
-        "UserPoolId": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef"
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604132-amplifyAuthstoreLocatorAd-z8Qs8o6wv4D7",
+        "UserPoolId": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -101,7 +101,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef"
+        "UserPoolId": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -135,7 +135,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef"
+        "UserPoolId": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -149,7 +149,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPoolAppClient05441DFFRef",
+            "ClientId": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPoolAppClientCAF3C2C1Ref",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -159,7 +159,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef"
+                  "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref"
                 ]
               ]
             }
@@ -190,7 +190,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthIdentityPoolCF1E7E92Ref",
+        "IdentityPoolId": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthIdentityPool7446C0FARef",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -203,9 +203,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef",
+                  "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref",
                   ":",
-                  "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPoolAppClient05441DFFRef"
+                  "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPoolAppClientCAF3C2C1Ref"
                 ]
               ]
             },
@@ -213,8 +213,8 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthunauthenticatedUserRoleD2514EFDRef",
-          "authenticated": "arn:aws:iam::123456789012:role/abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthauthenticatedUserRole3F42FC10Ref"
+          "unauthenticated": "arn:aws:iam::123456789012:role/abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthunauthenticatedUserRole2A60C2ADRef",
+          "authenticated": "arn:aws:iam::123456789012:role/abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthauthenticatedUserRole6E909F50Ref"
         }
       },
       "UpdateReplacePolicy": "Delete",

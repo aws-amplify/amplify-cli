@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPoolAppClient05441DFFRef"
+    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPoolAppClientCAF3C2C1Ref"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPoolAppClient05441DFFRef"
+    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPoolAppClientCAF3C2C1Ref"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthUserPool931A32FBRef"
+    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthUserPool2FF50894Ref"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthIdentityPoolCF1E7E92Ref"
+    "OutputValue": "abd122f9cf.amplifystorelocatore2esandbox67f8357920authamplifyAuthIdentityPool7446C0FARef"
   },
   {
     "OutputKey": "verificationMechanisms",

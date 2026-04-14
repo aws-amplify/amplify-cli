@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationLambdaExecutionRole",
-    "ParameterValue": "e4977f9816.LambdaExecutionRoleArn"
+    "ParameterValue": "01de036e92.LambdaExecutionRoleArn"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationArn",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:e4977f9816.LambdaExecutionRole"
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:01de036e92.LambdaExecutionRole"
   },
   {
     "ParameterKey": "env",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",
-    "ParameterValue": "e4977f9816.LambdaExecutionRole"
+    "ParameterValue": "01de036e92.LambdaExecutionRole"
   }
 ]

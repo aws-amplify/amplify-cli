@@ -8,7 +8,7 @@
       "DeploymentBucketName": "43851d75ef.DeploymentBucketName",
       "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
       "StackName": "amplify-storelocator-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/967505f0-37a1-11f1-9391-0affd7abc465",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/3a263f80-37a6-11f1-8387-0ee7c6114f57",
       "AmplifyAppId": "storelocator",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },

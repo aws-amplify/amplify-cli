@@ -278,7 +278,7 @@
         "PolicyName": "storeLocatorAdminstoreLocatorGeofence-gen2-xPolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatore2esandbox72bbda7fbaauthNestedStackauthNestedStackResource8BB26000Outputsamplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthstoreLocatorAdminGroupRole944C5DA8Ref"
+            "Ref": "referencetoamplifystorelocatore2esandbox67f8357920authNestedStackauthNestedStackResource2312D3C0Outputsamplifystorelocatore2esandbox67f8357920authamplifyAuthstoreLocatorAdminGroupRole46D4B581Ref"
           }
         ]
       },
@@ -349,7 +349,7 @@
         ]
       }
     },
-    "amplifystorelocatore2esandbox72bbda7fbageostoreLocatorGeofenceCustomGeofenceCollection33900EC8CollectionName": {
+    "amplifystorelocatore2esandbox67f8357920geostoreLocatorGeofenceCustomGeofenceCollection730403FACollectionName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
@@ -625,7 +625,7 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocatore2esandbox72bbda7fbaauthNestedStackauthNestedStackResource8BB26000Outputsamplifystorelocatore2esandbox72bbda7fbaauthamplifyAuthstoreLocatorAdminGroupRole944C5DA8Ref": {
+    "referencetoamplifystorelocatore2esandbox67f8357920authNestedStackauthNestedStackResource2312D3C0Outputsamplifystorelocatore2esandbox67f8357920authamplifyAuthstoreLocatorAdminGroupRole46D4B581Ref": {
       "Type": "String"
     }
   }
