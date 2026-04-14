@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPINONEDSA56A9AC6Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource2716F82DOutputsamplifymediavaulte2esandbox7c7d118fbbdataamplifyDataAmplifyTableManagerTab10AF0577",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault2604132-TableManagerCustomProvid-gzafrmOvx0pA"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbauthNestedStackauthNestedStackResource250D4630Outputsamplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref",
+    "ParameterValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId",
+    "ParameterValue": "0680ada23e.amplifymediavaulte2esandbox7c7d118fbbdataamplifyDataGraphQLAPIDF5884B9ApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbauthNestedStackauthNestedStackResource250D4630Outputsamplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref",
+    "ParameterValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox7c7d118fbbauthNestedStackauthNestedStackResource250D4630Outputsamplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref",
+    "ParameterValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref"
+  }
+]

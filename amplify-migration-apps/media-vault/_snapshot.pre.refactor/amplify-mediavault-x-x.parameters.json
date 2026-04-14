@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "AuthRoleName",
+    "ParameterValue": "amplify-mediavault-x-x-authRole"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "9601f578ed.DeploymentBucketName"
+  },
+  {
+    "ParameterKey": "UnauthRoleName",
+    "ParameterValue": "amplify-mediavault-x-x-unauthRole"
+  }
+]

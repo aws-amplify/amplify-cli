@@ -22,7 +22,6 @@ dist-ssr
 *.sw?
 # amplify
 .amplify
-amplify_outputs*
 amplifyconfiguration*
 aws-exports*
 build

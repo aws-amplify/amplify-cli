@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "9601f578ed.DeploymentBucketName"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "ce750da45a.GraphQLAPIIdOutput"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/a9caa2a9280aa728b448533b4b7827dcc2cbf238"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "mediavault"
+  }
+]

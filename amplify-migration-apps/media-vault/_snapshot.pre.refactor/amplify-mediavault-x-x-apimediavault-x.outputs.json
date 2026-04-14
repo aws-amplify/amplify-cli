@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "ce750da45a.GraphQLAPIIdOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-mediavault-x-x-apimediavault-x:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "ce750da45a.GraphQLAPIEndpointOutput",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-mediavault-x-x-apimediavault-x:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "ce750da45a.GraphQLAPIKeyOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-mediavault-x-x-apimediavault-x:GraphQLApiKey"
+  }
+]

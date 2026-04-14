@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthAdminGroupRoleD7AC5D73Ref",
+    "OutputValue": "amplify-mediavault2604132-amplifyAuthAdminGroupRole-HsQkd9JBnpZW"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolAppClient8C70A60CRef",
+    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolAppClient8C70A60CRef"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref",
+    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthunauthenticatedUserRoleB1B81EE6Ref"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref",
+    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthIdentityPoolECC3ADE8Ref"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolUserPoolDomain38E249EERef",
+    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolUserPoolDomain38E249EERef"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthremoveuserfromgroupgen2xlambda5AF4F689Ref",
+    "OutputValue": "removeuserfromgroup-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthBasicGroupRoleD80411DARef",
+    "OutputValue": "amplify-mediavault2604132-amplifyAuthBasicGroupRole-WE2X2YmFTCpM"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthaddusertogroupgen2xlambda149E72C0Ref",
+    "OutputValue": "addusertogroup-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolCEF67AE8Ref",
+    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthUserPoolCEF67AE8Ref"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref",
+    "OutputValue": "75fda31738.amplifymediavaulte2esandbox7c7d118fbbauthamplifyAuthauthenticatedUserRoleCCE3B979Ref"
+  }
+]
