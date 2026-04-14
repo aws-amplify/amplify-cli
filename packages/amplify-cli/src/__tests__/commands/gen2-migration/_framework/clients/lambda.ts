@@ -99,6 +99,9 @@ export class LambdaMock {
           throw new Error(`Unexpected environment variable value for '${key}' in function '${resourceName}': ${value}`);
         }
 
+        const cfnLayers = template.Resources.LambdaFunction.Properties.Layers ?? [];
+        const layers = cfnLayers.map((arn: string) => ({ Arn: arn, CodeSize: 0 }));
+
         return {
           Configuration: {
             FunctionName: input.FunctionName,
@@ -108,6 +111,7 @@ export class LambdaMock {
             Environment: {
               Variables: envVariables,
             },
+            Layers: layers,
           },
           $metadata: {},
         };

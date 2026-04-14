@@ -8,5 +8,9 @@ export const quotegenerator = defineFunction({
   timeoutSeconds: 25,
   memoryMB: 128,
   environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  layers: {
+    SharedUtils: 'arn:aws:lambda:us-east-1:123456789012:layer:SharedUtils:3',
+    CommonDeps: 'arn:aws:lambda:us-east-1:123456789012:layer:CommonDeps:1',
+  },
   runtime: 22,
 });
