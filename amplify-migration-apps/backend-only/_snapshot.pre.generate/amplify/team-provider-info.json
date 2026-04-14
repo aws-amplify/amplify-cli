@@ -1,14 +1,14 @@
 {
-  "main": {
+  "x": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-backendonly-main-5e0fa-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-authRole",
+      "AuthRoleName": "amplify-backendonly-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-backendonly-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-backendonly-x-x-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-backendonly-main-5e0fa-deployment",
-      "UnauthRoleName": "amplify-backendonly-main-5e0fa-unauthRole",
-      "StackName": "amplify-backendonly-main-5e0fa",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-main-5e0fa/6563d5d0-1b19-11f1-9ce2-0e0bf294f4d9",
+      "DeploymentBucketName": "5e43d22fb5.DeploymentBucketName",
+      "UnauthRoleName": "amplify-backendonly-x-x-unauthRole",
+      "StackName": "amplify-backendonly-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/4d582d10-37a2-11f1-b01d-0ecde9c2e61b",
       "AmplifyAppId": "backendonly"
     },
     "categories": {
@@ -17,7 +17,7 @@
       },
       "function": {
         "quotegeneratorbe": {
-          "deploymentBucketName": "amplify-backendonly-main-5e0fa-deployment",
+          "deploymentBucketName": "5e43d22fb5.DeploymentBucketName",
           "s3Key": "amplify-builds/quotegeneratorbe-513654756a51615a5779-build.zip"
         }
       },

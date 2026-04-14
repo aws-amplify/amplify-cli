@@ -1,0 +1,35 @@
+[
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "0cb5c645ab.UserPoolId",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "0cb5c645ab.AppClientIDWeb",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "0cb5c645ab.AppClientID",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "0cb5c645ab.IdentityPoolId",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "0cb5c645ab.UserPoolArn",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "0cb5c645ab.IdentityPoolName"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "0cb5c645ab.UserPoolName"
+  }
+]

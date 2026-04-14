@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataTodoNestedStackTodoNestedStackResource5FDD0938Outputsamplifybackendonlye2esandbox8d9d627f93dataamplifyDataTodoTodoTableF8C4284FTableArn",
+    "ParameterValue": "eed4a285f2.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataTodoTodoTableF8C4284FTableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPINONEDSE377B84BName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef",
+    "ParameterValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthunauthenticatedUserRole761C742DRef"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref",
+    "ParameterValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthauthenticatedUserRoleABADADD9Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93authNestedStackauthNestedStackResourceB95E899AOutputsamplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref",
+    "ParameterValue": "2a1f245bde.amplifybackendonlye2esandbox8d9d627f93authamplifyAuthIdentityPool3C32A276Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId",
+    "ParameterValue": "9aa5598e5d.amplifybackendonlye2esandbox8d9d627f93dataamplifyDataGraphQLAPI79E8DAE5ApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox8d9d627f93dataamplifyDataTodoNestedStackTodoNestedStackResource5FDD0938Outputsamplifybackendonlye2esandbox8d9d627f93dataamplifyDataTodoTodoDataSource2441E4C2Name",
+    "ParameterValue": "TodoTable"
+  }
+]
