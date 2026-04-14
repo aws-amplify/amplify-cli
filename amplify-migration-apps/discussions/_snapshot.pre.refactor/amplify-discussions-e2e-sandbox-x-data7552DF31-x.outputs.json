@@ -1,30 +1,30 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837GraphQLUrl",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837GraphQLUrl"
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBD85F6D3CDestinationBucketArn",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBD85F6D3CDestinationBucketArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAGraphQLUrl",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAGraphQLUrl"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIDefaultApiKey9ECC0CABApiKey",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIDefaultApiKey9ECC0CABApiKey"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostNestedStackPostNestedStackResource68A00BBDOutputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostTableCB8025FETableStreamArn",
     "OutputValue": "caf15f98bf.GetAttPostTableStreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIDefaultApiKey4B940EB5ApiKey",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIDefaultApiKey4B940EB5ApiKey"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC1FC96BADestinationBucketArn",
-    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC1FC96BADestinationBucketArn"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableStreamArn",
-    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicNestedStackTopicNestedStackResourceDCA82F56Outputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicTopicTable7DB73BCFTableStreamArn",
     "OutputValue": "88936db3f2.GetAttTopicTableStreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentNestedStackCommentNestedStackResource8DBB122AOutputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentTable666E90A9TableStreamArn",
+    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
   }
 ]

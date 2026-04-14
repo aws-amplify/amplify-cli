@@ -1,46 +1,46 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicDataSource91954AB8Name",
-    "ParameterValue": "TopicTable"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId",
-    "ParameterValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostDataSource3234496EName",
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostNestedStackPostNestedStackResource68A00BBDOutputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostDataSourceFEAFD983Name",
     "ParameterValue": "PostTable"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableArn",
-    "ParameterValue": "c177ecebaa.amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableArn"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId",
+    "ParameterValue": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPINONEDS61A5340BName",
-    "ParameterValue": "NONE_DS"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3authNestedStackauthNestedStackResourceEE2EA184Outputsamplifydiscussionse2esandboxf1b6d432e3authamplifyAuthIdentityPool03260DD9Ref",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandboxf1b6d432e3authamplifyAuthIdentityPool03260DD9Ref"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostNestedStackPostNestedStackResourceAF8D3BB1Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableArn",
-    "ParameterValue": "caf15f98bf.amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableArn"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthunauthenticatedUserRole1CB0ABB2Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthunauthenticatedUserRole1CB0ABB2Ref"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthIdentityPool3B6DB672Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthIdentityPool3B6DB672Ref"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentNestedStackCommentNestedStackResource35D362D5Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentDataSourceD64CB0C5Name",
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentNestedStackCommentNestedStackResource8DBB122AOutputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentDataSource969BB2CFName",
     "ParameterValue": "CommentTable"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthauthenticatedUserRole62785719Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthauthenticatedUserRole62785719Ref"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentNestedStackCommentNestedStackResource8DBB122AOutputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentTable666E90A9TableArn",
+    "ParameterValue": "c177ecebaa.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentTable666E90A9TableArn"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicNestedStackTopicNestedStackResource588F08F0Outputsamplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableArn",
-    "ParameterValue": "88936db3f2.amplifydiscussionse2esandbox73b64377c8dataamplifyDataTopicTopicTableF3EBB2DDTableArn"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostNestedStackPostNestedStackResource68A00BBDOutputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostTableCB8025FETableArn",
+    "ParameterValue": "caf15f98bf.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostTableCB8025FETableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3authNestedStackauthNestedStackResourceEE2EA184Outputsamplifydiscussionse2esandboxf1b6d432e3authamplifyAuthauthenticatedUserRole154C009FRef",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandboxf1b6d432e3authamplifyAuthauthenticatedUserRole154C009FRef"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3authNestedStackauthNestedStackResourceEE2EA184Outputsamplifydiscussionse2esandboxf1b6d432e3authamplifyAuthunauthenticatedUserRole5E3A4ABARef",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandboxf1b6d432e3authamplifyAuthunauthenticatedUserRole5E3A4ABARef"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicNestedStackTopicNestedStackResourceDCA82F56Outputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicTopicTable7DB73BCFTableArn",
+    "ParameterValue": "88936db3f2.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicTopicTable7DB73BCFTableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPINONEDSD95FC958Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicNestedStackTopicNestedStackResourceDCA82F56Outputsamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataTopicTopicDataSource306AA42BName",
+    "ParameterValue": "TopicTable"
   }
 ]

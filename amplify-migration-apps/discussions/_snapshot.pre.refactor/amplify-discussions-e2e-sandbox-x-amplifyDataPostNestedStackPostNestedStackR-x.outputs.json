@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableArn",
-    "OutputValue": "caf15f98bf.amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableArn"
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostTableCB8025FETableArn",
+    "OutputValue": "caf15f98bf.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostTableCB8025FETableArn"
   },
   {
     "OutputKey": "GetAttPostTableStreamArn",
     "OutputValue": "caf15f98bf.GetAttPostTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId:GetAtt:PostTable:StreamArn"
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId:GetAtt:PostTable:StreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostTable1AC2A5FBTableStreamArn",
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostDataSourceFEAFD983Name",
+    "OutputValue": "PostTable"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataPostPostTableCB8025FETableStreamArn",
     "OutputValue": "caf15f98bf.GetAttPostTableStreamArn"
   },
   {
     "OutputKey": "GetAttPostTableName",
     "OutputValue": "caf15f98bf.GetAttPostTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId:GetAtt:PostTable:Name"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataPostPostDataSource3234496EName",
-    "OutputValue": "PostTable"
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId:GetAtt:PostTable:Name"
   }
 ]

@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId",
-    "ParameterValue": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId",
+    "ParameterValue": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthunauthenticatedUserRole1CB0ABB2Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthunauthenticatedUserRole1CB0ABB2Ref"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3authNestedStackauthNestedStackResourceEE2EA184Outputsamplifydiscussionse2esandboxf1b6d432e3authamplifyAuthIdentityPool03260DD9Ref",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandboxf1b6d432e3authamplifyAuthIdentityPool03260DD9Ref"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthIdentityPool3B6DB672Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthIdentityPool3B6DB672Ref"
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3authNestedStackauthNestedStackResourceEE2EA184Outputsamplifydiscussionse2esandboxf1b6d432e3authamplifyAuthauthenticatedUserRole154C009FRef",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandboxf1b6d432e3authamplifyAuthauthenticatedUserRole154C009FRef"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPINONEDS61A5340BName",
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3authNestedStackauthNestedStackResourceEE2EA184Outputsamplifydiscussionse2esandboxf1b6d432e3authamplifyAuthunauthenticatedUserRole5E3A4ABARef",
+    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandboxf1b6d432e3authamplifyAuthunauthenticatedUserRole5E3A4ABARef"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPINONEDSD95FC958Name",
     "ParameterValue": "NONE_DS"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox73b64377c8authNestedStackauthNestedStackResourceE6A96E20Outputsamplifydiscussionse2esandbox73b64377c8authamplifyAuthauthenticatedUserRole62785719Ref",
-    "ParameterValue": "8c37e1c652.amplifydiscussionse2esandbox73b64377c8authamplifyAuthauthenticatedUserRole62785719Ref"
   }
 ]

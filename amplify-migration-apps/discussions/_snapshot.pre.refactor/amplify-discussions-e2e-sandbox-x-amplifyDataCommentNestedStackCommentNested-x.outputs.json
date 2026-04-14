@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableArn",
-    "OutputValue": "c177ecebaa.amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableArn"
-  },
-  {
     "OutputKey": "GetAttCommentTableStreamArn",
     "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId:GetAtt:CommentTable:StreamArn"
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId:GetAtt:CommentTable:StreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentTable00E68427TableStreamArn",
-    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentTable666E90A9TableArn",
+    "OutputValue": "c177ecebaa.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentTable666E90A9TableArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentDataSource969BB2CFName",
+    "OutputValue": "CommentTable"
   },
   {
     "OutputKey": "GetAttCommentTableName",
     "OutputValue": "c177ecebaa.GetAttCommentTableName",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox73b64377c8dataamplifyDataGraphQLAPIF46DF837ApiId:GetAtt:CommentTable:Name"
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataGraphQLAPIC75DD2EAApiId:GetAtt:CommentTable:Name"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox73b64377c8dataamplifyDataCommentCommentDataSourceD64CB0C5Name",
-    "OutputValue": "CommentTable"
+    "OutputKey": "amplifydiscussionse2esandboxf1b6d432e3dataamplifyDataCommentCommentTable666E90A9TableStreamArn",
+    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
   }
 ]
