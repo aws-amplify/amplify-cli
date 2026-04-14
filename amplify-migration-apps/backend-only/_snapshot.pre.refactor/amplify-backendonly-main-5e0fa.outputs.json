@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "a46443d3d7.AuthRoleName"
+    "OutputValue": "amplify-backendonly-main-5e0fa-authRole"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "a46443d3d7.UnauthRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-unauthRole"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "a46443d3d7.AuthRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-authRole"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "a46443d3d7.StackName-Region"
+    "ExportName": "amplify-backendonly-main-5e0fa-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "a46443d3d7.DeploymentBucketName",
+    "OutputValue": "amplify-backendonly-main-5e0fa-deployment",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "a46443d3d7.StackName-DeploymentBucketName"
+    "ExportName": "amplify-backendonly-main-5e0fa-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "a46443d3d7.UnauthRoleName"
+    "OutputValue": "amplify-backendonly-main-5e0fa-unauthRole"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "a46443d3d7.StackName",
+    "OutputValue": "amplify-backendonly-main-5e0fa",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "a46443d3d7.StackName-StackName"
+    "ExportName": "amplify-backendonly-main-5e0fa-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "a46443d3d7.StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-main-5e0fa/6563d5d0-1b19-11f1-9ce2-0e0bf294f4d9",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "a46443d3d7.StackName-StackId"
+    "ExportName": "amplify-backendonly-main-5e0fa-StackId"
   }
 ]

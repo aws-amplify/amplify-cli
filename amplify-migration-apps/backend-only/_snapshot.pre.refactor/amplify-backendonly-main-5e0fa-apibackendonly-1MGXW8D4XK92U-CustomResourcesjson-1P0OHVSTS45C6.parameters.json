@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "a46443d3d7.DeploymentBucketName"
+    "ParameterValue": "amplify-backendonly-main-5e0fa-deployment"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "994414bf7a.GraphQLAPIIdOutput"
+    "ParameterValue": "sgumi4ggubb4jdo6i54km7skka"
   },
   {
     "ParameterKey": "env",

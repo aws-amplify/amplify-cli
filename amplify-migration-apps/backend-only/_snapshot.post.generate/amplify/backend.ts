@@ -44,7 +44,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'bb968f9dc3.BucketName';
+// s3Bucket.bucketName = 'backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -55,5 +55,5 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const c0d444ea7b.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.quotegeneratorbe.resources.cfnResources.cfnFunction.functionName = `quotegeneratorbe-${c0d444ea7b.deploymentTypeName}`;
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.quotegeneratorbe.resources.cfnResources.cfnFunction.functionName = `quotegeneratorbe-${branchName}`;

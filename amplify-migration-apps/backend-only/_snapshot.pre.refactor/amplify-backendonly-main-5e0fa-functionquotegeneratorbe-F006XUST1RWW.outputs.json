@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "e8bb2e75e8.LambdaExecutionRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/backendonlyLambdaRole8a0d8e62-main"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "function.quotegeneratorbe.Arn"
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:quotegeneratorbe-main"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "function.quotegeneratorbe.Name"
+    "OutputValue": "quotegeneratorbe-main"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "e8bb2e75e8.LambdaExecutionRole"
+    "OutputValue": "backendonlyLambdaRole8a0d8e62-main"
   }
 ]

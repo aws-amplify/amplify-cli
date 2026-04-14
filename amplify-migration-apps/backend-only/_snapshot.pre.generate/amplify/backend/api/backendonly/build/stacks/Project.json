@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "7a51ff3517.GetAttProjectDataSourceName": {
+    "ProjectTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -303,7 +303,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "7a51ff3517.GetAttProjectDataSourceName",
+                    "ProjectTable",
                     "Arn"
                   ]
                 },
@@ -334,10 +334,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+            "Ref": "ProjectTable"
           }
         },
-        "Name": "7a51ff3517.GetAttProjectDataSourceName",
+        "Name": "ProjectTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "ProjectIAMRole928454B5",
@@ -501,7 +501,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+                "Ref": "ProjectTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -602,7 +602,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+                "Ref": "ProjectTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -769,7 +769,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+                "Ref": "ProjectTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -957,7 +957,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+                "Ref": "ProjectTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1109,7 +1109,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+                "Ref": "ProjectTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1413,11 +1413,11 @@
     }
   },
   "Outputs": {
-    "GetAtt7a51ff3517.GetAttProjectDataSourceNameStreamArn": {
+    "GetAttProjectTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "7a51ff3517.GetAttProjectDataSourceName",
+          "ProjectTable",
           "StreamArn"
         ]
       },
@@ -1429,16 +1429,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:7a51ff3517.GetAttProjectDataSourceName:StreamArn"
+              "GetAtt:ProjectTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt7a51ff3517.GetAttProjectDataSourceNameName": {
+    "GetAttProjectTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "7a51ff3517.GetAttProjectDataSourceName"
+        "Ref": "ProjectTable"
       },
       "Export": {
         "Name": {
@@ -1448,7 +1448,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:7a51ff3517.GetAttProjectDataSourceName:Name"
+              "GetAtt:ProjectTable:Name"
             ]
           ]
         }

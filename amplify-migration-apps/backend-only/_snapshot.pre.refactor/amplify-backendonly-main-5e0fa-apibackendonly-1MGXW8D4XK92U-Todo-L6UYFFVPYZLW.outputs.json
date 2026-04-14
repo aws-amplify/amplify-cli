@@ -1,28 +1,28 @@
 [
   {
-    "OutputKey": "GetAtt273e28bfb9.GetAttTodoDataSourceNameName",
-    "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameName",
+    "OutputKey": "GetAttTodoTableName",
+    "OutputValue": "Todo-sgumi4ggubb4jdo6i54km7skka-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "994414bf7a.GraphQLAPIIdOutput:GetAtt:273e28bfb9.GetAttTodoDataSourceName:Name"
+    "ExportName": "sgumi4ggubb4jdo6i54km7skka:GetAtt:TodoTable:Name"
   },
   {
     "OutputKey": "GetAttTodoDataSourceName",
-    "OutputValue": "273e28bfb9.GetAttTodoDataSourceName",
+    "OutputValue": "TodoTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "994414bf7a.GraphQLAPIIdOutput:GetAtt:TodoDataSource:Name"
+    "ExportName": "sgumi4ggubb4jdo6i54km7skka:GetAtt:TodoDataSource:Name"
   },
   {
-    "OutputKey": "transformerrootstackTodo273e28bfb9.GetAttTodoDataSourceNameC67E79C2Ref",
-    "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameName"
+    "OutputKey": "transformerrootstackTodoTodoTableC67E79C2Ref",
+    "OutputValue": "Todo-sgumi4ggubb4jdo6i54km7skka-main"
   },
   {
-    "OutputKey": "GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn",
-    "OutputValue": "273e28bfb9.GetAtt273e28bfb9.GetAttTodoDataSourceNameStreamArn",
+    "OutputKey": "GetAttTodoTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-sgumi4ggubb4jdo6i54km7skka-main/stream/2026-03-08T18:11:40.339",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "994414bf7a.GraphQLAPIIdOutput:GetAtt:273e28bfb9.GetAttTodoDataSourceName:StreamArn"
+    "ExportName": "sgumi4ggubb4jdo6i54km7skka:GetAtt:TodoTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackTodoTodoDataSourceBD713D7DName",
-    "OutputValue": "273e28bfb9.GetAttTodoDataSourceName"
+    "OutputValue": "TodoTable"
   }
 ]

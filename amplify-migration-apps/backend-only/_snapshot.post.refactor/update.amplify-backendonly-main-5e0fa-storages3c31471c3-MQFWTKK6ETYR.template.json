@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "bb968f9dc3.BucketName"
+      "Value": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main"
     },
     "Region": {
       "Value": "us-east-1"
@@ -193,7 +193,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "a46443d3d7.StackName-storages3c31471c3-MQFWTKK6ETYR"
+                      "amplify-backendonly-main-5e0fa-storages3c31471c3-MQFWTKK6ETYR"
                     ]
                   }
                 ]
@@ -263,7 +263,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                       "/public/*"
                     ]
                   ]
@@ -274,7 +274,7 @@
         },
         "PolicyName": "Public_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.AuthRoleName"
+          "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -299,7 +299,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -310,7 +310,7 @@
         },
         "PolicyName": "Protected_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.AuthRoleName"
+          "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -335,7 +335,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -346,7 +346,7 @@
         },
         "PolicyName": "Private_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.AuthRoleName"
+          "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -371,7 +371,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                       "/uploads/*"
                     ]
                   ]
@@ -382,7 +382,7 @@
         },
         "PolicyName": "Uploads_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.AuthRoleName"
+          "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -407,7 +407,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "bb968f9dc3.BucketName",
+                      "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                       "/public/*"
                     ]
                   ]
@@ -418,7 +418,7 @@
         },
         "PolicyName": "Public_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.UnauthRoleName"
+          "amplify-backendonly-main-5e0fa-unauthRole"
         ]
       },
       "Condition": "CreateGuestPublic"
@@ -436,7 +436,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName",
+                    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                     "/protected/*"
                   ]
                 ]
@@ -462,7 +462,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName"
+                    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main"
                   ]
                 ]
               }
@@ -472,7 +472,7 @@
         },
         "PolicyName": "read_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.AuthRoleName"
+          "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
       "Condition": "AuthReadAndList"
@@ -490,7 +490,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName",
+                    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
                     "/protected/*"
                   ]
                 ]
@@ -514,7 +514,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "bb968f9dc3.BucketName"
+                    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main"
                   ]
                 ]
               }
@@ -524,7 +524,7 @@
         },
         "PolicyName": "read_policy_c31471c3",
         "Roles": [
-          "a46443d3d7.UnauthRoleName"
+          "amplify-backendonly-main-5e0fa-unauthRole"
         ]
       },
       "Condition": "GuestReadAndList"

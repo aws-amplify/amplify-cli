@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "a46443d3d7.AuthRoleName"
+    "ParameterValue": "amplify-backendonly-main-5e0fa-authRole"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "a46443d3d7.DeploymentBucketName"
+    "ParameterValue": "amplify-backendonly-main-5e0fa-deployment"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "a46443d3d7.UnauthRoleName"
+    "ParameterValue": "amplify-backendonly-main-5e0fa-unauthRole"
   }
 ]

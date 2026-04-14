@@ -4,7 +4,7 @@
     "apiName": "backendonly",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "c0d444ea7b.awsAppsyncAuthenticationType",
+      "mode": "API_KEY",
       "expirationTime": 7
     },
     "additionalAuthTypes": [

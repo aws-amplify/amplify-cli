@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "a46443d3d7.UnauthRoleName"
+    "ParameterValue": "amplify-backendonly-main-5e0fa-unauthRole"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -53,7 +53,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "a46443d3d7.AuthRoleName"
+    "ParameterValue": "amplify-backendonly-main-5e0fa-authRole"
   },
   {
     "ParameterKey": "GuestAllowList",

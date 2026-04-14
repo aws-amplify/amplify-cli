@@ -1,14 +1,14 @@
 {
   "providers": {
     "awscloudformation": {
-      "AuthRoleName": "a46443d3d7.AuthRoleName",
-      "UnauthRoleArn": "a46443d3d7.UnauthRoleArn",
-      "AuthRoleArn": "a46443d3d7.AuthRoleArn",
+      "AuthRoleName": "amplify-backendonly-main-5e0fa-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "a46443d3d7.DeploymentBucketName",
-      "UnauthRoleName": "a46443d3d7.UnauthRoleName",
-      "StackName": "a46443d3d7.StackName",
-      "StackId": "a46443d3d7.StackId",
+      "DeploymentBucketName": "amplify-backendonly-main-5e0fa-deployment",
+      "UnauthRoleName": "amplify-backendonly-main-5e0fa-unauthRole",
+      "StackName": "amplify-backendonly-main-5e0fa",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-main-5e0fa/6563d5d0-1b19-11f1-9ce2-0e0bf294f4d9",
       "AmplifyAppId": "backendonly"
     }
   },
@@ -39,18 +39,18 @@
         ]
       },
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/a46443d3d7.DeploymentBucketName/amplify-cfn-templates/auth/backendonlyf8c4c57b-cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-main-5e0fa-deployment/amplify-cfn-templates/auth/backendonlyf8c4c57b-cloudformation-template.json",
         "logicalId": "authbackendonlyf8c4c57b"
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "output": {
-        "UserPoolId": "2dfb8ed9d7.UserPoolId",
-        "AppClientIDWeb": "2dfb8ed9d7.AppClientIDWeb",
-        "AppClientID": "2dfb8ed9d7.AppClientID",
-        "IdentityPoolId": "2dfb8ed9d7.IdentityPoolId",
-        "UserPoolArn": "2dfb8ed9d7.UserPoolArn",
-        "IdentityPoolName": "2dfb8ed9d7.IdentityPoolName",
-        "UserPoolName": "2dfb8ed9d7.UserPoolName"
+        "UserPoolId": "us-east-1_1rvCNKN5B",
+        "AppClientIDWeb": "2udsup370on7n0b1gdf8hpijc6",
+        "AppClientID": "773c808k3864f2k0sqk4j71gsj",
+        "IdentityPoolId": "us-east-1:3d2fd52c-2247-42b8-8773-3102fce814b8",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_1rvCNKN5B",
+        "IdentityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b__main",
+        "UserPoolName": "backendonlyf8c4c57b_userpool_f8c4c57b"
       },
       "lastPushDirHash": "686H3dissPlXxzTHFb9vBmwM2jw="
     }
@@ -71,7 +71,7 @@
       "output": {
         "authConfig": {
           "defaultAuthentication": {
-            "authenticationType": "c0d444ea7b.awsAppsyncAuthenticationType",
+            "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 7
             }
@@ -85,13 +85,13 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "994414bf7a.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "994414bf7a.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "54ab1189d3.amplifybackendonlygen2mainc0d444ea7b.deploymentType8e0f260810dataamplifyDataGraphQLAPIDefaultApiKeyA92FFACFApiKey"
+        "GraphQLAPIIdOutput": "sgumi4ggubb4jdo6i54km7skka",
+        "GraphQLAPIEndpointOutput": "https://24agelrb6rgfrcvxhfwq53ge7a.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/a46443d3d7.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-main-5e0fa-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apibackendonly"
       },
       "lastPushDirHash": "6xeb+ZtO7QcOMff2eTn6QF9a60Y="
@@ -104,11 +104,11 @@
       "dependsOn": [],
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/a46443d3d7.DeploymentBucketName/amplify-cfn-templates/storage/cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-main-5e0fa-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages3c31471c3"
       },
       "output": {
-        "BucketName": "bb968f9dc3.BucketName",
+        "BucketName": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fa-main",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "5S73DL/tGImodFS4Yhe8QtAEepc="
@@ -124,20 +124,20 @@
       "lastPackageTimeStamp": "2026-03-08T18:09:56.174Z",
       "distZipFilename": "quotegeneratorbe-513654756a51615a5779-build.zip",
       "s3Bucket": {
-        "deploymentBucketName": "a46443d3d7.DeploymentBucketName",
+        "deploymentBucketName": "amplify-backendonly-main-5e0fa-deployment",
         "s3Key": "amplify-builds/quotegeneratorbe-513654756a51615a5779-build.zip"
       },
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/a46443d3d7.DeploymentBucketName/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-main-5e0fa-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
         "logicalId": "functionquotegeneratorbe"
       },
       "lastPushTimeStamp": "2026-03-08T18:15:12.219Z",
       "output": {
-        "LambdaExecutionRoleArn": "e8bb2e75e8.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/backendonlyLambdaRole8a0d8e62-main",
         "Region": "us-east-1",
-        "Arn": "function.quotegeneratorbe.Arn",
-        "Name": "function.quotegeneratorbe.Name",
-        "LambdaExecutionRole": "e8bb2e75e8.LambdaExecutionRole"
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:quotegeneratorbe-main",
+        "Name": "quotegeneratorbe-main",
+        "LambdaExecutionRole": "backendonlyLambdaRole8a0d8e62-main"
       },
       "lastPushDirHash": "g+QSHqf0IzubQUzZPRqNTEsEhkI="
     }

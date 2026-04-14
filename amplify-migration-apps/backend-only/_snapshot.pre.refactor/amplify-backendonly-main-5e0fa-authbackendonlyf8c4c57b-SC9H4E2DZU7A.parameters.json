@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "a46443d3d7.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "2dfb8ed9d7.UserPoolName"
+    "ParameterValue": "backendonlyf8c4c57b_userpool_f8c4c57b"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "a46443d3d7.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",
