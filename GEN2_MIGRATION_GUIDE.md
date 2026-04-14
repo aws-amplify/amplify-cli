@@ -1051,7 +1051,7 @@ by the CLI setting that configures them.
       - 🔴 **function**
 
     - ⚠️ **Do you want to invoke this function on a recurring schedule**
-    - 🔴 **Do you want to enable Lambda layers for this function**
+    - 🟡 **Do you want to enable Lambda layers for this function** (_generate_ ✔ _refactor_ ✗)
     - 🟢 **Do you want to configure environment variables for this function**
     - 🟡 **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
     - ➤ **Choose the package manager that you want to use**
