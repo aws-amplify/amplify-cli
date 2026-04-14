@@ -87,7 +87,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = '3ae948247d.BucketName';
+// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -98,18 +98,18 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const 7e048d04ad.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.thumbnailgen.resources.cfnResources.cfnFunction.functionName = `thumbnailgen-${7e048d04ad.deploymentTypeName}`;
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.thumbnailgen.resources.cfnResources.cfnFunction.functionName = `thumbnailgen-${branchName}`;
 backend.thumbnailgen.addEnvironment(
   'STORAGE_MEDIAVAULT_BUCKETNAME',
   backend.storage.resources.bucket.bucketName
 );
-backend.addusertogroup.resources.cfnResources.cfnFunction.functionName = `addusertogroup-${7e048d04ad.deploymentTypeName}`;
+backend.addusertogroup.resources.cfnResources.cfnFunction.functionName = `addusertogroup-${branchName}`;
 backend.addusertogroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
-backend.removeuserfromgroup.resources.cfnResources.cfnFunction.functionName = `removeuserfromgroup-${7e048d04ad.deploymentTypeName}`;
+backend.removeuserfromgroup.resources.cfnResources.cfnFunction.functionName = `removeuserfromgroup-${branchName}`;
 backend.removeuserfromgroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId

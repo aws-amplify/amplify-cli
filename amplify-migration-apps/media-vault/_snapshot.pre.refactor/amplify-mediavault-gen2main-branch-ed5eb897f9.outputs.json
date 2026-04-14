@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref"
+    "OutputValue": "427n07aeulhlev4cen3qs6kf17"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef"
+    "OutputValue": "amplify-mediavault-ge-mediavaultb574f210f1634e-5dlrd30ro5u0"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref"
+    "OutputValue": "427n07aeulhlev4cen3qs6kf17"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "oauthCognitoDomain",
-    "OutputValue": "7e048d04ad.oauthCognitoDomain"
+    "OutputValue": "deddd8c1d0c4f5cbeefe.auth.us-east-1.amazoncognito.com"
   },
   {
     "OutputKey": "oauthScope",
@@ -37,11 +37,11 @@
   },
   {
     "OutputKey": "oauthRedirectSignOut",
-    "OutputValue": "7e048d04ad.oauthRedirectSignIn"
+    "OutputValue": "https://main.d1086iitvfyy6.amplifyapp.com/,https://gen2-main.d1086iitvfyy6.amplifyapp.com/"
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "7e048d04ad.awsAppsyncAdditionalAuthenticationTypes"
+    "OutputValue": "API_KEY,AWS_IAM"
   },
   {
     "OutputKey": "mfaTypes",
@@ -61,15 +61,15 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPIDefaultApiKey6A29A072ApiKey"
+    "OutputValue": "da2-fakeapikey00000000000000"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "7e048d04ad.awsAppsyncAuthenticationType"
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "7e048d04ad.oauthRedirectSignIn"
+    "OutputValue": "https://main.d1086iitvfyy6.amplifyapp.com/,https://gen2-main.d1086iitvfyy6.amplifyapp.com/"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833GraphQLUrl"
+    "OutputValue": "https://kwrtotqfmjhqdkjn3sy5stjrt4.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "195df8d5e8.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+    "OutputValue": "lrahqddacbde5pc3etoruofrzu"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main\\\",\\\"bucketName\\\":\\\"1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-mediavault-ge-mediavaultb574f210f1634e-5dlrd30ro5u0\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "7e048d04ad.amplifyApiModelSchemaS3Uri"
+    "OutputValue": "s3://amplify-mediavault-ge-amplifydataamplifycodege-gek2tu7zd4au/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authaddusertogroupgen2mainlambdaFE5FDFFARef\",\"41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authremoveuserfromgroupgen2mainlambda5610FB1BRef\",\"1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef\"]"
+    "OutputValue": "[\"addusertogroup-gen2-main\",\"removeuserfromgroup-gen2-main\",\"thumbnailgen-gen2-main\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -113,7 +113,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "7e048d04ad.deploymentType"
+    "OutputValue": "branch"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthUserPool9F5CB443Ref"
+    "OutputValue": "us-east-1_Pwn7i486a"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "41a5689bdb.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+    "OutputValue": "us-east-1:bed96618-da8d-4017-b873-fdff1744397a"
   },
   {
     "OutputKey": "verificationMechanisms",

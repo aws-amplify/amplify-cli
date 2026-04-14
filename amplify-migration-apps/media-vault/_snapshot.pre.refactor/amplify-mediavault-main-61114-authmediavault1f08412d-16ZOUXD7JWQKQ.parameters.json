@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "6b2a52a982.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault-main-61114-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -93,7 +93,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "1e7e367f51.UserPoolName"
+    "ParameterValue": "mediavault1f08412d_userpool_1f08412d"
   },
   {
     "ParameterKey": "hostedUIProviderMeta",
@@ -141,7 +141,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "6b2a52a982.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault-main-61114-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

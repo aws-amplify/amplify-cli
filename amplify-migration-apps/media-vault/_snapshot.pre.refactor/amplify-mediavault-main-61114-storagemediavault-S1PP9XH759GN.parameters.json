@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "6b2a52a982.UnauthRoleName"
+    "ParameterValue": "amplify-mediavault-main-61114-unauthRole"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -49,7 +49,7 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsAdminGroupRole",
-    "ParameterValue": "auth.userPoolGroups.AdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_gekM9OHb7-AdminGroupRole"
   },
   {
     "ParameterKey": "unauthPolicyName",
@@ -57,11 +57,11 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsBasicGroupRole",
-    "ParameterValue": "auth.userPoolGroups.BasicGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_gekM9OHb7-BasicGroupRole"
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "6b2a52a982.AuthRoleName"
+    "ParameterValue": "amplify-mediavault-main-61114-authRole"
   },
   {
     "ParameterKey": "GuestAllowList",
@@ -73,7 +73,7 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "1e7e367f51.UserPoolId"
+    "ParameterValue": "us-east-1_gekM9OHb7"
   },
   {
     "ParameterKey": "s3PermissionsAuthenticatedProtected",

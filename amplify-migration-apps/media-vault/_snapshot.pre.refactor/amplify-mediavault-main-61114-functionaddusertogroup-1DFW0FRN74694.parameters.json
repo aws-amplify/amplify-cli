@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "6b2a52a982.DeploymentBucketName"
+    "ParameterValue": "amplify-mediavault-main-61114-deployment"
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "1e7e367f51.UserPoolId"
+    "ParameterValue": "us-east-1_gekM9OHb7"
   },
   {
     "ParameterKey": "env",

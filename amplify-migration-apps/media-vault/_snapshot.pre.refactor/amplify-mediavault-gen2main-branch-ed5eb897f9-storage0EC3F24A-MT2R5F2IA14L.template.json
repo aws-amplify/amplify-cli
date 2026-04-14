@@ -46,12 +46,12 @@
             "Value": "mediavault"
           },
           {
-            "Key": "amplify:7e048d04ad.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "7e048d04ad.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -70,7 +70,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main/Bucket/Resource"
       }
     },
     "mediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucketPolicy9F1C0E39": {
@@ -159,7 +159,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main/Bucket/Policy/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main/Bucket/Policy/Resource"
       }
     },
     "mediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucketAutoDeleteObjectsCustomResource9FE792C3": {
@@ -181,7 +181,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/mediavaultb574f210f1634e3a8d1934f263da5bed61114-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
@@ -206,7 +206,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
@@ -245,7 +245,7 @@
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
         "aws:asset:property": "Code"
       }
@@ -253,11 +253,11 @@
     "MEDIAVAULTB574F210F1634E3A8D1934F263DA5BED61114GEN2MAINBUCKETNAMEParameterAA138399": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/mediavault/gen2main-7e048d04ad.deploymentType-ed5eb897f9/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/mediavault/gen2main-branch-ed5eb897f9/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME",
         "Tags": {
           "amplify:app-id": "mediavault",
-          "amplify:7e048d04ad.deploymentType-name": "gen2-main",
-          "amplify:deployment-type": "7e048d04ad.deploymentType",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
           "created-by": "amplify"
         },
         "Type": "String",
@@ -266,7 +266,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
       }
     },
     "thumbnailgengen2mainlambdaServiceRole39A68ECC": {
@@ -304,16 +304,16 @@
             "Value": "mediavault"
           },
           {
-            "Key": "amplify:7e048d04ad.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "7e048d04ad.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef"
+            "Value": "thumbnailgen-gen2-main"
           },
           {
             "Key": "created-by",
@@ -322,7 +322,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/thumbnailgen-gen2-main-lambda/ServiceRole/Resource"
       }
     },
     "thumbnailgengen2mainlambdaServiceRoleDefaultPolicyBD042915": {
@@ -349,7 +349,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter/amplify/resource_reference/mediavault/gen2main-7e048d04ad.deploymentType-ed5eb897f9/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME"
+                    ":parameter/amplify/resource_reference/mediavault/gen2main-branch-ed5eb897f9/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME"
                   ]
                 ]
               }
@@ -365,7 +365,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/thumbnailgen-gen2-main-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "thumbnailgengen2mainlambda5B675D96": {
@@ -384,7 +384,7 @@
           "Variables": {
             "ENV": "gen2-main",
             "REGION": "us-east-1",
-            "AMPLIFY_SSM_ENV_CONFIG": "{\"MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME\":{\"path\":\"/amplify/resource_reference/mediavault/gen2main-7e048d04ad.deploymentType-ed5eb897f9/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME\"}}",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME\":{\"path\":\"/amplify/resource_reference/mediavault/gen2main-branch-ed5eb897f9/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME\"}}",
             "MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BED_61114_GEN_2_MAIN_BUCKET_NAME": "<value will be resolved during runtime>",
             "STORAGE_MEDIAVAULT_BUCKETNAME": {
               "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket30C540BA"
@@ -394,7 +394,7 @@
         "EphemeralStorage": {
           "Size": 512
         },
-        "FunctionName": "1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef",
+        "FunctionName": "thumbnailgen-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {
@@ -410,16 +410,16 @@
             "Value": "mediavault"
           },
           {
-            "Key": "amplify:7e048d04ad.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "7e048d04ad.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef"
+            "Value": "thumbnailgen-gen2-main"
           },
           {
             "Key": "created-by",
@@ -432,13 +432,13 @@
         "thumbnailgengen2mainlambdaServiceRole39A68ECC"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/1b871c1131.amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef-lambda/Resource",
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/thumbnailgen-gen2-main-lambda/Resource",
         "aws:asset:path": "asset.e7e706e5d5e976200f0e1990040ec5369468c4cd2f2aedafc5ba5dc698db04e9",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
       }
     },
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess5F5646D39": {
+    "amplifymediavaultgen2mainbranched5eb897f9storageAccess5F5646D39": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -482,18 +482,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess5F5646D39",
+        "PolicyName": "amplifymediavaultgen2mainbranched5eb897f9storageAccess5F5646D39",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+            "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9--storageAccess5/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/amplify-mediavault-gen2main-branch-ed5eb897f9--storageAccess5/Resource"
       }
     },
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess6D6A2D82F": {
+    "amplifymediavaultgen2mainbranched5eb897f9storageAccess6D6A2D82F": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -667,18 +667,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess6D6A2D82F",
+        "PolicyName": "amplifymediavaultgen2mainbranched5eb897f9storageAccess6D6A2D82F",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+            "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9--storageAccess6/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/amplify-mediavault-gen2main-branch-ed5eb897f9--storageAccess6/Resource"
       }
     },
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess7B4F024D5": {
+    "amplifymediavaultgen2mainbranched5eb897f9storageAccess7B4F024D5": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -852,18 +852,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess7B4F024D5",
+        "PolicyName": "amplifymediavaultgen2mainbranched5eb897f9storageAccess7B4F024D5",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthAdminGroupRoleD3CE4EF4Ref"
+            "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthAdminGroupRoleD3CE4EF4Ref"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9--storageAccess7/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/amplify-mediavault-gen2main-branch-ed5eb897f9--storageAccess7/Resource"
       }
     },
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess82A1F08C7": {
+    "amplifymediavaultgen2mainbranched5eb897f9storageAccess82A1F08C7": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -941,18 +941,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess82A1F08C7",
+        "PolicyName": "amplifymediavaultgen2mainbranched5eb897f9storageAccess82A1F08C7",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthBasicGroupRole000D5775Ref"
+            "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthBasicGroupRole000D5775Ref"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9--storageAccess8/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/amplify-mediavault-gen2main-branch-ed5eb897f9--storageAccess8/Resource"
       }
     },
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess94C250161": {
+    "amplifymediavaultgen2mainbranched5eb897f9storageAccess94C250161": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1126,7 +1126,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storageAccess94C250161",
+        "PolicyName": "amplifymediavaultgen2mainbranched5eb897f9storageAccess94C250161",
         "Roles": [
           {
             "Ref": "thumbnailgengen2mainlambdaServiceRole39A68ECC"
@@ -1134,7 +1134,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9--storageAccess9/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/amplify-mediavault-gen2main-branch-ed5eb897f9--storageAccess9/Resource"
       }
     },
     "CDKMetadata": {
@@ -1143,7 +1143,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwY7CMAxEv4V7aqDsgetSaY+oaj+gMomp0jaJFCcgVOXfV226oD29GVseTwnl1xEOO3xyIdVYTPoG85U4kGoDylHgk7uZTzBfohwpiOpuN5VRu0nL12e8+WwuyJQEs4G5DV7bvkaPhgL55eBtkpjQ3BR21ikaGK4rfqKVQTsrNBqYGzfRcrTy8zSrJPjUITMFhu8FWyBUd/sXk0QVOTjTELvoZQ5763+r2ruHVuSX+mLNawP22vZJLA1h4P2jLOF4hsNuYK0LH23QhqDJ/AXbc7LRVQEAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/storage/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/storage/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -1415,28 +1415,28 @@
     }
   },
   "Outputs": {
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef": {
+    "amplifymediavaultgen2mainbranched5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef": {
       "Value": {
         "Ref": "thumbnailgengen2mainlambda5B675D96"
       }
     },
-    "amplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef": {
+    "amplifymediavaultgen2mainbranched5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef": {
       "Value": {
         "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket30C540BA"
       }
     }
   },
   "Parameters": {
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthAdminGroupRoleD3CE4EF4Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthAdminGroupRoleD3CE4EF4Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthBasicGroupRole000D5775Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthBasicGroupRole000D5775Ref": {
       "Type": "String"
     }
   }

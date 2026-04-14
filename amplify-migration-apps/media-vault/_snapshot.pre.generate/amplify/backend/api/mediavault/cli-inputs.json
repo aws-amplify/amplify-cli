@@ -4,7 +4,7 @@
     "apiName": "mediavault",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "7e048d04ad.awsAppsyncAuthenticationType",
+      "mode": "AMAZON_COGNITO_USER_POOLS",
       "cognitoUserPoolId": "authmediavault1f08412d"
     },
     "additionalAuthTypes": [

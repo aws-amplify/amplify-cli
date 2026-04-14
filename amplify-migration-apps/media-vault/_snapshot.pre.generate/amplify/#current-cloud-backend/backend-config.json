@@ -23,7 +23,7 @@
             }
           ],
           "defaultAuthentication": {
-            "authenticationType": "7e048d04ad.awsAppsyncAuthenticationType",
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
               "userPoolId": "authmediavault1f08412d"
             }

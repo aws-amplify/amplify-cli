@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "8febe7e2a6.GetAttNoteDataSourceName": {
+    "NoteTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -303,7 +303,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "8febe7e2a6.GetAttNoteDataSourceName",
+                    "NoteTable",
                     "Arn"
                   ]
                 },
@@ -334,10 +334,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+            "Ref": "NoteTable"
           }
         },
-        "Name": "8febe7e2a6.GetAttNoteDataSourceName",
+        "Name": "NoteTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "NoteIAMRoleCA742F19",
@@ -501,9 +501,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+                "Ref": "NoteTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -602,9 +602,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+                "Ref": "NoteTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -769,9 +769,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+                "Ref": "NoteTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -957,9 +957,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+                "Ref": "NoteTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1109,9 +1109,9 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+                "Ref": "NoteTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1232,7 +1232,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1278,7 +1278,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1324,7 +1324,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1403,7 +1403,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"1e7e367f51.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:f09a0373-df13-49a1-a865-247f1908a6a1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1413,11 +1413,11 @@
     }
   },
   "Outputs": {
-    "GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn": {
+    "GetAttNoteTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "8febe7e2a6.GetAttNoteDataSourceName",
+          "NoteTable",
           "StreamArn"
         ]
       },
@@ -1429,16 +1429,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
+              "GetAtt:NoteTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt8febe7e2a6.GetAttNoteDataSourceNameName": {
+    "GetAttNoteTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "8febe7e2a6.GetAttNoteDataSourceName"
+        "Ref": "NoteTable"
       },
       "Export": {
         "Name": {
@@ -1448,7 +1448,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
+              "GetAtt:NoteTable:Name"
             ]
           ]
         }

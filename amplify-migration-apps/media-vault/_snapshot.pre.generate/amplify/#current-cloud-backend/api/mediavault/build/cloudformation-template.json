@@ -66,7 +66,7 @@
             "AuthenticationType": "API_KEY"
           }
         ],
-        "AuthenticationType": "7e048d04ad.awsAppsyncAuthenticationType",
+        "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
         "Name": {
           "Fn::Join": [
             "",
@@ -356,7 +356,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -453,7 +453,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -496,7 +496,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -539,7 +539,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -582,7 +582,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -625,7 +625,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"function.thumbnailgen.Name\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-main\"]))\n$util.toJson({})"
             ]
           ]
         },

@@ -37,22 +37,22 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref": {
+    "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref": {
       "Type": "String"
     }
   },
@@ -349,13 +349,13 @@
     }
   },
   "Resources": {
-    "8febe7e2a6.GetAttNoteDataSourceName": {
+    "NoteTable": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB4D1B84FOutputsamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataAmplifyTableManagerTableMa7AAB1CB8"
         },
-        "tableName": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
+        "tableName": "Note-5aahjbxypzan3jqab7lbquus4m-main",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -418,7 +418,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/8febe7e2a6.GetAttNoteDataSourceName/Default/Default"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/NoteTable/Default/Default"
       }
     },
     "NoteIAMRoleCA742F19": {
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName"
+                          "tablename": "Note-5aahjbxypzan3jqab7lbquus4m-main"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName"
+                          "tablename": "Note-5aahjbxypzan3jqab7lbquus4m-main"
                         }
                       ]
                     }
@@ -487,7 +487,7 @@
             [
               "NoteIAMRoleee5963-",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "-NONE"
             ]
@@ -499,12 +499,12 @@
             "Value": "mediavault"
           },
           {
-            "Key": "amplify:7e048d04ad.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "7e048d04ad.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "amplify:friendly-name",
@@ -517,14 +517,14 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/NoteIAMRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/NoteIAMRole/Resource"
       }
     },
     "NoteDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DynamoDBConfig": {
           "AwsRegion": {
@@ -544,7 +544,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "8febe7e2a6.GetAttNoteDataSourceName",
+                              "NoteTable",
                               "TableArn"
                             ]
                           }
@@ -557,7 +557,7 @@
             ]
           }
         },
-        "Name": "8febe7e2a6.GetAttNoteDataSourceName",
+        "Name": "NoteTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "NoteIAMRoleCA742F19",
@@ -570,17 +570,17 @@
         "NoteIAMRoleCA742F19"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/NoteDataSource/Resource"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/NoteDataSource/Resource"
       }
     },
     "QuerygetNoteauth0FunctionQuerygetNoteauth0FunctionAppSyncFunction1125F54B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetNoteauth0Function",
@@ -590,17 +590,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/QuerygetNoteauth0Function/QuerygetNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/QuerygetNoteauth0Function/QuerygetNoteauth0Function.AppSyncFunction"
       }
     },
     "QuerygetNotepostAuth0FunctionQuerygetNotepostAuth0FunctionAppSyncFunctionBC9940CA": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetNotepostAuth0Function",
@@ -610,14 +610,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/QuerygetNotepostAuth0Function/QuerygetNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/QuerygetNotepostAuth0Function/QuerygetNotepostAuth0Function.AppSyncFunction"
       }
     },
     "QueryGetNoteDataResolverFnQueryGetNoteDataResolverFnAppSyncFunction2F346125": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -638,14 +638,14 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/QueryGetNoteDataResolverFn/QueryGetNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/QueryGetNoteDataResolverFn/QueryGetNoteDataResolverFn.AppSyncFunction"
       }
     },
     "GetNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "getNote",
         "Kind": "PIPELINE",
@@ -677,7 +677,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -694,7 +694,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "8febe7e2a6.GetAttNoteDataSourceName",
+                                  "NoteTable",
                                   "TableArn"
                                 ]
                               }
@@ -716,7 +716,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -728,11 +728,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -742,17 +742,17 @@
         "TypeName": "Query"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/queryGetNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/queryGetNoteResolver"
       }
     },
     "QuerylistNotesauth0FunctionQuerylistNotesauth0FunctionAppSyncFunction4C828F45": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistNotesauth0Function",
@@ -762,17 +762,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/QuerylistNotesauth0Function/QuerylistNotesauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/QuerylistNotesauth0Function/QuerylistNotesauth0Function.AppSyncFunction"
       }
     },
     "QuerylistNotespostAuth0FunctionQuerylistNotespostAuth0FunctionAppSyncFunctionCEA378D3": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistNotespostAuth0Function",
@@ -782,14 +782,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/QuerylistNotespostAuth0Function/QuerylistNotespostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/QuerylistNotespostAuth0Function/QuerylistNotespostAuth0Function.AppSyncFunction"
       }
     },
     "QueryListNotesDataResolverFnQueryListNotesDataResolverFnAppSyncFunctionBD5C872B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -810,14 +810,14 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/QueryListNotesDataResolverFn/QueryListNotesDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/QueryListNotesDataResolverFn/QueryListNotesDataResolverFn.AppSyncFunction"
       }
     },
     "ListNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "listNotes",
         "Kind": "PIPELINE",
@@ -849,7 +849,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listNotes\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -866,7 +866,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "8febe7e2a6.GetAttNoteDataSourceName",
+                                  "NoteTable",
                                   "TableArn"
                                 ]
                               }
@@ -888,7 +888,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -900,11 +900,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -914,17 +914,17 @@
         "TypeName": "Query"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/queryListNotesResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/queryListNotesResolver"
       }
     },
     "MutationcreateNoteinit0FunctionMutationcreateNoteinit0FunctionAppSyncFunction336343A0": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateNoteinit0Function",
@@ -934,17 +934,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationcreateNoteinit0Function/MutationcreateNoteinit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationcreateNoteinit0Function/MutationcreateNoteinit0Function.AppSyncFunction"
       }
     },
     "MutationcreateNoteauth0FunctionMutationcreateNoteauth0FunctionAppSyncFunction24439C2F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateNoteauth0Function",
@@ -954,17 +954,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationcreateNoteauth0Function/MutationcreateNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationcreateNoteauth0Function/MutationcreateNoteauth0Function.AppSyncFunction"
       }
     },
     "MutationcreateNotepostAuth0FunctionMutationcreateNotepostAuth0FunctionAppSyncFunction6D427EC4": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateNotepostAuth0Function",
@@ -974,14 +974,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationcreateNotepostAuth0Function/MutationcreateNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationcreateNotepostAuth0Function/MutationcreateNotepostAuth0Function.AppSyncFunction"
       }
     },
     "MutationCreateNoteDataResolverFnMutationCreateNoteDataResolverFnAppSyncFunction591F5456": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1002,14 +1002,14 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationCreateNoteDataResolverFn/MutationCreateNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationCreateNoteDataResolverFn/MutationCreateNoteDataResolverFn.AppSyncFunction"
       }
     },
     "CreateNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "createNote",
         "Kind": "PIPELINE",
@@ -1047,7 +1047,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1064,7 +1064,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "8febe7e2a6.GetAttNoteDataSourceName",
+                                  "NoteTable",
                                   "TableArn"
                                 ]
                               }
@@ -1086,7 +1086,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1098,11 +1098,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1112,17 +1112,17 @@
         "TypeName": "Mutation"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/mutationCreateNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/mutationCreateNoteResolver"
       }
     },
     "MutationupdateNoteinit0FunctionMutationupdateNoteinit0FunctionAppSyncFunction19D28B0F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateNoteinit0Function",
@@ -1132,14 +1132,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationupdateNoteinit0Function/MutationupdateNoteinit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationupdateNoteinit0Function/MutationupdateNoteinit0Function.AppSyncFunction"
       }
     },
     "MutationupdateNoteauth0FunctionMutationupdateNoteauth0FunctionAppSyncFunction72CAF43F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1160,17 +1160,17 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationupdateNoteauth0Function/MutationupdateNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationupdateNoteauth0Function/MutationupdateNoteauth0Function.AppSyncFunction"
       }
     },
     "MutationupdateNotepostAuth0FunctionMutationupdateNotepostAuth0FunctionAppSyncFunction7DBB904D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateNotepostAuth0Function",
@@ -1180,14 +1180,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationupdateNotepostAuth0Function/MutationupdateNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationupdateNotepostAuth0Function/MutationupdateNotepostAuth0Function.AppSyncFunction"
       }
     },
     "MutationUpdateNoteDataResolverFnMutationUpdateNoteDataResolverFnAppSyncFunctionBCC5D9E4": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1208,14 +1208,14 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationUpdateNoteDataResolverFn/MutationUpdateNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationUpdateNoteDataResolverFn/MutationUpdateNoteDataResolverFn.AppSyncFunction"
       }
     },
     "UpdateNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "updateNote",
         "Kind": "PIPELINE",
@@ -1253,7 +1253,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1270,7 +1270,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "8febe7e2a6.GetAttNoteDataSourceName",
+                                  "NoteTable",
                                   "TableArn"
                                 ]
                               }
@@ -1292,7 +1292,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1304,11 +1304,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1318,14 +1318,14 @@
         "TypeName": "Mutation"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/mutationUpdateNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/mutationUpdateNoteResolver"
       }
     },
     "MutationdeleteNoteauth0FunctionMutationdeleteNoteauth0FunctionAppSyncFunction5FE2B4D0": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1346,17 +1346,17 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationdeleteNoteauth0Function/MutationdeleteNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationdeleteNoteauth0Function/MutationdeleteNoteauth0Function.AppSyncFunction"
       }
     },
     "MutationdeleteNotepostAuth0FunctionMutationdeleteNotepostAuth0FunctionAppSyncFunction5E0783EF": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationdeleteNotepostAuth0Function",
@@ -1366,14 +1366,14 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationdeleteNotepostAuth0Function/MutationdeleteNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationdeleteNotepostAuth0Function/MutationdeleteNotepostAuth0Function.AppSyncFunction"
       }
     },
     "MutationDeleteNoteDataResolverFnMutationDeleteNoteDataResolverFnAppSyncFunction3FA3FDA0": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1394,14 +1394,14 @@
         "NoteDataSource"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/MutationDeleteNoteDataResolverFn/MutationDeleteNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/MutationDeleteNoteDataResolverFn/MutationDeleteNoteDataResolverFn.AppSyncFunction"
       }
     },
     "DeleteNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "deleteNote",
         "Kind": "PIPELINE",
@@ -1433,7 +1433,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1450,7 +1450,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "8febe7e2a6.GetAttNoteDataSourceName",
+                                  "NoteTable",
                                   "TableArn"
                                 ]
                               }
@@ -1472,7 +1472,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1484,11 +1484,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1498,17 +1498,17 @@
         "TypeName": "Mutation"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/mutationDeleteNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/mutationDeleteNoteResolver"
       }
     },
     "SubscriptiononCreateNoteauth0FunctionSubscriptiononCreateNoteauth0FunctionAppSyncFunction853C832F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateNoteauth0Function",
@@ -1518,17 +1518,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptiononCreateNoteauth0Function/SubscriptiononCreateNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptiononCreateNoteauth0Function/SubscriptiononCreateNoteauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononCreateNotepostAuth0FunctionSubscriptiononCreateNotepostAuth0FunctionAppSyncFunction2FE4DC1E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateNotepostAuth0Function",
@@ -1538,17 +1538,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptiononCreateNotepostAuth0Function/SubscriptiononCreateNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptiononCreateNotepostAuth0Function/SubscriptiononCreateNotepostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnCreateNoteDataResolverFnSubscriptionOnCreateNoteDataResolverFnAppSyncFunction37D6FFF2": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnCreateNoteDataResolverFn",
@@ -1560,14 +1560,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptionOnCreateNoteDataResolverFn/SubscriptionOnCreateNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptionOnCreateNoteDataResolverFn/SubscriptionOnCreateNoteDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononCreateNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "onCreateNote",
         "Kind": "PIPELINE",
@@ -1599,7 +1599,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1611,7 +1611,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1623,11 +1623,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1637,17 +1637,17 @@
         "TypeName": "Subscription"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/subscriptionOnCreateNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/subscriptionOnCreateNoteResolver"
       }
     },
     "SubscriptiononUpdateNoteauth0FunctionSubscriptiononUpdateNoteauth0FunctionAppSyncFunction2413D644": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateNoteauth0Function",
@@ -1657,17 +1657,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptiononUpdateNoteauth0Function/SubscriptiononUpdateNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptiononUpdateNoteauth0Function/SubscriptiononUpdateNoteauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononUpdateNotepostAuth0FunctionSubscriptiononUpdateNotepostAuth0FunctionAppSyncFunction30ABF2EE": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateNotepostAuth0Function",
@@ -1677,17 +1677,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptiononUpdateNotepostAuth0Function/SubscriptiononUpdateNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptiononUpdateNotepostAuth0Function/SubscriptiononUpdateNotepostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnUpdateNoteDataResolverFnSubscriptionOnUpdateNoteDataResolverFnAppSyncFunctionE4137817": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnUpdateNoteDataResolverFn",
@@ -1699,14 +1699,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptionOnUpdateNoteDataResolverFn/SubscriptionOnUpdateNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptionOnUpdateNoteDataResolverFn/SubscriptionOnUpdateNoteDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononUpdateNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "onUpdateNote",
         "Kind": "PIPELINE",
@@ -1738,7 +1738,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1750,7 +1750,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1762,11 +1762,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1776,17 +1776,17 @@
         "TypeName": "Subscription"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/subscriptionOnUpdateNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/subscriptionOnUpdateNoteResolver"
       }
     },
     "SubscriptiononDeleteNoteauth0FunctionSubscriptiononDeleteNoteauth0FunctionAppSyncFunction1B717F3B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteNoteauth0Function",
@@ -1796,17 +1796,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptiononDeleteNoteauth0Function/SubscriptiononDeleteNoteauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptiononDeleteNoteauth0Function/SubscriptiononDeleteNoteauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononDeleteNotepostAuth0FunctionSubscriptiononDeleteNotepostAuth0FunctionAppSyncFunction7D4AF5B3": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteNotepostAuth0Function",
@@ -1816,17 +1816,17 @@
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptiononDeleteNotepostAuth0Function/SubscriptiononDeleteNotepostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptiononDeleteNotepostAuth0Function/SubscriptiononDeleteNotepostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnDeleteNoteDataResolverFnSubscriptionOnDeleteNoteDataResolverFnAppSyncFunctionA1CED045": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnDeleteNoteDataResolverFn",
@@ -1838,14 +1838,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/SubscriptionOnDeleteNoteDataResolverFn/SubscriptionOnDeleteNoteDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/SubscriptionOnDeleteNoteDataResolverFn/SubscriptionOnDeleteNoteDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononDeleteNoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "onDeleteNote",
         "Kind": "PIPELINE",
@@ -1877,7 +1877,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteNote\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1889,7 +1889,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1901,11 +1901,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1915,17 +1915,17 @@
         "TypeName": "Subscription"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/subscriptionOnDeleteNoteResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/subscriptionOnDeleteNoteResolver"
       }
     },
     "NoteOwnerDataResolverFnNoteOwnerDataResolverFnAppSyncFunction66A7C72C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPINONEDS72CA46E4Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "NoteOwnerDataResolverFn",
@@ -1937,14 +1937,14 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/NoteOwnerDataResolverFn/NoteOwnerDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/NoteOwnerDataResolverFn/NoteOwnerDataResolverFn.AppSyncFunction"
       }
     },
     "NoteownerResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+          "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
         },
         "FieldName": "owner",
         "Kind": "PIPELINE",
@@ -1964,7 +1964,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Note\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1976,7 +1976,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1988,11 +1988,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9authNestedStackauthNestedStackResource88E75484Outputsamplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2002,7 +2002,7 @@
         "TypeName": "Note"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/noteOwnerResolver"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/noteOwnerResolver"
       }
     },
     "CDKMetadata": {
@@ -2011,17 +2011,17 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X34LV0h11Xqh63CXavTGJQCjgodlpViHefoFOnnX5/8if7zyF/3cF2gzfJrOuy3tcwfZAouUrRdqZo+AsjDqQUFygCO68+sClJQoqWTJFEw/CHDT9nvMl5cnfGIbgavrHu6YBCxuMAUxn6hx16mg2Oo9zZwnRc9WN9RMXqefI/nRLbpUQRuPFtirg2+v3cXynORvZnFCEVeF/CyB4OyXakS4F5cT+TjknNuq4UW8/tbDg4gou8XPMcdm+w3VzE+ywmVj8QlI/8AXh83Gc2AQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-gen2main-7e048d04ad.deploymentType-ed5eb897f9/data/amplifyData/Note/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-mediavault-gen2main-branch-ed5eb897f9/data/amplifyData/Note/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
   },
   "Outputs": {
-    "GetAtt8febe7e2a6.GetAttNoteDataSourceNameStreamArn": {
+    "GetAttNoteTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "8febe7e2a6.GetAttNoteDataSourceName",
+          "NoteTable",
           "TableStreamArn"
         ]
       },
@@ -2031,26 +2031,26 @@
             ":",
             [
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
-              "GetAtt:8febe7e2a6.GetAttNoteDataSourceName:StreamArn"
+              "GetAtt:NoteTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt8febe7e2a6.GetAttNoteDataSourceNameName": {
+    "GetAttNoteTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName",
+      "Value": "Note-5aahjbxypzan3jqab7lbquus4m-main",
       "Export": {
         "Name": {
           "Fn::Join": [
             ":",
             [
               {
-                "Ref": "referencetoamplifymediavaultgen2main7e048d04ad.deploymentTypeed5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
+                "Ref": "referencetoamplifymediavaultgen2mainbranched5eb897f9dataamplifyDataGraphQLAPID9F44833ApiId"
               },
-              "GetAtt:8febe7e2a6.GetAttNoteDataSourceName:Name"
+              "GetAtt:NoteTable:Name"
             ]
           ]
         }

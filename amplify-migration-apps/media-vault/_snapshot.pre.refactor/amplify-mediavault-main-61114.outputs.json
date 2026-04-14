@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "6b2a52a982.AuthRoleName"
+    "OutputValue": "amplify-mediavault-main-61114-authRole"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "6b2a52a982.UnauthRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-mediavault-main-61114-unauthRole"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "6b2a52a982.AuthRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-mediavault-main-61114-authRole"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "6b2a52a982.StackName-Region"
+    "ExportName": "amplify-mediavault-main-61114-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "6b2a52a982.DeploymentBucketName",
+    "OutputValue": "amplify-mediavault-main-61114-deployment",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "6b2a52a982.StackName-DeploymentBucketName"
+    "ExportName": "amplify-mediavault-main-61114-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "6b2a52a982.UnauthRoleName"
+    "OutputValue": "amplify-mediavault-main-61114-unauthRole"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "6b2a52a982.StackName",
+    "OutputValue": "amplify-mediavault-main-61114",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "6b2a52a982.StackName-StackName"
+    "ExportName": "amplify-mediavault-main-61114-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "6b2a52a982.StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-main-61114/fdd16cb0-1afb-11f1-aa46-12a754d266f9",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "6b2a52a982.StackName-StackId"
+    "ExportName": "amplify-mediavault-main-61114-StackId"
   }
 ]

@@ -1,6 +1,6 @@
 import { defineData } from '@aws-amplify/backend';
 
-const 7e048d04ad.deploymentTypeName = process.env.AWS_BRANCH ?? 'sandbox';
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Note @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admin"] }]) {
   id: ID!
   title: String!
@@ -8,9 +8,9 @@ const schema = `type Note @model @auth(rules: [{ allow: owner }, { allow: groups
 }
 
 type Query {
-  generateThumbnail(mediaFileKey: String!): GenerateThumbnailResponse @function(name: "thumbnailgen-${7e048d04ad.deploymentTypeName}") @auth(rules: [{ allow: public }])
-  addUserToGroup(userSub: String!, group: String!): AddUserToGroupResponse @function(name: "addusertogroup-${7e048d04ad.deploymentTypeName}") @auth(rules: [{ allow: public }])
-  removeUserFromGroup(userSub: String!, group: String!): RemoveUserFromGroupResponse @function(name: "removeuserfromgroup-${7e048d04ad.deploymentTypeName}") @auth(rules: [{ allow: public }])
+  generateThumbnail(mediaFileKey: String!): GenerateThumbnailResponse @function(name: "thumbnailgen-${branchName}") @auth(rules: [{ allow: public }])
+  addUserToGroup(userSub: String!, group: String!): AddUserToGroupResponse @function(name: "addusertogroup-${branchName}") @auth(rules: [{ allow: public }])
+  removeUserFromGroup(userSub: String!, group: String!): RemoveUserFromGroupResponse @function(name: "removeuserfromgroup-${branchName}") @auth(rules: [{ allow: public }])
 }
 
 type GenerateThumbnailResponse {
@@ -32,10 +32,10 @@ type RemoveUserFromGroupResponse {
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "7e048d04ad.deploymentTypename" variable needs to be the same as your deployment 7e048d04ad.deploymentType if you want to reuse your Gen1 app tables
-      7e048d04ad.deploymentTypeName: 'main',
+      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+      branchName: 'main',
       modelNameToTableNameMapping: {
-        Note: '8febe7e2a6.GetAtt8febe7e2a6.GetAttNoteDataSourceNameName',
+        Note: 'Note-5aahjbxypzan3jqab7lbquus4m-main',
       },
     },
   ],

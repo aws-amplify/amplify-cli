@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "a902e5815d.LambdaExecutionRoleArn"
+    "OutputValue": "arn:aws:iam::123456789012:role/mediavaultLambdaRolefe3fe5ce-main"
   },
   {
     "OutputKey": "Region",
@@ -9,14 +9,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "function.thumbnailgen.Arn"
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:thumbnailgen-main"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "function.thumbnailgen.Name"
+    "OutputValue": "thumbnailgen-main"
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "a902e5815d.LambdaExecutionRole"
+    "OutputValue": "mediavaultLambdaRolefe3fe5ce-main"
   }
 ]
