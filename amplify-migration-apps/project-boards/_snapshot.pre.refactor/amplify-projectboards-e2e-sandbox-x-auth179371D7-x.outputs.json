@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPool277FEC38Ref"
+    "OutputKey": "amplifyprojectboardse2esandboxc2ad403197authamplifyAuthauthenticatedUserRole8FAF8BA2Ref",
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthauthenticatedUserRole8FAF8BA2Ref"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef"
+    "OutputKey": "amplifyprojectboardse2esandboxc2ad403197authamplifyAuthunauthenticatedUserRole9B0DC5D0Ref",
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthunauthenticatedUserRole9B0DC5D0Ref"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPoolAppClient71A9EB50Ref",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthUserPoolAppClient71A9EB50Ref"
+    "OutputKey": "amplifyprojectboardse2esandboxc2ad403197authamplifyAuthUserPoolAppClient4257AC4BRef",
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthUserPoolAppClient4257AC4BRef"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
+    "OutputKey": "amplifyprojectboardse2esandboxc2ad403197authamplifyAuthUserPool4DBCFB39Ref",
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthUserPool4DBCFB39Ref"
   },
   {
-    "OutputKey": "amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref",
-    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref"
+    "OutputKey": "amplifyprojectboardse2esandboxc2ad403197authamplifyAuthIdentityPool2B0ABC4CRef",
+    "OutputValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthIdentityPool2B0ABC4CRef"
   }
 ]

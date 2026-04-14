@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket9AEED8CF": {
+    "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket311A7FA8": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {

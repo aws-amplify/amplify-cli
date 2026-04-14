@@ -1,30 +1,30 @@
 [
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPINONEDS40813DEFName",
-    "ParameterValue": "NONE_DS"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197authNestedStackauthNestedStackResource5B9F90C7Outputsamplifyprojectboardse2esandboxc2ad403197authamplifyAuthIdentityPool2B0ABC4CRef",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthIdentityPool2B0ABC4CRef"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthauthenticatedUserRole83A2907CRef"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197authNestedStackauthNestedStackResource5B9F90C7Outputsamplifyprojectboardse2esandboxc2ad403197authamplifyAuthauthenticatedUserRole8FAF8BA2Ref",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthauthenticatedUserRole8FAF8BA2Ref"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId",
-    "ParameterValue": "98b70a6375.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataGraphQLAPIA591E832ApiId"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthunauthenticatedUserRoleDB361237Ref"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoNestedStackTodoNestedStackResource2A92E884Outputsamplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoTodoDataSource0372474CName",
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197dataamplifyDataTodoNestedStackTodoNestedStackResource41A35224Outputsamplifyprojectboardse2esandboxc2ad403197dataamplifyDataTodoTodoDataSource11493892Name",
     "ParameterValue": "TodoTable"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoNestedStackTodoNestedStackResource2A92E884Outputsamplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoTodoTable35F1344DTableArn",
-    "ParameterValue": "5c1e28b4a7.amplifyprojectboardse2esandboxdb84d1ad4adataamplifyDataTodoTodoTable35F1344DTableArn"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197authNestedStackauthNestedStackResource5B9F90C7Outputsamplifyprojectboardse2esandboxc2ad403197authamplifyAuthunauthenticatedUserRole9B0DC5D0Ref",
+    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxc2ad403197authamplifyAuthunauthenticatedUserRole9B0DC5D0Ref"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxdb84d1ad4aauthNestedStackauthNestedStackResourceF5DD0DABOutputsamplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef",
-    "ParameterValue": "6e8907221c.amplifyprojectboardse2esandboxdb84d1ad4aauthamplifyAuthIdentityPoolA51EAABFRef"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197dataamplifyDataGraphQLAPINONEDS77849D82Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197dataamplifyDataGraphQLAPIDE98A364ApiId",
+    "ParameterValue": "98b70a6375.amplifyprojectboardse2esandboxc2ad403197dataamplifyDataGraphQLAPIDE98A364ApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxc2ad403197dataamplifyDataTodoNestedStackTodoNestedStackResource41A35224Outputsamplifyprojectboardse2esandboxc2ad403197dataamplifyDataTodoTodoTableB4588F16TableArn",
+    "ParameterValue": "5c1e28b4a7.amplifyprojectboardse2esandboxc2ad403197dataamplifyDataTodoTodoTableB4588F16TableArn"
   }
 ]
