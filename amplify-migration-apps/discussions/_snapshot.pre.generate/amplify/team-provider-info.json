@@ -1,14 +1,14 @@
 {
-  "x": {
+  "main": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-discussions-x-x-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-authRole",
+      "AuthRoleName": "amplify-discussions-main-c39a5-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-main-c39a5-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "dcec0749f7.DeploymentBucketName",
-      "UnauthRoleName": "amplify-discussions-x-x-unauthRole",
-      "StackName": "amplify-discussions-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/563767d0-37a1-11f1-8686-0affdef5e6b9",
+      "DeploymentBucketName": "amplify-discussions-main-c39a5-deployment",
+      "UnauthRoleName": "amplify-discussions-main-c39a5-unauthRole",
+      "StackName": "amplify-discussions-main-c39a5",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-main-c39a5/0e9a6f60-24a2-11f1-8462-0afffd2fb801",
       "AmplifyAppId": "discussions"
     },
     "categories": {
@@ -17,13 +17,15 @@
       },
       "function": {
         "fetchuseractivity": {
-          "deploymentBucketName": "dcec0749f7.DeploymentBucketName",
-          "s3Key": "amplify-builds/fetchuseractivity-574d43794579796f5042-build.zip"
+          "deploymentBucketName": "amplify-discussions-main-c39a5-deployment",
+          "s3Key": "amplify-builds/fetchuseractivity-6e523036545438726f37-build.zip"
         },
         "recorduseractivity": {
-          "deploymentBucketName": "dcec0749f7.DeploymentBucketName",
-          "s3Key": "amplify-builds/recorduseractivity-54696a587a7168467354-build.zip"
-        }
+          "deploymentBucketName": "amplify-discussions-main-c39a5-deployment",
+          "s3Key": "amplify-builds/recorduseractivity-433947686f7145754543-build.zip"
+        },
+        "activity": {},
+        "discussions": {}
       },
       "api": {
         "discussions": {}

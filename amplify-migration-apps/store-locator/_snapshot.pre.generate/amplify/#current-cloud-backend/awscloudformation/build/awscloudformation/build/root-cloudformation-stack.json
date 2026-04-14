@@ -202,9 +202,9 @@
     "AuthTriggerCustomLambdaStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
         "Parameters": {
-          "env": "x",
+          "env": "main",
           "userpoolId": {
             "Fn::GetAtt": [
               "authstorelocator41a9495f41a9495f",
@@ -245,7 +245,7 @@
     "authuserPoolGroups": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "Parameters": {
           "AuthRoleArn": {
             "Fn::GetAtt": [
@@ -283,19 +283,19 @@
               "Outputs.IdentityPoolId"
             ]
           },
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "authstorelocator41a9495f41a9495f": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "storelocator41a9495f_identitypool_41a9495f",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "storel41a9495f",
-          "userPoolName": "14974b1dfe.UserPoolName",
+          "userPoolName": "storelocator41a9495f_userpool_41a9495f",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -344,27 +344,28 @@
           "dependsOn": "[object Object]",
           "permissions": "{\"policyName\":\"AddToGroupCognito\",\"trigger\":\"PostConfirmation\",\"effect\":\"Allow\",\"actions\":[\"cognito-idp:AdminAddUserToGroup\",\"cognito-idp:GetGroup\",\"cognito-idp:CreateGroup\"],\"resource\":{\"paramType\":\"!GetAtt\",\"keys\":[\"UserPool\",\"Arn\"]}}",
           "authTriggerConnections": "{\"triggerType\":\"PostConfirmation\",\"lambdaFunctionName\":\"storelocator41a9495f41a9495fPostConfirmation\"}",
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "functionstorelocator41a9495f41a9495fPostConfirmation": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
         "Parameters": {
           "modules": "add-to-group",
           "resourceName": "storelocator41a9495f41a9495fPostConfirmation",
-          "deploymentBucketName": "43851d75ef.DeploymentBucketName",
+          "GROUP": "storeLocatorAdmin",
+          "deploymentBucketName": "amplify-storelocator-main-f9ca7-deployment",
           "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip",
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "geostoreLocatorMap": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
         "Parameters": {
           "authRoleName": {
             "Ref": "AuthRoleName"
@@ -387,14 +388,14 @@
               "Outputs.storeLocatorAdminGroupRole"
             ]
           },
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "geostoreLocatorSearch": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
         "Parameters": {
           "authRoleName": {
             "Ref": "AuthRoleName"
@@ -418,14 +419,14 @@
               "Outputs.storeLocatorAdminGroupRole"
             ]
           },
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "geostoreLocatorGeofence": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/43851d75ef.DeploymentBucketName/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
         "Parameters": {
           "collectionName": "storeLocatorGeofence",
           "isDefault": true,
@@ -441,7 +442,7 @@
               "Outputs.storeLocatorAdminGroupRole"
             ]
           },
-          "env": "x"
+          "env": "main"
         }
       }
     },

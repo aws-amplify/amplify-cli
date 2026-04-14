@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda22206BBBRef",
+    "OutputValue": "S3Trigger1ef46783-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9afunctionlowstockproductsgen2mainlambda27C27D88Ref",
+    "OutputValue": "lowstockproducts-gen2-main"
+  }
+]

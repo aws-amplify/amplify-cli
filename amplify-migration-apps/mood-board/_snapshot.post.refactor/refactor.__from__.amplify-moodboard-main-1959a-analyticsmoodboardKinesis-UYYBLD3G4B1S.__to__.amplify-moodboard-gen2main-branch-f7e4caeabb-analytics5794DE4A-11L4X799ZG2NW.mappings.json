@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-main-1959a-analyticsmoodboardKinesis-UYYBLD3G4B1S",
+      "LogicalResourceId": "KinesisStream"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-analytics5794DE4A-11L4X799ZG2NW",
+      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+    }
+  }
+]

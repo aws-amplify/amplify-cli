@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey",
+    "ParameterValue": "da2-kk7yuee625g6jdpnt5zi37yyxq"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId",
+    "ParameterValue": "3afyqracmndnzmjr344badj4ja"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloggen2mainbranch4b79ec0f9adataNestedStackdataNestedStackResource4BE83A16Outputsamplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl",
+    "ParameterValue": "https://ezubvwgxara45chr4bilqahity.appsync-api.us-east-1.amazonaws.com/graphql"
+  }
+]

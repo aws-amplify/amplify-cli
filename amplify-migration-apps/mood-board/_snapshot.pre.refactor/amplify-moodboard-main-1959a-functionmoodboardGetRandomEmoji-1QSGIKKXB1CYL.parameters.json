@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/moodboardGetRandomEmoji-59616d4f4b546a305a75-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  }
+]

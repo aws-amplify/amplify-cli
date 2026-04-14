@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPINONEDS6292E862Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef",
+    "ParameterValue": "amplify-backendonly-ge-amplifyAuthauthenticatedU-NrnOsacJVeCr"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthIdentityPool91CBC3ADRef",
+    "ParameterValue": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource10281D13Outputsamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataAmplifyTableManagerTableMa0FF916B6",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-backendonly-ge-TableManagerCustomProvid-hkst44FcjL0J"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810authNestedStackauthNestedStackResource99123BA9Outputsamplifybackendonlygen2mainbranch8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref",
+    "ParameterValue": "amplify-backendonly-ge-amplifyAuthunauthenticate-mFzNB8V2DE4J"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlygen2mainbranch8e0f260810dataamplifyDataGraphQLAPIB11735D9ApiId",
+    "ParameterValue": "pjpnolkqdzf57jyueue5dlgyam"
+  }
+]

@@ -25,8 +25,8 @@ function getFilesRecursive(dir: string): string[] {
 }
 
 /**
- * Builds the list of string replacements needed to normalize run-specific
- * values out of snapshot filenames and content.
+ * Builds the list of filename replacements needed to normalize run-specific
+ * values out of snapshot filenames.
  *
  * Run-specific values in CFN stack names (and thus filenames):
  *   1. deploymentName  (timestamp-based, e.g. projectboa2604111848)
@@ -89,20 +89,16 @@ export function normalize(appName: string, appDir: string): void {
 
   const replacements = extractReplacements(appName, appDir);
 
-  // Single pass: read each file once, apply all replacements, write once, rename once.
+  // Single pass: rename each file once with all replacements applied.
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
 
   for (const file of files) {
-    let content = fs.readFileSync(file, 'utf-8');
     let basename = path.basename(file);
 
     for (const { before, after } of replacements) {
-      content = content.replaceAll(before, after);
       basename = basename.replaceAll(before, after);
     }
-
-    fs.writeFileSync(file, content, 'utf-8');
 
     const newPath = path.join(path.dirname(file), basename);
     if (newPath !== file) {

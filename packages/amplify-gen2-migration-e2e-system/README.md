@@ -116,8 +116,8 @@ Order matters — normalize first, then sanitize.
 
 ### Normalization
 
-Normalization removes run-specific values (random env names, CFN stack hashes)
-from snapshot filenames and content so that filenames are stable across runs.
+Normalization replaces run-specific values in snapshot filenames
+so that filenames are stable across runs.
 
 | Value                   | Replacement            |
 | ----------------------- | ---------------------- |
@@ -127,24 +127,16 @@ from snapshot filenames and content so that filenames are stable across runs.
 | Sandbox hash            | `x`                    |
 | CFN nested stack hashes | `x`                    |
 
-These replacements apply to both file content and filenames.
-
 ### Sanitization
 
-Sanitization replaces sensitive or environment-specific values:
+Sanitization replaces sensitive values in file content:
 
 | Value                          | Replacement                    |
 | ------------------------------ | ------------------------------ |
 | AWS Account ID                 | `123456789012`                 |
 | Amplify App ID                 | `<app-name-no-dashes>`         |
 | Gen1 AppSync API Key (da2-...) | `da2-fakeapikey00000000000000` |
-| Sensitive output values        | `<fileHash>.<OutputKey>`       |
-
-Sensitive output values are extracted from `.outputs.json` files in
-`_snapshot.pre.refactor/`. Only outputs whose key matches a known
-varying-value pattern are replaced (pool IDs, client IDs, API keys,
-bucket names, table names, Lambda ARNs, etc.). The file hash is a
-stable 10-character SHA-256 digest of the outputs filename.
+| Gen2 AppSync API Key (da2-...) | `da2-fakeapikey00000000000000` |
 
 ## Development
 

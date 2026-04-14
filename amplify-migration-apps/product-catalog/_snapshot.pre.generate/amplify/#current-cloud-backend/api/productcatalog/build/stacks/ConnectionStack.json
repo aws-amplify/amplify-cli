@@ -127,7 +127,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"e9f97e5724.IdentityPoolId\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-main\",\"lowstockproducts-main\",\"amplify-productcatalog\"]))\n$util.toJson({})"
             ]
           ]
         },

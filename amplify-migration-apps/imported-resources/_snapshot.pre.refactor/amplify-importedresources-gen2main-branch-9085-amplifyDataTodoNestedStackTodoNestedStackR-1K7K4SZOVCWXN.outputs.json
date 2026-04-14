@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameName",
-    "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName",
+    "OutputKey": "GetAttTodoTableName",
+    "OutputValue": "Todo-xzx4nj36zzemlloxzhpkicpa7i-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId:GetAtt:01f772aca2.GetAttTodoDataSourceName:Name"
+    "ExportName": "wl2oasglxvbnza7q3obncdxijq:GetAtt:TodoTable:Name"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn",
-    "OutputValue": "ea7297173c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodo01f772aca2.GetAttTodoDataSourceName2DD94F95TableArn"
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoTable2DD94F95TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-xzx4nj36zzemlloxzhpkicpa7i-main"
   },
   {
-    "OutputKey": "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
-    "OutputValue": "01f772aca2.GetAttTodoDataSourceName"
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+    "OutputValue": "TodoTable"
   },
   {
-    "OutputKey": "GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
-    "OutputValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameStreamArn",
+    "OutputKey": "GetAttTodoTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-xzx4nj36zzemlloxzhpkicpa7i-main/stream/2026-03-27T18:36:27.813",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId:GetAtt:01f772aca2.GetAttTodoDataSourceName:StreamArn"
+    "ExportName": "wl2oasglxvbnza7q3obncdxijq:GetAtt:TodoTable:StreamArn"
   }
 ]

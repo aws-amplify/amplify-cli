@@ -1,14 +1,14 @@
 {
   "providers": {
     "awscloudformation": {
-      "AuthRoleName": "8d0d0cbe70.AuthRoleName",
-      "UnauthRoleArn": "8d0d0cbe70.UnauthRoleArn",
-      "AuthRoleArn": "8d0d0cbe70.AuthRoleArn",
+      "AuthRoleName": "amplify-importedresources-main-8a9e9-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-importedresources-main-8a9e9-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-importedresources-main-8a9e9-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "8d0d0cbe70.DeploymentBucketName",
-      "UnauthRoleName": "8d0d0cbe70.UnauthRoleName",
-      "StackName": "8d0d0cbe70.StackName",
-      "StackId": "8d0d0cbe70.StackId",
+      "DeploymentBucketName": "amplify-importedresources-main-8a9e9-deployment",
+      "UnauthRoleName": "amplify-importedresources-main-8a9e9-unauthRole",
+      "StackName": "amplify-importedresources-main-8a9e9",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-importedresources-main-8a9e9/5c5e4ec0-2a0a-11f1-8859-126d6e2516bf",
       "AmplifyAppId": "importedresources"
     }
   },
@@ -20,12 +20,12 @@
       "dependsOn": [],
       "customAuth": false,
       "output": {
-        "UserPoolId": "c643a9b272.userPoolId",
-        "UserPoolName": "auth.importedresources2c7c1c40.UserPoolName",
-        "AppClientID": "auth.importedresources2c7c1c40.AppClientID",
-        "AppClientIDWeb": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
-        "IdentityPoolId": "c643a9b272.identityPoolId",
-        "IdentityPoolName": "auth.importedresources2c7c1c40.IdentityPoolName"
+        "UserPoolId": "us-east-1_8feoXFV6v",
+        "UserPoolName": "importedresources_userpool",
+        "AppClientID": "33ifnqdr402dggr73sf2d2c182",
+        "AppClientIDWeb": "2oi4chvjmec9shclb000688s9a",
+        "IdentityPoolId": "us-east-1:12def580-cd20-405f-accf-51c866797e48",
+        "IdentityPoolName": "importedresources_identitypool"
       },
       "frontendAuthConfig": {
         "socialProviders": [],
@@ -64,7 +64,7 @@
       "output": {
         "authConfig": {
           "defaultAuthentication": {
-            "authenticationType": "c643a9b272.awsAppsyncAuthenticationType",
+            "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 7
             }
@@ -78,13 +78,13 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "fe17e54548.GraphQLAPIIdOutput",
-        "GraphQLAPIEndpointOutput": "fe17e54548.GraphQLAPIEndpointOutput",
-        "GraphQLAPIKeyOutput": "0cf2b76f20.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6dddataamplifyDataGraphQLAPIDefaultApiKey5C1FDC7EApiKey"
+        "GraphQLAPIIdOutput": "xzx4nj36zzemlloxzhpkicpa7i",
+        "GraphQLAPIEndpointOutput": "https://f3k4fuhaxfcjpnrojgtaox3kiy.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/8d0d0cbe70.DeploymentBucketName/amplify-cfn-templates/api/cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-importedresources-main-8a9e9-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiimportedresources"
       },
       "lastPushDirHash": "1K4C1z6fYyEHKnJagYaIhTJHUtc="
@@ -97,11 +97,11 @@
       "dependsOn": [],
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/8d0d0cbe70.DeploymentBucketName/amplify-cfn-templates/storage/cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-importedresources-main-8a9e9-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages34ebf8874"
       },
       "output": {
-        "BucketName": "5cd5e4706d.BucketName",
+        "BucketName": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
         "Region": "us-east-1"
       },
       "lastPushDirHash": "I7JSG1NRrCOgPEsHiLRnxnZfqdk="
@@ -117,20 +117,20 @@
       "lastPackageTimeStamp": "2026-03-27T18:35:07.531Z",
       "distZipFilename": "importedresourcequotegenerator-564649317a6f53484f35-build.zip",
       "s3Bucket": {
-        "deploymentBucketName": "8d0d0cbe70.DeploymentBucketName",
+        "deploymentBucketName": "amplify-importedresources-main-8a9e9-deployment",
         "s3Key": "amplify-builds/importedresourcequotegenerator-564649317a6f53484f35-build.zip"
       },
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/8d0d0cbe70.DeploymentBucketName/amplify-cfn-templates/function/importedresourcequotegenerator-cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-importedresources-main-8a9e9-deployment/amplify-cfn-templates/function/importedresourcequotegenerator-cloudformation-template.json",
         "logicalId": "functionimportedresourcequotegenerator"
       },
       "lastPushTimeStamp": "2026-03-27T18:38:57.701Z",
       "output": {
-        "LambdaExecutionRoleArn": "4647c67c14.LambdaExecutionRoleArn",
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/importedresourcesLambdaRole7bd99cfb-main",
         "Region": "us-east-1",
-        "Arn": "function.importedresourcequotegenerator.Arn",
-        "Name": "function.importedresourcequotegenerator.Name",
-        "LambdaExecutionRole": "4647c67c14.LambdaExecutionRole"
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:importedresourcequotegenerator-main",
+        "Name": "importedresourcequotegenerator-main",
+        "LambdaExecutionRole": "importedresourcesLambdaRole7bd99cfb-main"
       },
       "lastPushDirHash": "kMMjdXBOJoAlVxAgQJIqYD2PuGc="
     }

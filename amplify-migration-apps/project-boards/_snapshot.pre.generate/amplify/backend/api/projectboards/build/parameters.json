@@ -8,6 +8,6 @@
             "Outputs.UserPoolId"
         ]
     },
-    "S3DeploymentBucket": "1cbef42f68.DeploymentBucketName",
+    "S3DeploymentBucket": "amplify-projectboards-main-02940-deployment",
     "S3DeploymentRootKey": "amplify-appsync-files/182d69537a429ad74cd4e2ced5fdadbb4cbf17fc"
 }

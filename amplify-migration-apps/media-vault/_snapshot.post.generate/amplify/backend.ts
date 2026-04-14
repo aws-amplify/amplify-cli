@@ -40,9 +40,9 @@ const userPoolClient = userPool.addClient('NativeAppClient', {
   enablePropagateAdditionalUserContextData: false,
   authSessionValidity: Duration.minutes(3),
   supportedIdentityProviders: [
-    UserPoolClientIdentityProvider.COGNITO,
     UserPoolClientIdentityProvider.FACEBOOK,
     UserPoolClientIdentityProvider.GOOGLE,
+    UserPoolClientIdentityProvider.COGNITO,
   ],
   oAuth: {
     callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
@@ -53,11 +53,11 @@ const userPoolClient = userPool.addClient('NativeAppClient', {
       clientCredentials: false,
     },
     scopes: [
-      OAuthScope.COGNITO_ADMIN,
+      OAuthScope.PHONE,
       OAuthScope.EMAIL,
       OAuthScope.OPENID,
-      OAuthScope.PHONE,
       OAuthScope.PROFILE,
+      OAuthScope.COGNITO_ADMIN,
     ],
   },
   // flows: ['code'],
@@ -87,7 +87,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'd82321d1d5.BucketName';
+// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

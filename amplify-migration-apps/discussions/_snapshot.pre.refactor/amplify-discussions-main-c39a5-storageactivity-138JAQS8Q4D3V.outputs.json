@@ -1,0 +1,34 @@
+[
+  {
+    "OutputKey": "PartitionKeyName",
+    "OutputValue": "id"
+  },
+  {
+    "OutputKey": "SortKeyName",
+    "OutputValue": "userId"
+  },
+  {
+    "OutputKey": "SortKeyType",
+    "OutputValue": "S"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
+  },
+  {
+    "OutputKey": "StreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-20T21:19:57.516"
+  },
+  {
+    "OutputKey": "PartitionKeyType",
+    "OutputValue": "S"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "activity-main"
+  }
+]

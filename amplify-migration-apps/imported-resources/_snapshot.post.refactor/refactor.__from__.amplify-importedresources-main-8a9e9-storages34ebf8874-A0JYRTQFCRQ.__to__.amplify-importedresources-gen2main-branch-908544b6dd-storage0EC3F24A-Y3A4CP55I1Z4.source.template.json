@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "5cd5e4706d.BucketName"
+      "Value": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main"
     },
     "Region": {
       "Value": "us-east-1"
@@ -199,7 +199,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "5cd5e4706d.BucketName",
+                      "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                       "/public/*"
                     ]
                   ]
@@ -235,7 +235,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "5cd5e4706d.BucketName",
+                      "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -271,7 +271,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "5cd5e4706d.BucketName",
+                      "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -307,7 +307,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "5cd5e4706d.BucketName",
+                      "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                       "/uploads/*"
                     ]
                   ]
@@ -343,7 +343,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "5cd5e4706d.BucketName",
+                      "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                       "/public/*"
                     ]
                   ]
@@ -372,7 +372,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "5cd5e4706d.BucketName",
+                    "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                     "/protected/*"
                   ]
                 ]
@@ -398,7 +398,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "5cd5e4706d.BucketName"
+                    "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main"
                   ]
                 ]
               }
@@ -426,7 +426,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "5cd5e4706d.BucketName",
+                    "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
                     "/protected/*"
                   ]
                 ]
@@ -450,7 +450,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "5cd5e4706d.BucketName"
+                    "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main"
                   ]
                 ]
               }

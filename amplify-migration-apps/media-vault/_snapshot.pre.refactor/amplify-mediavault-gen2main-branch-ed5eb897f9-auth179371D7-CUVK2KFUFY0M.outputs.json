@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthauthenticatedUserRoleC20A3134Ref",
+    "OutputValue": "amplify-mediavault-ge-amplifyAuthauthenticatedU-slnshFMVHHTk"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthUserPool9F5CB443Ref",
+    "OutputValue": "us-east-1_Pwn7i486a"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthUserPoolUserPoolDomainAC114943Ref",
+    "OutputValue": "deddd8c1d0c4f5cbeefe"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthAdminGroupRoleD3CE4EF4Ref",
+    "OutputValue": "amplify-mediavault-ge-amplifyAuthAdminGroupRole-iQTk2vzwHVQa"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthUserPoolAppClient20072DD5Ref",
+    "OutputValue": "427n07aeulhlev4cen3qs6kf17"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthIdentityPoolB6C3F181Ref",
+    "OutputValue": "us-east-1:bed96618-da8d-4017-b873-fdff1744397a"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authremoveuserfromgroupgen2mainlambda5610FB1BRef",
+    "OutputValue": "removeuserfromgroup-gen2-main"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthunauthenticatedUserRoleEF69FE43Ref",
+    "OutputValue": "amplify-mediavault-ge-amplifyAuthunauthenticate-vTKBs153l45R"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authamplifyAuthBasicGroupRole000D5775Ref",
+    "OutputValue": "amplify-mediavault-ge-amplifyAuthBasicGroupRole-pQ0ZAig6LwnK"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9authaddusertogroupgen2mainlambdaFE5FDFFARef",
+    "OutputValue": "addusertogroup-gen2-main"
+  }
+]

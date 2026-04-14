@@ -1,6 +1,0 @@
-[
-  {
-    "OutputKey": "AdminGroupRole",
-    "OutputValue": "arn:aws:iam::123456789012:role/e2e2116184.UserPoolId-AdminGroupRole"
-  }
-]

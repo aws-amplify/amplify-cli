@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "AuthRoleName",
+    "OutputValue": "amplify-backendonly-main-5e0fa-authRole"
+  },
+  {
+    "OutputKey": "UnauthRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-unauthRole"
+  },
+  {
+    "OutputKey": "AuthRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-authRole"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1",
+    "Description": "CloudFormation provider root stack Region",
+    "ExportName": "amplify-backendonly-main-5e0fa-Region"
+  },
+  {
+    "OutputKey": "DeploymentBucketName",
+    "OutputValue": "amplify-backendonly-main-5e0fa-deployment",
+    "Description": "CloudFormation provider root stack deployment bucket name",
+    "ExportName": "amplify-backendonly-main-5e0fa-DeploymentBucketName"
+  },
+  {
+    "OutputKey": "UnauthRoleName",
+    "OutputValue": "amplify-backendonly-main-5e0fa-unauthRole"
+  },
+  {
+    "OutputKey": "StackName",
+    "OutputValue": "amplify-backendonly-main-5e0fa",
+    "Description": "CloudFormation provider root stack ID",
+    "ExportName": "amplify-backendonly-main-5e0fa-StackName"
+  },
+  {
+    "OutputKey": "StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-main-5e0fa/6563d5d0-1b19-11f1-9ce2-0e0bf294f4d9",
+    "Description": "CloudFormation provider root stack name",
+    "ExportName": "amplify-backendonly-main-5e0fa-StackId"
+  }
+]

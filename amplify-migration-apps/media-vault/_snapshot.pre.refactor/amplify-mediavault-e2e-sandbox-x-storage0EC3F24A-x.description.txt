@@ -1,1 +1,0 @@
-{"createdOn":"Mac","createdBy":"AmplifySandbox","createdWith":"1.4.3","stackType":"storage-S3","metadata":{}}

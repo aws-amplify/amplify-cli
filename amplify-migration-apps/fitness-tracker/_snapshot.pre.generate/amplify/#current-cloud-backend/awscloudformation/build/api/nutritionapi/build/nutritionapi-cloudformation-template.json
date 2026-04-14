@@ -666,7 +666,7 @@
         "Name": "nutritionapi"
       }
     },
-    "nutritionapiDefault4XXResponse9dce9073": {
+    "nutritionapiDefault4XXResponsef55128fc": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -681,7 +681,7 @@
         }
       }
     },
-    "nutritionapiDefault5XXResponse9dce9073": {
+    "nutritionapiDefault5XXResponsef55128fc": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -696,7 +696,7 @@
         }
       }
     },
-    "DeploymentAPIGWnutritionapidd85fc11": {
+    "DeploymentAPIGWnutritionapi5caf0abc": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
@@ -714,8 +714,8 @@
         }
       },
       "DependsOn": [
-        "nutritionapiDefault4XXResponse9dce9073",
-        "nutritionapiDefault5XXResponse9dce9073"
+        "nutritionapiDefault4XXResponsef55128fc",
+        "nutritionapiDefault5XXResponsef55128fc"
       ]
     }
   },

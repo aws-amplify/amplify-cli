@@ -36,12 +36,12 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:c643a9b272.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "c643a9b272.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -50,7 +50,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProviderLambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProviderLambda/ServiceRole/Resource"
       }
     },
     "AmplifyRefAuthCustomResourceProviderLambdaServiceRoleDefaultPolicy0ACD038C": {
@@ -83,7 +83,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":userpool/c643a9b272.userPoolId"
+                    ":userpool/us-east-1_8feoXFV6v"
                   ]
                 ]
               }
@@ -106,7 +106,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":identitypool/c643a9b272.identityPoolId"
+                    ":identitypool/us-east-1:12def580-cd20-405f-accf-51c866797e48"
                   ]
                 ]
               }
@@ -122,7 +122,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProviderLambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProviderLambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyRefAuthCustomResourceProviderLambda524C6354": {
@@ -148,12 +148,12 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:c643a9b272.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "c643a9b272.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -167,7 +167,7 @@
         "AmplifyRefAuthCustomResourceProviderLambdaServiceRoleF0B14CF2"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProviderLambda/Resource",
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProviderLambda/Resource",
         "aws:asset:path": "asset.b5f21eb551eeb5636789cbeef87d51a06d68b6c7fb2a910bef25d0bfb0c4c0c7",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -208,12 +208,12 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:c643a9b272.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "c643a9b272.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -222,7 +222,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider/framework-onEvent/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider/framework-onEvent/ServiceRole/Resource"
       }
     },
     "AmplifyRefAuthCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy1B3E5DA5": {
@@ -277,7 +277,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
       }
     },
     "AmplifyRefAuthCustomResourceProviderframeworkonEvent889C39F4": {
@@ -289,7 +289,7 @@
           },
           "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
         },
-        "Description": "AWS CDK resource provider framework - onEvent (amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -318,12 +318,12 @@
             "Value": "importedresources"
           },
           {
-            "Key": "amplify:c643a9b272.deploymentType-name",
+            "Key": "amplify:branch-name",
             "Value": "gen2-main"
           },
           {
             "Key": "amplify:deployment-type",
-            "Value": "c643a9b272.deploymentType"
+            "Value": "branch"
           },
           {
             "Key": "created-by",
@@ -337,7 +337,7 @@
         "AmplifyRefAuthCustomResourceProviderframeworkonEventServiceRole6A9EEB6C"
       ],
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResourceProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -352,9 +352,9 @@
             "Arn"
           ]
         },
-        "userPoolId": "c643a9b272.userPoolId",
-        "identityPoolId": "c643a9b272.identityPoolId",
-        "userPoolClientId": "e9df22841c.amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
+        "userPoolId": "us-east-1_8feoXFV6v",
+        "identityPoolId": "us-east-1:12def580-cd20-405f-accf-51c866797e48",
+        "userPoolClientId": "2oi4chvjmec9shclb000688s9a",
         "authRoleArn": "arn:aws:iam::123456789012:role/importedresources-auth-role",
         "unauthRoleArn": "arn:aws:iam::123456789012:role/importedresources-unauth-role",
         "groups": {},
@@ -365,7 +365,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/AmplifyRefAuthCustomResource/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/AmplifyRefAuthCustomResource/Default"
       }
     },
     "CDKMetadata": {
@@ -374,7 +374,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/z2OywrCQAxFv8V9GrUquNWCS5H6ASXOREkfMzCZUaT036Wtujo3XHI5OebbHa4W9NLM2CZr5Yb9mTWyvUYyDZSsPgXDQC+t+pa6m6XKecu14nnCKTkTxTsQ6rAvfctQ3N3Ei2/FvMdzTgPopiJVjoqHEaAbPCbTcDySMszz2Bd391/9hWGA6eUa6SHuASZp9F0Vvn6Kl+CfYjlAMTV/8VHmmwcYzbHW5TPPcb3H1aJWkSwkF6VjLGd+AExal2cVAQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-importedresources-gen2main-c643a9b272.deploymentType-908544b6dd/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-importedresources-gen2main-branch-908544b6dd/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -646,7 +646,7 @@
     }
   },
   "Outputs": {
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CallowUnauthenticatedIdentities": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CallowUnauthenticatedIdentities": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -654,7 +654,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CsignupAttributes": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CsignupAttributes": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -662,7 +662,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CusernameAttributes": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CusernameAttributes": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -670,7 +670,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CverificationMechanisms": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CverificationMechanisms": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -678,7 +678,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyMinLength": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyMinLength": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -686,7 +686,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyRequirements": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyRequirements": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -694,7 +694,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaConfiguration": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaConfiguration": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -702,7 +702,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaTypes": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaTypes": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -710,7 +710,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CsocialProviders": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CsocialProviders": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -718,7 +718,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -726,7 +726,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthScope": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthScope": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -734,7 +734,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignIn": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignIn": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -742,7 +742,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignOut": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignOut": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -750,7 +750,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthResponseType": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthResponseType": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",
@@ -758,7 +758,7 @@
         ]
       }
     },
-    "amplifyimportedresourcesgen2mainc643a9b272.deploymentType908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId": {
+    "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId": {
       "Value": {
         "Fn::GetAtt": [
           "AmplifyRefAuthCustomResource",

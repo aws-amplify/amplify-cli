@@ -230,7 +230,7 @@
         "TypeName": "Query"
       }
     },
-    "MoodboardKinesisReaderLambdaDataSourceServiceRole0DD9733A": {
+    "MoodboardKinesisreaderLambdaDataSourceServiceRole9D507FAC": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -247,7 +247,7 @@
         }
       }
     },
-    "MoodboardKinesisReaderLambdaDataSourceServiceRoleDefaultPolicy83734E31": {
+    "MoodboardKinesisreaderLambdaDataSourceServiceRoleDefaultPolicyD5B4AEB5": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -305,15 +305,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MoodboardKinesisReaderLambdaDataSourceServiceRoleDefaultPolicy83734E31",
+        "PolicyName": "MoodboardKinesisreaderLambdaDataSourceServiceRoleDefaultPolicyD5B4AEB5",
         "Roles": [
           {
-            "Ref": "MoodboardKinesisReaderLambdaDataSourceServiceRole0DD9733A"
+            "Ref": "MoodboardKinesisreaderLambdaDataSourceServiceRole9D507FAC"
           }
         ]
       }
     },
-    "MoodboardKinesisReaderLambdaDataSource": {
+    "MoodboardKinesisreaderLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -339,17 +339,17 @@
             ]
           }
         },
-        "Name": "MoodboardKinesisReaderLambdaDataSource",
+        "Name": "MoodboardKinesisreaderLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "MoodboardKinesisReaderLambdaDataSourceServiceRole0DD9733A",
+            "MoodboardKinesisreaderLambdaDataSourceServiceRole9D507FAC",
             "Arn"
           ]
         },
         "Type": "AWS_LAMBDA"
       }
     },
-    "InvokeMoodboardKinesisReaderLambdaDataSourceInvokeMoodboardKinesisReaderLambdaDataSourceAppSyncFunctionDD5E9972": {
+    "InvokeMoodboardKinesisreaderLambdaDataSourceInvokeMoodboardKinesisreaderLambdaDataSourceAppSyncFunction48095023": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
@@ -357,12 +357,12 @@
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "MoodboardKinesisReaderLambdaDataSource",
+            "MoodboardKinesisreaderLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeMoodboardKinesisReaderLambdaDataSource",
+        "Name": "InvokeMoodboardKinesisreaderLambdaDataSource",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -375,7 +375,7 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/InvokeMoodboardKinesisReaderLambdaDataSource.req.vtl"
+              "/resolvers/InvokeMoodboardKinesisreaderLambdaDataSource.req.vtl"
             ]
           ]
         },
@@ -391,13 +391,13 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/InvokeMoodboardKinesisReaderLambdaDataSource.res.vtl"
+              "/resolvers/InvokeMoodboardKinesisreaderLambdaDataSource.res.vtl"
             ]
           ]
         }
       },
       "DependsOn": [
-        "MoodboardKinesisReaderLambdaDataSource"
+        "MoodboardKinesisreaderLambdaDataSource"
       ]
     },
     "QuerygetKinesisEventsResolver": {
@@ -418,7 +418,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeMoodboardKinesisReaderLambdaDataSourceInvokeMoodboardKinesisReaderLambdaDataSourceAppSyncFunctionDD5E9972",
+                "InvokeMoodboardKinesisreaderLambdaDataSourceInvokeMoodboardKinesisreaderLambdaDataSourceAppSyncFunction48095023",
                 "FunctionId"
               ]
             }

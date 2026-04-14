@@ -1,1 +1,0 @@
-{"createdOn":"Mac","createdBy":"AmplifySandbox","createdWith":"1.22.0","stackType":"root","metadata":{}}

@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "fe17e54548.GraphQLAPIIdOutput"
+    "ParameterValue": "xzx4nj36zzemlloxzhpkicpa7i"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "8d0d0cbe70.DeploymentBucketName"
+    "ParameterValue": "amplify-importedresources-main-8a9e9-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

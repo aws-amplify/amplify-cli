@@ -9,18 +9,18 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "fe17e54548.GraphQLAPIIdOutput"
+    "ParameterValue": "xzx4nj36zzemlloxzhpkicpa7i"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "8d0d0cbe70.DeploymentBucketName"
+    "ParameterValue": "amplify-importedresources-main-8a9e9-deployment"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodo01f772aca2.GetAttTodoDataSourceNameC67E79C2Ref",
-    "ParameterValue": "01f772aca2.GetAtt01f772aca2.GetAttTodoDataSourceNameName"
+    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref",
+    "ParameterValue": "Todo-xzx4nj36zzemlloxzhpkicpa7i-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName",
-    "ParameterValue": "01f772aca2.GetAttTodoDataSourceName"
+    "ParameterValue": "TodoTable"
   }
 ]

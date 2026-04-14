@@ -1,0 +1,42 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-projectboards-main-02940-deployment"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/182d69537a429ad74cd4e2ced5fdadbb4cbf17fc"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "projectboards"
+  },
+  {
+    "ParameterKey": "AuthCognitoUserPoolId",
+    "ParameterValue": "us-east-1_ct5s4IEz3"
+  }
+]

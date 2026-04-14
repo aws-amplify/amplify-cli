@@ -2,7 +2,7 @@
   "identityPoolName": "mediavault1f08412d_identitypool_1f08412d",
   "allowUnauthenticatedIdentities": true,
   "resourceNameTruncated": "mediav1f08412d",
-  "userPoolName": "cf5487f464.UserPoolName",
+  "userPoolName": "mediavault1f08412d_userpool_1f08412d",
   "autoVerifiedAttributes": [
     "email"
   ],
