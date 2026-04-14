@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttCommentDataSourceName",
+    "OutputValue": "CommentTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "d83ddb8f78.GraphQLAPIIdOutput:GetAtt:CommentDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttCommentTableStreamArn",
+    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "d83ddb8f78.GraphQLAPIIdOutput:GetAtt:CommentTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackCommentCommentDataSourceA0E54655Name",
+    "OutputValue": "CommentTable"
+  },
+  {
+    "OutputKey": "transformerrootstackCommentCommentTable5427FDE2Ref",
+    "OutputValue": "c177ecebaa.GetAttCommentTableName"
+  },
+  {
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "c177ecebaa.GetAttCommentTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "d83ddb8f78.GraphQLAPIIdOutput:GetAtt:CommentTable:Name"
+  }
+]

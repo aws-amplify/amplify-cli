@@ -1,0 +1,56 @@
+[
+  {
+    "OutputKey": "GetAttTopicTableStreamArn",
+    "OutputValue": "88936db3f2.GetAttTopicTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "d83ddb8f78.GraphQLAPIIdOutput:GetAtt:TopicTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttTopicTableName",
+    "OutputValue": "88936db3f2.GetAttTopicTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "d83ddb8f78.GraphQLAPIIdOutput:GetAtt:TopicTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
+    "OutputValue": "7a5zdo22inhtbfdno2fbatgg3a"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId",
+    "OutputValue": "cm3akvkdgvegnhbybpnkuzdhfi"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId",
+    "OutputValue": "6qi4qdakcndlbp76y3vsnmioti"
+  },
+  {
+    "OutputKey": "GetAttTopicDataSourceName",
+    "OutputValue": "TopicTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "d83ddb8f78.GraphQLAPIIdOutput:GetAtt:TopicDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicTopicTableFD91FB92Ref",
+    "OutputValue": "88936db3f2.GetAttTopicTableName"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicTopicDataSource63D2F34BName",
+    "OutputValue": "TopicTable"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",
+    "OutputValue": "4vabdkesevcdlgjdgvodsu6s5m"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId",
+    "OutputValue": "avhszkuu2vdk3jzbqdcowpkqoe"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId",
+    "OutputValue": "wtm4z5lt5zfwjimx256asfaibu"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId",
+    "OutputValue": "mt3qfhaspfgkndvd6chj62mmu4"
+  }
+]

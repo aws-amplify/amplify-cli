@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "GetAttCommentTableStreamArn",
+    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId:GetAtt:CommentTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableStreamArn",
+    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentDataSourceD05DAE39Name",
+    "OutputValue": "CommentTable"
+  },
+  {
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "c177ecebaa.GetAttCommentTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId:GetAtt:CommentTable:Name"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableArn",
+    "OutputValue": "c177ecebaa.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableArn"
+  }
+]

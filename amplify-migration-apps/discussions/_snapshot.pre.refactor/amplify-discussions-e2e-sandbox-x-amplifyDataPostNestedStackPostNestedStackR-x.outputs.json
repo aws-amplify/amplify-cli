@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostDataSourceD120BC00Name",
+    "OutputValue": "PostTable"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableArn",
+    "OutputValue": "caf15f98bf.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableArn"
+  },
+  {
+    "OutputKey": "GetAttPostTableStreamArn",
+    "OutputValue": "caf15f98bf.GetAttPostTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId:GetAtt:PostTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableStreamArn",
+    "OutputValue": "caf15f98bf.GetAttPostTableStreamArn"
+  },
+  {
+    "OutputKey": "GetAttPostTableName",
+    "OutputValue": "caf15f98bf.GetAttPostTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId:GetAtt:PostTable:Name"
+  }
+]

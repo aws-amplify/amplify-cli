@@ -1,0 +1,30 @@
+[
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostNestedStackPostNestedStackResource9D015818Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataPostPostTable3DB54AE3TableStreamArn",
+    "OutputValue": "caf15f98bf.GetAttPostTableStreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentNestedStackCommentNestedStackResource20676D04Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataCommentCommentTableFDD72892TableStreamArn",
+    "OutputValue": "c177ecebaa.GetAttCommentTableStreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicNestedStackTopicNestedStackResource133901D8Outputsamplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataTopicTopicTableD3459ABCTableStreamArn",
+    "OutputValue": "88936db3f2.GetAttTopicTableStreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25ApiId"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25GraphQLUrl",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPI08807E25GraphQLUrl"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBCE90A8CDDestinationBucketArn",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBCE90A8CDDestinationBucketArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPIDefaultApiKey5AB67691ApiKey",
+    "OutputValue": "f2f38e4190.amplifydiscussionse2esandbox9b40c8c4e2dataamplifyDataGraphQLAPIDefaultApiKey5AB67691ApiKey"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "b52f278f36.LambdaExecutionRoleArn"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:recorduseractivity-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "recorduseractivity-x"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "b52f278f36.LambdaExecutionRole"
+  }
+]

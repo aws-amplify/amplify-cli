@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x-storagebookmarks-x/ca1a68b0-3791-11f1-83f7-0affff93e649",
+      "LogicalResourceId": "DynamoDBTable"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x/73aa0b00-3793-11f1-994b-0ef7dc2495a5",
+      "LogicalResourceId": "bookmarksA4548304"
+    }
+  }
+]

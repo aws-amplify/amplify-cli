@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "d83ddb8f78.GraphQLAPIIdOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-discussions-x-x-apidiscussions-x:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "d83ddb8f78.GraphQLAPIEndpointOutput",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-discussions-x-x-apidiscussions-x:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "d83ddb8f78.GraphQLAPIKeyOutput",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-discussions-x-x-apidiscussions-x:GraphQLApiKey"
+  }
+]

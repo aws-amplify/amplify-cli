@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "storageactivityName",
+    "ParameterValue": "activity-x"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/fetchuseractivity-574d43794579796f5042-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "dcec0749f7.DeploymentBucketName"
+  },
+  {
+    "ParameterKey": "storageactivityStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-13T23:37:57.742"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "storageactivityArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x"
+  }
+]
