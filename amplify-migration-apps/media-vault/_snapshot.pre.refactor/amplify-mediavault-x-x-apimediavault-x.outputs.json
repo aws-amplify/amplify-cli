@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "lk2yjzufrzavpf2a5rnunfhjxa",
+    "OutputValue": "kbn35pgkfzcptkngbejmivjpby",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-apimediavault-B89XPUQU7W04:GraphQLApiId"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-apimediavault-5EP904OJI52J:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "https://4tsumr3auzb63lftcqpg4ehs7i.appsync-api.us-east-1.amazonaws.com/graphql",
+    "OutputValue": "https://a2ikvfqthvg57duzmbxofkiiue.appsync-api.us-east-1.amazonaws.com/graphql",
     "Description": "Your GraphQL API endpoint.",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-apimediavault-B89XPUQU7W04:GraphQLApiEndpoint"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-apimediavault-5EP904OJI52J:GraphQLApiEndpoint"
   },
   {
     "OutputKey": "GraphQLAPIKeyOutput",
     "OutputValue": "da2-fakeapikey00000000000000",
     "Description": "Your GraphQL API ID.",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-apimediavault-B89XPUQU7W04:GraphQLApiKey"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-apimediavault-5EP904OJI52J:GraphQLApiKey"
   }
 ]

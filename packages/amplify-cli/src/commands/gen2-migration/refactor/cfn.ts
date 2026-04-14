@@ -171,8 +171,8 @@ export class Cfn {
 
     const input: CreateStackRefactorCommandInput = {
       StackDefinitions: [
-        { TemplateBody: JSON.stringify(sourceTemplate), StackName: sourceStackId },
-        { TemplateBody: JSON.stringify(targetTemplate), StackName: targetStackId },
+        { TemplateBody: JSON.stringify(sourceTemplate), StackName: sourceStackName },
+        { TemplateBody: JSON.stringify(targetTemplate), StackName: targetStackName },
       ],
       ResourceMappings: resourceMappings,
       EnableStackCreation: true,

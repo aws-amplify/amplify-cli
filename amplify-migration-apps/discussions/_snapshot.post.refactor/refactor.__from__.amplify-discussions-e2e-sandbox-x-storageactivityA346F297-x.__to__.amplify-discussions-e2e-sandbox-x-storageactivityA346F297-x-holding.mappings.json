@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR",
+      "LogicalResourceId": "activity1E902D9C"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-holding",
+      "LogicalResourceId": "activity1E902D9C"
+    }
+  }
+]

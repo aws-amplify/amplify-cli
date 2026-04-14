@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GetAttProductTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Product-vlckulotdbgslandc7rkudxrne-x/stream/2026-04-14T19:59:48.062",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:ProductTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttProductTableName",
+    "OutputValue": "Product-vlckulotdbgslandc7rkudxrne-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:ProductTable:Name"
+  },
+  {
+    "OutputKey": "GetAttProductDataSourceName",
+    "OutputValue": "ProductTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:ProductDataSource:Name"
+  }
+]

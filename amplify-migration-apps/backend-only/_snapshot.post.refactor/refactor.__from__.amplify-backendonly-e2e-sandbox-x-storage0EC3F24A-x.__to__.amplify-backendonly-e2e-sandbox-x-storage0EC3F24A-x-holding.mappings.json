@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-storage0EC3F24A-G2AI2XCOP3QY",
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016238e4gen2xBucket152AA9AD"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-storage0EC3F24A-G2AI2XCOP3QY-holding",
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016238e4gen2xBucket152AA9AD"
+    }
+  }
+]

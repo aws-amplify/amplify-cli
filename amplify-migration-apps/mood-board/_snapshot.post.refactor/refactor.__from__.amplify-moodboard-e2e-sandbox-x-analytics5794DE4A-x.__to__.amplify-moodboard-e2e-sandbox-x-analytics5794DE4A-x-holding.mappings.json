@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5-analytics5794DE4A-1X8PRYVA74H1U",
+      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5-analytics5794DE4A-1X8PRYVA74H1U-holding",
+      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+    }
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "storageactivityName",
+    "ParameterValue": "activity-x"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/recorduseractivity-54696a587a7168467354-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-discussion2604141557-x-7df19-deployment"
+  },
+  {
+    "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
+    "ParameterValue": "https://ozggyogx55ggzpl3g7ub5qgao4.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
+    "ParameterValue": "hwqxyznpcnbv3jwcfv2y4upnjy"
+  },
+  {
+    "ParameterKey": "storageactivityStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-14T19:59:26.893"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "storageactivityArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x"
+  }
+]

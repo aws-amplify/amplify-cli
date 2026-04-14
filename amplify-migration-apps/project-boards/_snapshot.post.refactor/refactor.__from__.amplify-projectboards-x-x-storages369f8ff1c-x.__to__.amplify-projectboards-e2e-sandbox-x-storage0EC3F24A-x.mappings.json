@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604141617-x-59641-storages369f8ff1c-P5WLWDCN9RBD/2c6297b0-383f-11f1-bfbc-0affdef3e2c5",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604141617-e2e-sandbox-b9ce55d36e-storage0EC3F24A-1REZG0MX538QX/c78bdb10-3840-11f1-bd57-0afff81a6d49",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688b59641gen2xBucket11E3CBC2"
+    }
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthunauthenticatedUserRoleF481FA2CRef",
+    "OutputValue": "amplify-productcat2604141-amplifyAuthunauthenticate-9Izt2IGsl5cW"
+  },
+  {
+    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthauthenticatedUserRoleBAC77C65Ref",
+    "OutputValue": "amplify-productcat2604141-amplifyAuthauthenticatedU-aSSioLkHSQnB"
+  },
+  {
+    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthIdentityPool82E88E73Ref",
+    "OutputValue": "us-east-1:828b72b1-2737-4006-8259-e69f328b7186"
+  },
+  {
+    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthUserPool1E23366ERef",
+    "OutputValue": "us-east-1_CRVoSSm8q"
+  },
+  {
+    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthUserPoolAppClient16210A0BRef",
+    "OutputValue": "42ldhre91b3loouf1e02oo3fmu"
+  }
+]

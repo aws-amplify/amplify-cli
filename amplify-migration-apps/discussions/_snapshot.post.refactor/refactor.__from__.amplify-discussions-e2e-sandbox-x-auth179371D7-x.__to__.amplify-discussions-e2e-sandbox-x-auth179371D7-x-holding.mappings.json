@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD-holding",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

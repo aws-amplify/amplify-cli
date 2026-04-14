@@ -172,7 +172,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-fitnesstra2604141557-x-ed729-authfitnesstracker33f5545533f55455-EAQE9RXTDRM6"
+                      "amplify-fitnesstra2604141634-x-ec6cd-authfitnesstracker33f5545533f55455-1SFNCARV0T4KZ"
                     ]
                   }
                 ]
@@ -188,29 +188,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:288277bf-a7fc-4932-b533-1dc0ccb1c16e"
+      "Value": "us-east-1:32dbe464-d271-4856-ba8a-edbbca7f030b"
     },
     "IdentityPoolName": {
       "Value": "fitnesstracker33f55455_identitypool_33f55455__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_x7JXn9m7Y"
+      "Value": "us-east-1_Lpe1wF8QP"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_x7JXn9m7Y"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Lpe1wF8QP"
     },
     "UserPoolName": {
       "Value": "fitnesstracker33f55455_userpool_33f55455"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "2mp6qo4mgstntulpvcrmh8eqql"
+      "Value": "6d5gd1gqfh9iknrd2im04rei3f"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "6sgrsst0a519s4is59in56tr0s"
+      "Value": "272ngh0pd9ebfq8dpifrdj0iss"
     }
   }
 }

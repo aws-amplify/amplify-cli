@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-x-7df19-authdiscussionsc578c16ec578c16e-1F66MFCD3QE0Y/6e26dd30-383c-11f1-aa8a-0afff431e359",
+      "LogicalResourceId": "UserPool"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD/4f1bb620-383e-11f1-9fc1-0e3228531b11",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-x-7df19-authdiscussionsc578c16ec578c16e-1F66MFCD3QE0Y/6e26dd30-383c-11f1-aa8a-0afff431e359",
+      "LogicalResourceId": "UserPoolClientWeb"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD/4f1bb620-383e-11f1-9fc1-0e3228531b11",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-x-7df19-authdiscussionsc578c16ec578c16e-1F66MFCD3QE0Y/6e26dd30-383c-11f1-aa8a-0afff431e359",
+      "LogicalResourceId": "UserPoolClient"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD/4f1bb620-383e-11f1-9fc1-0e3228531b11",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-x-7df19-authdiscussionsc578c16ec578c16e-1F66MFCD3QE0Y/6e26dd30-383c-11f1-aa8a-0afff431e359",
+      "LogicalResourceId": "IdentityPool"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD/4f1bb620-383e-11f1-9fc1-0e3228531b11",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-x-7df19-authdiscussionsc578c16ec578c16e-1F66MFCD3QE0Y/6e26dd30-383c-11f1-aa8a-0afff431e359",
+      "LogicalResourceId": "IdentityPoolRoleMap"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-e2e-sandbox-3c66db7581-auth179371D7-12B8X78B8FXUD/4f1bb620-383e-11f1-9fc1-0e3228531b11",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

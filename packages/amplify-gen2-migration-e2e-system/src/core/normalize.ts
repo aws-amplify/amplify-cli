@@ -36,18 +36,7 @@ function getFilesRecursive(dir: string): string[] {
  *   5. git commit hash (Amplify hosting branch hash)
  *   6. CFN nested stack hashes (CloudFormation physical resource IDs)
  */
-interface NormalizeReplacements {
-  /**
-   * All replacements to apply to filenames.
-   */
-  readonly filenameReplacements: { before: string; after: string }[];
-  /**
-   * The environment name replacement — also applied to file content.
-   */
-  readonly envNameReplacement: { before: string; after: string };
-}
-
-function extractReplacements(appName: string, appDir: string): NormalizeReplacements {
+function extractReplacements(appName: string, appDir: string): { before: string; after: string }[] {
   const appNameNoDashes = appName.replaceAll('-', '');
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
@@ -67,8 +56,7 @@ function extractReplacements(appName: string, appDir: string): NormalizeReplacem
   const envHash = stackName.split('-')[3];
 
   add(deploymentName, appNameNoDashes);
-  const envNameReplacement = { before: envName, after: 'x' };
-  add(envNameReplacement.before, envNameReplacement.after);
+  add(envName, 'x');
   add(envHash, 'x');
 
   const sandboxSegment = '-sandbox-';
@@ -101,26 +89,27 @@ function extractReplacements(appName: string, appDir: string): NormalizeReplacem
     add(`-${hash}-`, '-x-');
   }
 
-  return { filenameReplacements: replacements, envNameReplacement };
+  return replacements;
 }
 
 export function normalize(appName: string, appDir: string): void {
-  const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
-  if (!fs.existsSync(preRefactorSnapshot)) {
-    throw new Error(`Expected _snapshot.pre.refactor to exist at ${preRefactorSnapshot}`);
-  }
+  const replacements = extractReplacements(appName, appDir);
 
-  const { filenameReplacements, envNameReplacement } = extractReplacements(appName, appDir);
-
-  // Rename each file once with all replacements applied.
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
 
   for (const file of files) {
+    const original = fs.readFileSync(file, 'utf-8');
+    let content = original;
     let basename = path.basename(file);
 
-    for (const { before, after } of filenameReplacements) {
+    for (const { before, after } of replacements) {
+      content = content.replaceAll(before, after);
       basename = basename.replaceAll(before, after);
+    }
+
+    if (content !== original) {
+      fs.writeFileSync(file, content, 'utf-8');
     }
 
     const newPath = path.join(path.dirname(file), basename);
@@ -136,31 +125,5 @@ export function normalize(appName: string, appDir: string): void {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
     pkg.name = `@amplify-migration-apps/${appName}-snapshot`;
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
-  }
-
-  // Apply the same replacements to amplify-meta.json and team-provider-info.json
-  // content so that stack names inside these files match the renamed filenames.
-  const preGenerate = path.join(appDir, '_snapshot.pre.generate');
-  const metaFiles = [
-    path.join(preGenerate, 'amplify', 'backend', 'amplify-meta.json'),
-    path.join(preGenerate, 'amplify', '#current-cloud-backend', 'amplify-meta.json'),
-    path.join(preGenerate, 'amplify', 'team-provider-info.json'),
-  ];
-  for (const metaFile of metaFiles) {
-    let content = fs.readFileSync(metaFile, 'utf-8');
-    for (const { before, after } of filenameReplacements) {
-      content = content.replaceAll(before, after);
-    }
-    fs.writeFileSync(metaFile, content, 'utf-8');
-  }
-
-  // Replace the environment name in all file content.
-  const renamedFiles = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
-  for (const file of renamedFiles) {
-    const content = fs.readFileSync(file, 'utf-8');
-    const replaced = content.replaceAll(envNameReplacement.before, envNameReplacement.after);
-    if (replaced !== content) {
-      fs.writeFileSync(file, replaced, 'utf-8');
-    }
   }
 }

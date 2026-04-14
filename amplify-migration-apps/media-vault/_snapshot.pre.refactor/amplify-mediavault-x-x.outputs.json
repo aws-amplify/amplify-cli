@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-mediavault2604141556-x-c529c-authRole"
+    "OutputValue": "amplify-mediavault2604141621-x-e880d-authRole"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141556-x-c529c-unauthRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141621-x-e880d-unauthRole"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141556-x-c529c-authRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141621-x-e880d-authRole"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-Region"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-mediavault2604141556-x-c529c-deployment",
+    "OutputValue": "amplify-mediavault2604141621-x-e880d-deployment",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-DeploymentBucketName"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-mediavault2604141556-x-c529c-unauthRole"
+    "OutputValue": "amplify-mediavault2604141621-x-e880d-unauthRole"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-mediavault2604141556-x-c529c",
+    "OutputValue": "amplify-mediavault2604141621-x-e880d",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-StackName"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault2604141556-x-c529c/11f8d770-383c-11f1-90e6-0ed080e97a09",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault2604141621-x-e880d/825dda80-383f-11f1-9dd9-12bf5621106f",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-mediavault2604141556-x-c529c-StackId"
+    "ExportName": "amplify-mediavault2604141621-x-e880d-StackId"
   }
 ]

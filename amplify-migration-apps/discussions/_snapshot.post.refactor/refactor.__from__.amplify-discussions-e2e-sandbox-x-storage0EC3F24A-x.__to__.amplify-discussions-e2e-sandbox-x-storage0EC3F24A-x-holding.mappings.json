@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-storage0EC3F24A-1KIE4YMTLPXF9",
+      "LogicalResourceId": "discusavatars7df19gen2xBucketA565041A"
+    },
+    "Destination": {
+      "StackName": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-storage0EC3F24A-1KIE4YMTLPXF9-holding",
+      "LogicalResourceId": "discusavatars7df19gen2xBucketA565041A"
+    }
+  }
+]

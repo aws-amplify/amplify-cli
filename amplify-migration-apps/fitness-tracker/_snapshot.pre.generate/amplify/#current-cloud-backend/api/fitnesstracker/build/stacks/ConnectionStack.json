@@ -111,7 +111,7 @@
               {
                 "Ref": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:288277bf-a7fc-4932-b533-1dc0ccb1c16e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"lognutrition-x\"]))\n$util.toJson({})"
             ]
           ]
         },

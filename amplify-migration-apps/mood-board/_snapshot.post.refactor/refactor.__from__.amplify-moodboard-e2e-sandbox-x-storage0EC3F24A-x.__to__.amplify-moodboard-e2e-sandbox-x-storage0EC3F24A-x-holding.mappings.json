@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5-storage0EC3F24A-HAXV6PXEX9HF",
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c435d03gen2xBucket13A106E0"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5-storage0EC3F24A-HAXV6PXEX9HF-holding",
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c435d03gen2xBucket13A106E0"
+    }
+  }
+]

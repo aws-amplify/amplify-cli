@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/lowstockproducts-5148445a7a3964456a67-build.zip"
+  },
+  {
+    "ParameterKey": "lowStockThreshold",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-deployment"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIKeyOutput",
+    "ParameterValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
+    "ParameterValue": "https://eysrirckt5dsbgttp7mv6n44nm.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "secretsPathAmplifyAppId",
+    "ParameterValue": "productcatalog"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
+    "ParameterValue": "vlckulotdbgslandc7rkudxrne"
+  }
+]

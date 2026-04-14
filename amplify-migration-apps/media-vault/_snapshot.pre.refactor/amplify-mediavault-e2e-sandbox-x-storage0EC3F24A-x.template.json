@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD": {
+    "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -47,7 +47,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x"
+            "Value": "mediavaultb574f210f1634e3a8d1934f263da5bede880d-gen2-x"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -62,14 +62,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x/Bucket/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/mediavaultb574f210f1634e3a8d1934f263da5bede880d-gen2-x/Bucket/Resource"
       }
     },
-    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucketPolicy8D02EF73": {
+    "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucketPolicy23CD4D33": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870"
         },
         "PolicyDocument": {
           "Statement": [
@@ -87,7 +87,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                    "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                     "Arn"
                   ]
                 },
@@ -97,7 +97,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -126,7 +126,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                    "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                     "Arn"
                   ]
                 },
@@ -136,7 +136,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -153,10 +153,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x/Bucket/Policy/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/mediavaultb574f210f1634e3a8d1934f263da5bede880d-gen2-x/Bucket/Policy/Resource"
       }
     },
-    "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucketAutoDeleteObjectsCustomResource7F540864": {
+    "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucketAutoDeleteObjectsCustomResource89A75E02": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": {
@@ -166,16 +166,16 @@
           ]
         },
         "BucketName": {
-          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870"
         }
       },
       "DependsOn": [
-        "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucketPolicy8D02EF73"
+        "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucketPolicy23CD4D33"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/mediavaultb574f210f1634e3a8d1934f263da5bedc529c-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/mediavaultb574f210f1634e3a8d1934f263da5bede880d-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
@@ -202,7 +202,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
@@ -230,7 +230,7 @@
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+                "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870"
               },
               " S3 bucket."
             ]
@@ -243,31 +243,31 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
         "aws:asset:property": "Code"
       }
     },
-    "MEDIAVAULTB574F210F1634E3A8D1934F263DA5BEDC529CGEN2ZREBVLAVOGBUCKETNAMEParameter671C205D": {
+    "MEDIAVAULTB574F210F1634E3A8D1934F263DA5BEDE880DGEN2JGKYYPRDDHBUCKETNAMEParameterB1D6F207": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/mediavault2604141556/e2e-sandbox-ee9ada15ef/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/mediavault2604141621/e2e-sandbox-2dcf2e244b/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDE_880_D_GEN_2_JGKYYPRDDH_BUCKET_NAME",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": {
-          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+          "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDE_880_D_GEN_2_JGKYYPRDDH_BUCKET_NAMEParameter/Resource"
       }
     },
-    "thumbnailgengen2xlambdaServiceRoleDAC329D4": {
+    "thumbnailgengen2xlambdaServiceRole52237C34": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -314,10 +314,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/thumbnailgen-gen2-x-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/thumbnailgen-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "thumbnailgengen2xlambdaServiceRoleDefaultPolicy68D95C45": {
+    "thumbnailgengen2xlambdaServiceRoleDefaultPolicy307C582A": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -341,7 +341,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter/amplify/resource_reference/mediavault2604141556/e2e-sandbox-ee9ada15ef/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME"
+                    ":parameter/amplify/resource_reference/mediavault2604141621/e2e-sandbox-2dcf2e244b/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDE_880_D_GEN_2_JGKYYPRDDH_BUCKET_NAME"
                   ]
                 ]
               }
@@ -349,18 +349,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "thumbnailgengen2xlambdaServiceRoleDefaultPolicy68D95C45",
+        "PolicyName": "thumbnailgengen2xlambdaServiceRoleDefaultPolicy307C582A",
         "Roles": [
           {
-            "Ref": "thumbnailgengen2xlambdaServiceRoleDAC329D4"
+            "Ref": "thumbnailgengen2xlambdaServiceRole52237C34"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/thumbnailgen-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/thumbnailgen-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "thumbnailgengen2xlambdaA0DF74F3": {
+    "thumbnailgengen2xlambda69F4256D": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -376,10 +376,10 @@
           "Variables": {
             "ENV": "gen2-x",
             "REGION": "us-east-1",
-            "AMPLIFY_SSM_ENV_CONFIG": "{\"MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME\":{\"path\":\"/amplify/resource_reference/mediavault2604141556/e2e-sandbox-ee9ada15ef/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME\"}}",
-            "MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDC_529_C_GEN_2_ZREBVLAVOG_BUCKET_NAME": "<value will be resolved during runtime>",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDE_880_D_GEN_2_JGKYYPRDDH_BUCKET_NAME\":{\"path\":\"/amplify/resource_reference/mediavault2604141621/e2e-sandbox-2dcf2e244b/MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDE_880_D_GEN_2_JGKYYPRDDH_BUCKET_NAME\"}}",
+            "MEDIAVAULTB_574_F_210_F_1634_E_3_A_8_D_1934_F_263_DA_5_BEDE_880_D_GEN_2_JGKYYPRDDH_BUCKET_NAME": "<value will be resolved during runtime>",
             "STORAGE_MEDIAVAULT_BUCKETNAME": {
-              "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+              "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870"
             }
           }
         },
@@ -391,7 +391,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "thumbnailgengen2xlambdaServiceRoleDAC329D4",
+            "thumbnailgengen2xlambdaServiceRole52237C34",
             "Arn"
           ]
         },
@@ -413,18 +413,18 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "thumbnailgengen2xlambdaServiceRoleDAC329D4"
+        "thumbnailgengen2xlambdaServiceRole52237C34"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/thumbnailgen-gen2-x-lambda/Resource",
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/thumbnailgen-gen2-x-lambda/Resource",
         "aws:asset:path": "asset.c58dbd5561089b6980a71917af7086867587b41a7657c1ef33109378e90e319c",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
       }
     },
-    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess5D5103D90": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess5C1F45942": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -438,7 +438,7 @@
                   [
                     {
                       "Fn::GetAtt": [
-                        "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                        "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                         "Arn"
                       ]
                     },
@@ -460,7 +460,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                   "Arn"
                 ]
               }
@@ -468,20 +468,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess5D5103D90",
+        "PolicyName": "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess5C1F45942",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthunauthenticatedUserRoleF6CEAA65Ref"
+            "Ref": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthunauthenticatedUserRoleED4B9DB9Ref"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess5/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b--storageAccess5/Resource"
       }
     },
-    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess6C7C35ABC": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess64B5A3335": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -496,7 +496,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -510,7 +510,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -524,7 +524,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -544,7 +544,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -558,7 +558,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -572,7 +572,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -599,7 +599,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                   "Arn"
                 ]
               }
@@ -614,7 +614,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -628,7 +628,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -642,7 +642,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -655,20 +655,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess6C7C35ABC",
+        "PolicyName": "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess64B5A3335",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthauthenticatedUserRole44A9CD26Ref"
+            "Ref": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthauthenticatedUserRole2519A9CFRef"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess6/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b--storageAccess6/Resource"
       }
     },
-    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess7A4171422": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess7240B3635": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -683,7 +683,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -697,7 +697,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -711,7 +711,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -731,7 +731,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -745,7 +745,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -759,7 +759,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -786,7 +786,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                   "Arn"
                 ]
               }
@@ -801,7 +801,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -815,7 +815,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -829,7 +829,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -842,20 +842,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess7A4171422",
+        "PolicyName": "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess7240B3635",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthAdminGroupRole9A66B9E9Ref"
+            "Ref": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthAdminGroupRole64088547Ref"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess7/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b--storageAccess7/Resource"
       }
     },
-    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess81D0DE89A": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess83CF7E07C": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -870,7 +870,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -884,7 +884,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -898,7 +898,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -925,7 +925,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                   "Arn"
                 ]
               }
@@ -933,20 +933,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess81D0DE89A",
+        "PolicyName": "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess83CF7E07C",
         "Roles": [
           {
-            "Ref": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthBasicGroupRoleDE3FFCFARef"
+            "Ref": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthBasicGroupRole7AA9D300Ref"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess8/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b--storageAccess8/Resource"
       }
     },
-    "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess9EBD2BDD2": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess99C548A60": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -961,7 +961,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -975,7 +975,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -989,7 +989,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1016,7 +1016,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                  "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                   "Arn"
                 ]
               }
@@ -1031,7 +1031,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1045,7 +1045,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1059,7 +1059,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1079,7 +1079,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1093,7 +1093,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1107,7 +1107,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD",
+                          "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870",
                           "Arn"
                         ]
                       },
@@ -1120,17 +1120,17 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymediavault2604141556e2esandboxee9ada15efstorageAccess9EBD2BDD2",
+        "PolicyName": "amplifymediavault2604141621e2esandbox2dcf2e244bstorageAccess99C548A60",
         "Roles": [
           {
-            "Ref": "thumbnailgengen2xlambdaServiceRoleDAC329D4"
+            "Ref": "thumbnailgengen2xlambdaServiceRole52237C34"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef--storageAccess9/Resource"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b--storageAccess9/Resource"
       }
     },
     "CDKMetadata": {
@@ -1139,7 +1139,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WOQU+DQBCFf0s5L2MFY6K3FuOxEjgaQ5ZlShbY3WRnaDWE/25gta1HT+9N3rxvJoHk4Qm2G3mmWDV9POgapgMSY1OyVL2QZ6omSmHaj6pHFtnRBvc+RUZ/ahs9R7flZZ9SWCOCsLob2b3ggIxvdYeKKZo/RIhyN2j1daWG+R/sUChZMhq0t+i9JJwFkYGpZK9tm0svDTL65dxlmMUgTd3IyroGO4LDKq+jVaydFVoamAo34FJa9fpycLOgtJJEyAS7RX6AkB3tL2YW2UjsTIHkRq8C7OL/RLl3J92gX94XK69k2WrbzmL5EDq6OyUJ3D/CdtOR1rEfLWuDUAT9BnilPXnSAQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141556-e2e-sandbox-ee9ada15ef/storage/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/storage/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -1411,28 +1411,28 @@
     }
   },
   "Outputs": {
-    "amplifymediavault2604141556e2esandboxee9ada15efstoragethumbnailgengen2xlambda7D04D45DRef": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstoragethumbnailgengen2xlambda8F66C251Ref": {
       "Value": {
-        "Ref": "thumbnailgengen2xlambdaA0DF74F3"
+        "Ref": "thumbnailgengen2xlambda69F4256D"
       }
     },
-    "amplifymediavault2604141556e2esandboxee9ada15efstoragemediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket169E4DD7Ref": {
+    "amplifymediavault2604141621e2esandbox2dcf2e244bstoragemediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucketB64C8F99Ref": {
       "Value": {
-        "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bedc529cgen2xBucket00A86ABD"
+        "Ref": "mediavaultb574f210f1634e3a8d1934f263da5bede880dgen2xBucket9142F870"
       }
     }
   },
   "Parameters": {
-    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthunauthenticatedUserRoleF6CEAA65Ref": {
+    "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthunauthenticatedUserRoleED4B9DB9Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthauthenticatedUserRole44A9CD26Ref": {
+    "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthauthenticatedUserRole2519A9CFRef": {
       "Type": "String"
     },
-    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthAdminGroupRole9A66B9E9Ref": {
+    "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthAdminGroupRole64088547Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthBasicGroupRoleDE3FFCFARef": {
+    "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthBasicGroupRole7AA9D300Ref": {
       "Type": "String"
     }
   }

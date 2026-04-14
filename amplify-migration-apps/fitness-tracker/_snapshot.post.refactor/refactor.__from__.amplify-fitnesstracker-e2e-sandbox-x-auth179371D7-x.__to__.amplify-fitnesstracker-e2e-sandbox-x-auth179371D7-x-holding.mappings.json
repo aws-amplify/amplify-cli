@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ-holding",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ-holding",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ-holding",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ-holding",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26-auth179371D7-1WVQ61FPSKCZZ-holding",
+      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }

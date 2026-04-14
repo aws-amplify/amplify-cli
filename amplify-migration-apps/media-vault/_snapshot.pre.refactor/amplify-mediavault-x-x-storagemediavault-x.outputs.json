@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "mediavaultb574f210f1634e3a8d1934f263da5bedc529c-x",
+    "OutputValue": "mediavaultb574f210f1634e3a8d1934f263da5bede880d-x",
     "Description": "Bucket name for the S3 bucket"
   },
   {

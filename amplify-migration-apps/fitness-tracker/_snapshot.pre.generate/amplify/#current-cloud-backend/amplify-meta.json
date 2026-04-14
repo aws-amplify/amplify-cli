@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
       "UnauthRoleName": "amplify-fitnesstracker-x-x-unauthRole",
       "StackName": "amplify-fitnesstracker-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/21f2f5c0-383c-11f1-9edd-0affd23ca3f1",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/6a57e190-3841-11f1-8f2c-123c460468a9",
       "AmplifyAppId": "fitnesstracker",
       "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
@@ -30,13 +30,13 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "AdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_x7JXn9m7Y-AdminGroupRole"
+        "AdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_Lpe1wF8QP-AdminGroupRole"
       },
       "lastPushDirHash": "5G4uAlMxN8rsFD1jyeLTya9ahFM="
     },
@@ -77,13 +77,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/auth/fitnesstracker33f5545533f55455-cloudformation-template.json",
         "logicalId": "authfitnesstracker33f5545533f55455"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "output": {
-        "UserPoolId": "us-east-1_x7JXn9m7Y",
-        "AppClientIDWeb": "2mp6qo4mgstntulpvcrmh8eqql",
-        "AppClientID": "6sgrsst0a519s4is59in56tr0s",
-        "IdentityPoolId": "us-east-1:288277bf-a7fc-4932-b533-1dc0ccb1c16e",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_x7JXn9m7Y",
+        "UserPoolId": "us-east-1_Lpe1wF8QP",
+        "AppClientIDWeb": "6d5gd1gqfh9iknrd2im04rei3f",
+        "AppClientID": "272ngh0pd9ebfq8dpifrdj0iss",
+        "IdentityPoolId": "us-east-1:32dbe464-d271-4856-ba8a-edbbca7f030b",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Lpe1wF8QP",
         "IdentityPoolName": "fitnesstracker33f55455_identitypool_33f55455__x",
         "UserPoolName": "fitnesstracker33f55455_userpool_33f55455"
       },
@@ -95,9 +95,9 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-04-14T19:58:17.241Z",
+      "lastBuildTimeStamp": "2026-04-14T20:36:04.227Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T19:58:17.274Z",
+      "lastPackageTimeStamp": "2026-04-14T20:36:04.244Z",
       "distZipFilename": "fitnesstracker33f5545533f55455PreSignup-68374859444c45627749-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
@@ -107,7 +107,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/function/fitnesstracker33f5545533f55455PreSignup-cloudformation-template.json",
         "logicalId": "functionfitnesstracker33f5545533f55455PreSignup"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/fitnesstracker33f5545533f55455PreSignup-x",
         "Region": "us-east-1",
@@ -130,9 +130,9 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-14T19:58:18.380Z",
+      "lastBuildTimeStamp": "2026-04-14T20:36:04.958Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T19:58:18.996Z",
+      "lastPackageTimeStamp": "2026-04-14T20:36:05.328Z",
       "distZipFilename": "lognutrition-4d67766f675761365161-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
@@ -142,7 +142,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/function/lognutrition-cloudformation-template.json",
         "logicalId": "functionlognutrition"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/fitnesstrackerLambdaRole2824d4b4-x",
         "Region": "us-east-1",
@@ -165,9 +165,9 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-14T19:58:21.084Z",
+      "lastBuildTimeStamp": "2026-04-14T20:36:06.691Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T19:58:22.948Z",
+      "lastPackageTimeStamp": "2026-04-14T20:36:08.565Z",
       "distZipFilename": "admin-2f397a7163426d447a6b-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
@@ -177,7 +177,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/function/admin-cloudformation-template.json",
         "logicalId": "functionadmin"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/fitnesstrackerLambdaRole4a08108a-x",
         "Region": "us-east-1",
@@ -220,15 +220,15 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "mowyrc366ndvvdsdtopm4s4dae",
-        "GraphQLAPIEndpointOutput": "https://ekmk6rxzmrbcvni6pxctk2vro4.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "4u7y7wfisvavppu3diznx2j6mm",
+        "GraphQLAPIEndpointOutput": "https://cxpk7vtqpnfprnpzfch4nfpncm.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apifitnesstracker"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "lastPushDirHash": "RCtlX/RFS23/RTpTpKEuv4XLh08="
     },
     "nutritionapi": {
@@ -262,11 +262,11 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/api/nutritionapi-cloudformation-template.json",
         "logicalId": "apinutritionapi"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "output": {
         "ApiName": "nutritionapi",
-        "RootUrl": "https://fi9hcozz3j.execute-api.us-east-1.amazonaws.com/x",
-        "ApiId": "fi9hcozz3j"
+        "RootUrl": "https://sibbiqns5f.execute-api.us-east-1.amazonaws.com/x",
+        "ApiId": "sibbiqns5f"
       },
       "lastPushDirHash": "5JwuGoxSHfV3nT5/dIukaklIOKI="
     },
@@ -301,11 +301,11 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/api/adminapi-cloudformation-template.json",
         "logicalId": "apiadminapi"
       },
-      "lastPushTimeStamp": "2026-04-14T20:06:16.605Z",
+      "lastPushTimeStamp": "2026-04-14T20:43:04.730Z",
       "output": {
         "ApiName": "adminapi",
-        "RootUrl": "https://va98c9bf4h.execute-api.us-east-1.amazonaws.com/x",
-        "ApiId": "va98c9bf4h"
+        "RootUrl": "https://ue9uyhcyi1.execute-api.us-east-1.amazonaws.com/x",
+        "ApiId": "ue9uyhcyi1"
       },
       "lastPushDirHash": "SI1snudM0j/SqX5HIasSB/7nF3k="
     }

@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581storageactivity2385C7CDRef",
+    "OutputValue": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-activity1E902D9C-1FVF821TU9C49"
+  },
+  {
+    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581storageactivity2385C7CDStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-activity1E902D9C-1FVF821TU9C49/stream/2026-04-14T20:12:54.272"
+  },
+  {
+    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581storageactivity2385C7CDArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-activity1E902D9C-1FVF821TU9C49"
+  }
+]

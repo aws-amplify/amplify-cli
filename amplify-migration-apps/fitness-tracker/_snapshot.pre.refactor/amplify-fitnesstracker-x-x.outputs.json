@@ -1,42 +1,42 @@
 [
   {
     "OutputKey": "AuthRoleName",
-    "OutputValue": "amplify-fitnesstra2604141557-x-ed729-authRole"
+    "OutputValue": "amplify-fitnesstra2604141634-x-ec6cd-authRole"
   },
   {
     "OutputKey": "UnauthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141557-x-ed729-unauthRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141634-x-ec6cd-unauthRole"
   },
   {
     "OutputKey": "AuthRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141557-x-ed729-authRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141634-x-ec6cd-authRole"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1",
     "Description": "CloudFormation provider root stack Region",
-    "ExportName": "amplify-fitnesstra2604141557-x-ed729-Region"
+    "ExportName": "amplify-fitnesstra2604141634-x-ec6cd-Region"
   },
   {
     "OutputKey": "DeploymentBucketName",
-    "OutputValue": "amplify-fitnesstra2604141557-x-ed729-deployment",
+    "OutputValue": "amplify-fitnesstra2604141634-x-ec6cd-deployment",
     "Description": "CloudFormation provider root stack deployment bucket name",
-    "ExportName": "amplify-fitnesstra2604141557-x-ed729-DeploymentBucketName"
+    "ExportName": "amplify-fitnesstra2604141634-x-ec6cd-DeploymentBucketName"
   },
   {
     "OutputKey": "UnauthRoleName",
-    "OutputValue": "amplify-fitnesstra2604141557-x-ed729-unauthRole"
+    "OutputValue": "amplify-fitnesstra2604141634-x-ec6cd-unauthRole"
   },
   {
     "OutputKey": "StackName",
-    "OutputValue": "amplify-fitnesstra2604141557-x-ed729",
+    "OutputValue": "amplify-fitnesstra2604141634-x-ec6cd",
     "Description": "CloudFormation provider root stack ID",
-    "ExportName": "amplify-fitnesstra2604141557-x-ed729-StackName"
+    "ExportName": "amplify-fitnesstra2604141634-x-ec6cd-StackName"
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141557-x-ed729/21f2f5c0-383c-11f1-9edd-0affd23ca3f1",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-x-ec6cd/6a57e190-3841-11f1-8f2c-123c460468a9",
     "Description": "CloudFormation provider root stack name",
-    "ExportName": "amplify-fitnesstra2604141557-x-ed729-StackId"
+    "ExportName": "amplify-fitnesstra2604141634-x-ec6cd-StackId"
   }
 ]

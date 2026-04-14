@@ -87,7 +87,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bedc529c-x';
+// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bede880d-x';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

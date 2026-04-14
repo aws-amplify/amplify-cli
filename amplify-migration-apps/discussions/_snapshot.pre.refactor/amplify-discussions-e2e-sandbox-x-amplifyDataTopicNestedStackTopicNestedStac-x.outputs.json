@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "GetAttTopicTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-hwqxyznpcnbv3jwcfv2y4upnjy-x/stream/2026-04-14T19:59:46.974",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "psahj67fdrbbbe3dkyugogsi4y:GetAtt:TopicTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttTopicTableName",
+    "OutputValue": "Topic-hwqxyznpcnbv3jwcfv2y4upnjy-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "psahj67fdrbbbe3dkyugogsi4y:GetAtt:TopicTable:Name"
+  },
+  {
+    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataTopicTopicTableBE6A2F5BTableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-hwqxyznpcnbv3jwcfv2y4upnjy-x"
+  },
+  {
+    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataTopicTopicTableBE6A2F5BTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-hwqxyznpcnbv3jwcfv2y4upnjy-x/stream/2026-04-14T19:59:46.974"
+  },
+  {
+    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataTopicTopicDataSource82C043E6Name",
+    "OutputValue": "TopicTable"
+  }
+]

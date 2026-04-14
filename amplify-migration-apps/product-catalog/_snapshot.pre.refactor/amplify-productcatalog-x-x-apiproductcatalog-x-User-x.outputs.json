@@ -1,0 +1,36 @@
+[
+  {
+    "OutputKey": "GetAttUserTableName",
+    "OutputValue": "User-vlckulotdbgslandc7rkudxrne-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:UserTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
+    "OutputValue": "ceexlewajrbcpfhlg6mtexq55i"
+  },
+  {
+    "OutputKey": "transformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
+    "OutputValue": "5umkzzj5cfewvki2jfropdtfjq"
+  },
+  {
+    "OutputKey": "transformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
+    "OutputValue": "bubzttck2vdhnj5yjpsnkfkwjy"
+  },
+  {
+    "OutputKey": "GetAttUserDataSourceName",
+    "OutputValue": "UserTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:UserDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttUserTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-vlckulotdbgslandc7rkudxrne-x/stream/2026-04-14T19:58:59.864",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:UserTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
+    "OutputValue": "zn6ouxqcznc67nfpxrgy23l2ue"
+  }
+]

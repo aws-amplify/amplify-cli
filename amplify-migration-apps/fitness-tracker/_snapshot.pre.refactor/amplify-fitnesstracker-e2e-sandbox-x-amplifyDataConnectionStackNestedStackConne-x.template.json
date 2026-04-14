@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPI4985FCE0ApiId"
+          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPINONEDS09C995C5Name"
+          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramexercisesauth0Function",
@@ -19,17 +19,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/data/amplifyData/ConnectionStack/WorkoutProgramexercisesauth0Function/WorkoutProgramexercisesauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/ConnectionStack/WorkoutProgramexercisesauth0Function/WorkoutProgramexercisesauth0Function.AppSyncFunction"
       }
     },
     "WorkoutProgramExercisesDataResolverFnWorkoutProgramExercisesDataResolverFnAppSyncFunctionA9FFE7A3": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPI4985FCE0ApiId"
+          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseNestedStackExerciseNestedStackResource46FB0EC9Outputsamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseExerciseDataSource85C55265Name"
+          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseNestedStackExerciseNestedStackResourceC6F16FF1Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseExerciseDataSource222C3F55Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramExercisesDataResolverFn",
@@ -43,14 +43,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/data/amplifyData/ConnectionStack/WorkoutProgramExercisesDataResolverFn/WorkoutProgramExercisesDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/ConnectionStack/WorkoutProgramExercisesDataResolverFn/WorkoutProgramExercisesDataResolverFn.AppSyncFunction"
       }
     },
     "WorkoutProgramexercisesResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPI4985FCE0ApiId"
+          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
         },
         "FieldName": "exercises",
         "Kind": "PIPELINE",
@@ -76,7 +76,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"WorkoutProgram\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"exercises\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPI4985FCE0ApiId"
+                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseNestedStackExerciseNestedStackResource46FB0EC9Outputsamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseExerciseTableFB497398TableArn"
+                                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseNestedStackExerciseNestedStackResourceC6F16FF1Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseExerciseTable57578DA4TableArn"
                               }
                             ]
                           }
@@ -112,7 +112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthauthenticatedUserRole4E61C272Ref"
+                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -124,11 +124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthunauthenticatedUserRole7A7B748ARef"
+                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthIdentityPool289A3103Ref"
+                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -140,7 +140,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/data/amplifyData/ConnectionStack/workoutProgramExercisesResolver"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/ConnectionStack/workoutProgramExercisesResolver"
       }
     },
     "CDKMetadata": {
@@ -149,7 +149,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMQQ6CMBBA0bOwLyMWY+JSSFy6gAOQsQykgFPSaSGGcHeDrl7+5mvQlxtkCa6SmnZMJ/uC7UkSqK0DmlHhKs0meYMiFATuB0pyKKIZKRQopHCe5cMGtrLjR2QTrOPScWf76PEIVXZckbhpIb/v6veoA/aW+12xawkGOS1aw/kKWTKItamPHOyboPr7BWm48tGnAAAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/data/amplifyData/ConnectionStack/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/ConnectionStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -421,25 +421,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPI4985FCE0ApiId": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataGraphQLAPINONEDS09C995C5Name": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseNestedStackExerciseNestedStackResource46FB0EC9Outputsamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseExerciseDataSource85C55265Name": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseNestedStackExerciseNestedStackResourceC6F16FF1Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseExerciseDataSource222C3F55Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseNestedStackExerciseNestedStackResource46FB0EC9Outputsamplifyfitnesstra2604141557e2esandboxc170c93a26dataamplifyDataExerciseExerciseTableFB497398TableArn": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseNestedStackExerciseNestedStackResourceC6F16FF1Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataExerciseExerciseTable57578DA4TableArn": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthauthenticatedUserRole4E61C272Ref": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthunauthenticatedUserRole7A7B748ARef": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141557e2esandboxc170c93a26authNestedStackauthNestedStackResourceB896F32COutputsamplifyfitnesstra2604141557e2esandboxc170c93a26authamplifyAuthIdentityPool289A3103Ref": {
+    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref": {
       "Type": "String"
     }
   }

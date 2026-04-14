@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthunauthenticatedUserRoleF6CEAA65Ref",
-    "ParameterValue": "amplify-mediavault2604141-amplifyAuthunauthenticate-f3LV6NvETe0j"
+    "ParameterKey": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bdataamplifyDataGraphQLAPI3831A291ApiId",
+    "ParameterValue": "rm4mczka7rbotje4blofvbmugy"
   },
   {
-    "ParameterKey": "referencetoamplifymediavault2604141556e2esandboxee9ada15efdataamplifyDataGraphQLAPI3F143AD1ApiId",
-    "ParameterValue": "blkwtbadujddpmmrphnj3r6k5q"
-  },
-  {
-    "ParameterKey": "referencetoamplifymediavault2604141556e2esandboxee9ada15efdataamplifyDataGraphQLAPINONEDS6EE43FBBName",
+    "ParameterKey": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bdataamplifyDataGraphQLAPINONEDSD800D72EName",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthIdentityPoolB3B373ECRef",
-    "ParameterValue": "us-east-1:ebcdec2b-4ba5-4fd4-977e-ac05e616f4a2"
+    "ParameterKey": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthunauthenticatedUserRoleED4B9DB9Ref",
+    "ParameterValue": "amplify-mediavault2604141-amplifyAuthunauthenticate-7YaBMcnDKVE5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavault2604141556e2esandboxee9ada15efauthNestedStackauthNestedStackResourceFE1A6AB4Outputsamplifymediavault2604141556e2esandboxee9ada15efauthamplifyAuthauthenticatedUserRole44A9CD26Ref",
-    "ParameterValue": "amplify-mediavault2604141-amplifyAuthauthenticatedU-5uRWhwP71C78"
+    "ParameterKey": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthauthenticatedUserRole2519A9CFRef",
+    "ParameterValue": "amplify-mediavault2604141-amplifyAuthauthenticatedU-o8pRr8DW7YuD"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bauthNestedStackauthNestedStackResource320B5CA3Outputsamplifymediavault2604141621e2esandbox2dcf2e244bauthamplifyAuthIdentityPool14378735Ref",
+    "ParameterValue": "us-east-1:8791bd12-c5c9-4925-a94d-e32877c0009c"
   }
 ]

@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard2604141556-x-35d03-analyticsmoodboardKinesis-10BH90JGWTNHM/39b67c90-383c-11f1-a7d3-0afffc45dd0d",
+      "LogicalResourceId": "KinesisStream"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard2604141556-e2e-sandbox-61f13981b5-analytics5794DE4A-1X8PRYVA74H1U/bdb78ec0-383d-11f1-8417-1220ebfe67af",
+      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+    }
+  }
+]

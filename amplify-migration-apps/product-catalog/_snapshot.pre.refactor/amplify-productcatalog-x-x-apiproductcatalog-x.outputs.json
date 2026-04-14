@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "vlckulotdbgslandc7rkudxrne",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-productcat2604141556-x-a4ffc-apiproductcatalog-V5XMNECLLTYB:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "https://eysrirckt5dsbgttp7mv6n44nm.appsync-api.us-east-1.amazonaws.com/graphql",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-productcat2604141556-x-a4ffc-apiproductcatalog-V5XMNECLLTYB:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "da2-fakeapikey00000000000000",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-productcat2604141556-x-a4ffc-apiproductcatalog-V5XMNECLLTYB:GraphQLApiKey"
+  }
+]

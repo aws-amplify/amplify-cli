@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthunauthenticatedUserRole3C92CDC2Ref",
+    "ParameterValue": "amplify-moodboard26041415-amplifyAuthunauthenticate-SS66Ove4Az7s"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataGraphQLAPINONEDSC4140C1AName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthIdentityPool02207698Ref",
+    "ParameterValue": "us-east-1:41437c78-5f37-444c-8443-3abab1167021"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataBoardNestedStackBoardNestedStackResource818E00DEOutputsamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataBoardBoardDataSource13A9BAE7Name",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource749F86F0Outputsamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataMoodItemMoodItemDataSource3E45D38FName",
+    "ParameterValue": "MoodItemTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataGraphQLAPI728A8585ApiId",
+    "ParameterValue": "m3bvdhw7arfblm3ar5hlia2ag4"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthauthenticatedUserRoleFA23546CRef",
+    "ParameterValue": "amplify-moodboard26041415-amplifyAuthauthenticatedU-UiuvcH7z0ns6"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataBoardNestedStackBoardNestedStackResource818E00DEOutputsamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataBoardBoardTableBE325460TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-76irxl6yqbbhdmbj6g2ij2yamu-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource749F86F0Outputsamplifymoodboard2604141556e2esandbox61f13981b5dataamplifyDataMoodItemMoodItemTableBA0A3342TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-76irxl6yqbbhdmbj6g2ij2yamu-x"
+  }
+]

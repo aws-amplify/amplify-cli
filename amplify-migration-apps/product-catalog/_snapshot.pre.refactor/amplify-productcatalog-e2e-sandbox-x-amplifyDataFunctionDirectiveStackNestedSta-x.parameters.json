@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPINONEDSE77F50D7Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthunauthenticatedUserRoleF481FA2CRef",
+    "ParameterValue": "amplify-productcat2604141-amplifyAuthunauthenticate-9Izt2IGsl5cW"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthauthenticatedUserRoleBAC77C65Ref",
+    "ParameterValue": "amplify-productcat2604141-amplifyAuthauthenticatedU-aSSioLkHSQnB"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthIdentityPool82E88E73Ref",
+    "ParameterValue": "us-east-1:828b72b1-2737-4006-8259-e69f328b7186"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId",
+    "ParameterValue": "gm5dn2njv5gpxddr6v7f53ttaa"
+  }
+]

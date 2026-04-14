@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141556-x-c529c-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141621-x-e880d-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -141,7 +141,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141556-x-c529c-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault2604141621-x-e880d-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

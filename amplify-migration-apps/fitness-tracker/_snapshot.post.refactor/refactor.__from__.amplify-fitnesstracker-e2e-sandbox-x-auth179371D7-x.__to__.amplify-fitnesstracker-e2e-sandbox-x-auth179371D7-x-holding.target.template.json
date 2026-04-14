@@ -7,13 +7,13 @@
       "Properties": {
         "GroupName": "Admin",
         "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141-amplifyAuthAdminGroupRole-p8dqVx2w8DTh",
-        "UserPoolId": "us-east-1_KSGIBuFxP"
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141-amplifyAuthAdminGroupRole-BzafJPStbrRb",
+        "UserPoolId": "us-east-1_MaYjFBmVw"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/auth/amplifyAuth/AdminGroup"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/auth/amplifyAuth/AdminGroup"
       }
     },
     "amplifyAuthUserPool4BA7F805": {
@@ -80,7 +80,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -98,12 +98,12 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_KSGIBuFxP"
+        "UserPoolId": "us-east-1_MaYjFBmVw"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -132,12 +132,12 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_KSGIBuFxP"
+        "UserPoolId": "us-east-1_MaYjFBmVw"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -146,7 +146,7 @@
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "37ra1q9uq94arb6i1jjmo04v76",
+            "ClientId": "24ortii6512khqs4tbh7t5g91s",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -156,7 +156,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_KSGIBuFxP"
+                  "us-east-1_MaYjFBmVw"
                 ]
               ]
             }
@@ -181,13 +181,13 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:27969919-a87f-4628-93c0-82ca0ca0ca8d",
+        "IdentityPoolId": "us-east-1:fdef89a0-70e9-4732-86c6-5e4f8adac12c",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -200,9 +200,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_KSGIBuFxP",
+                  "us-east-1_MaYjFBmVw",
                   ":",
-                  "37ra1q9uq94arb6i1jjmo04v76"
+                  "24ortii6512khqs4tbh7t5g91s"
                 ]
               ]
             },
@@ -210,14 +210,14 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141-amplifyAuthunauthenticate-jZqY0hlY3tqb",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141-amplifyAuthauthenticatedU-eAbsSNPT21ru"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141-amplifyAuthunauthenticate-XD8Hg3mokjcq",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604141-amplifyAuthauthenticatedU-cGqiTcIUTgi4"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141557-e2e-sandbox-c170c93a26/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     }
   },

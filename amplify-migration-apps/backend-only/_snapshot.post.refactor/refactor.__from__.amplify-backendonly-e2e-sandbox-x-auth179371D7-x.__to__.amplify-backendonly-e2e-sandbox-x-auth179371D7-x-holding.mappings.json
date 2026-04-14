@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX-holding",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1-auth179371D7-OGBEIDY2JVOX-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

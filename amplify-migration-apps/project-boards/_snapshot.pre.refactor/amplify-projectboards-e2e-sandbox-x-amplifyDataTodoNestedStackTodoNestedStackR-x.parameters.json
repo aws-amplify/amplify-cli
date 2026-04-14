@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboa2604141617e2esandboxb9ce55d36edataamplifyDataGraphQLAPI1BF47672ApiId",
+    "ParameterValue": "p2ryunr3qvc7voolreloaypj4e"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboa2604141617e2esandboxb9ce55d36edataamplifyDataGraphQLAPINONEDS0381860EName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboa2604141617e2esandboxb9ce55d36eauthNestedStackauthNestedStackResource00EF31D9Outputsamplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthunauthenticatedUserRole869966A8Ref",
+    "ParameterValue": "amplify-projectboa2604141-amplifyAuthunauthenticate-FwFL6iWPsBfn"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboa2604141617e2esandboxb9ce55d36eauthNestedStackauthNestedStackResource00EF31D9Outputsamplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthIdentityPoolB004F76ERef",
+    "ParameterValue": "us-east-1:e151bdbb-6dfc-4eec-be25-899be6cba0e7"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboa2604141617e2esandboxb9ce55d36edataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource88C35376Outputsamplifyprojectboa2604141617e2esandboxb9ce55d36edataamplifyDataAmplifyTableManagerTab4D3D282F",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-projectboa2604141-TableManagerCustomProvid-edBvRxB6GfwY"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboa2604141617e2esandboxb9ce55d36eauthNestedStackauthNestedStackResource00EF31D9Outputsamplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthauthenticatedUserRole6D305084Ref",
+    "ParameterValue": "amplify-projectboa2604141-amplifyAuthauthenticatedU-GxXyBMfXGBJn"
+  }
+]
