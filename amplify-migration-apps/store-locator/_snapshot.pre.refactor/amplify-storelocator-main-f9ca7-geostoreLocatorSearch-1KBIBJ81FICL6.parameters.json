@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "authuserPoolGroupsstoreLocatorAdminGroupRole",
-    "ParameterValue": "959c1c2a71.storeLocatorAdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_R1pdziFVe-storeLocatorAdminGroupRole"
   },
   {
     "ParameterKey": "isDefault",
@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "b3b1865edc.AuthRoleName"
+    "ParameterValue": "amplify-storelocator-main-f9ca7-authRole"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "b3b1865edc.UnauthRoleName"
+    "ParameterValue": "amplify-storelocator-main-f9ca7-unauthRole"
   },
   {
     "ParameterKey": "indexName",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
-    "ParameterValue": "455111189d.UserPoolId"
+    "ParameterValue": "us-east-1_R1pdziFVe"
   }
 ]

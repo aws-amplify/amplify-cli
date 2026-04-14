@@ -102,7 +102,7 @@
         }
       ],
       "isDefault": true,
-      "mapStyle": "a5e76e9278.Style",
+      "mapStyle": "VectorEsriStreets",
       "providerPlugin": "awscloudformation",
       "service": "Map"
     },

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "Style",
-    "OutputValue": "a5e76e9278.Style"
+    "OutputValue": "VectorEsriStreets"
   },
   {
     "OutputKey": "Region",
@@ -9,10 +9,10 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "e9f06e9cd3.Arn"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-main"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "e9f06e9cd3.Name"
+    "OutputValue": "storeLocatorMap-main"
   }
 ]

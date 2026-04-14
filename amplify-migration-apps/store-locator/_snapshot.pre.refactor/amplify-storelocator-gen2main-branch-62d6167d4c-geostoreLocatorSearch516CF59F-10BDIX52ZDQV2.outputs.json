@@ -5,14 +5,14 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "2d8904d0a4.Arn"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-main"
   },
   {
-    "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName",
-    "OutputValue": "2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
+    "OutputKey": "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName",
+    "OutputValue": "storeLocatorSearch-gen2-main"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName"
+    "OutputValue": "storeLocatorSearch-gen2-main"
   }
 ]

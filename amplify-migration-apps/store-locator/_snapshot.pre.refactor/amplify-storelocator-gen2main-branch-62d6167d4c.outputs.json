@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
+    "OutputValue": "1t7et22n9m68741vh3pmv2nmfq"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolAppClientA8D9B6FBRef"
+    "OutputValue": "1t7et22n9m68741vh3pmv2nmfq"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -49,11 +49,11 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName\":{\"style\":\"a5e76e9278.Style\"}},\"default\":\"a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName\"},\"search_indices\":{\"items\":[\"2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName\"],\"default\":\"2d8904d0a4.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName\"},\"geofence_collections\":{\"items\":[\"19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName\"],\"default\":\"19bf0e623d.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorGeofenceCustomGeofenceCollectionF2914E55CollectionName\"}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-main\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-main\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-main\"],\"default\":\"storeLocatorSearch-gen2-main\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-main\"],\"default\":\"storeLocatorGeofence-gen2-main\"}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "38b5101cfb.oauthRedirectSignIn"
+    "OutputValue": "https://example.com"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -69,7 +69,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthstorelocator41a9495f41a9495fPostConfirmationgen2mainlambda5D769661Ref\"]"
+    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-main\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -77,7 +77,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "38b5101cfb.deploymentType"
+    "OutputValue": "branch"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthUserPoolE0F0BF85Ref"
+    "OutputValue": "us-east-1_AeAJNVPgB"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "dc2fece239.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cauthamplifyAuthIdentityPool537188CARef"
+    "OutputValue": "us-east-1:cbd1c99c-bad6-4aff-8d75-a63d582714ee"
   },
   {
     "OutputKey": "verificationMechanisms",

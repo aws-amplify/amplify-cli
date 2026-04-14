@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "b3b1865edc.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -105,7 +105,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "455111189d.UserPoolName"
+    "ParameterValue": "storelocator41a9495f_userpool_41a9495f"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -153,7 +153,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "b3b1865edc.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

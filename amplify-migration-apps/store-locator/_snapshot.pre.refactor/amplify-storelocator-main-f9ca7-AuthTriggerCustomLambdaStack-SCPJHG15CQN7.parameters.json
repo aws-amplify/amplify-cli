@@ -1,15 +1,15 @@
 [
   {
     "ParameterKey": "userpoolId",
-    "ParameterValue": "455111189d.UserPoolId"
+    "ParameterValue": "us-east-1_R1pdziFVe"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationLambdaExecutionRole",
-    "ParameterValue": "d8066ec12f.LambdaExecutionRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/storelocator41a9495f41a9495fPostConfirmation-main"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationArn",
-    "ParameterValue": "d8066ec12f.Arn"
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-main"
   },
   {
     "ParameterKey": "env",
@@ -17,10 +17,10 @@
   },
   {
     "ParameterKey": "userpoolArn",
-    "ParameterValue": "455111189d.UserPoolArn"
+    "ParameterValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_R1pdziFVe"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",
-    "ParameterValue": "d8066ec12f.LambdaExecutionRole"
+    "ParameterValue": "storelocator41a9495f41a9495fPostConfirmation-main"
   }
 ]

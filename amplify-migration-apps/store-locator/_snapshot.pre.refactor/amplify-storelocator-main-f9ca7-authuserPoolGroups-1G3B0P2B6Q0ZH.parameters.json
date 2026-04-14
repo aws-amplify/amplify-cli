@@ -1,19 +1,19 @@
 [
   {
     "ParameterKey": "UnauthRoleArn",
-    "ParameterValue": "b3b1865edc.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-unauthRole"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fAppClientID",
-    "ParameterValue": "455111189d.AppClientID"
+    "ParameterValue": "5ppvpdo9dmkrj55qi8h865lt34"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fIdentityPoolId",
-    "ParameterValue": "455111189d.IdentityPoolId"
+    "ParameterValue": "us-east-1:4ea514e6-bc16-4990-a5ea-cefe84c3050d"
   },
   {
     "ParameterKey": "AuthRoleArn",
-    "ParameterValue": "b3b1865edc.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-authRole"
   },
   {
     "ParameterKey": "env",
@@ -21,10 +21,10 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fAppClientIDWeb",
-    "ParameterValue": "455111189d.AppClientIDWeb"
+    "ParameterValue": "6am6ldh23n8ke819nuvk51cddq"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
-    "ParameterValue": "455111189d.UserPoolId"
+    "ParameterValue": "us-east-1_R1pdziFVe"
   }
 ]

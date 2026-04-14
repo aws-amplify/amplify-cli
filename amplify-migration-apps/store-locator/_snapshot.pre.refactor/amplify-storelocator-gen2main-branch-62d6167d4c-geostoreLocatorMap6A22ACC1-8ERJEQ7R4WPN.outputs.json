@@ -1,22 +1,22 @@
 [
   {
     "OutputKey": "Style",
-    "OutputValue": "a5e76e9278.Style"
+    "OutputValue": "VectorEsriStreets"
   },
   {
     "OutputKey": "Region",
     "OutputValue": "us-east-1"
   },
   {
-    "OutputKey": "amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName",
-    "OutputValue": "a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
+    "OutputKey": "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName",
+    "OutputValue": "storeLocatorMap-gen2-main"
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "a5e76e9278.Arn"
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-main"
   },
   {
     "OutputKey": "Name",
-    "OutputValue": "a5e76e9278.amplifystorelocatorgen2main38b5101cfb.deploymentType62d6167d4cgeostoreLocatorMapCustomMap41EB8E23MapName"
+    "OutputValue": "storeLocatorMap-gen2-main"
   }
 ]

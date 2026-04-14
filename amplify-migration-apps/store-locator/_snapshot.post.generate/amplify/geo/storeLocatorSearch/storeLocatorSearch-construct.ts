@@ -30,7 +30,7 @@ export interface geostoreLocatorSearchProps {
   readonly isDefault: string;
   /**
    */
-  readonly 38b5101cfb.deploymentTypeName: string;
+  readonly branchName: string;
 }
 
 /**
@@ -161,7 +161,7 @@ export class geostoreLocatorSearch extends Construct {
                   'locationServiceRegion'
                 )}:${cdk.Stack.of(this).account}:place-index/${[
                   props.indexName!,
-                  props.38b5101cfb.deploymentTypeName!,
+                  props.branchName!,
                 ].join('-')}`,
               },
             ],
@@ -203,7 +203,7 @@ export class geostoreLocatorSearch extends Construct {
     customPlaceIndex.addOverride('Type', 'Custom::LambdaCallout');
     customPlaceIndex.addPropertyOverride(
       'indexName',
-      [props.indexName!, props.38b5101cfb.deploymentTypeName!].join('-')
+      [props.indexName!, props.branchName!].join('-')
     );
     customPlaceIndex.addPropertyOverride('dataSource', props.dataProvider!);
     customPlaceIndex.addPropertyOverride(
@@ -217,7 +217,7 @@ export class geostoreLocatorSearch extends Construct {
         'locationServiceRegion'
       )
     );
-    customPlaceIndex.addPropertyOverride('env', props.38b5101cfb.deploymentTypeName!);
+    customPlaceIndex.addPropertyOverride('env', props.branchName!);
     customPlaceIndex.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.DELETE;
 
     const placeIndexPolicy = new iam.CfnPolicy(this, 'PlaceIndexPolicy', {
@@ -237,7 +237,7 @@ export class geostoreLocatorSearch extends Construct {
         Version: '2012-10-17',
       },
       policyName: [
-        [props.indexName!, props.38b5101cfb.deploymentTypeName!].join('-'),
+        [props.indexName!, props.branchName!].join('-'),
         'Policy',
       ].join(''),
       roles: [

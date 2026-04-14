@@ -1,6 +1,6 @@
 [
   {
     "OutputKey": "storeLocatorAdminGroupRole",
-    "OutputValue": "959c1c2a71.storeLocatorAdminGroupRole"
+    "OutputValue": "arn:aws:iam::123456789012:role/us-east-1_R1pdziFVe-storeLocatorAdminGroupRole"
   }
 ]
