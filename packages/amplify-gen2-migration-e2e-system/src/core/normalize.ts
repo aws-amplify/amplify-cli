@@ -25,8 +25,8 @@ function getFilesRecursive(dir: string): string[] {
 }
 
 /**
- * Normalizes snapshot filenames and content so that re-running the e2e
- * system (with no code changes) produces identical snapshots.
+ * Builds the list of string replacements needed to normalize run-specific
+ * values out of snapshot filenames and content.
  *
  * Run-specific values in CFN stack names (and thus filenames):
  *   1. deploymentName  (timestamp-based, e.g. projectboa2604111848)
@@ -35,10 +35,6 @@ function getFilesRecursive(dir: string): string[] {
  *   4. sandbox hash    (CDK sandbox deployment hash)
  *   5. git commit hash (Amplify hosting branch hash)
  *   6. CFN nested stack hashes (CloudFormation physical resource IDs)
- */
-/**
- * Builds the list of string replacements needed to normalize run-specific
- * values out of snapshot filenames and content.
  */
 function extractReplacements(appName: string, appDir: string): { before: string; after: string }[] {
   const appNameNoDashes = appName.replaceAll('-', '');

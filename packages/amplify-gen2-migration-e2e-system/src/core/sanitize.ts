@@ -9,7 +9,6 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 
 interface SensitiveValues {
   accountId: string;
@@ -135,15 +134,8 @@ function getFilesRecursive(dir: string): string[] {
 }
 
 function sanitizeFileName(name: string, appId: string, appName: string): string {
-  // sandbox uses this
-  const username = os.userInfo().username;
-  return name.replaceAll(appId, appName).replaceAll(`-${username}-`, '-username-');
+  return name.replaceAll(appId, appName);
 }
-
-function getAllFiles(dir: string): string[] {
-  return getFilesRecursive(dir);
-}
-
 /**
  * Sanitizes sensitive values in Amplify migration app snapshot files for safe public commit.
  *
@@ -155,8 +147,8 @@ function getAllFiles(dir: string): string[] {
  * Targets:
  * - AWS Account ID (from providers.awscloudformation AuthRoleArn) → replaced with 123456789012
  * - Amplify App ID (from providers.awscloudformation) → replaced with app name (dashes removed)
- * - All string output values from resource categories → replaced with <category>.<resourceName>.<outputKey>
- * - All string output values from .outputs.json files → replaced with <fileHash>.<OutputKey>
+ * - Gen1 AppSync API Key (if present and starts with da2-) → replaced with da2-fakeapikey00000000000000
+ * - Sensitive output values from .outputs.json files → replaced with <fileHash>.<OutputKey>
  */
 export function sanitize(appName: string, appDir: string): void {
   const appNameNoDashes = appName.replaceAll('-', '');
@@ -167,7 +159,7 @@ export function sanitize(appName: string, appDir: string): void {
   const refactorOutputReplacements = extractOutputReplacements(appDir);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
-  const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
+  const files = [...snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)))];
 
   for (const file of files) {
     let content = fs.readFileSync(file, 'utf-8');

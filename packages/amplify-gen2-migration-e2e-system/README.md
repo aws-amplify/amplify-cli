@@ -94,8 +94,57 @@ src/
 └── core/
     ├── app.ts                      # App class — owns the full lifecycle of a migration app
     ├── git.ts                      # Git operations (init, commit, checkout)
+    ├── normalize.ts                # Normalizes run-specific values in snapshot files
+    ├── sanitize.ts                 # Sanitizes sensitive values in snapshot files
     └── logger.ts                   # Logging with file output
 ```
+
+## Snapshot Post-Processing
+
+After snapshots are captured, when the E2E system is executed with
+`UPDATE_SNAPSHOTS=1`, two post-processing steps run before copying
+them back to the source app directory:
+
+1. **Normalize** — replaces run-specific values (random env names,
+   CFN stack hashes) with deterministic placeholders so
+   that snapshot filenames are stable across runs.
+2. **Sanitize** — replaces sensitive values (AWS account IDs, API keys,
+   resource identifiers from CloudFormation outputs) with safe placeholders
+   suitable for public commit.
+
+Order matters — normalize first, then sanitize.
+
+### Normalization
+
+Normalization removes run-specific values (random env names, CFN stack hashes)
+from snapshot filenames and content so that filenames are stable across runs.
+
+| Value                   | Replacement            |
+| ----------------------- | ---------------------- |
+| Deployment name         | `<app-name-no-dashes>` |
+| Environment name        | `x`                    |
+| Environment hash        | `x`                    |
+| Sandbox hash            | `x`                    |
+| CFN nested stack hashes | `x`                    |
+
+These replacements apply to both file content and filenames.
+
+### Sanitization
+
+Sanitization replaces sensitive or environment-specific values:
+
+| Value                          | Replacement                    |
+| ------------------------------ | ------------------------------ |
+| AWS Account ID                 | `123456789012`                 |
+| Amplify App ID                 | `<app-name-no-dashes>`         |
+| Gen1 AppSync API Key (da2-...) | `da2-fakeapikey00000000000000` |
+| Sensitive output values        | `<fileHash>.<OutputKey>`       |
+
+Sensitive output values are extracted from `.outputs.json` files in
+`_snapshot.pre.refactor/`. Only outputs whose key matches a known
+varying-value pattern are replaced (pool IDs, client IDs, API keys,
+bucket names, table names, Lambda ARNs, etc.). The file hash is a
+stable 10-character SHA-256 digest of the outputs filename.
 
 ## Development
 
