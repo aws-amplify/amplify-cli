@@ -41,7 +41,6 @@ function extractGen1ApiKey(meta: any): string | null {
 
 function extractGen2ApiKey(appDir: string): string | null {
   const preRefactor = path.join(appDir, '_snapshot.pre.refactor');
-  if (!fs.existsSync(preRefactor)) return null;
   for (const outputsFile of fs.readdirSync(preRefactor).filter((f) => f.endsWith('outputs.json'))) {
     const outputs = JSON.parse(fs.readFileSync(path.join(preRefactor, outputsFile), { encoding: 'utf-8' }));
     for (const output of outputs) {
