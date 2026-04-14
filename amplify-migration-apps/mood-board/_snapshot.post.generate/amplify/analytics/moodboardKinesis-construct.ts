@@ -25,7 +25,7 @@ export interface analyticsmoodboardKinesisProps {
   readonly unauthRoleName: string;
   /**
    */
-  readonly 383edf5091.deploymentTypeName: string;
+  readonly branchName: string;
 }
 
 /**
@@ -51,7 +51,7 @@ export class analyticsmoodboardKinesis extends Construct {
 
     // Resources
     const kinesisStream = new kinesis.CfnStream(this, 'KinesisStream', {
-      name: [props.kinesisStreamName!, props.383edf5091.deploymentTypeName!].join('-'),
+      name: [props.kinesisStreamName!, props.branchName!].join('-'),
       shardCount: props.kinesisStreamShardCount!,
     });
 

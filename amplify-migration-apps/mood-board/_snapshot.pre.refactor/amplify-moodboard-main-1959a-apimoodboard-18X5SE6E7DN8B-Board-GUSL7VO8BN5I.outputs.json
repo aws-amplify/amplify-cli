@@ -1,28 +1,28 @@
 [
   {
-    "OutputKey": "GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn",
-    "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn",
+    "OutputKey": "GetAttBoardTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-vsozkn3hbzdjppzyf7xtf2f4sy-main/stream/2026-03-08T17:04:46.147",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
+    "ExportName": "vsozkn3hbzdjppzyf7xtf2f4sy:GetAtt:BoardTable:StreamArn"
   },
   {
     "OutputKey": "GetAttBoardDataSourceName",
-    "OutputValue": "2a2fe43672.GetAttBoardDataSourceName",
+    "OutputValue": "BoardTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:BoardDataSource:Name"
+    "ExportName": "vsozkn3hbzdjppzyf7xtf2f4sy:GetAtt:BoardDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackBoardBoardDataSource99BFC69FName",
-    "OutputValue": "2a2fe43672.GetAttBoardDataSourceName"
+    "OutputValue": "BoardTable"
   },
   {
-    "OutputKey": "GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
-    "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName",
+    "OutputKey": "GetAttBoardTableName",
+    "OutputValue": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "5494e94a79.GraphQLAPIIdOutput:GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
+    "ExportName": "vsozkn3hbzdjppzyf7xtf2f4sy:GetAtt:BoardTable:Name"
   },
   {
-    "OutputKey": "transformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref",
-    "OutputValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName"
+    "OutputKey": "transformerrootstackBoardBoardTable30788E07Ref",
+    "OutputValue": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main"
   }
 ]

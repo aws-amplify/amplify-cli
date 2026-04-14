@@ -110,7 +110,7 @@
     }
   },
   "Resources": {
-    "2a2fe43672.GetAttBoardDataSourceName": {
+    "BoardTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -321,7 +321,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "2a2fe43672.GetAttBoardDataSourceName",
+                    "BoardTable",
                     "Arn"
                   ]
                 },
@@ -352,10 +352,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+            "Ref": "BoardTable"
           }
         },
-        "Name": "2a2fe43672.GetAttBoardDataSourceName",
+        "Name": "BoardTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "BoardIAMRole2AFA0B47",
@@ -453,7 +453,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+                "Ref": "BoardTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -548,7 +548,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+                "Ref": "BoardTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -646,7 +646,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+                "Ref": "BoardTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -798,7 +798,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+                "Ref": "BoardTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -947,7 +947,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+                "Ref": "BoardTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1070,11 +1070,11 @@
     }
   },
   "Outputs": {
-    "GetAtt2a2fe43672.GetAttBoardDataSourceNameStreamArn": {
+    "GetAttBoardTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "2a2fe43672.GetAttBoardDataSourceName",
+          "BoardTable",
           "StreamArn"
         ]
       },
@@ -1086,16 +1086,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:2a2fe43672.GetAttBoardDataSourceName:StreamArn"
+              "GetAtt:BoardTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt2a2fe43672.GetAttBoardDataSourceNameName": {
+    "GetAttBoardTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+        "Ref": "BoardTable"
       },
       "Export": {
         "Name": {
@@ -1105,7 +1105,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:2a2fe43672.GetAttBoardDataSourceName:Name"
+              "GetAtt:BoardTable:Name"
             ]
           ]
         }
@@ -1141,9 +1141,9 @@
         ]
       }
     },
-    "transformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref": {
+    "transformerrootstackBoardBoardTable30788E07Ref": {
       "Value": {
-        "Ref": "2a2fe43672.GetAttBoardDataSourceName"
+        "Ref": "BoardTable"
       }
     }
   }

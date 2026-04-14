@@ -92,7 +92,7 @@
     }
   },
   "Resources": {
-    "1230b2630f.GetAttMoodItemDataSourceName": {
+    "MoodItemTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
@@ -337,7 +337,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "1230b2630f.GetAttMoodItemDataSourceName",
+                    "MoodItemTable",
                     "Arn"
                   ]
                 },
@@ -347,7 +347,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "1230b2630f.GetAttMoodItemDataSourceName",
+                          "MoodItemTable",
                           "Arn"
                         ]
                       },
@@ -379,10 +379,10 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+            "Ref": "MoodItemTable"
           }
         },
-        "Name": "1230b2630f.GetAttMoodItemDataSourceName",
+        "Name": "MoodItemTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "MoodItemIAMRoleF26F66C1",
@@ -546,7 +546,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+                "Ref": "MoodItemTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -647,7 +647,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+                "Ref": "MoodItemTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -814,7 +814,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+                "Ref": "MoodItemTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1002,7 +1002,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+                "Ref": "MoodItemTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1154,7 +1154,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+                "Ref": "MoodItemTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1468,7 +1468,7 @@
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+                "Ref": "MoodItemTable"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1480,11 +1480,11 @@
     }
   },
   "Outputs": {
-    "GetAtt1230b2630f.GetAttMoodItemDataSourceNameStreamArn": {
+    "GetAttMoodItemTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "1230b2630f.GetAttMoodItemDataSourceName",
+          "MoodItemTable",
           "StreamArn"
         ]
       },
@@ -1496,16 +1496,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:1230b2630f.GetAttMoodItemDataSourceName:StreamArn"
+              "GetAtt:MoodItemTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAtt1230b2630f.GetAttMoodItemDataSourceNameName": {
+    "GetAttMoodItemTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+        "Ref": "MoodItemTable"
       },
       "Export": {
         "Name": {
@@ -1515,7 +1515,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:1230b2630f.GetAttMoodItemDataSourceName:Name"
+              "GetAtt:MoodItemTable:Name"
             ]
           ]
         }
@@ -1607,9 +1607,9 @@
         ]
       }
     },
-    "transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref": {
+    "transformerrootstackMoodItemMoodItemTable5135EED9Ref": {
       "Value": {
-        "Ref": "1230b2630f.GetAttMoodItemDataSourceName"
+        "Ref": "MoodItemTable"
       }
     }
   }

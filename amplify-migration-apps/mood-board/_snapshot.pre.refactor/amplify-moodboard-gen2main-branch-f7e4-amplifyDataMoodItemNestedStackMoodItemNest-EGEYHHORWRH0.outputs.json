@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "GetAtt1230b2630f.GetAttMoodItemDataSourceNameStreamArn",
-    "OutputValue": "1230b2630f.GetAtt1230b2630f.GetAttMoodItemDataSourceNameStreamArn",
+    "OutputKey": "GetAttMoodItemTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main/stream/2026-03-08T17:03:43.962",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId:GetAtt:1230b2630f.GetAttMoodItemDataSourceName:StreamArn"
+    "ExportName": "i3rfe6qyonbeldjtlui5jixz4u:GetAtt:MoodItemTable:StreamArn"
   },
   {
-    "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem1230b2630f.GetAttMoodItemDataSourceName2DB74480TableArn",
-    "OutputValue": "79926af416.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItem1230b2630f.GetAttMoodItemDataSourceName2DB74480TableArn"
+    "OutputKey": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemMoodItemTable2DB74480TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main"
   },
   {
-    "OutputKey": "GetAtt1230b2630f.GetAttMoodItemDataSourceNameName",
-    "OutputValue": "1230b2630f.transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref",
+    "OutputKey": "GetAttMoodItemTableName",
+    "OutputValue": "MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId:GetAtt:1230b2630f.GetAttMoodItemDataSourceName:Name"
+    "ExportName": "i3rfe6qyonbeldjtlui5jixz4u:GetAtt:MoodItemTable:Name"
   },
   {
-    "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName",
-    "OutputValue": "1230b2630f.GetAttMoodItemDataSourceName"
+    "OutputKey": "amplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataMoodItemMoodItemDataSource2ACD4FADName",
+    "OutputValue": "MoodItemTable"
   }
 ]

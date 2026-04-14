@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "analyticsmoodboardKinesiskinesisStreamArn",
-    "ParameterValue": "analytics.moodboardKinesis.kinesisStreamArn"
+    "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "1133a3293d.DeploymentBucketName"
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
   },
   {
     "ParameterKey": "env",

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "1133a3293d.AuthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "5b400a3a3b.UserPoolName"
+    "ParameterValue": "moodboard759ae00a_userpool_759ae00a"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "1133a3293d.UnauthRoleArn"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

@@ -1,10 +1,10 @@
 [
   {
-    "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardGetRandomEmojigen2mainlambda76EFC76ERef",
-    "OutputValue": "c881a80d11.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardGetRandomEmojigen2mainlambda76EFC76ERef"
+    "OutputKey": "amplifymoodboardgen2mainbranchf7e4caeabbfunctionmoodboardGetRandomEmojigen2mainlambda76EFC76ERef",
+    "OutputValue": "moodboardGetRandomEmoji-gen2-main"
   },
   {
-    "OutputKey": "amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardKinesisReadergen2mainlambda6E070627Ref",
-    "OutputValue": "c881a80d11.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardKinesisReadergen2mainlambda6E070627Ref"
+    "OutputKey": "amplifymoodboardgen2mainbranchf7e4caeabbfunctionmoodboardKinesisReadergen2mainlambda6E070627Ref",
+    "OutputValue": "moodboardKinesisReader-gen2-main"
   }
 ]

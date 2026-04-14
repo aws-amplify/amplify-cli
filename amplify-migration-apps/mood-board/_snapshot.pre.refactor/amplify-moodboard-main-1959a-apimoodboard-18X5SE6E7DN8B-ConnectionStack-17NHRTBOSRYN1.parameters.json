@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName",
-    "ParameterValue": "2a2fe43672.GetAttBoardDataSourceName"
+    "ParameterValue": "BoardTable"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -13,22 +13,22 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "5494e94a79.GraphQLAPIIdOutput"
+    "ParameterValue": "vsozkn3hbzdjppzyf7xtf2f4sy"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoard2a2fe43672.GetAttBoardDataSourceName30788E07Ref",
-    "ParameterValue": "2a2fe43672.GetAtt2a2fe43672.GetAttBoardDataSourceNameName"
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
+    "ParameterValue": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main"
   },
   {
-    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref",
-    "ParameterValue": "1230b2630f.transformerrootstackMoodItem1230b2630f.GetAttMoodItemDataSourceName5135EED9Ref"
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
+    "ParameterValue": "MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "1133a3293d.DeploymentBucketName"
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName",
-    "ParameterValue": "1230b2630f.GetAttMoodItemDataSourceName"
+    "ParameterValue": "MoodItemTable"
   }
 ]

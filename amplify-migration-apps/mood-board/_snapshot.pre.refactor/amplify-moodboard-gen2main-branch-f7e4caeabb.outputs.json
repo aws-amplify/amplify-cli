@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+    "OutputValue": "2otm0qh3fj270k5tdn95cgjlm5"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref"
+    "OutputValue": "amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref"
+    "OutputValue": "2otm0qh3fj270k5tdn95cgjlm5"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -41,7 +41,7 @@
   },
   {
     "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
-    "OutputValue": "383edf5091.awsAppsyncAdditionalAuthenticationTypes"
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
   },
   {
     "OutputKey": "mfaTypes",
@@ -61,15 +61,15 @@
   },
   {
     "OutputKey": "awsAppsyncApiKey",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPIDefaultApiKeyAF7FD918ApiKey"
+    "OutputValue": "da2-fakeapikey00000000000000"
   },
   {
     "OutputKey": "awsAppsyncAuthenticationType",
-    "OutputValue": "383edf5091.awsAppsyncAuthenticationType"
+    "OutputValue": "API_KEY"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
-    "OutputValue": "383edf5091.oauthRedirectSignIn"
+    "OutputValue": "https://example.com"
   },
   {
     "OutputKey": "passwordPolicyMinLength",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48GraphQLUrl"
+    "OutputValue": "https://zu6mo3ciwjapfizsp4qbtoigli.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "70fa8eeabc.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId"
+    "OutputValue": "i3rfe6qyonbeldjtlui5jixz4u"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main\\\",\\\"bucketName\\\":\\\"db32b21f58.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "383edf5091.amplifyApiModelSchemaS3Uri"
+    "OutputValue": "s3://amplify-moodboard-ge-amplifydataamplifycodege-ozxpnvhcwmyz/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"c881a80d11.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardGetRandomEmojigen2mainlambda76EFC76ERef\",\"c881a80d11.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbfunctionmoodboardKinesisReadergen2mainlambda6E070627Ref\"]"
+    "OutputValue": "[\"moodboardGetRandomEmoji-gen2-main\",\"moodboardKinesisReader-gen2-main\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -113,7 +113,7 @@
   },
   {
     "OutputKey": "deploymentType",
-    "OutputValue": "383edf5091.deploymentType"
+    "OutputValue": "branch"
   },
   {
     "OutputKey": "passwordPolicyRequirements",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthUserPoolAE38F854Ref"
+    "OutputValue": "us-east-1_1A4RMvPNr"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "8ca203247f.amplifymoodboardgen2main383edf5091.deploymentTypef7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef"
+    "OutputValue": "us-east-1:820c5910-56e0-4010-b0c4-b457a728acfb"
   },
   {
     "OutputKey": "verificationMechanisms",

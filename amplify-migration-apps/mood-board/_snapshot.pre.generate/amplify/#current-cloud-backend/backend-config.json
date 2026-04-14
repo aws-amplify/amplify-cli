@@ -32,7 +32,7 @@
               "apiKeyExpirationDays": 365,
               "description": "moodBoard API Key"
             },
-            "authenticationType": "383edf5091.awsAppsyncAuthenticationType"
+            "authenticationType": "API_KEY"
           }
         }
       },

@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "1133a3293d.AuthRoleName"
+    "ParameterValue": "amplify-moodboard-main-1959a-authRole"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "1133a3293d.DeploymentBucketName"
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "1133a3293d.UnauthRoleName"
+    "ParameterValue": "amplify-moodboard-main-1959a-unauthRole"
   }
 ]

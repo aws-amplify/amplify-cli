@@ -54,7 +54,7 @@
       "Properties": {
         "PolicyName": "kinesis_amplify_bca5ce95",
         "Roles": [
-          "1133a3293d.UnauthRoleName"
+          "amplify-moodboard-main-1959a-unauthRole"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -65,7 +65,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "analytics.moodboardKinesis.kinesisStreamArn"
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
             }
           ]
         }
@@ -76,7 +76,7 @@
       "Properties": {
         "PolicyName": "kinesis_amplify_bca5ce95",
         "Roles": [
-          "1133a3293d.AuthRoleName"
+          "amplify-moodboard-main-1959a-authRole"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -87,7 +87,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "analytics.moodboardKinesis.kinesisStreamArn"
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
             }
           ]
         }
@@ -96,10 +96,10 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "analytics.moodboardKinesis.kinesisStreamArn"
+      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
     },
     "kinesisStreamId": {
-      "Value": "analytics.moodboardKinesis.kinesisStreamId"
+      "Value": "moodboardKinesis-main"
     },
     "kinesisStreamShardCount": {
       "Value": "1"

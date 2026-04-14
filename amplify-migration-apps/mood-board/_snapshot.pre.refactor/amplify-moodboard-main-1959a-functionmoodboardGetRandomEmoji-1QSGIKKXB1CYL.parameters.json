@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "1133a3293d.DeploymentBucketName"
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
   },
   {
     "ParameterKey": "env",

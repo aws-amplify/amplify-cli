@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "1133a3293d.DeploymentBucketName"
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "5b400a3a3b.UserPoolId"
+    "ParameterValue": "us-east-1_Cwvqs93Nc"
   }
 ]
