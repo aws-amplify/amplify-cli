@@ -1,0 +1,10 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dfunctionNestedStackfunctionNestedStackResource80CA8018Outputsamplifyproductcataloge2esandboxb8db8f353dfunctionS3Trigger1ef46783gen2xlambdaF1735CBAArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/lowstockproducts-5148445a7a3964456a67-build.zip"
+  },
+  {
+    "ParameterKey": "lowStockThreshold",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "449e3df2aa.DeploymentBucketName"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIKeyOutput",
+    "ParameterValue": "52f765a398.GraphQLAPIKeyOutput"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
+    "ParameterValue": "52f765a398.GraphQLAPIEndpointOutput"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "secretsPathAmplifyAppId",
+    "ParameterValue": "productcatalog"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
+    "ParameterValue": "52f765a398.GraphQLAPIIdOutput"
+  }
+]

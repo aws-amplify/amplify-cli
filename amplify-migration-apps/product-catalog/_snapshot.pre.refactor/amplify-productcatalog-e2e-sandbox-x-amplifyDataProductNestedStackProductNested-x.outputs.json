@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "GetAttProductTableStreamArn",
+    "OutputValue": "2ea75865de.GetAttProductTableStreamArn",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId:GetAtt:ProductTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttProductTableName",
+    "OutputValue": "2ea75865de.GetAttProductTableName",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId:GetAtt:ProductTable:Name"
+  }
+]

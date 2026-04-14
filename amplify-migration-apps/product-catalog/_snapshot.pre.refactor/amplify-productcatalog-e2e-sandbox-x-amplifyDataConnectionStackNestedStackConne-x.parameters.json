@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthunauthenticatedUserRoleFC0C0DB6Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentNestedStackCommentNestedStackResource28D7D195Outputsamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentTableFF270716TableArn",
+    "ParameterValue": "6661c58358.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentTableFF270716TableArn"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthIdentityPool329E1A61Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId",
+    "ParameterValue": "403ebe0d53.amplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPID3BC8B42ApiId"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataGraphQLAPINONEDSAFFD23ABName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353dauthNestedStackauthNestedStackResource27070C74Outputsamplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref",
+    "ParameterValue": "f55ea5a5a9.amplifyproductcataloge2esandboxb8db8f353dauthamplifyAuthauthenticatedUserRole356A4562Ref"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentNestedStackCommentNestedStackResource28D7D195Outputsamplifyproductcataloge2esandboxb8db8f353ddataamplifyDataCommentCommentDataSourceEA566D86Name",
+    "ParameterValue": "CommentTable"
+  }
+]
