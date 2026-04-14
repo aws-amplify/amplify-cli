@@ -113,11 +113,11 @@ export function sanitize(appName: string, appDir: string): void {
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, appNameNoDashes);
 
-    if (values.gen1ApiKey && values.gen1ApiKey.startsWith('da2-')) {
+    if (values.gen1ApiKey) {
       content = content.replaceAll(values.gen1ApiKey, 'da2-fakeapikey00000000000000');
     }
 
-    if (values.gen2ApiKey && values.gen2ApiKey.startsWith('da2-')) {
+    if (values.gen2ApiKey) {
       content = content.replaceAll(values.gen2ApiKey, 'da2-fakeapikey00000000000000');
     }
 
