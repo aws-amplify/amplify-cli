@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "635genchrcmt5d9t2osf8c01sp"
+    "OutputValue": "7pl59lran1kdcu0840lrtg6trt"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "635genchrcmt5d9t2osf8c01sp"
+    "OutputValue": "7pl59lran1kdcu0840lrtg6trt"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_0BR3dEawx"
+    "OutputValue": "us-east-1_kQhwAG0Bz"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
+    "OutputValue": "us-east-1:35aab9ee-5d76-4bbb-b844-b2a9869e292f"
   },
   {
     "OutputKey": "verificationMechanisms",

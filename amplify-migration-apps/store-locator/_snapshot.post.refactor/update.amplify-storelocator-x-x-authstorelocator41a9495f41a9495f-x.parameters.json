@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141401-x-9bc6f-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -153,7 +153,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocat2604141401-x-9bc6f-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

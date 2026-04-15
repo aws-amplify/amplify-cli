@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-x-9bc6f-authstorelocator41a9495f41a9495f-1V7SPYGYAYJ1N/233c31e0-382c-11f1-899d-0ee9fd7d467d",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x/ef39af70-3845-11f1-9a49-12dc5e550a09",
       "LogicalResourceId": "UserPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95-auth179371D7-WBC9EKG1TR7B/41b830f0-382d-11f1-ac4a-0affd0e28067",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-e2e-sandbox-x-auth179371D7-x/f644db90-3846-11f1-b063-0affc6401ceb",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-x-9bc6f-authstorelocator41a9495f41a9495f-1V7SPYGYAYJ1N/233c31e0-382c-11f1-899d-0ee9fd7d467d",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x/ef39af70-3845-11f1-9a49-12dc5e550a09",
       "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95-auth179371D7-WBC9EKG1TR7B/41b830f0-382d-11f1-ac4a-0affd0e28067",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-e2e-sandbox-x-auth179371D7-x/f644db90-3846-11f1-b063-0affc6401ceb",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-x-9bc6f-authstorelocator41a9495f41a9495f-1V7SPYGYAYJ1N/233c31e0-382c-11f1-899d-0ee9fd7d467d",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x/ef39af70-3845-11f1-9a49-12dc5e550a09",
       "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95-auth179371D7-WBC9EKG1TR7B/41b830f0-382d-11f1-ac4a-0affd0e28067",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-e2e-sandbox-x-auth179371D7-x/f644db90-3846-11f1-b063-0affc6401ceb",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-x-9bc6f-authstorelocator41a9495f41a9495f-1V7SPYGYAYJ1N/233c31e0-382c-11f1-899d-0ee9fd7d467d",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x/ef39af70-3845-11f1-9a49-12dc5e550a09",
       "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95-auth179371D7-WBC9EKG1TR7B/41b830f0-382d-11f1-ac4a-0affd0e28067",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-e2e-sandbox-x-auth179371D7-x/f644db90-3846-11f1-b063-0affc6401ceb",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-x-9bc6f-authstorelocator41a9495f41a9495f-1V7SPYGYAYJ1N/233c31e0-382c-11f1-899d-0ee9fd7d467d",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x/ef39af70-3845-11f1-9a49-12dc5e550a09",
       "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocat2604141401-e2e-sandbox-a2d2be7e95-auth179371D7-WBC9EKG1TR7B/41b830f0-382d-11f1-ac4a-0affd0e28067",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-e2e-sandbox-x-auth179371D7-x/f644db90-3846-11f1-b063-0affc6401ceb",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }

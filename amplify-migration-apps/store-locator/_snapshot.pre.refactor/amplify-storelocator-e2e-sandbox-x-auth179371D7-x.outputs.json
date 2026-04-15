@@ -1,30 +1,30 @@
 [
   {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthunauthenticatedUserRoleB0A68BEARef",
-    "OutputValue": "amplify-storelocat2604141-amplifyAuthunauthenticate-D4gNY4N0a2XU"
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthamplifyAuthunauthenticatedUserRoleBFADA170Ref",
+    "OutputValue": "amplify-storelocat2604141-amplifyAuthunauthenticate-Nnt1cYet2VQn"
   },
   {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthstoreLocatorAdminGroupRole0BF42F58Ref",
-    "OutputValue": "amplify-storelocat2604141-amplifyAuthstoreLocatorAd-uOq1IDgNXoe3"
-  },
-  {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authstorelocator41a9495f41a9495fPostConfirmationgen2xlambda02482847Ref",
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthstorelocator41a9495f41a9495fPostConfirmationgen2xlambda9D3D99E4Ref",
     "OutputValue": "storelocator41a9495f41a9495fPostConfirmation-gen2-x"
   },
   {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPool66E805C5Ref",
-    "OutputValue": "us-east-1_0BR3dEawx"
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthamplifyAuthUserPoolAppClient41F5D3CCRef",
+    "OutputValue": "7pl59lran1kdcu0840lrtg6trt"
   },
   {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthUserPoolAppClient07C98E08Ref",
-    "OutputValue": "635genchrcmt5d9t2osf8c01sp"
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthamplifyAuthstoreLocatorAdminGroupRole5087772FRef",
+    "OutputValue": "amplify-storelocat2604141-amplifyAuthstoreLocatorAd-6feBdcCwT1Pa"
   },
   {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthIdentityPool59D0B764Ref",
-    "OutputValue": "us-east-1:9b38351e-1b7c-4d08-97b7-b020d2b44ac1"
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthamplifyAuthUserPool8052C61CRef",
+    "OutputValue": "us-east-1_kQhwAG0Bz"
   },
   {
-    "OutputKey": "amplifystorelocat2604141401e2esandboxa2d2be7e95authamplifyAuthauthenticatedUserRole4C310127Ref",
-    "OutputValue": "amplify-storelocat2604141-amplifyAuthauthenticatedU-07X2CzBJ7RpS"
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthamplifyAuthauthenticatedUserRole39BF4BE6Ref",
+    "OutputValue": "amplify-storelocat2604141-amplifyAuthauthenticatedU-3YhQXHozKzkX"
+  },
+  {
+    "OutputKey": "amplifystorelocatore2esandbox33f387fd3aauthamplifyAuthIdentityPool15229A9ARef",
+    "OutputValue": "us-east-1:35aab9ee-5d76-4bbb-b844-b2a9869e292f"
   }
 ]

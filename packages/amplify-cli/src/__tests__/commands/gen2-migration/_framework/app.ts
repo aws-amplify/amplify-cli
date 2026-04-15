@@ -475,6 +475,8 @@ export class MigrationApp {
       }
     }
 
+    // throw new Error(`Unable to find output for ${logicalId} in stack ${stackName}`);
+
     // some resources don't expose their physical id as an output
     return undefined;
   }

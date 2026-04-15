@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "amplify-storelocat2604141401-x-9bc6f-authRole"
+    "ParameterValue": "amplify-storelocator-x-x-authRole"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "amplify-storelocat2604141401-x-9bc6f-deployment"
+    "ParameterValue": "amplify-storelocator-x-x-deployment"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "amplify-storelocat2604141401-x-9bc6f-unauthRole"
+    "ParameterValue": "amplify-storelocator-x-x-unauthRole"
   }
 ]

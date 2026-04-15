@@ -73,7 +73,7 @@ function extractReplacements(appName: string, appDir: string): { before: string;
     // e.g amplify-storelocat2604141401-rbroqinlsf-9bc6f
     // here we replace the last (4th) part only since the 3rd
     // is the environment name, which is replaced sooner.
-    const hash = file.split('.')[0][3];
+    const hash = file.split('-')[3];
     add(`-${hash}-`, '-x-');
   }
 
