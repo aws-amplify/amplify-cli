@@ -52,7 +52,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:d4a07155-3716-42f1-826a-a0a0324c64bd"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:4325116e-cc4c-42a3-8fd7-96d046eb902e"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -65,7 +65,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_f2zr8yubd",
+              "us-east-1_VEWtx9ytt",
               "-storeLocatorAdminGroupRole"
             ]
           ]
@@ -75,7 +75,7 @@
   },
   "Outputs": {
     "storeLocatorAdminGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_f2zr8yubd-storeLocatorAdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_VEWtx9ytt-storeLocatorAdminGroupRole"
     }
   }
 }

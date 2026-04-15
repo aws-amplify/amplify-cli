@@ -7,8 +7,8 @@
       "Properties": {
         "GroupName": "storeLocatorAdmin",
         "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604142-amplifyAuthstoreLocatorAd-8E28E34AP41q",
-        "UserPoolId": "us-east-1_fs79GWYyF"
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2604142-amplifyAuthstoreLocatorAd-eROlHLZ4C3eo",
+        "UserPoolId": "us-east-1_BZD6DAzvX"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -101,7 +101,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_fs79GWYyF"
+        "UserPoolId": "us-east-1_BZD6DAzvX"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -135,7 +135,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_fs79GWYyF"
+        "UserPoolId": "us-east-1_BZD6DAzvX"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -149,7 +149,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "2te807juup4eq5agfrpq0qimc9",
+            "ClientId": "64e6d5e82472ge0t6ikq44dtqk",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -159,7 +159,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_fs79GWYyF"
+                  "us-east-1_BZD6DAzvX"
                 ]
               ]
             }
@@ -190,7 +190,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:12b5ab31-e802-4a9e-b65f-8b6a3868c2b2",
+        "IdentityPoolId": "us-east-1:af752313-539d-40c6-beba-4874d6752d66",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -203,9 +203,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_fs79GWYyF",
+                  "us-east-1_BZD6DAzvX",
                   ":",
-                  "2te807juup4eq5agfrpq0qimc9"
+                  "64e6d5e82472ge0t6ikq44dtqk"
                 ]
               ]
             },
@@ -213,8 +213,8 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604142-amplifyAuthunauthenticate-VP0lu1zhYCae",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604142-amplifyAuthauthenticatedU-wHXLVdNpIijq"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604142-amplifyAuthunauthenticate-kogncZeAY6NS",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2604142-amplifyAuthauthenticatedU-xoH4GfVGZODn"
         }
       },
       "UpdateReplacePolicy": "Delete",

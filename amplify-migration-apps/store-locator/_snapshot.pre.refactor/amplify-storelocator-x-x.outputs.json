@@ -35,7 +35,7 @@
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/38574140-3869-11f1-bcdc-0e5087383571",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/82ea6570-3873-11f1-9f4c-12b6e139516b",
     "Description": "CloudFormation provider root stack name",
     "ExportName": "amplify-storelocator-x-x-StackId"
   }

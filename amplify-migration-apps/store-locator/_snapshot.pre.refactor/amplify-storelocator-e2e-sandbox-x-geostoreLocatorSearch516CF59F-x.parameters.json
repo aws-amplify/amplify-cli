@@ -1,14 +1,14 @@
 [
   {
-    "ParameterKey": "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthstoreLocatorAdminGroupRoleD94C84CBRef",
-    "ParameterValue": "amplify-storelocat2604142-amplifyAuthstoreLocatorAd-8E28E34AP41q"
+    "ParameterKey": "referencetoamplifystorelocatore2esandboxcf2c434046authNestedStackauthNestedStackResourceA92D3862Outputsamplifystorelocatore2esandboxcf2c434046authamplifyAuthstoreLocatorAdminGroupRole9B16D109Ref",
+    "ParameterValue": "amplify-storelocat2604142-amplifyAuthstoreLocatorAd-eROlHLZ4C3eo"
   },
   {
-    "ParameterKey": "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthauthenticatedUserRole86686D6ERef",
-    "ParameterValue": "amplify-storelocat2604142-amplifyAuthauthenticatedU-wHXLVdNpIijq"
+    "ParameterKey": "referencetoamplifystorelocatore2esandboxcf2c434046authNestedStackauthNestedStackResourceA92D3862Outputsamplifystorelocatore2esandboxcf2c434046authamplifyAuthunauthenticatedUserRoleB4D39601Ref",
+    "ParameterValue": "amplify-storelocat2604142-amplifyAuthunauthenticate-kogncZeAY6NS"
   },
   {
-    "ParameterKey": "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthunauthenticatedUserRole20612435Ref",
-    "ParameterValue": "amplify-storelocat2604142-amplifyAuthunauthenticate-VP0lu1zhYCae"
+    "ParameterKey": "referencetoamplifystorelocatore2esandboxcf2c434046authNestedStackauthNestedStackResourceA92D3862Outputsamplifystorelocatore2esandboxcf2c434046authamplifyAuthauthenticatedUserRole74C0B8F7Ref",
+    "ParameterValue": "amplify-storelocat2604142-amplifyAuthauthenticatedU-xoH4GfVGZODn"
   }
 ]
