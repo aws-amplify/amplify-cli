@@ -70,7 +70,7 @@ function extractReplacements(appName: string, appDir: string): { before: string;
     if (file.includes(sandboxSegment)) continue;
 
     // all gen1 stacks start with these four parts
-    // e.g amplify-storelocat2604141401-rbroqinlsf-9bc6f
+    // e.g amplify-projectboards-main-02940-apiprojectboards-15FKVIF6IO9MO-ConnectionStack-1873TQGTKKESK.template.json
     // here we replace the last (4th) part only since the 3rd
     // is the environment name, which is replaced sooner.
     const hash = file.split('-')[3];
@@ -78,11 +78,15 @@ function extractReplacements(appName: string, appDir: string): { before: string;
   }
 
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
+    // the last part is always a generated hash
+    // e.g amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ.template.json
     const hash = file.split('.')[0].split('-').reverse()[0];
     add(`-${hash}`, '-x');
   }
 
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
+    // doubly nested stacks (Api) have another hash in the middle
+    // e.g amplify-projectboards-main-02940-apiprojectboards-15FKVIF6IO9MO-ConnectionStack-1873TQGTKKESK.template.json
     const parts = file.split('.')[0].split('-');
     if (parts.length !== 8) continue;
     const hash = parts[5];
