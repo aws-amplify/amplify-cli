@@ -1,0 +1,27 @@
+# Gen2 Migration Test from Source
+#
+# This workflow builds the CLI from source and runs a single migration test.
+# It's slower than the binary-based workflow but avoids pkg bundling issues.
+#
+# Usage:
+#   yarn cloud-gen2-migration-test
+#
+version: 0.2
+env:
+  shell: bash
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-east-1
+    CDK_DEFAULT_REGION: us-east-1
+    CLI_REGION: us-east-1
+
+phases:
+  build:
+    commands:
+      - export NODE_OPTIONS=--max-old-space-size=8192
+      - export MIGRATION_APP=project-boards
+      - echo "Running Gen2 Migration E2E test from source for app $MIGRATION_APP"
+      - source ./shared-scripts.sh && _runGen2MigrationE2EFromSource
+  post_build:
+    commands:
+      - echo "Migration E2E test completed"

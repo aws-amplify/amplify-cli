@@ -1,0 +1,20 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    CI: true
+    IS_AMPLIFY_CI: true
+    MIGRATION_APP: project-boards
+
+phases:
+  build:
+    commands:
+      - export NODE_OPTIONS=--max-old-space-size=8192
+      - echo "Running Gen2 Migration E2E test from source for app: $MIGRATION_APP"
+      - source ./shared-scripts.sh && _runGen2MigrationE2EFromSource
+
+  post_build:
+    commands:
+      - echo "Migration E2E test completed for $MIGRATION_APP"
+      - npm install -g ts-node
+      - source ./shared-scripts.sh && _cleanUpResources
