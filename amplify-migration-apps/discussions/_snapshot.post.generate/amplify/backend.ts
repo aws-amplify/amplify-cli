@@ -12,7 +12,7 @@ import {
   StreamViewType,
 } from 'aws-cdk-lib/aws-dynamodb';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -30,7 +30,7 @@ const activity = new Table(storageActivityStack, 'activity', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'userId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'activity-main'
+// Add this property to the Table above post refactor: tableName: 'activity-x'
 activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
   partitionKey: { name: 'userId', type: AttributeType.STRING },
@@ -38,14 +38,6 @@ activity.addGlobalSecondaryIndex({
   readCapacity: 5,
   writeCapacity: 5,
 });
-for (const cfnResource of storageActivityStack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::DynamoDB::Table') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}
 const storageBookmarksStack = backend.createStack('storagebookmarks');
 const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
   partitionKey: { name: 'userId', type: AttributeType.STRING },
@@ -55,21 +47,13 @@ const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'postId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
+// Add this property to the Table above post refactor: tableName: 'bookmarks-x'
 bookmarks.addGlobalSecondaryIndex({
   indexName: 'byPost',
   partitionKey: { name: 'postId', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });
-for (const cfnResource of storageBookmarksStack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::DynamoDB::Table') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['phone_number'];
 cfnUserPool.policies = {
@@ -161,7 +145,7 @@ for (const model of ['Topic', 'Post', 'Comment']) {
 }
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'discus-avatarsc39a5-main';
+// s3Bucket.bucketName = 'discus-avatarsx-x';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -172,28 +156,3 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (
-    [
-      'AWS::Cognito::UserPool',
-      'AWS::Cognito::IdentityPool',
-      'AWS::Cognito::UserPoolClient',
-      'AWS::Cognito::IdentityPoolRoleAttachment',
-      'AWS::Cognito::UserPoolDomain',
-      'AWS::Cognito::UserPoolGroup',
-    ].includes(cfnResource.cfnResourceType)
-  ) {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}

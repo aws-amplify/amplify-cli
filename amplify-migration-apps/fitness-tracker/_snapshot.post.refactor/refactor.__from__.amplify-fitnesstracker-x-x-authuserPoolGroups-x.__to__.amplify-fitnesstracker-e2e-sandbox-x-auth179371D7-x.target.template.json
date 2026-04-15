@@ -1,0 +1,1121 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.11.2\",\"stackType\":\"auth-Cognito\",\"metadata\":{}}",
+  "Resources": {
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": false
+        },
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationSubject": "Your verification code",
+        "LambdaConfig": {
+          "PreSignUp": "arn:aws:lambda:us-east-1:123456789012:function:fitnesstracker33f5545533f55455PreSignup-gen2-x"
+        },
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 8,
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false,
+            "TemporaryPasswordValidityDays": 7
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolTags": {
+          "amplify:deployment-type": "sandbox",
+          "amplify:friendly-name": "amplifyAuth",
+          "created-by": "amplify"
+        },
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        },
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "Your verification code is {####}",
+          "EmailSubject": "Your verification code",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
+      }
+    },
+    "amplifyAuthUserPoolPreSignUpCognito55F45D8E": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:fitnesstracker33f5545533f55455PreSignup-gen2-x",
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/PreSignUpCognito"
+      }
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlowsUserPoolClient": false,
+        "AuthSessionValidity": 3,
+        "EnablePropagateAdditionalUserContextData": false,
+        "EnableTokenRevocation": true,
+        "GenerateSecret": false,
+        "RefreshTokenValidity": 43200,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "minutes"
+        },
+        "UserPoolId": "us-east-1_FnKoHEldQ"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+      }
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "ExplicitAuthFlows": [
+          "ALLOW_CUSTOM_AUTH",
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "UserPoolId": "us-east-1_FnKoHEldQ"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
+      }
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": false,
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "1tmuolsu3gsj9nj6bg66l3capo",
+            "ProviderName": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_FnKoHEldQ"
+                ]
+              ]
+            }
+          }
+        ],
+        "IdentityPoolTags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "SupportedLoginProviders": {}
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
+      }
+    },
+    "amplifyAuthauthenticatedUserRoleD8DA3689": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/authenticatedUserRole/Resource"
+      }
+    },
+    "amplifyAuthunauthenticatedUserRole2B524D9E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+      }
+    },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004",
+        "RoleMappings": {
+          "UserPoolWebClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_FnKoHEldQ",
+                  ":",
+                  "1tmuolsu3gsj9nj6bg66l3capo"
+                ]
+              ]
+            },
+            "Type": "Token"
+          }
+        },
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604142-amplifyAuthunauthenticate-1g49fB6fAFbP",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604142-amplifyAuthauthenticatedU-NanIXo9aixs2"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
+      }
+    },
+    "amplifyAuthAdminGroupRole766878DC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/AdminGroupRole/Resource"
+      }
+    },
+    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole796B58B8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "fitnesstracker33f5545533f55455PreSignup-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/fitnesstracker33f5545533f55455PreSignup-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "fitnesstracker33f5545533f55455PreSignupgen2xlambda207A093B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "4eb38c172ef4d940eb17f8c6890c0284b8743fc46517097ac3e22db8b67f30eb.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "MODULES": "email-filter-allowlist",
+            "DOMAINALLOWLIST": "amazon.com",
+            "DOMAINBLACKLIST": "",
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}"
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "fitnesstracker33f5545533f55455PreSignup-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole796B58B8",
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "fitnesstracker33f5545533f55455PreSignup-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/fitnesstracker33f5545533f55455PreSignup-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.4eb38c172ef4d940eb17f8c6890c0284b8743fc46517097ac3e22db8b67f30eb",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "AMPLIFYAUTHUSERPOOLIDParameterCC466CA3": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/fitnesstracker/e2e-sandbox-x/AMPLIFY_AUTH_USERPOOL_ID",
+        "Tags": {
+          "amplify:deployment-type": "sandbox",
+          "created-by": "amplify"
+        },
+        "Type": "String",
+        "Value": "us-east-1_FnKoHEldQ"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
+      }
+    },
+    "admingen2xlambdaServiceRoleDFED86E5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "admin-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "admingen2xlambdaServiceRoleDefaultPolicyF1CBE2CB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameters",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/amplify/resource_reference/fitnesstracker/e2e-sandbox-x/AMPLIFY_AUTH_USERPOOL_ID"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "admingen2xlambdaServiceRoleDefaultPolicyF1CBE2CB",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "admingen2xlambdaBD6AFAAA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "5c5c671427617f523e13e68fd0ce04b66742ea630686ba9840a7c23ae2163b75.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"AMPLIFY_AUTH_USERPOOL_ID\":{\"path\":\"/amplify/resource_reference/fitnesstracker/e2e-sandbox-x/AMPLIFY_AUTH_USERPOOL_ID\"}}",
+            "AMPLIFY_AUTH_USERPOOL_ID": "<value will be resolved during runtime>",
+            "AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID": "us-east-1_FnKoHEldQ"
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "admin-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRoleDFED86E5",
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "admin-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.5c5c671427617f523e13e68fd0ce04b66742ea630686ba9840a7c23ae2163b75",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "userpoolAccess13FEE5419": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:AdminGetDevice",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess13FEE5419",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess1/Resource"
+      }
+    },
+    "userpoolAccess268F187DB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:AdminGetUser",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess268F187DB",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess2/Resource"
+      }
+    },
+    "userpoolAccess3956C62F8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:AdminListDevices",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess3956C62F8",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess3/Resource"
+      }
+    },
+    "userpoolAccess4A84025C3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:AdminListGroupsForUser",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess4A84025C3",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess4/Resource"
+      }
+    },
+    "userpoolAccess585E2FB32": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:ListUsers",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess585E2FB32",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess5/Resource"
+      }
+    },
+    "userpoolAccess600DA4CB0": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:ListUsersInGroup",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess600DA4CB0",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess6/Resource"
+      }
+    },
+    "userpoolAccess76F9C91C1": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:ListGroups",
+              "Effect": "Allow",
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_FnKoHEldQ"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess76F9C91C1",
+        "Roles": [
+          {
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/userpoolAccess7/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/12NzW6DQAyEnyX3xaVE7T1BatRLhIJ6RpvFoYb9qdamUYR492qJaKOeZsb2fC6geMkh3+grZ6YdMktnmI7Igm0t2gxKX7mZTOg8SYDpgzFWIVhVXvyvX01pCb08rv4m7y16Ibmt5cd8ChZ3Itp8un/9Qwzj16ysdudWw1RefIXRETMFn+7eRm+Egp8VaQdTAqXxolWwZG4p3t2KaXxosWc4LrISFG8bzYzCsEuieAv70Qwoe82omB1MtUTyXaWjdigYF/Qa5lktvVp0R76bVfoCPT99FwU8v0K+6Zkoi6MXcginu/4AH6eqXH4BAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    },
+    "amplifyAuthAdminGroupCC42FF04": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "Admin",
+        "Precedence": 1,
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_Xm7264Or1-AdminGroupRole",
+        "UserPoolId": "us-east-1_Xm7264Or1"
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthUserPoolC7DC7AACRef": {
+      "Value": "us-east-1_FnKoHEldQ"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthUserPoolAppClientB7EA7D1ERef": {
+      "Value": "1tmuolsu3gsj9nj6bg66l3capo"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthIdentityPool5207C654Ref": {
+      "Value": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthfitnesstracker33f5545533f55455PreSignupgen2xlambdaF9537418Ref": {
+      "Value": "fitnesstracker33f5545533f55455PreSignup-gen2-x"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthadmingen2xlambda8DFBC2FBRef": {
+      "Value": "admin-gen2-x"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef": {
+      "Value": "amplify-fitnesstra2604142-amplifyAuthauthenticatedU-NanIXo9aixs2"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthunauthenticatedUserRoleC3170373Ref": {
+      "Value": "amplify-fitnesstra2604142-amplifyAuthunauthenticate-1g49fB6fAFbP"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthAdminGroupRoleDDED643DRef": {
+      "Value": "amplify-fitnesstra2604142-amplifyAuthAdminGroupRole-w2iwcg4Jlkt1"
+    },
+    "amplifyfitnesstrackere2esandboxb87516873eauthadmingen2xlambda8DFBC2FBArn": {
+      "Value": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-x"
+    }
+  }
+}

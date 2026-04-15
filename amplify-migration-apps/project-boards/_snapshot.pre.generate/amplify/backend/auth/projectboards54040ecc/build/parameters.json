@@ -55,28 +55,5 @@
     ]
   },
   "breakCircularDependency": true,
-  "dependsOn": [
-    {
-      "category": "function",
-      "resourceName": "projectboards54040eccPreTokenGeneration",
-      "triggerProvider": "Cognito",
-      "attributes": [
-        "Arn",
-        "Name"
-      ]
-    }
-  ],
-  "thirdPartyAuth": false,
-  "userPoolGroups": false,
-  "adminQueries": false,
-  "triggers": "{\"PreTokenGeneration\":[\"alter-claims\"]}",
-  "hostedUI": false,
-  "authProviders": [],
-  "parentStack": {
-    "Ref": "AWS::StackId"
-  },
-  "authTriggerConnections": [
-    "{\"triggerType\":\"PreTokenGeneration\",\"lambdaFunctionName\":\"projectboards54040eccPreTokenGeneration\"}"
-  ],
-  "permissions": []
+  "dependsOn": []
 }

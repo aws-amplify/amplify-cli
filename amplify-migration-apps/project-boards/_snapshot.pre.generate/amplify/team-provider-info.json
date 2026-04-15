@@ -1,28 +1,23 @@
 {
-  "kjelsxpuch": {
+  "x": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-projectboards-kjelsxpuch-266a6-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-kjelsxpuch-266a6-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-kjelsxpuch-266a6-authRole",
+      "AuthRoleName": "amplify-projectboards-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
-      "UnauthRoleName": "amplify-projectboards-kjelsxpuch-266a6-unauthRole",
-      "StackName": "amplify-projectboards-kjelsxpuch-266a6",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-kjelsxpuch-266a6/72486a40-3545-11f1-b3c8-12c91f52bffb",
-      "AmplifyAppId": "projectboards",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "DeploymentBucketName": "amplify-projectboards-x-x-deployment",
+      "UnauthRoleName": "amplify-projectboards-x-x-unauthRole",
+      "StackName": "amplify-projectboards-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/39c2f9b0-387e-11f1-b834-0affdb5fc025",
+      "AmplifyAppId": "projectboards"
     },
     "categories": {
       "auth": {
         "projectboards54040ecc": {}
       },
       "function": {
-        "projectboards54040eccPreTokenGeneration": {
-          "deploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
-          "s3Key": "amplify-builds/projectboards54040eccPreTokenGeneration-6c7a69757a727a343153-build.zip"
-        },
         "quotegenerator": {
-          "deploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
+          "deploymentBucketName": "amplify-projectboards-x-x-deployment",
           "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip"
         }
       },

@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef",
+    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthauthenticatedU-NanIXo9aixs2"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthIdentityPool5207C654Ref",
+    "ParameterValue": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthUserPoolC7DC7AACRef",
+    "ParameterValue": "us-east-1_FnKoHEldQ"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthunauthenticatedUserRoleC3170373Ref",
+    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthunauthenticate-1g49fB6fAFbP"
+  }
+]

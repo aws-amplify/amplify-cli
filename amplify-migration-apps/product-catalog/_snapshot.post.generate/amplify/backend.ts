@@ -4,7 +4,7 @@ import { storage } from './storage/resource';
 import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
 import { lowstockproducts } from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -84,7 +84,7 @@ backend.data.resources.graphqlApi.grantQuery(
 );
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'productcatalogf95af07481f845caa6594c26ac9c8ed331323-main';
+// s3Bucket.bucketName = 'productcatalogf95af07481f845caa6594c26ac9c8ed3x-x';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -95,28 +95,3 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (
-    [
-      'AWS::Cognito::UserPool',
-      'AWS::Cognito::IdentityPool',
-      'AWS::Cognito::UserPoolClient',
-      'AWS::Cognito::IdentityPoolRoleAttachment',
-      'AWS::Cognito::UserPoolDomain',
-      'AWS::Cognito::UserPoolGroup',
-    ].includes(cfnResource.cfnResourceType)
-  ) {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}

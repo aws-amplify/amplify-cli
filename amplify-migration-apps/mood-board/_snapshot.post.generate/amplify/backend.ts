@@ -5,7 +5,7 @@ import { moodboardGetRandomEmoji } from './function/moodboardGetRandomEmoji/reso
 import { moodboardKinesisReader } from './function/moodboardKinesisReader/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
-import { Duration, aws_iam, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration, aws_iam } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -48,7 +48,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c41959a-main';
+// s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c4x-x';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -84,28 +84,3 @@ backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
     resources: [analytics.kinesisStreamArn],
   })
 );
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (
-    [
-      'AWS::Cognito::UserPool',
-      'AWS::Cognito::IdentityPool',
-      'AWS::Cognito::UserPoolClient',
-      'AWS::Cognito::IdentityPoolRoleAttachment',
-      'AWS::Cognito::UserPoolDomain',
-      'AWS::Cognito::UserPoolGroup',
-    ].includes(cfnResource.cfnResourceType)
-  ) {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}

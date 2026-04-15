@@ -3,7 +3,6 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { importedresourcequotegenerator } from './function/importedresourcequotegenerator/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -36,11 +35,3 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.importedresourcequotegenerator.resources.cfnResources.cfnFunction.functionName = `importedresourcequotegenerator-${branchName}`;
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}

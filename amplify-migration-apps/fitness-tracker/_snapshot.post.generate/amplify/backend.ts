@@ -12,7 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, Stack, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -120,8 +120,8 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   nutritionapiStack,
   'Gen1nutritionapiApi',
   {
-    restApiId: 'hmydcaubcb',
-    rootResourceId: 'hmydcaubcb-root',
+    restApiId: 's27d6on2x4',
+    rootResourceId: 's27d6on2x4-root',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -249,8 +249,8 @@ const gen1adminapiApi = RestApi.fromRestApiAttributes(
   adminapiStack,
   'Gen1adminapiApi',
   {
-    restApiId: 'oxq86r59h6',
-    rootResourceId: 'oxq86r59h6-root',
+    restApiId: 'wn1ifrxt6h',
+    rootResourceId: 'wn1ifrxt6h-root',
   }
 );
 const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
@@ -312,20 +312,3 @@ backend.addOutput({
     },
   },
 });
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (
-    [
-      'AWS::Cognito::UserPool',
-      'AWS::Cognito::IdentityPool',
-      'AWS::Cognito::UserPoolClient',
-      'AWS::Cognito::IdentityPoolRoleAttachment',
-      'AWS::Cognito::UserPoolDomain',
-      'AWS::Cognito::UserPoolGroup',
-    ].includes(cfnResource.cfnResourceType)
-  ) {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}

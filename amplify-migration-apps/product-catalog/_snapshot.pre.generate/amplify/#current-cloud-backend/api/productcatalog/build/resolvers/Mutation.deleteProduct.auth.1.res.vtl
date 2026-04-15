@@ -10,7 +10,7 @@ $util.unauthorized()
       #return($util.toJson({}))
     #end
   #end
-  #if( $ctx.identity.userArn == $ctx.stash.authRole )
+  #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )
     #set( $isAuthorized = true )
   #end
 #end

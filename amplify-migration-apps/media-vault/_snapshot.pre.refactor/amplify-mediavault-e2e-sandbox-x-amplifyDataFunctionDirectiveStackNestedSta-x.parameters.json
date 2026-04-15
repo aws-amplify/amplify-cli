@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthauthenticatedUserRoleE0CA9703Ref",
+    "ParameterValue": "amplify-mediavault2604142-amplifyAuthauthenticatedU-eE1RG94dAZFh"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIC1298574ApiId",
+    "ParameterValue": "wxqxmfnao5dgtoc4j7tvafb4ti"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthunauthenticatedUserRole88DA1FC1Ref",
+    "ParameterValue": "amplify-mediavault2604142-amplifyAuthunauthenticate-IXwU5AR0tJSE"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthIdentityPool0BF026A3Ref",
+    "ParameterValue": "us-east-1:7740513c-8837-4108-969d-d368bab19238"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPINONEDSFC51E2F6Name",
+    "ParameterValue": "NONE_DS"
+  }
+]

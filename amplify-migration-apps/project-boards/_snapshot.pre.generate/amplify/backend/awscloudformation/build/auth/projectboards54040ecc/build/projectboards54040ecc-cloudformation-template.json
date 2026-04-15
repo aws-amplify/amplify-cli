@@ -5,14 +5,6 @@
     "env": {
       "Type": "String"
     },
-    "functionprojectboards54040eccPreTokenGenerationArn": {
-      "Type": "String",
-      "Default": "functionprojectboards54040eccPreTokenGenerationArn"
-    },
-    "functionprojectboards54040eccPreTokenGenerationName": {
-      "Type": "String",
-      "Default": "functionprojectboards54040eccPreTokenGenerationName"
-    },
     "identityPoolName": {
       "Type": "String"
     },
@@ -116,33 +108,6 @@
       "Type": "String"
     },
     "dependsOn": {
-      "Type": "CommaDelimitedList"
-    },
-    "thirdPartyAuth": {
-      "Type": "String"
-    },
-    "userPoolGroups": {
-      "Type": "String"
-    },
-    "adminQueries": {
-      "Type": "String"
-    },
-    "triggers": {
-      "Type": "String"
-    },
-    "hostedUI": {
-      "Type": "String"
-    },
-    "authProviders": {
-      "Type": "CommaDelimitedList"
-    },
-    "parentStack": {
-      "Type": "String"
-    },
-    "authTriggerConnections": {
-      "Type": "CommaDelimitedList"
-    },
-    "permissions": {
       "Type": "CommaDelimitedList"
     }
   },

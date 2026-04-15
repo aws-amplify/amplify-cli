@@ -5,7 +5,7 @@ import { thumbnailgen } from './storage/thumbnailgen/resource';
 import { addusertogroup } from './function/addusertogroup/resource';
 import { removeuserfromgroup } from './function/removeuserfromgroup/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import {
   OAuthScope,
   UserPoolClientIdentityProvider,
@@ -87,7 +87,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
+// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bedx-x';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -114,28 +114,3 @@ backend.removeuserfromgroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (
-    [
-      'AWS::Cognito::UserPool',
-      'AWS::Cognito::IdentityPool',
-      'AWS::Cognito::UserPoolClient',
-      'AWS::Cognito::IdentityPoolRoleAttachment',
-      'AWS::Cognito::UserPoolDomain',
-      'AWS::Cognito::UserPoolGroup',
-    ].includes(cfnResource.cfnResourceType)
-  ) {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter((n) => CfnResource.isCfnResource(n))) {
-  if (cfnResource.cfnResourceType === 'AWS::S3::Bucket') {
-    cfnResource.addOverride('DeletionPolicy', 'Retain');
-    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
-  }
-}

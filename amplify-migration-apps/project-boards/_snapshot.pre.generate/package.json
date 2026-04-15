@@ -1,5 +1,5 @@
 {
-  "name": "projectboards",
+  "name": "@amplify-migration-apps/project-boards-snapshot",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
+    "normalize": "tsx ../normalize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
     "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
     "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",

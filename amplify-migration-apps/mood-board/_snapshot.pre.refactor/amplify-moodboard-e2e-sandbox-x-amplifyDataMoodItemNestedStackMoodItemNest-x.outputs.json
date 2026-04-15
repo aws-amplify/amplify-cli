@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "GetAttMoodItemTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-pd6mhagtyveltorgdvv7movvqq-x/stream/2026-04-15T04:22:18.110",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "tr6hjslzxzextaawz3ftjzwqyi:GetAtt:MoodItemTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemTableB6DE0468TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-pd6mhagtyveltorgdvv7movvqq-x"
+  },
+  {
+    "OutputKey": "GetAttMoodItemTableName",
+    "OutputValue": "MoodItem-pd6mhagtyveltorgdvv7movvqq-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "tr6hjslzxzextaawz3ftjzwqyi:GetAtt:MoodItemTable:Name"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemDataSourceA5BD018EName",
+    "OutputValue": "MoodItemTable"
+  }
+]
