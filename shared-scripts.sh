@@ -785,10 +785,10 @@ function _amplifyGeneralConfigTests {
 function _cleanUpResources {
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
-    cd packages/amplify-e2e-tests
+    cd $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests
     yarn install
     export NODE_OPTIONS="--max-old-space-size=8192"
-    ts-node ./src/cleanup-codebuild-resources.ts
+    npx ts-node ./src/cleanup-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
 function _deploymentVerificationPostRelease {

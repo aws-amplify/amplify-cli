@@ -4,7 +4,6 @@ env:
 phases:
   build:
     commands:
-      - npm install -g ts-node
       - source ./shared-scripts.sh && _cleanUpResources
 artifacts:
   files:

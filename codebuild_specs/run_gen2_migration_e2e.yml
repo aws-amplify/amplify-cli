@@ -19,7 +19,6 @@ phases:
   post_build:
     commands:
       - echo "Migration E2E test completed for $MIGRATION_APP"
-      - npm install -g ts-node
       - source ./shared-scripts.sh && _cleanUpResources
 
 # 45 minute timeout to accommodate ~30 min migration + buffer
