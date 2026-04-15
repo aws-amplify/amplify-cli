@@ -166,6 +166,11 @@ const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^ampli
 const USER_POOL_TEST_REGEX = /integtest|amplify_backend_manager/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
+// Gen2 migration E2E tests use time-based deployment names: [a-z prefix][YYMMDDHHMM]
+// e.g. "backendonly2501151430", "projectbo2503201200"
+const MIGRATION_APP_NAME_REGEX = /^[a-z][a-z0-9]{0,9}\d{10}$/;
+const MIGRATION_STACK_NAME_REGEX = /^amplify-[a-z][a-z0-9]{0,9}\d{10}-/;
+
 /*
  * Exit on expired token as all future requests will fail.
  */
@@ -1070,11 +1075,20 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const testStacks = allResources['<unknown>']?.stacks?.filter(
     (s) => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'),
   );
+
+  // cleanup resources created by Gen2 migration E2E tests
+  // deployment names follow [prefix][YYMMDDHHMM] (e.g. "backendonly2501151430")
+  // stack names follow amplify-[deploymentName]-... (Gen1 root + Gen2 sandbox stacks)
+  const migrationApps = allResources['<unknown>']?.amplifyApps?.filter((a) => MIGRATION_APP_NAME_REGEX.test(a.name));
+  const migrationStacks = allResources['<unknown>']?.stacks?.filter((s) => MIGRATION_STACK_NAME_REGEX.test(s.stackName));
+
   const orphanedResources = allResources['<orphan>'];
   orphanedResources.amplifyApps = orphanedResources.amplifyApps ?? [];
   orphanedResources.stacks = orphanedResources.stacks ?? [];
   orphanedResources.amplifyApps.push(...(testApps ? testApps : []));
   orphanedResources.stacks.push(...(testStacks ? testStacks : []));
+  orphanedResources.amplifyApps.push(...(migrationApps ? migrationApps : []));
+  orphanedResources.stacks.push(...(migrationStacks ? migrationStacks : []));
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources);
