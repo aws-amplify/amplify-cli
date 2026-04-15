@@ -184,7 +184,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
       },
       cfn,
     ).plan();
-    expect(ops).toHaveLength(5); // 2 status validations + updateSource + updateTarget + beforeMove (holding)
+    expect(ops).toHaveLength(7); // 2 status validations + 2 deletion policy validations + updateSource + updateTarget + beforeMove (holding)
   });
 
   it('produces updateSource → updateTarget → beforeMove → move for forward plan', async () => {
@@ -269,8 +269,7 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
       cfn,
     ).plan();
 
-    // Resources already exist in Gen1 target, so rollback produces no-op
-    expect(ops).toHaveLength(4); // 2 status validations + updateSource + updateTarget
+    expect(ops).toHaveLength(6); // 2 status validations + 2 deletion policy validations + updateSource + updateTarget
   });
 });
 
@@ -360,7 +359,7 @@ describe('Analytics wiring tests', () => {
     ).plan();
 
     // Resources already exist in Gen1 target, so rollback produces no-op
-    expect(ops).toHaveLength(4); // 2 status validations + updateSource + updateTarget
+    expect(ops).toHaveLength(6); // 2 status validations + 2 deletion policy validations + updateSource + updateTarget
   });
 });
 
@@ -453,5 +452,94 @@ describe('placeholder constants', () => {
 
   it('placeholder logical ID is MigrationPlaceholder', () => {
     expect(MIGRATION_PLACEHOLDER_LOGICAL_ID).toBe('MigrationPlaceholder');
+  });
+});
+
+describe('deletion policy validation', () => {
+  let cfnMock: ReturnType<typeof mockClient>;
+  beforeEach(() => {
+    cfnMock = mockClient(CloudFormationClient);
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+  });
+  afterEach(() => cfnMock.restore());
+
+  it('reports invalid when resources lack DeletionPolicy Retain', async () => {
+    // Templates without DeletionPolicy/UpdateReplacePolicy set
+    setupStorageMocks(cfnMock);
+
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
+    const ops = await new StorageS3ForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' as const },
+      cfn,
+    ).plan();
+
+    // Deletion policy validations are at indices 2 and 3 (after 2 status validations)
+    const sourceValidation = ops[2].validate();
+    expect(sourceValidation).toBeDefined();
+    const sourceResult = await sourceValidation!.run();
+    expect(sourceResult.valid).toBe(false);
+    expect(sourceResult.report).toContain('Retain');
+  });
+
+  it('reports valid when resources have DeletionPolicy and UpdateReplacePolicy set to Retain', async () => {
+    const retainTemplate: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'storage with retain',
+      Resources: {
+        S3Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {},
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+      Outputs: {},
+    };
+
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-storage-stack' }).resolves({
+      Stacks: [{ StackName: 'gen1-storage-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-storage-stack' }).resolves({
+      Stacks: [{ StackName: 'gen2-storage-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen1-storage-stack' }).resolves({ TemplateBody: JSON.stringify(retainTemplate) });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-storage-stack' }).resolves({ TemplateBody: JSON.stringify(retainTemplate) });
+
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
+    const ops = await new StorageS3ForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' as const },
+      cfn,
+    ).plan();
+
+    const sourceValidation = ops[2].validate();
+    expect(sourceValidation).toBeDefined();
+    const sourceResult = await sourceValidation!.run();
+    expect(sourceResult.valid).toBe(true);
+
+    const targetValidation = ops[3].validate();
+    expect(targetValidation).toBeDefined();
+    const targetResult = await targetValidation!.run();
+    expect(targetResult.valid).toBe(true);
   });
 });

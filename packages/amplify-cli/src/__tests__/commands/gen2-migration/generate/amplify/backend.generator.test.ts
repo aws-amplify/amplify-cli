@@ -174,4 +174,114 @@ describe('BackendGenerator', () => {
     const content = await fs.readFile(path.join(outputDir, 'amplify', 'backend.ts'), 'utf-8');
     assertion(content);
   }
+
+  describe('addRefactoredResourceTypes', () => {
+    it('emits a per-stack retention loop with addOverride for a single type', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain('backend.storage.stack.node');
+        expect(content).toContain("cfnResource.cfnResourceType === 'AWS::S3::Bucket'");
+        expect(content).toContain("cfnResource.addOverride('DeletionPolicy', 'Retain')");
+        expect(content).toContain("cfnResource.addOverride('UpdateReplacePolicy', 'Retain')");
+        expect(content).not.toContain('applyRemovalPolicy');
+        expect(content).not.toContain('REFACTORED_RESOURCE_TYPES');
+      });
+    });
+
+    it('emits .includes() check when multiple types are registered for a stack', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.addRefactoredResourceTypes('auth', ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool']);
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain('backend.auth.stack.node');
+        expect(content).toContain('.includes(');
+        expect(content).toContain('cfnResource.cfnResourceType');
+        expect(content).toContain("'AWS::Cognito::UserPool'");
+        expect(content).toContain("'AWS::Cognito::IdentityPool'");
+      });
+    });
+
+    it('emits separate loops for different stacks', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.addRefactoredResourceTypes('auth', ['AWS::Cognito::UserPool']);
+      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain('backend.auth.stack.node');
+        expect(content).toContain('backend.storage.stack.node');
+      });
+    });
+
+    it('deduplicates types registered for the same stack', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+
+      return verifyBackendTs(gen, (content) => {
+        const matches = content.match(/AWS::S3::Bucket/g) || [];
+        // Should appear once in the condition, not duplicated
+        expect(matches).toHaveLength(1);
+      });
+    });
+
+    it('imports CfnResource and RemovalPolicy when types are registered', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain('CfnResource');
+        expect(content).toContain('RemovalPolicy');
+      });
+    });
+
+    it('does not emit retention block when no types are registered', () => {
+      const gen = new BackendGenerator(outputDir);
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).not.toContain('CfnResource');
+        expect(content).not.toContain('addOverride');
+      });
+    });
+  });
+
+  describe('addRetentionOverrideLoop', () => {
+    it('emits a retention loop referencing a stack variable', () => {
+      const gen = new BackendGenerator(outputDir);
+      const stackVar = gen.createDynamoDBStack('activity');
+      gen.addRetentionOverrideLoop(stackVar, 'AWS::DynamoDB::Table');
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain('storageActivityStack.node');
+        expect(content).toContain("cfnResource.cfnResourceType === 'AWS::DynamoDB::Table'");
+        expect(content).toContain("cfnResource.addOverride('DeletionPolicy', 'Retain')");
+        expect(content).toContain("cfnResource.addOverride('UpdateReplacePolicy', 'Retain')");
+      });
+    });
+
+    it('imports CfnResource when called', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.addRetentionOverrideLoop('myStack', 'AWS::DynamoDB::Table');
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain('CfnResource');
+      });
+    });
+
+    it('emits the loop as an early statement before post-define statements', () => {
+      const gen = new BackendGenerator(outputDir);
+      const stackVar = gen.createDynamoDBStack('items');
+      gen.addRetentionOverrideLoop(stackVar, 'AWS::DynamoDB::Table');
+      gen.addStatement(factory.createExpressionStatement(factory.createIdentifier('// post-define marker')));
+
+      return verifyBackendTs(gen, (content) => {
+        const loopIdx = content.indexOf('storageItemsStack.node');
+        const markerIdx = content.indexOf('post-define marker');
+        expect(loopIdx).toBeGreaterThan(-1);
+        expect(markerIdx).toBeGreaterThan(-1);
+        expect(loopIdx).toBeLessThan(markerIdx);
+      });
+    });
+  });
 });
