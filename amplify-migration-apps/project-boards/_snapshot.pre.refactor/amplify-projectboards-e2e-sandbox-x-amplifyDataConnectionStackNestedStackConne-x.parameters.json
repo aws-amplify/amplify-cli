@@ -1,30 +1,30 @@
 [
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthauthenticatedUserRole1E0DC40CRef",
-    "ParameterValue": "amplify-projectboa2604142-amplifyAuthauthenticatedU-pWa3DkVgvvp2"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref",
+    "ParameterValue": "amplify-projectboa2604142-amplifyAuthauthenticatedU-1jxM3hVSjIDm"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthIdentityPoolE623DB0ARef",
-    "ParameterValue": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId",
+    "ParameterValue": "rvxoywjwergpdpazwnark4tqei"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294dataamplifyDataGraphQLAPINONEDS53116C6FName",
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref",
+    "ParameterValue": "amplify-projectboa2604142-amplifyAuthunauthenticate-LvEI2or1a1b4"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoNestedStackTodoNestedStackResource2889E577Outputsamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoTodoTable7AAD0AE7TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-feqgb7ww75f5lklhnep4rre3va-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPINONEDS68EBE495Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthunauthenticatedUserRole010FB2A2Ref",
-    "ParameterValue": "amplify-projectboa2604142-amplifyAuthunauthenticate-I2EBv7VnlK9x"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294dataamplifyDataTodoNestedStackTodoNestedStackResourceEC7EE3CEOutputsamplifyprojectboardse2esandboxfb57929294dataamplifyDataTodoTodoDataSource1C0AA382Name",
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoNestedStackTodoNestedStackResource2889E577Outputsamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoTodoDataSourceCEEFF600Name",
     "ParameterValue": "TodoTable"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294dataamplifyDataGraphQLAPIE0A6BEE3ApiId",
-    "ParameterValue": "ufcdpgoelbdx3bwrqppofhwjai"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294dataamplifyDataTodoNestedStackTodoNestedStackResourceEC7EE3CEOutputsamplifyprojectboardse2esandboxfb57929294dataamplifyDataTodoTodoTableC3598369TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-hebeyt7cxzbnhleer6t7bavlxe-x"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref",
+    "ParameterValue": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
   }
 ]

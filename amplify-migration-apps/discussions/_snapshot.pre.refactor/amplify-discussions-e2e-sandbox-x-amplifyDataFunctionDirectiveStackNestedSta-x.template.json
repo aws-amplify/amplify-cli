@@ -278,7 +278,7 @@
     }
   },
   "Resources": {
-    "FetchuseractivityGen2BctyrotywbLambdaDataSourceServiceRoleD59D1866": {
+    "FetchuseractivityGen2EgfgfhficcLambdaDataSourceServiceRole8E9A234F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -311,10 +311,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2BctyrotywbLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2EgfgfhficcLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "FetchuseractivityGen2BctyrotywbLambdaDataSourceServiceRoleDefaultPolicy235DAB40": {
+    "FetchuseractivityGen2EgfgfhficcLambdaDataSourceServiceRoleDefaultPolicy4C56F38D": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -364,24 +364,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "FetchuseractivityGen2BctyrotywbLambdaDataSourceServiceRoleDefaultPolicy235DAB40",
+        "PolicyName": "FetchuseractivityGen2EgfgfhficcLambdaDataSourceServiceRoleDefaultPolicy4C56F38D",
         "Roles": [
           {
-            "Ref": "FetchuseractivityGen2BctyrotywbLambdaDataSourceServiceRoleD59D1866"
+            "Ref": "FetchuseractivityGen2EgfgfhficcLambdaDataSourceServiceRole8E9A234F"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2BctyrotywbLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2EgfgfhficcLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "FetchuseractivityGen2BctyrotywbLambdaDataSource": {
+    "FetchuseractivityGen2EgfgfhficcLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPIB59D66C6ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -399,10 +399,10 @@
             ]
           }
         },
-        "Name": "FetchuseractivityGen2BctyrotywbLambdaDataSource",
+        "Name": "FetchuseractivityGen2EgfgfhficcLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "FetchuseractivityGen2BctyrotywbLambdaDataSourceServiceRoleD59D1866",
+            "FetchuseractivityGen2EgfgfhficcLambdaDataSourceServiceRole8E9A234F",
             "Arn"
           ]
         },
@@ -411,44 +411,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2BctyrotywbLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2EgfgfhficcLambdaDataSource/Resource"
       }
     },
-    "InvokeFetchuseractivityGen2BctyrotywbLambdaDataSourceInvokeFetchuseractivityGen2BctyrotywbLambdaDataSourceAppSyncFunctionEC8C9B8C": {
+    "InvokeFetchuseractivityGen2EgfgfhficcLambdaDataSourceInvokeFetchuseractivityGen2EgfgfhficcLambdaDataSourceAppSyncFunction7F6BA712": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPIB59D66C6ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "FetchuseractivityGen2BctyrotywbLambdaDataSource",
+            "FetchuseractivityGen2EgfgfhficcLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeFetchuseractivityGen2BctyrotywbLambdaDataSource",
+        "Name": "InvokeFetchuseractivityGen2EgfgfhficcLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/926f58a4899210ee85e9a94d4750b3f9b678e4b65ed05e80c1f4b726a566b5b9.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aa9dfcd7a149591f672f38ef0fcbb8ad0a28188dc8d9ac97e7c927146756e236.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "FetchuseractivityGen2BctyrotywbLambdaDataSource"
+        "FetchuseractivityGen2EgfgfhficcLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeFetchuseractivityGen2BctyrotywbLambdaDataSource/InvokeFetchuseractivityGen2BctyrotywbLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeFetchuseractivityGen2EgfgfhficcLambdaDataSource/InvokeFetchuseractivityGen2EgfgfhficcLambdaDataSource.AppSyncFunction"
       }
     },
     "QueryfetchUserActivityResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPIB59D66C6ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
         },
         "FieldName": "fetchUserActivity",
         "Kind": "PIPELINE",
@@ -462,7 +462,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeFetchuseractivityGen2BctyrotywbLambdaDataSourceInvokeFetchuseractivityGen2BctyrotywbLambdaDataSourceAppSyncFunctionEC8C9B8C",
+                "InvokeFetchuseractivityGen2EgfgfhficcLambdaDataSourceInvokeFetchuseractivityGen2EgfgfhficcLambdaDataSourceAppSyncFunction7F6BA712",
                 "FunctionId"
               ]
             }
@@ -478,7 +478,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthauthenticatedUserRoleF25318ECRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -486,11 +486,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthunauthenticatedUserRole9DE7C151Ref"
+                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthIdentityPool5C0954EDRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -511,10 +511,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPIB59D66C6ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPINONEDS90A18945Name"
+          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryFetchUserActivityAuthFN",
@@ -541,19 +541,19 @@
     }
   },
   "Parameters": {
-    "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPIB59D66C6ApiId": {
+    "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthauthenticatedUserRoleF25318ECRef": {
+    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthunauthenticatedUserRole9DE7C151Ref": {
+    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthIdentityPool5C0954EDRef": {
+    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPINONEDS90A18945Name": {
+    "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name": {
       "Type": "String"
     }
   }

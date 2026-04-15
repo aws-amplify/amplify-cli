@@ -3,13 +3,13 @@
     "OutputKey": "GetAttPostDataSourceName",
     "OutputValue": "PostTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "bqp44ncaurbzjctjwkjxo72ble:GetAtt:PostDataSource:Name"
+    "ExportName": "xw3yrfq7mngltcua43nucy7fg4:GetAtt:PostDataSource:Name"
   },
   {
     "OutputKey": "GetAttPostTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-bqp44ncaurbzjctjwkjxo72ble-x/stream/2026-04-15T01:23:07.367",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.531",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "bqp44ncaurbzjctjwkjxo72ble:GetAtt:PostTable:StreamArn"
+    "ExportName": "xw3yrfq7mngltcua43nucy7fg4:GetAtt:PostTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackPostPostDataSource6998E105Name",
@@ -17,12 +17,12 @@
   },
   {
     "OutputKey": "GetAttPostTableName",
-    "OutputValue": "Post-bqp44ncaurbzjctjwkjxo72ble-x",
+    "OutputValue": "Post-xw3yrfq7mngltcua43nucy7fg4-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "bqp44ncaurbzjctjwkjxo72ble:GetAtt:PostTable:Name"
+    "ExportName": "xw3yrfq7mngltcua43nucy7fg4:GetAtt:PostTable:Name"
   },
   {
     "OutputKey": "transformerrootstackPostPostTable34CAE87BRef",
-    "OutputValue": "Post-bqp44ncaurbzjctjwkjxo72ble-x"
+    "OutputValue": "Post-xw3yrfq7mngltcua43nucy7fg4-x"
   }
 ]

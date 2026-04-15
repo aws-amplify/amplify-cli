@@ -87,7 +87,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Account"
       }
     },
-    "RestApiDeployment180EC503b6f59a65470b4074de6b377063e14e8a": {
+    "RestApiDeployment180EC5033e73cf385dac4ffb99e7c8df64331992": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "Automatically created by the RestApi construct",
@@ -117,7 +117,7 @@
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "DeploymentId": {
-          "Ref": "RestApiDeployment180EC503b6f59a65470b4074de6b377063e14e8a"
+          "Ref": "RestApiDeployment180EC5033e73cf385dac4ffb99e7c8df64331992"
         },
         "RestApiId": {
           "Ref": "RestApi0C43BF4B"
@@ -225,12 +225,12 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/OPTIONS/Resource"
       }
     },
-    "RestApinutritionlogANYApiPermissionamplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011ANYnutritionlog10ECC820": {
+    "RestApinutritionlogANYApiPermissionamplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38AANYnutritionlog8E6912BA": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn"
+          "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn"
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -265,15 +265,15 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/ApiPermission.amplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011.ANY..nutrition.log"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/ApiPermission.amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38A.ANY..nutrition.log"
       }
     },
-    "RestApinutritionlogANYApiPermissionTestamplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011ANYnutritionlogA6B32379": {
+    "RestApinutritionlogANYApiPermissionTestamplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38AANYnutritionlogDF04A34A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn"
+          "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn"
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -304,7 +304,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/ApiPermission.Test.amplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011.ANY..nutrition.log"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/ANY/ApiPermission.Test.amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38A.ANY..nutrition.log"
       }
     },
     "RestApinutritionlogANY08C15E55": {
@@ -329,7 +329,7 @@
                 },
                 ":lambda:path/2015-03-31/functions/",
                 {
-                  "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn"
+                  "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn"
                 },
                 "/invocations"
               ]
@@ -411,12 +411,12 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/OPTIONS/Resource"
       }
     },
-    "RestApinutritionlogproxyANYApiPermissionamplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011ANYnutritionlogproxy41792C83": {
+    "RestApinutritionlogproxyANYApiPermissionamplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38AANYnutritionlogproxyFCDF0CD2": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn"
+          "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn"
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -451,15 +451,15 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.amplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011.ANY..nutrition.log.{proxy+}"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38A.ANY..nutrition.log.{proxy+}"
       }
     },
-    "RestApinutritionlogproxyANYApiPermissionTestamplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011ANYnutritionlogproxy75BDC5EC": {
+    "RestApinutritionlogproxyANYApiPermissionTestamplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38AANYnutritionlogproxyFDB894CB": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn"
+          "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn"
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -490,7 +490,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.Test.amplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi9C678011.ANY..nutrition.log.{proxy+}"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi/RestApi/Default/nutrition/log/{proxy+}/ANY/ApiPermission.Test.amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi9084C38A.ANY..nutrition.log.{proxy+}"
       }
     },
     "RestApinutritionlogproxyANY89358520": {
@@ -515,7 +515,7 @@
                 },
                 ":lambda:path/2015-03-31/functions/",
                 {
-                  "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn"
+                  "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn"
                 },
                 "/invocations"
               ]
@@ -600,7 +600,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":6d7915qlm4/*/POST/*"
+                      ":s27d6on2x4/*/POST/*"
                     ]
                   ]
                 },
@@ -620,7 +620,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":6d7915qlm4/*/GET/*"
+                      ":s27d6on2x4/*/GET/*"
                     ]
                   ]
                 },
@@ -640,7 +640,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":6d7915qlm4/*/PUT/*"
+                      ":s27d6on2x4/*/PUT/*"
                     ]
                   ]
                 },
@@ -660,7 +660,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":6d7915qlm4/*/DELETE/*"
+                      ":s27d6on2x4/*/DELETE/*"
                     ]
                   ]
                 }
@@ -672,7 +672,7 @@
         "PolicyName": "Gen1nutritionapiPolicyAC846721",
         "Roles": [
           {
-            "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
+            "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef"
           }
         ]
       },
@@ -891,7 +891,7 @@
         "PolicyName": "nutritionlogAuthPolicyF60C3901",
         "Roles": [
           {
-            "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
+            "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef"
           }
         ]
       },
@@ -1110,7 +1110,7 @@
         "PolicyName": "nutritionlogAdminPolicy5FCB013F",
         "Roles": [
           {
-            "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthAdminGroupRoleC4D9FFACRef"
+            "Ref": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthAdminGroupRoleDDED643DRef"
           }
         ]
       },
@@ -1158,12 +1158,12 @@
         ]
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApi0D951431Ref": {
+    "amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi28212794Ref": {
       "Value": {
         "Ref": "RestApi0C43BF4B"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6restapistacknutritionapiRestApiDeploymentStageprod820AAB0CRef": {
+    "amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApiDeploymentStageprod6F2FD815Ref": {
       "Value": {
         "Ref": "RestApiDeploymentStageprod3855DE66"
       }
@@ -1436,13 +1436,13 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataNestedStackdataNestedStackResource288E96F3Outputsamplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn": {
+    "referencetoamplifyfitnesstrackere2esandboxb87516873edataNestedStackdataNestedStackResource5CB5414DOutputsamplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref": {
+    "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthAdminGroupRoleC4D9FFACRef": {
+    "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthAdminGroupRoleDDED643DRef": {
       "Type": "String"
     }
   }

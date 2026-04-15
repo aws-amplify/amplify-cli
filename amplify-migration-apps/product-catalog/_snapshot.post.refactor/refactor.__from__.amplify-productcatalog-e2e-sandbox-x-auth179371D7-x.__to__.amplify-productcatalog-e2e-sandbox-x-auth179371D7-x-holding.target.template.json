@@ -84,7 +84,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_oYi5tAgJc"
+        "UserPoolId": "us-east-1_tRO9BruHe"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -118,7 +118,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_oYi5tAgJc"
+        "UserPoolId": "us-east-1_tRO9BruHe"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -132,7 +132,7 @@
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "7hfcjjgipbr3lkhighqdtveuh5",
+            "ClientId": "27q6muiijfov65g35g37t9bldv",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -142,7 +142,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_oYi5tAgJc"
+                  "us-east-1_tRO9BruHe"
                 ]
               ]
             }
@@ -173,7 +173,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:de4bb93a-fbe2-4c18-93ff-95c37500323d",
+        "IdentityPoolId": "us-east-1:ec121e86-e0d7-4f59-beaf-535182dac9c0",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -186,9 +186,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_oYi5tAgJc",
+                  "us-east-1_tRO9BruHe",
                   ":",
-                  "7hfcjjgipbr3lkhighqdtveuh5"
+                  "27q6muiijfov65g35g37t9bldv"
                 ]
               ]
             },
@@ -196,8 +196,8 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-productcat2604142-amplifyAuthunauthenticate-3ny5LVg29U5L",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-productcat2604142-amplifyAuthauthenticatedU-FSYagP5lqNEE"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-productcat2604142-amplifyAuthunauthenticate-OzRPKugSY82W",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-productcat2604142-amplifyAuthauthenticatedU-FTyAOUWtFeJb"
         }
       },
       "UpdateReplacePolicy": "Delete",

@@ -4,20 +4,20 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPool4C87431ARef",
-    "ParameterValue": "us-east-1_Moc1WFnWk"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref",
+    "ParameterValue": "amplify-projectboa2604142-amplifyAuthauthenticatedU-1jxM3hVSjIDm"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref",
+    "ParameterValue": "amplify-projectboa2604142-amplifyAuthunauthenticate-LvEI2or1a1b4"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthauthenticatedUserRole1E0DC40CRef",
-    "ParameterValue": "amplify-projectboa2604142-amplifyAuthauthenticatedU-pWa3DkVgvvp2"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthIdentityPoolE623DB0ARef",
-    "ParameterValue": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolE690205FRef",
+    "ParameterValue": "us-east-1_KIRz8bn0l"
   },
   {
     "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
@@ -32,7 +32,7 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb57929294authNestedStackauthNestedStackResource414864C7Outputsamplifyprojectboardse2esandboxfb57929294authamplifyAuthunauthenticatedUserRole010FB2A2Ref",
-    "ParameterValue": "amplify-projectboa2604142-amplifyAuthunauthenticate-I2EBv7VnlK9x"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref",
+    "ParameterValue": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
   }
 ]

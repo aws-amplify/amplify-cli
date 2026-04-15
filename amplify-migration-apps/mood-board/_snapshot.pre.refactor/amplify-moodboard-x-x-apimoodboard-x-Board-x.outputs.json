@@ -1,15 +1,15 @@
 [
   {
     "OutputKey": "GetAttBoardTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-kuwr5auj4zbxdhbslpanljzbwi-x/stream/2026-04-15T01:23:57.889",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-pd6mhagtyveltorgdvv7movvqq-x/stream/2026-04-15T04:23:19.837",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "kuwr5auj4zbxdhbslpanljzbwi:GetAtt:BoardTable:StreamArn"
+    "ExportName": "pd6mhagtyveltorgdvv7movvqq:GetAtt:BoardTable:StreamArn"
   },
   {
     "OutputKey": "GetAttBoardDataSourceName",
     "OutputValue": "BoardTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "kuwr5auj4zbxdhbslpanljzbwi:GetAtt:BoardDataSource:Name"
+    "ExportName": "pd6mhagtyveltorgdvv7movvqq:GetAtt:BoardDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackBoardBoardDataSource99BFC69FName",
@@ -17,12 +17,12 @@
   },
   {
     "OutputKey": "GetAttBoardTableName",
-    "OutputValue": "Board-kuwr5auj4zbxdhbslpanljzbwi-x",
+    "OutputValue": "Board-pd6mhagtyveltorgdvv7movvqq-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "kuwr5auj4zbxdhbslpanljzbwi:GetAtt:BoardTable:Name"
+    "ExportName": "pd6mhagtyveltorgdvv7movvqq:GetAtt:BoardTable:Name"
   },
   {
     "OutputKey": "transformerrootstackBoardBoardTable30788E07Ref",
-    "OutputValue": "Board-kuwr5auj4zbxdhbslpanljzbwi-x"
+    "OutputValue": "Board-pd6mhagtyveltorgdvv7movvqq-x"
   }
 ]

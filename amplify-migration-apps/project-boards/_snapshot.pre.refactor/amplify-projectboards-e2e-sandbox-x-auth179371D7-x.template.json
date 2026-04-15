@@ -603,27 +603,27 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPool4C87431ARef": {
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolE690205FRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPoolAppClient404AD969Ref": {
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolAppClient619348A5Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthIdentityPoolE623DB0ARef": {
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthauthenticatedUserRole1E0DC40CRef": {
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthunauthenticatedUserRole010FB2A2Ref": {
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

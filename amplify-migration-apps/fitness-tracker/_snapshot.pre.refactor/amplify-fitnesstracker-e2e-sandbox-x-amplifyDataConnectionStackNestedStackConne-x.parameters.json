@@ -1,30 +1,30 @@
 [
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataExerciseNestedStackExerciseNestedStackResource43233579Outputsamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataExerciseExerciseDataSourceB67B88D3Name",
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef",
+    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthauthenticatedU-NanIXo9aixs2"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthIdentityPool5207C654Ref",
+    "ParameterValue": "us-east-1:64bddaa4-7f3b-47a0-b404-3275cd735004"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873edataamplifyDataExerciseNestedStackExerciseNestedStackResource29F00F64Outputsamplifyfitnesstrackere2esandboxb87516873edataamplifyDataExerciseExerciseDataSource0ED76988Name",
     "ParameterValue": "ExerciseTable"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef",
-    "ParameterValue": "us-east-1:39e7fe18-e057-418c-8e1e-1e1c3db4e0cf"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873edataamplifyDataExerciseNestedStackExerciseNestedStackResource29F00F64Outputsamplifyfitnesstrackere2esandboxb87516873edataamplifyDataExerciseExerciseTable43007536TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-xwgwkksjrbcoxnb64a6clvir4u-x"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref",
-    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthauthenticatedU-IJJ54HHuxReG"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId",
-    "ParameterValue": "rjha5ajvwncwne5frb2wiqdmji"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataExerciseNestedStackExerciseNestedStackResource43233579Outputsamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataExerciseExerciseTable5251D0CCTableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-wj6lytnty5ftnkpbpk6i7y4zpi-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref",
-    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthunauthenticate-wdL5ZJnVmqli"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName",
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPINONEDSD3F9B7A2Name",
     "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPI2639E0B5ApiId",
+    "ParameterValue": "pa7lr2bmbjfqxdfidheoysbvhu"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthunauthenticatedUserRoleC3170373Ref",
+    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthunauthenticate-1g49fB6fAFbP"
   }
 ]

@@ -355,6 +355,7 @@
         "Parameters": {
           "modules": "add-to-group",
           "resourceName": "storelocator41a9495f41a9495fPostConfirmation",
+          "GROUP": "storeLocatorAdmin",
           "deploymentBucketName": "amplify-storelocator-x-x-deployment",
           "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip",
           "env": "x"

@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAttProjectTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-hebeyt7cxzbnhleer6t7bavlxe-x/stream/2026-04-15T01:22:36.698",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-feqgb7ww75f5lklhnep4rre3va-x/stream/2026-04-15T03:52:26.358",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "ufcdpgoelbdx3bwrqppofhwjai:GetAtt:ProjectTable:StreamArn"
+    "ExportName": "rvxoywjwergpdpazwnark4tqei:GetAtt:ProjectTable:StreamArn"
   },
   {
     "OutputKey": "GetAttProjectTableName",
-    "OutputValue": "Project-hebeyt7cxzbnhleer6t7bavlxe-x",
+    "OutputValue": "Project-feqgb7ww75f5lklhnep4rre3va-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "ufcdpgoelbdx3bwrqppofhwjai:GetAtt:ProjectTable:Name"
+    "ExportName": "rvxoywjwergpdpazwnark4tqei:GetAtt:ProjectTable:Name"
   }
 ]

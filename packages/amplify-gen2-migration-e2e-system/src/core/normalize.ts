@@ -109,7 +109,7 @@ export function normalize(appName: string, appDir: string): void {
     }
 
     if (content !== original) {
-      fs.writeFileSync(file, content, 'utf-8');
+      fs.writeFileSync(file, content.trimEnd() + '\n', 'utf-8');
     }
 
     const newPath = path.join(path.dirname(file), basename);

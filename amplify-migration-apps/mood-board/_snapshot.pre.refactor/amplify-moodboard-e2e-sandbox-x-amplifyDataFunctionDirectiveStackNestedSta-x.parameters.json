@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPINONEDS538C9366Name",
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef",
+    "ParameterValue": "amplify-moodboard26041500-amplifyAuthunauthenticate-2CR87a5ajww1"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthIdentityPoolB80FD358Ref",
+    "ParameterValue": "us-east-1:edbce570-5f19-4755-9803-52e7b3e0c56d"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPINONEDS7A779376Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId",
-    "ParameterValue": "hgyiaksxfnd5rgxabjzq6acftm"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref",
+    "ParameterValue": "amplify-moodboard26041500-amplifyAuthauthenticatedU-inPzqwEs0wDw"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef",
-    "ParameterValue": "amplify-moodboard26041421-amplifyAuthunauthenticate-Jmnij9sVaquJ"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref",
-    "ParameterValue": "amplify-moodboard26041421-amplifyAuthauthenticatedU-Nwa298eMXnxj"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthIdentityPoolCBF7B421Ref",
-    "ParameterValue": "us-east-1:05ed68ed-ccea-46a0-a75c-e98bcea30d30"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId",
+    "ParameterValue": "tr6hjslzxzextaawz3ftjzwqyi"
   }
 ]

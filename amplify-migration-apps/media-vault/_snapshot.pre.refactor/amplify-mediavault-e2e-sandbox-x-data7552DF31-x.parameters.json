@@ -4,20 +4,8 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox523dc92cecauthNestedStackauthNestedStackResource4C8A3EECOutputsamplifymediavaulte2esandbox523dc92cecauthamplifyAuthUserPool6876FA13Ref",
-    "ParameterValue": "us-east-1_J3F4VTBkR"
-  },
-  {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox523dc92cecauthNestedStackauthNestedStackResource4C8A3EECOutputsamplifymediavaulte2esandbox523dc92cecauthamplifyAuthunauthenticatedUserRole002DAB67Ref",
-    "ParameterValue": "amplify-mediavault2604142-amplifyAuthunauthenticate-sBa92eRj15PE"
-  },
-  {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox523dc92cecauthNestedStackauthNestedStackResource4C8A3EECOutputsamplifymediavaulte2esandbox523dc92cecauthamplifyAuthIdentityPool036B7350Ref",
-    "ParameterValue": "us-east-1:34a99d91-a6fb-433f-95c5-285cd9ac33a5"
-  },
-  {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox523dc92cecauthNestedStackauthNestedStackResource4C8A3EECOutputsamplifymediavaulte2esandbox523dc92cecauthamplifyAuthauthenticatedUserRole5460FBABRef",
-    "ParameterValue": "amplify-mediavault2604142-amplifyAuthauthenticatedU-A1L5bSsO9fji"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthauthenticatedUserRoleE0CA9703Ref",
+    "ParameterValue": "amplify-mediavault2604142-amplifyAuthauthenticatedU-eE1RG94dAZFh"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -32,7 +20,19 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthunauthenticatedUserRole88DA1FC1Ref",
+    "ParameterValue": "amplify-mediavault2604142-amplifyAuthunauthenticate-IXwU5AR0tJSE"
+  },
+  {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthIdentityPool0BF026A3Ref",
+    "ParameterValue": "us-east-1:7740513c-8837-4108-969d-d368bab19238"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthUserPoolE48AF738Ref",
+    "ParameterValue": "us-east-1_nyb6Y32aT"
   }
 ]

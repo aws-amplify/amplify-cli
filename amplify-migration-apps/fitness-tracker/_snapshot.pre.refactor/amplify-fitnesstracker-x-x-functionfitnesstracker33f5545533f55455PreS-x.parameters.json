@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "DOMAINALLOWLIST",
-    "ParameterValue": ""
+    "ParameterValue": "amazon.com"
   },
   {
     "ParameterKey": "parentStack",

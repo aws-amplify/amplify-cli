@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "quotegeneratorbegen2xlambdaServiceRole2046B2D2": {
+    "quotegeneratorbegen2xlambdaServiceRole0ACA5205": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -51,7 +51,7 @@
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function/quotegeneratorbe-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "quotegeneratorbegen2xlambdaD6444BFD": {
+    "quotegeneratorbegen2xlambda88BD52A3": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -78,7 +78,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "quotegeneratorbegen2xlambdaServiceRole2046B2D2",
+            "quotegeneratorbegen2xlambdaServiceRole0ACA5205",
             "Arn"
           ]
         },
@@ -100,7 +100,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "quotegeneratorbegen2xlambdaServiceRole2046B2D2"
+        "quotegeneratorbegen2xlambdaServiceRole0ACA5205"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -389,9 +389,9 @@
     }
   },
   "Outputs": {
-    "amplifybackendonlye2esandbox2d86e29401functionquotegeneratorbegen2xlambda16C88816Ref": {
+    "amplifybackendonlye2esandbox363d3cd24dfunctionquotegeneratorbegen2xlambda933F80AFRef": {
       "Value": {
-        "Ref": "quotegeneratorbegen2xlambdaD6444BFD"
+        "Ref": "quotegeneratorbegen2xlambda88BD52A3"
       }
     }
   }

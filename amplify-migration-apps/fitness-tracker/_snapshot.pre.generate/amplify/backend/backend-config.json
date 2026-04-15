@@ -194,6 +194,14 @@
         }
       ]
     },
+    "AMPLIFY_function_fitnesstracker33f5545533f55455PreSignup_DOMAINALLOWLIST": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "fitnesstracker33f5545533f55455PreSignup"
+        }
+      ]
+    },
     "AMPLIFY_function_fitnesstracker33f5545533f55455PreSignup_deploymentBucketName": {
       "usedBy": [
         {

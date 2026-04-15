@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "us-east-1_Yn9NrABc0"
+    "ParameterValue": "us-east-1_Xm7264Or1"
   },
   {
     "ParameterKey": "env",
@@ -17,6 +17,6 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsAdminGroupRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_Yn9NrABc0-AdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_Xm7264Or1-AdminGroupRole"
   }
 ]

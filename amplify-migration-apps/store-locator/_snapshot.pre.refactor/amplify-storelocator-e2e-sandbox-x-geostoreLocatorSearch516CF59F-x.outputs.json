@@ -1,9 +1,5 @@
 [
   {
-    "OutputKey": "amplifystorelocatore2esandboxcf2c434046geostoreLocatorSearchCustomPlaceIndexC99E0280IndexName",
-    "OutputValue": "storeLocatorSearch-gen2-x"
-  },
-  {
     "OutputKey": "Region",
     "OutputValue": "us-east-1"
   },
@@ -13,6 +9,10 @@
   },
   {
     "OutputKey": "Name",
+    "OutputValue": "storeLocatorSearch-gen2-x"
+  },
+  {
+    "OutputKey": "amplifystorelocatore2esandboxdd610709c4geostoreLocatorSearchCustomPlaceIndex90EC0A16IndexName",
     "OutputValue": "storeLocatorSearch-gen2-x"
   }
 ]

@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "amplifybackendonlye2esandbox2d86e29401authamplifyAuthUserPoolAF80CA2ERef",
-    "OutputValue": "us-east-1_yedejeTXn"
+    "OutputKey": "amplifybackendonlye2esandbox363d3cd24dauthamplifyAuthIdentityPool210F50E3Ref",
+    "OutputValue": "us-east-1:253c6cb3-ea32-4bc6-9532-d622a04831ed"
   },
   {
-    "OutputKey": "amplifybackendonlye2esandbox2d86e29401authamplifyAuthunauthenticatedUserRole1B8CEF7BRef",
-    "OutputValue": "amplify-backendonl2604142-amplifyAuthunauthenticate-gWSAtRE7p9pV"
+    "OutputKey": "amplifybackendonlye2esandbox363d3cd24dauthamplifyAuthUserPoolAppClientD789C43ARef",
+    "OutputValue": "2351hpg07effv1sr4a6fv32pni"
   },
   {
-    "OutputKey": "amplifybackendonlye2esandbox2d86e29401authamplifyAuthauthenticatedUserRoleDCBC5850Ref",
-    "OutputValue": "amplify-backendonl2604142-amplifyAuthauthenticatedU-g82ebHtmyg7n"
+    "OutputKey": "amplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef",
+    "OutputValue": "amplify-backendonl2604142-amplifyAuthauthenticatedU-e2MZgmxI4x06"
   },
   {
-    "OutputKey": "amplifybackendonlye2esandbox2d86e29401authamplifyAuthUserPoolAppClientEF65FB55Ref",
-    "OutputValue": "74cktn2kovh375q3rl3257137b"
+    "OutputKey": "amplifybackendonlye2esandbox363d3cd24dauthamplifyAuthUserPoolC6936963Ref",
+    "OutputValue": "us-east-1_QCCMEQ5di"
   },
   {
-    "OutputKey": "amplifybackendonlye2esandbox2d86e29401authamplifyAuthIdentityPoolE95BFFC2Ref",
-    "OutputValue": "us-east-1:34c3ebe7-bf84-450e-9dd6-7f5f20d6d408"
+    "OutputKey": "amplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref",
+    "OutputValue": "amplify-backendonl2604142-amplifyAuthunauthenticate-T0OFU3aW6x78"
   }
 ]

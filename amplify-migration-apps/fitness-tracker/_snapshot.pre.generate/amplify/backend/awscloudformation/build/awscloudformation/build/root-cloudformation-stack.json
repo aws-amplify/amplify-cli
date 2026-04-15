@@ -381,6 +381,7 @@
         "Parameters": {
           "modules": "email-filter-allowlist",
           "resourceName": "fitnesstracker33f5545533f55455PreSignup",
+          "DOMAINALLOWLIST": "amazon.com",
           "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
           "s3Key": "amplify-builds/fitnesstracker33f5545533f55455PreSignup-68374859444c45627749-build.zip",
           "env": "x"

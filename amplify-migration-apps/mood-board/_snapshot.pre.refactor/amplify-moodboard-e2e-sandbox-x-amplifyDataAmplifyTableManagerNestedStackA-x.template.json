@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+                            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "MoodItem-kuwr5auj4zbxdhbslpanljzbwi-x"
+                          "tableName": "MoodItem-pd6mhagtyveltorgdvv7movvqq-x"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Board-kuwr5auj4zbxdhbslpanljzbwi-x"
+                          "tableName": "Board-pd6mhagtyveltorgdvv7movvqq-x"
                         }
                       ]
                     }
@@ -169,7 +169,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+                            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
                           },
                           "envName": "NONE"
                         }
@@ -179,7 +179,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "MoodItem-kuwr5auj4zbxdhbslpanljzbwi-x"
+                          "tableName": "MoodItem-pd6mhagtyveltorgdvv7movvqq-x"
                         }
                       ]
                     },
@@ -187,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Board-kuwr5auj4zbxdhbslpanljzbwi-x"
+                          "tableName": "Board-pd6mhagtyveltorgdvv7movvqq-x"
                         }
                       ]
                     }
@@ -754,12 +754,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox6a07bd88f4dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent89093114Arn": {
+    "amplifymoodboarde2esandbox799a4d1a84dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent5D5EC05CArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

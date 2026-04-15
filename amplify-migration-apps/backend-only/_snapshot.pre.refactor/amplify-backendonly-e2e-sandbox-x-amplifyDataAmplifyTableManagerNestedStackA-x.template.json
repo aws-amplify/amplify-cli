@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifybackendonlye2esandbox2d86e29401dataamplifyDataGraphQLAPI1E34A99DApiId"
+                            "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Project-i7hukhoj6fcn7fi3k5yl7vy7aa-x"
+                          "tableName": "Project-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Todo-i7hukhoj6fcn7fi3k5yl7vy7aa-x"
+                          "tableName": "Todo-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
                         }
                       ]
                     }
@@ -169,7 +169,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifybackendonlye2esandbox2d86e29401dataamplifyDataGraphQLAPI1E34A99DApiId"
+                            "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
                           },
                           "envName": "NONE"
                         }
@@ -179,7 +179,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Project-i7hukhoj6fcn7fi3k5yl7vy7aa-x"
+                          "tableName": "Project-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
                         }
                       ]
                     },
@@ -187,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Todo-i7hukhoj6fcn7fi3k5yl7vy7aa-x"
+                          "tableName": "Todo-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
                         }
                       ]
                     }
@@ -754,12 +754,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifybackendonlye2esandbox2d86e29401dataamplifyDataGraphQLAPI1E34A99DApiId": {
+    "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifybackendonlye2esandbox2d86e29401dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent0587728DArn": {
+    "amplifybackendonlye2esandbox363d3cd24ddataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventECB17234Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

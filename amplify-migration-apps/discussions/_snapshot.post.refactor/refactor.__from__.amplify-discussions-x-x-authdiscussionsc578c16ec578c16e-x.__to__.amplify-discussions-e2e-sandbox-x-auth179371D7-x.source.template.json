@@ -240,29 +240,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:fb3991a7-7d67-41b4-bc4e-63e2deeadf30"
+      "Value": "us-east-1:c19a7d32-3b9f-4b48-829c-46082712131c"
     },
     "IdentityPoolName": {
       "Value": "discussionsc578c16e_identitypool_c578c16e__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_gKGBJxaOV"
+      "Value": "us-east-1_lG0pUBlcH"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_gKGBJxaOV"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_lG0pUBlcH"
     },
     "UserPoolName": {
       "Value": "discussionsc578c16e_userpool_c578c16e"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "6ab1u5l8lf108dsam10vte84q6"
+      "Value": "2u018c10958rc16k88nfl6er4m"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "7m54g2evveeeo7octbpfntg18s"
+      "Value": "145r5chjngcvdjv7uk1s3826ol"
     },
     "CreatedSNSRole": {
       "Description": "role arn",

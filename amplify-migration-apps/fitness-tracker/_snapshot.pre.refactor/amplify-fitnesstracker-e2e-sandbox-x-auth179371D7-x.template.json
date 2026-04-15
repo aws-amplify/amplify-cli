@@ -23,7 +23,7 @@
         "LambdaConfig": {
           "PreSignUp": {
             "Fn::GetAtt": [
-              "fitnesstracker33f5545533f55455PreSignupgen2xlambdaD25EC2B9",
+              "fitnesstracker33f5545533f55455PreSignupgen2xlambda207A093B",
               "Arn"
             ]
           }
@@ -79,7 +79,7 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaD25EC2B9",
+            "fitnesstracker33f5545533f55455PreSignupgen2xlambda207A093B",
             "Arn"
           ]
         },
@@ -421,7 +421,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/AdminGroup"
       }
     },
-    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRoleB280C81B": {
+    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole796B58B8": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -471,7 +471,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/fitnesstracker33f5545533f55455PreSignup-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaD25EC2B9": {
+    "fitnesstracker33f5545533f55455PreSignupgen2xlambda207A093B": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -501,7 +501,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRoleB280C81B",
+            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole796B58B8",
             "Arn"
           ]
         },
@@ -523,7 +523,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRoleB280C81B"
+        "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole796B58B8"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -553,7 +553,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
       }
     },
-    "admingen2xlambdaServiceRoleF294245C": {
+    "admingen2xlambdaServiceRoleDFED86E5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -603,7 +603,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "admingen2xlambdaServiceRoleDefaultPolicy7C125864": {
+    "admingen2xlambdaServiceRoleDefaultPolicyF1CBE2CB": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -635,10 +635,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "admingen2xlambdaServiceRoleDefaultPolicy7C125864",
+        "PolicyName": "admingen2xlambdaServiceRoleDefaultPolicyF1CBE2CB",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -646,7 +646,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "admingen2xlambda5CE3B16F": {
+    "admingen2xlambdaBD6AFAAA": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -677,7 +677,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "admingen2xlambdaServiceRoleF294245C",
+            "admingen2xlambdaServiceRoleDFED86E5",
             "Arn"
           ]
         },
@@ -699,7 +699,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "admingen2xlambdaServiceRoleF294245C"
+        "admingen2xlambdaServiceRoleDFED86E5"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -731,7 +731,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -762,7 +762,7 @@
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -793,7 +793,7 @@
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -824,7 +824,7 @@
         "PolicyName": "userpoolAccess4A84025C3",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -855,7 +855,7 @@
         "PolicyName": "userpoolAccess585E2FB32",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -886,7 +886,7 @@
         "PolicyName": "userpoolAccess600DA4CB0",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -917,7 +917,7 @@
         "PolicyName": "userpoolAccess76F9C91C1",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleF294245C"
+            "Ref": "admingen2xlambdaServiceRoleDFED86E5"
           }
         ]
       },
@@ -1205,50 +1205,50 @@
     }
   },
   "Outputs": {
-    "amplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthUserPool3BB3A476Ref": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthUserPoolC7DC7AACRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthUserPoolAppClientB138A307Ref": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthUserPoolAppClientB7EA7D1ERef": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthIdentityPool5207C654Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authfitnesstracker33f5545533f55455PreSignupgen2xlambda6251328FRef": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthfitnesstracker33f5545533f55455PreSignupgen2xlambdaF9537418Ref": {
       "Value": {
-        "Ref": "fitnesstracker33f5545533f55455PreSignupgen2xlambdaD25EC2B9"
+        "Ref": "fitnesstracker33f5545533f55455PreSignupgen2xlambda207A093B"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authadmingen2xlambdaBF5DE390Ref": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthadmingen2xlambda8DFBC2FBRef": {
       "Value": {
-        "Ref": "admingen2xlambda5CE3B16F"
+        "Ref": "admingen2xlambdaBD6AFAAA"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthunauthenticatedUserRoleC3170373Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthAdminGroupRoleC4D9FFACRef": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthAdminGroupRoleDDED643DRef": {
       "Value": {
         "Ref": "amplifyAuthAdminGroupRole766878DC"
       }
     },
-    "amplifyfitnesstrackere2esandbox8ed617aee6authadmingen2xlambdaBF5DE390Arn": {
+    "amplifyfitnesstrackere2esandboxb87516873eauthadmingen2xlambda8DFBC2FBArn": {
       "Value": {
         "Fn::GetAtt": [
-          "admingen2xlambda5CE3B16F",
+          "admingen2xlambdaBD6AFAAA",
           "Arn"
         ]
       }

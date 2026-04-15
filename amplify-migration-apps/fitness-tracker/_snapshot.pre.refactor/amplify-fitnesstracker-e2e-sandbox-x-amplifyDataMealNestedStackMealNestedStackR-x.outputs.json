@@ -1,18 +1,18 @@
 [
   {
-    "OutputKey": "GetAttMealTableName",
-    "OutputValue": "Meal-wj6lytnty5ftnkpbpk6i7y4zpi-x",
-    "Description": "Your DynamoDB table name.",
-    "ExportName": "rjha5ajvwncwne5frb2wiqdmji:GetAtt:MealTable:Name"
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataMealMealTable74E2D2AETableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-xwgwkksjrbcoxnb64a6clvir4u-x"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataMealMealTableA93EC3B4TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-wj6lytnty5ftnkpbpk6i7y4zpi-x"
+    "OutputKey": "GetAttMealTableName",
+    "OutputValue": "Meal-xwgwkksjrbcoxnb64a6clvir4u-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "pa7lr2bmbjfqxdfidheoysbvhu:GetAtt:MealTable:Name"
   },
   {
     "OutputKey": "GetAttMealTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-wj6lytnty5ftnkpbpk6i7y4zpi-x/stream/2026-04-15T01:24:04.232",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-xwgwkksjrbcoxnb64a6clvir4u-x/stream/2026-04-15T03:52:30.998",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "rjha5ajvwncwne5frb2wiqdmji:GetAtt:MealTable:StreamArn"
+    "ExportName": "pa7lr2bmbjfqxdfidheoysbvhu:GetAtt:MealTable:StreamArn"
   }
 ]

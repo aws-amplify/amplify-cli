@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://w2ioo3tdj5cghbfxmujafjksna.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "https://nmunek64lresdpc5z6pnhpsbh4.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
-    "ParameterValue": "3j3hj2kxzjdsbcy54mp7p6oeya"
+    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
   }
 ]

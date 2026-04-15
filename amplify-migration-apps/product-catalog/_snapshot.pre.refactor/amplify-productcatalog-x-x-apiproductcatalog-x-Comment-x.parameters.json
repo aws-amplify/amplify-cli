@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
-    "ParameterValue": "cqkwxi44anavbabtinsnfpedlm"
+    "ParameterValue": "qfwkpcbq4fgfjakokec32roplu"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -21,11 +21,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "3j3hj2kxzjdsbcy54mp7p6oeya"
+    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
-    "ParameterValue": "h3u2hj6yyjhozjgnngc2bvfy64"
+    "ParameterValue": "lw2jye7ga5ddlhesqzclrligny"
   },
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
@@ -41,7 +41,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
-    "ParameterValue": "jsmg3kxgtfbehcpztiewqw5fey"
+    "ParameterValue": "x4iwoozno5dlboqsjxv4ol2r7y"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -61,6 +61,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
-    "ParameterValue": "hmlajcdtmvbz5fxlhhdakmtxwm"
+    "ParameterValue": "jnj2c6vawvazfpixdbasl5x6be"
   }
 ]

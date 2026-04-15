@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPINONEDS538C9366Name"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPINONEDS7A779376Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "BoardmoodItemsauth0Function",
@@ -26,10 +26,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource3A1BF7ECOutputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemMoodItemDataSource0EAEB9F9Name"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource909B7D4FOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemDataSourceA5BD018EName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "BoardMoodItemsDataResolverFn",
@@ -50,7 +50,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
         },
         "FieldName": "moodItems",
         "Kind": "PIPELINE",
@@ -76,7 +76,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Board\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"moodItems\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource3A1BF7ECOutputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemMoodItemTableFCB4EDBCTableArn"
+                                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource909B7D4FOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemTableB6DE0468TableArn"
                               }
                             ]
                           }
@@ -112,7 +112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -124,11 +124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthIdentityPoolCBF7B421Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthIdentityPoolB80FD358Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -147,10 +147,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPINONEDS538C9366Name"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPINONEDS7A779376Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MoodItemboardauth0Function",
@@ -169,10 +169,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardNestedStackBoardNestedStackResourceEE470B09Outputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardBoardDataSourceC9CF2CA9Name"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardNestedStackBoardNestedStackResource95BF389DOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardDataSource5B663EE3Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MoodItemBoardDataResolverFn",
@@ -193,7 +193,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
         },
         "FieldName": "board",
         "Kind": "PIPELINE",
@@ -219,7 +219,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"MoodItem\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"board\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -235,7 +235,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardNestedStackBoardNestedStackResourceEE470B09Outputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardBoardTable776FB72BTableArn"
+                                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardNestedStackBoardNestedStackResource95BF389DOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardTableE632E322TableArn"
                               }
                             ]
                           }
@@ -255,7 +255,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -267,11 +267,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthIdentityPoolCBF7B421Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthIdentityPoolB80FD358Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -564,31 +564,31 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPI1C60E297ApiId": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataGraphQLAPINONEDS538C9366Name": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPINONEDS7A779376Name": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource3A1BF7ECOutputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemMoodItemDataSource0EAEB9F9Name": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource909B7D4FOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemDataSourceA5BD018EName": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource3A1BF7ECOutputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataMoodItemMoodItemTableFCB4EDBCTableArn": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource909B7D4FOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemTableB6DE0468TableArn": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthIdentityPoolCBF7B421Ref": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthIdentityPoolB80FD358Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardNestedStackBoardNestedStackResourceEE470B09Outputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardBoardDataSourceC9CF2CA9Name": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardNestedStackBoardNestedStackResource95BF389DOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardDataSource5B663EE3Name": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardNestedStackBoardNestedStackResourceEE470B09Outputsamplifymoodboarde2esandbox6a07bd88f4dataamplifyDataBoardBoardTable776FB72BTableArn": {
+    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardNestedStackBoardNestedStackResource95BF389DOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardTableE632E322TableArn": {
       "Type": "String"
     }
   }

@@ -19,12 +19,12 @@
     "test:shared-data": "true",
     "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app store-locator --profile ${AWS_PROFILE:-default}",
     "deploy": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app store-locator --step deploy --profile ${AWS_PROFILE:-default}",
-    "pre-push": "true",
+    "pre-push": "npx tsx migration/pre-push.ts",
     "post-generate": "npx tsx migration/post-generate.ts",
     "post-refactor": "true",
     "post-sandbox": "true",
     "pre-sandbox": "true",
-    "post-push": "npx tsx migration/post-push.ts"
+    "post-push": "true"
   },
   "dependencies": {
     "@aws-amplify/geo": "^3.0.92",

@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -367,20 +367,20 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPool4C87431ARef": {
-      "Value": "us-east-1_Moc1WFnWk"
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolE690205FRef": {
+      "Value": "us-east-1_KIRz8bn0l"
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPoolAppClient404AD969Ref": {
-      "Value": "5ekdk1jf07t84hl4ns11jglpt3"
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolAppClient619348A5Ref": {
+      "Value": "5u0pu7spa0tin8np6oitsr50ke"
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthIdentityPoolE623DB0ARef": {
-      "Value": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref": {
+      "Value": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthauthenticatedUserRole1E0DC40CRef": {
-      "Value": "amplify-projectboa2604142-amplifyAuthauthenticatedU-pWa3DkVgvvp2"
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref": {
+      "Value": "amplify-projectboa2604142-amplifyAuthauthenticatedU-1jxM3hVSjIDm"
     },
-    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthunauthenticatedUserRole010FB2A2Ref": {
-      "Value": "amplify-projectboa2604142-amplifyAuthunauthenticate-I2EBv7VnlK9x"
+    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref": {
+      "Value": "amplify-projectboa2604142-amplifyAuthunauthenticate-LvEI2or1a1b4"
     }
   }
 }

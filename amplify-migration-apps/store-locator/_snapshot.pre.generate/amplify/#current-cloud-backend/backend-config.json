@@ -132,6 +132,14 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_storelocator41a9495f41a9495fPostConfirmation_GROUP": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "storelocator41a9495f41a9495fPostConfirmation"
+        }
+      ]
+    },
     "AMPLIFY_function_storelocator41a9495f41a9495fPostConfirmation_deploymentBucketName": {
       "usedBy": [
         {

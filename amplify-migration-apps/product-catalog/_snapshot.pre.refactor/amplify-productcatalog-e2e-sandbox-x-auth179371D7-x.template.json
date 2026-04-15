@@ -243,7 +243,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/3j3hj2kxzjdsbcy54mp7p6oeya/*"
+                    ":apis/hscmwhprkbaljmcpavj3dcztrq/*"
                   ]
                 ]
               }
@@ -644,27 +644,27 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloge2esandbox0187871387authamplifyAuthUserPool707B3666Ref": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPool28A7874FRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyproductcataloge2esandbox0187871387authamplifyAuthUserPoolAppClientDF5EE11DRef": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPoolAppClient577E72DBRef": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyproductcataloge2esandbox0187871387authamplifyAuthIdentityPool7C1EDD16Ref": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyproductcataloge2esandbox0187871387authamplifyAuthauthenticatedUserRoleC781B511Ref": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyproductcataloge2esandbox0187871387authamplifyAuthunauthenticatedUserRoleF54183DBRef": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "GROUP",
-    "ParameterValue": ""
+    "ParameterValue": "storeLocatorAdmin"
   },
   {
     "ParameterKey": "parentResource",

@@ -123,7 +123,7 @@ export function sanitize(appName: string, appDir: string): void {
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);
 
-    fs.writeFileSync(file, content, 'utf-8');
+    fs.writeFileSync(file, content.trimEnd() + '\n', 'utf-8');
     fs.renameSync(file, sanitizedFileName);
   }
 }

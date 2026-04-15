@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fAppClientID",
-    "ParameterValue": "6p13r82hu1ob8npprf9dfrbe6l"
+    "ParameterValue": "3g5sgr3m93hl8dklni4oat8c5o"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fIdentityPoolId",
-    "ParameterValue": "us-east-1:4325116e-cc4c-42a3-8fd7-96d046eb902e"
+    "ParameterValue": "us-east-1:7517a9de-d491-4df1-9b07-0bf87d82d7da"
   },
   {
     "ParameterKey": "AuthRoleArn",
@@ -21,10 +21,10 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fAppClientIDWeb",
-    "ParameterValue": "6d9tdoai4i09l9nho29vfegdas"
+    "ParameterValue": "3q5ra9590bvgqmjrls6cuntmir"
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
-    "ParameterValue": "us-east-1_VEWtx9ytt"
+    "ParameterValue": "us-east-1_PMTKHb3hY"
   }
 ]

@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "oxfvlrf3yjcbro7xnm36lnmt2q",
+    "OutputValue": "m35dk4nrcna2hiz267tsvgu77y",
     "Description": "Your GraphQL API ID.",
     "ExportName": "amplify-mediavault-x-x-apimediavault-x:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "https://aijpicmhonhnjmc4zfyb3dfbm4.appsync-api.us-east-1.amazonaws.com/graphql",
+    "OutputValue": "https://g5z2setogbflfexkd3i54nriqi.appsync-api.us-east-1.amazonaws.com/graphql",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "amplify-mediavault-x-x-apimediavault-x:GraphQLApiEndpoint"
   },

@@ -2,11 +2,11 @@
   {
     "Source": {
       "StackName": "amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x",
-      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket15C694E1"
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketD26234B2"
     },
     "Destination": {
       "StackName": "amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x-holding",
-      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket15C694E1"
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketD26234B2"
     }
   }
 ]

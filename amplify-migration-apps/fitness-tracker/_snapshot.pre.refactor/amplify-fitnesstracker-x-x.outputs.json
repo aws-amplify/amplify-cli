@@ -35,7 +35,7 @@
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/55532570-3869-11f1-b875-0affe8b1cf09",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/05c223c0-387e-11f1-a0a5-0affda7b6827",
     "Description": "CloudFormation provider root stack name",
     "ExportName": "amplify-fitnesstracker-x-x-StackId"
   }

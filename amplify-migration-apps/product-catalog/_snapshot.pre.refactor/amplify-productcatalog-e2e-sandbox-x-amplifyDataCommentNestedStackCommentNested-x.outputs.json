@@ -1,22 +1,22 @@
 [
   {
     "OutputKey": "GetAttCommentTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x/stream/2026-04-15T01:23:53.782",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-hscmwhprkbaljmcpavj3dcztrq-x/stream/2026-04-15T03:53:06.820",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "caqorxixyrhgza7yzqnrt7o23i:GetAtt:CommentTable:StreamArn"
+    "ExportName": "e5folpqnrzbzpbark3e3agy5ly:GetAtt:CommentTable:StreamArn"
   },
   {
-    "OutputKey": "amplifyproductcataloge2esandbox0187871387dataamplifyDataCommentCommentDataSource4CBA8356Name",
-    "OutputValue": "CommentTable"
+    "OutputKey": "amplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentTableECA430A9TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-hscmwhprkbaljmcpavj3dcztrq-x"
   },
   {
     "OutputKey": "GetAttCommentTableName",
-    "OutputValue": "Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x",
+    "OutputValue": "Comment-hscmwhprkbaljmcpavj3dcztrq-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "caqorxixyrhgza7yzqnrt7o23i:GetAtt:CommentTable:Name"
+    "ExportName": "e5folpqnrzbzpbark3e3agy5ly:GetAtt:CommentTable:Name"
   },
   {
-    "OutputKey": "amplifyproductcataloge2esandbox0187871387dataamplifyDataCommentCommentTable74B8DDA4TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x"
+    "OutputKey": "amplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentDataSourceC4EBFBBFName",
+    "OutputValue": "CommentTable"
   }
 ]

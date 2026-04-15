@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Arn",
-    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-x"
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPI2639E0B5ApiId",
+    "OutputValue": "pa7lr2bmbjfqxdfidheoysbvhu"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC6B32CB6DestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604142-amplifydataamplifycodege-shui2rhtk2pf"
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPI2639E0B5GraphQLUrl",
+    "OutputValue": "https://xswambcukzfbnhzand3lag77ey.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId",
-    "OutputValue": "rjha5ajvwncwne5frb2wiqdmji"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPIDefaultApiKeyABE41BA8ApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6datalognutritiongen2xlambdaCA7E4418Ref",
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BRef",
     "OutputValue": "lognutrition-gen2-x"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DGraphQLUrl",
-    "OutputValue": "https://beosywz5qbatlciaxfj242dxbm.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB8CEB812DDestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604142-amplifydataamplifycodege-kqzgdclvoxoc"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPIDefaultApiKey24BA9C2AApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
   }
 ]
