@@ -944,7 +944,7 @@ __metadata:
     "@aws-amplify/graphql-model-transformer": ^2.14.2
     "@aws-amplify/graphql-predictions-transformer": ^2.2.2
     "@aws-amplify/graphql-relational-transformer": ^2.5.20
-    "@aws-amplify/graphql-searchable-transformer": ^2.7.19
+    "@aws-amplify/graphql-searchable-transformer": ^2.7.20
     "@aws-amplify/graphql-transformer": ^1.1.0
     "@aws-amplify/graphql-transformer-core": ^2.11.3
     "@aws-amplify/graphql-transformer-interfaces": ^3.12.1
@@ -1565,7 +1565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.7.19, @aws-amplify/graphql-searchable-transformer@npm:^2.7.19":
+"@aws-amplify/graphql-searchable-transformer@npm:2.7.19":
   version: 2.7.19
   resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.19"
   dependencies:
@@ -1580,6 +1580,24 @@ __metadata:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
   checksum: 27d943e7d4067e29c9034036bb3de0a9beded2d9299e639548d7a8ed3890179493d45905c99d0e10a38a33313cc5987f31832d05ac7463ce291d5b0e58d2fbaa
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-searchable-transformer@npm:^2.7.20":
+  version: 2.7.20
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.20"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.1
+    "@aws-amplify/graphql-model-transformer": 2.14.2
+    "@aws-amplify/graphql-transformer-core": 2.11.3
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.1
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.34.0
+  peerDependencies:
+    aws-cdk-lib: ^2.187.0
+    constructs: ^10.3.0
+  checksum: d11f88393678ebb3639998de2093e77a9c21e548fcfa40ca3a60eba0b54d37f6f34aa30b31c9167c07921152cef801bbed9923cbfe7db9986d0962da85180a9a
   languageName: node
   linkType: hard
 
