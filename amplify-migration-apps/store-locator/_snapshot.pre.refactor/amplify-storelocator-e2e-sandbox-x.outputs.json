@@ -1,0 +1,102 @@
+[
+  {
+    "OutputKey": "webClientId",
+    "OutputValue": "1jb6icmarkdqbom3q1caugppsp"
+  },
+  {
+    "OutputKey": "socialProviders",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "usernameAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "signupAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "oauthClientId",
+    "OutputValue": "1jb6icmarkdqbom3q1caugppsp"
+  },
+  {
+    "OutputKey": "allowUnauthenticatedIdentities",
+    "OutputValue": "true"
+  },
+  {
+    "OutputKey": "oauthCognitoDomain",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "oauthScope",
+    "OutputValue": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+  },
+  {
+    "OutputKey": "oauthRedirectSignOut",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "mfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "mfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "oauthResponseType",
+    "OutputValue": "code"
+  },
+  {
+    "OutputKey": "customOutputs",
+    "OutputValue": "{\"geo\":{\"aws_region\":\"us-east-1\",\"maps\":{\"items\":{\"storeLocatorMap-gen2-x\":{\"style\":\"VectorEsriStreets\"}},\"default\":\"storeLocatorMap-gen2-x\"},\"search_indices\":{\"items\":[\"storeLocatorSearch-gen2-x\"],\"default\":\"storeLocatorSearch-gen2-x\"},\"geofence_collections\":{\"items\":[\"storeLocatorGeofence-gen2-x\"],\"default\":\"storeLocatorGeofence-gen2-x\"}},\"version\":\"1.4\"}"
+  },
+  {
+    "OutputKey": "oauthRedirectSignIn",
+    "OutputValue": "https://example.com"
+  },
+  {
+    "OutputKey": "passwordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "authRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "groups",
+    "OutputValue": "[{\"storeLocatorAdmin\":{\"precedence\":0}}]"
+  },
+  {
+    "OutputKey": "definedFunctions",
+    "OutputValue": "[\"storelocator41a9495f41a9495fPostConfirmation-gen2-x\"]"
+  },
+  {
+    "OutputKey": "passwordlessOptions",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "deploymentType",
+    "OutputValue": "sandbox"
+  },
+  {
+    "OutputKey": "passwordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "userPoolId",
+    "OutputValue": "us-east-1_1dsjv7aux"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:81ff082e-6b3d-42b8-baa8-59f036f4bf6b"
+  },
+  {
+    "OutputKey": "verificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  }
+]

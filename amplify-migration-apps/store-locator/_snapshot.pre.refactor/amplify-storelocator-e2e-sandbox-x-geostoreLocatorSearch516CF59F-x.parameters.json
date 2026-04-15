@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthstoreLocatorAdminGroupRoleC0E3E7C0Ref",
+    "ParameterValue": "amplify-storelocat2604142-amplifyAuthstoreLocatorAd-Y07eHwc1xbQQ"
+  },
+  {
+    "ParameterKey": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthunauthenticatedUserRoleF5FAC08ERef",
+    "ParameterValue": "amplify-storelocat2604142-amplifyAuthunauthenticate-jXqOMCUo8MPA"
+  },
+  {
+    "ParameterKey": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthauthenticatedUserRoleFD3A976BRef",
+    "ParameterValue": "amplify-storelocat2604142-amplifyAuthauthenticatedU-wVZxcFB0fphi"
+  }
+]

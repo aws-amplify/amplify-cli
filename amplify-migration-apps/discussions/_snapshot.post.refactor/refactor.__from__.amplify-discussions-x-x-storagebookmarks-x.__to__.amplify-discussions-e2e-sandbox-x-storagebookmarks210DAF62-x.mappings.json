@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-x-x-storagebookmarks-x",
+      "LogicalResourceId": "DynamoDBTable"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x",
+      "LogicalResourceId": "bookmarksA4548304"
+    }
+  }
+]

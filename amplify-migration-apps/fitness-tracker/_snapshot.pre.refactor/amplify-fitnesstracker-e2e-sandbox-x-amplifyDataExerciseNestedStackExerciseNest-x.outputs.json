@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataExerciseExerciseTable43007536TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-xwgwkksjrbcoxnb64a6clvir4u-x"
+  },
+  {
+    "OutputKey": "GetAttExerciseTableName",
+    "OutputValue": "Exercise-xwgwkksjrbcoxnb64a6clvir4u-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "pa7lr2bmbjfqxdfidheoysbvhu:GetAtt:ExerciseTable:Name"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataExerciseExerciseDataSource0ED76988Name",
+    "OutputValue": "ExerciseTable"
+  },
+  {
+    "OutputKey": "GetAttExerciseTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-xwgwkksjrbcoxnb64a6clvir4u-x/stream/2026-04-15T03:52:31.073",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "pa7lr2bmbjfqxdfidheoysbvhu:GetAtt:ExerciseTable:StreamArn"
+  }
+]

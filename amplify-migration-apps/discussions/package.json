@@ -13,6 +13,7 @@
     "configure": "./backend/configure.sh",
     "configure-schema": "./backend/configure-schema.sh",
     "sanitize": "tsx ../sanitize.ts",
+    "normalize": "tsx ../normalize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
     "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose --testPathIgnorePatterns='shared-data'",
     "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose --testPathIgnorePatterns='shared-data'",

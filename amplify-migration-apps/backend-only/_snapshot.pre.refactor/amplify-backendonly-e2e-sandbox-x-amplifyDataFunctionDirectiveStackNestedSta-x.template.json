@@ -1,0 +1,560 @@
+{
+  "Description": "An auto-generated nested stack for the @function directive.",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "QuotegeneratorGen2SwedqgwlifLambdaDataSourceServiceRoleB8202CCB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2SwedqgwlifLambdaDataSource/ServiceRole/Resource"
+      }
+    },
+    "QuotegeneratorGen2SwedqgwlifLambdaDataSourceServiceRoleDefaultPolicy73BD834F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "HasEnvironmentParameter",
+                    {
+                      "Fn::Sub": [
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x",
+                        {}
+                      ]
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::If": [
+                          "HasEnvironmentParameter",
+                          {
+                            "Fn::Sub": [
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x",
+                              {}
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x"
+                          }
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "QuotegeneratorGen2SwedqgwlifLambdaDataSourceServiceRoleDefaultPolicy73BD834F",
+        "Roles": [
+          {
+            "Ref": "QuotegeneratorGen2SwedqgwlifLambdaDataSourceServiceRoleB8202CCB"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2SwedqgwlifLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "QuotegeneratorGen2SwedqgwlifLambdaDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
+        },
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
+              "HasEnvironmentParameter",
+              {
+                "Fn::Sub": [
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x",
+                  {}
+                ]
+              },
+              {
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:quotegenerator-gen2-x"
+              }
+            ]
+          }
+        },
+        "Name": "QuotegeneratorGen2SwedqgwlifLambdaDataSource",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "QuotegeneratorGen2SwedqgwlifLambdaDataSourceServiceRoleB8202CCB",
+            "Arn"
+          ]
+        },
+        "Type": "AWS_LAMBDA"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2SwedqgwlifLambdaDataSource/Resource"
+      }
+    },
+    "InvokeQuotegeneratorGen2SwedqgwlifLambdaDataSourceInvokeQuotegeneratorGen2SwedqgwlifLambdaDataSourceAppSyncFunction88B50E2A": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "QuotegeneratorGen2SwedqgwlifLambdaDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "InvokeQuotegeneratorGen2SwedqgwlifLambdaDataSource",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/78782c75a87f723f2233b8f3eb0eafb4c9d776d40551ff4f5878175aef97aed8.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
+        }
+      },
+      "DependsOn": [
+        "QuotegeneratorGen2SwedqgwlifLambdaDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeQuotegeneratorGen2SwedqgwlifLambdaDataSource/InvokeQuotegeneratorGen2SwedqgwlifLambdaDataSource.AppSyncFunction"
+      }
+    },
+    "QuerygetRandomQuoteResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
+        },
+        "FieldName": "getRandomQuote",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QueryGetRandomQuoteAuthFNQueryGetRandomQuoteAuthFNAppSyncFunction15864A6C",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "InvokeQuotegeneratorGen2SwedqgwlifLambdaDataSourceInvokeQuotegeneratorGen2SwedqgwlifLambdaDataSourceAppSyncFunction88B50E2A",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "## [Start] Stash resolver specific context.. **\n$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getRandomQuote\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthIdentityPool210F50E3Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/387d5992f5fc03d05de27289457dcc374a84c42a889acb504aff1031047dde00.vtl"
+        },
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/queryGetRandomQuoteResolver"
+      }
+    },
+    "QueryGetRandomQuoteAuthFNQueryGetRandomQuoteAuthFNAppSyncFunction15864A6C": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPINONEDSD6CF5616Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetRandomQuoteAuthFN",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/830fd5a473c43e78ac02d7ec373d9543ca16c5b96b72acdde27ccd8277dec3f2.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QueryGetRandomQuoteAuthFN/QueryGetRandomQuoteAuthFN.AppSyncFunction"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQWvDMAyFf0vvjpalbPc1o6cxRvIDimorQY0jl8huKSH/fdhlh50+vSe9hxpo3mqod3jXyrqp8nyG9Zs0kusj2sm0g7RBHEcOYvCup9XjfHYIxyQ2mwdUMni96kMsrF9l+YkR+5AWSzn/X/3l2iADj2nB0twO0pEGf6NlM4wzrF3w5b7wJ3i2jyyf02Z0f0JVigofGUb3cEh2opj/2Uwx+4gjy7gZCY7goi+3poHXd6h3F2WuliSRZ4LuyV9Irx7YCwEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Parameters": {
+    "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthIdentityPool210F50E3Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPINONEDSD6CF5616Name": {
+      "Type": "String"
+    }
+  }
+}

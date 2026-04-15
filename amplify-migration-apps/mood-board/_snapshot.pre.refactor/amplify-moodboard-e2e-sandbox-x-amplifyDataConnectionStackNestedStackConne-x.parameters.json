@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef",
+    "ParameterValue": "amplify-moodboard26041500-amplifyAuthunauthenticate-2CR87a5ajww1"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthIdentityPoolB80FD358Ref",
+    "ParameterValue": "us-east-1:edbce570-5f19-4755-9803-52e7b3e0c56d"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource909B7D4FOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemTableB6DE0468TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-pd6mhagtyveltorgdvv7movvqq-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPINONEDS7A779376Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref",
+    "ParameterValue": "amplify-moodboard26041500-amplifyAuthauthenticatedU-inPzqwEs0wDw"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardNestedStackBoardNestedStackResource95BF389DOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardTableE632E322TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-pd6mhagtyveltorgdvv7movvqq-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardNestedStackBoardNestedStackResource95BF389DOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardDataSource5B663EE3Name",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId",
+    "ParameterValue": "tr6hjslzxzextaawz3ftjzwqyi"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource909B7D4FOutputsamplifymoodboarde2esandbox799a4d1a84dataamplifyDataMoodItemMoodItemDataSourceA5BD018EName",
+    "ParameterValue": "MoodItemTable"
+  }
+]
