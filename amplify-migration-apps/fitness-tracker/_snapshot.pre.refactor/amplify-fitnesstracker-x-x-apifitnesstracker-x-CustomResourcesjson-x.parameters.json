@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-fitnesstra2604141634-x-ec6cd-deployment"
+    "ParameterValue": "amplify-fitnesstracker-x-x-deployment"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "4u7y7wfisvavppu3diznx2j6mm"
+    "ParameterValue": "wj6lytnty5ftnkpbpk6i7y4zpi"
   },
   {
     "ParameterKey": "env",

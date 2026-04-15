@@ -24,7 +24,7 @@
     "post-refactor": "true",
     "post-sandbox": "true",
     "pre-sandbox": "true",
-    "post-push": "true"
+    "post-push": "npx tsx migration/post-push.ts"
   },
   "dependencies": {
     "@aws-amplify/geo": "^3.0.92",

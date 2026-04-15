@@ -256,13 +256,13 @@
         "PolicyName": "storeLocatorMap-gen2-xPolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatore2esandbox33f387fd3aauthNestedStackauthNestedStackResource706AC16EOutputsamplifystorelocatore2esandbox33f387fd3aauthamplifyAuthauthenticatedUserRole39BF4BE6Ref"
+            "Ref": "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthauthenticatedUserRole86686D6ERef"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandbox33f387fd3aauthNestedStackauthNestedStackResource706AC16EOutputsamplifystorelocatore2esandbox33f387fd3aauthamplifyAuthunauthenticatedUserRoleBFADA170Ref"
+            "Ref": "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthunauthenticatedUserRole20612435Ref"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandbox33f387fd3aauthNestedStackauthNestedStackResource706AC16EOutputsamplifystorelocatore2esandbox33f387fd3aauthamplifyAuthstoreLocatorAdminGroupRole5087772FRef"
+            "Ref": "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthstoreLocatorAdminGroupRoleD94C84CBRef"
           }
         ]
       },
@@ -275,7 +275,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQrCMBBA4bN0n441iOA64M4f6gEkTVKZNpmUZmKR0LtLdfUWH0+CPJygqfSSamPH2mMH5eoSO/tgbUaherroaUJ6Cb2kZ0EdoKie2ujdhvfo0XxW4XXorAbV0zmTYYy0bqxy4hhal2KezW+4ZZ4yr4KidTCk3VtK2B+hqYaEWM+ZGIOD9t8vaxBJhJ8AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQ6CMBBA4bOwLyM20Qs0cedP8ABmaIsZaKeETiWGcHejrt7iy9OgDw00FS65tm6sA3WwXnwW7+6CdlSm5zNOE/FT4ZIfK2GE1fTcpuC/eEuB7HtTAWPnEEzPp8JWKPH2ZVOypNj6nMpsf8O1yFRkU5ychyHvXlrD/ghNNWSiei4sFD20/34Au+f/SJ8AAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorMap/CDKMetadata/Default"
@@ -314,7 +314,7 @@
         ]
       }
     },
-    "amplifystorelocatore2esandbox33f387fd3ageostoreLocatorMapCustomMap15598541MapName": {
+    "amplifystorelocatore2esandboxf766a11072geostoreLocatorMapCustomMap2B1F86DAMapName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorMapCustomMap3D69EC7C",
@@ -590,13 +590,13 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocatore2esandbox33f387fd3aauthNestedStackauthNestedStackResource706AC16EOutputsamplifystorelocatore2esandbox33f387fd3aauthamplifyAuthauthenticatedUserRole39BF4BE6Ref": {
+    "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthauthenticatedUserRole86686D6ERef": {
       "Type": "String"
     },
-    "referencetoamplifystorelocatore2esandbox33f387fd3aauthNestedStackauthNestedStackResource706AC16EOutputsamplifystorelocatore2esandbox33f387fd3aauthamplifyAuthunauthenticatedUserRoleBFADA170Ref": {
+    "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthunauthenticatedUserRole20612435Ref": {
       "Type": "String"
     },
-    "referencetoamplifystorelocatore2esandbox33f387fd3aauthNestedStackauthNestedStackResource706AC16EOutputsamplifystorelocatore2esandbox33f387fd3aauthamplifyAuthstoreLocatorAdminGroupRole5087772FRef": {
+    "referencetoamplifystorelocatore2esandboxf766a11072authNestedStackauthNestedStackResourceC7104615Outputsamplifystorelocatore2esandboxf766a11072authamplifyAuthstoreLocatorAdminGroupRoleD94C84CBRef": {
       "Type": "String"
     }
   }

@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:e151bdbb-6dfc-4eec-be25-899be6cba0e7"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -42,7 +42,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboa2604141617-e2e-sandbox-b9ce55d36e/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:e151bdbb-6dfc-4eec-be25-899be6cba0e7"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -86,16 +86,16 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboa2604141617-e2e-sandbox-b9ce55d36e/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK1BBI/SkxeRimeJyapb0w00q0VC/l2KVHuamTczGvRqA1Vhhlha9yg9XSDtMQq6oxj7UGaI52TDjUkCpFPE/hCCV/WVf34ytSdkmVd/snPIQvKezvPcBI9bEWPvHbJkRaaDNMJxOGrOWXFwCG1cvLSG5Rqqoo1EZf9koQ6h+eoHjkjons4AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVVIUZY2ldV3q6QjpgFHQnMbZTZoyXZMOdSQKkc8ThGIJX9Y1/fja1J2RZVn+yd8hC8p7Py9wEjzsRYx89smRFpoc0wWk4ac5ZcXAIbVy9tIb1FqqijUTl8GShHqH56gf10GUazgAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboa2604141617-e2e-sandbox-b9ce55d36e/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -367,20 +367,20 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthUserPoolBC3694A2Ref": {
-      "Value": "us-east-1_x18jPvLf8"
+    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPool4C87431ARef": {
+      "Value": "us-east-1_Moc1WFnWk"
     },
-    "amplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthUserPoolAppClient8DFF36B3Ref": {
-      "Value": "34bp928fqrp76s4pbc4uotjhbq"
+    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthUserPoolAppClient404AD969Ref": {
+      "Value": "5ekdk1jf07t84hl4ns11jglpt3"
     },
-    "amplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthIdentityPoolB004F76ERef": {
-      "Value": "us-east-1:e151bdbb-6dfc-4eec-be25-899be6cba0e7"
+    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthIdentityPoolE623DB0ARef": {
+      "Value": "us-east-1:fad14851-c270-44f1-bebe-9a5e780ab329"
     },
-    "amplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthauthenticatedUserRole6D305084Ref": {
-      "Value": "amplify-projectboa2604141-amplifyAuthauthenticatedU-GxXyBMfXGBJn"
+    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthauthenticatedUserRole1E0DC40CRef": {
+      "Value": "amplify-projectboa2604142-amplifyAuthauthenticatedU-pWa3DkVgvvp2"
     },
-    "amplifyprojectboa2604141617e2esandboxb9ce55d36eauthamplifyAuthunauthenticatedUserRole869966A8Ref": {
-      "Value": "amplify-projectboa2604141-amplifyAuthunauthenticate-FwFL6iWPsBfn"
+    "amplifyprojectboardse2esandboxfb57929294authamplifyAuthunauthenticatedUserRole010FB2A2Ref": {
+      "Value": "amplify-projectboa2604142-amplifyAuthunauthenticate-I2EBv7VnlK9x"
     }
   }
 }

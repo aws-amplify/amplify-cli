@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "7aqt7h6nk38dfruasbugjspdl"
+    "OutputValue": "74cktn2kovh375q3rl3257137b"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-backendonl2604141-backendonlycb1a13ab81664-4uht6yuw7bsp"
+    "OutputValue": "amplify-backendonl2604142-backendonlycb1a13ab81664-hmf4dqcue1g0"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "7aqt7h6nk38dfruasbugjspdl"
+    "OutputValue": "74cktn2kovh375q3rl3257137b"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://dvfhgykex5hndgpuje34fdzzha.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "https://dbzmu7uzsbcxxksrukpihpxaby.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "pi4vomstg5bxpbvj6uhhz3fgvm"
+    "OutputValue": "tb5xhebpdjbg5ppu7gnclyrgeu"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d016238e4-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-backendonl2604141-backendonlycb1a13ab81664-4uht6yuw7bsp\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-backendonl2604142-backendonlycb1a13ab81664-hmf4dqcue1g0\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-backendonl2604141-amplifydataamplifycodege-5qaiqbjffivo/model-schema.graphql"
+    "OutputValue": "s3://amplify-backendonl2604142-amplifydataamplifycodege-q4rwlndl2kq7/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_QbEnyujax"
+    "OutputValue": "us-east-1_yedejeTXn"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:3d68243f-5f2c-44db-9207-55cf4339a4e8"
+    "OutputValue": "us-east-1:34c3ebe7-bf84-450e-9dd6-7f5f20d6d408"
   },
   {
     "OutputKey": "verificationMechanisms",

@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-mediavault-x-x-deployment",
       "UnauthRoleName": "amplify-mediavault-x-x-unauthRole",
       "StackName": "amplify-mediavault-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/825dda80-383f-11f1-9dd9-12bf5621106f",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/5ba4bb00-3869-11f1-a7d3-0afffc45dd0d",
       "AmplifyAppId": "mediavault"
     },
     "categories": {

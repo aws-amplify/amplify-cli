@@ -129,7 +129,7 @@
           ]
         },
         "Description": "graphql",
-        "Expires": 1784838144
+        "Expires": 1784856139
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -356,7 +356,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6a331f18-dea8-4ace-aeb3-d8fa6dd451e8\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6bfe9001-2df6-45ea-bd93-ac94157d6310\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -453,7 +453,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6a331f18-dea8-4ace-aeb3-d8fa6dd451e8\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6bfe9001-2df6-45ea-bd93-ac94157d6310\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -496,7 +496,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6a331f18-dea8-4ace-aeb3-d8fa6dd451e8\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6bfe9001-2df6-45ea-bd93-ac94157d6310\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -539,7 +539,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6a331f18-dea8-4ace-aeb3-d8fa6dd451e8\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6bfe9001-2df6-45ea-bd93-ac94157d6310\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -582,7 +582,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6a331f18-dea8-4ace-aeb3-d8fa6dd451e8\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6bfe9001-2df6-45ea-bd93-ac94157d6310\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -625,7 +625,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6a331f18-dea8-4ace-aeb3-d8fa6dd451e8\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6bfe9001-2df6-45ea-bd93-ac94157d6310\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"thumbnailgen-x\"]))\n$util.toJson({})"
             ]
           ]
         },

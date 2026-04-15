@@ -4,20 +4,16 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthUserPool367EFDEBRef",
-    "ParameterValue": "us-east-1_MaYjFBmVw"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthUserPool3BB3A476Ref",
+    "ParameterValue": "us-east-1_wBbVHIMMW"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef",
-    "ParameterValue": "amplify-fitnesstra2604141-amplifyAuthunauthenticate-XD8Hg3mokjcq"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef",
+    "ParameterValue": "us-east-1:39e7fe18-e057-418c-8e1e-1e1c3db4e0cf"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef",
-    "ParameterValue": "amplify-fitnesstra2604141-amplifyAuthauthenticatedU-cGqiTcIUTgi4"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref",
-    "ParameterValue": "us-east-1:fdef89a0-70e9-4732-86c6-5e4f8adac12c"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref",
+    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthauthenticatedU-IJJ54HHuxReG"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -34,5 +30,9 @@
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref",
+    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthunauthenticate-wdL5ZJnVmqli"
   }
 ]

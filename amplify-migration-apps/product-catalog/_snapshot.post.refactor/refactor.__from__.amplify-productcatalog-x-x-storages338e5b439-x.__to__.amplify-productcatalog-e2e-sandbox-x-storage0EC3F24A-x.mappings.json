@@ -1,12 +1,12 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcat2604141556-x-a4ffc-storages338e5b439-B0X1R2MH04H1/d50abd00-383c-11f1-a075-0e352bdff5bb",
+      "StackName": "amplify-productcatalog-x-x-storages338e5b439-x",
       "LogicalResourceId": "S3Bucket"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcat2604141556-e2e-sandbox-d0bbc153f0-storage0EC3F24A-18OFTZGKQVPV9/41de2a50-383f-11f1-9485-0afffd3fdb51",
-      "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffcgen2xBucket159D3D3C"
+      "StackName": "amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucketBF2A4B68"
     }
   }
 ]

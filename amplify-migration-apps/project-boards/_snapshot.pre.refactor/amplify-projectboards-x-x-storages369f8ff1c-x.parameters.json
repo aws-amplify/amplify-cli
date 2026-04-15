@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-projectboa2604141617-x-59641-unauthRole"
+    "ParameterValue": "amplify-projectboards-x-x-unauthRole"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -53,7 +53,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-projectboa2604141617-x-59641-authRole"
+    "ParameterValue": "amplify-projectboards-x-x-authRole"
   },
   {
     "ParameterKey": "GuestAllowList",

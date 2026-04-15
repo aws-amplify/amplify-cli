@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "discus-avatars7df19-x",
+    "OutputValue": "discus-avatarsx-x",
     "Description": "Bucket name for the S3 bucket"
   },
   {

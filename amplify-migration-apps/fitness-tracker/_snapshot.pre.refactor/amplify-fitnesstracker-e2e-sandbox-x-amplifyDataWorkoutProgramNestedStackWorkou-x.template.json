@@ -37,22 +37,22 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceF6FFC483Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataAmplifyTableManagerTab5EA507B1": {
+    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource66EC4E9FOutputsamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataAmplifyTableManagerTab95F106F7": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId": {
+    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName": {
+    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef": {
+    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef": {
+    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref": {
+    "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef": {
       "Type": "String"
     }
   },
@@ -353,9 +353,9 @@
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceF6FFC483Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataAmplifyTableManagerTab5EA507B1"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource66EC4E9FOutputsamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataAmplifyTableManagerTab95F106F7"
         },
-        "tableName": "WorkoutProgram-4u7y7wfisvavppu3diznx2j6mm-x",
+        "tableName": "WorkoutProgram-wj6lytnty5ftnkpbpk6i7y4zpi-x",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -418,7 +418,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/WorkoutProgramTable/Default/Default"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/WorkoutProgramTable/Default/Default"
       }
     },
     "WorkoutProgramIAMRoleB75B98D5": {
@@ -461,7 +461,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "WorkoutProgram-4u7y7wfisvavppu3diznx2j6mm-x"
+                          "tablename": "WorkoutProgram-wj6lytnty5ftnkpbpk6i7y4zpi-x"
                         }
                       ]
                     },
@@ -469,7 +469,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "WorkoutProgram-4u7y7wfisvavppu3diznx2j6mm-x"
+                          "tablename": "WorkoutProgram-wj6lytnty5ftnkpbpk6i7y4zpi-x"
                         }
                       ]
                     }
@@ -487,7 +487,7 @@
             [
               "WorkoutProgramIAMRol516c57-",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "-NONE"
             ]
@@ -511,14 +511,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/WorkoutProgramIAMRole/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/WorkoutProgramIAMRole/Resource"
       }
     },
     "WorkoutProgramDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DynamoDBConfig": {
           "AwsRegion": {
@@ -566,17 +566,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/WorkoutProgramDataSource/Resource"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/WorkoutProgramDataSource/Resource"
       }
     },
     "QuerygetWorkoutProgramauth0FunctionQuerygetWorkoutProgramauth0FunctionAppSyncFunctionF61649FE": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetWorkoutProgramauth0Function",
@@ -588,17 +588,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/QuerygetWorkoutProgramauth0Function/QuerygetWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/QuerygetWorkoutProgramauth0Function/QuerygetWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "QuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction3557039E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetWorkoutProgrampostAuth0Function",
@@ -610,14 +610,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/QuerygetWorkoutProgrampostAuth0Function/QuerygetWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/QuerygetWorkoutProgrampostAuth0Function/QuerygetWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "QueryGetWorkoutProgramDataResolverFnQueryGetWorkoutProgramDataResolverFnAppSyncFunctionDFD5C9FA": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -640,14 +640,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/QueryGetWorkoutProgramDataResolverFn/QueryGetWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/QueryGetWorkoutProgramDataResolverFn/QueryGetWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "GetWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "getWorkoutProgram",
         "Kind": "PIPELINE",
@@ -679,7 +679,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -718,7 +718,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -730,11 +730,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -746,17 +746,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/queryGetWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/queryGetWorkoutProgramResolver"
       }
     },
     "QuerylistWorkoutProgramsauth0FunctionQuerylistWorkoutProgramsauth0FunctionAppSyncFunctionEDC95461": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistWorkoutProgramsauth0Function",
@@ -768,17 +768,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/QuerylistWorkoutProgramsauth0Function/QuerylistWorkoutProgramsauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/QuerylistWorkoutProgramsauth0Function/QuerylistWorkoutProgramsauth0Function.AppSyncFunction"
       }
     },
     "QuerylistWorkoutProgramspostAuth0FunctionQuerylistWorkoutProgramspostAuth0FunctionAppSyncFunction784BDD23": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistWorkoutProgramspostAuth0Function",
@@ -790,14 +790,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/QuerylistWorkoutProgramspostAuth0Function/QuerylistWorkoutProgramspostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/QuerylistWorkoutProgramspostAuth0Function/QuerylistWorkoutProgramspostAuth0Function.AppSyncFunction"
       }
     },
     "QueryListWorkoutProgramsDataResolverFnQueryListWorkoutProgramsDataResolverFnAppSyncFunctionC43C9A14": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -820,14 +820,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/QueryListWorkoutProgramsDataResolverFn/QueryListWorkoutProgramsDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/QueryListWorkoutProgramsDataResolverFn/QueryListWorkoutProgramsDataResolverFn.AppSyncFunction"
       }
     },
     "ListWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "listWorkoutPrograms",
         "Kind": "PIPELINE",
@@ -859,7 +859,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listWorkoutPrograms\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -898,7 +898,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -910,11 +910,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -926,17 +926,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/queryListWorkoutProgramsResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/queryListWorkoutProgramsResolver"
       }
     },
     "MutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD050B3C1": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateWorkoutPrograminit0Function",
@@ -948,17 +948,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationcreateWorkoutPrograminit0Function/MutationcreateWorkoutPrograminit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationcreateWorkoutPrograminit0Function/MutationcreateWorkoutPrograminit0Function.AppSyncFunction"
       }
     },
     "MutationcreateWorkoutProgramauth0FunctionMutationcreateWorkoutProgramauth0FunctionAppSyncFunction6165E2A5": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateWorkoutProgramauth0Function",
@@ -970,17 +970,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationcreateWorkoutProgramauth0Function/MutationcreateWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationcreateWorkoutProgramauth0Function/MutationcreateWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "MutationcreateWorkoutProgrampostAuth0FunctionMutationcreateWorkoutProgrampostAuth0FunctionAppSyncFunctionC1F2C501": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreateWorkoutProgrampostAuth0Function",
@@ -992,14 +992,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationcreateWorkoutProgrampostAuth0Function/MutationcreateWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationcreateWorkoutProgrampostAuth0Function/MutationcreateWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "MutationCreateWorkoutProgramDataResolverFnMutationCreateWorkoutProgramDataResolverFnAppSyncFunction20E77E8E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1022,14 +1022,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationCreateWorkoutProgramDataResolverFn/MutationCreateWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationCreateWorkoutProgramDataResolverFn/MutationCreateWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "CreateWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "createWorkoutProgram",
         "Kind": "PIPELINE",
@@ -1067,7 +1067,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1106,7 +1106,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1118,11 +1118,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1134,17 +1134,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/mutationCreateWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/mutationCreateWorkoutProgramResolver"
       }
     },
     "MutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionDF7D6DB3": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateWorkoutPrograminit0Function",
@@ -1156,14 +1156,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationupdateWorkoutPrograminit0Function/MutationupdateWorkoutPrograminit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationupdateWorkoutPrograminit0Function/MutationupdateWorkoutPrograminit0Function.AppSyncFunction"
       }
     },
     "MutationupdateWorkoutProgramauth0FunctionMutationupdateWorkoutProgramauth0FunctionAppSyncFunction5B1F99AE": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1186,17 +1186,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationupdateWorkoutProgramauth0Function/MutationupdateWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationupdateWorkoutProgramauth0Function/MutationupdateWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "MutationupdateWorkoutProgrampostAuth0FunctionMutationupdateWorkoutProgrampostAuth0FunctionAppSyncFunction848486DA": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdateWorkoutProgrampostAuth0Function",
@@ -1208,14 +1208,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationupdateWorkoutProgrampostAuth0Function/MutationupdateWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationupdateWorkoutProgrampostAuth0Function/MutationupdateWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "MutationUpdateWorkoutProgramDataResolverFnMutationUpdateWorkoutProgramDataResolverFnAppSyncFunctionC239D12F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1238,14 +1238,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationUpdateWorkoutProgramDataResolverFn/MutationUpdateWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationUpdateWorkoutProgramDataResolverFn/MutationUpdateWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "UpdateWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "updateWorkoutProgram",
         "Kind": "PIPELINE",
@@ -1283,7 +1283,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1322,7 +1322,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1334,11 +1334,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1350,14 +1350,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/mutationUpdateWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/mutationUpdateWorkoutProgramResolver"
       }
     },
     "MutationdeleteWorkoutProgramauth0FunctionMutationdeleteWorkoutProgramauth0FunctionAppSyncFunctionCF8FDD99": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1380,17 +1380,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationdeleteWorkoutProgramauth0Function/MutationdeleteWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationdeleteWorkoutProgramauth0Function/MutationdeleteWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "MutationdeleteWorkoutProgrampostAuth0FunctionMutationdeleteWorkoutProgrampostAuth0FunctionAppSyncFunction1A56FB4E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationdeleteWorkoutProgrampostAuth0Function",
@@ -1402,14 +1402,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationdeleteWorkoutProgrampostAuth0Function/MutationdeleteWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationdeleteWorkoutProgrampostAuth0Function/MutationdeleteWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "MutationDeleteWorkoutProgramDataResolverFnMutationDeleteWorkoutProgramDataResolverFnAppSyncFunction57D3FA26": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1432,14 +1432,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/MutationDeleteWorkoutProgramDataResolverFn/MutationDeleteWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/MutationDeleteWorkoutProgramDataResolverFn/MutationDeleteWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "DeleteWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "deleteWorkoutProgram",
         "Kind": "PIPELINE",
@@ -1471,7 +1471,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1510,7 +1510,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1522,11 +1522,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1538,17 +1538,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/mutationDeleteWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/mutationDeleteWorkoutProgramResolver"
       }
     },
     "SubscriptiononCreateWorkoutProgramauth0FunctionSubscriptiononCreateWorkoutProgramauth0FunctionAppSyncFunctionBA1C0577": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateWorkoutProgramauth0Function",
@@ -1560,17 +1560,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptiononCreateWorkoutProgramauth0Function/SubscriptiononCreateWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptiononCreateWorkoutProgramauth0Function/SubscriptiononCreateWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononCreateWorkoutProgrampostAuth0FunctionSubscriptiononCreateWorkoutProgrampostAuth0FunctionAppSyncFunction1FBC8B34": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreateWorkoutProgrampostAuth0Function",
@@ -1582,17 +1582,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptiononCreateWorkoutProgrampostAuth0Function/SubscriptiononCreateWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptiononCreateWorkoutProgrampostAuth0Function/SubscriptiononCreateWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyncFunction4E344723": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnCreateWorkoutProgramDataResolverFn",
@@ -1606,14 +1606,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptionOnCreateWorkoutProgramDataResolverFn/SubscriptionOnCreateWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptionOnCreateWorkoutProgramDataResolverFn/SubscriptionOnCreateWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononCreateWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "onCreateWorkoutProgram",
         "Kind": "PIPELINE",
@@ -1645,7 +1645,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1657,7 +1657,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1669,11 +1669,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1685,17 +1685,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/subscriptionOnCreateWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/subscriptionOnCreateWorkoutProgramResolver"
       }
     },
     "SubscriptiononUpdateWorkoutProgramauth0FunctionSubscriptiononUpdateWorkoutProgramauth0FunctionAppSyncFunctionEC33DFA9": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateWorkoutProgramauth0Function",
@@ -1707,17 +1707,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptiononUpdateWorkoutProgramauth0Function/SubscriptiononUpdateWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptiononUpdateWorkoutProgramauth0Function/SubscriptiononUpdateWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononUpdateWorkoutProgrampostAuth0FunctionSubscriptiononUpdateWorkoutProgrampostAuth0FunctionAppSyncFunctionB64D3021": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdateWorkoutProgrampostAuth0Function",
@@ -1729,17 +1729,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptiononUpdateWorkoutProgrampostAuth0Function/SubscriptiononUpdateWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptiononUpdateWorkoutProgrampostAuth0Function/SubscriptiononUpdateWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnUpdateWorkoutProgramDataResolverFnSubscriptionOnUpdateWorkoutProgramDataResolverFnAppSyncFunction09BC3352": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnUpdateWorkoutProgramDataResolverFn",
@@ -1753,14 +1753,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptionOnUpdateWorkoutProgramDataResolverFn/SubscriptionOnUpdateWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptionOnUpdateWorkoutProgramDataResolverFn/SubscriptionOnUpdateWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononUpdateWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "onUpdateWorkoutProgram",
         "Kind": "PIPELINE",
@@ -1792,7 +1792,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1804,7 +1804,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1816,11 +1816,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1832,17 +1832,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/subscriptionOnUpdateWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/subscriptionOnUpdateWorkoutProgramResolver"
       }
     },
     "SubscriptiononDeleteWorkoutProgramauth0FunctionSubscriptiononDeleteWorkoutProgramauth0FunctionAppSyncFunction798D646D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteWorkoutProgramauth0Function",
@@ -1854,17 +1854,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptiononDeleteWorkoutProgramauth0Function/SubscriptiononDeleteWorkoutProgramauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptiononDeleteWorkoutProgramauth0Function/SubscriptiononDeleteWorkoutProgramauth0Function.AppSyncFunction"
       }
     },
     "SubscriptiononDeleteWorkoutProgrampostAuth0FunctionSubscriptiononDeleteWorkoutProgrampostAuth0FunctionAppSyncFunctionF1F4A2FC": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeleteWorkoutProgrampostAuth0Function",
@@ -1876,17 +1876,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptiononDeleteWorkoutProgrampostAuth0Function/SubscriptiononDeleteWorkoutProgrampostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptiononDeleteWorkoutProgrampostAuth0Function/SubscriptiononDeleteWorkoutProgrampostAuth0Function.AppSyncFunction"
       }
     },
     "SubscriptionOnDeleteWorkoutProgramDataResolverFnSubscriptionOnDeleteWorkoutProgramDataResolverFnAppSyncFunction7AE965FB": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnDeleteWorkoutProgramDataResolverFn",
@@ -1900,14 +1900,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/SubscriptionOnDeleteWorkoutProgramDataResolverFn/SubscriptionOnDeleteWorkoutProgramDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/SubscriptionOnDeleteWorkoutProgramDataResolverFn/SubscriptionOnDeleteWorkoutProgramDataResolverFn.AppSyncFunction"
       }
     },
     "SubscriptiononDeleteWorkoutProgramResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "onDeleteWorkoutProgram",
         "Kind": "PIPELINE",
@@ -1939,7 +1939,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteWorkoutProgram\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1951,7 +1951,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1963,11 +1963,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1979,17 +1979,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/subscriptionOnDeleteWorkoutProgramResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/subscriptionOnDeleteWorkoutProgramResolver"
       }
     },
     "WorkoutProgramOwnerDataResolverFnWorkoutProgramOwnerDataResolverFnAppSyncFunction6C8EE914": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPINONEDS2F5EFBEFName"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPINONEDS803DDFBBName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramOwnerDataResolverFn",
@@ -2003,14 +2003,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/WorkoutProgramOwnerDataResolverFn/WorkoutProgramOwnerDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/WorkoutProgramOwnerDataResolverFn/WorkoutProgramOwnerDataResolverFn.AppSyncFunction"
       }
     },
     "WorkoutProgramownerResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
         },
         "FieldName": "owner",
         "Kind": "PIPELINE",
@@ -2030,7 +2030,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"WorkoutProgram\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -2042,7 +2042,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthauthenticatedUserRole7C4432ABRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthauthenticatedUserRoleAF582682Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -2054,11 +2054,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthunauthenticatedUserRole80A6EA4FRef"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthunauthenticatedUserRole7CAAFC84Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3authNestedStackauthNestedStackResourceF80D19F3Outputsamplifyfitnesstra2604141634e2esandbox67e1cabfd3authamplifyAuthIdentityPoolF0F94269Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6authNestedStackauthNestedStackResourceE6958888Outputsamplifyfitnesstrackere2esandbox8ed617aee6authamplifyAuthIdentityPool0905012FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2070,16 +2070,16 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/workoutProgramOwnerResolver"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/workoutProgramOwnerResolver"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwWrDMAyGn6V3R+vSMdhxTehxG8nuRbGV4iaRgyW3lJB3H0lHx06/PvQh/TnkL2+w3eBVMuu6rPcNTB8kSq5WtJ0pWv7CiAMpxQWKwM6rD2wqkpCiJVMk0TD8YcuPGa9ynNyNcQiugW9setqjkPE4wFSF/m6HnmaD4yg3tjCVq142JSrWj5P/6ZDYLiWKwK0/pYhro9/P/YXibGR3RBFSgfcljOxgn2xHuhSYF/cz6ZjUrOta8eT5NBsOjuAsT5c8h+dX2G7O4n0WE6sfCKp7/gAZX0DSNgEAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X31GNU230F7bhNsHtlEoNSwEGx06pCvPsEnTrt9PuTP9l/DvlLBtkOr7K3rt8PvoH5g0TJ1Yq2N0XLXxhxJKW4QhHYefWBTUUSUrRkiiQaxj9s+THjVU6zuzGOwTXwjc1ARxQyHkeYqzDc7TDQYnCa5MYW5nLTy6ZExfpx8j+9J7ZriSJw67sUcWv0+3m4UFyMHE4oQirwtoaRAxyT7UnXAsvqfiadkpptXSt2nrvFcHAEZ3m65Dk8v0K2O4v3+5hY/UhQ3fMHIPwRXTYBAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3/data/amplifyData/WorkoutProgram/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data/amplifyData/WorkoutProgram/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -2099,7 +2099,7 @@
             ":",
             [
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "GetAtt:WorkoutProgramTable:StreamArn"
             ]
@@ -2109,14 +2109,14 @@
     },
     "GetAttWorkoutProgramTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "WorkoutProgram-4u7y7wfisvavppu3diznx2j6mm-x",
+      "Value": "WorkoutProgram-wj6lytnty5ftnkpbpk6i7y4zpi-x",
       "Export": {
         "Name": {
           "Fn::Join": [
             ":",
             [
               {
-                "Ref": "referencetoamplifyfitnesstra2604141634e2esandbox67e1cabfd3dataamplifyDataGraphQLAPIB57FFEBBApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox8ed617aee6dataamplifyDataGraphQLAPI20475A0DApiId"
               },
               "GetAtt:WorkoutProgramTable:Name"
             ]

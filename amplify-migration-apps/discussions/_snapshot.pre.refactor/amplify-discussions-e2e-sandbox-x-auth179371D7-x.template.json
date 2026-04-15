@@ -70,7 +70,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -95,7 +95,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -131,7 +131,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -179,7 +179,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
@@ -225,7 +225,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -271,7 +271,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
@@ -327,16 +327,16 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK1BBI/SkxeRimeJyapb0w00q0VC/l2KVHuamTczGvRqA1Vhhlha9yg9XSDtMQq6oxj7UGaI52TDjUkCpFPE/hCCV/WVf34ytSdkmVd/snPIQvKezvPcBI9bEWPvHbJkRaaDNMJxOGrOWXFwCG1cvLSG5Rqqoo1EZf9koQ6h+eoHjkjons4AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVVIUZY2ldV3q6QjpgFHQnMbZTZoyXZMOdSQKkc8ThGIJX9Y1/fja1J2RZVn+yd8hC8p7Py9wEjzsRYx89smRFpoc0wWk4ac5ZcXAIbVy9tIb1FqqijUTl8GShHqH56gf10GUazgAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -608,27 +608,27 @@
     }
   },
   "Outputs": {
-    "amplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthUserPool5BC00E5DRef": {
+    "amplifydiscussionse2esandbox5a00829043authamplifyAuthUserPool4FB0FB1CRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthUserPoolAppClientBFF9C9E6Ref": {
+    "amplifydiscussionse2esandbox5a00829043authamplifyAuthUserPoolAppClient8E1FF794Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthIdentityPoolB6B7C291Ref": {
+    "amplifydiscussionse2esandbox5a00829043authamplifyAuthIdentityPool5C0954EDRef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthauthenticatedUserRole917F75E4Ref": {
+    "amplifydiscussionse2esandbox5a00829043authamplifyAuthauthenticatedUserRoleF25318ECRef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthunauthenticatedUserRole284634E9Ref": {
+    "amplifydiscussionse2esandbox5a00829043authamplifyAuthunauthenticatedUserRole9DE7C151Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

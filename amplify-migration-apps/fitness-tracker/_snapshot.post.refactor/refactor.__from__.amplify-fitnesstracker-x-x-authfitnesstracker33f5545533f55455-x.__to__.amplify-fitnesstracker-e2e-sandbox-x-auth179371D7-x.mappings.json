@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-x-ec6cd-authfitnesstracker33f5545533f55455-1SFNCARV0T4KZ/94d8ec70-3841-11f1-8282-12c8af93ad29",
+      "StackName": "amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x",
       "LogicalResourceId": "UserPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA/4f715df0-3843-11f1-a306-0e23b58d8e69",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-x-ec6cd-authfitnesstracker33f5545533f55455-1SFNCARV0T4KZ/94d8ec70-3841-11f1-8282-12c8af93ad29",
+      "StackName": "amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x",
       "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA/4f715df0-3843-11f1-a306-0e23b58d8e69",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-x-ec6cd-authfitnesstracker33f5545533f55455-1SFNCARV0T4KZ/94d8ec70-3841-11f1-8282-12c8af93ad29",
+      "StackName": "amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x",
       "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA/4f715df0-3843-11f1-a306-0e23b58d8e69",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-x-ec6cd-authfitnesstracker33f5545533f55455-1SFNCARV0T4KZ/94d8ec70-3841-11f1-8282-12c8af93ad29",
+      "StackName": "amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x",
       "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA/4f715df0-3843-11f1-a306-0e23b58d8e69",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-x-ec6cd-authfitnesstracker33f5545533f55455-1SFNCARV0T4KZ/94d8ec70-3841-11f1-8282-12c8af93ad29",
+      "StackName": "amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x",
       "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA/4f715df0-3843-11f1-a306-0e23b58d8e69",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }

@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-backendonl2604141557-x-238e4-deployment"
+    "ParameterValue": "amplify-backendonly-x-x-deployment"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "us-east-1_zsAu7Lrdv"
+    "ParameterValue": "us-east-1_OE65iSpXZ"
   }
 ]

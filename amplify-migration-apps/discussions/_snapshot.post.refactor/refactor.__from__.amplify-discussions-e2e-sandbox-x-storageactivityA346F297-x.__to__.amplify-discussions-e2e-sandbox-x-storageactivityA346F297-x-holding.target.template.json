@@ -72,7 +72,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/storageactivity/activity/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storageactivity/activity/Resource"
       }
     }
   },

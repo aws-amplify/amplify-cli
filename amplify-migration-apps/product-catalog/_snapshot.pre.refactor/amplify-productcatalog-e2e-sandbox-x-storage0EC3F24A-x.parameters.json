@@ -1,10 +1,10 @@
 [
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthauthenticatedUserRoleBAC77C65Ref",
-    "ParameterValue": "amplify-productcat2604141-amplifyAuthauthenticatedU-aSSioLkHSQnB"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387authNestedStackauthNestedStackResource1A37C122Outputsamplifyproductcataloge2esandbox0187871387authamplifyAuthauthenticatedUserRoleC781B511Ref",
+    "ParameterValue": "amplify-productcat2604142-amplifyAuthauthenticatedU-FSYagP5lqNEE"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0functionNestedStackfunctionNestedStackResourceB3369E09Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0functionS3Trigger1ef46783gen2xlambda070C05C6Arn",
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387functionNestedStackfunctionNestedStackResource22F72A43Outputsamplifyproductcataloge2esandbox0187871387functionS3Trigger1ef46783gen2xlambda47499DBDArn",
     "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
   }
 ]

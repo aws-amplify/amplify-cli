@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "authuserPoolGroupsstoreLocatorAdminGroupRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_4ghoVnWqL-storeLocatorAdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_f2zr8yubd-storeLocatorAdminGroupRole"
   },
   {
     "ParameterKey": "isDefault",
@@ -29,6 +29,6 @@
   },
   {
     "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
-    "ParameterValue": "us-east-1_4ghoVnWqL"
+    "ParameterValue": "us-east-1_f2zr8yubd"
   }
 ]

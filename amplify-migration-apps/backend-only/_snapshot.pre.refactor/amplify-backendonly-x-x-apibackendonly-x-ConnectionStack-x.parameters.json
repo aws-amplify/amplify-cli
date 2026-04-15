@@ -9,15 +9,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "2c4qzgu3qndmzjgzklyh5ziy2e"
+    "ParameterValue": "i7hukhoj6fcn7fi3k5yl7vy7aa"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-backendonl2604141557-x-238e4-deployment"
+    "ParameterValue": "amplify-backendonly-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref",
-    "ParameterValue": "Todo-2c4qzgu3qndmzjgzklyh5ziy2e-x"
+    "ParameterValue": "Todo-i7hukhoj6fcn7fi3k5yl7vy7aa-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName",

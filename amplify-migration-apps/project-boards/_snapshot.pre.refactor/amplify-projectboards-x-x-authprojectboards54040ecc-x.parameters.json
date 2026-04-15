@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboa2604141617-x-59641-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboa2604141617-x-59641-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-x-x-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

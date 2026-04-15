@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-projectboards-x-x-deployment",
       "UnauthRoleName": "amplify-projectboards-x-x-unauthRole",
       "StackName": "amplify-projectboards-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/0495b050-383f-11f1-85a3-127cff1666cb",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/37349330-3869-11f1-8c68-0e611e7b2d5b",
       "AmplifyAppId": "projectboards"
     }
   },
@@ -42,13 +42,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-x-x-deployment/amplify-cfn-templates/auth/projectboards54040ecc-cloudformation-template.json",
         "logicalId": "authprojectboards54040ecc"
       },
-      "lastPushTimeStamp": "2026-04-14T20:22:54.232Z",
+      "lastPushTimeStamp": "2026-04-15T01:26:27.652Z",
       "output": {
-        "UserPoolId": "us-east-1_wSDpIQS6L",
-        "AppClientIDWeb": "33g0hjhlmklnneqahld66pbq0t",
-        "AppClientID": "38pujrmfiksiscshr66q8bqbf5",
-        "IdentityPoolId": "us-east-1:54f30675-21ab-4455-bf8e-2b359e46afb9",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_wSDpIQS6L",
+        "UserPoolId": "us-east-1_AS5BJDmKP",
+        "AppClientIDWeb": "783n8121fpor7cjel4opk0scml",
+        "AppClientID": "3eeh5bqk1fajaudhsss6pr61s3",
+        "IdentityPoolId": "us-east-1:15d3cf54-98c3-4624-9ace-9dadc85b2890",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_AS5BJDmKP",
         "IdentityPoolName": "projectboards54040ecc_identitypool_54040ecc__x",
         "UserPoolName": "projectboards54040ecc_userpool_54040ecc"
       },
@@ -85,11 +85,11 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "ikqsnsk5ifeg5gpwmycd664jhe",
-        "GraphQLAPIEndpointOutput": "https://3ulkdkmyenantg7z3vrda26lye.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "hebeyt7cxzbnhleer6t7bavlxe",
+        "GraphQLAPIEndpointOutput": "https://oeoi7fnscnbhthwqhijdjlpvpu.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
-      "lastPushTimeStamp": "2026-04-14T20:22:54.232Z",
+      "lastPushTimeStamp": "2026-04-15T01:26:27.652Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiprojectboards"
@@ -102,7 +102,7 @@
       "service": "S3",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
-      "lastPushTimeStamp": "2026-04-14T20:22:54.232Z",
+      "lastPushTimeStamp": "2026-04-15T01:26:27.652Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages369f8ff1c"
@@ -119,9 +119,9 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-04-14T20:18:55.798Z",
+      "lastBuildTimeStamp": "2026-04-15T01:21:30.900Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T20:18:55.817Z",
+      "lastPackageTimeStamp": "2026-04-15T01:21:30.940Z",
       "distZipFilename": "quotegenerator-51737a6b73437548654c-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-projectboards-x-x-deployment",
@@ -131,7 +131,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-x-x-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
         "logicalId": "functionquotegenerator"
       },
-      "lastPushTimeStamp": "2026-04-14T20:22:54.232Z",
+      "lastPushTimeStamp": "2026-04-15T01:26:27.652Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/projectboardsLambdaRolef283f87f-x",
         "Region": "us-east-1",

@@ -4,14 +4,6 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthunauthenticatedUserRole3C92CDC2Ref",
-    "ParameterValue": "amplify-moodboard26041415-amplifyAuthunauthenticate-SS66Ove4Az7s"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthIdentityPool02207698Ref",
-    "ParameterValue": "us-east-1:41437c78-5f37-444c-8443-3abab1167021"
-  },
-  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
@@ -24,15 +16,23 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef",
+    "ParameterValue": "amplify-moodboard26041421-amplifyAuthunauthenticate-Jmnij9sVaquJ"
+  },
+  {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthauthenticatedUserRoleFA23546CRef",
-    "ParameterValue": "amplify-moodboard26041415-amplifyAuthauthenticatedU-UiuvcH7z0ns6"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthUserPool87AB24A1Ref",
+    "ParameterValue": "us-east-1_NWqJ8An7G"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthUserPoolCC82176CRef",
-    "ParameterValue": "us-east-1_6d6wmuHsS"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref",
+    "ParameterValue": "amplify-moodboard26041421-amplifyAuthauthenticatedU-Nwa298eMXnxj"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthIdentityPoolCBF7B421Ref",
+    "ParameterValue": "us-east-1:05ed68ed-ccea-46a0-a75c-e98bcea30d30"
   }
 ]

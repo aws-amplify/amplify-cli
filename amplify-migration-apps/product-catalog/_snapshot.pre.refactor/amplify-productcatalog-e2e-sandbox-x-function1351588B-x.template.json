@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "S3Trigger1ef46783gen2xlambdaServiceRole1BF46202": {
+    "S3Trigger1ef46783gen2xlambdaServiceRoleC23823EE": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -48,10 +48,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/S3Trigger1ef46783-gen2-x-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/S3Trigger1ef46783-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicy097A6174": {
+    "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicyBAF60818": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -77,7 +77,7 @@
                     },
                     ":apis/",
                     {
-                      "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId"
+                      "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFApiId"
                     },
                     "/types/Mutation/*"
                   ]
@@ -87,20 +87,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicy097A6174",
+        "PolicyName": "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicyBAF60818",
         "Roles": [
           {
-            "Ref": "S3Trigger1ef46783gen2xlambdaServiceRole1BF46202"
+            "Ref": "S3Trigger1ef46783gen2xlambdaServiceRoleC23823EE"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/S3Trigger1ef46783-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/S3Trigger1ef46783-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "S3Trigger1ef46783gen2xlambdaAE6A26A3": {
+    "S3Trigger1ef46783gen2xlambdaCDFDCDB9": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -118,13 +118,13 @@
             "REGION": "us-east-1",
             "AMPLIFY_SSM_ENV_CONFIG": "{}",
             "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPIDefaultApiKey36F3D331ApiKey"
+              "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIDefaultApiKeyE7EDCB7CApiKey"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": {
-              "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451GraphQLUrl"
+              "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFGraphQLUrl"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId"
+              "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFApiId"
             }
           }
         },
@@ -136,7 +136,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "S3Trigger1ef46783gen2xlambdaServiceRole1BF46202",
+            "S3Trigger1ef46783gen2xlambdaServiceRoleC23823EE",
             "Arn"
           ]
         },
@@ -158,19 +158,19 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicy097A6174",
-        "S3Trigger1ef46783gen2xlambdaServiceRole1BF46202"
+        "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicyBAF60818",
+        "S3Trigger1ef46783gen2xlambdaServiceRoleC23823EE"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/S3Trigger1ef46783-gen2-x-lambda/Resource",
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/S3Trigger1ef46783-gen2-x-lambda/Resource",
         "aws:asset:path": "asset.9e821eababa829077bc1c07365ae1d9d01b5527ce0ab051608b55befc213b14a",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
       }
     },
-    "lowstockproductsgen2xlambdaServiceRoleD9531386": {
+    "lowstockproductsgen2xlambdaServiceRole42E65544": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -217,10 +217,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/lowstockproducts-gen2-x-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/lowstockproducts-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "lowstockproductsgen2xlambdaServiceRoleDefaultPolicyD73CA2D2": {
+    "lowstockproductsgen2xlambdaServiceRoleDefaultPolicyE510B2C3": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -246,7 +246,7 @@
                     },
                     ":apis/",
                     {
-                      "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId"
+                      "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFApiId"
                     },
                     "/types/Query/*"
                   ]
@@ -273,7 +273,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":parameter/amplify/productcat2604141556/e2e-sandbox-d0bbc153f0/PRODUCT_CATALOG_SECRET"
+                      ":parameter/amplify/productcatalog/e2e-sandbox-x/PRODUCT_CATALOG_SECRET"
                     ]
                   ]
                 },
@@ -293,7 +293,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":parameter/amplify/shared/productcat2604141556/PRODUCT_CATALOG_SECRET"
+                      ":parameter/amplify/shared/productcatalog/PRODUCT_CATALOG_SECRET"
                     ]
                   ]
                 }
@@ -302,20 +302,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "lowstockproductsgen2xlambdaServiceRoleDefaultPolicyD73CA2D2",
+        "PolicyName": "lowstockproductsgen2xlambdaServiceRoleDefaultPolicyE510B2C3",
         "Roles": [
           {
-            "Ref": "lowstockproductsgen2xlambdaServiceRoleD9531386"
+            "Ref": "lowstockproductsgen2xlambdaServiceRole42E65544"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/lowstockproducts-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/lowstockproducts-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "lowstockproductsgen2xlambdaCCA15B27": {
+    "lowstockproductsgen2xlambda432F3819": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -333,15 +333,15 @@
             "PRODUCT_CATALOG_SECRET": "<value will be resolved during runtime>",
             "ENV": "gen2-x",
             "REGION": "us-east-1",
-            "AMPLIFY_SSM_ENV_CONFIG": "{\"PRODUCT_CATALOG_SECRET\":{\"path\":\"/amplify/productcat2604141556/e2e-sandbox-d0bbc153f0/PRODUCT_CATALOG_SECRET\",\"sharedPath\":\"/amplify/shared/productcat2604141556/PRODUCT_CATALOG_SECRET\"}}",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"PRODUCT_CATALOG_SECRET\":{\"path\":\"/amplify/productcatalog/e2e-sandbox-x/PRODUCT_CATALOG_SECRET\",\"sharedPath\":\"/amplify/shared/productcatalog/PRODUCT_CATALOG_SECRET\"}}",
             "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPIDefaultApiKey36F3D331ApiKey"
+              "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIDefaultApiKeyE7EDCB7CApiKey"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": {
-              "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451GraphQLUrl"
+              "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFGraphQLUrl"
             },
             "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId"
+              "Ref": "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFApiId"
             }
           }
         },
@@ -353,7 +353,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "lowstockproductsgen2xlambdaServiceRoleD9531386",
+            "lowstockproductsgen2xlambdaServiceRole42E65544",
             "Arn"
           ]
         },
@@ -375,13 +375,13 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "lowstockproductsgen2xlambdaServiceRoleDefaultPolicyD73CA2D2",
-        "lowstockproductsgen2xlambdaServiceRoleD9531386"
+        "lowstockproductsgen2xlambdaServiceRoleDefaultPolicyE510B2C3",
+        "lowstockproductsgen2xlambdaServiceRole42E65544"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/lowstockproducts-gen2-x-lambda/Resource",
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/lowstockproducts-gen2-x-lambda/Resource",
         "aws:asset:path": "asset.fd5da4e6462455bc211b03dcbcd7a1ad87b4dd3fa0da7463b999cd2ff558d107",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -390,10 +390,10 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNzQqDMBCEn8X7urWxFHqshR6l6APImkRZfxLoxkoR372o9PTNwPCNQnW5YRLRLLE2fTxwjUtuJVhTBtI90CzVMtBYG6qcN7YTzHc8J6cDewdMIy6FHyw8Grfz5QfW360eaQVJKxKxQfC+ASTFbNK9DRmJhUOPj8b9pSvsuzJQy65dYXvGTk4fpfB8xSTqhDl+Ty7waLE4+AOBHF+TzAAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNzQqDMBCEn8X7urWR9l6FHqXoA8iarBJ/EujGShHfvaj09M3A8I1CdUswiWiRWJshHm2Da8ES2FSB9AC0SL2ONDWGaucN94LFgefsdLDegaUJ19KPDHnrDr78aPV3r2faQNKaRDgIPnaApJjNeuCQkTCcesxb95ducOyqQJ113Qb7M/Zy+SiF1zsmUS/Wxu/ZBTsxlid/7OrnScwAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/function/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -665,33 +665,33 @@
     }
   },
   "Outputs": {
-    "amplifyproductcat2604141556e2esandboxd0bbc153f0functionS3Trigger1ef46783gen2xlambda070C05C6Arn": {
+    "amplifyproductcataloge2esandbox0187871387functionS3Trigger1ef46783gen2xlambda47499DBDArn": {
       "Value": {
         "Fn::GetAtt": [
-          "S3Trigger1ef46783gen2xlambdaAE6A26A3",
+          "S3Trigger1ef46783gen2xlambdaCDFDCDB9",
           "Arn"
         ]
       }
     },
-    "amplifyproductcat2604141556e2esandboxd0bbc153f0functionS3Trigger1ef46783gen2xlambda070C05C6Ref": {
+    "amplifyproductcataloge2esandbox0187871387functionS3Trigger1ef46783gen2xlambda47499DBDRef": {
       "Value": {
-        "Ref": "S3Trigger1ef46783gen2xlambdaAE6A26A3"
+        "Ref": "S3Trigger1ef46783gen2xlambdaCDFDCDB9"
       }
     },
-    "amplifyproductcat2604141556e2esandboxd0bbc153f0functionlowstockproductsgen2xlambda2C049469Ref": {
+    "amplifyproductcataloge2esandbox0187871387functionlowstockproductsgen2xlambdaAA1DD1B3Ref": {
       "Value": {
-        "Ref": "lowstockproductsgen2xlambdaCCA15B27"
+        "Ref": "lowstockproductsgen2xlambda432F3819"
       }
     }
   },
   "Parameters": {
-    "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId": {
+    "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFApiId": {
       "Type": "String"
     },
-    "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPIDefaultApiKey36F3D331ApiKey": {
+    "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIDefaultApiKeyE7EDCB7CApiKey": {
       "Type": "String"
     },
-    "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataNestedStackdataNestedStackResource85DABF83Outputsamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451GraphQLUrl": {
+    "referencetoamplifyproductcataloge2esandbox0187871387dataNestedStackdataNestedStackResource5BD91232Outputsamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFGraphQLUrl": {
       "Type": "String"
     }
   }

@@ -13,19 +13,19 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "76irxl6yqbbhdmbj6g2ij2yamu"
+    "ParameterValue": "kuwr5auj4zbxdhbslpanljzbwi"
   },
   {
     "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
-    "ParameterValue": "Board-76irxl6yqbbhdmbj6g2ij2yamu-x"
+    "ParameterValue": "Board-kuwr5auj4zbxdhbslpanljzbwi-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
-    "ParameterValue": "MoodItem-76irxl6yqbbhdmbj6g2ij2yamu-x"
+    "ParameterValue": "MoodItem-kuwr5auj4zbxdhbslpanljzbwi-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-moodboard2604141556-x-35d03-deployment"
+    "ParameterValue": "amplify-moodboard-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName",

@@ -21,7 +21,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5/analytics/moodboardKinesis/KinesisStream"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/moodboardKinesis/KinesisStream"
       }
     }
   },

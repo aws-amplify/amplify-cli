@@ -48,7 +48,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c435d03-x';
+// s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c4x-x';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

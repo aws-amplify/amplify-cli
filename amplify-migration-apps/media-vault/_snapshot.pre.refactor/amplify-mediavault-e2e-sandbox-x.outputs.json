@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "7a00bcu9i154ujqidgq0jme9kl"
+    "OutputValue": "3o3h9s86ge1kipfahd1fr9bqc1"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-mediavault2604141-mediavaultb574f210f1634e-qylvrybd9nwx"
+    "OutputValue": "amplify-mediavault2604142-mediavaultb574f210f1634e-rbwf9ikdfn3b"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "7a00bcu9i154ujqidgq0jme9kl"
+    "OutputValue": "3o3h9s86ge1kipfahd1fr9bqc1"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -29,7 +29,7 @@
   },
   {
     "OutputKey": "oauthCognitoDomain",
-    "OutputValue": "5de7da18a28ef83f5ff0.auth.us-east-1.amazoncognito.com"
+    "OutputValue": "19db2f67a272bbdccb4d.auth.us-east-1.amazoncognito.com"
   },
   {
     "OutputKey": "oauthScope",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://5obgbqjgp5a7hpfi4vw35lqyhy.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "https://gvot225vqfgu5lffed4smkxdvi.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "rm4mczka7rbotje4blofvbmugy"
+    "OutputValue": "v7w4r5raj5fdvfsml64oyjlkjy"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bede880d-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-mediavault2604141-mediavaultb574f210f1634e-qylvrybd9nwx\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bedx-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-mediavault2604142-mediavaultb574f210f1634e-rbwf9ikdfn3b\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-mediavault2604141-amplifydataamplifycodege-dbe6hqhewank/model-schema.graphql"
+    "OutputValue": "s3://amplify-mediavault2604142-amplifydataamplifycodege-kvgaeroeqnfs/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_Rw2PcBNBe"
+    "OutputValue": "us-east-1_J3F4VTBkR"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:8791bd12-c5c9-4925-a94d-e32877c0009c"
+    "OutputValue": "us-east-1:34a99d91-a6fb-433f-95c5-285cd9ac33a5"
   },
   {
     "OutputKey": "verificationMechanisms",

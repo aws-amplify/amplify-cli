@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "discus-avatars7df19-x"
+      "Value": "discus-avatarsx-x"
     },
     "Region": {
       "Value": "us-east-1"
@@ -199,7 +199,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatars7df19-x",
+                      "discus-avatarsx-x",
                       "/public/*"
                     ]
                   ]
@@ -210,7 +210,7 @@
         },
         "PolicyName": "Public_policy_bf41454d",
         "Roles": [
-          "amplify-discussion2604141557-x-7df19-authRole"
+          "amplify-discussions-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -235,7 +235,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatars7df19-x",
+                      "discus-avatarsx-x",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -246,7 +246,7 @@
         },
         "PolicyName": "Protected_policy_bf41454d",
         "Roles": [
-          "amplify-discussion2604141557-x-7df19-authRole"
+          "amplify-discussions-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -271,7 +271,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatars7df19-x",
+                      "discus-avatarsx-x",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -282,7 +282,7 @@
         },
         "PolicyName": "Private_policy_bf41454d",
         "Roles": [
-          "amplify-discussion2604141557-x-7df19-authRole"
+          "amplify-discussions-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -307,7 +307,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "discus-avatars7df19-x",
+                      "discus-avatarsx-x",
                       "/uploads/*"
                     ]
                   ]
@@ -318,7 +318,7 @@
         },
         "PolicyName": "Uploads_policy_bf41454d",
         "Roles": [
-          "amplify-discussion2604141557-x-7df19-authRole"
+          "amplify-discussions-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -336,7 +336,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "discus-avatars7df19-x",
+                    "discus-avatarsx-x",
                     "/protected/*"
                   ]
                 ]
@@ -362,7 +362,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "discus-avatars7df19-x"
+                    "discus-avatarsx-x"
                   ]
                 ]
               }
@@ -372,7 +372,7 @@
         },
         "PolicyName": "read_policy_bf41454d",
         "Roles": [
-          "amplify-discussion2604141557-x-7df19-authRole"
+          "amplify-discussions-x-x-authRole"
         ]
       },
       "Condition": "AuthReadAndList"

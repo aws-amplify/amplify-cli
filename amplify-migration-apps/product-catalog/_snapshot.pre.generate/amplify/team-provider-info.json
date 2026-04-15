@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-productcatalog-x-x-deployment",
       "UnauthRoleName": "amplify-productcatalog-x-x-unauthRole",
       "StackName": "amplify-productcatalog-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/fe909470-383b-11f1-ad5e-12d718d37d11",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/366905d0-3869-11f1-b7ce-1284a989edb9",
       "AmplifyAppId": "productcatalog"
     },
     "categories": {

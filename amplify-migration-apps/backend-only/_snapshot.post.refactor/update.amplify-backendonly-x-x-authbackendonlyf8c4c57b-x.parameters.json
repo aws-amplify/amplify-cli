@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-backendonl2604141557-x-238e4-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-backendonly-x-x-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-backendonl2604141557-x-238e4-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-backendonly-x-x-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

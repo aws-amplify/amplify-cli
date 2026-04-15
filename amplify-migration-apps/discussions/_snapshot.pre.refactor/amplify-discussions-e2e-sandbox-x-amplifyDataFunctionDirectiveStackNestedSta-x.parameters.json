@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataGraphQLAPINONEDSA2C972C3Name",
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthauthenticatedUserRoleF25318ECRef",
+    "ParameterValue": "amplify-discussion2604142-amplifyAuthauthenticatedU-LL3Om46CnEIk"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPINONEDS90A18945Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthunauthenticatedUserRole284634E9Ref",
-    "ParameterValue": "amplify-discussion2604141-amplifyAuthunauthenticate-MChGu0GSFvq2"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthIdentityPool5C0954EDRef",
+    "ParameterValue": "us-east-1:ed0d32b6-e50f-4c51-98ac-6554ce43e4ee"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataGraphQLAPIEA7365BBApiId",
-    "ParameterValue": "psahj67fdrbbbe3dkyugogsi4y"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthunauthenticatedUserRole9DE7C151Ref",
+    "ParameterValue": "amplify-discussion2604142-amplifyAuthunauthenticate-zWvKNFFHMWpi"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthIdentityPoolB6B7C291Ref",
-    "ParameterValue": "us-east-1:a8c0ee9c-098e-4b39-900d-551279680b48"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthauthenticatedUserRole917F75E4Ref",
-    "ParameterValue": "amplify-discussion2604141-amplifyAuthauthenticatedU-YABe4lvwe63h"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043dataamplifyDataGraphQLAPIB59D66C6ApiId",
+    "ParameterValue": "pfld4ysxvjhldejvk5qiyro7fu"
   }
 ]

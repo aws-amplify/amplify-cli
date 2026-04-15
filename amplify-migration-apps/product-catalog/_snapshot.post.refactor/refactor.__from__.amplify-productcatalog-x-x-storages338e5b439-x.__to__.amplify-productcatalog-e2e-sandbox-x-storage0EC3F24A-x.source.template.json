@@ -187,7 +187,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x"
+      "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x"
     },
     "Region": {
       "Value": "us-east-1"
@@ -223,7 +223,7 @@
                             {
                               "Fn::Split": [
                                 "-",
-                                "amplify-productcat2604141556-x-a4ffc-storages338e5b439-B0X1R2MH04H1"
+                                "amplify-productcatalog-x-x-storages338e5b439-x"
                               ]
                             }
                           ]
@@ -260,7 +260,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x",
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
                       "/public/*"
                     ]
                   ]
@@ -271,7 +271,7 @@
         },
         "PolicyName": "Public_policy_38e5b439",
         "Roles": [
-          "amplify-productcat2604141556-x-a4ffc-authRole"
+          "amplify-productcatalog-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -296,7 +296,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x",
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -307,7 +307,7 @@
         },
         "PolicyName": "Protected_policy_38e5b439",
         "Roles": [
-          "amplify-productcat2604141556-x-a4ffc-authRole"
+          "amplify-productcatalog-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -332,7 +332,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x",
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -343,7 +343,7 @@
         },
         "PolicyName": "Private_policy_38e5b439",
         "Roles": [
-          "amplify-productcat2604141556-x-a4ffc-authRole"
+          "amplify-productcatalog-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -368,7 +368,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x",
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
                       "/uploads/*"
                     ]
                   ]
@@ -379,7 +379,7 @@
         },
         "PolicyName": "Uploads_policy_38e5b439",
         "Roles": [
-          "amplify-productcat2604141556-x-a4ffc-authRole"
+          "amplify-productcatalog-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -397,7 +397,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x",
+                    "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
                     "/protected/*"
                   ]
                 ]
@@ -423,7 +423,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x"
+                    "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x"
                   ]
                 ]
               }
@@ -433,7 +433,7 @@
         },
         "PolicyName": "read_policy_38e5b439",
         "Roles": [
-          "amplify-productcat2604141556-x-a4ffc-authRole"
+          "amplify-productcatalog-x-x-authRole"
         ]
       },
       "Condition": "AuthReadAndList"
@@ -455,7 +455,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x"
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x"
                     ]
                   ]
                 }
@@ -475,7 +475,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-x",
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
                       "/*"
                     ]
                   ]

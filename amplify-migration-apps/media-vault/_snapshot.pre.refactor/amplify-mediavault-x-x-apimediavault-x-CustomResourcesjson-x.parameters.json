@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-mediavault2604141621-x-e880d-deployment"
+    "ParameterValue": "amplify-mediavault-x-x-deployment"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "kbn35pgkfzcptkngbejmivjpby"
+    "ParameterValue": "oxfvlrf3yjcbro7xnm36lnmt2q"
   },
   {
     "ParameterKey": "env",

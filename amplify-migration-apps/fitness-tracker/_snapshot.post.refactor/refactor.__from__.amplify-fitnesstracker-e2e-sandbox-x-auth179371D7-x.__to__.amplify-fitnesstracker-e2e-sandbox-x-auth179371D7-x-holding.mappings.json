@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     },
     "Destination": {
-      "StackName": "amplify-fitnesstra2604141634-e2e-sandbox-67e1cabfd3-auth179371D7-1CCRO3LKI5HLA-holding",
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }

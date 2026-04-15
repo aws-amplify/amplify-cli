@@ -172,7 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": "moodboard20e29595008142e3ad16f01c4066e1c435d03-x"
+      "Value": "moodboard20e29595008142e3ad16f01c4066e1c4x-x"
     },
     "Region": {
       "Value": "us-east-1"
@@ -193,7 +193,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-moodboard2604141556-x-35d03-storagemoodboardStorage-1T2BSTNYOVGG7"
+                      "amplify-moodboard-x-x-storagemoodboardStorage-x"
                     ]
                   }
                 ]
@@ -263,7 +263,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                      "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                       "/public/*"
                     ]
                   ]
@@ -274,7 +274,7 @@
         },
         "PolicyName": "Public_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-authRole"
+          "amplify-moodboard-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -299,7 +299,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                      "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -310,7 +310,7 @@
         },
         "PolicyName": "Protected_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-authRole"
+          "amplify-moodboard-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -335,7 +335,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                      "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -346,7 +346,7 @@
         },
         "PolicyName": "Private_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-authRole"
+          "amplify-moodboard-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -371,7 +371,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                      "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                       "/uploads/*"
                     ]
                   ]
@@ -382,7 +382,7 @@
         },
         "PolicyName": "Uploads_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-authRole"
+          "amplify-moodboard-x-x-authRole"
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -407,7 +407,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                      "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                       "/public/*"
                     ]
                   ]
@@ -418,7 +418,7 @@
         },
         "PolicyName": "Public_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-unauthRole"
+          "amplify-moodboard-x-x-unauthRole"
         ]
       },
       "Condition": "CreateGuestPublic"
@@ -436,7 +436,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                    "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                     "/protected/*"
                   ]
                 ]
@@ -462,7 +462,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c435d03-x"
+                    "moodboard20e29595008142e3ad16f01c4066e1c4x-x"
                   ]
                 ]
               }
@@ -472,7 +472,7 @@
         },
         "PolicyName": "read_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-authRole"
+          "amplify-moodboard-x-x-authRole"
         ]
       },
       "Condition": "AuthReadAndList"
@@ -490,7 +490,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c435d03-x",
+                    "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
                     "/protected/*"
                   ]
                 ]
@@ -514,7 +514,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    "moodboard20e29595008142e3ad16f01c4066e1c435d03-x"
+                    "moodboard20e29595008142e3ad16f01c4066e1c4x-x"
                   ]
                 ]
               }
@@ -524,7 +524,7 @@
         },
         "PolicyName": "read_policy_206c638b",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-unauthRole"
+          "amplify-moodboard-x-x-unauthRole"
         ]
       },
       "Condition": "GuestReadAndList"

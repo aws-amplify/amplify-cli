@@ -1,26 +1,26 @@
 [
   {
     "OutputKey": "GetAttCommentTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-hwqxyznpcnbv3jwcfv2y4upnjy-x/stream/2026-04-14T20:00:38.746",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-bqp44ncaurbzjctjwkjxo72ble-x/stream/2026-04-15T01:23:07.075",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "psahj67fdrbbbe3dkyugogsi4y:GetAtt:CommentTable:StreamArn"
+    "ExportName": "pfld4ysxvjhldejvk5qiyro7fu:GetAtt:CommentTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox5a00829043dataamplifyDataCommentCommentTableD08F01C6TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-bqp44ncaurbzjctjwkjxo72ble-x"
   },
   {
     "OutputKey": "GetAttCommentTableName",
-    "OutputValue": "Comment-hwqxyznpcnbv3jwcfv2y4upnjy-x",
+    "OutputValue": "Comment-bqp44ncaurbzjctjwkjxo72ble-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "psahj67fdrbbbe3dkyugogsi4y:GetAtt:CommentTable:Name"
+    "ExportName": "pfld4ysxvjhldejvk5qiyro7fu:GetAtt:CommentTable:Name"
   },
   {
-    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataCommentCommentTable18D3969BTableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-hwqxyznpcnbv3jwcfv2y4upnjy-x"
+    "OutputKey": "amplifydiscussionse2esandbox5a00829043dataamplifyDataCommentCommentTableD08F01C6TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-bqp44ncaurbzjctjwkjxo72ble-x/stream/2026-04-15T01:23:07.075"
   },
   {
-    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataCommentCommentTable18D3969BTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-hwqxyznpcnbv3jwcfv2y4upnjy-x/stream/2026-04-14T20:00:38.746"
-  },
-  {
-    "OutputKey": "amplifydiscussion2604141557e2esandbox3c66db7581dataamplifyDataCommentCommentDataSource740B26D4Name",
+    "OutputKey": "amplifydiscussionse2esandbox5a00829043dataamplifyDataCommentCommentDataSource75EF99E1Name",
     "OutputValue": "CommentTable"
   }
 ]

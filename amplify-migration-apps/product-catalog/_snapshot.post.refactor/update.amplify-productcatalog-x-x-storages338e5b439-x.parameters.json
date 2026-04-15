@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-unauthRole"
+    "ParameterValue": "amplify-productcatalog-x-x-unauthRole"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -81,7 +81,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-authRole"
+    "ParameterValue": "amplify-productcatalog-x-x-authRole"
   },
   {
     "ParameterKey": "GuestAllowList",

@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref",
-    "ParameterValue": "Topic-hwqxyznpcnbv3jwcfv2y4upnjy-x"
+    "ParameterValue": "Topic-bqp44ncaurbzjctjwkjxo72ble-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -13,15 +13,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef",
-    "ParameterValue": "Post-hwqxyznpcnbv3jwcfv2y4upnjy-x"
+    "ParameterValue": "Post-bqp44ncaurbzjctjwkjxo72ble-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
-    "ParameterValue": "Comment-hwqxyznpcnbv3jwcfv2y4upnjy-x"
+    "ParameterValue": "Comment-bqp44ncaurbzjctjwkjxo72ble-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "hwqxyznpcnbv3jwcfv2y4upnjy"
+    "ParameterValue": "bqp44ncaurbzjctjwkjxo72ble"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",
@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-discussion2604141557-x-7df19-deployment"
+    "ParameterValue": "amplify-discussions-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostDataSource6998E105Name",

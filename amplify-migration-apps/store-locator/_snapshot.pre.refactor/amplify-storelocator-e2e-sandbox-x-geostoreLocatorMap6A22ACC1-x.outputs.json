@@ -8,15 +8,15 @@
     "OutputValue": "us-east-1"
   },
   {
-    "OutputKey": "amplifystorelocatore2esandbox33f387fd3ageostoreLocatorMapCustomMap15598541MapName",
-    "OutputValue": "storeLocatorMap-gen2-x"
-  },
-  {
     "OutputKey": "Arn",
     "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-x"
   },
   {
     "OutputKey": "Name",
+    "OutputValue": "storeLocatorMap-gen2-x"
+  },
+  {
+    "OutputKey": "amplifystorelocatore2esandboxf766a11072geostoreLocatorMapCustomMap2B1F86DAMapName",
     "OutputValue": "storeLocatorMap-gen2-x"
   }
 ]

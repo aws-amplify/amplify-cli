@@ -3,13 +3,13 @@
     "OutputKey": "GetAttCommentDataSourceName",
     "OutputValue": "CommentTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:CommentDataSource:Name"
+    "ExportName": "3j3hj2kxzjdsbcy54mp7p6oeya:GetAtt:CommentDataSource:Name"
   },
   {
     "OutputKey": "GetAttCommentTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-vlckulotdbgslandc7rkudxrne-x/stream/2026-04-14T19:59:48.010",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x/stream/2026-04-15T01:23:53.782",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:CommentTable:StreamArn"
+    "ExportName": "3j3hj2kxzjdsbcy54mp7p6oeya:GetAtt:CommentTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackCommentCommentDataSourceA0E54655Name",
@@ -17,12 +17,12 @@
   },
   {
     "OutputKey": "transformerrootstackCommentCommentTable5427FDE2Ref",
-    "OutputValue": "Comment-vlckulotdbgslandc7rkudxrne-x"
+    "OutputValue": "Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x"
   },
   {
     "OutputKey": "GetAttCommentTableName",
-    "OutputValue": "Comment-vlckulotdbgslandc7rkudxrne-x",
+    "OutputValue": "Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "vlckulotdbgslandc7rkudxrne:GetAtt:CommentTable:Name"
+    "ExportName": "3j3hj2kxzjdsbcy54mp7p6oeya:GetAtt:CommentTable:Name"
   }
 ]

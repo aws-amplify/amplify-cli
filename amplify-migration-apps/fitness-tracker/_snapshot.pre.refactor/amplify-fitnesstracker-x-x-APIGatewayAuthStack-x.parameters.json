@@ -1,19 +1,19 @@
 [
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-fitnesstra2604141634-x-ec6cd-authRole"
+    "ParameterValue": "amplify-fitnesstracker-x-x-authRole"
   },
   {
     "ParameterKey": "nutritionapi",
-    "ParameterValue": "sibbiqns5f"
+    "ParameterValue": "6d7915qlm4"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-fitnesstra2604141634-x-ec6cd-unauthRole"
+    "ParameterValue": "amplify-fitnesstracker-x-x-unauthRole"
   },
   {
     "ParameterKey": "adminapi",
-    "ParameterValue": "ue9uyhcyi1"
+    "ParameterValue": "gazhcvr1zj"
   },
   {
     "ParameterKey": "env",

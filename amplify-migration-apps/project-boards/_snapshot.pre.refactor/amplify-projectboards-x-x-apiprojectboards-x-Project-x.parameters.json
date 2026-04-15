@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "ikqsnsk5ifeg5gpwmycd664jhe"
+    "ParameterValue": "hebeyt7cxzbnhleer6t7bavlxe"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -33,7 +33,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-projectboa2604141617-x-59641-deployment"
+    "ParameterValue": "amplify-projectboards-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

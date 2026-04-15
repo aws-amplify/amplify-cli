@@ -9,15 +9,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "4u7y7wfisvavppu3diznx2j6mm"
+    "ParameterValue": "wj6lytnty5ftnkpbpk6i7y4zpi"
   },
   {
     "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef",
-    "ParameterValue": "Exercise-4u7y7wfisvavppu3diznx2j6mm-x"
+    "ParameterValue": "Exercise-wj6lytnty5ftnkpbpk6i7y4zpi-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-fitnesstra2604141634-x-ec6cd-deployment"
+    "ParameterValue": "amplify-fitnesstracker-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseDataSourceE8B787D0Name",

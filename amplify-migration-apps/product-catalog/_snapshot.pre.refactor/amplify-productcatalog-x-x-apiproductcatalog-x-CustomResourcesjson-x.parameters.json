@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-deployment"
+    "ParameterValue": "amplify-productcatalog-x-x-deployment"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "vlckulotdbgslandc7rkudxrne"
+    "ParameterValue": "3j3hj2kxzjdsbcy54mp7p6oeya"
   },
   {
     "ParameterKey": "env",

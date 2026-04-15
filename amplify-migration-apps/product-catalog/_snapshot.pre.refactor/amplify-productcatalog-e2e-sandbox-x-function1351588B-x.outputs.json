@@ -1,14 +1,14 @@
 [
   {
-    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0functionS3Trigger1ef46783gen2xlambda070C05C6Arn",
-    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
-  },
-  {
-    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0functionS3Trigger1ef46783gen2xlambda070C05C6Ref",
+    "OutputKey": "amplifyproductcataloge2esandbox0187871387functionS3Trigger1ef46783gen2xlambda47499DBDRef",
     "OutputValue": "S3Trigger1ef46783-gen2-x"
   },
   {
-    "OutputKey": "amplifyproductcat2604141556e2esandboxd0bbc153f0functionlowstockproductsgen2xlambda2C049469Ref",
+    "OutputKey": "amplifyproductcataloge2esandbox0187871387functionS3Trigger1ef46783gen2xlambda47499DBDArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyproductcataloge2esandbox0187871387functionlowstockproductsgen2xlambdaAA1DD1B3Ref",
     "OutputValue": "lowstockproducts-gen2-x"
   }
 ]

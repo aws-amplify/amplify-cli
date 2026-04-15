@@ -1,14 +1,14 @@
 [
   {
     "ParameterKey": "AuthRoleName",
-    "ParameterValue": "amplify-mediavault2604141621-x-e880d-authRole"
+    "ParameterValue": "amplify-mediavault-x-x-authRole"
   },
   {
     "ParameterKey": "DeploymentBucketName",
-    "ParameterValue": "amplify-mediavault2604141621-x-e880d-deployment"
+    "ParameterValue": "amplify-mediavault-x-x-deployment"
   },
   {
     "ParameterKey": "UnauthRoleName",
-    "ParameterValue": "amplify-mediavault2604141621-x-e880d-unauthRole"
+    "ParameterValue": "amplify-mediavault-x-x-unauthRole"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-unauthRole"
+    "ParameterValue": "amplify-productcatalog-x-x-unauthRole"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -13,11 +13,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
-    "ParameterValue": "Comment-vlckulotdbgslandc7rkudxrne-x"
+    "ParameterValue": "Comment-3j3hj2kxzjdsbcy54mp7p6oeya-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "vlckulotdbgslandc7rkudxrne"
+    "ParameterValue": "3j3hj2kxzjdsbcy54mp7p6oeya"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",
@@ -25,10 +25,10 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-deployment"
+    "ParameterValue": "amplify-productcatalog-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-authRole"
+    "ParameterValue": "amplify-productcatalog-x-x-authRole"
   }
 ]

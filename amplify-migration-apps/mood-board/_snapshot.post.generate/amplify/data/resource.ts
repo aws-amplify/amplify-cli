@@ -28,8 +28,8 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
-        MoodItem: 'MoodItem-76irxl6yqbbhdmbj6g2ij2yamu-x',
-        Board: 'Board-76irxl6yqbbhdmbj6g2ij2yamu-x',
+        MoodItem: 'MoodItem-kuwr5auj4zbxdhbslpanljzbwi-x',
+        Board: 'Board-kuwr5auj4zbxdhbslpanljzbwi-x',
       },
     },
   ],

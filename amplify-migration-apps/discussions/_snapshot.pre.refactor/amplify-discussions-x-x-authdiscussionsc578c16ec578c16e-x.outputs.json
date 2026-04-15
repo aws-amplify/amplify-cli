@@ -1,32 +1,32 @@
 [
   {
     "OutputKey": "CreatedSNSRole",
-    "OutputValue": "arn:aws:iam::123456789012:role/snsc578c16e7df19-x",
+    "OutputValue": "arn:aws:iam::123456789012:role/snsc578c16ex-x",
     "Description": "role arn"
   },
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "us-east-1_yFhmClEh9",
+    "OutputValue": "us-east-1_gKGBJxaOV",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "41a5teppdjvk2beu5bdvhrln11",
+    "OutputValue": "6ab1u5l8lf108dsam10vte84q6",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "65umfc3mj88tth0u17aqnk141h",
+    "OutputValue": "7m54g2evveeeo7octbpfntg18s",
     "Description": "The user pool app client id"
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "us-east-1:ebcdc5c2-4bd2-42fa-ac4c-29739844228d",
+    "OutputValue": "us-east-1:fb3991a7-7d67-41b4-bc4e-63e2deeadf30",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_yFhmClEh9",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_gKGBJxaOV",
     "Description": "Arn for the user pool"
   },
   {

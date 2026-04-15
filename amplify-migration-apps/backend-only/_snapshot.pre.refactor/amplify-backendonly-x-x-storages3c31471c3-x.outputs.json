@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-    "OutputValue": "backendonlycb1a13ab81664ecaa7d015068ab2d016238e4-x",
+    "OutputValue": "backendonlycb1a13ab81664ecaa7d015068ab2d016x-x",
     "Description": "Bucket name for the S3 bucket"
   },
   {

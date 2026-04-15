@@ -202,7 +202,7 @@
     "authbackendonlyf8c4c57b": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonl2604141557-x-238e4-deployment/amplify-cfn-templates/auth/backendonlyf8c4c57b-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/auth/backendonlyf8c4c57b-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b",
           "allowUnauthenticatedIdentities": true,
@@ -256,7 +256,7 @@
     "apibackendonly": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonl2604141557-x-238e4-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "backendonly",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
@@ -267,7 +267,7 @@
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "amplify-backendonl2604141557-x-238e4-deployment",
+          "S3DeploymentBucket": "amplify-backendonly-x-x-deployment",
           "S3DeploymentRootKey": "amplify-appsync-files/47418d5f9df78fb8fa9acaa5bd04a81ebc30971b",
           "env": "x"
         }
@@ -276,7 +276,7 @@
     "storages3c31471c3": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonl2604141557-x-238e4-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "backendonlycb1a13ab81664ecaa7d015068ab2d016",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
@@ -309,9 +309,9 @@
     "functionquotegeneratorbe": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonl2604141557-x-238e4-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-backendonl2604141557-x-238e4-deployment",
+          "deploymentBucketName": "amplify-backendonly-x-x-deployment",
           "s3Key": "amplify-builds/quotegeneratorbe-513654756a51615a5779-build.zip",
           "env": "x"
         }

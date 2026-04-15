@@ -8,6 +8,6 @@
             "Outputs.UserPoolId"
         ]
     },
-    "S3DeploymentBucket": "amplify-fitnesstra2604141634-x-ec6cd-deployment",
+    "S3DeploymentBucket": "amplify-fitnesstracker-x-x-deployment",
     "S3DeploymentRootKey": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
 }

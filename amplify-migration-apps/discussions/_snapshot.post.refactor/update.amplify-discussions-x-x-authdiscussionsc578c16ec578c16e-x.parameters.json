@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-discussion2604141557-x-7df19-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -141,7 +141,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-discussion2604141557-x-7df19-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

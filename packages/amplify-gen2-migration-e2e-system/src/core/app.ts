@@ -432,7 +432,10 @@ export class App {
       if (fs.existsSync(sourceSnapshotPath)) {
         fs.removeSync(sourceSnapshotPath);
       }
-      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourceSnapshotPath);
+      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourceSnapshotPath, {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        filter: (src: string, _dst: string) => !src.includes('node_modules'),
+      });
     }
   }
 

@@ -20,7 +20,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5/analytics/moodboardKinesis/KinesisStream"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/moodboardKinesis/KinesisStream"
       }
     },
     "moodboardKinesisCognitoAuthPolicyB69F4FA6": {
@@ -42,14 +42,14 @@
         "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthauthenticatedUserRoleFA23546CRef"
+            "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5/analytics/moodboardKinesis/CognitoAuthPolicy"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/moodboardKinesis/CognitoAuthPolicy"
       }
     },
     "moodboardKinesisCognitoUnauthPolicyC4CE1D44": {
@@ -71,23 +71,23 @@
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthunauthenticatedUserRole3C92CDC2Ref"
+            "Ref": "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5/analytics/moodboardKinesis/CognitoUnauthPolicy"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/moodboardKinesis/CognitoUnauthPolicy"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHwQqDMAwA0G/x3maujMHO3rcxP0CyNkKsrWLSiYj/PsZOj+fAXW5QV7iK9SHakd+w30mUQqvoo8FVuj1yJmGBps+tLoTJMKbfntPIfjtM0+dH0bnoYfIUCAY5fZyD8xXqahBmu5SsnAhef7+FrGQldwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQrCMAwA0LPsv421MC+wfxV3AIltBlnXTpbUIWN3H+LX43nwrQPX4Co2xGQnfsF2JVGKvWJIBld5bokLCQt0Q+l1IcyGMf92nycO3910Q7lVfVfdTZkjwSinj/dwvoBrRmG2Sy3KmeDx9wDnXMcSdwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard2604141556-e2e-sandbox-61f13981b5/analytics/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -102,7 +102,7 @@
     "kinesisStreamShardCount": {
       "Value": "1"
     },
-    "amplifymoodboard2604141556e2esandbox61f13981b5analyticsmoodboardKinesisKinesisStreamFBFBCAFCArn": {
+    "amplifymoodboarde2esandbox6a07bd88f4analyticsmoodboardKinesisKinesisStream0185A29FArn": {
       "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
     }
   },
@@ -373,10 +373,10 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthauthenticatedUserRoleFA23546CRef": {
+    "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthauthenticatedUserRole2D7DC2E7Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboard2604141556e2esandbox61f13981b5authNestedStackauthNestedStackResourceD71BBE56Outputsamplifymoodboard2604141556e2esandbox61f13981b5authamplifyAuthunauthenticatedUserRole3C92CDC2Ref": {
+    "referencetoamplifymoodboarde2esandbox6a07bd88f4authNestedStackauthNestedStackResource1D0C35BFOutputsamplifymoodboarde2esandbox6a07bd88f4authamplifyAuthunauthenticatedUserRole29AA796DRef": {
       "Type": "String"
     }
   }

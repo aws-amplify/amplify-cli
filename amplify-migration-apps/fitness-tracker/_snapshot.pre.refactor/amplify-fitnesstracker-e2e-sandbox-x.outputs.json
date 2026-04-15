@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "24ortii6512khqs4tbh7t5g91s"
+    "OutputValue": "3r8nlr77vplvpu6pv2fgp9vedj"
   },
   {
     "OutputKey": "socialProviders",
@@ -17,7 +17,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "24ortii6512khqs4tbh7t5g91s"
+    "OutputValue": "3r8nlr77vplvpu6pv2fgp9vedj"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -61,7 +61,7 @@
   },
   {
     "OutputKey": "customOutputs",
-    "OutputValue": "{\"custom\":{\"API\":{\"nutritionapi-gen2-x\":{\"endpoint\":\"https://tj53n468ji.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"nutritionapi-gen2-x\"},\"adminapi-gen2-x\":{\"endpoint\":\"https://0r7h6ad9u0.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"adminapi-gen2-x\"}}},\"version\":\"1.4\"}"
+    "OutputValue": "{\"custom\":{\"API\":{\"nutritionapi-gen2-x\":{\"endpoint\":\"https://zqwf2raxx5.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"nutritionapi-gen2-x\"},\"adminapi-gen2-x\":{\"endpoint\":\"https://1z6pm96fl1.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"adminapi-gen2-x\"}}},\"version\":\"1.4\"}"
   },
   {
     "OutputKey": "oauthRedirectSignIn",
@@ -73,11 +73,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://yeaaneaeundazd7k66achnlr74.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "https://beosywz5qbatlciaxfj242dxbm.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "mlgiemm5ybg75fq4happ3ha2iq"
+    "OutputValue": "rjha5ajvwncwne5frb2wiqdmji"
   },
   {
     "OutputKey": "authRegion",
@@ -85,7 +85,7 @@
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-fitnesstra2604141-amplifydataamplifycodege-uag7zqb84vrt/model-schema.graphql"
+    "OutputValue": "s3://amplify-fitnesstra2604142-amplifydataamplifycodege-shui2rhtk2pf/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -117,11 +117,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_MaYjFBmVw"
+    "OutputValue": "us-east-1_wBbVHIMMW"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:fdef89a0-70e9-4732-86c6-5e4f8adac12c"
+    "OutputValue": "us-east-1:39e7fe18-e057-418c-8e1e-1e1c3db4e0cf"
   },
   {
     "OutputKey": "verificationMechanisms",

@@ -1,11 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-    "ParameterValue": "amplify-moodboard2604141556-x-35d03-deployment"
+    "ParameterValue": "amplify-moodboard-x-x-deployment"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "76irxl6yqbbhdmbj6g2ij2yamu"
+    "ParameterValue": "kuwr5auj4zbxdhbslpanljzbwi"
   },
   {
     "ParameterKey": "env",

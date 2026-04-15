@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bdataamplifyDataGraphQLAPI3831A291ApiId"
+                            "Ref": "referencetoamplifymediavaulte2esandbox523dc92cecdataamplifyDataGraphQLAPI02F3F333ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Note-kbn35pgkfzcptkngbejmivjpby-x"
+                          "tableName": "Note-oxfvlrf3yjcbro7xnm36lnmt2q-x"
                         }
                       ]
                     }
@@ -104,7 +104,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleB4E71DEA": {
@@ -161,7 +161,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bdataamplifyDataGraphQLAPI3831A291ApiId"
+                            "Ref": "referencetoamplifymediavaulte2esandbox523dc92cecdataamplifyDataGraphQLAPI02F3F333ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -171,7 +171,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Note-kbn35pgkfzcptkngbejmivjpby-x"
+                          "tableName": "Note-oxfvlrf3yjcbro7xnm36lnmt2q-x"
                         }
                       ]
                     }
@@ -211,7 +211,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6": {
@@ -239,7 +239,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
       }
     },
     "TableManagerCustomProviderframeworkonEvent1DFC2ECC": {
@@ -251,7 +251,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - onEvent (amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - onEvent (amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Environment": {
           "Variables": {
             "WAITER_STATE_MACHINE_ARN": {
@@ -290,7 +290,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -305,7 +305,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - isComplete (amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - isComplete (amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Handler": "amplify-table-manager-handler.isComplete",
         "Role": {
           "Fn::GetAtt": [
@@ -336,7 +336,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -375,7 +375,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
       }
     },
     "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A": {
@@ -422,7 +422,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "AmplifyTableWaiterStateMachine060600BC": {
@@ -457,16 +457,16 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNwQqCQBRFv8X9+LIxgpYZtIzQD5Dn+JKn4wz4xiTEfw+1VudczuJq0KcLJBFOEpu6iy1XMD9IAtVFQNMpnKScGXuYc29J3V5u49NbNp917rYoi31VI8z30ZnA3q3t74uStEQRCgLXFUpSyEbTUchQaFE5iR8HQ2qrRcCGXbOd/cKinK8JWjm8tYbjGZKoFeZ4GF3gniDf+QVVRqyazwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNyw6CMBBFv8V9GbFE92Li0hj4ADK0IymPNmFaiWn67wbQ1Tk3Z3ElyHMO+QEXzpQestG0EB/EnnTtUQ0CF26iwQli5UYSt5fd+HSjUZ917pbEiFOrEeI9WOWNs2v7exJcNMhMnuG6QnABZVAD+RKZkqiIXZgVia3WHjtju+3sF5KwThP0fHxLCacL5IeejcnmYL2ZCKqdX3lj/13PAAAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault2604141621-e2e-sandbox-2dcf2e244b/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -738,12 +738,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymediavault2604141621e2esandbox2dcf2e244bdataamplifyDataGraphQLAPI3831A291ApiId": {
+    "referencetoamplifymediavaulte2esandbox523dc92cecdataamplifyDataGraphQLAPI02F3F333ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymediavault2604141621e2esandbox2dcf2e244bdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent6EE5FFA1Arn": {
+    "amplifymediavaulte2esandbox523dc92cecdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent2B69675AArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

@@ -6,7 +6,7 @@ const branchName = process.env.AWS_BRANCH ?? 'sandbox';
  * TODO: Your project uses group permissions. Group permissions have changed in Gen 2. In order to grant permissions to groups in Gen 2, please refer to https://docs.amplify.aws/react/build-a-backend/storage/authorization/#for-gen-1-public-protected-and-private-access-pattern. */
 
 export const storage = defineStorage({
-  name: `mediavaultb574f210f1634e3a8d1934f263da5bede880d-${branchName}`,
+  name: `mediavaultb574f210f1634e3a8d1934f263da5bedx-${branchName}`,
   access: (allow) => ({
     'public/*': [
       allow.guest.to(['read']),

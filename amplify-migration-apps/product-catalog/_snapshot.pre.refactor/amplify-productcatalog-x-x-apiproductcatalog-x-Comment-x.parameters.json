@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
-    "ParameterValue": "bubzttck2vdhnj5yjpsnkfkwjy"
+    "ParameterValue": "cqkwxi44anavbabtinsnfpedlm"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
@@ -21,15 +21,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "vlckulotdbgslandc7rkudxrne"
+    "ParameterValue": "3j3hj2kxzjdsbcy54mp7p6oeya"
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
-    "ParameterValue": "zn6ouxqcznc67nfpxrgy23l2ue"
+    "ParameterValue": "h3u2hj6yyjhozjgnngc2bvfy64"
   },
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-unauthRole"
+    "ParameterValue": "amplify-productcatalog-x-x-unauthRole"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -41,7 +41,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
-    "ParameterValue": "5umkzzj5cfewvki2jfropdtfjq"
+    "ParameterValue": "jsmg3kxgtfbehcpztiewqw5fey"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -49,11 +49,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-deployment"
+    "ParameterValue": "amplify-productcatalog-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
-    "ParameterValue": "amplify-productcat2604141556-x-a4ffc-authRole"
+    "ParameterValue": "amplify-productcatalog-x-x-authRole"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
@@ -61,6 +61,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
-    "ParameterValue": "ceexlewajrbcpfhlg6mtexq55i"
+    "ParameterValue": "hmlajcdtmvbz5fxlhhdakmtxwm"
   }
 ]

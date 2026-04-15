@@ -146,7 +146,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-moodboard2604141556-x-35d03-authmoodboard759ae00a-TVQUBVISBZDL"
+                      "amplify-moodboard-x-x-authmoodboard759ae00a-x"
                     ]
                   }
                 ]
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:2ea46795-3d2c-456b-a40a-11039e62b215"
+      "Value": "us-east-1:9e333039-1177-4414-8157-d3d19326c7d5"
     },
     "IdentityPoolName": {
       "Value": "moodboard759ae00a_identitypool_759ae00a__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_59TtY7B4f"
+      "Value": "us-east-1_ahE0iIVd0"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_59TtY7B4f"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_ahE0iIVd0"
     },
     "UserPoolName": {
       "Value": "moodboard759ae00a_userpool_759ae00a"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "6c1pslsdq3nh3meuen5vjf57lt"
+      "Value": "5sa4elqnmj95i2rllln6kklb0b"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "328td1sc1t2o2cqitiu7dhl29d"
+      "Value": "mads98b98ibl8errdhubmduvp"
     }
   }
 }

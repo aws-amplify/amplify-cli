@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPINONEDSE77F50D7Name",
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPINONEDS0BE0CC65Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthunauthenticatedUserRoleF481FA2CRef",
-    "ParameterValue": "amplify-productcat2604141-amplifyAuthunauthenticate-9Izt2IGsl5cW"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387authNestedStackauthNestedStackResource1A37C122Outputsamplifyproductcataloge2esandbox0187871387authamplifyAuthunauthenticatedUserRoleF54183DBRef",
+    "ParameterValue": "amplify-productcat2604142-amplifyAuthunauthenticate-3ny5LVg29U5L"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthauthenticatedUserRoleBAC77C65Ref",
-    "ParameterValue": "amplify-productcat2604141-amplifyAuthauthenticatedU-aSSioLkHSQnB"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387dataamplifyDataGraphQLAPIA9B22CEFApiId",
+    "ParameterValue": "caqorxixyrhgza7yzqnrt7o23i"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0authNestedStackauthNestedStackResourceB8F9BB7BOutputsamplifyproductcat2604141556e2esandboxd0bbc153f0authamplifyAuthIdentityPool82E88E73Ref",
-    "ParameterValue": "us-east-1:828b72b1-2737-4006-8259-e69f328b7186"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387authNestedStackauthNestedStackResource1A37C122Outputsamplifyproductcataloge2esandbox0187871387authamplifyAuthIdentityPool7C1EDD16Ref",
+    "ParameterValue": "us-east-1:de4bb93a-fbe2-4c18-93ff-95c37500323d"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcat2604141556e2esandboxd0bbc153f0dataamplifyDataGraphQLAPI4AC67451ApiId",
-    "ParameterValue": "gm5dn2njv5gpxddr6v7f53ttaa"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandbox0187871387authNestedStackauthNestedStackResource1A37C122Outputsamplifyproductcataloge2esandbox0187871387authamplifyAuthauthenticatedUserRoleC781B511Ref",
+    "ParameterValue": "amplify-productcat2604142-amplifyAuthauthenticatedU-FSYagP5lqNEE"
   }
 ]

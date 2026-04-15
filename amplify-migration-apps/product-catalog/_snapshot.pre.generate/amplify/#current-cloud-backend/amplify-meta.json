@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-productcatalog-x-x-deployment",
       "UnauthRoleName": "amplify-productcatalog-x-x-unauthRole",
       "StackName": "amplify-productcatalog-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/fe909470-383b-11f1-ad5e-12d718d37d11",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/366905d0-3869-11f1-b7ce-1284a989edb9",
       "AmplifyAppId": "productcatalog"
     }
   },
@@ -42,13 +42,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/auth/productcatalog90174ac4-cloudformation-template.json",
         "logicalId": "authproductcatalog90174ac4"
       },
-      "lastPushTimeStamp": "2026-04-14T20:05:04.940Z",
+      "lastPushTimeStamp": "2026-04-15T01:28:36.487Z",
       "output": {
-        "UserPoolId": "us-east-1_DQgLSh8Np",
-        "AppClientIDWeb": "424j4vbmppr518n885h2h44b86",
-        "AppClientID": "28bkmev3rq676qmdant2o0nl7j",
-        "IdentityPoolId": "us-east-1:caeda873-7f69-4465-9922-9421abd0ef2d",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_DQgLSh8Np",
+        "UserPoolId": "us-east-1_s68oFf0XO",
+        "AppClientIDWeb": "5htla6aman0h6ar24ev25nqreo",
+        "AppClientID": "4o72la7687n9hjed614iko05b6",
+        "IdentityPoolId": "us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_s68oFf0XO",
         "IdentityPoolName": "productcatalog90174ac4_identitypool_90174ac4__x",
         "UserPoolName": "productcatalog90174ac4_userpool_90174ac4"
       },
@@ -90,15 +90,15 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "vlckulotdbgslandc7rkudxrne",
-        "GraphQLAPIEndpointOutput": "https://eysrirckt5dsbgttp7mv6n44nm.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "3j3hj2kxzjdsbcy54mp7p6oeya",
+        "GraphQLAPIEndpointOutput": "https://w2ioo3tdj5cghbfxmujafjksna.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiproductcatalog"
       },
-      "lastPushTimeStamp": "2026-04-14T20:05:04.940Z",
+      "lastPushTimeStamp": "2026-04-15T01:28:36.487Z",
       "lastPushDirHash": "M4Lv1myo82xasoYda8BR7zSbDl4="
     }
   },
@@ -118,10 +118,10 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-14T20:05:04.940Z",
-      "lastBuildTimeStamp": "2026-04-14T19:57:32.876Z",
+      "lastPushTimeStamp": "2026-04-15T01:28:36.487Z",
+      "lastBuildTimeStamp": "2026-04-15T01:21:42.248Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T19:57:40.156Z",
+      "lastPackageTimeStamp": "2026-04-15T01:21:48.721Z",
       "distZipFilename": "S3Trigger1ef46783-4b4665534739746b326e-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-productcatalog-x-x-deployment",
@@ -155,9 +155,9 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-14T19:57:43.784Z",
+      "lastBuildTimeStamp": "2026-04-15T01:21:52.725Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-14T19:57:49.271Z",
+      "lastPackageTimeStamp": "2026-04-15T01:21:58.653Z",
       "distZipFilename": "lowstockproducts-5148445a7a3964456a67-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-productcatalog-x-x-deployment",
@@ -167,7 +167,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/function/lowstockproducts-cloudformation-template.json",
         "logicalId": "functionlowstockproducts"
       },
-      "lastPushTimeStamp": "2026-04-14T20:05:04.940Z",
+      "lastPushTimeStamp": "2026-04-15T01:28:36.487Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/productcatalogLambdaRole1ca4fb61-x",
         "Region": "us-east-1",
@@ -193,7 +193,7 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-14T20:05:04.940Z",
+      "lastPushTimeStamp": "2026-04-15T01:28:36.487Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages338e5b439"

@@ -146,7 +146,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-projectboa2604141617-x-59641-authprojectboards54040ecc-I39CMD5491Z7"
+                      "amplify-projectboards-x-x-authprojectboards54040ecc-x"
                     ]
                   }
                 ]
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:54f30675-21ab-4455-bf8e-2b359e46afb9"
+      "Value": "us-east-1:15d3cf54-98c3-4624-9ace-9dadc85b2890"
     },
     "IdentityPoolName": {
       "Value": "projectboards54040ecc_identitypool_54040ecc__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_wSDpIQS6L"
+      "Value": "us-east-1_AS5BJDmKP"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_wSDpIQS6L"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_AS5BJDmKP"
     },
     "UserPoolName": {
       "Value": "projectboards54040ecc_userpool_54040ecc"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "33g0hjhlmklnneqahld66pbq0t"
+      "Value": "783n8121fpor7cjel4opk0scml"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "38pujrmfiksiscshr66q8bqbf5"
+      "Value": "3eeh5bqk1fajaudhsss6pr61s3"
     }
   }
 }

@@ -1,17 +1,17 @@
 [
   {
     "OutputKey": "UserPoolId",
-    "OutputValue": "us-east-1_G9hV6on7n",
+    "OutputValue": "us-east-1_8FmdjX88F",
     "Description": "Id for the user pool"
   },
   {
     "OutputKey": "AppClientIDWeb",
-    "OutputValue": "6vbhhaic3tgk4m497ditaej8ha",
+    "OutputValue": "16ep9vvlatg5bq7353u7ogsabl",
     "Description": "The user pool app client id for web"
   },
   {
     "OutputKey": "AppClientID",
-    "OutputValue": "t6gnigdl7c55uv4lhqjtna1k4",
+    "OutputValue": "qiok6kjhq94v983vqufemn1kp",
     "Description": "The user pool app client id"
   },
   {
@@ -20,12 +20,12 @@
   },
   {
     "OutputKey": "IdentityPoolId",
-    "OutputValue": "us-east-1:ee2475c5-9bae-4a0e-acf7-cec394afabaa",
+    "OutputValue": "us-east-1:8bf64a9c-6534-43dc-a6a9-a7bc0b8eec51",
     "Description": "Id for the identity pool"
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_G9hV6on7n",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_8FmdjX88F",
     "Description": "Arn for the user pool"
   },
   {

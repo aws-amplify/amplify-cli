@@ -500,7 +500,7 @@
               {
                 "Ref": "CommentTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -595,7 +595,7 @@
               {
                 "Ref": "CommentTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -693,7 +693,7 @@
               {
                 "Ref": "CommentTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -845,7 +845,7 @@
               {
                 "Ref": "CommentTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -994,7 +994,7 @@
               {
                 "Ref": "CommentTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1031,7 +1031,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1068,7 +1068,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1105,7 +1105,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d588cc58-4459-4b1b-ac91-307079a54464\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a201286e-1461-4a7f-99ad-781bcafabb7c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },

@@ -1,3 +1,4 @@
 {
+  "lock": { "skipValidations": true },
   "refactor": { "skipValidations": true }
 }

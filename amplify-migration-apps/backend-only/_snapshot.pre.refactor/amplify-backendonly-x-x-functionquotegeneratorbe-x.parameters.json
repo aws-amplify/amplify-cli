@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-backendonl2604141557-x-238e4-deployment"
+    "ParameterValue": "amplify-backendonly-x-x-deployment"
   },
   {
     "ParameterKey": "env",

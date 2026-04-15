@@ -17,19 +17,19 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "4u7y7wfisvavppu3diznx2j6mm"
+    "ParameterValue": "wj6lytnty5ftnkpbpk6i7y4zpi"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
-    "ParameterValue": "cpsmwgzqlre57lo5s2nmipwtti"
+    "ParameterValue": "um3qlw7zube6fgxf6hortylezm"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
-    "ParameterValue": "xg3524lcjrc7xhq2uvc6j5z5iy"
+    "ParameterValue": "wlafkxh6pbf5tp6iehnqs2yg6i"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
-    "ParameterValue": "7jsk4uryvbhu7b4jamvjgoncju"
+    "ParameterValue": "yjhudkgfd5h75knvgfxsr44lay"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -45,7 +45,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-fitnesstra2604141634-x-ec6cd-deployment"
+    "ParameterValue": "amplify-fitnesstracker-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
@@ -53,6 +53,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
-    "ParameterValue": "nqtdv5jxtvhlhmeqn5c3ne7vl4"
+    "ParameterValue": "z32dhoqimjdi7drdbl4ut5juvq"
   }
 ]

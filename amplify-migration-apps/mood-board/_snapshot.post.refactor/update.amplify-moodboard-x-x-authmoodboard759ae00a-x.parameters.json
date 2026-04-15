@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard2604141556-x-35d03-authRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard2604141556-x-35d03-unauthRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",

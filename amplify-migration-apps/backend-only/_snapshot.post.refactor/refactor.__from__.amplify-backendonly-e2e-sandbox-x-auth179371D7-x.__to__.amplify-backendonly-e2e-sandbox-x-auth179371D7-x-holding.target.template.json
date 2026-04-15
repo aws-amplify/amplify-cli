@@ -66,7 +66,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -84,12 +84,12 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_QbEnyujax"
+        "UserPoolId": "us-east-1_yedejeTXn"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -118,12 +118,12 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_QbEnyujax"
+        "UserPoolId": "us-east-1_yedejeTXn"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -132,7 +132,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "7aqt7h6nk38dfruasbugjspdl",
+            "ClientId": "74cktn2kovh375q3rl3257137b",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -142,7 +142,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_QbEnyujax"
+                  "us-east-1_yedejeTXn"
                 ]
               ]
             }
@@ -167,13 +167,13 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:3d68243f-5f2c-44db-9207-55cf4339a4e8",
+        "IdentityPoolId": "us-east-1:34c3ebe7-bf84-450e-9dd6-7f5f20d6d408",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -186,9 +186,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_QbEnyujax",
+                  "us-east-1_yedejeTXn",
                   ":",
-                  "7aqt7h6nk38dfruasbugjspdl"
+                  "74cktn2kovh375q3rl3257137b"
                 ]
               ]
             },
@@ -196,14 +196,14 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-backendonl2604141-amplifyAuthunauthenticate-67Ngf8HdxWQG",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-backendonl2604141-amplifyAuthauthenticatedU-R4mCcBFu0Gat"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-backendonl2604142-amplifyAuthunauthenticate-gWSAtRE7p9pV",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-backendonl2604142-amplifyAuthauthenticatedU-g82ebHtmyg7n"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     }
   },

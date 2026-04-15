@@ -146,7 +146,7 @@
                   {
                     "Fn::Split": [
                       "-",
-                      "amplify-productcat2604141556-x-a4ffc-authproductcatalog90174ac4-1RCLCVLKCZIM9"
+                      "amplify-productcatalog-x-x-authproductcatalog90174ac4-x"
                     ]
                   }
                 ]
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:caeda873-7f69-4465-9922-9421abd0ef2d"
+      "Value": "us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1"
     },
     "IdentityPoolName": {
       "Value": "productcatalog90174ac4_identitypool_90174ac4__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_DQgLSh8Np"
+      "Value": "us-east-1_s68oFf0XO"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_DQgLSh8Np"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_s68oFf0XO"
     },
     "UserPoolName": {
       "Value": "productcatalog90174ac4_userpool_90174ac4"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "424j4vbmppr518n885h2h44b86"
+      "Value": "5htla6aman0h6ar24ev25nqreo"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "28bkmev3rq676qmdant2o0nl7j"
+      "Value": "4o72la7687n9hjed614iko05b6"
     }
   }
 }

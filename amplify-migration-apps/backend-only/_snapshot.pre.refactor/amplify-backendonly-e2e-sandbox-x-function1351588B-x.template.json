@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "quotegeneratorbegen2xlambdaServiceRoleEFF7A8DA": {
+    "quotegeneratorbegen2xlambdaServiceRole2046B2D2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -48,10 +48,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/function/quotegeneratorbe-gen2-x-lambda/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function/quotegeneratorbe-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "quotegeneratorbegen2xlambda81BD258A": {
+    "quotegeneratorbegen2xlambdaD6444BFD": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -78,7 +78,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "quotegeneratorbegen2xlambdaServiceRoleEFF7A8DA",
+            "quotegeneratorbegen2xlambdaServiceRole2046B2D2",
             "Arn"
           ]
         },
@@ -100,12 +100,12 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "quotegeneratorbegen2xlambdaServiceRoleEFF7A8DA"
+        "quotegeneratorbegen2xlambdaServiceRole2046B2D2"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/function/quotegeneratorbe-gen2-x-lambda/Resource",
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function/quotegeneratorbe-gen2-x-lambda/Resource",
         "aws:asset:path": "asset.6548b84d54f89bb78d6b59300a01d3c45a8c0aedbee21a2cd8361de38ed60d9a",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
@@ -114,10 +114,10 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNuwqDQBCF4WexHydmDYGUMZDSQh9Axt1R1ssImTUW4rsHlVRfc/iPQXN7YBLRorF1fTz4GtecNbArA9keaNFqHWisHVUyOe4U84P3LDb4ScDTiGsxDQyvRnY30LQiVQ6Kzx3QFLPZ9hwyUoazhq9G/o0Njl0ZqPXSbrAfYaeXrzF4vWMSdep9/Jkl+JGxOP0BaqoNnrsAAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNOw6DQAxF0bXQG4cMSvqAlJICFoDMjEHDx0jxEArE3iNAqU7zdJ9B80gwiWjV2LohHn2DW8Ea2FWB7AC0ar2NNDWOapkd94rFyXsRG/ws4GnCrZxHhryVwx00rUmVg+LrADTFbLEDh4yU4aph3sq/scO5qwJ1XrodjiPs9fY1Bu9PTKJevY8/iwQ/MZaXPwR/I7e7AAAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonl2604141557-e2e-sandbox-a0c493e7c1/function/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -389,9 +389,9 @@
     }
   },
   "Outputs": {
-    "amplifybackendonl2604141557e2esandboxa0c493e7c1functionquotegeneratorbegen2xlambdaA44ED665Ref": {
+    "amplifybackendonlye2esandbox2d86e29401functionquotegeneratorbegen2xlambda16C88816Ref": {
       "Value": {
-        "Ref": "quotegeneratorbegen2xlambda81BD258A"
+        "Ref": "quotegeneratorbegen2xlambdaD6444BFD"
       }
     }
   }

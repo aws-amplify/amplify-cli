@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "storagemediavaultBucketName",
-    "ParameterValue": "mediavaultb574f210f1634e3a8d1934f263da5bede880d-x"
+    "ParameterValue": "mediavaultb574f210f1634e3a8d1934f263da5bedx-x"
   },
   {
     "ParameterKey": "s3Key",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-mediavault2604141621-x-e880d-deployment"
+    "ParameterValue": "amplify-mediavault-x-x-deployment"
   },
   {
     "ParameterKey": "env",

@@ -9,11 +9,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "kbn35pgkfzcptkngbejmivjpby"
+    "ParameterValue": "oxfvlrf3yjcbro7xnm36lnmt2q"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-    "ParameterValue": "amplify-mediavault2604141621-x-e880d-deployment"
+    "ParameterValue": "amplify-mediavault-x-x-deployment"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

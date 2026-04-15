@@ -1,12 +1,12 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-x-7df19-storageavatars-XP34VVTHMSCC/6dc66db0-383c-11f1-be4d-1233bc5a8f7d",
+      "StackName": "amplify-discussions-x-x-storageavatars-x",
       "LogicalResourceId": "S3Bucket"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussion2604141557-e2e-sandbox-3c66db7581-storage0EC3F24A-1KIE4YMTLPXF9/63cf8bf0-383e-11f1-a39d-0afff3794177",
-      "LogicalResourceId": "discusavatars7df19gen2xBucketA565041A"
+      "StackName": "amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "discusavatarsxgen2xBucket0940DA64"
     }
   }
 ]

@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffcgen2xBucket159D3D3C": {
+    "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucketBF2A4B68": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -48,7 +48,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-gen2-x"
+            "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed3x-gen2-x"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -63,7 +63,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcat2604141556-e2e-sandbox-d0bbc153f0/storage/productcatalogf95af07481f845caa6594c26ac9c8ed3a4ffc-gen2-x/Bucket/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/storage/productcatalogf95af07481f845caa6594c26ac9c8ed3x-gen2-x/Bucket/Resource"
       }
     }
   },

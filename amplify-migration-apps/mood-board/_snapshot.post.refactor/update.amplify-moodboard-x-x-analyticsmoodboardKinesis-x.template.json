@@ -54,7 +54,7 @@
       "Properties": {
         "PolicyName": "kinesis_amplify_bca5ce95",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-unauthRole"
+          "amplify-moodboard-x-x-unauthRole"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -76,7 +76,7 @@
       "Properties": {
         "PolicyName": "kinesis_amplify_bca5ce95",
         "Roles": [
-          "amplify-moodboard2604141556-x-35d03-authRole"
+          "amplify-moodboard-x-x-authRole"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",

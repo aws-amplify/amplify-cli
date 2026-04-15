@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "discusavatars7df19gen2xBucketA565041A": {
+    "discusavatarsxgen2xBucket0940DA64": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -48,7 +48,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "discus-avatars7df19-gen2-x"
+            "Value": "discus-avatarsx-gen2-x"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -63,7 +63,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/storage/discus-avatars7df19-gen2-x/Bucket/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/discus-avatarsx-gen2-x/Bucket/Resource"
       }
     }
   },

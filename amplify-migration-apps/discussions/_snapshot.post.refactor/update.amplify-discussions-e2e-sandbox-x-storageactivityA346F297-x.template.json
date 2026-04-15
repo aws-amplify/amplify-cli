@@ -71,16 +71,16 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/storageactivity/activity/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storageactivity/activity/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGsQqDMBAA0G9xT840iNC5ewfbXS65K0RjAl6siPjvgk7vWbDNE0yFq2hPo47Bwf5mKUyfgn5UuEpPW8Ipk4P9iy6yev3SlUN1LHmZPR8qZWIYpP5bC48WTDVICHpeUgkTQ3d7AkUgpwFuAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ2M2oBewt3C3l0lmhPhJwImKiHcX1uo9C7YyYAo8RHua9BwcXC1LZvpm9JPCQ3o6Iy6JHFw/dDOrZoj/3KpjSdvq+VYxEcMo5W4tfGowxSgh6HWLOSwM3esDKnhKBG4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-discussion2604141557-e2e-sandbox-3c66db7581/storageactivity/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storageactivity/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -352,14 +352,14 @@
     }
   },
   "Outputs": {
-    "amplifydiscussion2604141557e2esandbox3c66db7581storageactivity2385C7CDArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-activity1E902D9C-1FVF821TU9C49"
+    "amplifydiscussionse2esandbox5a00829043storageactivity8BEE594FArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-1F60OANEEGYV5"
     },
-    "amplifydiscussion2604141557e2esandbox3c66db7581storageactivity2385C7CDStreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-activity1E902D9C-1FVF821TU9C49/stream/2026-04-14T20:12:54.272"
+    "amplifydiscussionse2esandbox5a00829043storageactivity8BEE594FStreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-1F60OANEEGYV5/stream/2026-04-15T01:36:09.001"
     },
-    "amplifydiscussion2604141557e2esandbox3c66db7581storageactivity2385C7CDRef": {
-      "Value": "amplify-discussion2604141557-e2e-sandbox-3c66db7581-storageactivityA346F297-1Q94GAJ5SFLAR-activity1E902D9C-1FVF821TU9C49"
+    "amplifydiscussionse2esandbox5a00829043storageactivity8BEE594FRef": {
+      "Value": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-1F60OANEEGYV5"
     }
   }
 }

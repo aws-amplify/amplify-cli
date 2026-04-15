@@ -4,35 +4,35 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthunauthenticatedUserRole284634E9Ref",
-    "ParameterValue": "amplify-discussion2604141-amplifyAuthunauthenticate-MChGu0GSFvq2"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthauthenticatedUserRoleF25318ECRef",
+    "ParameterValue": "amplify-discussion2604142-amplifyAuthauthenticatedU-LL3Om46CnEIk"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
   {
-    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
-    "ParameterValue": "false"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthIdentityPool5C0954EDRef",
+    "ParameterValue": "us-east-1:ed0d32b6-e50f-4c51-98ac-6554ce43e4ee"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthIdentityPoolB6B7C291Ref",
-    "ParameterValue": "us-east-1:a8c0ee9c-098e-4b39-900d-551279680b48"
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthunauthenticatedUserRole9DE7C151Ref",
+    "ParameterValue": "amplify-discussion2604142-amplifyAuthunauthenticate-zWvKNFFHMWpi"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox5a00829043authNestedStackauthNestedStackResource2D613577Outputsamplifydiscussionse2esandbox5a00829043authamplifyAuthUserPool4FB0FB1CRef",
+    "ParameterValue": "us-east-1_4l7RqLpPz"
+  },
+  {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthUserPool5BC00E5DRef",
-    "ParameterValue": "us-east-1_c70DTvjJB"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussion2604141557e2esandbox3c66db7581authNestedStackauthNestedStackResourceA5C81627Outputsamplifydiscussion2604141557e2esandbox3c66db7581authamplifyAuthauthenticatedUserRole917F75E4Ref",
-    "ParameterValue": "amplify-discussion2604141-amplifyAuthauthenticatedU-YABe4lvwe63h"
   }
 ]
