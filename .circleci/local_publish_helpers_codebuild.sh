@@ -64,6 +64,23 @@ function generatePkgCli {
   cp ../yarn.lock ./
   yarn workspaces focus --production
 
+  # --- DIAGNOSTIC: async-function investigation ---
+  echo "=== PKG DIAG: checking for async-function after yarn workspaces focus ==="
+  if [ -d node_modules/async-function ]; then
+    echo "PKG DIAG: async-function FOUND in pkg/node_modules/"
+    cat node_modules/async-function/package.json | grep -E '"name"|"version"'
+  else
+    echo "PKG DIAG: async-function NOT found in pkg/node_modules/"
+  fi
+  if [ -d node_modules/get-intrinsic ]; then
+    echo "PKG DIAG: get-intrinsic version:"
+    cat node_modules/get-intrinsic/package.json | grep -E '"name"|"version"'
+    echo "PKG DIAG: get-intrinsic deps mentioning async:"
+    cat node_modules/get-intrinsic/package.json | grep "async" || echo "(none)"
+  fi
+  echo "=== PKG DIAG: end ==="
+  # --- END DIAGNOSTIC ---
+
   # Optimize package size
   find . \
     -name "*.d.ts" -or -name "*.js.map" -or -name "*.d.ts.map" -or \
@@ -78,6 +95,17 @@ function generatePkgCli {
 
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
+
+  # --- DIAGNOSTIC: check build output for async-function ---
+  echo "=== PKG DIAG: checking for async-function after babel transpile ==="
+  if [ -d ../build/node_modules/async-function ]; then
+    echo "PKG DIAG: async-function FOUND in build/node_modules/"
+    ls -la ../build/node_modules/async-function/
+  else
+    echo "PKG DIAG: async-function NOT found in build/node_modules/"
+  fi
+  echo "=== PKG DIAG: end ==="
+  # --- END DIAGNOSTIC ---
 
   # Include third party licenses
   cp ../Third_Party_Licenses.txt ../build/node_modules
