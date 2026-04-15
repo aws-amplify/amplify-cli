@@ -499,6 +499,7 @@ __metadata:
     "@aws-amplify/ui-react": ^6.13.2
     "@aws-amplify/ui-react-geo": ^2.2.13
     "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@aws-sdk/client-lambda": ^3.936.0
     "@eslint/js": ^9.39.1
     "@types/aws-lambda": ^8.10.92
     "@types/jest": ^29.5.14
@@ -538,6 +539,7 @@ __metadata:
     "@aws-amplify/ui-react": ^6.13.2
     "@aws-amplify/ui-react-geo": ^2.2.13
     "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@aws-sdk/client-lambda": ^3.936.0
     "@eslint/js": ^9.39.1
     "@types/jest": ^29.5.14
     "@types/node": ^24.10.1
