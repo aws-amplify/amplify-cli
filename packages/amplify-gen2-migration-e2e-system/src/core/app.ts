@@ -8,6 +8,7 @@ import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { normalize } from './normalize';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -241,17 +242,17 @@ export class App {
     await this.testGen1();
     await this.testGen2();
 
-    if (this.skipRefactor) {
-      this.logger.info('Skipping refactor (configured in migration/config.json)');
-      return;
-    }
-
     const gen1StackName = await this.findGen1RootStack();
 
     this.logger.info(`Capturing pre.refactor snapshot`);
     console.log('');
     await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
     console.log('');
+
+    if (this.skipRefactor) {
+      this.logger.info('Skipping refactor (configured in migration/config.json)');
+      return;
+    }
 
     await this.git.checkout(this.gen1BranchName, false);
     await this.refactor(gen2StackName);
@@ -319,7 +320,7 @@ export class App {
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
-    const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
+    const result = await execa('npx', ['ampx', 'sandbox', '--once', '--identifier', 'e2e'], {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
@@ -332,8 +333,7 @@ export class App {
 
     this.logger.info(`ampx sandbox completed (${Date.now() - startTime}ms)`);
 
-    const username = os.userInfo().username;
-    const stackPrefix = `amplify-${this.deploymentName}-${username}-sandbox`;
+    const stackPrefix = `amplify-${this.deploymentName}-e2e-sandbox`;
     return this.findGen2RootStack(stackPrefix);
   }
 
@@ -422,15 +422,20 @@ export class App {
    * Sanitizes and copies captured snapshots back to the source app directory.
    */
   public updateSnapshots(): void {
+    this.logger.info(`Normalizing snapshots`);
+    normalize(path.basename(this.sourceAppPath), this.snapshotAppPath);
     this.logger.info(`Sanitizing snapshots`);
-    sanitize(this.deploymentName, this.snapshotAppPath);
+    sanitize(path.basename(this.sourceAppPath), this.snapshotAppPath);
     for (const snapshot of fs.readdirSync(this.snapshotAppPath).filter((f) => f.includes('_snapshot'))) {
       const sourceSnapshotPath = path.join(this.sourceAppPath, snapshot);
       this.logger.info(`Updating snapshot: ${sourceSnapshotPath}`);
       if (fs.existsSync(sourceSnapshotPath)) {
         fs.removeSync(sourceSnapshotPath);
       }
-      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourceSnapshotPath);
+      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourceSnapshotPath, {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        filter: (src: string, _dst: string) => !src.includes('node_modules'),
+      });
     }
   }
 

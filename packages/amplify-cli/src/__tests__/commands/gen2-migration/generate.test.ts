@@ -32,20 +32,16 @@ afterAll(() => {
   jest.mock('fs-extra');
 });
 
-// standard buildspec for all apps that are published via hosting
-const BUILDSPEC =
-  "version: 1\nbackend:\n  phases:\n    build:\n      commands:\n        - '# Execute Amplify CLI with the helper script'\n        - amplifyPush --simple\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - npm install\n    build:\n      commands:\n        - npm run build\n  artifacts:\n    baseDirectory: dist\n    files:\n      - '**/*'\n  cache:\n    paths:\n      - node_modules/**/*\n";
-
 test('fitness-tracker snapshot', async () => {
-  await testSnapshot('fitness-tracker', { buildSpec: BUILDSPEC });
+  await testSnapshot('fitness-tracker');
 });
 
 test('product-catalog snapshot', async () => {
-  await testSnapshot('product-catalog', { buildSpec: BUILDSPEC });
+  await testSnapshot('product-catalog');
 });
 
 test('project-boards snapshot', async () => {
-  await testSnapshot('project-boards', { buildSpec: BUILDSPEC });
+  await testSnapshot('project-boards');
 });
 
 test('backend-only snapshot', async () => {
@@ -53,23 +49,23 @@ test('backend-only snapshot', async () => {
 });
 
 test('discussions snapshot', async () => {
-  await testSnapshot('discussions', { buildSpec: BUILDSPEC });
+  await testSnapshot('discussions');
 });
 
 test('media-vault snapshot', async () => {
-  await testSnapshot('media-vault', { buildSpec: BUILDSPEC });
+  await testSnapshot('media-vault');
 });
 
 test('mood-board snapshot', async () => {
-  await testSnapshot('mood-board', { buildSpec: BUILDSPEC });
+  await testSnapshot('mood-board');
 });
 
 test('store-locator snapshot', async () => {
-  await testSnapshot('store-locator', { buildSpec: BUILDSPEC });
+  await testSnapshot('store-locator');
 });
 
 test('imported-resources snapshot', async () => {
-  await testSnapshot('imported-resources', { buildSpec: BUILDSPEC });
+  await testSnapshot('imported-resources');
 });
 
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {

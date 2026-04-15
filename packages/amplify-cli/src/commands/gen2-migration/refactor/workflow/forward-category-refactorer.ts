@@ -34,8 +34,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       const targetId = this.findMatchingTarget(sourceId, sourceResource, targetResources, usedTargetIds, targetStackId);
       usedTargetIds.add(targetId);
       mappings.push({
-        Source: { StackName: sourceStackId, LogicalResourceId: sourceId },
-        Destination: { StackName: targetStackId, LogicalResourceId: targetId },
+        Source: { StackName: extractStackNameFromId(sourceStackId), LogicalResourceId: sourceId },
+        Destination: { StackName: extractStackNameFromId(targetStackId), LogicalResourceId: targetId },
       });
     }
     return mappings;
