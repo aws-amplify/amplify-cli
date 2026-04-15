@@ -944,7 +944,7 @@ __metadata:
     "@aws-amplify/graphql-model-transformer": ^2.14.2
     "@aws-amplify/graphql-predictions-transformer": ^2.2.2
     "@aws-amplify/graphql-relational-transformer": ^2.5.20
-    "@aws-amplify/graphql-searchable-transformer": ^2.7.19
+    "@aws-amplify/graphql-searchable-transformer": ^2.7.20
     "@aws-amplify/graphql-transformer": ^1.1.0
     "@aws-amplify/graphql-transformer-core": ^2.11.3
     "@aws-amplify/graphql-transformer-interfaces": ^3.12.1
@@ -1565,9 +1565,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.7.19, @aws-amplify/graphql-searchable-transformer@npm:^2.7.19":
-  version: 2.7.19
-  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.19"
+"@aws-amplify/graphql-searchable-transformer@npm:2.7.20":
+  version: 2.7.20
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.20"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
     "@aws-amplify/graphql-model-transformer": 2.14.2
@@ -1579,7 +1579,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 27d943e7d4067e29c9034036bb3de0a9beded2d9299e639548d7a8ed3890179493d45905c99d0e10a38a33313cc5987f31832d05ac7463ce291d5b0e58d2fbaa
+  checksum: d11f88393678ebb3639998de2093e77a9c21e548fcfa40ca3a60eba0b54d37f6f34aa30b31c9167c07921152cef801bbed9923cbfe7db9986d0962da85180a9a
   languageName: node
   linkType: hard
 
@@ -22412,16 +22412,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-elasticsearch-transformer@npm:5.2.88":
-  version: 5.2.88
-  resolution: "graphql-elasticsearch-transformer@npm:5.2.88"
+"graphql-elasticsearch-transformer@npm:5.2.89":
+  version: 5.2.89
+  resolution: "graphql-elasticsearch-transformer@npm:5.2.89"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
     graphql-transformer-core: 8.2.18
-  checksum: 357e9d7078042447ca7ab4b3ac90dec235df6e2a30581a152e40012c3ae70c794c1bfbe76277fc908cd98afdbbffb799267fab2d451a537dacc02d8adf1f62e4
+  checksum: ad9663767a2ea6b2bc90ca1eb79d1a8bbe8fbd960cb07997ba318aa1e7c6c4f683e5f095a4849f80dd4b0fb3a0af43c63ef8a5815660551157a6d4a936aad05d
   languageName: node
   linkType: hard
 
