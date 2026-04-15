@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "xwgwkksjrbcoxnb64a6clvir4u"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseTable2F3E478ERef",
+    "ParameterValue": "Exercise-xwgwkksjrbcoxnb64a6clvir4u-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-fitnesstracker-x-x-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackExerciseNestedStackExerciseNestedStackResourceA190CF68OutputstransformerrootstackExerciseExerciseDataSourceE8B787D0Name",
+    "ParameterValue": "ExerciseTable"
+  }
+]

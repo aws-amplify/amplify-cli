@@ -221,25 +221,21 @@ Some refactors target a `-holding` stack (visible in the target stack name). Res
 moved from the Gen2 stack to the holding stack (to make room), then from the Gen1 stack to the
 Gen2 stack. The holding stack persists as the final destination for the Gen2 stateful resources.
 
-## Sanitization
+## Normalization and Sanitization
 
-Sensitive values must be replaced with safe placeholder values before they are committed.
-Each app's `package.json` includes a `sanitize` script that invokes the shared `sanitize.ts`
-at the root of this directory. This runs automatically on commit via the Husky pre-commit hook,
-so you don't need to run it manually. If you do want to run it yourself:
+After snapshots are captured, they must be normalized and sanitized before committing.
+See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md#snapshot-post-processing)
+for details on what each step does.
+
+To run them manually on a single app:
 
 ```console
 cd amplify-migration-apps/<app-name>
-npm run sanitize
+npx tsx ../normalize.ts
+npx tsx ../sanitize.ts
 ```
 
-The script extracts values from `amplify-meta.json` and replaces them across all snapshot files:
-
-| Value            | Placeholder                        |
-| ---------------- | ---------------------------------- |
-| AWS Account ID   | `123456789012`                     |
-| Amplify App ID   | `<app-name-no-dashes>`             |
-| AppSync API Key  | `da2-fakeapikey00000000000000`     |
+Order matters — normalize first, then sanitize.
 
 ## Typechecking
 

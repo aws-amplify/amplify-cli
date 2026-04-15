@@ -1,0 +1,58 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "xwgwkksjrbcoxnb64a6clvir4u"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
+    "ParameterValue": "gcclerajqfgpnmxr3jcddmqsv4"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
+    "ParameterValue": "imibv6cnzvcp7i5gs7mcrvx3ey"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
+    "ParameterValue": "khfkfuz5xrdgflta2g3tocqc2a"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-fitnesstracker-x-x-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
+    "ParameterValue": "ezrp4critvfnfiahjlhijajcmi"
+  }
+]

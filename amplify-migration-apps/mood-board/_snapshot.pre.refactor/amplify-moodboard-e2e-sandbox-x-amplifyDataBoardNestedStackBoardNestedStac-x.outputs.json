@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardDataSource5B663EE3Name",
+    "OutputValue": "BoardTable"
+  },
+  {
+    "OutputKey": "GetAttBoardTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-pd6mhagtyveltorgdvv7movvqq-x/stream/2026-04-15T04:23:19.837",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "tr6hjslzxzextaawz3ftjzwqyi:GetAtt:BoardTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttBoardTableName",
+    "OutputValue": "Board-pd6mhagtyveltorgdvv7movvqq-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "tr6hjslzxzextaawz3ftjzwqyi:GetAtt:BoardTable:Name"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox799a4d1a84dataamplifyDataBoardBoardTableE632E322TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-pd6mhagtyveltorgdvv7movvqq-x"
+  }
+]

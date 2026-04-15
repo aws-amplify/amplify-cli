@@ -1,0 +1,6 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox799a4d1a84analyticsNestedStackanalyticsNestedStackResourceAE3BFFB1Outputsamplifymoodboarde2esandbox799a4d1a84analyticsmoodboardKinesisKinesisStream1161343BArn",
+    "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+  }
+]

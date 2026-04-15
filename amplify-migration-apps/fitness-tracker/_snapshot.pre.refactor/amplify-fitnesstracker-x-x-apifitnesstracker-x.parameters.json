@@ -1,0 +1,42 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-fitnesstracker-x-x-deployment"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "fitnesstracker"
+  },
+  {
+    "ParameterKey": "AuthCognitoUserPoolId",
+    "ParameterValue": "us-east-1_Xm7264Or1"
+  }
+]

@@ -40,8 +40,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         continue;
       }
       mappings.push({
-        Source: { StackName: sourceStackId, LogicalResourceId: sourceId },
-        Destination: { StackName: targetStackId, LogicalResourceId: gen1LogicalId },
+        Source: { StackName: extractStackNameFromId(sourceStackId), LogicalResourceId: sourceId },
+        Destination: { StackName: extractStackNameFromId(targetStackId), LogicalResourceId: gen1LogicalId },
       });
     }
     return mappings;

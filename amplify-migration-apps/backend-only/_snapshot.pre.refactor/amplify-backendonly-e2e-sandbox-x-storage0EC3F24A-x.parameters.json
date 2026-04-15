@@ -1,0 +1,10 @@
+[
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef",
+    "ParameterValue": "amplify-backendonl2604142-amplifyAuthauthenticatedU-e2MZgmxI4x06"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref",
+    "ParameterValue": "amplify-backendonl2604142-amplifyAuthunauthenticate-T0OFU3aW6x78"
+  }
+]

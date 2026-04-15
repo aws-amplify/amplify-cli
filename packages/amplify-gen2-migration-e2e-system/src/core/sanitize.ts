@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -9,7 +8,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 
 interface SensitiveValues {
   accountId: string;
@@ -83,13 +81,7 @@ function getFilesRecursive(dir: string): string[] {
 }
 
 function sanitizeFileName(name: string, appId: string, appName: string): string {
-  // sandbox uses this
-  const username = os.userInfo().username;
-  return name.replaceAll(appId, appName).replaceAll(`-${username}-`, '-username-');
-}
-
-function getAllFiles(dir: string): string[] {
-  return getFilesRecursive(dir);
+  return name.replaceAll(appId, appName);
 }
 
 /**
@@ -103,7 +95,8 @@ function getAllFiles(dir: string): string[] {
  * Targets:
  * - AWS Account ID (from providers.awscloudformation AuthRoleArn) → replaced with 123456789012
  * - Amplify App ID (from providers.awscloudformation) → replaced with app name (dashes removed)
- * - AppSync API Key (from api output, if present) → replaced with da2-fakeapikey00000000000000
+ * - Gen1 AppSync API Key (if present and starts with da2-) → replaced with da2-fakeapikey00000000000000
+ * - Gen2 AppSync API Key (from .outputs.json, if present) → replaced with da2-fakeapikey00000000000000
  */
 export function sanitize(appName: string, appDir: string): void {
   const appNameNoDashes = appName.replaceAll('-', '');
@@ -112,7 +105,7 @@ export function sanitize(appName: string, appDir: string): void {
   const values = extractSensitiveValues(amplifyMeta, appDir);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
-  const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
+  const files = [...snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)))];
 
   for (const file of files) {
     let content = fs.readFileSync(file, 'utf-8');
@@ -130,7 +123,7 @@ export function sanitize(appName: string, appDir: string): void {
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);
 
-    fs.writeFileSync(file, content, 'utf-8');
+    fs.writeFileSync(file, content.trimEnd() + '\n', 'utf-8');
     fs.renameSync(file, sanitizedFileName);
   }
 }
