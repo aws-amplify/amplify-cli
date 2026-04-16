@@ -5,9 +5,9 @@ import {
   AdminSetUserPasswordCommand,
   AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { Amplify } from 'aws-amplify';
 import * as fs from 'fs';
 import { randomBytes } from 'crypto';
+import * as apiconfig from '../src/api-config';
 
 import { webcrypto } from 'crypto';
 if (typeof globalThis.crypto === 'undefined') {
@@ -23,7 +23,7 @@ export function configureAmplify(cfg?: any): any {
     }
     cfg = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
   }
-  Amplify.configure(cfg);
+  apiconfig.configureAmplify(cfg);
   return cfg;
 }
 

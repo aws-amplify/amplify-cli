@@ -132,4 +132,17 @@ You are a peer, not an order-taker. When the user proposes a design, naming choi
 
 This doesn't mean argue about everything. Straightforward tasks, clear instructions, and well-reasoned requests should be executed efficiently. Use judgment: the more consequential the decision, the more discussion it deserves.
 
+## Avoiding Stale File Overwrites
+
+The user and the AI often edit files in parallel. If the AI writes to a file using cached content from earlier in the conversation, it can silently overwrite changes the user made in the meantime.
+
+To prevent this:
+
+- **Always re-read a file immediately before editing it** if any of the following are true:
+  - The file is currently open in the user's editor.
+  - The user has mentioned editing or changing it.
+  - Significant time or turns have passed since you last read it.
+- **Never use `strReplace` or `fsWrite` based on content you read more than a few turns ago** without re-reading first.
+- If the user says "I changed X" or "re-read before editing", treat that as a hard requirement to read the file fresh before touching it.
+
 # **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**

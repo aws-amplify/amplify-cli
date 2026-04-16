@@ -210,6 +210,25 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     ],
   })
 );
+backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
+  new Policy(nutritionapiStack, 'gen1NutritionlogAdminPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [
+          gen1nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log/*'),
+          gen1nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log/*'),
+          gen1nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
+          gen1nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
+        ],
+      }),
+    ],
+  })
+);
 backend.addOutput({
   custom: {
     API: {
@@ -297,6 +316,19 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
         resources: [
           adminapiApi.arnForExecuteApi('GET', '/admin'),
           adminapiApi.arnForExecuteApi('GET', '/admin/*'),
+        ],
+      }),
+    ],
+  })
+);
+backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
+  new Policy(adminapiStack, 'gen1AdminAdminPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [
+          gen1adminapiApi.arnForExecuteApi('GET', '/admin'),
+          gen1adminapiApi.arnForExecuteApi('GET', '/admin/*'),
         ],
       }),
     ],
