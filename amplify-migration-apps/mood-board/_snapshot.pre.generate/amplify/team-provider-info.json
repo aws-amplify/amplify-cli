@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-moodboard-x-x-deployment",
       "UnauthRoleName": "amplify-moodboard-x-x-unauthRole",
       "StackName": "amplify-moodboard-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/61829dd0-3882-11f1-b5b8-0afffe97e059",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/89310e30-3926-11f1-aaf3-0afff4ed678f",
       "AmplifyAppId": "moodboard"
     },
     "categories": {
@@ -16,6 +16,10 @@
         "moodboard759ae00a": {}
       },
       "function": {
+        "moodboard2604151154c448f847": {
+          "deploymentBucketName": "amplify-moodboard-x-x-deployment",
+          "s3Key": "amplify-builds/moodboard2604151154c448f847-5a615250796c76626f49-build.zip"
+        },
         "moodboardGetRandomEmoji": {
           "deploymentBucketName": "amplify-moodboard-x-x-deployment",
           "s3Key": "amplify-builds/moodboardGetRandomEmoji-59616d4f4b546a305a75-build.zip"

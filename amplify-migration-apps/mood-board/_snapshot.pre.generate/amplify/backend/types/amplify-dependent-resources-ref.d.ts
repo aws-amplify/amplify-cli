@@ -25,6 +25,13 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
+    "moodboard2604151154c448f847": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
     "moodboardGetRandomEmoji": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
