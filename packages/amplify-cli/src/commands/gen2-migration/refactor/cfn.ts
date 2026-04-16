@@ -36,7 +36,7 @@ import { DiscoveredResource } from '../generate/_infra/gen1-app';
 const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
-export const OUTPUT_DIRECTORY = '.amplify/refactor.operations';
+export const OUTPUT_DIRECTORY = '.gen2-migration/refactor.operations';
 
 const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -171,8 +171,8 @@ export class Cfn {
 
     const input: CreateStackRefactorCommandInput = {
       StackDefinitions: [
-        { TemplateBody: JSON.stringify(sourceTemplate), StackName: sourceStackId },
-        { TemplateBody: JSON.stringify(targetTemplate), StackName: targetStackId },
+        { TemplateBody: JSON.stringify(sourceTemplate), StackName: sourceStackName },
+        { TemplateBody: JSON.stringify(targetTemplate), StackName: targetStackName },
       ],
       ResourceMappings: resourceMappings,
       EnableStackCreation: true,
@@ -422,7 +422,7 @@ function buildRefactorDescription(input: CreateStackRefactorCommandInput): strin
 }
 
 function formatTemplateBody(templateBody: string): string {
-  return JSON.stringify(JSON.parse(templateBody), null, 2);
+  return JSON.stringify(JSON.parse(templateBody), null, 2) + '\n';
 }
 
 interface WriteUpdateSnapshotInput {
@@ -434,7 +434,7 @@ interface WriteUpdateSnapshotInput {
 function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
   fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.template.json`), formatTemplateBody(input.templateBody));
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2));
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2) + '\n');
 }
 
 function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
@@ -446,5 +446,8 @@ function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
   const basePath = path.join(OUTPUT_DIRECTORY, description);
   fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody));
   fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody));
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${description}.mappings.json`), JSON.stringify(input.ResourceMappings ?? [], null, 2));
+  fs.writeFileSync(
+    path.join(OUTPUT_DIRECTORY, `${description}.mappings.json`),
+    JSON.stringify(input.ResourceMappings ?? [], null, 2) + '\n',
+  );
 }

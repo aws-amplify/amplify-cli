@@ -22,7 +22,5 @@
       }
     }
   ],
-  "triggerFunctions": [
-    "activityTrigger79c26ead"
-  ]
+  "triggerFunctions": []
 }

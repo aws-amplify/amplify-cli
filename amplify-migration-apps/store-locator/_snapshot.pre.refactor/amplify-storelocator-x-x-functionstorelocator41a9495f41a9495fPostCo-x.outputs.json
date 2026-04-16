@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/storelocator41a9495f41a9495fPostConfirmation-x"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "storelocator41a9495f41a9495fPostConfirmation-x"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "storelocator41a9495f41a9495fPostConfirmation-x"
+  }
+]

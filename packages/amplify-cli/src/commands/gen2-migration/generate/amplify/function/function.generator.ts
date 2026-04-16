@@ -118,6 +118,7 @@ export class FunctionGenerator implements Planner {
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
     const storageTriggerTables = this.detectStorageDynamoTriggers(func);
+    const hasKinesisTrigger = this.detectKinesisTrigger(func);
     this.contributeAuthAccess(func);
     this.contributeAuthTrigger();
     await this.contributeStorageAccess(this.category);
@@ -137,6 +138,9 @@ export class FunctionGenerator implements Planner {
           }
           if (storageTriggerTables.length > 0) {
             this.contributeStorageDynamoTrigger(func.resourceName, storageTriggerTables);
+          }
+          if (hasKinesisTrigger) {
+            this.contributeKinesisTrigger(func.resourceName);
           }
         },
       },
@@ -871,6 +875,104 @@ export class FunctionGenerator implements Planner {
         ),
       );
     }
+  }
+
+  /**
+   * Detects a Kinesis stream trigger by parsing this function's
+   * CloudFormation template for an EventSourceMapping resource that
+   * references a Kinesis stream ARN via `Ref: analytics<name>kinesisStreamArn`.
+   */
+  private detectKinesisTrigger(func: ResolvedFunction): boolean {
+    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = this.gen1App.json(templatePath);
+
+    for (const resource of Object.values(template.Resources ?? {})) {
+      const res = resource as Record<string, unknown>;
+      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
+
+      const props = res.Properties as Record<string, unknown> | undefined;
+      const eventSourceArn = props?.EventSourceArn as Record<string, string> | undefined;
+      if (!eventSourceArn || !('Ref' in eventSourceArn)) continue;
+
+      if (/^analytics\w+kinesisStreamArn$/.test(eventSourceArn.Ref)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Generates Kinesis stream event source wiring for this function.
+   * Uses Stream.fromStreamArn() to create an L2 reference from the
+   * analytics construct's ARN, then adds a KinesisEventSource.
+   */
+  private contributeKinesisTrigger(functionName: string): void {
+    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['KinesisEventSource']);
+    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
+    this.backendGenerator.addImport('aws-cdk-lib/aws-kinesis', ['Stream']);
+
+    // const kinesisStream = Stream.fromStreamArn(backend.func.resources.lambda.stack, 'KinesisStream', analytics.kinesisStreamArn)
+    const fromStreamArn = factory.createVariableStatement(
+      [],
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'kinesisStream',
+            undefined,
+            undefined,
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('Stream'), factory.createIdentifier('fromStreamArn')),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier(`backend.${functionName}`),
+                      factory.createIdentifier('resources'),
+                    ),
+                    factory.createIdentifier('lambda'),
+                  ),
+                  factory.createIdentifier('stack'),
+                ),
+                factory.createStringLiteral('KinesisStream'),
+                factory.createPropertyAccessExpression(factory.createIdentifier('analytics'), factory.createIdentifier('kinesisStreamArn')),
+              ],
+            ),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+    this.backendGenerator.addStatement(fromStreamArn);
+
+    // backend.func.resources.lambda.addEventSource(new KinesisEventSource(kinesisStream, { startingPosition: StartingPosition.LATEST }))
+    this.backendGenerator.addStatement(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier(`backend.${functionName}.resources`),
+              factory.createIdentifier('lambda'),
+            ),
+            factory.createIdentifier('addEventSource'),
+          ),
+          undefined,
+          [
+            factory.createNewExpression(factory.createIdentifier('KinesisEventSource'), undefined, [
+              factory.createIdentifier('kinesisStream'),
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment(
+                  'startingPosition',
+                  factory.createPropertyAccessExpression(factory.createIdentifier('StartingPosition'), factory.createIdentifier('LATEST')),
+                ),
+              ]),
+            ]),
+          ],
+        ),
+      ),
+    );
   }
 }
 

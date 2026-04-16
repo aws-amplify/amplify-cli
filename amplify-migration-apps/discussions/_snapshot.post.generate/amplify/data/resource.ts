@@ -25,11 +25,6 @@ type Comment @model @auth(rules: [{ allow: public }]){
 
 type Query {
   fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
-  getActivityStats: ActivityStats @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
-}
-
-type ActivityStats {
-  activityCount: Int! @auth(rules: [{ allow: public }])
 }
 
 type Activity {
@@ -38,18 +33,17 @@ type Activity {
   activityType: String! @auth(rules: [{ allow: public }])
   timestamp: String! @auth(rules: [{ allow: public }])
 }
-
 `;
 
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-      branchName: 'main',
+      branchName: 'x',
       modelNameToTableNameMapping: {
-        Topic: 'Topic-n6ixw7ql4bhglfwh7cxizw2k3e-main',
-        Post: 'Post-n6ixw7ql4bhglfwh7cxizw2k3e-main',
-        Comment: 'Comment-n6ixw7ql4bhglfwh7cxizw2k3e-main',
+        Topic: 'Topic-xw3yrfq7mngltcua43nucy7fg4-x',
+        Post: 'Post-xw3yrfq7mngltcua43nucy7fg4-x',
+        Comment: 'Comment-xw3yrfq7mngltcua43nucy7fg4-x',
       },
     },
   ],

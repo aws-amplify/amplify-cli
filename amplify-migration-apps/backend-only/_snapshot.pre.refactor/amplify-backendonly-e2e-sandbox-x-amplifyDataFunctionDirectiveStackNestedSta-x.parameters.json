@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId",
+    "ParameterValue": "64fwpekbzfhs7ctgvnsvdv33fa"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPINONEDSD6CF5616Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef",
+    "ParameterValue": "amplify-backendonl2604142-amplifyAuthauthenticatedU-e2MZgmxI4x06"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref",
+    "ParameterValue": "amplify-backendonl2604142-amplifyAuthunauthenticate-T0OFU3aW6x78"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthIdentityPool210F50E3Ref",
+    "ParameterValue": "us-east-1:253c6cb3-ea32-4bc6-9532-d622a04831ed"
+  }
+]
