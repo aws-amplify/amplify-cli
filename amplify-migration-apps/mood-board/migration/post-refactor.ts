@@ -59,10 +59,24 @@ async function updateSurpriseMeStreamName(appPath: string, envName: string): Pro
   await fs.writeFile(constantsPath, updated, 'utf-8');
 }
 
+async function uncommentPostRefactorTag(appPath: string): Promise<void> {
+  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
+  let content = await fs.readFile(backendPath, 'utf-8');
+
+  content = content.replace(/\/\/\s*(import \{ Tags \} from 'aws-cdk-lib';)/, '$1');
+  content = content.replace(
+    /\/\/\s*(Tags\.of\(backend\.stack\)\.add\(['"]gen2-migration\/post-refactor['"],\s*['"]true['"]\);?)/,
+    '$1',
+  );
+
+  await fs.writeFile(backendPath, content, 'utf-8');
+}
+
 export async function postRefactor(appPath: string, envName: string): Promise<void> {
   await uncommentKinesisStreamName(appPath, envName);
   await uncommentS3BucketName(appPath);
   await updateSurpriseMeStreamName(appPath, envName);
+  await uncommentPostRefactorTag(appPath);
 }
 
 async function main(): Promise<void> {

@@ -10,6 +10,7 @@ import {
   OAuthScope,
   UserPoolClientIdentityProvider,
 } from 'aws-cdk-lib/aws-cognito';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -114,3 +115,6 @@ backend.removeuserfromgroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

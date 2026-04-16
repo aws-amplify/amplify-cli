@@ -13,6 +13,7 @@ import {
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration, Stack } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -312,3 +313,6 @@ backend.addOutput({
     },
   },
 });
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
