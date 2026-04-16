@@ -125,8 +125,10 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const parameters = stack.Parameters ?? [];
     const outputs = stack.Outputs ?? [];
 
+    const stackName = extractStackNameFromId(stackId);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withDeps = resolveDependencies(originalTemplate);
+    const withParams = resolveParameters(originalTemplate, parameters, stackName);
+    const withDeps = resolveDependencies(withParams);
     const resolved = resolveOutputs({
       template: withDeps,
       stackOutputs: outputs,
