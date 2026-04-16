@@ -52,7 +52,7 @@ function graphqlRequest(query, variables) {
 exports.handler = async (event) => {
   console.log('Kinesis trigger fired with', event.Records.length, 'records');
 
-  for (const record of event.Records) {
+  for (const _record of event.Records) {
     await graphqlRequest(createKinesisEventCount, {
       input: {
         processedAt: new Date().toISOString(),
