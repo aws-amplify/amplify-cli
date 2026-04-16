@@ -1,48 +1,48 @@
 [
   {
     "OutputKey": "transformerrootstackWorkoutProgramQuerygetWorkoutProgramauth0FunctionQuerygetWorkoutProgramauth0FunctionAppSyncFunction8D95BFD8FunctionId",
-    "OutputValue": "gep2vf3wjbd45hp2ubzkexxt5i"
+    "OutputValue": "kwhvvi5h25erzegrfqnhgh7r3a"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramSubscriptiononCreateWorkoutProgramauth0FunctionSubscriptiononCreateWorkoutProgramauth0FunctionAppSyncFunction55BF88AFFunctionId",
-    "OutputValue": "bvcwsgcx7jg2hlkn3nbbqmpoxi"
+    "OutputValue": "w3ffhzkms5fpbjrebav7mdldhe"
   },
   {
     "OutputKey": "GetAttWorkoutProgramTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/WorkoutProgram-xwgwkksjrbcoxnb64a6clvir4u-x/stream/2026-04-15T03:51:29.200",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/WorkoutProgram-togpa5colne67hczqmubjjmzwa-x/stream/2026-04-16T01:28:45.794",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:WorkoutProgramTable:StreamArn"
+    "ExportName": "togpa5colne67hczqmubjjmzwa:GetAtt:WorkoutProgramTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
-    "OutputValue": "imibv6cnzvcp7i5gs7mcrvx3ey"
+    "OutputValue": "eqj24fsjunafddq7xjdyqyi5cq"
   },
   {
     "OutputKey": "GetAttWorkoutProgramTableName",
-    "OutputValue": "WorkoutProgram-xwgwkksjrbcoxnb64a6clvir4u-x",
+    "OutputValue": "WorkoutProgram-togpa5colne67hczqmubjjmzwa-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:WorkoutProgramTable:Name"
+    "ExportName": "togpa5colne67hczqmubjjmzwa:GetAtt:WorkoutProgramTable:Name"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramWorkoutProgramOwnerDataResolverFnWorkoutProgramOwnerDataResolverFnAppSyncFunctionB902B95DFunctionId",
-    "OutputValue": "yzgglqqoifb7zgi4uecbbdek6e"
+    "OutputValue": "ceyi7xog55bsrn6alpfzu5jmha"
   },
   {
     "OutputKey": "GetAttWorkoutProgramDataSourceName",
     "OutputValue": "WorkoutProgramTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:WorkoutProgramDataSource:Name"
+    "ExportName": "togpa5colne67hczqmubjjmzwa:GetAtt:WorkoutProgramDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
-    "OutputValue": "gcclerajqfgpnmxr3jcddmqsv4"
+    "OutputValue": "43q6copg6jek7cvcc3aefd77gq"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyncFunctionE9212A4DFunctionId",
-    "OutputValue": "ezrp4critvfnfiahjlhijajcmi"
+    "OutputValue": "h67z3e2whnguvkzk3togp4htvm"
   },
   {
     "OutputKey": "transformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
-    "OutputValue": "khfkfuz5xrdgflta2g3tocqc2a"
+    "OutputValue": "ojuywc4yhnbkvav3ja64dhyiw4"
   }
 ]
