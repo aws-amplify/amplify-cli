@@ -121,7 +121,7 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   'Gen1nutritionapiApi',
   {
     restApiId: 'ma6towcpja',
-    rootResourceId: 'z3wuqrsdj9',
+    rootResourceId: 'ma6towcpja-root',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -250,7 +250,7 @@ const gen1adminapiApi = RestApi.fromRestApiAttributes(
   'Gen1adminapiApi',
   {
     restApiId: 'nv2lhk3kt8',
-    rootResourceId: '67jbkp82b1',
+    rootResourceId: 'nv2lhk3kt8-root',
   }
 );
 const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
