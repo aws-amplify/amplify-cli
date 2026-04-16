@@ -404,9 +404,6 @@ const sleep = async (milliseconds: number): Promise<void> => new Promise((resolv
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  if (region === 'us-east-1' && account.parent) {
-    return []; // temporarily disabled until us-east-1 is re-enabled for this account
-  }
   const amplifyClient = new AmplifyClient(getAWSConfig(account, region));
   try {
     const amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 })); // keeping it to 25 as max supported is 25
