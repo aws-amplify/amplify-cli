@@ -250,7 +250,7 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifymoodboarde2esandbox685dc54d14functionmoodboard2604151154c448f847gen2xlambda7EBA9517Ref"
+                "Outputs.amplifymoodboarde2esandbox685dc54d14functionmoodboardKinesisTriggergen2xlambda7EBA9517Ref"
               ]
             },
             "\"]"

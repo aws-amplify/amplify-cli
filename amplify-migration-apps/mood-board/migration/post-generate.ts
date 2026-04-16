@@ -149,7 +149,7 @@ export async function postGenerate(appPath: string, envName: string): Promise<vo
   await updateBranchName(appPath);
   await convertFunctionToESM(appPath, 'moodboardGetRandomEmoji');
   await convertFunctionToESM(appPath, 'moodboardKinesisReader');
-  await convertFunctionToESM(appPath, 'moodboard2604151154c448f847');
+  await convertFunctionToESM(appPath, 'moodboardKinesisTrigger');
   await removeHardcodedKinesisArn(appPath);
   await updateFrontendConfig(appPath);
   await updateSurpriseMeStreamName(appPath, envName);

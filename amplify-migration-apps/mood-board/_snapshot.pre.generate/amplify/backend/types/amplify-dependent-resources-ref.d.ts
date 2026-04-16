@@ -25,7 +25,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
-    "moodboard2604151154c448f847": {
+    "moodboardKinesisTrigger": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

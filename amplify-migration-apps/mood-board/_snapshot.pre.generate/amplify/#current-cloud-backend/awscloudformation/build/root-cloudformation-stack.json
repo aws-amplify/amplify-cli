@@ -334,13 +334,13 @@
         }
       }
     },
-    "functionmoodboard2604151154c448f847": {
+    "functionmoodboardKinesisTrigger": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboard2604151154c448f847-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboardKinesisTrigger-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-moodboard-x-x-deployment",
-          "s3Key": "amplify-builds/moodboard2604151154c448f847-5a615250796c76626f49-build.zip",
+          "s3Key": "amplify-builds/moodboardKinesisTrigger-5a615250796c76626f49-build.zip",
           "analyticsmoodboardKinesiskinesisStreamArn": {
             "Fn::GetAtt": [
               "analyticsmoodboardKinesis",

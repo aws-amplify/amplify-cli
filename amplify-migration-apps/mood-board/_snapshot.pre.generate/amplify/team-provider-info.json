@@ -16,9 +16,9 @@
         "moodboard759ae00a": {}
       },
       "function": {
-        "moodboard2604151154c448f847": {
+        "moodboardKinesisTrigger": {
           "deploymentBucketName": "amplify-moodboard-x-x-deployment",
-          "s3Key": "amplify-builds/moodboard2604151154c448f847-5a615250796c76626f49-build.zip"
+          "s3Key": "amplify-builds/moodboardKinesisTrigger-5a615250796c76626f49-build.zip"
         },
         "moodboardGetRandomEmoji": {
           "deploymentBucketName": "amplify-moodboard-x-x-deployment",

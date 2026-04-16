@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"moodboardGetRandomEmoji-gen2-x\",\"moodboardKinesisReader-gen2-x\",\"moodboard2604151154c448f847-gen2-x\"]"
+    "OutputValue": "[\"moodboardGetRandomEmoji-gen2-x\",\"moodboardKinesisReader-gen2-x\",\"moodboardKinesisTrigger-gen2-x\"]"
   },
   {
     "OutputKey": "passwordlessOptions",

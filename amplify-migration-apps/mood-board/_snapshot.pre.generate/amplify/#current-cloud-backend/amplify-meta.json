@@ -178,7 +178,7 @@
       },
       "lastPushDirHash": "Hm1fZAAyF9uAjfeygeDAxRhFnjI="
     },
-    "moodboard2604151154c448f847": {
+    "moodboardKinesisTrigger": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
@@ -203,21 +203,21 @@
       "lastBuildTimeStamp": "2026-04-15T23:56:16.683Z",
       "lastBuildType": "PROD",
       "lastPackageTimeStamp": "2026-04-15T23:56:16.696Z",
-      "distZipFilename": "moodboard2604151154c448f847-5a615250796c76626f49-build.zip",
+      "distZipFilename": "moodboardKinesisTrigger-5a615250796c76626f49-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-moodboard-x-x-deployment",
-        "s3Key": "amplify-builds/moodboard2604151154c448f847-5a615250796c76626f49-build.zip"
+        "s3Key": "amplify-builds/moodboardKinesisTrigger-5a615250796c76626f49-build.zip"
       },
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboard2604151154c448f847-cloudformation-template.json",
-        "logicalId": "functionmoodboard2604151154c448f847"
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboardKinesisTrigger-cloudformation-template.json",
+        "logicalId": "functionmoodboardKinesisTrigger"
       },
       "lastPushTimeStamp": "2026-04-16T00:02:36.057Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/moodboard2604151154LambdaRoleba2650b3-x",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:moodboard2604151154c448f847-x",
-        "Name": "moodboard2604151154c448f847-x",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:moodboardKinesisTrigger-x",
+        "Name": "moodboardKinesisTrigger-x",
         "LambdaExecutionRole": "moodboard2604151154LambdaRoleba2650b3-x"
       },
       "lastPushDirHash": "JcRwdYiRhPhYpnY0zH0oZvhkTaA="

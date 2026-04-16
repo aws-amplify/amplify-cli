@@ -63,12 +63,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "moodboard2604151154c448f847",
+            "moodboardKinesisTrigger",
             {
               "Fn::Join": [
                 "",
                 [
-                  "moodboard2604151154c448f847",
+                  "moodboardKinesisTrigger",
                   "-",
                   {
                     "Ref": "env"

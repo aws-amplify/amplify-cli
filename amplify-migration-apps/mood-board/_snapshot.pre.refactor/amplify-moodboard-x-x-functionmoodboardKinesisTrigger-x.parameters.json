@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/moodboard2604151154c448f847-5a615250796c76626f49-build.zip"
+    "ParameterValue": "amplify-builds/moodboardKinesisTrigger-5a615250796c76626f49-build.zip"
   },
   {
     "ParameterKey": "analyticsmoodboardKinesiskinesisStreamArn",

@@ -3,7 +3,7 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { moodboardGetRandomEmoji } from './function/moodboardGetRandomEmoji/resource';
 import { moodboardKinesisReader } from './function/moodboardKinesisReader/resource';
-import { moodboard2604151154c448f847 } from './function/moodboard2604151154c448f847/resource';
+import { moodboardKinesisTrigger } from './function/moodboardKinesisTrigger/resource';
 import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
@@ -17,7 +17,7 @@ const backend = defineBackend({
   storage,
   moodboardGetRandomEmoji,
   moodboardKinesisReader,
-  moodboard2604151154c448f847,
+  moodboardKinesisTrigger,
 });
 const analytics = defineAnalytics(backend);
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
@@ -89,28 +89,28 @@ backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
     resources: [analytics.kinesisStreamArn],
   })
 );
-backend.moodboard2604151154c448f847.resources.cfnResources.cfnFunction.functionName = `moodboard2604151154c448f847-${branchName}`;
-backend.moodboard2604151154c448f847.addEnvironment(
+backend.moodboardKinesisTrigger.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisTrigger-${branchName}`;
+backend.moodboardKinesisTrigger.addEnvironment(
   'API_MOODBOARD_GRAPHQLAPIKEYOUTPUT',
   backend.data.apiKey!
 );
-backend.moodboard2604151154c448f847.addEnvironment(
+backend.moodboardKinesisTrigger.addEnvironment(
   'API_MOODBOARD_GRAPHQLAPIENDPOINTOUTPUT',
   backend.data.graphqlUrl
 );
-backend.moodboard2604151154c448f847.addEnvironment(
+backend.moodboardKinesisTrigger.addEnvironment(
   'API_MOODBOARD_GRAPHQLAPIIDOUTPUT',
   backend.data.apiId
 );
 backend.data.resources.graphqlApi.grantMutation(
-  backend.moodboard2604151154c448f847.resources.lambda
+  backend.moodboardKinesisTrigger.resources.lambda
 );
 const kinesisStream = Stream.fromStreamArn(
-  backend.moodboard2604151154c448f847.resources.lambda.stack,
+  backend.moodboardKinesisTrigger.resources.lambda.stack,
   'KinesisStream',
   analytics.kinesisStreamArn
 );
-backend.moodboard2604151154c448f847.resources.lambda.addEventSource(
+backend.moodboardKinesisTrigger.resources.lambda.addEventSource(
   new KinesisEventSource(kinesisStream, {
     startingPosition: StartingPosition.LATEST,
   })

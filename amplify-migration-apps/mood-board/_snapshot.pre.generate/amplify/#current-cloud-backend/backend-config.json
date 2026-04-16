@@ -69,7 +69,7 @@
     }
   },
   "function": {
-    "moodboard2604151154c448f847": {
+    "moodboardKinesisTrigger": {
       "build": true,
       "dependsOn": [
         {
@@ -113,19 +113,19 @@
     }
   },
   "parameters": {
-    "AMPLIFY_function_moodboard2604151154c448f847_deploymentBucketName": {
+    "AMPLIFY_function_moodboardKinesisTrigger_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "moodboard2604151154c448f847"
+          "resourceName": "moodboardKinesisTrigger"
         }
       ]
     },
-    "AMPLIFY_function_moodboard2604151154c448f847_s3Key": {
+    "AMPLIFY_function_moodboardKinesisTrigger_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "moodboard2604151154c448f847"
+          "resourceName": "moodboardKinesisTrigger"
         }
       ]
     },
