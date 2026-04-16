@@ -16,6 +16,11 @@ type Board @model @auth(rules: [{ allow: public }]) {
   moodItems: [MoodItem] @hasMany(indexName: "byBoard", fields: ["id"])
 }
 
+type KinesisEventCount @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  processedAt: AWSDateTime!
+}
+
 type Query {
   getRandomEmoji: String @function(name: "moodboardGetRandomEmoji-${branchName}") @auth(rules: [{ allow: private }])
   getKinesisEvents: AWSJSON @function(name: "moodboardKinesisReader-${branchName}") @auth(rules: [{ allow: private }])
@@ -28,8 +33,9 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
-        MoodItem: 'MoodItem-pd6mhagtyveltorgdvv7movvqq-x',
-        Board: 'Board-pd6mhagtyveltorgdvv7movvqq-x',
+        MoodItem: 'MoodItem-g26hrobfy5b5pniveska5ylg4u-x',
+        Board: 'Board-g26hrobfy5b5pniveska5ylg4u-x',
+        KinesisEventCount: 'KinesisEventCount-g26hrobfy5b5pniveska5ylg4u-x',
       },
     },
   ],

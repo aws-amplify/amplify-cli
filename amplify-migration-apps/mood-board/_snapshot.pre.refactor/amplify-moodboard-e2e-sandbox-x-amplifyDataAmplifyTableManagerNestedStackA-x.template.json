@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
+                            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "MoodItem-pd6mhagtyveltorgdvv7movvqq-x"
+                          "tableName": "MoodItem-g26hrobfy5b5pniveska5ylg4u-x"
                         }
                       ]
                     },
@@ -72,7 +72,15 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Board-pd6mhagtyveltorgdvv7movvqq-x"
+                          "tableName": "Board-g26hrobfy5b5pniveska5ylg4u-x"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                        {
+                          "tableName": "KinesisEventCount-g26hrobfy5b5pniveska5ylg4u-x"
                         }
                       ]
                     }
@@ -169,7 +177,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId"
+                            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -179,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "MoodItem-pd6mhagtyveltorgdvv7movvqq-x"
+                          "tableName": "MoodItem-g26hrobfy5b5pniveska5ylg4u-x"
                         }
                       ]
                     },
@@ -187,7 +195,15 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Board-pd6mhagtyveltorgdvv7movvqq-x"
+                          "tableName": "Board-g26hrobfy5b5pniveska5ylg4u-x"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                        {
+                          "tableName": "KinesisEventCount-g26hrobfy5b5pniveska5ylg4u-x"
                         }
                       ]
                     }
@@ -479,7 +495,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNyw6CMBBFv8V9GbFE92Li0hj4ADK0IymPNmFaiWn67wbQ1Tk3Z3ElyHMO+QEXzpQestG0EB/EnnTtUQ0CF26iwQli5UYSt5fd+HSjUZ917pbEiFOrEeI9WOWNs2v7exJcNMhMnuG6QnABZVAD+RKZkqiIXZgVia3WHjtju+3sF5KwThP0fHxLCacL5IeejcnmYL2ZCKqdX3lj/13PAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNTQ6CMBBGz8K+jFjiAcTEpTFwADK0Iyk/bcK0EtP07gbQ1Xtf3uKTIC8FFBmunCs95pPpID6IPenGoxoFrtxGgzPE2k0kbi+78+kmoz7bPCyJCedOI8R7sMobZ7f29yS4bJGZPMN1g+ASqqBG8hUyJVETu7AoEnttPPbG9vvZLyRhnSYY+PSWEuQZimxgY/IlWG9mgvrgF13iClnPAAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
@@ -754,12 +770,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox799a4d1a84dataamplifyDataGraphQLAPI1E67CA8DApiId": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox799a4d1a84dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent5D5EC05CArn": {
+    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventA0825010Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

@@ -47,7 +47,7 @@
         "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref"
+            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
           }
         ]
       },
@@ -81,7 +81,7 @@
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef"
+            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
           }
         ]
       },
@@ -94,7 +94,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQrCMAwA0LPsv421MC+wfxV3AIltBlnXTpbUIWN3H+LX43nwrQPX4Co2xGQnfsF2JVGKvWJIBld5bokLCQt0Q+l1IcyGMf92nycO3910Q7lVfVfdTZkjwSinj/dwvoBrRmG2Sy3KmeDx9wDnXMcSdwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQqDMAwA0LP432ZdwBP4v415AKlthFhbh0knQ7z7GPt6PARsHbjG72JDTHbhEY4biVLs1Ydk/C7DkbiQsEA3lV438tmwz7891oXD5zTdVO5VX1VPU9ZIMMvljQh4BdfMwmy3WpQzwfPvF8PdMhZ3AAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/CDKMetadata/Default"
@@ -119,7 +119,7 @@
     "kinesisStreamShardCount": {
       "Value": "1"
     },
-    "amplifymoodboarde2esandbox799a4d1a84analyticsmoodboardKinesisKinesisStream1161343BArn": {
+    "amplifymoodboarde2esandbox685dc54d14analyticsmoodboardKinesisKinesisStream0B86977BArn": {
       "Value": {
         "Fn::GetAtt": [
           "moodboardKinesisKinesisStreamD5E97047",
@@ -395,10 +395,10 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
       "Type": "String"
     }
   }
