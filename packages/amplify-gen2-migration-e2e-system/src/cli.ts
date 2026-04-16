@@ -33,6 +33,11 @@ async function main(): Promise<void> {
       choices: ['deploy', 'migrate'],
       string: true,
     })
+    .option('teardown', {
+      type: 'boolean',
+      description: 'Delete all deployed resources after execution',
+      default: false,
+    })
     .help()
     .alias('help', 'h')
     .version()
@@ -70,6 +75,10 @@ async function main(): Promise<void> {
   } catch (error) {
     (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
     throw error;
+  } finally {
+    if (argv.teardown) {
+      await app.teardown();
+    }
   }
 }
 

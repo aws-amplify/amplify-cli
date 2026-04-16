@@ -435,6 +435,57 @@ export class App {
   }
 
   // ============================================================
+  // Teardown
+  // ============================================================
+
+  /**
+   * Delete all deployed resources (Gen1 backend + Gen2 sandbox).
+   * Runs in a best-effort manner — logs errors but does not throw.
+   */
+  public async teardown(): Promise<void> {
+    this.logger.info('Starting teardown...');
+
+    // Delete Gen2 sandbox stack
+    try {
+      this.logger.info('Deleting Gen2 sandbox...');
+      await this.git.checkout(this.gen2BranchName, false);
+      const sandboxResult = await execa('npx', ['ampx', 'sandbox', 'delete', '--yes'], {
+        cwd: this.targetAppPath,
+        reject: false,
+        stdio: 'inherit',
+        env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
+      });
+      if (sandboxResult.exitCode !== 0) {
+        this.logger.info(`ampx sandbox delete exited with code ${sandboxResult.exitCode} (continuing teardown)`);
+      } else {
+        this.logger.info('Gen2 sandbox deleted');
+      }
+    } catch (e) {
+      this.logger.info(`Gen2 sandbox delete failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    // Delete Gen1 backend via amplify delete
+    try {
+      this.logger.info('Deleting Gen1 backend...');
+      await this.git.checkout(this.gen1BranchName, false);
+      const deleteResult = await execa(this.amplifyPath, ['delete', '--yes'], {
+        cwd: this.targetAppPath,
+        reject: false,
+        stdio: 'inherit',
+      });
+      if (deleteResult.exitCode !== 0) {
+        this.logger.info(`amplify delete exited with code ${deleteResult.exitCode} (continuing teardown)`);
+      } else {
+        this.logger.info('Gen1 backend deleted');
+      }
+    } catch (e) {
+      this.logger.info(`Gen1 backend delete failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    this.logger.info('Teardown complete');
+  }
+
+  // ============================================================
   // Private Helpers
   // ============================================================
 

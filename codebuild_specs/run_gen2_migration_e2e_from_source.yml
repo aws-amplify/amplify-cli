@@ -5,6 +5,7 @@ env:
     CI: true
     IS_AMPLIFY_CI: true
     MIGRATION_APP: project-boards
+    TEARDOWN: "1"
 
 phases:
   build:

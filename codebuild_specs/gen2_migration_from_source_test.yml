@@ -20,6 +20,7 @@ phases:
     commands:
       - export NODE_OPTIONS=--max-old-space-size=8192
       - export MIGRATION_APP=project-boards
+      - export TEARDOWN=1
       - echo "Running Gen2 Migration E2E test from source for app $MIGRATION_APP"
       - source ./shared-scripts.sh && _runGen2MigrationE2EFromSource
   post_build:
