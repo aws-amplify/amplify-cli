@@ -254,9 +254,7 @@
         },
         "PolicyName": "amplifymoodboarde2esandbox799a4d1a84storageAccess35BE57E89",
         "Roles": [
-          {
-            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef"
-          }
+          "amplify-moodboard26041500-amplifyAuthunauthenticate-2CR87a5ajww1"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -391,9 +389,7 @@
         },
         "PolicyName": "amplifymoodboarde2esandbox799a4d1a84storageAccess45ABD2020",
         "Roles": [
-          {
-            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref"
-          }
+          "amplify-moodboard26041500-amplifyAuthauthenticatedU-inPzqwEs0wDw"
         ]
       },
       "UpdateReplacePolicy": "Delete",

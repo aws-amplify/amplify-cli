@@ -19,9 +19,7 @@
         },
         "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
         "Roles": [
-          {
-            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref"
-          }
+          "amplify-moodboard26041500-amplifyAuthauthenticatedU-inPzqwEs0wDw"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -48,9 +46,7 @@
         },
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
         "Roles": [
-          {
-            "Ref": "referencetoamplifymoodboarde2esandbox799a4d1a84authNestedStackauthNestedStackResourceCF49B256Outputsamplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef"
-          }
+          "amplify-moodboard26041500-amplifyAuthunauthenticate-2CR87a5ajww1"
         ]
       },
       "UpdateReplacePolicy": "Delete",
