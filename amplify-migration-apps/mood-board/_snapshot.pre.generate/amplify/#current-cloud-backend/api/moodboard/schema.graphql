@@ -13,6 +13,11 @@ type Board @model @auth(rules: [{ allow: public }]) {
   moodItems: [MoodItem] @hasMany(indexName: "byBoard", fields: ["id"])
 }
 
+type KinesisEventCount @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  processedAt: AWSDateTime!
+}
+
 type Query {
   getRandomEmoji: String @function(name: "moodboardGetRandomEmoji-${env}") @auth(rules: [{ allow: private }])
   getKinesisEvents: AWSJSON @function(name: "moodboardKinesisReader-${env}") @auth(rules: [{ allow: private }])

@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "S3DeploymentRootKey",
-    "ParameterValue": "amplify-appsync-files/5c491eab2bbf740cbba1e26a8e9053c2c881af96"
+    "ParameterValue": "amplify-appsync-files/43e6fad4f7ae7e9b21954a41da4290129df61441"
   },
   {
     "ParameterKey": "AppSyncApiName",
@@ -37,6 +37,6 @@
   },
   {
     "ParameterKey": "AuthCognitoUserPoolId",
-    "ParameterValue": "us-east-1_wDScdYiSe"
+    "ParameterValue": "us-east-1_uFCFZxzU8"
   }
 ]
