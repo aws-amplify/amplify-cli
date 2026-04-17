@@ -64,6 +64,18 @@ function generatePkgCli {
   cp ../yarn.lock ./
   yarn workspaces focus --production
 
+  # Workaround for yao-pkg/pkg#195: pkg's snapshot filesystem can't resolve
+  # ESM imports from .mjs files referenced by the "module-sync" export condition.
+  # We strip just the "module-sync" line from each affected package.json so pkg
+  # falls back to the "default" (CJS) condition instead.
+  for esm_pkg in async-function async-generator-function generator-function; do
+    pkg_dir="node_modules/$esm_pkg"
+    if [ -d "$pkg_dir" ]; then
+      sed -i.bak '/"module-sync"/d' "$pkg_dir/package.json" && rm -f "$pkg_dir/package.json.bak"
+      echo "Patched $esm_pkg: removed module-sync export (yao-pkg/pkg#195)"
+    fi
+  done
+
   # Optimize package size
   find . \
     -name "*.d.ts" -or -name "*.js.map" -or -name "*.d.ts.map" -or \
