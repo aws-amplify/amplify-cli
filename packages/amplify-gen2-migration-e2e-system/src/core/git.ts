@@ -16,7 +16,7 @@ export class Git {
   }
 
   public async init(): Promise<void> {
-    await this.run('init');
+    await this.run('init', '--initial-branch=main');
   }
 
   public async diff(): Promise<void> {

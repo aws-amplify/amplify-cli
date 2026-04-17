@@ -263,6 +263,19 @@ function _uploadPkgBinaries {
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
+
+# Upload only linux binaries - used by gen2 migration workflow which only needs linux
+function _uploadPkgBinariesLinuxOnly {
+    echo Consolidate linux binaries cache and upload
+
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
+
+    echo Done loading linux binaries
+    ls $CODEBUILD_SRC_DIR/out
+
+    storeCache $CODEBUILD_SRC_DIR/out all-binaries
+}
 function _buildBinaries {
     echo Start verdaccio and package CLI
     binaryType="$1"
@@ -791,4 +804,67 @@ function _deploymentVerificationRCOrTagged {
     echo Verify Tagged or RC Deployment
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/verify-deployment.ts --version $version --exclude-github
+}
+
+function _runGen2MigrationE2E {
+    echo "Running Gen2 Migration E2E test for app: $MIGRATION_APP"
+
+    # Load cached artifacts
+    _loadE2ECache
+    _install_packaged_cli_linux
+
+    # Verify CLI installation
+    which amplify
+    amplify version
+
+    # Start local registry for npm packages
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+
+    # Load test account credentials
+    _loadTestAccountCredentials
+
+    # Configure AWS profile for the migration CLI
+    # The migration CLI requires a named profile, so we create one with the assumed role credentials
+    mkdir -p ~/.aws
+    cat > ~/.aws/credentials << EOF
+[amplify-migration-test]
+aws_access_key_id = $AWS_ACCESS_KEY_ID
+aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
+aws_session_token = $AWS_SESSION_TOKEN
+EOF
+
+    cat > ~/.aws/config << EOF
+[profile amplify-migration-test]
+region = ${CLI_REGION:-us-east-1}
+output = json
+EOF
+
+    export AWS_PROFILE=amplify-migration-test
+
+    # Unset credential env vars to avoid conflicts with AWS_PROFILE
+    # The credentials are now stored in ~/.aws/credentials
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+
+    # Bootstrap CDK if not already done (required for ampx sandbox)
+    # This is idempotent - safe to run even if already bootstrapped
+    echo "Bootstrapping CDK for region ${CLI_REGION:-us-east-1}..."
+    npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/${CLI_REGION:-us-east-1} || echo "Bootstrap may already exist or failed, continuing..."
+
+    # Configure git identity for commits during migration
+    git config --global user.email "amplify-cli-e2e@test.com"
+    git config --global user.name "Amplify CLI E2E Test Name"
+
+    # Navigate to the migration app directory
+    cd $CODEBUILD_SRC_DIR/amplify-migration-apps/$MIGRATION_APP
+
+    # Run the e2e migration test
+    # The test:e2e script runs the migration CLI which handles the full workflow
+    echo "Starting migration E2E test for $MIGRATION_APP"
+    npm run test:e2e
+
+    echo "Migration E2E test completed for $MIGRATION_APP"
 }
