@@ -1,14 +1,14 @@
 [
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthauthenticatedUserRole0560F89FRef",
-    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthauthenticatedU-NanIXo9aixs2"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthadmingen2xlambda8DFBC2FBArn",
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBArn",
     "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-x"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxb87516873eauthNestedStackauthNestedStackResource3D775B9AOutputsamplifyfitnesstrackere2esandboxb87516873eauthamplifyAuthAdminGroupRoleDDED643DRef",
-    "ParameterValue": "amplify-fitnesstra2604142-amplifyAuthAdminGroupRole-w2iwcg4Jlkt1"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref",
+    "ParameterValue": "amplify-fitnesstra2604152-amplifyAuthauthenticatedU-aZ9LbK0lXc4U"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref",
+    "ParameterValue": "amplify-fitnesstra2604152-amplifyAuthAdminGroupRole-jbCHSfemreQa"
   }
 ]

@@ -1,14 +1,14 @@
 [
   {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68restapistacknutritionapiRestApi28E9B2D1Ref",
+    "OutputValue": "eg0xf87mn9"
+  },
+  {
     "OutputKey": "RestApiEndpoint0551178A",
-    "OutputValue": "https://xae3h1l9l7.execute-api.us-east-1.amazonaws.com/prod/"
+    "OutputValue": "https://eg0xf87mn9.execute-api.us-east-1.amazonaws.com/prod/"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApiDeploymentStageprod6F2FD815Ref",
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68restapistacknutritionapiRestApiDeploymentStageprod2F3F557DRef",
     "OutputValue": "prod"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873erestapistacknutritionapiRestApi28212794Ref",
-    "OutputValue": "xae3h1l9l7"
   }
 ]

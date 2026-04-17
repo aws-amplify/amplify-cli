@@ -43,8 +43,8 @@
         "Description": "override success",
         "GroupName": "Admin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_Xm7264Or1-AdminGroupRole",
-        "UserPoolId": "us-east-1_Xm7264Or1"
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_bhgoCMFQU-AdminGroupRole",
+        "UserPoolId": "us-east-1_bhgoCMFQU"
       }
     },
     "AdminGroupRole": {
@@ -62,7 +62,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:c525ee11-d503-434d-a20e-29d16684f0f3"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:8c3507bb-36a7-4095-8c3f-23fe6edf7d2e"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -75,7 +75,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_Xm7264Or1",
+              "us-east-1_bhgoCMFQU",
               "-AdminGroupRole"
             ]
           ]
@@ -85,7 +85,7 @@
   },
   "Outputs": {
     "AdminGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_Xm7264Or1-AdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_bhgoCMFQU-AdminGroupRole"
     }
   }
 }

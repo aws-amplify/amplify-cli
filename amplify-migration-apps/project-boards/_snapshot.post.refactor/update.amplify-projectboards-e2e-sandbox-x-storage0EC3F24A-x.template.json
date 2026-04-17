@@ -254,9 +254,7 @@
         },
         "PolicyName": "amplifyprojectboardse2esandboxb2cbfff775storageAccess3692CDB92",
         "Roles": [
-          {
-            "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref"
-          }
+          "amplify-projectboa2604142-amplifyAuthunauthenticate-LvEI2or1a1b4"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -391,9 +389,7 @@
         },
         "PolicyName": "amplifyprojectboardse2esandboxb2cbfff775storageAccess426533AE4",
         "Roles": [
-          {
-            "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref"
-          }
+          "amplify-projectboa2604142-amplifyAuthauthenticatedU-1jxM3hVSjIDm"
         ]
       },
       "UpdateReplacePolicy": "Delete",

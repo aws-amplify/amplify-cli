@@ -152,17 +152,13 @@
               "Events": [
                 "s3:ObjectCreated:*"
               ],
-              "LambdaFunctionArn": {
-                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17functionNestedStackfunctionNestedStackResource2A71F224Outputsamplifyproductcataloge2esandboxde12df9a17functionS3Trigger1ef46783gen2xlambda81A9091AArn"
-              }
+              "LambdaFunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
             },
             {
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
-              "LambdaFunctionArn": {
-                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17functionNestedStackfunctionNestedStackResource2A71F224Outputsamplifyproductcataloge2esandboxde12df9a17functionS3Trigger1ef46783gen2xlambda81A9091AArn"
-              }
+              "LambdaFunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
             }
           ]
         },
@@ -179,9 +175,7 @@
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17functionNestedStackfunctionNestedStackResource2A71F224Outputsamplifyproductcataloge2esandboxde12df9a17functionS3Trigger1ef46783gen2xlambda81A9091AArn"
-        },
+        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x",
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {
           "Ref": "AWS::AccountId"
@@ -497,9 +491,7 @@
         },
         "PolicyName": "amplifyproductcataloge2esandboxde12df9a17storageAccess479CEF9A9",
         "Roles": [
-          {
-            "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref"
-          }
+          "amplify-productcat2604142-amplifyAuthauthenticatedU-FTyAOUWtFeJb"
         ]
       },
       "UpdateReplacePolicy": "Delete",
