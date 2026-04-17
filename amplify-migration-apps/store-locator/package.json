@@ -17,7 +17,7 @@
     "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
     "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
     "test:shared-data": "true",
-    "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app store-locator --profile ${AWS_PROFILE:-default}",
+    "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app store-locator --profile ${AWS_PROFILE:-default} ${TEARDOWN:+--teardown}",
     "deploy": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app store-locator --step deploy --profile ${AWS_PROFILE:-default}",
     "pre-push": "npx tsx migration/pre-push.ts",
     "post-generate": "npx tsx migration/post-generate.ts",

@@ -7,8 +7,15 @@ import { Logger, LogLevel } from './logger';
 import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
-import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 import { normalize } from './normalize';
+import {
+  CloudFormationClient,
+  DeleteStackCommand,
+  paginateListStacks,
+  StackStatus,
+  waitUntilStackDeleteComplete,
+} from '@aws-sdk/client-cloudformation';
+import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -437,6 +444,107 @@ export class App {
         filter: (src: string, _dst: string) => !src.includes('node_modules'),
       });
     }
+  }
+
+  // ============================================================
+  // Teardown
+  // ============================================================
+
+  /**
+   * Delete all deployed resources (Gen1 backend + Gen2 sandbox + holding stacks).
+   * Runs in a best-effort manner — logs errors but does not throw.
+   */
+  public async teardown(): Promise<void> {
+    this.logger.info('Starting teardown...');
+
+    // Delete Gen2 sandbox stack
+    try {
+      this.logger.info('Deleting Gen2 sandbox...');
+      await this.git.checkout(this.gen2BranchName, false);
+      const sandboxResult = await execa('npx', ['ampx', 'sandbox', 'delete', '--yes'], {
+        cwd: this.targetAppPath,
+        reject: false,
+        stdio: 'inherit',
+        env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
+      });
+      if (sandboxResult.exitCode !== 0) {
+        this.logger.info(`ampx sandbox delete exited with code ${sandboxResult.exitCode} (continuing teardown)`);
+      } else {
+        this.logger.info('Gen2 sandbox deleted');
+      }
+    } catch (e) {
+      this.logger.info(`Gen2 sandbox delete failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    // Delete holding stacks created during refactor
+    try {
+      this.logger.info('Deleting holding stacks...');
+      const cfnClient = new CloudFormationClient({});
+      for await (const page of paginateListStacks(
+        { client: cfnClient },
+        { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.REVIEW_IN_PROGRESS] },
+      )) {
+        for (const stack of page.StackSummaries ?? []) {
+          if (stack.StackName?.includes(this.deploymentName) && stack.StackName.endsWith('-holding')) {
+            this.logger.info(`Deleting holding stack: ${stack.StackName}`);
+            await cfnClient.send(new DeleteStackCommand({ StackName: stack.StackName }));
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.info(`Holding stack cleanup failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    // Delete Gen1 CFN stacks directly (amplify delete doesn't work after migration mutates the workspace)
+    try {
+      this.logger.info('Deleting Gen1 CloudFormation stacks...');
+      const cfnClient = new CloudFormationClient({});
+      const stackPrefix = `amplify-${this.deploymentName}-`;
+      for await (const page of paginateListStacks(
+        { client: cfnClient },
+        {
+          StackStatusFilter: [
+            StackStatus.CREATE_COMPLETE,
+            StackStatus.UPDATE_COMPLETE,
+            StackStatus.UPDATE_ROLLBACK_COMPLETE,
+            StackStatus.ROLLBACK_COMPLETE,
+            StackStatus.DELETE_FAILED,
+          ],
+        },
+      )) {
+        for (const stack of page.StackSummaries ?? []) {
+          if (stack.StackName?.startsWith(stackPrefix) && !stack.RootId) {
+            this.logger.info(`Deleting stack: ${stack.StackName}`);
+            await cfnClient.send(new DeleteStackCommand({ StackName: stack.StackName }));
+            try {
+              await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stack.StackName });
+            } catch {
+              this.logger.info(`Stack ${stack.StackName} delete did not complete within timeout (continuing teardown)`);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.info(`Gen1 stack cleanup failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    // Delete the Amplify console app
+    try {
+      this.logger.info('Deleting Amplify console app...');
+      const amplifyClient = new AmplifyClient({});
+      const apps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 }));
+      const app = apps.apps?.find((a) => a.name === this.deploymentName);
+      if (app?.appId) {
+        await amplifyClient.send(new DeleteAppCommand({ appId: app.appId }));
+        this.logger.info(`Deleted Amplify app: ${this.deploymentName} (${app.appId})`);
+      } else {
+        this.logger.info(`Amplify app ${this.deploymentName} not found (may already be deleted)`);
+      }
+    } catch (e) {
+      this.logger.info(`Amplify app cleanup failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    this.logger.info('Teardown complete');
   }
 
   // ============================================================
