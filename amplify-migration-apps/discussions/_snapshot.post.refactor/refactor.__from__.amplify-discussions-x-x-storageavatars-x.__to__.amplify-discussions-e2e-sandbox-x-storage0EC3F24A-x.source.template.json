@@ -172,11 +172,7 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-      "Value": "discus-avatars223a2-main"
-========
       "Value": "discus-avatarsx-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
     },
     "Region": {
       "Value": "us-east-1"
@@ -203,11 +199,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-                      "discus-avatars223a2-main",
-========
                       "discus-avatarsx-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
                       "/public/*"
                     ]
                   ]
@@ -218,11 +210,7 @@
         },
         "PolicyName": "Public_policy_5f6a0280",
         "Roles": [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-          "amplify-discussions-main-223a2-authRole"
-========
           "amplify-discussions-x-x-authRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
         ]
       },
       "Condition": "CreateAuthPublic"
@@ -247,11 +235,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-                      "discus-avatars223a2-main",
-========
                       "discus-avatarsx-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -262,11 +246,7 @@
         },
         "PolicyName": "Protected_policy_5f6a0280",
         "Roles": [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-          "amplify-discussions-main-223a2-authRole"
-========
           "amplify-discussions-x-x-authRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
         ]
       },
       "Condition": "CreateAuthProtected"
@@ -291,11 +271,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-                      "discus-avatars223a2-main",
-========
                       "discus-avatarsx-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -306,11 +282,7 @@
         },
         "PolicyName": "Private_policy_5f6a0280",
         "Roles": [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-          "amplify-discussions-main-223a2-authRole"
-========
           "amplify-discussions-x-x-authRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
         ]
       },
       "Condition": "CreateAuthPrivate"
@@ -335,11 +307,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-                      "discus-avatars223a2-main",
-========
                       "discus-avatarsx-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
                       "/uploads/*"
                     ]
                   ]
@@ -350,11 +318,7 @@
         },
         "PolicyName": "Uploads_policy_5f6a0280",
         "Roles": [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-          "amplify-discussions-main-223a2-authRole"
-========
           "amplify-discussions-x-x-authRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
         ]
       },
       "Condition": "CreateAuthUploads"
@@ -372,11 +336,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-                    "discus-avatars223a2-main",
-========
                     "discus-avatarsx-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
                     "/protected/*"
                   ]
                 ]
@@ -402,11 +362,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-                    "discus-avatars223a2-main"
-========
                     "discus-avatarsx-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
                   ]
                 ]
               }
@@ -416,11 +372,7 @@
         },
         "PolicyName": "read_policy_5f6a0280",
         "Roles": [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.source.template.json
-          "amplify-discussions-main-223a2-authRole"
-========
           "amplify-discussions-x-x-authRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageavatars-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.source.template.json
         ]
       },
       "Condition": "AuthReadAndList"

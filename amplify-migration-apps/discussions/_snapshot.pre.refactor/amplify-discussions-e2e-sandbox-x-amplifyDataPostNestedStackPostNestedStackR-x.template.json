@@ -37,41 +37,22 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceAAC71C59Outputsamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataAmplifyTableManagerTableMa0169C4CD": {
+    "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource41B5715DOutputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataAmplifyTableManagerTab9B8D6DCD": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId": {
+    "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName": {
+    "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref": {
+    "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef": {
+    "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref": {
       "Type": "String"
     },
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef": {
-========
-    "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource0F117C2FOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataAmplifyTableManagerTab02D7CFF1": {
-      "Type": "String"
-    },
-    "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId": {
-      "Type": "String"
-    },
-    "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name": {
-      "Type": "String"
-    },
-    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref": {
-      "Type": "String"
-    },
-    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef": {
-      "Type": "String"
-    },
-    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+    "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef": {
       "Type": "String"
     }
   },
@@ -369,29 +350,12 @@
   },
   "Resources": {
     "PostTable": {
-      "Type": "Custom::AmplifyDynamoDBTable",
+      "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceAAC71C59Outputsamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataAmplifyTableManagerTableMa0169C4CD"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource41B5715DOutputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataAmplifyTableManagerTab9B8D6DCD"
         },
-        "tableName": {
-          "Fn::Join": [
-            "",
-            [
-              "Post-",
-              {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-              },
-              "-NONE"
-            ]
-          ]
-        },
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource0F117C2FOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataAmplifyTableManagerTab02D7CFF1"
-        },
-        "tableName": "Post-xw3yrfq7mngltcua43nucy7fg4-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+        "tableName": "Post-x6yep2wyvjefhbpic6h5h4vdji-x",
         "attributeDefinitions": [
           {
             "attributeName": "id",
@@ -421,20 +385,12 @@
               "projectionType": "ALL"
             },
             "provisionedThroughput": {
-              "Fn::If": [
-                "ShouldUsePayPerRequestBilling",
-                {
-                  "Ref": "AWS::NoValue"
-                },
-                {
-                  "ReadCapacityUnits": {
-                    "Ref": "DynamoDBModelTableReadIOPS"
-                  },
-                  "WriteCapacityUnits": {
-                    "Ref": "DynamoDBModelTableWriteIOPS"
-                  }
-                }
-              ]
+              "readCapacityUnits": {
+                "Ref": "DynamoDBModelTableReadIOPS"
+              },
+              "writeCapacityUnits": {
+                "Ref": "DynamoDBModelTableWriteIOPS"
+              }
             }
           }
         ],
@@ -460,9 +416,10 @@
         "streamSpecification": {
           "streamViewType": "NEW_AND_OLD_IMAGES"
         },
-        "deletionProtectionEnabled": false,
+        "deletionProtectionEnabled": true,
         "allowDestructiveGraphqlSchemaUpdates": true,
         "replaceTableUponGsiUpdate": false,
+        "isImported": true,
         "pointInTimeRecoverySpecification": {
           "Fn::If": [
             "ShouldUsePointInTimeRecovery",
@@ -487,11 +444,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/PostTable/Default/Default"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/PostTable/Default/Default"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "PostIAMRole83BF708F": {
@@ -534,22 +487,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                          "tablename": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "Post-",
-                                {
-                                  "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-                                },
-                                "-NONE"
-                              ]
-                            ]
-                          }
-========
-                          "tablename": "Post-xw3yrfq7mngltcua43nucy7fg4-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                          "tablename": "Post-x6yep2wyvjefhbpic6h5h4vdji-x"
                         }
                       ]
                     },
@@ -557,22 +495,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                          "tablename": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "Post-",
-                                {
-                                  "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-                                },
-                                "-NONE"
-                              ]
-                            ]
-                          }
-========
-                          "tablename": "Post-xw3yrfq7mngltcua43nucy7fg4-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                          "tablename": "Post-x6yep2wyvjefhbpic6h5h4vdji-x"
                         }
                       ]
                     }
@@ -590,11 +513,7 @@
             [
               "PostIAMRolebbce9b-",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "-NONE"
             ]
@@ -618,22 +537,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/PostIAMRole/Resource"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/PostIAMRole/Resource"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "PostDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DynamoDBConfig": {
           "AwsRegion": {
@@ -681,28 +592,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/PostDataSource/Resource"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/PostDataSource/Resource"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "QuerygetPostauth0FunctionQuerygetPostauth0FunctionAppSyncFunctionB1D588DF": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetPostauth0Function",
@@ -714,28 +614,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/QuerygetPostauth0Function/QuerygetPostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/QuerygetPostauth0Function/QuerygetPostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerygetPostpostAuth0Function",
@@ -747,22 +636,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/QuerygetPostpostAuth0Function/QuerygetPostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/QuerygetPostpostAuth0Function/QuerygetPostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "QueryGetPostDataResolverFnQueryGetPostDataResolverFnAppSyncFunction06724190": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -785,22 +666,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/QueryGetPostDataResolverFn/QueryGetPostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/QueryGetPostDataResolverFn/QueryGetPostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "GetPostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "getPost",
         "Kind": "PIPELINE",
@@ -832,11 +705,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getPost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -875,11 +744,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -891,19 +756,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -915,28 +772,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/queryGetPostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/queryGetPostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "QuerylistPostsauth0FunctionQuerylistPostsauth0FunctionAppSyncFunctionCDCF8956": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistPostsauth0Function",
@@ -948,28 +794,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/QuerylistPostsauth0Function/QuerylistPostsauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/QuerylistPostsauth0Function/QuerylistPostsauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "QuerylistPostspostAuth0FunctionQuerylistPostspostAuth0FunctionAppSyncFunction3585C8F4": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QuerylistPostspostAuth0Function",
@@ -981,22 +816,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/QuerylistPostspostAuth0Function/QuerylistPostspostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/QuerylistPostspostAuth0Function/QuerylistPostspostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "QueryListPostsDataResolverFnQueryListPostsDataResolverFnAppSyncFunction3D526AB7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1019,22 +846,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/QueryListPostsDataResolverFn/QueryListPostsDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/QueryListPostsDataResolverFn/QueryListPostsDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "ListPostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "listPosts",
         "Kind": "PIPELINE",
@@ -1066,11 +885,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listPosts\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1109,11 +924,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1125,19 +936,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1149,28 +952,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/queryListPostsResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/queryListPostsResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunction9E444A7F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreatePostinit0Function",
@@ -1182,28 +974,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationcreatePostinit0Function/MutationcreatePostinit0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationcreatePostinit0Function/MutationcreatePostinit0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationcreatePostauth0FunctionMutationcreatePostauth0FunctionAppSyncFunctionF347AB28": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreatePostauth0Function",
@@ -1215,28 +996,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationcreatePostauth0Function/MutationcreatePostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationcreatePostauth0Function/MutationcreatePostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationcreatePostpostAuth0FunctionMutationcreatePostpostAuth0FunctionAppSyncFunction2C708069": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationcreatePostpostAuth0Function",
@@ -1248,22 +1018,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationcreatePostpostAuth0Function/MutationcreatePostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationcreatePostpostAuth0Function/MutationcreatePostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationCreatePostDataResolverFnMutationCreatePostDataResolverFnAppSyncFunctionE45E2000": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1286,22 +1048,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationCreatePostDataResolverFn/MutationCreatePostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationCreatePostDataResolverFn/MutationCreatePostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "CreatePostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "createPost",
         "Kind": "PIPELINE",
@@ -1339,11 +1093,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createPost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1382,11 +1132,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1398,19 +1144,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1422,28 +1160,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/mutationCreatePostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/mutationCreatePostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationupdatePostinit0FunctionMutationupdatePostinit0FunctionAppSyncFunctionBAC7D532": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdatePostinit0Function",
@@ -1455,22 +1182,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationupdatePostinit0Function/MutationupdatePostinit0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationupdatePostinit0Function/MutationupdatePostinit0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationupdatePostauth0FunctionMutationupdatePostauth0FunctionAppSyncFunction3E057835": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1493,28 +1212,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationupdatePostauth0Function/MutationupdatePostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationupdatePostauth0Function/MutationupdatePostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationupdatePostpostAuth0FunctionMutationupdatePostpostAuth0FunctionAppSyncFunctionB977D8DD": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationupdatePostpostAuth0Function",
@@ -1526,22 +1234,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationupdatePostpostAuth0Function/MutationupdatePostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationupdatePostpostAuth0Function/MutationupdatePostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationUpdatePostDataResolverFnMutationUpdatePostDataResolverFnAppSyncFunctionBF7D410D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1564,22 +1264,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationUpdatePostDataResolverFn/MutationUpdatePostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationUpdatePostDataResolverFn/MutationUpdatePostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "UpdatePostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "updatePost",
         "Kind": "PIPELINE",
@@ -1617,11 +1309,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updatePost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1660,11 +1348,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1676,19 +1360,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1700,22 +1376,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/mutationUpdatePostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/mutationUpdatePostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationdeletePostauth0FunctionMutationdeletePostauth0FunctionAppSyncFunctionFBE21CB7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1738,28 +1406,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationdeletePostauth0Function/MutationdeletePostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationdeletePostauth0Function/MutationdeletePostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationdeletePostpostAuth0FunctionMutationdeletePostpostAuth0FunctionAppSyncFunctionFF4E884F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "MutationdeletePostpostAuth0Function",
@@ -1771,22 +1428,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationdeletePostpostAuth0Function/MutationdeletePostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationdeletePostpostAuth0Function/MutationdeletePostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "MutationDeletePostDataResolverFnMutationDeletePostDataResolverFnAppSyncFunction45B37C12": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
@@ -1809,22 +1458,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/MutationDeletePostDataResolverFn/MutationDeletePostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/MutationDeletePostDataResolverFn/MutationDeletePostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "DeletePostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "deletePost",
         "Kind": "PIPELINE",
@@ -1856,11 +1497,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deletePost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1899,11 +1536,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1915,19 +1548,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1939,28 +1564,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/mutationDeletePostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/mutationDeletePostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononCreatePostauth0FunctionSubscriptiononCreatePostauth0FunctionAppSyncFunction24934FF1": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreatePostauth0Function",
@@ -1972,28 +1586,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptiononCreatePostauth0Function/SubscriptiononCreatePostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptiononCreatePostauth0Function/SubscriptiononCreatePostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononCreatePostpostAuth0FunctionSubscriptiononCreatePostpostAuth0FunctionAppSyncFunction3197D95D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononCreatePostpostAuth0Function",
@@ -2005,28 +1608,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptiononCreatePostpostAuth0Function/SubscriptiononCreatePostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptiononCreatePostpostAuth0Function/SubscriptiononCreatePostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionB4572868": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnCreatePostDataResolverFn",
@@ -2040,22 +1632,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptionOnCreatePostDataResolverFn/SubscriptionOnCreatePostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptionOnCreatePostDataResolverFn/SubscriptionOnCreatePostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononCreatePostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "onCreatePost",
         "Kind": "PIPELINE",
@@ -2087,11 +1671,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreatePost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -2103,11 +1683,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -2119,19 +1695,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2143,28 +1711,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/subscriptionOnCreatePostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/subscriptionOnCreatePostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononUpdatePostauth0FunctionSubscriptiononUpdatePostauth0FunctionAppSyncFunction503CE6B6": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdatePostauth0Function",
@@ -2176,28 +1733,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptiononUpdatePostauth0Function/SubscriptiononUpdatePostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptiononUpdatePostauth0Function/SubscriptiononUpdatePostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononUpdatePostpostAuth0FunctionSubscriptiononUpdatePostpostAuth0FunctionAppSyncFunction3D79B6CB": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononUpdatePostpostAuth0Function",
@@ -2209,28 +1755,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptiononUpdatePostpostAuth0Function/SubscriptiononUpdatePostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptiononUpdatePostpostAuth0Function/SubscriptiononUpdatePostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptionOnUpdatePostDataResolverFnSubscriptionOnUpdatePostDataResolverFnAppSyncFunction325AAFC9": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnUpdatePostDataResolverFn",
@@ -2244,22 +1779,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptionOnUpdatePostDataResolverFn/SubscriptionOnUpdatePostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptionOnUpdatePostDataResolverFn/SubscriptionOnUpdatePostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononUpdatePostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "onUpdatePost",
         "Kind": "PIPELINE",
@@ -2291,11 +1818,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdatePost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -2307,11 +1830,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -2323,19 +1842,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2347,28 +1858,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/subscriptionOnUpdatePostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/subscriptionOnUpdatePostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononDeletePostauth0FunctionSubscriptiononDeletePostauth0FunctionAppSyncFunction79C0574D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeletePostauth0Function",
@@ -2380,28 +1880,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptiononDeletePostauth0Function/SubscriptiononDeletePostauth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptiononDeletePostauth0Function/SubscriptiononDeletePostauth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononDeletePostpostAuth0FunctionSubscriptiononDeletePostpostAuth0FunctionAppSyncFunction80B1275A": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptiononDeletePostpostAuth0Function",
@@ -2413,28 +1902,17 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptiononDeletePostpostAuth0Function/SubscriptiononDeletePostpostAuth0Function.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptiononDeletePostpostAuth0Function/SubscriptiononDeletePostpostAuth0Function.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptionOnDeletePostDataResolverFnSubscriptionOnDeletePostDataResolverFnAppSyncFunction9D84E829": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
-        },
-        "DataSourceName": {
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "SubscriptionOnDeletePostDataResolverFn",
@@ -2448,22 +1926,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/SubscriptionOnDeletePostDataResolverFn/SubscriptionOnDeletePostDataResolverFn.AppSyncFunction"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/SubscriptionOnDeletePostDataResolverFn/SubscriptionOnDeletePostDataResolverFn.AppSyncFunction"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "SubscriptiononDeletePostResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-          "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-          "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+          "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
         },
         "FieldName": "onDeletePost",
         "Kind": "PIPELINE",
@@ -2495,11 +1965,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeletePost\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -2511,11 +1977,7 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -2527,19 +1989,11 @@
               },
               ":assumed-role/",
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef"
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
-              },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
-              {
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -2551,27 +2005,16 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/subscriptionOnDeletePostResolver"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/subscriptionOnDeletePostResolver"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQQU/DMAyFfwv3zEDHgStrxRFQy31yE7fK2jpV7Gyaqv53lA4NcXp+ek/2JxdQvLzC0wNeZGfdsBt9C8sHiZJrFO1gyo6/MOJESjGbMrDz6gObmiSkaMmUSTRMf7bj+4wXOS7uyjgF18I3tiMdUMh4nGCpw3hrh5FWg/MsV7awVFu9aitUbO4r/7v3xDZDlIE736eIG9Hv5fFMcTWyP6IIqcBbFiN7OCQ7kGaANXc/k85JzRY3ir3nfjUcHMFJHs9FAc/5MyfxfhcTq58I6pv+AD5ajwo2AQAA"
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/data/amplifyData/Post/CDKMetadata/Default"
-========
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X31GNU230F7bhNsHtlEoNSwEGx06pCvPsEnTrt9PuTP9l/DvlLBtkOr7K3rt8PvoH5g0TJ1Yq2N0XLXxhxJKW4QhHYefWBTUUSUrRkiiQaxj9s+THjVU6zuzGOwTXwjc1ARxQyHkeYqzDc7TDQYnCa5MYW5nLTy6ZExfpx8j+9J7ZriSJw67sUcWv0+3m4UFyMHE4oQirwtoaRAxyT7UnXAsvqfiadkpptXSt2nrvFcHAEZ3m65Dk8v0K2O4v3+5hY/UhQ3fMHIPwRXTYBAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQW6DQAxFz5L9xKVEPUAD6jKtoPvIzBg0ATxo7EkUIe5eQapUXX0/+cn+OeRvGWQ7vMneun4/+AbmE4mSqxVtb4qWvzDiSEpxhSKw8+oDm4okpGjJFEk0jH/Y8nPGm5xnd2ccg2vgG5uBjihkPI4wV2F42GGgxeA0yZ0tzOWml02JivXz5H/6SGzXEkXg1ncp4tbo9/NwpbgYOZxRhFTgfQ0jBzgm25OuBZbV/Uw6JTXbulbsPHeL4eAILvJyzXPIXyHbXcT7fUysfiSoHvkDBH3kWTYBAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/Post/CDKMetadata/Default"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -2591,11 +2034,7 @@
             ":",
             [
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "GetAtt:PostTable:StreamArn"
             ]
@@ -2605,33 +2044,14 @@
     },
     "GetAttPostTableName": {
       "Description": "Your DynamoDB table name.",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "Post-",
-            {
-              "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-            },
-            "-NONE"
-          ]
-        ]
-      },
-========
-      "Value": "Post-xw3yrfq7mngltcua43nucy7fg4-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+      "Value": "Post-x6yep2wyvjefhbpic6h5h4vdji-x",
       "Export": {
         "Name": {
           "Fn::Join": [
             ":",
             [
               {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-                "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId"
-========
-                "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+                "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId"
               },
               "GetAtt:PostTable:Name"
             ]
@@ -2639,11 +2059,7 @@
         }
       }
     },
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-    "amplifydiscussionsgen2mainbranche3e983762fdataamplifyDataPostPostDataSource129C22F5Name": {
-========
-    "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostPostDataSource59A9823FName": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+    "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostDataSourceB13E6321Name": {
       "Value": {
         "Fn::GetAtt": [
           "PostDataSource",
@@ -2651,11 +2067,7 @@
         ]
       }
     },
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-    "amplifydiscussionsgen2mainbranche3e983762fdataamplifyDataPostPostTable89CB7053TableArn": {
-========
-    "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostPostTable9EB88B55TableArn": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+    "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostTable43EFBEF5TableArn": {
       "Value": {
         "Fn::GetAtt": [
           "PostTable",
@@ -2663,11 +2075,7 @@
         ]
       }
     },
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e9-amplifyDataPostNestedStackPostNestedStackR-1246X59EBDF5L.template.json
-    "amplifydiscussionsgen2mainbranche3e983762fdataamplifyDataPostPostTable89CB7053TableStreamArn": {
-========
-    "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostPostTable9EB88B55TableStreamArn": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-e2e-sandbox-x-amplifyDataPostNestedStackPostNestedStackR-x.template.json
+    "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostTable43EFBEF5TableStreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "PostTable",

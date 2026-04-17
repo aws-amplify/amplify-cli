@@ -43,11 +43,7 @@
       "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x"
     },
     "StreamArn": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storageactivity-1JE8RLVN83DY0.__to__.amplify-discussions-gen2main-branch-e3e983762f-storageactivityA346F297-MS1DRX0NXN21.source.template.json
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-04-08T15:46:22.655"
-========
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-15T03:52:10.997"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storageactivity-x.__to__.amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x.source.template.json
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-17T02:44:56.274"
     },
     "PartitionKeyName": {
       "Value": "id"

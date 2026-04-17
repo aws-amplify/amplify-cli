@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref",
-    "ParameterValue": "amplify-discussion2604142-amplifyAuthauthenticatedU-OFERj1VQgbh0"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref",
+    "ParameterValue": "amplify-discussion2604162-amplifyAuthauthenticatedU-DpI98VU4kxL1"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef",
-    "ParameterValue": "amplify-discussion2604142-amplifyAuthunauthenticate-RegjzqZNry1w"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref",
+    "ParameterValue": "amplify-discussion2604162-amplifyAuthunauthenticate-fQoBMJqeFfIK"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId",
-    "ParameterValue": "wdfhzimbunbg5ahiuonmjslcb4"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef",
+    "ParameterValue": "us-east-1:71501d31-e722-454c-ac1a-ccb858fb39f8"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPINONEDS28CABBB9Name",
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId",
+    "ParameterValue": "3d5zemsh3rg7hjsazykqv6g37q"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name",
     "ParameterValue": "NONE_DS"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef",
-    "ParameterValue": "us-east-1:0ab20e5d-b843-4969-94b1-c17d26af9934"
   }
 ]

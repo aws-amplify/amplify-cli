@@ -111,7 +111,7 @@
             "ApiId"
           ]
         },
-        "Expires": 1776829921
+        "Expires": 1776998686
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -555,6 +555,103 @@
         "Topic"
       ]
     },
+    "ActivityStatsActivityCountDataResolverFnActivityStatsActivityCountDataResolverFnAppSyncFunctionAF5EFAA1": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQLAPI",
+            "ApiId"
+          ]
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQLAPINONEDS95A13CF0",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "ActivityStatsActivityCountDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "S3DeploymentBucket"
+              },
+              "/",
+              {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "/resolvers/ActivityStats.activityCount.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "S3DeploymentBucket"
+              },
+              "/",
+              {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "/resolvers/ActivityStats.activityCount.res.vtl"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "GraphQLAPITransformerSchema3CB2AE18"
+      ]
+    },
+    "ActivityStatsactivityCountResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQLAPI",
+            "ApiId"
+          ]
+        },
+        "FieldName": "activityCount",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "ActivityStatsActivityCountDataResolverFnActivityStatsActivityCountDataResolverFnAppSyncFunctionAF5EFAA1",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"ActivityStats\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"activityCount\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Fn::GetAtt": [
+                  "GraphQLAPI",
+                  "ApiId"
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "ActivityStats"
+      },
+      "DependsOn": [
+        "GraphQLAPITransformerSchema3CB2AE18"
+      ]
+    },
     "ActivityIdDataResolverFnActivityIdDataResolverFnAppSyncFunction8AF5D830": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
@@ -641,7 +738,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:fb3991a7-7d67-41b4-bc4e-63e2deeadf30\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -738,7 +835,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:fb3991a7-7d67-41b4-bc4e-63e2deeadf30\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -835,7 +932,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:fb3991a7-7d67-41b4-bc4e-63e2deeadf30\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -932,7 +1029,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:fb3991a7-7d67-41b4-bc4e-63e2deeadf30\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },

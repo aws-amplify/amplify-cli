@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/5ea4f2944872a4a8c138cab8a1cc05758d76f884"
+    "ParameterValue": "amplify-appsync-files/a7cf20f814c34d5b15d3f5872b92bc7611086a72"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -25,11 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-apidiscussions-1GWWU04Q4N04Z-Topic-AV6A79ATYTYF.parameters.json
-    "ParameterValue": "n6ixw7ql4bhglfwh7cxizw2k3e"
-========
-    "ParameterValue": "xw3yrfq7mngltcua43nucy7fg4"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-apidiscussions-x-Topic-x.parameters.json
+    "ParameterValue": "x6yep2wyvjefhbpic6h5h4vdji"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -37,11 +33,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-apidiscussions-1GWWU04Q4N04Z-Topic-AV6A79ATYTYF.parameters.json
-    "ParameterValue": "amplify-discussions-main-223a2-deployment"
-========
     "ParameterValue": "amplify-discussions-x-x-deployment"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-apidiscussions-x-Topic-x.parameters.json
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

@@ -5,14 +5,6 @@
     "env": {
       "Type": "String"
     },
-    "functionstorelocator41a9495f41a9495fPostConfirmationArn": {
-      "Type": "String",
-      "Default": "functionstorelocator41a9495f41a9495fPostConfirmationArn"
-    },
-    "functionstorelocator41a9495f41a9495fPostConfirmationName": {
-      "Type": "String",
-      "Default": "functionstorelocator41a9495f41a9495fPostConfirmationName"
-    },
     "identityPoolName": {
       "Type": "String"
     },
@@ -132,12 +124,6 @@
     },
     "dependsOn": {
       "Type": "CommaDelimitedList"
-    },
-    "permissions": {
-      "Type": "CommaDelimitedList"
-    },
-    "authTriggerConnections": {
-      "Type": "CommaDelimitedList"
     }
   },
   "Conditions": {
@@ -151,7 +137,6 @@
     }
   },
   "Resources": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
     "SNSRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -225,8 +210,6 @@
         }
       }
     },
-========
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
     "UserPool": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
@@ -258,9 +241,13 @@
             "Mutable": true,
             "Name": "email",
             "Required": true
+          },
+          {
+            "Mutable": true,
+            "Name": "phone_number",
+            "Required": true
           }
         ],
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
         "SmsAuthenticationMessage": {
           "Ref": "smsAuthenticationMessage"
         },
@@ -276,8 +263,6 @@
         "SmsVerificationMessage": {
           "Ref": "smsVerificationMessage"
         },
-========
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
         "UserAttributeUpdateSettings": {
           "AttributesRequireVerificationBeforeUpdate": [
             "email"
@@ -311,16 +296,15 @@
         "UsernameConfiguration": {
           "CaseSensitive": false
         }
-      }
+      },
+      "DependsOn": [
+        "SNSRole"
+      ]
     },
     "UserPoolClientWeb": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
         "ClientName": "discus3e730a8c_app_clientWeb",
-========
-        "ClientName": "storel41a9495f_app_clientWeb",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
         "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity"
         },
@@ -338,11 +322,7 @@
     "UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
         "ClientName": "discus3e730a8c_app_client",
-========
-        "ClientName": "storel41a9495f_app_client",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
         "GenerateSecret": {
           "Ref": "userpoolClientGenerateSecret"
         },
@@ -385,11 +365,7 @@
               "Fn::Join": [
                 "",
                 [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
                   "upClientLambdaRole3e730a8c",
-========
-                  "upClientLambdaRole41a9495f",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
                   {
                     "Fn::Select": [
                       3,
@@ -461,20 +437,12 @@
         "IdentityPoolName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
             "discussions3e730a8c_identitypool_3e730a8c",
-========
-            "storelocator41a9495f_identitypool_41a9495f",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
             {
               "Fn::Join": [
                 "",
                 [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.generate/amplify/#current-cloud-backend/awscloudformation/build/auth/discussions3e730a8c3e730a8c/build/discussions3e730a8c3e730a8c-cloudformation-template.json
                   "discussions3e730a8c_identitypool_3e730a8c__",
-========
-                  "storelocator41a9495f_identitypool_41a9495f__",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/store-locator/_snapshot.pre.refactor/amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json
                   {
                     "Ref": "env"
                   }
@@ -491,48 +459,6 @@
         "IdentityPoolId": {
           "Ref": "IdentityPool"
         },
-        "RoleMappings": {
-          "UserPoolClientRoleMapping": {
-            "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${userPool}:${client}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "userPool": {
-                    "Ref": "UserPool"
-                  },
-                  "client": {
-                    "Ref": "UserPoolClient"
-                  }
-                }
-              ]
-            },
-            "Type": "Token"
-          },
-          "UserPoolWebClientRoleMapping": {
-            "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${userPool}:${webClient}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "userPool": {
-                    "Ref": "UserPool"
-                  },
-                  "webClient": {
-                    "Ref": "UserPoolClientWeb"
-                  }
-                }
-              ]
-            },
-            "Type": "Token"
-          }
-        },
         "Roles": {
           "unauthenticated": {
             "Ref": "unauthRoleArn"
@@ -543,9 +469,7 @@
         }
       },
       "DependsOn": [
-        "IdentityPool",
-        "UserPoolClient",
-        "UserPoolClientWeb"
+        "IdentityPool"
       ]
     }
   },
@@ -594,6 +518,15 @@
       "Description": "The user pool app client id",
       "Value": {
         "Ref": "UserPoolClient"
+      }
+    },
+    "CreatedSNSRole": {
+      "Description": "role arn",
+      "Value": {
+        "Fn::GetAtt": [
+          "SNSRole",
+          "Arn"
+        ]
       }
     }
   }

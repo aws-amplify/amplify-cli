@@ -2,11 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.target.template.json
-    "discusavatars223a2gen2mainBucket3F84B2BA": {
-========
-    "discusavatarsxgen2xBucketDA2F9CC2": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.target.template.json
+    "discusavatarsxgen2xBucketDA2D0D6B": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -52,11 +48,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.target.template.json
-            "Value": "discus-avatars223a2-gen2-main"
-========
             "Value": "discus-avatarsx-gen2-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.target.template.json
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -71,11 +63,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.target.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/discus-avatars223a2-gen2-main/Bucket/Resource"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/discus-avatarsx-gen2-x/Bucket/Resource"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.target.template.json
       }
     }
   },

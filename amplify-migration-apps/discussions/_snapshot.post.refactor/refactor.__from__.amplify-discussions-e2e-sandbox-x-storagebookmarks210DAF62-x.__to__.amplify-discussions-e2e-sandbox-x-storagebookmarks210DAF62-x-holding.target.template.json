@@ -64,11 +64,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storagebookmarks210DAF62-A9X48KQGLQY7.__to__.amplify-discussions-gen2main-branch-e3e983762f-storagebookmarks210DAF62-A9X48KQGLQY7-holding.target.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storagebookmarks/bookmarks/Resource"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storagebookmarks/bookmarks/Resource"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x.__to__.amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x-holding.target.template.json
       }
     }
   },

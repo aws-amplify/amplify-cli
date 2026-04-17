@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "5fmpdjh49lauff16m1r548ug0t"
+    "OutputValue": "50e30mj903868k89vugn5q3ul9"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf"
+    "OutputValue": "amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "5fmpdjh49lauff16m1r548ug0t"
+    "OutputValue": "50e30mj903868k89vugn5q3ul9"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://wlcb7lqbhjdkdhfmcc5xqlkpgi.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "https://mcueua6cyjfcbj23ci2f5qyowi.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "wdfhzimbunbg5ahiuonmjslcb4"
+    "OutputValue": "3d5zemsh3rg7hjsazykqv6g37q"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"discus-avatarsx-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"discus-avatarsx-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-discussion2604142-amplifydataamplifycodege-gpp6ytfvylbo/model-schema.graphql"
+    "OutputValue": "s3://amplify-discussion2604162-amplifydataamplifycodege-b1l4rzuewihn/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -101,7 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-    "OutputValue": "[\"fetchuseractivity-gen2-x\",\"recorduseractivity-gen2-x\"]"
+    "OutputValue": "[\"activityTrigger79c26ead-gen2-x\",\"fetchuseractivity-gen2-x\",\"recorduseractivity-gen2-x\"]"
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_QiMcYOBJq"
+    "OutputValue": "us-east-1_hSkvuYzs4"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:0ab20e5d-b843-4969-94b1-c17d26af9934"
+    "OutputValue": "us-east-1:71501d31-e722-454c-ac1a-ccb858fb39f8"
   },
   {
     "OutputKey": "verificationMechanisms",

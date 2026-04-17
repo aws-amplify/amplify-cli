@@ -35,4 +35,3 @@ type Activity {
   activityType: String! @auth(rules: [{ allow: public }])
   timestamp: String! @auth(rules: [{ allow: public }])
 }
-

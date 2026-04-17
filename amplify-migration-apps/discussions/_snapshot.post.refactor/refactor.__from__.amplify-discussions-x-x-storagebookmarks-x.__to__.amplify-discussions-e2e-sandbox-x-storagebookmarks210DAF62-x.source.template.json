@@ -43,11 +43,7 @@
       "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x"
     },
     "StreamArn": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-main-223a2-storagebookmarks-P44SKLDYQX6V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storagebookmarks210DAF62-A9X48KQGLQY7.source.template.json
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main/stream/2026-04-08T15:46:23.084"
-========
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-15T03:52:11.077"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-x-x-storagebookmarks-x.__to__.amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x.source.template.json
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-17T02:44:56.175"
     },
     "PartitionKeyName": {
       "Value": "userId"

@@ -1,30 +1,30 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB011B1B49DestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-discussion2604142-amplifydataamplifycodege-gpp6ytfvylbo"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBD29FF4BCDestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-discussion2604162-amplifydataamplifycodege-b1l4rzuewihn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostNestedStackPostNestedStackResource6361465DOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostPostTable9EB88B55TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.531"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostNestedStackPostNestedStackResource1BD049D0Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostTable43EFBEF5TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:46:05.461"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentNestedStackCommentNestedStackResourceD1B2144FOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentCommentTable761EEA24TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.114"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71GraphQLUrl",
+    "OutputValue": "https://mcueua6cyjfcbj23ci2f5qyowi.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId",
-    "OutputValue": "wdfhzimbunbg5ahiuonmjslcb4"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId",
+    "OutputValue": "3d5zemsh3rg7hjsazykqv6g37q"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AGraphQLUrl",
-    "OutputValue": "https://wlcb7lqbhjdkdhfmcc5xqlkpgi.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentNestedStackCommentNestedStackResource9CC8A2F1Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentCommentTable5BAC1EE7TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:46:05.357"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPIDefaultApiKeyD6D1106AApiKey",
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicNestedStackTopicNestedStackResource9BC3F506Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicTopicTable6CE3EC67TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:45:16.990"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPIDefaultApiKey0FAB56D4ApiKey",
     "OutputValue": "da2-fakeapikey00000000000000"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicNestedStackTopicNestedStackResourceD7684B5EOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicTopicTableEAA04215TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:52:31.420"
   }
 ]

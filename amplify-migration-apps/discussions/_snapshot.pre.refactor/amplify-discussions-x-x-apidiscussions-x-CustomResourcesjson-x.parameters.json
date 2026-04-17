@@ -1,19 +1,11 @@
 [
   {
     "ParameterKey": "S3DeploymentBucket",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-apidiscussions-1GWWU04Q4N04Z-CustomResourcesjson-W336ZOIBGD7M.parameters.json
-    "ParameterValue": "amplify-discussions-main-223a2-deployment"
-  },
-  {
-    "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "n6ixw7ql4bhglfwh7cxizw2k3e"
-========
     "ParameterValue": "amplify-discussions-x-x-deployment"
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "xw3yrfq7mngltcua43nucy7fg4"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-apidiscussions-x-CustomResourcesjson-x.parameters.json
+    "ParameterValue": "x6yep2wyvjefhbpic6h5h4vdji"
   },
   {
     "ParameterKey": "env",
@@ -21,7 +13,7 @@
   },
   {
     "ParameterKey": "S3DeploymentRootKey",
-    "ParameterValue": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d"
+    "ParameterValue": "amplify-appsync-files/a7cf20f814c34d5b15d3f5872b92bc7611086a72"
   },
   {
     "ParameterKey": "AppSyncApiName",

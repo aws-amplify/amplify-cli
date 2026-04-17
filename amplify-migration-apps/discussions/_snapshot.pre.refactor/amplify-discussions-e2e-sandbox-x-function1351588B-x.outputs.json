@@ -1,10 +1,14 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cfunctionfetchuseractivitygen2xlambda7D470E0ARef",
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6functionactivityTrigger79c26eadgen2xlambdaAE1FF4EARef",
+    "OutputValue": "activityTrigger79c26ead-gen2-x"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6functionfetchuseractivitygen2xlambdaAD730F49Ref",
     "OutputValue": "fetchuseractivity-gen2-x"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cfunctionrecorduseractivitygen2xlambda78ECD6A1Ref",
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6functionrecorduseractivitygen2xlambdaA0CF896ARef",
     "OutputValue": "recorduseractivity-gen2-x"
   }
 ]

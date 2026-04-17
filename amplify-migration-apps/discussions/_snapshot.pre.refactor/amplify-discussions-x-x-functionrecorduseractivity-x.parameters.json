@@ -9,26 +9,7 @@
   },
   {
     "ParameterKey": "s3Key",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-functionrecorduseractivity-10KWSRPKVFENJ.parameters.json
     "ParameterValue": "amplify-builds/recorduseractivity-42744a4e393579416f31-build.zip"
-  },
-  {
-    "ParameterKey": "deploymentBucketName",
-    "ParameterValue": "amplify-discussions-main-223a2-deployment"
-  },
-  {
-    "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://6szdkszbfrd7jdtl7j25f4vsum.appsync-api.us-east-1.amazonaws.com/graphql"
-  },
-  {
-    "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
-    "ParameterValue": "n6ixw7ql4bhglfwh7cxizw2k3e"
-  },
-  {
-    "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-04-08T15:46:22.655"
-========
-    "ParameterValue": "amplify-builds/recorduseractivity-54696a587a7168467354-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -36,16 +17,15 @@
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://ajag2p5xujbc3cfepbjri3sjam.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "https://kbgktcw65bdazp7bg2ssbyf554.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
-    "ParameterValue": "xw3yrfq7mngltcua43nucy7fg4"
+    "ParameterValue": "x6yep2wyvjefhbpic6h5h4vdji"
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-15T03:52:10.997"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-functionrecorduseractivity-x.parameters.json
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-17T02:44:56.274"
   },
   {
     "ParameterKey": "env",

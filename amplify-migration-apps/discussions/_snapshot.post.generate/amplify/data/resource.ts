@@ -25,6 +25,11 @@ type Comment @model @auth(rules: [{ allow: public }]){
 
 type Query {
   fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
+  getActivityStats: ActivityStats @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
+}
+
+type ActivityStats {
+  activityCount: Int! @auth(rules: [{ allow: public }])
 }
 
 type Activity {
@@ -41,9 +46,9 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
-        Topic: 'Topic-xw3yrfq7mngltcua43nucy7fg4-x',
-        Post: 'Post-xw3yrfq7mngltcua43nucy7fg4-x',
-        Comment: 'Comment-xw3yrfq7mngltcua43nucy7fg4-x',
+        Topic: 'Topic-x6yep2wyvjefhbpic6h5h4vdji-x',
+        Post: 'Post-x6yep2wyvjefhbpic6h5h4vdji-x',
+        Comment: 'Comment-x6yep2wyvjefhbpic6h5h4vdji-x',
       },
     },
   ],

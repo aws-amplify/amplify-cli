@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     return await fetchActivityStats();
   }
 
-  const { userId } = event.arguments;
+  const { userId } = event.arguments || {};
   return await fetchUserActivity(userId);
 };
 

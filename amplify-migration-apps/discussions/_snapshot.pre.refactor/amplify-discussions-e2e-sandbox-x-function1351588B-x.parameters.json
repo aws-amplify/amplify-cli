@@ -1,26 +1,26 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cstorageactivityNestedStackstorageactivityNestedStackResource537BD226Outputsamplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACRef",
-    "ParameterValue": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-WW109ZPG3FYW"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6storageactivityNestedStackstorageactivityNestedStackResource14CF6B57Outputsamplifydiscussionse2esandbox70eded89e6storageactivity85D6A81CRef",
+    "ParameterValue": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-102X355256W36"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cdataNestedStackdataNestedStackResourceBAB7F510Outputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentNestedStackCommentNestedStackResourceD1B2144FOutputsamplifyd6FB9505C",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.114"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataNestedStackdataNestedStackResource9D79B18DOutputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentNestedStackCommentNestedStackResource9CC8A2F1OutputsamplifydA4F0D236",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:46:05.357"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cdataNestedStackdataNestedStackResourceBAB7F510Outputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicNestedStackTopicNestedStackResourceD7684B5EOutputsamplifydiscuAC9DA0CC",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:52:31.420"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataNestedStackdataNestedStackResource9D79B18DOutputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicNestedStackTopicNestedStackResource9BC3F506OutputsamplifydiscuB45675B6",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:45:16.990"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cstorageactivityNestedStackstorageactivityNestedStackResource537BD226Outputsamplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-WW109ZPG3FYW/stream/2026-04-15T04:05:17.207"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6storageactivityNestedStackstorageactivityNestedStackResource14CF6B57Outputsamplifydiscussionse2esandbox70eded89e6storageactivity85D6A81CStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-102X355256W36/stream/2026-04-17T02:58:45.652"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cdataNestedStackdataNestedStackResourceBAB7F510Outputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostNestedStackPostNestedStackResource6361465DOutputsamplifydiscuss85F08407",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.531"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataNestedStackdataNestedStackResource9D79B18DOutputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataPostNestedStackPostNestedStackResource1BD049D0OutputsamplifydiscussD8606E0F",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:46:05.461"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cstorageactivityNestedStackstorageactivityNestedStackResource537BD226Outputsamplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-WW109ZPG3FYW"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6storageactivityNestedStackstorageactivityNestedStackResource14CF6B57Outputsamplifydiscussionse2esandbox70eded89e6storageactivity85D6A81CArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-102X355256W36"
   }
 ]

@@ -1,11 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-functionrecorduseractivity-10KWSRPKVFENJ.outputs.json
-    "OutputValue": "arn:aws:iam::123456789012:role/discussionsLambdaRole16a766d9-main"
-========
-    "OutputValue": "arn:aws:iam::123456789012:role/discussionsLambdaRole62a425ae-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-functionrecorduseractivity-x.outputs.json
+    "OutputValue": "arn:aws:iam::123456789012:role/discussionsLambdaRole16a766d9-x"
   },
   {
     "OutputKey": "Region",
@@ -21,10 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-functionrecorduseractivity-10KWSRPKVFENJ.outputs.json
-    "OutputValue": "discussionsLambdaRole16a766d9-main"
-========
-    "OutputValue": "discussionsLambdaRole62a425ae-x"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-functionrecorduseractivity-x.outputs.json
+    "OutputValue": "discussionsLambdaRole16a766d9-x"
   }
 ]

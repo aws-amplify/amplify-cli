@@ -1,11 +1,7 @@
 [
   {
     "OutputKey": "BucketName",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.outputs.json
-    "OutputValue": "discus-avatars223a2-main",
-========
     "OutputValue": "discus-avatarsx-x",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-storageavatars-x.outputs.json
     "Description": "Bucket name for the S3 bucket"
   },
   {

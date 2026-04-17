@@ -17,11 +17,7 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.parameters.json
-    "ParameterValue": "amplify-discussions-main-223a2-unauthRole"
-========
     "ParameterValue": "amplify-discussions-x-x-unauthRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-storageavatars-x.parameters.json
   },
   {
     "ParameterKey": "s3PrivatePolicy",
@@ -57,11 +53,7 @@
   },
   {
     "ParameterKey": "authRoleName",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL.parameters.json
-    "ParameterValue": "amplify-discussions-main-223a2-authRole"
-========
     "ParameterValue": "amplify-discussions-x-x-authRole"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-storageavatars-x.parameters.json
   },
   {
     "ParameterKey": "GuestAllowList",

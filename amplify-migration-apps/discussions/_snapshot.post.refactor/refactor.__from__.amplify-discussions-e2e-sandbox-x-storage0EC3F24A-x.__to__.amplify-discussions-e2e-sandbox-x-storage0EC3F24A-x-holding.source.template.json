@@ -1,17 +1,10 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-    "discusavatars223a2gen2mainBucketPolicyF4BC35B5": {
+    "discusavatarsxgen2xBucketPolicyC5B9951C": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": "amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-    "discusavatarsxgen2xBucketPolicyD2E4B70C": {
-      "Type": "AWS::S3::BucketPolicy",
-      "Properties": {
-        "Bucket": "amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+        "Bucket": "amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
         "PolicyDocument": {
           "Statement": [
             {
@@ -26,20 +19,12 @@
                 "AWS": "*"
               },
               "Resource": [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                 {
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/*"
                     ]
                   ]
@@ -55,26 +40,15 @@
               ],
               "Effect": "Allow",
               "Principal": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                "AWS": "arn:aws:iam::123456789012:role/amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-              },
-              "Resource": [
-                "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
                 "AWS": "arn:aws:iam::123456789012:role/amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                 {
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/*"
                     ]
                   ]
@@ -88,34 +62,19 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/discus-avatars223a2-gen2-main/Bucket/Policy/Resource"
-      }
-    },
-    "discusavatars223a2gen2mainBucketAutoDeleteObjectsCustomResourceA4A811AA": {
-      "Type": "Custom::S3AutoDeleteObjects",
-      "Properties": {
-        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/discus-avatarsx-gen2-x/Bucket/Policy/Resource"
       }
     },
-    "discusavatarsxgen2xBucketAutoDeleteObjectsCustomResource1D08A711": {
+    "discusavatarsxgen2xBucketAutoDeleteObjectsCustomResourceC2A17BC1": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+        "BucketName": "amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/discus-avatars223a2-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/discus-avatarsx-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
@@ -142,11 +101,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
       }
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
@@ -161,22 +116,14 @@
         "Timeout": 900,
         "MemorySize": 128,
         "Handler": "index.handler",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "Role": "arn:aws:iam::123456789012:role/amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-========
         "Role": "arn:aws:iam::123456789012:role/amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
         "Runtime": "nodejs22.x",
         "Description": {
           "Fn::Join": [
             "",
             [
               "Lambda function for auto-deleting objects in ",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-              "amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-              "amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+              "amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
               " S3 bucket."
             ]
           ]
@@ -185,51 +132,29 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
         "aws:asset:property": "Code"
       }
     },
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-    "DISCUSAVATARS223A2GEN2MAINBUCKETNAMEParameter763F7701": {
+    "DISCUSAVATARS662E2GEN2UIAKFNYSJGBUCKETNAMEParameterE24FA793": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/discussions/gen2main-branch-e3e983762f/DISCUS_AVATARS_223_A_2_GEN_2_MAIN_BUCKET_NAME",
-========
-    "DISCUSAVATARSB4C74GEN2EGFGFHFICCBUCKETNAMEParameter6939AE5D": {
-      "Type": "AWS::SSM::Parameter",
-      "Properties": {
-        "Name": "/amplify/resource_reference/discussions/e2e-sandbox-x/DISCUS_AVATARSB_4_C_74_GEN_2_EGFGFHFICC_BUCKET_NAME",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+        "Name": "/amplify/resource_reference/discussions/e2e-sandbox-x/DISCUS_AVATARS_662_E_2_GEN_2_UIAKFNYSJG_BUCKET_NAME",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "Value": "amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj"
-========
-        "Value": "amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+        "Value": "amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/DISCUS_AVATARS_223_A_2_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/DISCUS_AVATARS_662_E_2_GEN_2_UIAKFNYSJG_BUCKET_NAMEParameter/Resource"
       }
     },
-    "amplifydiscussionsgen2mainbranche3e983762fstorageAccess3B8B86939": {
-========
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/DISCUS_AVATARSB_4_C_74_GEN_2_EGFGFHFICC_BUCKET_NAMEParameter/Resource"
-      }
-    },
-    "amplifydiscussionse2esandbox11f7701e3cstorageAccess3FA725BAE": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+    "amplifydiscussionse2esandbox70eded89e6storageAccess3C36812C3": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -242,11 +167,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/public/*"
                     ]
                   ]
@@ -255,11 +176,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/protected/*"
                     ]
                   ]
@@ -268,11 +185,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/private/*"
                     ]
                   ]
@@ -287,11 +200,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/public/*"
                     ]
                   ]
@@ -300,11 +209,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/protected/*"
                     ]
                   ]
@@ -313,11 +218,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/private/*"
                     ]
                   ]
@@ -339,11 +240,7 @@
                 }
               },
               "Effect": "Allow",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-              "Resource": "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj"
-========
-              "Resource": "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+              "Resource": "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb"
             },
             {
               "Action": "s3:DeleteObject",
@@ -353,11 +250,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/public/*"
                     ]
                   ]
@@ -366,11 +259,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/protected/*"
                     ]
                   ]
@@ -379,11 +268,7 @@
                   "Fn::Join": [
                     "",
                     [
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-                      "arn:aws:s3:::amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj",
-========
-                      "arn:aws:s3:::amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf",
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+                      "arn:aws:s3:::amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb",
                       "/private/*"
                     ]
                   ]
@@ -393,44 +278,26 @@
           ],
           "Version": "2012-10-17"
         },
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "PolicyName": "amplifydiscussionsgen2mainbranche3e983762fstorageAccess3B8B86939",
+        "PolicyName": "amplifydiscussionse2esandbox70eded89e6storageAccess3C36812C3",
         "Roles": [
           {
-            "Ref": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref"
-========
-        "PolicyName": "amplifydiscussionse2esandbox11f7701e3cstorageAccess3FA725BAE",
-        "Roles": [
-          {
-            "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+            "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/amplify-discussions-gen2main-branch-e3e983762f--storageAccess3/Resource"
-========
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/amplify-discussions-e2e-sandbox-x--storageAccess3/Resource"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VQTUvEMBD9Lfacjtr1IN7246xlexSRbDqWaZsEMpNdJeS/Szdg9ehp3uN9wTTQPDzC3Y2+cG36qZ7pBOkZWbDvRJtJ6Qu/J95A2kUzoaj9hyvoNVWWPslVT9Xv8OLnDVwlhmLdRvEHnFHw5TSiEa7ymypS62cyX2tr4f/oLoFOtKBFd63OitlC6iSQG1odtEXBsGz8kKxIW0jrekE5q31k8faI7GMwuEgr/iO1wZ+px7DTjGrLjNKJHsgNWTnfI4x8e24auF++OzJRHaITsgjHcr8Bi0cu0HoBAAA="
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-e3e983762f/storage/CDKMetadata/Default"
-========
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNy07DMBBFv6VZO0NIBQt2fawhapYIIdcZokliW/JMWpDlf0epJQJLVnNH5z5qqB8qqDb6yqXpxnKiM8RnZMGuFW1Gpa/8HnkLcT+bEUUdPlxWr7Gw9EmueCp+hxc/b+GGGLJ1N4s/4oSCL+cBjXCR3lRGjZ/IfK2t+f9Hdw60ogUtult1UswWYiuBXN/ooC0KhmXj50mKtIW4rmeVkjrMLN6ekP0cDC5o1X9QE/yFOgx7zah2zCit6J5cn5TzHcLAd5e6hvtHqDYDE5VhdkIW4ZTvN8L1/x56AQAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Tk3pxIXbNs5QrccJoSw1ldsmkWJ3G4ry31EXicKRk1/reT9qqJ8qqDb6yqXpxnKiM8RXZMGuFW1Gpa/8EXkLcT+bEUUdPl1Wp1hYupErnovf4cXPW7gjhmzdzeJfcELBt/OARrhI7yqjxk9kvtbW/P+jOwda0YIW3b06KWYLsZVArm900BYFw7Lx8yRF2kJc17NKSR1mFm+PyH4OBhe06j+oCf5CHYa9ZlQ7ZpRWdE+uT8r5DmHgh0tdQ/0I1WZgojLMTsgiHPP9BuZ0Chp6AQAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/CDKMetadata/Default"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -702,22 +569,13 @@
     }
   },
   "Parameters": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-    "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref": {
-========
-    "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref": {
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+    "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref": {
       "Type": "String"
     }
   },
   "Outputs": {
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V.__to__.amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V-holding.source.template.json
-    "amplifydiscussionsgen2mainbranche3e983762fstoragediscusavatars223a2gen2mainBucket4FD3B8FDRef": {
-      "Value": "amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj"
-========
-    "amplifydiscussionse2esandbox11f7701e3cstoragediscusavatarsxgen2xBucketC837A45ARef": {
-      "Value": "amplify-discussion2604142-discusavatarsxgen2eg-tgx9ceq8osxf"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.post.refactor/refactor.__from__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
+    "amplifydiscussionse2esandbox70eded89e6storagediscusavatarsxgen2xBucketA56A2F77Ref": {
+      "Value": "amplify-discussion2604162-discusavatarsxgen2ui-vzuiplnpblnb"
     }
   }
 }

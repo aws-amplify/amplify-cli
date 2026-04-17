@@ -21,11 +21,7 @@
   },
   {
     "OutputKey": "StreamArn",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-main-223a2-storageactivity-1JE8RLVN83DY0.outputs.json
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-04-08T15:46:22.655"
-========
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-15T03:52:10.997"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-x-x-storageactivity-x.outputs.json
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-17T02:44:56.274"
   },
   {
     "OutputKey": "PartitionKeyType",

@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "storageactivityName",
+    "ParameterValue": "activity-x"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/activityTrigger79c26ead-4d4b593370674f615679-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-discussions-x-x-deployment"
+  },
+  {
+    "ParameterKey": "storageactivityStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-17T02:44:56.274"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "storageactivityArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x"
+  }
+]

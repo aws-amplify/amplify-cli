@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef",
-    "OutputValue": "us-east-1:0ab20e5d-b843-4969-94b1-c17d26af9934"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref",
+    "OutputValue": "amplify-discussion2604162-amplifyAuthauthenticatedU-DpI98VU4kxL1"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef",
-    "OutputValue": "amplify-discussion2604142-amplifyAuthunauthenticate-RegjzqZNry1w"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6authamplifyAuthUserPoolAppClient0977C3A8Ref",
+    "OutputValue": "50e30mj903868k89vugn5q3ul9"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPool78F21D47Ref",
-    "OutputValue": "us-east-1_QiMcYOBJq"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref",
+    "OutputValue": "amplify-discussion2604162-amplifyAuthunauthenticate-fQoBMJqeFfIK"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref",
-    "OutputValue": "amplify-discussion2604142-amplifyAuthauthenticatedU-OFERj1VQgbh0"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef",
+    "OutputValue": "us-east-1:71501d31-e722-454c-ac1a-ccb858fb39f8"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPoolAppClientC0A8CDEFRef",
-    "OutputValue": "5fmpdjh49lauff16m1r548ug0t"
+    "OutputKey": "amplifydiscussionse2esandbox70eded89e6authamplifyAuthUserPoolE62A968ERef",
+    "OutputValue": "us-east-1_hSkvuYzs4"
   }
 ]
