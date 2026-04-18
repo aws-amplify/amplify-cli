@@ -425,6 +425,7 @@ export class GeoRenderer {
     );
   }
 }
+/** backend.auth.resources.authenticatedUserIamRole.roleName */
 function createAuthRoleAccess(): ts.PropertyAccessExpression {
   return TS.propAccess('backend', 'auth', 'resources', 'authenticatedUserIamRole', 'roleName') as ts.PropertyAccessExpression;
 }
