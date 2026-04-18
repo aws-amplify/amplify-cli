@@ -489,7 +489,7 @@
         "FunctionName": "storelocator41a9495f41a9495fPostConfirmation-gen2-x",
         "Handler": "index.handler",
         "MemorySize": 512,
-        "Role": "arn:aws:iam::123456789012:role/amplify-storelocat2604162-storelocator41a9495f41a94-HOJ8b0FwS7FN",
+        "Role": "arn:aws:iam::123456789012:role/amplify-storelocator-e2e-sandbox-x-auth179371D7-x/storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole836F6891",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
