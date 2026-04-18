@@ -1,0 +1,110 @@
+{
+  "Parameters": {
+    "env": {
+      "Type": "String",
+      "Description": "Current Amplify CLI env name"
+    },
+    "functionmoodboardKinesisTriggerName": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisTriggerArn": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisTriggerRegion": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisTriggerLambdaExecutionRole": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisTriggerLambdaExecutionRoleArn": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisReaderName": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisReaderArn": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisReaderRegion": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisReaderLambdaExecutionRole": {
+      "Type": "String"
+    },
+    "functionmoodboardKinesisReaderLambdaExecutionRoleArn": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "ReaderDQL60362AB8": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ReaderDQLPolicyA28ECF28": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Ref": "functionmoodboardKinesisReaderLambdaExecutionRoleArn"
+                }
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ReaderDQL60362AB8",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "ReaderDQL60362AB8"
+          }
+        ]
+      }
+    },
+    "TriggerDLQ2AAE934B": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "TriggerDLQPolicy53E081CB": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Ref": "functionmoodboardKinesisTriggerLambdaExecutionRoleArn"
+                }
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TriggerDLQ2AAE934B",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "TriggerDLQ2AAE934B"
+          }
+        ]
+      }
+    }
+  }
+}
