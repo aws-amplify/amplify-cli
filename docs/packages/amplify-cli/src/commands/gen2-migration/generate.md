@@ -114,7 +114,6 @@ execution. Runs last and writes `backend.ts` from accumulated content.
 | api       | API Gateway             | `RestApiGenerator`          |
 | analytics | Kinesis                 | `AnalyticsKinesisGenerator` |
 | function  | Lambda                  | `FunctionGenerator`         |
-| geo       | Map/PlaceIndex/Geofence | `GeoGenerator`              |
 
 ## Design Principles
 
@@ -170,31 +169,3 @@ flowchart TD
     STEP -->|"collect plan() from all generators"| OPS["operations: AmplifyMigrationOperation array"]
     OPS -->|return to| DISP["Parent dispatcher: describe then execute"]
 ```
-
-## Post-Refactor Tag
-
-`BackendGenerator` appends two commented-out lines at the end of every generated `backend.ts`:
-
-```ts
-// import { Tags } from 'aws-cdk-lib';
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
-```
-
-The post-refactor script for each app uncomments both lines. This causes a CloudFormation tag change that forces a redeployment after migration, ensuring the gen2 stack is fully deployed with the shared resources.
-
-## Gen1 IAM Policies
-
-### REST API (API Gateway)
-
-`RestApiRenderer` generates two types of gen1 IAM policies in `backend.ts`:
-
-- **Broad policy** (`gen1{ApiName}Policy`) — grants `execute-api:Invoke` on all paths of the gen1 API to the authenticated user role.
-- **Group path policies** (`gen1{Path}{Group}Policy`) — for each group-restricted path, grants the same group role access to the equivalent gen1 API path. This ensures Cognito group roles retain access to both gen2 and gen1 REST APIs during the transition period.
-
-### Geo (Location Service)
-
-`GeoRenderer` generates a `gen1AuthPolicy` in each geo `resource.ts` file. The policy:
-
-- Grants the IAM actions extracted from the Gen1 CloudFormation template (not hardcoded — read from the template's user-facing IAM policy resource).
-- Targets the gen1 resource ARN (`arn:aws:geo:{region}:{account}:{type}/{resourceName}-{envName}`).
-- Attaches to the same roles that the gen2 construct receives (auth + unauth for Map/PlaceIndex; group roles for GeofenceCollection).
