@@ -5,7 +5,6 @@ import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
 import { lowstockproducts } from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
-// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -96,6 +95,3 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

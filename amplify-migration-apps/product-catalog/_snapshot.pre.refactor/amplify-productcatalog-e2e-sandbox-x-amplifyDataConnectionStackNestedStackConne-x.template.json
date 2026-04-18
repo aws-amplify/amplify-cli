@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPINONEDS60A1387FName"
+          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPINONEDS24528D33Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Productcommentsauth0Function",
@@ -26,10 +26,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentNestedStackCommentNestedStackResource05914557Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentCommentDataSource49D47B2AName"
+          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentNestedStackCommentNestedStackResource258A5736Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentDataSourceC4EBFBBFName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "ProductCommentsDataResolverFn",
@@ -50,7 +50,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
         },
         "FieldName": "comments",
         "Kind": "PIPELINE",
@@ -76,7 +76,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Product\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"comments\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
+                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentNestedStackCommentNestedStackResource05914557Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentCommentTable5440055BTableArn"
+                                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentNestedStackCommentNestedStackResource258A5736Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentTableECA430A9TableArn"
                               }
                             ]
                           }
@@ -112,7 +112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef"
+                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -124,11 +124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref"
+                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef"
+                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -421,25 +421,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPINONEDS60A1387FName": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPINONEDS24528D33Name": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentNestedStackCommentNestedStackResource05914557Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentCommentDataSource49D47B2AName": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentNestedStackCommentNestedStackResource258A5736Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentDataSourceC4EBFBBFName": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentNestedStackCommentNestedStackResource05914557Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentCommentTable5440055BTableArn": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentNestedStackCommentNestedStackResource258A5736Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentTableECA430A9TableArn": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef": {
+    "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef": {
       "Type": "String"
     }
   }

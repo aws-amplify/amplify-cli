@@ -6,7 +6,7 @@
     },
     "Destination": {
       "StackName": "amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x",
-      "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucketB5035870"
+      "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucketACEF49E5"
     }
   }
 ]

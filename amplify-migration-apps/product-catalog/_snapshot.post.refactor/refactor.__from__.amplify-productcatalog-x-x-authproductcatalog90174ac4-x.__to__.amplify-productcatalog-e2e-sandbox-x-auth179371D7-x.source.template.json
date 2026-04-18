@@ -124,7 +124,7 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-x-17",
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:5d36ee09-04b9-46d1-a389-a1f1581c60eb"
+      "Value": "us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d"
     },
     "IdentityPoolName": {
       "Value": "productcatalog90174ac4_identitypool_90174ac4__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_ZulgyCY8s"
+      "Value": "us-east-1_HpX9WE297"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_ZulgyCY8s"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_HpX9WE297"
     },
     "UserPoolName": {
       "Value": "productcatalog90174ac4_userpool_90174ac4"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "1b46dlk5ukj5l9s5vl3bia8kvs"
+      "Value": "5t4ot0q04ialfrcrbs42ja7pul"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "2nhbk67m7395m1ht5skr3tujm5"
+      "Value": "4kaqq4k3inp7kumdv6bqelrm7"
     }
   }
 }

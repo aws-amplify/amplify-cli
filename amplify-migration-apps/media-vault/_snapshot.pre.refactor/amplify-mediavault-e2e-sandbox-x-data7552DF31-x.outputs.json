@@ -1,18 +1,18 @@
 [
   {
-    "OutputKey": "amplifymediavaulte2esandbox922046e166dataamplifyDataGraphQLAPI9FDE0A75ApiId",
-    "OutputValue": "oqnhzrhmvfcndmddqoea43fy3e"
+    "OutputKey": "amplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB7F964333DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-mediavault2604142-amplifydataamplifycodege-fz46uttmwbyd"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox922046e166dataamplifyDataGraphQLAPI9FDE0A75GraphQLUrl",
-    "OutputValue": "https://wjrgrjvysvhgjgq5oofa3mhvza.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputKey": "amplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIC1298574ApiId",
+    "OutputValue": "wxqxmfnao5dgtoc4j7tvafb4ti"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox922046e166dataamplifyDataGraphQLAPIDefaultApiKey0B8961A1ApiKey",
+    "OutputKey": "amplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIDefaultApiKeyA4DABB13ApiKey",
     "OutputValue": "da2-fakeapikey00000000000000"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox922046e166dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB5A783BBADestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-mediavault2604162-amplifydataamplifycodege-6aooieo0e3y2"
+    "OutputKey": "amplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIC1298574GraphQLUrl",
+    "OutputValue": "https://r26utga6pnf6bebsk56unkjeta.appsync-api.us-east-1.amazonaws.com/graphql"
   }
 ]

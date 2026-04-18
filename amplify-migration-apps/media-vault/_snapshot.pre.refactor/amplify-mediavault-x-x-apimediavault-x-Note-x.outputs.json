@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GetAttNoteTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Note-6udbpqlmejgghlk6b6ezbi4xyy-x/stream/2026-04-17T00:50:20.908",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Note-m35dk4nrcna2hiz267tsvgu77y-x/stream/2026-04-15T03:52:49.047",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "6udbpqlmejgghlk6b6ezbi4xyy:GetAtt:NoteTable:StreamArn"
+    "ExportName": "m35dk4nrcna2hiz267tsvgu77y:GetAtt:NoteTable:StreamArn"
   },
   {
     "OutputKey": "GetAttNoteDataSourceName",
     "OutputValue": "NoteTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "6udbpqlmejgghlk6b6ezbi4xyy:GetAtt:NoteDataSource:Name"
+    "ExportName": "m35dk4nrcna2hiz267tsvgu77y:GetAtt:NoteDataSource:Name"
   },
   {
     "OutputKey": "GetAttNoteTableName",
-    "OutputValue": "Note-6udbpqlmejgghlk6b6ezbi4xyy-x",
+    "OutputValue": "Note-m35dk4nrcna2hiz267tsvgu77y-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "6udbpqlmejgghlk6b6ezbi4xyy:GetAtt:NoteTable:Name"
+    "ExportName": "m35dk4nrcna2hiz267tsvgu77y:GetAtt:NoteTable:Name"
   }
 ]

@@ -1,26 +1,26 @@
 [
   {
     "OutputKey": "GetAttCommentTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-qx63tows35dztl5ioa67kk3exi-x/stream/2026-04-17T00:49:07.248",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.114",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "ho26f7ncojdf3oyxk6par2k3om:GetAtt:CommentTable:StreamArn"
+    "ExportName": "wdfhzimbunbg5ahiuonmjslcb4:GetAtt:CommentTable:StreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataCommentCommentTable32B28FBFTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-qx63tows35dztl5ioa67kk3exi-x/stream/2026-04-17T00:49:07.248"
-  },
-  {
-    "OutputKey": "GetAttCommentTableName",
-    "OutputValue": "Comment-qx63tows35dztl5ioa67kk3exi-x",
-    "Description": "Your DynamoDB table name.",
-    "ExportName": "ho26f7ncojdf3oyxk6par2k3om:GetAtt:CommentTable:Name"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataCommentCommentDataSource20525A09Name",
+    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentCommentDataSourceCE9AE4FFName",
     "OutputValue": "CommentTable"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataCommentCommentTable32B28FBFTableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-qx63tows35dztl5ioa67kk3exi-x"
+    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentCommentTable761EEA24TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:53:19.114"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentCommentTable761EEA24TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-xw3yrfq7mngltcua43nucy7fg4-x"
+  },
+  {
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "Comment-xw3yrfq7mngltcua43nucy7fg4-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "wdfhzimbunbg5ahiuonmjslcb4:GetAtt:CommentTable:Name"
   }
 ]

@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandboxdc70242930authNestedStackauthNestedStackResourceEFF8005FOutputsamplifybackendonlye2esandboxdc70242930authamplifyAuthauthenticatedUserRoleB1E76601Ref",
-    "ParameterValue": "amplify-backendonl2604162-amplifyAuthauthenticatedU-4LZvqykzoLuY"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId",
+    "ParameterValue": "64fwpekbzfhs7ctgvnsvdv33fa"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandboxdc70242930dataamplifyDataGraphQLAPINONEDS2BC1D593Name",
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPINONEDSD6CF5616Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandboxdc70242930authNestedStackauthNestedStackResourceEFF8005FOutputsamplifybackendonlye2esandboxdc70242930authamplifyAuthIdentityPoolC39A6BBARef",
-    "ParameterValue": "us-east-1:b42371ee-0074-4271-9cdf-23aca9060b79"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef",
+    "ParameterValue": "amplify-backendonl2604142-amplifyAuthauthenticatedU-e2MZgmxI4x06"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandboxdc70242930authNestedStackauthNestedStackResourceEFF8005FOutputsamplifybackendonlye2esandboxdc70242930authamplifyAuthunauthenticatedUserRole8120049BRef",
-    "ParameterValue": "amplify-backendonl2604162-amplifyAuthunauthenticate-56C8TBIUDYAX"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref",
+    "ParameterValue": "amplify-backendonl2604142-amplifyAuthunauthenticate-T0OFU3aW6x78"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandboxdc70242930dataamplifyDataGraphQLAPI9B474082ApiId",
-    "ParameterValue": "53y4njel6nhh5hp3hxczpjp5d4"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthIdentityPool210F50E3Ref",
+    "ParameterValue": "us-east-1:253c6cb3-ea32-4bc6-9532-d622a04831ed"
   }
 ]

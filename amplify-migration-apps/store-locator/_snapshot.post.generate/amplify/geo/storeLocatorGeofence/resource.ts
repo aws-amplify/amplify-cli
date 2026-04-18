@@ -1,6 +1,5 @@
 import { geostoreLocatorGeofence } from './storeLocatorGeofence-construct';
 import { Backend } from '@aws-amplify/backend';
-import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -21,27 +20,5 @@ export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
       isDefault: 'true',
     }
   );
-
-  const policy = new Policy(storeLocatorGeofence, 'gen1AuthPolicy', {
-    statements: [
-      new PolicyStatement({
-        actions: [
-          'geo:GetGeofence',
-          'geo:PutGeofence',
-          'geo:BatchPutGeofence',
-          'geo:BatchDeleteGeofence',
-          'geo:ListGeofences',
-        ],
-        resources: [
-          `arn:aws:geo:${storeLocatorGeofenceStack.region}:${storeLocatorGeofenceStack.account}:geofence-collection/storeLocatorGeofence-x`,
-        ],
-      }),
-    ],
-  });
-
-  backend.auth.resources.groups['storeLocatorAdmin'].role.attachInlinePolicy(
-    policy
-  );
-
   return storeLocatorGeofence;
 };

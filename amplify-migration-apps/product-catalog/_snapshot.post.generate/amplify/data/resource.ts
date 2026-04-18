@@ -75,9 +75,9 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
-        User: 'User-4drytvw77zg5ho27ntn5w44g2q-x',
-        Product: 'Product-4drytvw77zg5ho27ntn5w44g2q-x',
-        Comment: 'Comment-4drytvw77zg5ho27ntn5w44g2q-x',
+        User: 'User-hscmwhprkbaljmcpavj3dcztrq-x',
+        Product: 'Product-hscmwhprkbaljmcpavj3dcztrq-x',
+        Comment: 'Comment-hscmwhprkbaljmcpavj3dcztrq-x',
       },
     },
   ],

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/34ebbd5b242527810cb0da50500245c626061434"
+    "ParameterValue": "amplify-appsync-files/2904294ac328b706f016848ccf5fa0abe614014d"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -13,11 +13,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
-    "ParameterValue": "Comment-4drytvw77zg5ho27ntn5w44g2q-x"
+    "ParameterValue": "Comment-hscmwhprkbaljmcpavj3dcztrq-x"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "4drytvw77zg5ho27ntn5w44g2q"
+    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
   },
   {
     "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",

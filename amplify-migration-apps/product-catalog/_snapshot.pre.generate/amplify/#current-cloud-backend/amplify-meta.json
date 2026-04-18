@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-productcatalog-x-x-deployment",
       "UnauthRoleName": "amplify-productcatalog-x-x-unauthRole",
       "StackName": "amplify-productcatalog-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/e180f8e0-39f6-11f1-bf27-0e2e7ea3a46d",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/25d38550-387e-11f1-9b94-0afffb3ee03d",
       "AmplifyAppId": "productcatalog"
     }
   },
@@ -42,17 +42,17 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/auth/productcatalog90174ac4-cloudformation-template.json",
         "logicalId": "authproductcatalog90174ac4"
       },
-      "lastPushTimeStamp": "2026-04-17T00:54:51.488Z",
+      "lastPushTimeStamp": "2026-04-15T03:57:56.367Z",
       "output": {
-        "UserPoolId": "us-east-1_ZulgyCY8s",
-        "AppClientIDWeb": "1b46dlk5ukj5l9s5vl3bia8kvs",
-        "AppClientID": "2nhbk67m7395m1ht5skr3tujm5",
-        "IdentityPoolId": "us-east-1:5d36ee09-04b9-46d1-a389-a1f1581c60eb",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_ZulgyCY8s",
+        "UserPoolId": "us-east-1_HpX9WE297",
+        "AppClientIDWeb": "5t4ot0q04ialfrcrbs42ja7pul",
+        "AppClientID": "4kaqq4k3inp7kumdv6bqelrm7",
+        "IdentityPoolId": "us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_HpX9WE297",
         "IdentityPoolName": "productcatalog90174ac4_identitypool_90174ac4__x",
         "UserPoolName": "productcatalog90174ac4_userpool_90174ac4"
       },
-      "lastPushDirHash": "rhWvThx2DePBMc31naw4kV4E0Es="
+      "lastPushDirHash": "vwfsguBCYhmnChi8OJsiaEhZfwA="
     }
   },
   "api": {
@@ -90,16 +90,16 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "4drytvw77zg5ho27ntn5w44g2q",
-        "GraphQLAPIEndpointOutput": "https://5k3aqphgoncofny4hdvzcua2a4.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "hscmwhprkbaljmcpavj3dcztrq",
+        "GraphQLAPIEndpointOutput": "https://nmunek64lresdpc5z6pnhpsbh4.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiproductcatalog"
       },
-      "lastPushTimeStamp": "2026-04-17T00:54:51.488Z",
-      "lastPushDirHash": "GOx5nr6BYNLoUNBWclP6bcwtxg0="
+      "lastPushTimeStamp": "2026-04-15T03:57:56.367Z",
+      "lastPushDirHash": "M4Lv1myo82xasoYda8BR7zSbDl4="
     }
   },
   "function": {
@@ -118,14 +118,14 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-17T00:54:51.488Z",
-      "lastBuildTimeStamp": "2026-04-17T00:48:09.741Z",
+      "lastPushTimeStamp": "2026-04-15T03:57:56.367Z",
+      "lastBuildTimeStamp": "2026-04-15T03:51:01.047Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-17T00:48:12.530Z",
-      "distZipFilename": "S3Trigger1ef46783-6547674f396832763433-build.zip",
+      "lastPackageTimeStamp": "2026-04-15T03:51:06.011Z",
+      "distZipFilename": "S3Trigger1ef46783-4b4665534739746b326e-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-productcatalog-x-x-deployment",
-        "s3Key": "amplify-builds/S3Trigger1ef46783-6547674f396832763433-build.zip"
+        "s3Key": "amplify-builds/S3Trigger1ef46783-4b4665534739746b326e-build.zip"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/function/S3Trigger1ef46783-cloudformation-template.json",
@@ -138,7 +138,7 @@
         "Name": "S3Trigger1ef46783-x",
         "LambdaExecutionRole": "S3Trigger1ef46783LambdaRole1ef46783-x"
       },
-      "lastPushDirHash": "cP4F7jAf31YPiBLp7E541o/M5J8="
+      "lastPushDirHash": "2Yp8qReEPNjxqPd0IEURpkIBCjs="
     },
     "lowstockproducts": {
       "build": true,
@@ -155,19 +155,19 @@
           ]
         }
       ],
-      "lastBuildTimeStamp": "2026-04-17T00:48:16.497Z",
+      "lastBuildTimeStamp": "2026-04-15T03:51:08.519Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-17T00:48:19.027Z",
-      "distZipFilename": "lowstockproducts-755178414f727a4f3054-build.zip",
+      "lastPackageTimeStamp": "2026-04-15T03:51:11.025Z",
+      "distZipFilename": "lowstockproducts-5148445a7a3964456a67-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-productcatalog-x-x-deployment",
-        "s3Key": "amplify-builds/lowstockproducts-755178414f727a4f3054-build.zip"
+        "s3Key": "amplify-builds/lowstockproducts-5148445a7a3964456a67-build.zip"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/function/lowstockproducts-cloudformation-template.json",
         "logicalId": "functionlowstockproducts"
       },
-      "lastPushTimeStamp": "2026-04-17T00:54:51.488Z",
+      "lastPushTimeStamp": "2026-04-15T03:57:56.367Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/productcatalogLambdaRole1ca4fb61-x",
         "Region": "us-east-1",
@@ -175,7 +175,7 @@
         "Name": "lowstockproducts-x",
         "LambdaExecutionRole": "productcatalogLambdaRole1ca4fb61-x"
       },
-      "lastPushDirHash": "d67zmFKv7wQ/OiFmilCiX7N03uk="
+      "lastPushDirHash": "5EfjkUs2if1HjkKcTDr6Hojbp5A="
     }
   },
   "storage": {
@@ -193,7 +193,7 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-17T00:54:51.488Z",
+      "lastPushTimeStamp": "2026-04-15T03:57:56.367Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-productcatalog-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages338e5b439"
@@ -202,7 +202,7 @@
         "BucketName": "productcatalogf95af07481f845caa6594c26ac9c8ed3x-x",
         "Region": "us-east-1"
       },
-      "lastPushDirHash": "1zQlIeNWanoPnz2lv8fAOl7QLcU="
+      "lastPushDirHash": "wE6Y7huJNaslBLmQHoL6Q0+9Yj4="
     }
   }
 }

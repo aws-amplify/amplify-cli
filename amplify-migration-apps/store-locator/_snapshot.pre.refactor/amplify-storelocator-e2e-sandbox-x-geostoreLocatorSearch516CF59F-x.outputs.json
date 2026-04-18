@@ -8,11 +8,11 @@
     "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-x"
   },
   {
-    "OutputKey": "amplifystorelocatore2esandboxf3331fe542geostoreLocatorSearchCustomPlaceIndex58A567EAIndexName",
+    "OutputKey": "Name",
     "OutputValue": "storeLocatorSearch-gen2-x"
   },
   {
-    "OutputKey": "Name",
+    "OutputKey": "amplifystorelocatore2esandboxdd610709c4geostoreLocatorSearchCustomPlaceIndex90EC0A16IndexName",
     "OutputValue": "storeLocatorSearch-gen2-x"
   }
 ]

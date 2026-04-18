@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-productcatalog-x-x-deployment",
       "UnauthRoleName": "amplify-productcatalog-x-x-unauthRole",
       "StackName": "amplify-productcatalog-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/e180f8e0-39f6-11f1-bf27-0e2e7ea3a46d",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-productcatalog-x-x/25d38550-387e-11f1-9b94-0afffb3ee03d",
       "AmplifyAppId": "productcatalog"
     },
     "categories": {
@@ -20,11 +20,11 @@
           "lowStockThreshold": "5",
           "secretsPathAmplifyAppId": "productcatalog",
           "deploymentBucketName": "amplify-productcatalog-x-x-deployment",
-          "s3Key": "amplify-builds/lowstockproducts-755178414f727a4f3054-build.zip"
+          "s3Key": "amplify-builds/lowstockproducts-5148445a7a3964456a67-build.zip"
         },
         "S3Trigger1ef46783": {
           "deploymentBucketName": "amplify-productcatalog-x-x-deployment",
-          "s3Key": "amplify-builds/S3Trigger1ef46783-6547674f396832763433-build.zip"
+          "s3Key": "amplify-builds/S3Trigger1ef46783-4b4665534739746b326e-build.zip"
         }
       },
       "api": {

@@ -43,7 +43,7 @@
       "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x"
     },
     "StreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-17T00:47:58.954"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-15T03:52:10.997"
     },
     "PartitionKeyName": {
       "Value": "id"

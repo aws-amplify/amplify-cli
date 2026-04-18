@@ -35,7 +35,7 @@
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/dd781ad0-39f6-11f1-8ad9-0e1533d2aa07",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/108480f0-387e-11f1-8e28-0ea5af7cf5ad",
     "Description": "CloudFormation provider root stack name",
     "ExportName": "amplify-mediavault-x-x-StackId"
   }

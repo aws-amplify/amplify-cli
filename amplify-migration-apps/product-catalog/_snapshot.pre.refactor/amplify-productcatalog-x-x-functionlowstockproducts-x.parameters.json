@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/lowstockproducts-755178414f727a4f3054-build.zip"
+    "ParameterValue": "amplify-builds/lowstockproducts-5148445a7a3964456a67-build.zip"
   },
   {
     "ParameterKey": "lowStockThreshold",
@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://5k3aqphgoncofny4hdvzcua2a4.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "https://nmunek64lresdpc5z6pnhpsbh4.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "ParameterKey": "env",
@@ -33,6 +33,6 @@
   },
   {
     "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
-    "ParameterValue": "4drytvw77zg5ho27ntn5w44g2q"
+    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
   }
 ]

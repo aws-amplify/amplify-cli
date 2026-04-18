@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
-    "ParameterValue": "isjl52oomrf65hwlwoe2e3gla4"
+    "ParameterValue": "qfwkpcbq4fgfjakokec32roplu"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/34ebbd5b242527810cb0da50500245c626061434"
+    "ParameterValue": "amplify-appsync-files/2904294ac328b706f016848ccf5fa0abe614014d"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -21,11 +21,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "4drytvw77zg5ho27ntn5w44g2q"
+    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
-    "ParameterValue": "4tag4cdm4rdwvkvz2qjzkk2dam"
+    "ParameterValue": "lw2jye7ga5ddlhesqzclrligny"
   },
   {
     "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
@@ -41,7 +41,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
-    "ParameterValue": "rmddtmfzhvbgvbkw5gcx2bprni"
+    "ParameterValue": "x4iwoozno5dlboqsjxv4ol2r7y"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -61,6 +61,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackUserNestedStackUserNestedStackResource01084C14OutputstransformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
-    "ParameterValue": "4cqgtz367be27jzy45yi5ukexu"
+    "ParameterValue": "jnj2c6vawvazfpixdbasl5x6be"
   }
 ]

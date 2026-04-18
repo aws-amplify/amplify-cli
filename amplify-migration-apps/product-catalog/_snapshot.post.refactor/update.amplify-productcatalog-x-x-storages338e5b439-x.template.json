@@ -320,7 +320,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-x-17",
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -356,7 +356,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-x-17",
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -392,7 +392,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-x-17",
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -428,7 +428,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-x-17",
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -505,7 +505,7 @@
               }
             }
           ],
-          "Version": "2012-x-17"
+          "Version": "2012-10-17"
         },
         "PolicyName": "read_policy_38e5b439",
         "Roles": [
@@ -518,7 +518,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-x-17",
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",

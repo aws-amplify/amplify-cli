@@ -1,14 +1,14 @@
 [
   {
-    "OutputKey": "amplifyproductcataloge2esandboxf9d1734d7efunctionS3Trigger1ef46783gen2xlambda72140433Arn",
+    "OutputKey": "amplifyproductcataloge2esandboxde12df9a17functionS3Trigger1ef46783gen2xlambda81A9091AArn",
     "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-gen2-x"
   },
   {
-    "OutputKey": "amplifyproductcataloge2esandboxf9d1734d7efunctionlowstockproductsgen2xlambdaE674AA7DRef",
+    "OutputKey": "amplifyproductcataloge2esandboxde12df9a17functionlowstockproductsgen2xlambdaDF5C10EARef",
     "OutputValue": "lowstockproducts-gen2-x"
   },
   {
-    "OutputKey": "amplifyproductcataloge2esandboxf9d1734d7efunctionS3Trigger1ef46783gen2xlambda72140433Ref",
+    "OutputKey": "amplifyproductcataloge2esandboxde12df9a17functionS3Trigger1ef46783gen2xlambda81A9091ARef",
     "OutputValue": "S3Trigger1ef46783-gen2-x"
   }
 ]

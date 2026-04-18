@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-backendonly-x-x-deployment",
       "UnauthRoleName": "amplify-backendonly-x-x-unauthRole",
       "StackName": "amplify-backendonly-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/d6686560-39f6-11f1-a9ca-0affe3485391",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/53088ca0-387e-11f1-b94b-12f2170fbccd",
       "AmplifyAppId": "backendonly"
     },
     "categories": {
@@ -18,7 +18,7 @@
       "function": {
         "quotegeneratorbe": {
           "deploymentBucketName": "amplify-backendonly-x-x-deployment",
-          "s3Key": "amplify-builds/quotegeneratorbe-74755344625831362b75-build.zip"
+          "s3Key": "amplify-builds/quotegeneratorbe-513654756a51615a5779-build.zip"
         }
       },
       "api": {

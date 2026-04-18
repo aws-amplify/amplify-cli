@@ -4,7 +4,6 @@ import { storage } from './storage/resource';
 import { quotegeneratorbe } from './function/quotegeneratorbe/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
-// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -58,6 +57,3 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.quotegeneratorbe.resources.cfnResources.cfnFunction.functionName = `quotegeneratorbe-${branchName}`;
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

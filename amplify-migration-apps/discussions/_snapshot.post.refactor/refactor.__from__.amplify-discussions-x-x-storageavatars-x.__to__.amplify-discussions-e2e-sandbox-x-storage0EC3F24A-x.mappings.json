@@ -6,7 +6,7 @@
     },
     "Destination": {
       "StackName": "amplify-discussions-e2e-sandbox-x-storage0EC3F24A-x",
-      "LogicalResourceId": "discusavatarsxgen2xBucket792ACCE8"
+      "LogicalResourceId": "discusavatarsxgen2xBucketDA2F9CC2"
     }
   }
 ]

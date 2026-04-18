@@ -1,36 +1,36 @@
 [
   {
     "OutputKey": "GetAttUserTableName",
-    "OutputValue": "User-4drytvw77zg5ho27ntn5w44g2q-x",
+    "OutputValue": "User-hscmwhprkbaljmcpavj3dcztrq-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "4drytvw77zg5ho27ntn5w44g2q:GetAtt:UserTable:Name"
+    "ExportName": "hscmwhprkbaljmcpavj3dcztrq:GetAtt:UserTable:Name"
   },
   {
     "OutputKey": "transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
-    "OutputValue": "4cqgtz367be27jzy45yi5ukexu"
+    "OutputValue": "jnj2c6vawvazfpixdbasl5x6be"
   },
   {
     "OutputKey": "transformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
-    "OutputValue": "rmddtmfzhvbgvbkw5gcx2bprni"
+    "OutputValue": "x4iwoozno5dlboqsjxv4ol2r7y"
   },
   {
     "OutputKey": "transformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
-    "OutputValue": "isjl52oomrf65hwlwoe2e3gla4"
+    "OutputValue": "qfwkpcbq4fgfjakokec32roplu"
   },
   {
     "OutputKey": "GetAttUserDataSourceName",
     "OutputValue": "UserTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "4drytvw77zg5ho27ntn5w44g2q:GetAtt:UserDataSource:Name"
+    "ExportName": "hscmwhprkbaljmcpavj3dcztrq:GetAtt:UserDataSource:Name"
   },
   {
     "OutputKey": "GetAttUserTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-4drytvw77zg5ho27ntn5w44g2q-x/stream/2026-04-17T00:49:26.243",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-hscmwhprkbaljmcpavj3dcztrq-x/stream/2026-04-15T03:52:18.290",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "4drytvw77zg5ho27ntn5w44g2q:GetAtt:UserTable:StreamArn"
+    "ExportName": "hscmwhprkbaljmcpavj3dcztrq:GetAtt:UserTable:StreamArn"
   },
   {
     "OutputKey": "transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
-    "OutputValue": "4tag4cdm4rdwvkvz2qjzkk2dam"
+    "OutputValue": "lw2jye7ga5ddlhesqzclrligny"
   }
 ]

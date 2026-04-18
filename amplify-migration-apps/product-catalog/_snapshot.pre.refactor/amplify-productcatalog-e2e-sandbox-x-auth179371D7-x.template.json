@@ -200,7 +200,7 @@
               }
             }
           ],
-          "Version": "2012-x-17"
+          "Version": "2012-10-17"
         },
         "Tags": [
           {
@@ -243,13 +243,13 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/4drytvw77zg5ho27ntn5w44g2q/*"
+                    ":apis/hscmwhprkbaljmcpavj3dcztrq/*"
                   ]
                 ]
               }
             }
           ],
-          "Version": "2012-x-17"
+          "Version": "2012-10-17"
         },
         "PolicyName": "amplifyAuthauthenticatedUserRoleDefaultPolicy82E52873",
         "Roles": [
@@ -287,7 +287,7 @@
               }
             }
           ],
-          "Version": "2012-x-17"
+          "Version": "2012-10-17"
         },
         "Tags": [
           {
@@ -644,27 +644,27 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthUserPoolCC150A31Ref": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPool28A7874FRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthUserPoolAppClient27F138D6Ref": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPoolAppClient577E72DBRef": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref": {
+    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
