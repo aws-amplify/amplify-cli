@@ -284,7 +284,7 @@
         "FunctionName": "admin-gen2-x",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604180-admingen2xlambda-lIXq3ud22xBB",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole3B855B76",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
