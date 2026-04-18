@@ -41,9 +41,7 @@
         },
         "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
         "Roles": [
-          {
-            "Ref": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthauthenticatedUserRole0982B29BRef"
-          }
+          "amplify-moodboard26041519-amplifyAuthauthenticatedU-hG08sRlsZcsb"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -70,9 +68,7 @@
         },
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
         "Roles": [
-          {
-            "Ref": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthunauthenticatedUserRole2DF278D3Ref"
-          }
+          "amplify-moodboard26041519-amplifyAuthunauthenticate-Six3YvIOxgGy"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -84,7 +80,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQrCMAwA0LPsv421MC+wfxV3AIltBlnXTpbUIWN3H+LX43nwrQPX4Co2xGQnfsF2JVGKvWJIBld5bokLCQt0Q+l1IcyGMf92nycO3910Q7lVfVfdTZkjwSinj/dwvoBrRmG2Sy3KmeDx9wDnXMcSdwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQqDMAwA0LP432ZdwBP4v415AKlthFhbh0knQ7z7GPt6PARsHbjG72JDTHbhEY4biVLs1Ydk/C7DkbiQsEA3lV438tmwz7891oXD5zTdVO5VX1VPU9ZIMMvljQh4BdfMwmy3WpQzwfPvF8PdMhZ3AAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/CDKMetadata/Default"
@@ -102,7 +98,7 @@
     "kinesisStreamShardCount": {
       "Value": "1"
     },
-    "amplifymoodboarde2esandbox9c14477299analyticsmoodboardKinesisKinesisStream35B80193Arn": {
+    "amplifymoodboarde2esandbox685dc54d14analyticsmoodboardKinesisKinesisStream0B86977BArn": {
       "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
     }
   },
@@ -373,10 +369,10 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthauthenticatedUserRole0982B29BRef": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthunauthenticatedUserRole2DF278D3Ref": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
       "Type": "String"
     }
   }

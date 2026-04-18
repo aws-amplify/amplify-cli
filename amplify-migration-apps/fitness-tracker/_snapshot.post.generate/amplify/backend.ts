@@ -13,7 +13,6 @@ import {
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration, Stack } from 'aws-cdk-lib';
-// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -121,8 +120,8 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   nutritionapiStack,
   'Gen1nutritionapiApi',
   {
-    restApiId: 'sr6b1iusul',
-    rootResourceId: 'sr6b1iusul-root',
+    restApiId: 'ma6towcpja',
+    rootResourceId: 'ma6towcpja-root',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -210,25 +209,6 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     ],
   })
 );
-backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(nutritionapiStack, 'gen1NutritionlogAdminPolicy', {
-    statements: [
-      new PolicyStatement({
-        actions: ['execute-api:Invoke'],
-        resources: [
-          gen1nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log'),
-          gen1nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log/*'),
-          gen1nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log'),
-          gen1nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log/*'),
-          gen1nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log'),
-          gen1nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
-          gen1nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log'),
-          gen1nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
-        ],
-      }),
-    ],
-  })
-);
 backend.addOutput({
   custom: {
     API: {
@@ -269,8 +249,8 @@ const gen1adminapiApi = RestApi.fromRestApiAttributes(
   adminapiStack,
   'Gen1adminapiApi',
   {
-    restApiId: 'x74a8qb2h2',
-    rootResourceId: 'x74a8qb2h2-root',
+    restApiId: 'nv2lhk3kt8',
+    rootResourceId: 'nv2lhk3kt8-root',
   }
 );
 const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
@@ -321,19 +301,6 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     ],
   })
 );
-backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(adminapiStack, 'gen1AdminAdminPolicy', {
-    statements: [
-      new PolicyStatement({
-        actions: ['execute-api:Invoke'],
-        resources: [
-          gen1adminapiApi.arnForExecuteApi('GET', '/admin'),
-          gen1adminapiApi.arnForExecuteApi('GET', '/admin/*'),
-        ],
-      }),
-    ],
-  })
-);
 backend.addOutput({
   custom: {
     API: {
@@ -345,6 +312,3 @@ backend.addOutput({
     },
   },
 });
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

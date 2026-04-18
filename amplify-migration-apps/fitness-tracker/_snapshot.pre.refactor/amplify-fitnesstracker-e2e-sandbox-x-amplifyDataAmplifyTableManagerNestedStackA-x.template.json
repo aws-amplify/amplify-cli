@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataGraphQLAPI945462C3ApiId"
+                            "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "WorkoutProgram-kwadx4scejb53dmavmu5agza3q-x"
+                          "tableName": "WorkoutProgram-togpa5colne67hczqmubjjmzwa-x"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Exercise-kwadx4scejb53dmavmu5agza3q-x"
+                          "tableName": "Exercise-togpa5colne67hczqmubjjmzwa-x"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Meal-kwadx4scejb53dmavmu5agza3q-x"
+                          "tableName": "Meal-togpa5colne67hczqmubjjmzwa-x"
                         }
                       ]
                     }
@@ -177,7 +177,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataGraphQLAPI945462C3ApiId"
+                            "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -187,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "WorkoutProgram-kwadx4scejb53dmavmu5agza3q-x"
+                          "tableName": "WorkoutProgram-togpa5colne67hczqmubjjmzwa-x"
                         }
                       ]
                     },
@@ -195,7 +195,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Exercise-kwadx4scejb53dmavmu5agza3q-x"
+                          "tableName": "Exercise-togpa5colne67hczqmubjjmzwa-x"
                         }
                       ]
                     },
@@ -203,7 +203,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Meal-kwadx4scejb53dmavmu5agza3q-x"
+                          "tableName": "Meal-togpa5colne67hczqmubjjmzwa-x"
                         }
                       ]
                     }
@@ -770,12 +770,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataGraphQLAPI945462C3ApiId": {
+    "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent2E050B3FArn": {
+    "amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent0908793DArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

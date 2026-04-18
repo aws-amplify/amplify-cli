@@ -122,7 +122,7 @@ Categories with multiple resources of the same type (e.g., auth with two `UserPo
 Templates are resolved to replace CloudFormation intrinsic functions with literal values. This is necessary because the StackRefactor API submits new template bodies for both stacks, and any `Ref`/`Fn::GetAtt` pointing to a resource being moved would become a dangling reference.
 
 **Forward (Gen1 source):** parameters → outputs → dependencies → conditions
-**Forward (Gen2 target):** dependencies → outputs
+**Forward (Gen2 target):** parameters → dependencies → outputs
 **Rollback (Gen2 source):** parameters → outputs → dependencies
 **Rollback (Gen1 target):** no resolution (template used as-is)
 

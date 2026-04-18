@@ -16,23 +16,23 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthauthenticatedUserRole0982B29BRef",
-    "ParameterValue": "amplify-moodboard26041620-amplifyAuthauthenticatedU-f0GKaxdKmWPI"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPool390B0381Ref",
+    "ParameterValue": "us-east-1_5iU0nP22B"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthUserPool533A7519Ref",
-    "ParameterValue": "us-east-1_ZzlEVfbIe"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthIdentityPool84D04BC1Ref",
-    "ParameterValue": "us-east-1:907b9800-2bf5-4819-8d80-f5ed6cccc4a4"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref",
+    "ParameterValue": "amplify-moodboard26041519-amplifyAuthunauthenticate-Six3YvIOxgGy"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthunauthenticatedUserRole2DF278D3Ref",
-    "ParameterValue": "amplify-moodboard26041620-amplifyAuthunauthenticate-HGT9xMJR1p0A"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref",
+    "ParameterValue": "us-east-1:3a5eeecb-0ea0-4cbe-93f4-2094213caf65"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref",
+    "ParameterValue": "amplify-moodboard26041519-amplifyAuthauthenticatedU-hG08sRlsZcsb"
   }
 ]

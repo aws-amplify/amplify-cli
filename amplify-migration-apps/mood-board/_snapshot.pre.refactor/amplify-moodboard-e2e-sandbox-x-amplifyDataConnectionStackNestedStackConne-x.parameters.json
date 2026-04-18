@@ -1,38 +1,38 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299dataamplifyDataBoardNestedStackBoardNestedStackResource8F14EBDBOutputsamplifymoodboarde2esandbox9c14477299dataamplifyDataBoardBoardTable48CD9503TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-tbkrulbwhfd3bhzikxzx6jqcae-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource2F06CBC0Outputsamplifymoodboarde2esandbox9c14477299dataamplifyDataMoodItemMoodItemDataSource0892A744Name",
-    "ParameterValue": "MoodItemTable"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource2F06CBC0Outputsamplifymoodboarde2esandbox9c14477299dataamplifyDataMoodItemMoodItemTable8A3C3671TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-tbkrulbwhfd3bhzikxzx6jqcae-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299dataamplifyDataBoardNestedStackBoardNestedStackResource8F14EBDBOutputsamplifymoodboarde2esandbox9c14477299dataamplifyDataBoardBoardDataSourceF780EFB8Name",
-    "ParameterValue": "BoardTable"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthauthenticatedUserRole0982B29BRef",
-    "ParameterValue": "amplify-moodboard26041620-amplifyAuthauthenticatedU-f0GKaxdKmWPI"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299dataamplifyDataGraphQLAPINONEDS3B7C13E4Name",
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthIdentityPool84D04BC1Ref",
-    "ParameterValue": "us-east-1:907b9800-2bf5-4819-8d80-f5ed6cccc4a4"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource1B190385Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemMoodItemTable596E9348TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-g26hrobfy5b5pniveska5ylg4u-x"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299dataamplifyDataGraphQLAPI9B76A56DApiId",
-    "ParameterValue": "n2o76jlpbjdxlfav3thlf37elu"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardNestedStackBoardNestedStackResource06103DCFOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardDataSourceED4EAD30Name",
+    "ParameterValue": "BoardTable"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox9c14477299authNestedStackauthNestedStackResource07F6625EOutputsamplifymoodboarde2esandbox9c14477299authamplifyAuthunauthenticatedUserRole2DF278D3Ref",
-    "ParameterValue": "amplify-moodboard26041620-amplifyAuthunauthenticate-HGT9xMJR1p0A"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId",
+    "ParameterValue": "lni7x3hwoncrhp3t6pnlk4wxtm"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref",
+    "ParameterValue": "amplify-moodboard26041519-amplifyAuthunauthenticate-Six3YvIOxgGy"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardNestedStackBoardNestedStackResource06103DCFOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardTable05921B50TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-g26hrobfy5b5pniveska5ylg4u-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref",
+    "ParameterValue": "us-east-1:3a5eeecb-0ea0-4cbe-93f4-2094213caf65"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref",
+    "ParameterValue": "amplify-moodboard26041519-amplifyAuthauthenticatedU-hG08sRlsZcsb"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource1B190385Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemMoodItemDataSource92236A55Name",
+    "ParameterValue": "MoodItemTable"
   }
 ]

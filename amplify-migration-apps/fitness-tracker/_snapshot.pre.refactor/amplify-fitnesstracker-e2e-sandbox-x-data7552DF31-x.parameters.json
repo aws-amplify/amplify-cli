@@ -4,6 +4,14 @@
     "ParameterValue": "5"
   },
   {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref",
+    "ParameterValue": "us-east-1:0bf2db5e-6a0d-41b3-a3e0-af7c7cc0de17"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref",
+    "ParameterValue": "amplify-fitnesstra2604152-amplifyAuthauthenticatedU-aZ9LbK0lXc4U"
+  },
+  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
@@ -16,23 +24,15 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox88d42854c5authNestedStackauthNestedStackResourceB7145A6DOutputsamplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthIdentityPool9437581ARef",
-    "ParameterValue": "us-east-1:50b06c4f-4b7c-4efb-9ba4-b13b63e10711"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref",
+    "ParameterValue": "amplify-fitnesstra2604152-amplifyAuthunauthenticate-olNwR2UIG1LJ"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox88d42854c5authNestedStackauthNestedStackResourceB7145A6DOutputsamplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthunauthenticatedUserRole1F796362Ref",
-    "ParameterValue": "amplify-fitnesstra2604162-amplifyAuthunauthenticate-UedBeDLFHKdA"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox88d42854c5authNestedStackauthNestedStackResourceB7145A6DOutputsamplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthauthenticatedUserRole60C9A397Ref",
-    "ParameterValue": "amplify-fitnesstra2604162-amplifyAuthauthenticatedU-PcQ32k6hSma3"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox88d42854c5authNestedStackauthNestedStackResourceB7145A6DOutputsamplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthUserPool28C7A7F1Ref",
-    "ParameterValue": "us-east-1_rz96Vbwnb"
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolFCF1A003Ref",
+    "ParameterValue": "us-east-1_eVv98CKOt"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/ce16156a1839e809f2a18aa189a71a273e924be8"
+    "ParameterValue": "amplify-appsync-files/43e6fad4f7ae7e9b21954a41da4290129df61441"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "tbkrulbwhfd3bhzikxzx6jqcae"
+    "ParameterValue": "g26hrobfy5b5pniveska5ylg4u"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",

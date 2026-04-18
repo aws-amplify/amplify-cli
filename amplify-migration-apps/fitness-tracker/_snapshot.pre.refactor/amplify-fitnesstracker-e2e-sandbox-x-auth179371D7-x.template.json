@@ -22,10 +22,7 @@
         "EmailVerificationSubject": "Your verification code",
         "LambdaConfig": {
           "PreSignUp": {
-            "Fn::GetAtt": [
-              "fitnesstracker33f5545533f55455PreSignupgen2xlambdaCB803B25",
-              "Arn"
-            ]
+            "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68functionNestedStackfunctionNestedStackResource60E00F36Outputsamplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Arn"
           }
         },
         "MfaConfiguration": "OFF",
@@ -78,10 +75,7 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaCB803B25",
-            "Arn"
-          ]
+          "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68functionNestedStackfunctionNestedStackResource60E00F36Outputsamplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Arn"
         },
         "Principal": "cognito-idp.amazonaws.com",
         "SourceArn": {
@@ -421,119 +415,6 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/AdminGroup"
       }
     },
-    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole27CC4287": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "amplify:deployment-type",
-            "Value": "sandbox"
-          },
-          {
-            "Key": "amplify:friendly-name",
-            "Value": "fitnesstracker33f5545533f55455PreSignup-gen2-x"
-          },
-          {
-            "Key": "created-by",
-            "Value": "amplify"
-          }
-        ]
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/fitnesstracker33f5545533f55455PreSignup-gen2-x-lambda/ServiceRole/Resource"
-      }
-    },
-    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaCB803B25": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Architectures": [
-          "x86_64"
-        ],
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-          },
-          "S3Key": "4eb38c172ef4d940eb17f8c6890c0284b8743fc46517097ac3e22db8b67f30eb.zip"
-        },
-        "Environment": {
-          "Variables": {
-            "MODULES": "email-filter-allowlist",
-            "DOMAINALLOWLIST": "amazon.com",
-            "DOMAINBLACKLIST": "",
-            "ENV": "gen2-x",
-            "REGION": "us-east-1",
-            "AMPLIFY_SSM_ENV_CONFIG": "{}"
-          }
-        },
-        "EphemeralStorage": {
-          "Size": 512
-        },
-        "FunctionName": "fitnesstracker33f5545533f55455PreSignup-gen2-x",
-        "Handler": "index.handler",
-        "MemorySize": 128,
-        "Role": {
-          "Fn::GetAtt": [
-            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole27CC4287",
-            "Arn"
-          ]
-        },
-        "Runtime": "nodejs22.x",
-        "Tags": [
-          {
-            "Key": "amplify:deployment-type",
-            "Value": "sandbox"
-          },
-          {
-            "Key": "amplify:friendly-name",
-            "Value": "fitnesstracker33f5545533f55455PreSignup-gen2-x"
-          },
-          {
-            "Key": "created-by",
-            "Value": "amplify"
-          }
-        ],
-        "Timeout": 25
-      },
-      "DependsOn": [
-        "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole27CC4287"
-      ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/fitnesstracker33f5545533f55455PreSignup-gen2-x-lambda/Resource",
-        "aws:asset:path": "asset.4eb38c172ef4d940eb17f8c6890c0284b8743fc46517097ac3e22db8b67f30eb",
-        "aws:asset:is-bundled": true,
-        "aws:asset:property": "Code"
-      }
-    },
     "AMPLIFYAUTHUSERPOOLIDParameterCC466CA3": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
@@ -553,7 +434,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
       }
     },
-    "admingen2xlambdaServiceRoleE0CA0529": {
+    "admingen2xlambdaServiceRole62EA3C7F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -603,7 +484,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "admingen2xlambdaServiceRoleDefaultPolicyDA34FCE0": {
+    "admingen2xlambdaServiceRoleDefaultPolicyE98E4B3B": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -635,10 +516,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "admingen2xlambdaServiceRoleDefaultPolicyDA34FCE0",
+        "PolicyName": "admingen2xlambdaServiceRoleDefaultPolicyE98E4B3B",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -646,7 +527,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "admingen2xlambda6C2EA957": {
+    "admingen2xlambda081CFEF7": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -656,7 +537,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "6a53fe8053d55445125f4276d264dc28c1a4ed787cefc1fba21b06a3d704dd65.zip"
+          "S3Key": "5c5c671427617f523e13e68fd0ce04b66742ea630686ba9840a7c23ae2163b75.zip"
         },
         "Environment": {
           "Variables": {
@@ -677,7 +558,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "admingen2xlambdaServiceRoleE0CA0529",
+            "admingen2xlambdaServiceRole62EA3C7F",
             "Arn"
           ]
         },
@@ -699,13 +580,13 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "admingen2xlambdaServiceRoleE0CA0529"
+        "admingen2xlambdaServiceRole62EA3C7F"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/admin-gen2-x-lambda/Resource",
-        "aws:asset:path": "asset.6a53fe8053d55445125f4276d264dc28c1a4ed787cefc1fba21b06a3d704dd65",
+        "aws:asset:path": "asset.5c5c671427617f523e13e68fd0ce04b66742ea630686ba9840a7c23ae2163b75",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
       }
@@ -731,7 +612,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -762,7 +643,7 @@
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -793,7 +674,7 @@
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -824,7 +705,7 @@
         "PolicyName": "userpoolAccess4A84025C3",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -855,7 +736,7 @@
         "PolicyName": "userpoolAccess585E2FB32",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -886,7 +767,7 @@
         "PolicyName": "userpoolAccess600DA4CB0",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -917,7 +798,7 @@
         "PolicyName": "userpoolAccess76F9C91C1",
         "Roles": [
           {
-            "Ref": "admingen2xlambdaServiceRoleE0CA0529"
+            "Ref": "admingen2xlambdaServiceRole62EA3C7F"
           }
         ]
       },
@@ -930,7 +811,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/12NzW6DQAyEnyX3xaVE7T1BatRLhIJ6RpvFoYb9qdamUYR492qJaKOeZsb2fC6geMkh3+grZ6YdMktnmI7Igm0t2gxKX7mZTOg8SYDpgzFWIVhVXvyvX01pCb08rv4m7y16Ibmt5cd8ChZ3Itp8un/9Qwzj16ysdudWw1RefIXRETMFn+7eRm+Egp8VaQdTAqXxolWwZG4p3t2KaXxosWc4LrISFG8bzYzCsEuieAv70Qwoe82omB1MtUTyXaWjdigYF/Qa5lktvVp0R76bVfoCPT99FwU8v0K+6Zkoi6MXcginu/4AH6eqXH4BAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/11NTWuDQBD9LbmvU2to74nQ0EuQSM+yWSd2dD/KztgQxP9e1mAbenpfM+8VULzkkG/0lTPTDpmlM0xHZMG2Fm0Gpa/cTCZ0niTA9MEYqxCsKi/+l6+ktIReHqM/571FLyS39flRn4LFnYg2n+7f/yGG8WtWVrtzq2EqL77C6IiZgk93b6M3QsHPirSDKRUle8EqWDK3JO9sVswOploi+a7SUTsUjEu+inWp8aHFnuG4wDqieNtoZhSGXQLFW9iPZkDZa8ZZLWYtuiPfzSpVQM9P30UBz6+Qb3omyuLohRzC6Y4/9u9DA34BAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -1204,51 +1085,51 @@
       ]
     }
   },
+  "Parameters": {
+    "referencetoamplifyfitnesstrackere2esandboxd06966be68functionNestedStackfunctionNestedStackResource60E00F36Outputsamplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Arn": {
+      "Type": "String"
+    }
+  },
   "Outputs": {
-    "amplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthUserPool28C7A7F1Ref": {
+    "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolFCF1A003Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthUserPoolAppClientF0575444Ref": {
+    "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolAppClient98C89471Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthIdentityPool9437581ARef": {
+    "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authfitnesstracker33f5545533f55455PreSignupgen2xlambda05C3A92DRef": {
+    "amplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBRef": {
       "Value": {
-        "Ref": "fitnesstracker33f5545533f55455PreSignupgen2xlambdaCB803B25"
+        "Ref": "admingen2xlambda081CFEF7"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authadmingen2xlambda21738432Ref": {
-      "Value": {
-        "Ref": "admingen2xlambda6C2EA957"
-      }
-    },
-    "amplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthauthenticatedUserRole60C9A397Ref": {
+    "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthunauthenticatedUserRole1F796362Ref": {
+    "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authamplifyAuthAdminGroupRole85E8F68DRef": {
+    "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref": {
       "Value": {
         "Ref": "amplifyAuthAdminGroupRole766878DC"
       }
     },
-    "amplifyfitnesstrackere2esandbox88d42854c5authadmingen2xlambda21738432Arn": {
+    "amplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBArn": {
       "Value": {
         "Fn::GetAtt": [
-          "admingen2xlambda6C2EA957",
+          "admingen2xlambda081CFEF7",
           "Arn"
         ]
       }

@@ -176,7 +176,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_yXsZ8EqWl"
+        "UserPoolId": "us-east-1_uFCFZxzU8"
       }
     },
     "UserPoolClient": {
@@ -188,7 +188,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_yXsZ8EqWl"
+        "UserPoolId": "us-east-1_uFCFZxzU8"
       }
     },
     "UserPoolClientRole": {
@@ -235,7 +235,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "5hkvq3ieq41m8oslpt92lad39f",
+            "ClientId": "4jbh65m4dc0ipi3j8918a7d372",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -243,13 +243,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_yXsZ8EqWl"
+                  "client": "us-east-1_uFCFZxzU8"
                 }
               ]
             }
           },
           {
-            "ClientId": "2amjboon1a2esgmn3e03kss4eb",
+            "ClientId": "74tvl72po139f1o6bp04rcs7s",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -257,7 +257,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_yXsZ8EqWl"
+                  "client": "us-east-1_uFCFZxzU8"
                 }
               ]
             }
@@ -277,7 +277,7 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:6a0dd00a-bd4d-4830-84f7-d4d8ccbcb8ac",
+        "IdentityPoolId": "us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843",
         "Roles": {
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-authRole"
@@ -288,29 +288,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:6a0dd00a-bd4d-4830-84f7-d4d8ccbcb8ac"
+      "Value": "us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843"
     },
     "IdentityPoolName": {
       "Value": "moodboard759ae00a_identitypool_759ae00a__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_yXsZ8EqWl"
+      "Value": "us-east-1_uFCFZxzU8"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_yXsZ8EqWl"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_uFCFZxzU8"
     },
     "UserPoolName": {
       "Value": "moodboard759ae00a_userpool_759ae00a"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "2amjboon1a2esgmn3e03kss4eb"
+      "Value": "74tvl72po139f1o6bp04rcs7s"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "5hkvq3ieq41m8oslpt92lad39f"
+      "Value": "4jbh65m4dc0ipi3j8918a7d372"
     }
   }
 }
