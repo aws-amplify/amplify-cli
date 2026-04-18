@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GetAttProductTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Product-hscmwhprkbaljmcpavj3dcztrq-x/stream/2026-04-15T03:53:06.985",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Product-4drytvw77zg5ho27ntn5w44g2q-x/stream/2026-04-17T00:50:13.693",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "hscmwhprkbaljmcpavj3dcztrq:GetAtt:ProductTable:StreamArn"
+    "ExportName": "4drytvw77zg5ho27ntn5w44g2q:GetAtt:ProductTable:StreamArn"
   },
   {
     "OutputKey": "GetAttProductTableName",
-    "OutputValue": "Product-hscmwhprkbaljmcpavj3dcztrq-x",
+    "OutputValue": "Product-4drytvw77zg5ho27ntn5w44g2q-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "hscmwhprkbaljmcpavj3dcztrq:GetAtt:ProductTable:Name"
+    "ExportName": "4drytvw77zg5ho27ntn5w44g2q:GetAtt:ProductTable:Name"
   },
   {
     "OutputKey": "GetAttProductDataSourceName",
     "OutputValue": "ProductTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "hscmwhprkbaljmcpavj3dcztrq:GetAtt:ProductDataSource:Name"
+    "ExportName": "4drytvw77zg5ho27ntn5w44g2q:GetAtt:ProductDataSource:Name"
   }
 ]

@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "userpoolId",
-    "ParameterValue": "us-east-1_Xm7264Or1"
+    "ParameterValue": "us-east-1_pNPVqNtul"
   },
   {
     "ParameterKey": "env",
@@ -21,6 +21,6 @@
   },
   {
     "ParameterKey": "userpoolArn",
-    "ParameterValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Xm7264Or1"
+    "ParameterValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_pNPVqNtul"
   }
 ]

@@ -4,12 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPINONEDS24528D33Name",
-    "ParameterValue": "NONE_DS"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef",
+    "ParameterValue": "amplify-productcat2604162-amplifyAuthauthenticatedU-7daBd62L4gkL"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref",
-    "ParameterValue": "amplify-productcat2604142-amplifyAuthauthenticatedU-FTyAOUWtFeJb"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef",
+    "ParameterValue": "us-east-1:cb0ae146-c6b9-4d73-9d03-481265793afa"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -24,23 +24,23 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref",
-    "ParameterValue": "amplify-productcat2604142-amplifyAuthunauthenticate-OzRPKugSY82W"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId",
-    "ParameterValue": "e5folpqnrzbzpbark3e3agy5ly"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref",
+    "ParameterValue": "amplify-productcat2604162-amplifyAuthunauthenticate-OJVqYKw8sMVR"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef",
-    "ParameterValue": "us-east-1:ec121e86-e0d7-4f59-beaf-535182dac9c0"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPINONEDS60A1387FName",
+    "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceA2D569B5Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataAmplifyTableManagerTab2B02BDE4",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-productcat2604142-TableManagerCustomProvid-XfT9qQaF59FI"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId",
+    "ParameterValue": "6lswrii3s5atnjpexy2wslasla"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceFC798028Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataAmplifyTableManagerTab5AA3153F",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-productcat2604162-TableManagerCustomProvid-BtACvdXpX8mV"
   }
 ]

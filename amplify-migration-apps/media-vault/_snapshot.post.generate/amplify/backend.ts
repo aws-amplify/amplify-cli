@@ -41,9 +41,9 @@ const userPoolClient = userPool.addClient('NativeAppClient', {
   enablePropagateAdditionalUserContextData: false,
   authSessionValidity: Duration.minutes(3),
   supportedIdentityProviders: [
+    UserPoolClientIdentityProvider.COGNITO,
     UserPoolClientIdentityProvider.FACEBOOK,
     UserPoolClientIdentityProvider.GOOGLE,
-    UserPoolClientIdentityProvider.COGNITO,
   ],
   oAuth: {
     callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
@@ -54,11 +54,11 @@ const userPoolClient = userPool.addClient('NativeAppClient', {
       clientCredentials: false,
     },
     scopes: [
-      OAuthScope.PHONE,
+      OAuthScope.COGNITO_ADMIN,
       OAuthScope.EMAIL,
       OAuthScope.OPENID,
+      OAuthScope.PHONE,
       OAuthScope.PROFILE,
-      OAuthScope.COGNITO_ADMIN,
     ],
   },
   // flows: ['code'],

@@ -9,5 +9,5 @@
         ]
     },
     "S3DeploymentBucket": "amplify-moodboard-x-x-deployment",
-    "S3DeploymentRootKey": "amplify-appsync-files/5c491eab2bbf740cbba1e26a8e9053c2c881af96"
+    "S3DeploymentRootKey": "amplify-appsync-files/ce16156a1839e809f2a18aa189a71a273e924be8"
 }

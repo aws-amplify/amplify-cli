@@ -75,6 +75,11 @@ describe('guest', () => {
 describe('auth', () => {
   const geofenceId = `test-geofence-${Date.now()}`;
 
+  beforeAll(async () => {
+    await signOut();
+    await signIn({ username, password });
+  }, 30_000);
+
   it('searches by text', async () => {
     const results = await Geo.searchByText('New York', { maxResults: 5 });
 

@@ -1,26 +1,26 @@
 [
   {
+    "OutputKey": "amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataTopicTopicDataSource7A45EEA4Name",
+    "OutputValue": "TopicTable"
+  },
+  {
     "OutputKey": "GetAttTopicTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:52:31.420",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-qx63tows35dztl5ioa67kk3exi-x/stream/2026-04-17T00:48:19.762",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "wdfhzimbunbg5ahiuonmjslcb4:GetAtt:TopicTable:StreamArn"
+    "ExportName": "ho26f7ncojdf3oyxk6par2k3om:GetAtt:TopicTable:StreamArn"
   },
   {
     "OutputKey": "GetAttTopicTableName",
-    "OutputValue": "Topic-xw3yrfq7mngltcua43nucy7fg4-x",
+    "OutputValue": "Topic-qx63tows35dztl5ioa67kk3exi-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "wdfhzimbunbg5ahiuonmjslcb4:GetAtt:TopicTable:Name"
+    "ExportName": "ho26f7ncojdf3oyxk6par2k3om:GetAtt:TopicTable:Name"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicTopicTableEAA04215TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-xw3yrfq7mngltcua43nucy7fg4-x"
+    "OutputKey": "amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataTopicTopicTableEE830080TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-qx63tows35dztl5ioa67kk3exi-x/stream/2026-04-17T00:48:19.762"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicTopicTableEAA04215TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:52:31.420"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicTopicDataSourceD9024362Name",
-    "OutputValue": "TopicTable"
+    "OutputKey": "amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataTopicTopicTableEE830080TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-qx63tows35dztl5ioa67kk3exi-x"
   }
 ]

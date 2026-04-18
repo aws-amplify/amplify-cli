@@ -35,7 +35,7 @@
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/53088ca0-387e-11f1-b94b-12f2170fbccd",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/d6686560-39f6-11f1-a9ca-0affe3485391",
     "Description": "CloudFormation provider root stack name",
     "ExportName": "amplify-backendonly-x-x-StackId"
   }

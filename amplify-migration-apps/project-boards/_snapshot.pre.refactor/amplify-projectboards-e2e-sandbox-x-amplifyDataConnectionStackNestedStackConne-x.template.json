@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPINONEDS68EBE495Name"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPINONEDS02E42B85Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "Projecttodosauth0Function",
@@ -26,10 +26,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoNestedStackTodoNestedStackResource2889E577Outputsamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoTodoDataSourceCEEFF600Name"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoNestedStackTodoNestedStackResourceE82E9B5COutputsamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoTodoDataSourceE85C1FA7Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "ProjectTodosDataResolverFn",
@@ -50,7 +50,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "FieldName": "todos",
         "Kind": "PIPELINE",
@@ -76,7 +76,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"todos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoNestedStackTodoNestedStackResource2889E577Outputsamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoTodoTable7AAD0AE7TableArn"
+                                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoNestedStackTodoNestedStackResourceE82E9B5COutputsamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoTodoTable6F4ACB1ATableArn"
                               }
                             ]
                           }
@@ -112,7 +112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthauthenticatedUserRole8D8BAA85Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -124,11 +124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthunauthenticatedUserRoleC2C1DE2BRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthIdentityPool9D9DE9A9Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -421,25 +421,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPINONEDS68EBE495Name": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPINONEDS02E42B85Name": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoNestedStackTodoNestedStackResource2889E577Outputsamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoTodoDataSourceCEEFF600Name": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoNestedStackTodoNestedStackResourceE82E9B5COutputsamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoTodoDataSourceE85C1FA7Name": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoNestedStackTodoNestedStackResource2889E577Outputsamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataTodoTodoTable7AAD0AE7TableArn": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoNestedStackTodoNestedStackResourceE82E9B5COutputsamplifyprojectboardse2esandbox4c53687716dataamplifyDataTodoTodoTable6F4ACB1ATableArn": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthauthenticatedUserRole8D8BAA85Ref": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthunauthenticatedUserRoleC2C1DE2BRef": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthIdentityPool9D9DE9A9Ref": {
       "Type": "String"
     }
   }

@@ -74,7 +74,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPool78F21D47Ref"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthUserPool7052365FRef"
         ]
       }
     },
@@ -82,7 +82,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPoolAppClientC0A8CDEFRef"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthUserPoolAppClient691B4C1DRef"
         ]
       }
     },
@@ -90,7 +90,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthIdentityPoolEE00E3D1Ref"
         ]
       }
     },
@@ -148,7 +148,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPoolAppClientC0A8CDEFRef"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthUserPoolAppClient691B4C1DRef"
         ]
       }
     },
@@ -159,7 +159,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AApiId"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataGraphQLAPI1F92AA55ApiId"
         ]
       }
     },
@@ -167,7 +167,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPI642D4E5AGraphQLUrl"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataGraphQLAPI1F92AA55GraphQLUrl"
         ]
       }
     },
@@ -200,7 +200,7 @@
                             {
                               "Fn::GetAtt": [
                                 "data7552DF31",
-                                "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB011B1B49DestinationBucketArn"
+                                "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBF3354DD7DestinationBucketArn"
                               ]
                             }
                           ]
@@ -220,7 +220,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataGraphQLAPIDefaultApiKeyD6D1106AApiKey"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataGraphQLAPIDefaultApiKeyF6CE16A1ApiKey"
         ]
       }
     },
@@ -236,14 +236,14 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifydiscussionse2esandbox11f7701e3cfunctionfetchuseractivitygen2xlambda7D470E0ARef"
+                "Outputs.amplifydiscussionse2esandbox9b0dc06ad5functionfetchuseractivitygen2xlambda2CE343E3Ref"
               ]
             },
             "\",\"",
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifydiscussionse2esandbox11f7701e3cfunctionrecorduseractivitygen2xlambda78ECD6A1Ref"
+                "Outputs.amplifydiscussionse2esandbox9b0dc06ad5functionrecorduseractivitygen2xlambda9595A33BRef"
               ]
             },
             "\"]"
@@ -260,7 +260,7 @@
       "Value": {
         "Fn::GetAtt": [
           "storage0EC3F24A",
-          "Outputs.amplifydiscussionse2esandbox11f7701e3cstoragediscusavatarsxgen2xBucketC837A45ARef"
+          "Outputs.amplifydiscussionse2esandbox9b0dc06ad5storagediscusavatarsxgen2xBucket3354BE7CRef"
         ]
       }
     },
@@ -273,7 +273,7 @@
             {
               "Fn::GetAtt": [
                 "storage0EC3F24A",
-                "Outputs.amplifydiscussionse2esandbox11f7701e3cstoragediscusavatarsxgen2xBucketC837A45ARef"
+                "Outputs.amplifydiscussionse2esandbox9b0dc06ad5storagediscusavatarsxgen2xBucket3354BE7CRef"
               ]
             },
             "\\\",\\\"storageRegion\\\":\\\"",
@@ -316,7 +316,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/cd82a7dd7e89258d579d1c6f223254c8d41e4bf692c7ad9e8b142ed9511b9e6b.json"
+              "/8843faaf6d4848aea8f9370eb6581ab3064720618686e5abf1415e646647df8c.json"
             ]
           ]
         }
@@ -325,7 +325,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionse2esandbox11f7701e3cauthD9392853.nested.template.json",
+        "aws:asset:path": "amplifydiscussionse2esandbox9b0dc06ad5authE42CC5C0.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -333,28 +333,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPool78F21D47Ref": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthUserPool7052365FRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPool78F21D47Ref"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthUserPool7052365FRef"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthauthenticatedUserRole8F7FA5B6Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthauthenticatedUserRole8F7FA5B6Ref"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthunauthenticatedUserRoleD01B5179Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthunauthenticatedUserRoleD01B5179Ref"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthIdentityPoolEE00E3D1Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthIdentityPoolEE00E3D1Ref"
             ]
           }
         },
@@ -384,7 +384,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/5d83cc22f499757e19b7dce455dd280f762c162cb541c9a043a8172ce20b0022.json"
+              "/bbada33841be559a0f42a6d6451bd5fe810affc494aaefee1f3ef7e6a5affab2.json"
             ]
           ]
         }
@@ -393,7 +393,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data.NestedStack/data.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionse2esandbox11f7701e3cdata88FEBEA6.nested.template.json",
+        "aws:asset:path": "amplifydiscussionse2esandbox9b0dc06ad5data6D8EAAF0.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -401,10 +401,10 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthauthenticatedUserRole8F7FA5B6Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthauthenticatedUserRole8F7FA5B6Ref"
             ]
           }
         },
@@ -434,7 +434,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/48bd8fc1abb1069a68563d10765355d2aed28e558f7451403aed788eb2da5d0e.json"
+              "/7f4a7ea99576306fae34e6c5dcde466cbb202140b968d1c6235672cf94ec4e30.json"
             ]
           ]
         }
@@ -443,7 +443,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage.NestedStack/storage.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionse2esandbox11f7701e3cstorageEC2B2588.nested.template.json",
+        "aws:asset:path": "amplifydiscussionse2esandbox9b0dc06ad5storage0A2F5B52.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -451,40 +451,40 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifydiscussionse2esandbox11f7701e3cstorageactivityNestedStackstorageactivityNestedStackResource537BD226Outputsamplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACArn": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5storageactivityNestedStackstorageactivityNestedStackResource6E709334Outputsamplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CArn": {
             "Fn::GetAtt": [
               "storageactivityA346F297",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACArn"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CArn"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cstorageactivityNestedStackstorageactivityNestedStackResource537BD226Outputsamplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACStreamArn": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5storageactivityNestedStackstorageactivityNestedStackResource6E709334Outputsamplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CStreamArn": {
             "Fn::GetAtt": [
               "storageactivityA346F297",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACStreamArn"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CStreamArn"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cstorageactivityNestedStackstorageactivityNestedStackResource537BD226Outputsamplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACRef": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5storageactivityNestedStackstorageactivityNestedStackResource6E709334Outputsamplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CRef": {
             "Fn::GetAtt": [
               "storageactivityA346F297",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACRef"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CRef"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cdataNestedStackdataNestedStackResourceBAB7F510Outputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicNestedStackTopicNestedStackResourceD7684B5EOutputsamplifydiscuAC9DA0CC": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5dataNestedStackdataNestedStackResource15451DE3Outputsamplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataTopicNestedStackTopicNestedStackResource87020C93Outputsamplifydiscu25415DE6": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicNestedStackTopicNestedStackResourceD7684B5EOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataTopicTopicTableEAA04215TableStreamArn"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataTopicNestedStackTopicNestedStackResource87020C93Outputsamplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataTopicTopicTableEE830080TableStreamArn"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cdataNestedStackdataNestedStackResourceBAB7F510Outputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostNestedStackPostNestedStackResource6361465DOutputsamplifydiscuss85F08407": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5dataNestedStackdataNestedStackResource15451DE3Outputsamplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataPostNestedStackPostNestedStackResource952FDAD5Outputsamplifydiscuss99138236": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostNestedStackPostNestedStackResource6361465DOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataPostPostTable9EB88B55TableStreamArn"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataPostNestedStackPostNestedStackResource952FDAD5Outputsamplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataPostPostTable308F30DATableStreamArn"
             ]
           },
-          "referencetoamplifydiscussionse2esandbox11f7701e3cdataNestedStackdataNestedStackResourceBAB7F510Outputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentNestedStackCommentNestedStackResourceD1B2144FOutputsamplifyd6FB9505C": {
+          "referencetoamplifydiscussionse2esandbox9b0dc06ad5dataNestedStackdataNestedStackResource15451DE3Outputsamplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataCommentNestedStackCommentNestedStackResource7EE93CFEOutputsamplifyd86109AC6": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentNestedStackCommentNestedStackResourceD1B2144FOutputsamplifydiscussionse2esandbox11f7701e3cdataamplifyDataCommentCommentTable761EEA24TableStreamArn"
+              "Outputs.amplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataCommentNestedStackCommentNestedStackResource7EE93CFEOutputsamplifydiscussionse2esandbox9b0dc06ad5dataamplifyDataCommentCommentTable32B28FBFTableStreamArn"
             ]
           }
         },
@@ -514,7 +514,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/7b599db2e5cca825c701b6a4ea776a6b371c81a8e50a750a6ddcee5f2edc598e.json"
+              "/808a17cb18dc461910e533348ee2161fd2742dff6be3734e93ebc059419417a4.json"
             ]
           ]
         }
@@ -523,7 +523,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/function.NestedStack/function.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionse2esandbox11f7701e3cfunctionC4803123.nested.template.json",
+        "aws:asset:path": "amplifydiscussionse2esandbox9b0dc06ad5functionD333F87B.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -556,7 +556,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/1183e297da242c15366528e3234c97d802c4ffbc66dd55ef47844f8179945c5f.json"
+              "/a1cd85c32405e1f9c5928bdebf9d24f8368c2020bb4ada7d3476090dcd0db599.json"
             ]
           ]
         }
@@ -565,7 +565,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storageactivity.NestedStack/storageactivity.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionse2esandbox11f7701e3cstorageactivity658AE115.nested.template.json",
+        "aws:asset:path": "amplifydiscussionse2esandbox9b0dc06ad5storageactivity5BD451AC.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -598,7 +598,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/5108a378cace07980480df92cb313bbf891440f1f68125012281aea2e9109b80.json"
+              "/d2d511a877c5704f176688ff491949e97c17b39cbc2faaabd297629bd7765382.json"
             ]
           ]
         }
@@ -607,7 +607,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storagebookmarks.NestedStack/storagebookmarks.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionse2esandbox11f7701e3cstoragebookmarks9FE8BF35.nested.template.json",
+        "aws:asset:path": "amplifydiscussionse2esandbox9b0dc06ad5storagebookmarks4C16D8A2.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },

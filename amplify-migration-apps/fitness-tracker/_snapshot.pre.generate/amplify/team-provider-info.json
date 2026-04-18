@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
       "UnauthRoleName": "amplify-fitnesstracker-x-x-unauthRole",
       "StackName": "amplify-fitnesstracker-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/05c223c0-387e-11f1-a0a5-0affda7b6827",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-x-x/fa5472a0-3a02-11f1-ba32-0ed19a32f335",
       "AmplifyAppId": "fitnesstracker",
       "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
@@ -26,7 +26,7 @@
         },
         "admin": {
           "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
-          "s3Key": "amplify-builds/admin-2f397a7163426d447a6b-build.zip"
+          "s3Key": "amplify-builds/admin-4b2b7638346375385468-build.zip"
         },
         "lognutrition": {
           "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",

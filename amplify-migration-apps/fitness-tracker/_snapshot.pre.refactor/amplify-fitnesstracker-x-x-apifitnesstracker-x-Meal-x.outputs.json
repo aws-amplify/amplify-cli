@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GetAttMealTableName",
-    "OutputValue": "Meal-xwgwkksjrbcoxnb64a6clvir4u-x",
+    "OutputValue": "Meal-kwadx4scejb53dmavmu5agza3q-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:MealTable:Name"
+    "ExportName": "kwadx4scejb53dmavmu5agza3q:GetAtt:MealTable:Name"
   },
   {
     "OutputKey": "GetAttMealDataSourceName",
     "OutputValue": "MealTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:MealDataSource:Name"
+    "ExportName": "kwadx4scejb53dmavmu5agza3q:GetAtt:MealDataSource:Name"
   },
   {
     "OutputKey": "GetAttMealTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-xwgwkksjrbcoxnb64a6clvir4u-x/stream/2026-04-15T03:52:30.998",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-kwadx4scejb53dmavmu5agza3q-x/stream/2026-04-17T02:16:09.151",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:MealTable:StreamArn"
+    "ExportName": "kwadx4scejb53dmavmu5agza3q:GetAtt:MealTable:StreamArn"
   }
 ]

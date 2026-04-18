@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
+    "ParameterValue": "amplify-appsync-files/0dfc08688d63d8488428487f6da4262eda6de0d7"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -17,19 +17,19 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "xwgwkksjrbcoxnb64a6clvir4u"
+    "ParameterValue": "kwadx4scejb53dmavmu5agza3q"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
-    "ParameterValue": "gcclerajqfgpnmxr3jcddmqsv4"
+    "ParameterValue": "mjrx6e32drekli4iqmpq7r5ovu"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
-    "ParameterValue": "imibv6cnzvcp7i5gs7mcrvx3ey"
+    "ParameterValue": "6wwzobalejhxno7z3zjbppbm6i"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
-    "ParameterValue": "khfkfuz5xrdgflta2g3tocqc2a"
+    "ParameterValue": "c4tvpo3vhfe5xj22lqlclsdkrm"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -53,6 +53,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
-    "ParameterValue": "ezrp4critvfnfiahjlhijajcmi"
+    "ParameterValue": "v2c33s6h3jdvvhbdqjmtiueb7e"
   }
 ]

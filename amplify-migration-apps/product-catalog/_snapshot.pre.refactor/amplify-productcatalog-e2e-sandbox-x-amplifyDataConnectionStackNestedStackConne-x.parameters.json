@@ -1,30 +1,30 @@
 [
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPINONEDS24528D33Name",
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentNestedStackCommentNestedStackResource05914557Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentCommentDataSource49D47B2AName",
+    "ParameterValue": "CommentTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef",
+    "ParameterValue": "amplify-productcat2604162-amplifyAuthauthenticatedU-7daBd62L4gkL"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef",
+    "ParameterValue": "us-east-1:cb0ae146-c6b9-4d73-9d03-481265793afa"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentNestedStackCommentNestedStackResource05914557Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataCommentCommentTable5440055BTableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-4drytvw77zg5ho27ntn5w44g2q-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref",
+    "ParameterValue": "amplify-productcat2604162-amplifyAuthunauthenticate-OJVqYKw8sMVR"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPINONEDS60A1387FName",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref",
-    "ParameterValue": "amplify-productcat2604142-amplifyAuthauthenticatedU-FTyAOUWtFeJb"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentNestedStackCommentNestedStackResource258A5736Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentTableECA430A9TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-hscmwhprkbaljmcpavj3dcztrq-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref",
-    "ParameterValue": "amplify-productcat2604142-amplifyAuthunauthenticate-OzRPKugSY82W"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId",
-    "ParameterValue": "e5folpqnrzbzpbark3e3agy5ly"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef",
-    "ParameterValue": "us-east-1:ec121e86-e0d7-4f59-beaf-535182dac9c0"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentNestedStackCommentNestedStackResource258A5736Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataCommentCommentDataSourceC4EBFBBFName",
-    "ParameterValue": "CommentTable"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId",
+    "ParameterValue": "6lswrii3s5atnjpexy2wslasla"
   }
 ]

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/47418d5f9df78fb8fa9acaa5bd04a81ebc30971b"
+    "ParameterValue": "amplify-appsync-files/1bb98024bb45fe354a03a385c4e3bfd9504f2f39"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "q2d7oghxlbgxxj3fr2t6f2bpm4"
+    "ParameterValue": "7y5ijxehvvfj5abska42v4znp4"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/removeuserfromgroup-6d6f39557861676c6c56-build.zip"
+    "ParameterValue": "amplify-builds/removeuserfromgroup-5a4764545334707a6d76-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "us-east-1_baREhKWox"
+    "ParameterValue": "us-east-1_Vg1b7U8Np"
   },
   {
     "ParameterKey": "env",

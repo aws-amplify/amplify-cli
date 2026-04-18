@@ -4,8 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref",
-    "ParameterValue": "amplify-discussion2604142-amplifyAuthauthenticatedU-OFERj1VQgbh0"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthUserPool7052365FRef",
+    "ParameterValue": "us-east-1_aJQuSRX1e"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthIdentityPoolEE00E3D1Ref",
+    "ParameterValue": "us-east-1:ecefa11a-d6c8-443a-b2a8-357b8fcbb970"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -20,19 +24,15 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPool78F21D47Ref",
-    "ParameterValue": "us-east-1_QiMcYOBJq"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef",
-    "ParameterValue": "amplify-discussion2604142-amplifyAuthunauthenticate-RegjzqZNry1w"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthauthenticatedUserRole8F7FA5B6Ref",
+    "ParameterValue": "amplify-discussion2604162-amplifyAuthauthenticatedU-0haqSQZ5hwcq"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef",
-    "ParameterValue": "us-east-1:0ab20e5d-b843-4969-94b1-c17d26af9934"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox9b0dc06ad5authNestedStackauthNestedStackResource5A787EF8Outputsamplifydiscussionse2esandbox9b0dc06ad5authamplifyAuthunauthenticatedUserRoleD01B5179Ref",
+    "ParameterValue": "amplify-discussion2604162-amplifyAuthunauthenticate-FAoxzAeIGbs9"
   }
 ]

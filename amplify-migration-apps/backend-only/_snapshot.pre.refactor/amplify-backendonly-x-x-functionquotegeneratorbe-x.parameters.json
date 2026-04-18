@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/quotegeneratorbe-513654756a51615a5779-build.zip"
+    "ParameterValue": "amplify-builds/quotegeneratorbe-74755344625831362b75-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",

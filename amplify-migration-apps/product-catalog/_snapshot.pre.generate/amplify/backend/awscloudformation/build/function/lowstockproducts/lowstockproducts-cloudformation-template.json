@@ -157,7 +157,7 @@
           ]
         },
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -187,7 +187,7 @@
           }
         ],
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -230,7 +230,7 @@
           }
         ],
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -274,7 +274,7 @@
           }
         ],
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",

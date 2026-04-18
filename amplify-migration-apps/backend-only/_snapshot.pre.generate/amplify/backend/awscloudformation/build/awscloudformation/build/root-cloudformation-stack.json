@@ -268,7 +268,7 @@
             ]
           },
           "S3DeploymentBucket": "amplify-backendonly-x-x-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/47418d5f9df78fb8fa9acaa5bd04a81ebc30971b",
+          "S3DeploymentRootKey": "amplify-appsync-files/1bb98024bb45fe354a03a385c4e3bfd9504f2f39",
           "env": "x"
         }
       }
@@ -312,7 +312,7 @@
         "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-backendonly-x-x-deployment",
-          "s3Key": "amplify-builds/quotegeneratorbe-513654756a51615a5779-build.zip",
+          "s3Key": "amplify-builds/quotegeneratorbe-74755344625831362b75-build.zip",
           "env": "x"
         }
       }

@@ -43,8 +43,8 @@
         "Description": "override success",
         "GroupName": "storeLocatorAdmin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_PMTKHb3hY-storeLocatorAdminGroupRole",
-        "UserPoolId": "us-east-1_PMTKHb3hY"
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_9pk7nwtWp-storeLocatorAdminGroupRole",
+        "UserPoolId": "us-east-1_9pk7nwtWp"
       }
     },
     "storeLocatorAdminGroupRole": {
@@ -62,7 +62,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:7517a9de-d491-4df1-9b07-0bf87d82d7da"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:5e8872f8-df84-4e9b-a157-e41fa8c846fe"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -75,7 +75,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_PMTKHb3hY",
+              "us-east-1_9pk7nwtWp",
               "-storeLocatorAdminGroupRole"
             ]
           ]
@@ -85,7 +85,7 @@
   },
   "Outputs": {
     "storeLocatorAdminGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_PMTKHb3hY-storeLocatorAdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_9pk7nwtWp-storeLocatorAdminGroupRole"
     }
   }
 }

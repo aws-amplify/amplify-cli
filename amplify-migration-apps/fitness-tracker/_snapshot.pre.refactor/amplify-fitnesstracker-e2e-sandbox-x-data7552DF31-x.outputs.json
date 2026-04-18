@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPI2639E0B5ApiId",
-    "OutputValue": "pa7lr2bmbjfqxdfidheoysbvhu"
+    "OutputKey": "amplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataGraphQLAPI945462C3ApiId",
+    "OutputValue": "cqh46j4ofrbr7gpnzsgshz65py"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPI2639E0B5GraphQLUrl",
-    "OutputValue": "https://xswambcukzfbnhzand3lag77ey.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputKey": "amplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBACF9889DDestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604162-amplifydataamplifycodege-7ox9oe5a7maw"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BRef",
-    "OutputValue": "lognutrition-gen2-x"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB8CEB812DDestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604142-amplifydataamplifycodege-kqzgdclvoxoc"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edatalognutritiongen2xlambda8A6B927BArn",
+    "OutputKey": "amplifyfitnesstrackere2esandbox88d42854c5datalognutritiongen2xlambda242A245DArn",
     "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-x"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxb87516873edataamplifyDataGraphQLAPIDefaultApiKey24BA9C2AApiKey",
+    "OutputKey": "amplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataGraphQLAPIDefaultApiKeyE2303825ApiKey",
     "OutputValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox88d42854c5datalognutritiongen2xlambda242A245DRef",
+    "OutputValue": "lognutrition-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox88d42854c5dataamplifyDataGraphQLAPI945462C3GraphQLUrl",
+    "OutputValue": "https://xelvd7w3vrbafkmu72mupuyvu4.appsync-api.us-east-1.amazonaws.com/graphql"
   }
 ]

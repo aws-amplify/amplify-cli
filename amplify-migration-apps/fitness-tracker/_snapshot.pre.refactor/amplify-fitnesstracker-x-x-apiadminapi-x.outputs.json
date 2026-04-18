@@ -6,12 +6,12 @@
   },
   {
     "OutputKey": "RootUrl",
-    "OutputValue": "https://wn1ifrxt6h.execute-api.us-east-1.amazonaws.com/x",
+    "OutputValue": "https://x74a8qb2h2.execute-api.us-east-1.amazonaws.com/x",
     "Description": "Root URL of the API gateway"
   },
   {
     "OutputKey": "ApiId",
-    "OutputValue": "wn1ifrxt6h",
+    "OutputValue": "x74a8qb2h2",
     "Description": "API ID (prefix of API URL)"
   }
 ]

@@ -278,7 +278,7 @@
     }
   },
   "Resources": {
-    "QuotegeneratorGen2GubukoedpuLambdaDataSourceServiceRole62ED214B": {
+    "QuotegeneratorGen2ZmqmztodlzLambdaDataSourceServiceRole83F7F9A0": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -311,10 +311,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2GubukoedpuLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2ZmqmztodlzLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "QuotegeneratorGen2GubukoedpuLambdaDataSourceServiceRoleDefaultPolicy9E56A2C1": {
+    "QuotegeneratorGen2ZmqmztodlzLambdaDataSourceServiceRoleDefaultPolicy5A39151C": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -364,24 +364,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "QuotegeneratorGen2GubukoedpuLambdaDataSourceServiceRoleDefaultPolicy9E56A2C1",
+        "PolicyName": "QuotegeneratorGen2ZmqmztodlzLambdaDataSourceServiceRoleDefaultPolicy5A39151C",
         "Roles": [
           {
-            "Ref": "QuotegeneratorGen2GubukoedpuLambdaDataSourceServiceRole62ED214B"
+            "Ref": "QuotegeneratorGen2ZmqmztodlzLambdaDataSourceServiceRole83F7F9A0"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2GubukoedpuLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2ZmqmztodlzLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "QuotegeneratorGen2GubukoedpuLambdaDataSource": {
+    "QuotegeneratorGen2ZmqmztodlzLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -399,10 +399,10 @@
             ]
           }
         },
-        "Name": "QuotegeneratorGen2GubukoedpuLambdaDataSource",
+        "Name": "QuotegeneratorGen2ZmqmztodlzLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "QuotegeneratorGen2GubukoedpuLambdaDataSourceServiceRole62ED214B",
+            "QuotegeneratorGen2ZmqmztodlzLambdaDataSourceServiceRole83F7F9A0",
             "Arn"
           ]
         },
@@ -411,44 +411,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2GubukoedpuLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/QuotegeneratorGen2ZmqmztodlzLambdaDataSource/Resource"
       }
     },
-    "InvokeQuotegeneratorGen2GubukoedpuLambdaDataSourceInvokeQuotegeneratorGen2GubukoedpuLambdaDataSourceAppSyncFunctionA3178EDC": {
+    "InvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSourceInvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSourceAppSyncFunctionE2548F95": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "QuotegeneratorGen2GubukoedpuLambdaDataSource",
+            "QuotegeneratorGen2ZmqmztodlzLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeQuotegeneratorGen2GubukoedpuLambdaDataSource",
+        "Name": "InvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e26691eb2c76713bbb45b2a3025f12c5b89a5a14f56f518e774da3a7489320e4.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf9ff434ff4d5ebed56c0df56f4e3259b9212834bdc95533646bd0b428b6dc78.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "QuotegeneratorGen2GubukoedpuLambdaDataSource"
+        "QuotegeneratorGen2ZmqmztodlzLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeQuotegeneratorGen2GubukoedpuLambdaDataSource/InvokeQuotegeneratorGen2GubukoedpuLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSource/InvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerygetRandomQuoteResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "FieldName": "getRandomQuote",
         "Kind": "PIPELINE",
@@ -462,7 +462,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeQuotegeneratorGen2GubukoedpuLambdaDataSourceInvokeQuotegeneratorGen2GubukoedpuLambdaDataSourceAppSyncFunctionA3178EDC",
+                "InvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSourceInvokeQuotegeneratorGen2ZmqmztodlzLambdaDataSourceAppSyncFunctionE2548F95",
                 "FunctionId"
               ]
             }
@@ -478,7 +478,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthauthenticatedUserRole8D8BAA85Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -486,11 +486,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthunauthenticatedUserRoleC2C1DE2BRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthIdentityPool9D9DE9A9Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -511,10 +511,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPINONEDS68EBE495Name"
+          "Ref": "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPINONEDS02E42B85Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryGetRandomQuoteAuthFN",
@@ -541,19 +541,19 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPIA979FE57ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthauthenticatedUserRole8D8BAA85Ref": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthunauthenticatedUserRoleC2C1DE2BRef": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716authNestedStackauthNestedStackResource8B84656AOutputsamplifyprojectboardse2esandbox4c53687716authamplifyAuthIdentityPool9D9DE9A9Ref": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPINONEDS68EBE495Name": {
+    "referencetoamplifyprojectboardse2esandbox4c53687716dataamplifyDataGraphQLAPINONEDS02E42B85Name": {
       "Type": "String"
     }
   }

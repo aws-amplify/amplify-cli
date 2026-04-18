@@ -23,7 +23,7 @@
         "LambdaConfig": {
           "PostConfirmation": {
             "Fn::GetAtt": [
-              "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaA39138C1",
+              "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0D6440E1",
               "Arn"
             ]
           }
@@ -82,7 +82,7 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaA39138C1",
+            "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0D6440E1",
             "Arn"
           ]
         },
@@ -424,7 +424,7 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/storeLocatorAdminGroup"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole7EA338D3": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole836F6891": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -474,7 +474,7 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy93A02680": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy362AD243": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -506,10 +506,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy93A02680",
+        "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy362AD243",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole7EA338D3"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole836F6891"
           }
         ]
       },
@@ -517,7 +517,7 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaA39138C1": {
+    "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0D6440E1": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -527,7 +527,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "160afe14228f538544d3f57eba2a67b081afe243d3926aab05a998f3553f00e0.zip"
+          "S3Key": "d7b3f94700d73cab274414d86a87bbff91f6ac383c9a4b97c479b832afa9f978.zip"
         },
         "Environment": {
           "Variables": {
@@ -547,7 +547,7 @@
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole7EA338D3",
+            "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole836F6891",
             "Arn"
           ]
         },
@@ -569,13 +569,13 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole7EA338D3"
+        "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole836F6891"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/storelocator41a9495f41a9495fPostConfirmation-gen2-x-lambda/Resource",
-        "aws:asset:path": "asset.160afe14228f538544d3f57eba2a67b081afe243d3926aab05a998f3553f00e0",
+        "aws:asset:path": "asset.d7b3f94700d73cab274414d86a87bbff91f6ac383c9a4b97c479b832afa9f978",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
       }
@@ -627,7 +627,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole7EA338D3"
+            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRole836F6891"
           }
         ]
       },
@@ -915,37 +915,37 @@
     }
   },
   "Outputs": {
-    "amplifystorelocatore2esandboxdd610709c4authamplifyAuthUserPool56C869F9Ref": {
+    "amplifystorelocatore2esandboxf3331fe542authamplifyAuthUserPool6632E7E7Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4authamplifyAuthUserPoolAppClient4E4BBC6CRef": {
+    "amplifystorelocatore2esandboxf3331fe542authamplifyAuthUserPoolAppClient997AB482Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4authamplifyAuthIdentityPoolC9BBD71ERef": {
+    "amplifystorelocatore2esandboxf3331fe542authamplifyAuthIdentityPool3570D3E7Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4authstorelocator41a9495f41a9495fPostConfirmationgen2xlambdaF3B8D931Ref": {
+    "amplifystorelocatore2esandboxf3331fe542authstorelocator41a9495f41a9495fPostConfirmationgen2xlambdaBE74DF9ERef": {
       "Value": {
-        "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaA39138C1"
+        "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambda0D6440E1"
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4authamplifyAuthauthenticatedUserRoleFD3A976BRef": {
+    "amplifystorelocatore2esandboxf3331fe542authamplifyAuthauthenticatedUserRole93F1DB7ARef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4authamplifyAuthunauthenticatedUserRoleF5FAC08ERef": {
+    "amplifystorelocatore2esandboxf3331fe542authamplifyAuthunauthenticatedUserRole61FD1A82Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4authamplifyAuthstoreLocatorAdminGroupRoleC0E3E7C0Ref": {
+    "amplifystorelocatore2esandboxf3331fe542authamplifyAuthstoreLocatorAdminGroupRole0DBB4218Ref": {
       "Value": {
         "Ref": "amplifyAuthstoreLocatorAdminGroupRoleDECAB489"
       }

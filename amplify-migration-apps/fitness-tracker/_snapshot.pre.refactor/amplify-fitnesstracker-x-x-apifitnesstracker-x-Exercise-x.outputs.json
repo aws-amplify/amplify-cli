@@ -5,24 +5,24 @@
   },
   {
     "OutputKey": "GetAttExerciseTableName",
-    "OutputValue": "Exercise-xwgwkksjrbcoxnb64a6clvir4u-x",
+    "OutputValue": "Exercise-kwadx4scejb53dmavmu5agza3q-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:ExerciseTable:Name"
+    "ExportName": "kwadx4scejb53dmavmu5agza3q:GetAtt:ExerciseTable:Name"
   },
   {
     "OutputKey": "GetAttExerciseDataSourceName",
     "OutputValue": "ExerciseTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:ExerciseDataSource:Name"
+    "ExportName": "kwadx4scejb53dmavmu5agza3q:GetAtt:ExerciseDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackExerciseExerciseTable2F3E478ERef",
-    "OutputValue": "Exercise-xwgwkksjrbcoxnb64a6clvir4u-x"
+    "OutputValue": "Exercise-kwadx4scejb53dmavmu5agza3q-x"
   },
   {
     "OutputKey": "GetAttExerciseTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-xwgwkksjrbcoxnb64a6clvir4u-x/stream/2026-04-15T03:52:31.073",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-kwadx4scejb53dmavmu5agza3q-x/stream/2026-04-17T02:16:08.954",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xwgwkksjrbcoxnb64a6clvir4u:GetAtt:ExerciseTable:StreamArn"
+    "ExportName": "kwadx4scejb53dmavmu5agza3q:GetAtt:ExerciseTable:StreamArn"
   }
 ]

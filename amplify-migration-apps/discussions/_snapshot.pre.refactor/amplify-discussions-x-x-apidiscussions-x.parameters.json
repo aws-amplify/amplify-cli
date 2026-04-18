@@ -29,7 +29,7 @@
   },
   {
     "ParameterKey": "S3DeploymentRootKey",
-    "ParameterValue": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d"
+    "ParameterValue": "amplify-appsync-files/f74f9c75727fbb5ad723f01d14525ce27c10b58a"
   },
   {
     "ParameterKey": "AppSyncApiName",

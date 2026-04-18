@@ -4,12 +4,16 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPool28A7874FRef",
-    "ParameterValue": "us-east-1_tRO9BruHe"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef",
+    "ParameterValue": "amplify-productcat2604162-amplifyAuthauthenticatedU-7daBd62L4gkL"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref",
-    "ParameterValue": "amplify-productcat2604142-amplifyAuthauthenticatedU-FTyAOUWtFeJb"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthUserPoolCC150A31Ref",
+    "ParameterValue": "us-east-1_YGLi1pEq6"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef",
+    "ParameterValue": "us-east-1:cb0ae146-c6b9-4d73-9d03-481265793afa"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -24,15 +28,11 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref",
-    "ParameterValue": "amplify-productcat2604142-amplifyAuthunauthenticate-OzRPKugSY82W"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref",
+    "ParameterValue": "amplify-productcat2604162-amplifyAuthunauthenticate-OJVqYKw8sMVR"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef",
-    "ParameterValue": "us-east-1:ec121e86-e0d7-4f59-beaf-535182dac9c0"
   }
 ]

@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIC1298574ApiId"
+                            "Ref": "referencetoamplifymediavaulte2esandbox922046e166dataamplifyDataGraphQLAPI9FDE0A75ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Note-m35dk4nrcna2hiz267tsvgu77y-x"
+                          "tableName": "Note-6udbpqlmejgghlk6b6ezbi4xyy-x"
                         }
                       ]
                     }
@@ -161,7 +161,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIC1298574ApiId"
+                            "Ref": "referencetoamplifymediavaulte2esandbox922046e166dataamplifyDataGraphQLAPI9FDE0A75ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -171,7 +171,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Note-m35dk4nrcna2hiz267tsvgu77y-x"
+                          "tableName": "Note-6udbpqlmejgghlk6b6ezbi4xyy-x"
                         }
                       ]
                     }
@@ -738,12 +738,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataGraphQLAPIC1298574ApiId": {
+    "referencetoamplifymediavaulte2esandbox922046e166dataamplifyDataGraphQLAPI9FDE0A75ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymediavaulte2esandbox0a7f7fcf5adataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventB2AB9C44Arn": {
+    "amplifymediavaulte2esandbox922046e166dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent3770E282Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

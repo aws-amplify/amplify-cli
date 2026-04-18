@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAttUserTableName",
-    "OutputValue": "User-hscmwhprkbaljmcpavj3dcztrq-x",
+    "OutputValue": "User-4drytvw77zg5ho27ntn5w44g2q-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "e5folpqnrzbzpbark3e3agy5ly:GetAtt:UserTable:Name"
+    "ExportName": "6lswrii3s5atnjpexy2wslasla:GetAtt:UserTable:Name"
   },
   {
     "OutputKey": "GetAttUserTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-hscmwhprkbaljmcpavj3dcztrq-x/stream/2026-04-15T03:52:18.290",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-4drytvw77zg5ho27ntn5w44g2q-x/stream/2026-04-17T00:49:26.243",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "e5folpqnrzbzpbark3e3agy5ly:GetAtt:UserTable:StreamArn"
+    "ExportName": "6lswrii3s5atnjpexy2wslasla:GetAtt:UserTable:StreamArn"
   }
 ]

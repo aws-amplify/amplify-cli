@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "AppSyncApiId",
-    "ParameterValue": "m35dk4nrcna2hiz267tsvgu77y"
+    "ParameterValue": "6udbpqlmejgghlk6b6ezbi4xyy"
   },
   {
     "ParameterKey": "env",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "S3DeploymentRootKey",
-    "ParameterValue": "amplify-appsync-files/a9caa2a9280aa728b448533b4b7827dcc2cbf238"
+    "ParameterValue": "amplify-appsync-files/fe53944e4f32ab939de8156f0bbd3ccd3262222b"
   },
   {
     "ParameterKey": "AppSyncApiName",

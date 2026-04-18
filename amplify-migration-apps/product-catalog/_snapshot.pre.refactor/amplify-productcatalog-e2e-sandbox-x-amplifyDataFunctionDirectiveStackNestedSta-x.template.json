@@ -278,7 +278,7 @@
     }
   },
   "Resources": {
-    "LowstockproductsGen2QypvnbisslLambdaDataSourceServiceRoleEFE62C84": {
+    "LowstockproductsGen2XvgexmrnnjLambdaDataSourceServiceRole40E3F0D7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -291,7 +291,7 @@
               }
             }
           ],
-          "Version": "2012-10-17"
+          "Version": "2012-x-17"
         },
         "Tags": [
           {
@@ -311,10 +311,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2QypvnbisslLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2XvgexmrnnjLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "LowstockproductsGen2QypvnbisslLambdaDataSourceServiceRoleDefaultPolicyE4ED6B03": {
+    "LowstockproductsGen2XvgexmrnnjLambdaDataSourceServiceRoleDefaultPolicy493C29DE": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -362,26 +362,26 @@
               ]
             }
           ],
-          "Version": "2012-10-17"
+          "Version": "2012-x-17"
         },
-        "PolicyName": "LowstockproductsGen2QypvnbisslLambdaDataSourceServiceRoleDefaultPolicyE4ED6B03",
+        "PolicyName": "LowstockproductsGen2XvgexmrnnjLambdaDataSourceServiceRoleDefaultPolicy493C29DE",
         "Roles": [
           {
-            "Ref": "LowstockproductsGen2QypvnbisslLambdaDataSourceServiceRoleEFE62C84"
+            "Ref": "LowstockproductsGen2XvgexmrnnjLambdaDataSourceServiceRole40E3F0D7"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2QypvnbisslLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2XvgexmrnnjLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "LowstockproductsGen2QypvnbisslLambdaDataSource": {
+    "LowstockproductsGen2XvgexmrnnjLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -399,10 +399,10 @@
             ]
           }
         },
-        "Name": "LowstockproductsGen2QypvnbisslLambdaDataSource",
+        "Name": "LowstockproductsGen2XvgexmrnnjLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "LowstockproductsGen2QypvnbisslLambdaDataSourceServiceRoleEFE62C84",
+            "LowstockproductsGen2XvgexmrnnjLambdaDataSourceServiceRole40E3F0D7",
             "Arn"
           ]
         },
@@ -411,44 +411,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2QypvnbisslLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/LowstockproductsGen2XvgexmrnnjLambdaDataSource/Resource"
       }
     },
-    "InvokeLowstockproductsGen2QypvnbisslLambdaDataSourceInvokeLowstockproductsGen2QypvnbisslLambdaDataSourceAppSyncFunctionD8876F84": {
+    "InvokeLowstockproductsGen2XvgexmrnnjLambdaDataSourceInvokeLowstockproductsGen2XvgexmrnnjLambdaDataSourceAppSyncFunction546E16A7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "LowstockproductsGen2QypvnbisslLambdaDataSource",
+            "LowstockproductsGen2XvgexmrnnjLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeLowstockproductsGen2QypvnbisslLambdaDataSource",
+        "Name": "InvokeLowstockproductsGen2XvgexmrnnjLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bbc7c5408d08a5e351e2944148cb66e6e91adec4c1da961e3e2e82f2a7855d31.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09cea02a94e2dd7fdba746fc02b1fed1a2f34c68f29e6edb55897b6a9684b292.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "LowstockproductsGen2QypvnbisslLambdaDataSource"
+        "LowstockproductsGen2XvgexmrnnjLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeLowstockproductsGen2QypvnbisslLambdaDataSource/InvokeLowstockproductsGen2QypvnbisslLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeLowstockproductsGen2XvgexmrnnjLambdaDataSource/InvokeLowstockproductsGen2XvgexmrnnjLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerycheckLowStockResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
         },
         "FieldName": "checkLowStock",
         "Kind": "PIPELINE",
@@ -462,7 +462,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeLowstockproductsGen2QypvnbisslLambdaDataSourceInvokeLowstockproductsGen2QypvnbisslLambdaDataSourceAppSyncFunctionD8876F84",
+                "InvokeLowstockproductsGen2XvgexmrnnjLambdaDataSourceInvokeLowstockproductsGen2XvgexmrnnjLambdaDataSourceAppSyncFunction546E16A7",
                 "FunctionId"
               ]
             }
@@ -478,7 +478,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref"
+                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -486,11 +486,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref"
+                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef"
+                "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -511,10 +511,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId"
+          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPINONEDS24528D33Name"
+          "Ref": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPINONEDS60A1387FName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryCheckLowStockAuthFN",
@@ -541,19 +541,19 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId": {
+    "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref": {
+    "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthauthenticatedUserRole75FF59DARef": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref": {
+    "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthunauthenticatedUserRoleA89EE206Ref": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxde12df9a17authNestedStackauthNestedStackResourceD8FBBF8AOutputsamplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef": {
+    "referencetoamplifyproductcataloge2esandboxf9d1734d7eauthNestedStackauthNestedStackResourceB16FFBD3Outputsamplifyproductcataloge2esandboxf9d1734d7eauthamplifyAuthIdentityPool5E973BECRef": {
       "Type": "String"
     },
-    "referencetoamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPINONEDS24528D33Name": {
+    "referencetoamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPINONEDS60A1387FName": {
       "Type": "String"
     }
   }

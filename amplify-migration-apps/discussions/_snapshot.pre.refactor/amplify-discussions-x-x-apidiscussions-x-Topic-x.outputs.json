@@ -1,37 +1,37 @@
 [
   {
     "OutputKey": "GetAttTopicTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-xw3yrfq7mngltcua43nucy7fg4-x/stream/2026-04-15T03:52:31.420",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-qx63tows35dztl5ioa67kk3exi-x/stream/2026-04-17T00:48:19.762",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xw3yrfq7mngltcua43nucy7fg4:GetAtt:TopicTable:StreamArn"
+    "ExportName": "qx63tows35dztl5ioa67kk3exi:GetAtt:TopicTable:StreamArn"
   },
   {
     "OutputKey": "GetAttTopicTableName",
-    "OutputValue": "Topic-xw3yrfq7mngltcua43nucy7fg4-x",
+    "OutputValue": "Topic-qx63tows35dztl5ioa67kk3exi-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xw3yrfq7mngltcua43nucy7fg4:GetAtt:TopicTable:Name"
+    "ExportName": "qx63tows35dztl5ioa67kk3exi:GetAtt:TopicTable:Name"
   },
   {
     "OutputKey": "transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
-    "OutputValue": "27vbgibrgvgbdjj3h5d4yil6kq"
+    "OutputValue": "bqng4twmjngdlfxam43y33zioi"
   },
   {
     "OutputKey": "transformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId",
-    "OutputValue": "zq2obabb55bd3gkmcz2bizu5iq"
+    "OutputValue": "w5v5kdawtjdsph24paprqlibu4"
   },
   {
     "OutputKey": "transformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId",
-    "OutputValue": "dur6tkgudfevrpl2my5gxyqyia"
+    "OutputValue": "u2mzy7v5nbbbtj6j5pcmgujnte"
   },
   {
     "OutputKey": "GetAttTopicDataSourceName",
     "OutputValue": "TopicTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "xw3yrfq7mngltcua43nucy7fg4:GetAtt:TopicDataSource:Name"
+    "ExportName": "qx63tows35dztl5ioa67kk3exi:GetAtt:TopicDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackTopicTopicTableFD91FB92Ref",
-    "OutputValue": "Topic-xw3yrfq7mngltcua43nucy7fg4-x"
+    "OutputValue": "Topic-qx63tows35dztl5ioa67kk3exi-x"
   },
   {
     "OutputKey": "transformerrootstackTopicTopicDataSource63D2F34BName",
@@ -39,18 +39,18 @@
   },
   {
     "OutputKey": "transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",
-    "OutputValue": "npdf275cd5g4nkiykjxmagc32q"
+    "OutputValue": "6ce6ypkrejd4jiazpzb75kunn4"
   },
   {
     "OutputKey": "transformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId",
-    "OutputValue": "nzhw35eydnfyhftp7kmjfhyr3m"
+    "OutputValue": "fmrpk3jm7zgotao47tv5pfuwby"
   },
   {
     "OutputKey": "transformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId",
-    "OutputValue": "rjy3dn7bgza2feymbanjplniym"
+    "OutputValue": "4hxu5zoucjaotiymx5p7k3wn7m"
   },
   {
     "OutputKey": "transformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId",
-    "OutputValue": "r3fmyrlvybdn7gw5wjca7aob5i"
+    "OutputValue": "2vpsvsieqngv5b4r5moqa5ficq"
   }
 ]

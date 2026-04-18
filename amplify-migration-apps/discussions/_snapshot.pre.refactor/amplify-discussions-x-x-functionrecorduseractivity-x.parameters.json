@@ -17,15 +17,15 @@
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://ajag2p5xujbc3cfepbjri3sjam.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "https://b62kjff2q5gc3ptdjehn6cujca.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "ParameterKey": "apidiscussionsGraphQLAPIIdOutput",
-    "ParameterValue": "xw3yrfq7mngltcua43nucy7fg4"
+    "ParameterValue": "qx63tows35dztl5ioa67kk3exi"
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-15T03:52:10.997"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-17T00:47:58.954"
   },
   {
     "ParameterKey": "env",

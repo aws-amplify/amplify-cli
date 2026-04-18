@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Validates that the gen2-migration refactor correctly shares stateful resources
- * (Cognito user pool, AppSync/DynamoDB, S3 bucket, Lambda) between gen1 and gen2 configurations.
+ * (AppSync/DynamoDB, S3 bucket, Lambda) between gen1 and gen2 configurations.
  *
+ * Auth sharing is tested separately in shared-auth.test.ts.
  * Tests both directions: gen1→gen2 and gen2→gen1.
  */
 import { generateClient } from 'aws-amplify/api';
@@ -19,37 +20,23 @@ const gen2Config = JSON.parse(fs.readFileSync('amplify_outputs.json', { encoding
 describe('gen1 to gen2', () => {
   let username: string;
   let password: string;
+  let userId: string;
 
   beforeAll(async () => {
     configureAmplify(gen1Config);
     const creds = await signUp(gen1Config);
     username = creds.username;
     password = creds.password;
+    await signIn({ username, password });
+    userId = (await getCurrentUser()).userId;
   }, 60_000);
 
   afterAll(async () => {
     try { await signOut(); } catch { /* ignore */ }
   });
 
-  it('auth: user created via gen1 can sign in via gen2', async () => {
-    configureAmplify(gen1Config);
-    await signIn({ username, password });
-    const gen1User = await getCurrentUser();
-    await signOut();
-
-    configureAmplify(gen2Config);
-    await signIn({ username, password });
-    const gen2User = await getCurrentUser();
-    await signOut();
-
-    expect(gen2User.userId).toBe(gen1User.userId);
-  }, 60_000);
-
   it('data: product created via gen1 can be read via gen2', async () => {
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
-    const currentUser = await getCurrentUser();
     const engword = `Widget gen1→gen2 ${Date.now()}`;
     const result = await generateClient().graphql({
       query: createProduct,
@@ -60,17 +47,14 @@ describe('gen1 to gen2', () => {
           price: 29.99,
           category: 'Test',
           stock: 10,
-          createdBy: currentUser.userId,
-          updatedBy: currentUser.userId,
+          createdBy: userId,
+          updatedBy: userId,
         },
       },
     });
     const productId = (result as any).data.createProduct.id;
-    await signOut();
 
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
     const fetched = (await generateClient().graphql({
       query: getProduct,
       variables: { id: productId },
@@ -79,15 +63,10 @@ describe('gen1 to gen2', () => {
     expect(fetched).not.toBeNull();
     expect(fetched.id).toBe(productId);
     expect(fetched.engword).toBe(engword);
-    await signOut();
   }, 60_000);
 
   it('data: comment created via gen1 can be read via gen2', async () => {
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
-    const currentUser = await getCurrentUser();
-    // Create a product to attach the comment to
     const productResult = await generateClient().graphql({
       query: createProduct,
       variables: {
@@ -97,8 +76,8 @@ describe('gen1 to gen2', () => {
           price: 5,
           category: 'Test',
           stock: 1,
-          createdBy: currentUser.userId,
-          updatedBy: currentUser.userId,
+          createdBy: userId,
+          updatedBy: userId,
         },
       },
     });
@@ -107,21 +86,11 @@ describe('gen1 to gen2', () => {
     const content = `Great product gen1→gen2 ${Date.now()}`;
     const commentResult = await generateClient().graphql({
       query: createComment,
-      variables: {
-        input: {
-          productId,
-          authorId: currentUser.userId,
-          authorName: username,
-          content,
-        },
-      },
+      variables: { input: { productId, authorId: userId, authorName: username, content } },
     });
     const commentId = (commentResult as any).data.createComment.id;
-    await signOut();
 
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
     const fetched = (await generateClient().graphql({
       query: getComment,
       variables: { id: commentId },
@@ -131,27 +100,16 @@ describe('gen1 to gen2', () => {
     expect(fetched.id).toBe(commentId);
     expect(fetched.content).toBe(content);
     expect(fetched.productId).toBe(productId);
-    await signOut();
   }, 60_000);
 
   it('lambda: checkLowStock returns consistent results via gen1 and gen2', async () => {
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
-    const gen1Result = (await generateClient().graphql({
-      query: checkLowStock,
-    }) as any).data.checkLowStock;
-    await signOut();
+    const gen1Result = (await generateClient().graphql({ query: checkLowStock }) as any).data.checkLowStock;
 
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
-    const gen2Result = (await generateClient().graphql({
-      query: checkLowStock,
-    }) as any).data.checkLowStock;
+    const gen2Result = (await generateClient().graphql({ query: checkLowStock }) as any).data.checkLowStock;
 
     expect(gen2Result.message).toBe(gen1Result.message);
-    await signOut();
   }, 60_000);
 
   it('storage: file uploaded via gen1 can be downloaded via gen2', async () => {
@@ -159,62 +117,40 @@ describe('gen1 to gen2', () => {
     const fileName = `test-g1g2-${Date.now()}.txt`;
 
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
     const uploadResult = await uploadData({
       key: fileName,
       data: Buffer.from(fileContent),
       options: { contentType: 'text/plain' },
     }).result;
     expect(uploadResult.key).toBe(fileName);
-    await signOut();
 
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
-    const downloadResult = await downloadData({
-      path: `public/${fileName}`,
-    }).result;
+    const downloadResult = await downloadData({ path: `public/${fileName}` }).result;
     const body = await downloadResult.body.text();
     expect(body).toBe(fileContent);
-    await signOut();
   }, 120_000);
 });
 
 describe('gen2 to gen1', () => {
   let username: string;
   let password: string;
+  let userId: string;
 
   beforeAll(async () => {
     configureAmplify(gen2Config);
     const creds = await signUp(gen2Config);
     username = creds.username;
     password = creds.password;
+    await signIn({ username, password });
+    userId = (await getCurrentUser()).userId;
   }, 60_000);
 
   afterAll(async () => {
     try { await signOut(); } catch { /* ignore */ }
   });
 
-  it('auth: user created via gen2 can sign in via gen1', async () => {
-    configureAmplify(gen2Config);
-    await signIn({ username, password });
-    const gen2User = await getCurrentUser();
-    await signOut();
-
-    configureAmplify(gen1Config);
-    await signIn({ username, password });
-    const gen1User = await getCurrentUser();
-    await signOut();
-
-    expect(gen1User.userId).toBe(gen2User.userId);
-  }, 60_000);
-
   it('data: product created via gen2 can be read via gen1', async () => {
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
-    const currentUser = await getCurrentUser();
     const engword = `Gadget gen2→gen1 ${Date.now()}`;
     const result = await generateClient().graphql({
       query: createProduct,
@@ -225,17 +161,14 @@ describe('gen2 to gen1', () => {
           price: 49.99,
           category: 'Test',
           stock: 20,
-          createdBy: currentUser.userId,
-          updatedBy: currentUser.userId,
+          createdBy: userId,
+          updatedBy: userId,
         },
       },
     });
     const productId = (result as any).data.createProduct.id;
-    await signOut();
 
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
     const fetched = (await generateClient().graphql({
       query: getProduct,
       variables: { id: productId },
@@ -244,14 +177,10 @@ describe('gen2 to gen1', () => {
     expect(fetched).not.toBeNull();
     expect(fetched.id).toBe(productId);
     expect(fetched.engword).toBe(engword);
-    await signOut();
   }, 60_000);
 
   it('data: comment created via gen2 can be read via gen1', async () => {
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
-    const currentUser = await getCurrentUser();
     const productResult = await generateClient().graphql({
       query: createProduct,
       variables: {
@@ -261,8 +190,8 @@ describe('gen2 to gen1', () => {
           price: 5,
           category: 'Test',
           stock: 1,
-          createdBy: currentUser.userId,
-          updatedBy: currentUser.userId,
+          createdBy: userId,
+          updatedBy: userId,
         },
       },
     });
@@ -271,21 +200,11 @@ describe('gen2 to gen1', () => {
     const content = `Nice item gen2→gen1 ${Date.now()}`;
     const commentResult = await generateClient().graphql({
       query: createComment,
-      variables: {
-        input: {
-          productId,
-          authorId: currentUser.userId,
-          authorName: username,
-          content,
-        },
-      },
+      variables: { input: { productId, authorId: userId, authorName: username, content } },
     });
     const commentId = (commentResult as any).data.createComment.id;
-    await signOut();
 
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
     const fetched = (await generateClient().graphql({
       query: getComment,
       variables: { id: commentId },
@@ -295,27 +214,16 @@ describe('gen2 to gen1', () => {
     expect(fetched.id).toBe(commentId);
     expect(fetched.content).toBe(content);
     expect(fetched.productId).toBe(productId);
-    await signOut();
   }, 60_000);
 
   it('lambda: checkLowStock returns consistent results via gen2 and gen1', async () => {
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
-    const gen2Result = (await generateClient().graphql({
-      query: checkLowStock,
-    }) as any).data.checkLowStock;
-    await signOut();
+    const gen2Result = (await generateClient().graphql({ query: checkLowStock }) as any).data.checkLowStock;
 
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
-    const gen1Result = (await generateClient().graphql({
-      query: checkLowStock,
-    }) as any).data.checkLowStock;
+    const gen1Result = (await generateClient().graphql({ query: checkLowStock }) as any).data.checkLowStock;
 
     expect(gen1Result.message).toBe(gen2Result.message);
-    await signOut();
   }, 60_000);
 
   it('storage: file uploaded via gen2 can be downloaded via gen1', async () => {
@@ -323,23 +231,11 @@ describe('gen2 to gen1', () => {
     const fileName = `test-g2g1-${Date.now()}.txt`;
 
     configureAmplify(gen2Config);
-    await signIn({ username, password });
-
-    await uploadData({
-      path: `public/${fileName}`,
-      data: Buffer.from(fileContent),
-      options: { contentType: 'text/plain' },
-    }).result;
-    await signOut();
+    await uploadData({ path: `public/${fileName}`, data: Buffer.from(fileContent), options: { contentType: 'text/plain' } }).result;
 
     configureAmplify(gen1Config);
-    await signIn({ username, password });
-
-    const downloadResult = await downloadData({
-      key: fileName,
-    }).result;
+    const downloadResult = await downloadData({ key: fileName }).result;
     const body = await downloadResult.body.text();
     expect(body).toBe(fileContent);
-    await signOut();
   }, 120_000);
 });

@@ -78,7 +78,7 @@ export class GeoGenerator implements Planner {
             this.gen1App.rootStackName,
           );
 
-          const codegenResult = await converter.generateGeoL1Code(resourceName, service, meta.providerMetadata);
+          const codegenResult = await converter.generateGeoL1Code(resourceName, service, meta.providerMetadata, this.gen1App.envName);
           allCodegenResults.push(codegenResult);
 
           const nodes = this.renderer.renderResource(codegenResult);

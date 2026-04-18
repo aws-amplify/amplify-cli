@@ -257,13 +257,13 @@
         "PolicyName": "storeLocatorSearch-gen2-xPolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthauthenticatedUserRoleFD3A976BRef"
+            "Ref": "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthauthenticatedUserRole93F1DB7ARef"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthunauthenticatedUserRoleF5FAC08ERef"
+            "Ref": "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthunauthenticatedUserRole61FD1A82Ref"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthstoreLocatorAdminGroupRoleC0E3E7C0Ref"
+            "Ref": "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthstoreLocatorAdminGroupRole0DBB4218Ref"
           }
         ]
       },
@@ -273,10 +273,62 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorSearch/storeLocatorSearch/PlaceIndexPolicy"
       }
     },
+    "storeLocatorSearchgen1AuthPolicy275D2FAF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:SearchPlaceIndexForPosition",
+                "geo:SearchPlaceIndexForText",
+                "geo:SearchPlaceIndexForSuggestions",
+                "geo:GetPlace"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:geo:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":place-index/storeLocatorSearch-x"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "storeLocatorSearchgen1AuthPolicy275D2FAF",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthauthenticatedUserRole93F1DB7ARef"
+          },
+          {
+            "Ref": "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthunauthenticatedUserRole61FD1A82Ref"
+          },
+          {
+            "Ref": "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthstoreLocatorAdminGroupRole0DBB4218Ref"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorSearch/storeLocatorSearch/gen1AuthPolicy/Resource"
+      }
+    },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQ6CMBBA4bOwLyM20Qs0cedP8ABmaIsZaKeETiWGcHejrt7iy9OgDw00FS65tm6sA3WwXnwW7+6CdlSm5zNOE/FT4ZIfK2GE1fTcpuC/eEuB7HtTAWPnEEzPp8JWKPH2ZVOypNj6nMpsf8O1yFRkU5ychyHvXlrD/ghNNWSiei4sFD20/34Au+f/SJ8AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWLSw6DIBQAz+IeXy1JewGS7voJPUCDgM1TeBgf1DTGuzfW1SxmRoI8NdBUZubauqEO2MJy85y9e2ZjB6E6uppxRHoLM/NrQRNhUR3pFPwmHymg/Yodqwgmts6A6uhSyGZMtG6VKpxT1J5Tmez/u5c8lrwKSs5Dz4ePlHA8Q1P1jFhPhTJGD3rnD6MRsB+mAAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorSearch/CDKMetadata/Default"
@@ -312,7 +364,7 @@
         ]
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4geostoreLocatorSearchCustomPlaceIndex90EC0A16IndexName": {
+    "amplifystorelocatore2esandboxf3331fe542geostoreLocatorSearchCustomPlaceIndex58A567EAIndexName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorSearchCustomPlaceIndexF0192882",
@@ -588,13 +640,13 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthauthenticatedUserRoleFD3A976BRef": {
+    "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthauthenticatedUserRole93F1DB7ARef": {
       "Type": "String"
     },
-    "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthunauthenticatedUserRoleF5FAC08ERef": {
+    "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthunauthenticatedUserRole61FD1A82Ref": {
       "Type": "String"
     },
-    "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthstoreLocatorAdminGroupRoleC0E3E7C0Ref": {
+    "referencetoamplifystorelocatore2esandboxf3331fe542authNestedStackauthNestedStackResourceF834F2C7Outputsamplifystorelocatore2esandboxf3331fe542authamplifyAuthstoreLocatorAdminGroupRole0DBB4218Ref": {
       "Type": "String"
     }
   }

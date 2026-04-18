@@ -5,15 +5,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",
-    "ParameterValue": "u47ijnto3jhnfbjyiy5tj5rbdu"
+    "ParameterValue": "77mjwj2w6jg7hdeuctgjkmmpma"
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/5c491eab2bbf740cbba1e26a8e9053c2c881af96"
+    "ParameterValue": "amplify-appsync-files/ce16156a1839e809f2a18aa189a71a273e924be8"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId",
-    "ParameterValue": "lmjqv4r5wvalhf33svv3f4h42y"
+    "ParameterValue": "dhzmza25bjb27aneudhrorcosq"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -21,15 +21,15 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "pd6mhagtyveltorgdvv7movvqq"
+    "ParameterValue": "tbkrulbwhfd3bhzikxzx6jqcae"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId",
-    "ParameterValue": "xfjy2brxbrhupg3vwrufsgqhqa"
+    "ParameterValue": "xlvimtyt5zbyzhh7y5kx2txj4q"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationupdateMoodIteminit0FunctionMutationupdateMoodIteminit0FunctionAppSyncFunctionA5BB53A1FunctionId",
-    "ParameterValue": "ntl7z7rbx5db5eovlakyuezxlq"
+    "ParameterValue": "qqidgm6llzgnxaumgmpwycj77q"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -41,11 +41,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationcreateMoodItemauth0FunctionMutationcreateMoodItemauth0FunctionAppSyncFunction8743A884FunctionId",
-    "ParameterValue": "6k5i7swotbgv3asogjzqhdfpxi"
+    "ParameterValue": "abxzewgiwvgkth5lgufid7bphy"
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemSubscriptionOnCreateMoodItemDataResolverFnSubscriptionOnCreateMoodItemDataResolverFnAppSyncFunctionE0588344FunctionId",
-    "ParameterValue": "hcoadlsitvfd3dtkroowtxgefy"
+    "ParameterValue": "wiyw4sh5d5avtb5ohsg2uf4ybu"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -57,7 +57,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId",
-    "ParameterValue": "y5hj2r3wkbhwnfvtnytqg6vakm"
+    "ParameterValue": "urxkzfddfjehlnew5bcdci3rme"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

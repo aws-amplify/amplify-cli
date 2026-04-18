@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:edbce570-5f19-4755-9803-52e7b3e0c56d"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:907b9800-2bf5-4819-8d80-f5ed6cccc4a4"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:edbce570-5f19-4755-9803-52e7b3e0c56d"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:907b9800-2bf5-4819-8d80-f5ed6cccc4a4"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -367,20 +367,20 @@
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox799a4d1a84authamplifyAuthUserPoolC3F32E8CRef": {
-      "Value": "us-east-1_K3ZcFPo5Q"
+    "amplifymoodboarde2esandbox9c14477299authamplifyAuthUserPool533A7519Ref": {
+      "Value": "us-east-1_ZzlEVfbIe"
     },
-    "amplifymoodboarde2esandbox799a4d1a84authamplifyAuthUserPoolAppClientFBE59DFARef": {
-      "Value": "7jnfsfml09seoak5857srhn920"
+    "amplifymoodboarde2esandbox9c14477299authamplifyAuthUserPoolAppClientB7C7B9A8Ref": {
+      "Value": "1k6n0e4ujqocob5n1rd2ki8lek"
     },
-    "amplifymoodboarde2esandbox799a4d1a84authamplifyAuthIdentityPoolB80FD358Ref": {
-      "Value": "us-east-1:edbce570-5f19-4755-9803-52e7b3e0c56d"
+    "amplifymoodboarde2esandbox9c14477299authamplifyAuthIdentityPool84D04BC1Ref": {
+      "Value": "us-east-1:907b9800-2bf5-4819-8d80-f5ed6cccc4a4"
     },
-    "amplifymoodboarde2esandbox799a4d1a84authamplifyAuthauthenticatedUserRole65FDEE87Ref": {
-      "Value": "amplify-moodboard26041500-amplifyAuthauthenticatedU-inPzqwEs0wDw"
+    "amplifymoodboarde2esandbox9c14477299authamplifyAuthauthenticatedUserRole0982B29BRef": {
+      "Value": "amplify-moodboard26041620-amplifyAuthauthenticatedU-f0GKaxdKmWPI"
     },
-    "amplifymoodboarde2esandbox799a4d1a84authamplifyAuthunauthenticatedUserRoleC0B7612DRef": {
-      "Value": "amplify-moodboard26041500-amplifyAuthunauthenticate-2CR87a5ajww1"
+    "amplifymoodboarde2esandbox9c14477299authamplifyAuthunauthenticatedUserRole2DF278D3Ref": {
+      "Value": "amplify-moodboard26041620-amplifyAuthunauthenticate-HGT9xMJR1p0A"
     }
   }
 }

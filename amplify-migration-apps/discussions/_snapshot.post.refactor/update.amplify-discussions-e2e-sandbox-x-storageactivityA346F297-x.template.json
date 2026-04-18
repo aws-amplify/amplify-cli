@@ -352,14 +352,14 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-WW109ZPG3FYW"
+    "amplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-1NEHRZEAGYD9N"
     },
-    "amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACStreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-WW109ZPG3FYW/stream/2026-04-15T04:05:17.207"
+    "amplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CStreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-1NEHRZEAGYD9N/stream/2026-04-17T01:01:35.323"
     },
-    "amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACRef": {
-      "Value": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-WW109ZPG3FYW"
+    "amplifydiscussionse2esandbox9b0dc06ad5storageactivity844C295CRef": {
+      "Value": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-activity1E902D9C-1NEHRZEAGYD9N"
     }
   }
 }

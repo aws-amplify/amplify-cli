@@ -1,18 +1,18 @@
 [
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthauthenticatedUserRoleE0CA9703Ref",
-    "ParameterValue": "amplify-mediavault2604142-amplifyAuthauthenticatedU-eE1RG94dAZFh"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox922046e166authNestedStackauthNestedStackResource94CC8DD1Outputsamplifymediavaulte2esandbox922046e166authamplifyAuthunauthenticatedUserRole67CA35DBRef",
+    "ParameterValue": "amplify-mediavault2604162-amplifyAuthunauthenticate-7rUbjWI4cw7v"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthAdminGroupRole56853334Ref",
-    "ParameterValue": "amplify-mediavault2604142-amplifyAuthAdminGroupRole-7ODIVGGdVIyj"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox922046e166authNestedStackauthNestedStackResource94CC8DD1Outputsamplifymediavaulte2esandbox922046e166authamplifyAuthBasicGroupRoleBBD4C01ERef",
+    "ParameterValue": "amplify-mediavault2604162-amplifyAuthBasicGroupRole-Te8C3ujRM4YY"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthunauthenticatedUserRole88DA1FC1Ref",
-    "ParameterValue": "amplify-mediavault2604142-amplifyAuthunauthenticate-IXwU5AR0tJSE"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox922046e166authNestedStackauthNestedStackResource94CC8DD1Outputsamplifymediavaulte2esandbox922046e166authamplifyAuthauthenticatedUserRole363EFD7ARef",
+    "ParameterValue": "amplify-mediavault2604162-amplifyAuthauthenticatedU-43G8w8Ywjqj6"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0a7f7fcf5aauthNestedStackauthNestedStackResource655CB183Outputsamplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthBasicGroupRole5656CA64Ref",
-    "ParameterValue": "amplify-mediavault2604142-amplifyAuthBasicGroupRole-iDzIZ8EOmyl8"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox922046e166authNestedStackauthNestedStackResource94CC8DD1Outputsamplifymediavaulte2esandbox922046e166authamplifyAuthAdminGroupRole4F40FD24Ref",
+    "ParameterValue": "amplify-mediavault2604162-amplifyAuthAdminGroupRole-xdEctYjahUV1"
   }
 ]

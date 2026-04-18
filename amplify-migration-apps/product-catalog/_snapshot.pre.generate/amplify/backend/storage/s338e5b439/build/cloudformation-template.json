@@ -364,7 +364,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -411,7 +411,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -458,7 +458,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -505,7 +505,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",
@@ -597,7 +597,7 @@
               }
             }
           ],
-          "Version": "2012-10-17"
+          "Version": "2012-x-17"
         },
         "PolicyName": {
           "Ref": "s3ReadPolicy"
@@ -660,7 +660,7 @@
               }
             }
           ],
-          "Version": "2012-10-17"
+          "Version": "2012-x-17"
         },
         "PolicyName": {
           "Ref": "s3ReadPolicy"
@@ -680,7 +680,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
+          "Version": "2012-x-17",
           "Statement": [
             {
               "Effect": "Allow",

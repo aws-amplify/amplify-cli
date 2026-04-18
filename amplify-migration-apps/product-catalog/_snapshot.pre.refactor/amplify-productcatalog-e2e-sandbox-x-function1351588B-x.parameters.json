@@ -1,14 +1,14 @@
 [
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataNestedStackdataNestedStackResourceD8EBCEB1Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1ApiId",
-    "ParameterValue": "e5folpqnrzbzpbark3e3agy5ly"
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataNestedStackdataNestedStackResource3DB776D8Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FApiId",
+    "ParameterValue": "6lswrii3s5atnjpexy2wslasla"
   },
   {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataNestedStackdataNestedStackResourceD8EBCEB1Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPIDefaultApiKey877BF6C7ApiKey",
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataNestedStackdataNestedStackResource3DB776D8Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPI2FA1292FGraphQLUrl",
+    "ParameterValue": "https://drcvy6xbv5amlpzxfqhy26y5yi.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "ParameterKey": "referencetoamplifyproductcataloge2esandboxf9d1734d7edataNestedStackdataNestedStackResource3DB776D8Outputsamplifyproductcataloge2esandboxf9d1734d7edataamplifyDataGraphQLAPIDefaultApiKey3D3A5E53ApiKey",
     "ParameterValue": "da2-fakeapikey00000000000000"
-  },
-  {
-    "ParameterKey": "referencetoamplifyproductcataloge2esandboxde12df9a17dataNestedStackdataNestedStackResourceD8EBCEB1Outputsamplifyproductcataloge2esandboxde12df9a17dataamplifyDataGraphQLAPI1B67C9C1GraphQLUrl",
-    "ParameterValue": "https://vp2rn7qbp5fbrblcdmbrcmjka4.appsync-api.us-east-1.amazonaws.com/graphql"
   }
 ]

@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-discussions-x-x-deployment",
       "UnauthRoleName": "amplify-discussions-x-x-unauthRole",
       "StackName": "amplify-discussions-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/573e2000-387e-11f1-8fe1-0e59b95a9da1",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/d76255c0-39f6-11f1-9775-1215f237b573",
       "AmplifyAppId": "discussions"
     },
     "categories": {
