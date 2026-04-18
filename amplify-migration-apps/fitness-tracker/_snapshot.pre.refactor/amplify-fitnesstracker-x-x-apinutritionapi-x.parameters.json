@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "us-east-1_bhgoCMFQU"
+    "ParameterValue": "us-east-1_yGeHz6G3D"
   },
   {
     "ParameterKey": "functionlognutritionName",
@@ -17,6 +17,6 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsAdminGroupRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_bhgoCMFQU-AdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_yGeHz6G3D-AdminGroupRole"
   }
 ]

@@ -3,6 +3,7 @@ import { storelocator41a9495f41a9495fPostConfirmation } from './auth/storelocato
 import { defineGeo } from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -32,3 +33,6 @@ userPool.addClient('NativeAppClient', {
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${branchName}`;
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
