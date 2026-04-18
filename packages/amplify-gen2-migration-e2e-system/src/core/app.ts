@@ -503,7 +503,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
+      env: { ...process.env, GEN1_ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
     });
 
     if (result.exitCode !== 0) {

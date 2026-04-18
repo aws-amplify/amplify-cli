@@ -13,11 +13,15 @@ import { record, flushEvents } from 'aws-amplify/analytics/kinesis';
 import { signUp, configureAmplify } from './signup';
 import { createBoard, createMoodItem } from '../src/graphql/mutations';
 import { getBoard, getMoodItem, getRandomEmoji, getKinesisEvents } from '../src/graphql/queries';
-import { KINESIS_STREAM_NAME } from '../src/constants';
 import * as fs from 'fs';
 
 const gen1Config = JSON.parse(fs.readFileSync('src/amplifyconfiguration.json', { encoding: 'utf-8' }));
 const gen2Config = JSON.parse(fs.readFileSync('amplify_outputs.json', { encoding: 'utf-8' }));
+
+const GEN1_ENV_NAME = process.env.GEN1_ENV_NAME;
+if (!GEN1_ENV_NAME) {
+  throw new Error(`Missing GEN1_ENV_NAME env variable`);
+}
 
 describe('gen1 to gen2', () => {
   let username: string;
@@ -105,7 +109,7 @@ describe('gen1 to gen2', () => {
       record({
         data: { event: 'sharedDataTest', marker, index: i },
         partitionKey: 'test',
-        streamName: KINESIS_STREAM_NAME,
+        streamName: `moodboardKinesis-${GEN1_ENV_NAME}`,
       });
     }
     flushEvents();
@@ -225,8 +229,32 @@ describe('gen2 to gen1', () => {
     expect(gen1Emoji.length).toBeGreaterThan(0);
   }, 60_000);
 
-  // TODO: re-enable once UserAlreadyAuthenticatedException on config swap is resolved
-  // it('analytics: Kinesis events recorded via gen2 are readable via gen1', ...);
+  it('analytics: Kinesis events recorded via gen1 are readable via gen1', async () => {
+    configureAmplify(gen2Config);
+    const marker = `g2→g1-${Date.now()}`;
+    for (let i = 0; i < 5; i++) {
+      record({
+        data: { event: 'sharedDataTest', marker, index: i },
+        partitionKey: 'test',
+        streamName: `moodboardKinesis-${GEN1_ENV_NAME}`,
+      });
+    }
+    flushEvents();
+    await new Promise((r) => setTimeout(r, 3000));
+
+    configureAmplify(gen1Config);
+    let markedEvents: any[] = [];
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const result = await generateClient({ authMode: 'userPool' }).graphql({ query: getKinesisEvents });
+      const raw = (result as any).data.getKinesisEvents;
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      const events = parsed?.events ?? [];
+      markedEvents = events.filter((e: any) => JSON.parse(e.data)?.marker === marker);
+      if (markedEvents.length > 0) break;
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+    expect(markedEvents.length).toBeGreaterThan(0);
+  }, 120_000);
 
   it('storage: file uploaded via gen2 can be downloaded via gen1', async () => {
     const fileContent = `gen2-to-gen1-${Date.now()}`;

@@ -10,6 +10,8 @@ import { randomBytes } from 'crypto';
 import * as apiconfig from '../src/api-config';
 
 import { webcrypto } from 'crypto';
+import { Amplify } from 'aws-amplify';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 if (typeof globalThis.crypto === 'undefined') {
   (globalThis as any).crypto = webcrypto;
 }
@@ -25,6 +27,18 @@ export function configureAmplify(cfg?: any): any {
   }
   apiconfig.configureAmplify(cfg);
   return cfg;
+}
+
+export function configureAmplifyGen1(cfg: any) {
+  Amplify.configure(cfg);
+}
+
+export function configureAmplifyGen2(cfg: any) {
+  const amplifyConfig = parseAmplifyConfig(cfg);
+  Amplify.configure({
+    ...amplifyConfig,
+    API: { ...amplifyConfig.API, REST: cfg.custom?.API },
+  });  
 }
 
 export async function signUp(cfg: any): Promise<{ username: string; password: string }> {
