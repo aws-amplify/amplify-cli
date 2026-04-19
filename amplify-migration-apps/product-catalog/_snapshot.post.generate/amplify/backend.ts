@@ -1,7 +1,7 @@
 import * as auth from './auth/resource';
 import * as data from './data/resource';
 import * as storage from './storage/resource';
-import * as S3Trigger1ef46783 from './storage/S3Trigger1ef46783/resource';
+import * as S3Trigger1ef46783 from './function/S3Trigger1ef46783/resource';
 import * as lowstockproducts from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
 

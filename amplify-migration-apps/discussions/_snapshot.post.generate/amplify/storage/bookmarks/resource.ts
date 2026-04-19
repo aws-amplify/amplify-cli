@@ -26,6 +26,6 @@ export function defineStorageBookmarks(backend: Backend) {
 }
 
 export function postRefactor(backend: Backend) {
-  const activity = backend.stack.node.findChild('') as CfnTable;
-  activity.tableName = 'bookmarks-x';
+  const bookmarks = backend.stack.node.findChild('storagebookmarks').node.findChild('bookmarks').node.defaultChild as CfnTable;
+  bookmarks.tableName = 'bookmarks-x';
 }

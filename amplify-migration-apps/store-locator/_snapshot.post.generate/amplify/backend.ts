@@ -1,5 +1,5 @@
 import * as auth from './auth/resource';
-import * as storelocator41a9495f41a9495fPostConfirmation from './auth/storelocator41a9495f41a9495fPostConfirmation/resource';
+import * as storelocator41a9495f41a9495fPostConfirmation from './function/storelocator41a9495f41a9495fPostConfirmation/resource';
 import * as geo from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
 

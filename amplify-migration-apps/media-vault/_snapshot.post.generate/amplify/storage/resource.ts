@@ -1,5 +1,5 @@
 import { defineStorage } from '@aws-amplify/backend';
-import { thumbnailgen } from '../storage/thumbnailgen/resource';
+import { thumbnailgen } from '../function/thumbnailgen/resource';
 import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';

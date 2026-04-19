@@ -1,7 +1,7 @@
 import * as auth from './auth/resource';
 import * as data from './data/resource';
 import * as storage from './storage/resource';
-import * as thumbnailgen from './storage/thumbnailgen/resource';
+import * as thumbnailgen from './function/thumbnailgen/resource';
 import * as addusertogroup from './function/addusertogroup/resource';
 import * as removeuserfromgroup from './function/removeuserfromgroup/resource';
 import { defineBackend } from '@aws-amplify/backend';

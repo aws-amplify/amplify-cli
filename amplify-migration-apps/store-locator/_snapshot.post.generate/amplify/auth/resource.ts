@@ -1,5 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
-import { storelocator41a9495f41a9495fPostConfirmation } from './storelocator41a9495f41a9495fPostConfirmation/resource';
+import { storelocator41a9495f41a9495fPostConfirmation } from '../function/storelocator41a9495f41a9495fPostConfirmation/resource';
 import { Duration } from 'aws-cdk-lib';
 import type { Backend } from '../backend';
 

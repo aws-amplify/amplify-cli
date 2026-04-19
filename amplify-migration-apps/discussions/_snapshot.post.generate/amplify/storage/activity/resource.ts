@@ -83,6 +83,6 @@ export function defineStorageActivity(backend: Backend) {
 }
 
 export function postRefactor(backend: Backend) {
-  const activity = backend.stack.node.findChild('') as CfnTable;
+  const activity = backend.stack.node.findChild('storageactivity').node.findChild('activity').node.defaultChild as CfnTable;
   activity.tableName = 'activity-x';
 }

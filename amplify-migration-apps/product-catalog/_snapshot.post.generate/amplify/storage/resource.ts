@@ -1,5 +1,5 @@
 import { defineStorage } from '@aws-amplify/backend';
-import { S3Trigger1ef46783 } from './S3Trigger1ef46783/resource';
+import { S3Trigger1ef46783 } from '../function/S3Trigger1ef46783/resource';
 import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
