@@ -1,7 +1,7 @@
 import { defineData } from '@aws-amplify/backend';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
-import { Backend } from '../backend';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Topic @model @auth(rules: [{ allow: public }]){

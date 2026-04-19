@@ -1,7 +1,7 @@
 import { defineStoreLocatorMap } from './storeLocatorMap/resource';
 import { defineStoreLocatorSearch } from './storeLocatorSearch/resource';
 import { defineStoreLocatorGeofence } from './storeLocatorGeofence/resource';
-import { Backend } from '../backend';
+import type { Backend } from '../backend';
 
 export const defineGeo = (backend: Backend) => {
   const storeLocatorMap = defineStoreLocatorMap(backend);

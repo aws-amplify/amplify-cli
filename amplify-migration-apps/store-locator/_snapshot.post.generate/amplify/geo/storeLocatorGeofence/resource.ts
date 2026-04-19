@@ -1,5 +1,5 @@
 import { geostoreLocatorGeofence } from './storeLocatorGeofence-construct';
-import { Backend } from '../../backend';
+import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 

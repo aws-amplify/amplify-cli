@@ -1,5 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
-import { Backend } from '../backend';
+import type { Backend } from '../backend';
 import { Duration } from 'aws-cdk-lib';
 
 export const auth = defineAuth({
