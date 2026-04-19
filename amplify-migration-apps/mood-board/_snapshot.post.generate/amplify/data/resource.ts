@@ -1,4 +1,5 @@
 import { defineData } from '@aws-amplify/backend';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type MoodItem @model @auth(rules: [{ allow: public }]) {
@@ -48,3 +49,16 @@ export const data = defineData({
   },
   schema,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+  cfnGraphqlApi.additionalAuthenticationProviders = [
+    {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      userPoolConfig: {
+        userPoolId: backend.auth.resources.userPool.userPoolId,
+        awsRegion: backend.auth.stack.region,
+      },
+    },
+  ];
+}

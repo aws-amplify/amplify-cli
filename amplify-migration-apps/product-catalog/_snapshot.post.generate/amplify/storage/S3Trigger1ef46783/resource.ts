@@ -1,4 +1,5 @@
 import { defineFunction } from '@aws-amplify/backend';
+import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -10,3 +11,22 @@ export const S3Trigger1ef46783 = defineFunction({
   environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
   runtime: 22,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  backend.S3Trigger1ef46783.resources.cfnResources.cfnFunction.functionName = `S3Trigger1ef46783-${branchName}`;
+  backend.S3Trigger1ef46783.addEnvironment(
+    'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
+    backend.data.apiKey!
+  );
+  backend.S3Trigger1ef46783.addEnvironment(
+    'API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT',
+    backend.data.graphqlUrl
+  );
+  backend.S3Trigger1ef46783.addEnvironment(
+    'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
+    backend.data.apiId
+  );
+  backend.data.resources.graphqlApi.grantMutation(
+    backend.S3Trigger1ef46783.resources.lambda
+  );
+}

@@ -1,4 +1,5 @@
 import { defineData } from '@aws-amplify/backend';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Note @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admin"] }]) {
@@ -45,3 +46,12 @@ export const data = defineData({
   },
   schema,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+  cfnGraphqlApi.additionalAuthenticationProviders = [
+    {
+      authenticationType: 'API_KEY',
+    },
+  ];
+}

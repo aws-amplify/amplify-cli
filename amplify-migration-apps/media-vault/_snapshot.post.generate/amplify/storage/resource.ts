@@ -1,5 +1,6 @@
 import { defineStorage } from '@aws-amplify/backend';
 import { thumbnailgen } from '../storage/thumbnailgen/resource';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 /**
@@ -29,3 +30,22 @@ export const storage = defineStorage({
     ],
   }),
 });
+
+export function postRefactor(backend: Backend) {
+  const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+  s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bedx-x';
+}
+
+export function applyEscapeHatches(backend: Backend) {
+  const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+  s3Bucket.bucketEncryption = {
+    serverSideEncryptionConfiguration: [
+      {
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: 'AES256',
+        },
+        bucketKeyEnabled: false,
+      },
+    ],
+  };
+}

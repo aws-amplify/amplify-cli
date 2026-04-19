@@ -1,97 +1,33 @@
-import { auth } from './auth/resource';
-import { data } from './data/resource';
-import { storage } from './storage/resource';
-import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
-import { lowstockproducts } from './function/lowstockproducts/resource';
+import * as auth from './auth/resource';
+import * as data from './data/resource';
+import * as storage from './storage/resource';
+import * as S3Trigger1ef46783 from './storage/S3Trigger1ef46783/resource';
+import * as lowstockproducts from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
-  auth,
-  data,
-  storage,
-  S3Trigger1ef46783,
-  lowstockproducts,
+  auth: auth.auth,
+  data: data.data,
+  storage: storage.storage,
+  S3Trigger1ef46783: S3Trigger1ef46783.S3Trigger1ef46783,
+  lowstockproducts: lowstockproducts.lowstockproducts,
 });
-const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-cfnUserPool.usernameAttributes = ['email'];
-cfnUserPool.policies = {
-  passwordPolicy: {
-    minimumLength: 8,
-    requireUppercase: false,
-    requireLowercase: false,
-    requireNumbers: false,
-    requireSymbols: false,
-    temporaryPasswordValidityDays: 7,
-  },
-};
-const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
-cfnIdentityPool.allowUnauthenticatedIdentities = false;
-const userPool = backend.auth.resources.userPool;
-userPool.addClient('NativeAppClient', {
-  refreshTokenValidity: Duration.days(30),
-  enableTokenRevocation: true,
-  enablePropagateAdditionalUserContextData: false,
-  authSessionValidity: Duration.minutes(3),
-  disableOAuth: true,
-  generateSecret: false,
-});
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'API_KEY',
-  },
-  {
-    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    userPoolConfig: {
-      userPoolId: backend.auth.resources.userPool.userPoolId,
-      awsRegion: backend.auth.stack.region,
-    },
-  },
-];
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.S3Trigger1ef46783.resources.cfnResources.cfnFunction.functionName = `S3Trigger1ef46783-${branchName}`;
-backend.S3Trigger1ef46783.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
-  backend.data.apiKey!
-);
-backend.S3Trigger1ef46783.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT',
-  backend.data.graphqlUrl
-);
-backend.S3Trigger1ef46783.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
-  backend.data.apiId
-);
-backend.data.resources.graphqlApi.grantMutation(
-  backend.S3Trigger1ef46783.resources.lambda
-);
-backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${branchName}`;
-backend.lowstockproducts.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
-  backend.data.apiKey!
-);
-backend.lowstockproducts.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT',
-  backend.data.graphqlUrl
-);
-backend.lowstockproducts.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
-  backend.data.apiId
-);
-backend.data.resources.graphqlApi.grantQuery(
-  backend.lowstockproducts.resources.lambda
-);
-const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-// Use this bucket name post refactor
-// s3Bucket.bucketName = 'productcatalogf95af07481f845caa6594c26ac9c8ed3x-x';
-s3Bucket.bucketEncryption = {
-  serverSideEncryptionConfiguration: [
-    {
-      serverSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  ],
-};
+
+export type Backend = typeof backend;
+
+export function postRefactor(backend: Backend) {
+  storage.postRefactor(backend);
+}
+
+export function applyEscapeHatches(backend: Backend) {
+  auth.applyEscapeHatches(backend);
+  data.applyEscapeHatches(backend);
+  storage.applyEscapeHatches(backend);
+  S3Trigger1ef46783.applyEscapeHatches(backend);
+  lowstockproducts.applyEscapeHatches(backend);
+}
+
+applyEscapeHatches(backend);
+
+// Uncomment after refactor
+// postRefactor(backend);

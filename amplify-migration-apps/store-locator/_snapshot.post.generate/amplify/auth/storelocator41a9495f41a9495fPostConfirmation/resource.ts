@@ -1,4 +1,5 @@
 import { defineFunction } from '@aws-amplify/backend';
+import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -15,3 +16,7 @@ export const storelocator41a9495f41a9495fPostConfirmation = defineFunction({
   },
   runtime: 22,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${branchName}`;
+}
