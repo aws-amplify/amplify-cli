@@ -20,7 +20,9 @@ export const defineAnalytics = (backend: Backend<any>) => {
       branchName,
     }
   );
-  //Use this kinesis stream name post-refactor
-  //(analytics.node.findChild('KinesisStream') as CfnStream).name = "moodboardKinesis-x"
   return analytics;
 };
+
+export function postRefactor(analytics: analyticsmoodboardKinesis) {
+  (analytics.node.findChild('KinesisStream') as CfnStream).name = 'moodboardKinesis-x';
+}

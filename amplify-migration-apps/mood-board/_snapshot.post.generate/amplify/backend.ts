@@ -22,6 +22,7 @@ export type Backend = typeof backend;
 
 export function postRefactor(backend: Backend) {
   storage.postRefactor(backend);
+  analytics.postRefactor(analyticsResult);
 }
 
 export function applyEscapeHatches(backend: Backend) {
