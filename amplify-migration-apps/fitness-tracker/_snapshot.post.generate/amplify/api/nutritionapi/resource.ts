@@ -11,7 +11,7 @@ import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineNutritionApi = (backend: Backend) => {
+export function defineNutritionApi(backend: Backend) {
   const nutritionapiStack = backend.createStack('rest-api-stack-nutritionapi');
   const nutritionapiApi = new RestApi(nutritionapiStack, 'RestApi', {
     restApiName: `nutritionapi-${branchName}`,
@@ -143,4 +143,4 @@ export const defineNutritionApi = (backend: Backend) => {
       },
     },
   });
-};
+}

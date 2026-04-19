@@ -3,7 +3,7 @@ import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineStoreLocatorGeofence = (backend: Backend) => {
+export function defineStoreLocatorGeofence(backend: Backend) {
   const storeLocatorGeofenceStack = backend.createStack(
     'geostoreLocatorGeofence'
   );
@@ -21,4 +21,4 @@ export const defineStoreLocatorGeofence = (backend: Backend) => {
     }
   );
   return storeLocatorGeofence;
-};
+}

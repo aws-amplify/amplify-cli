@@ -3,7 +3,7 @@ import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineStoreLocatorSearch = (backend: Backend) => {
+export function defineStoreLocatorSearch(backend: Backend) {
   const storeLocatorSearchStack = backend.createStack('geostoreLocatorSearch');
   const storeLocatorSearch = new geostoreLocatorSearch(
     storeLocatorSearchStack,
@@ -24,4 +24,4 @@ export const defineStoreLocatorSearch = (backend: Backend) => {
     }
   );
   return storeLocatorSearch;
-};
+}

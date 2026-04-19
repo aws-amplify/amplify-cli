@@ -11,7 +11,7 @@ import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineAdminApi = (backend: Backend) => {
+export function defineAdminApi(backend: Backend) {
   const adminapiStack = backend.createStack('rest-api-stack-adminapi');
   const adminapiApi = new RestApi(adminapiStack, 'RestApi', {
     restApiName: `adminapi-${branchName}`,
@@ -104,4 +104,4 @@ export const defineAdminApi = (backend: Backend) => {
       },
     },
   });
-};
+}
