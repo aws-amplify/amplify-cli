@@ -383,27 +383,31 @@ export class Cfn {
       lines.push(`${chalk.bold(logicalId)} (${resourceType}) — ${chalk.yellow(action)}`);
 
       const details = rc.Details ?? [];
-      const propDetails = details.filter((d) => d.Target?.Attribute === 'Properties' && d.Target?.Name);
 
-      for (const detail of propDetails) {
+      for (const detail of details) {
         const target = detail.Target;
-        const propertyPath = target.Path;
+        const attribute = target?.Attribute;
+        if (!target || !attribute) continue;
+        // For Properties, use the property Path (e.g. "BucketName"). For other attributes
+        // (DeletionPolicy, UpdatePolicy, CreationPolicy, Metadata, Tags), CFN omits Path/Name,
+        // so fall back to the attribute name itself.
+        const label = attribute === 'Properties' ? target.Path ?? target.Name ?? attribute : attribute;
         const before = target.BeforeValue;
         const after = target.AfterValue;
 
         lines.push('');
         if (before && after) {
-          lines.push(`  ${propertyPath}:`);
+          lines.push(`  ${label}:`);
           lines.push(`    ${chalk.red(`- ${before}`)}`);
           lines.push(`    ${chalk.green(`+ ${after}`)}`);
         } else if (after) {
-          lines.push(`  ${propertyPath}:`);
+          lines.push(`  ${label}:`);
           lines.push(`    ${chalk.green(`+ ${after}`)}`);
         } else if (before) {
-          lines.push(`  ${propertyPath}:`);
+          lines.push(`  ${label}:`);
           lines.push(`    ${chalk.red(`- ${before}`)}`);
         } else {
-          lines.push(`  ${propertyPath}: (changed)`);
+          lines.push(`  ${label}: (changed)`);
         }
       }
     }

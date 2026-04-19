@@ -32,7 +32,7 @@ export type CFNConditionFunction =
 
 export interface CFNResource {
   readonly Type: string;
-  readonly Properties: Record<string, string | number | object>;
+  readonly Properties: Record<string, string | number | boolean | object>;
   readonly Condition?: string;
 
   // mutable because we change these during `lock`.

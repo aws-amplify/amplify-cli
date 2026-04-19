@@ -302,18 +302,23 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const template = await cfn.fetchTemplate(stackId);
 
     const table = new CLITable({
-      head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
+      head: ['Logical ID', 'Type', 'DeletionPolicy/UpdateReplacePolicy (Before)', 'DeletionPolicy/UpdateReplacePolicy (After)'],
       style: { head: [] },
     });
 
     for (const [logicalId, resource] of Object.entries(template.Resources)) {
-      if (
-        REFACTORED_RESOURCES.includes(resource.Type) &&
-        (resource.DeletionPolicy !== 'Retain' || resource.UpdateReplacePolicy !== 'Retain')
-      ) {
+      const currentDeletion = resource.DeletionPolicy;
+      const currentUpdate = resource.UpdateReplacePolicy;
+      if (REFACTORED_RESOURCES.includes(resource.Type) && (currentDeletion !== 'Retain' || currentUpdate !== 'Retain')) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
-        table.push([logicalId, resource.Type, 'Retain', 'Retain']);
+        table.push([logicalId, resource.Type, `${currentDeletion}/${currentUpdate}`, 'Retain/Retain']);
+      }
+      if (resource.Type === 'AWS::DynamoDB::Table') {
+        resource.Properties['DeletionProtectionEnabled'] = true;
+      }
+      if (resource.Type === 'AWS::Cognito::UserPool') {
+        resource.Properties['DeletionProtection'] = 'ACTIVE';
       }
     }
 
@@ -327,15 +332,19 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       UsePreviousValue: true,
     }));
 
+    this.logger.push(`${stackName} (Create ChangeSet)`);
     const changeSet = await cfn.createChangeSet({
       stackName: stackId,
       templateBody: template,
       parameters,
     });
+    this.logger.pop();
+
+    const changeSetReport = cfn.renderChangeSet(changeSet);
 
     operations.push({
       resource: appResource,
-      describe: async () => [`Set resources to Retain in stack ${stackName}\n\n${table.toString()}`],
+      describe: async () => [`Apply 'Retain' removal policy to the following resources in stack ${stackName}\n${changeSetReport}`],
       validate: () => undefined,
       execute: async () => {
         await cfn.executeChangeSet({
