@@ -257,4 +257,14 @@ describe('auth', () => {
     expect(typeof emoji).toBe('string');
     expect(emoji.length).toBeGreaterThan(0);
   });
+
+  it('getKinesisEvents returns parseable JSON', async () => {
+    const result = await auth().graphql({ query: getKinesisEvents });
+    const raw = (result as any).data.getKinesisEvents;
+
+    expect(typeof raw).toBe('string');
+    const parsed = JSON.parse(raw);
+    expect(parsed).toBeDefined();
+    expect(typeof parsed).toBe('object');
+  });
 });

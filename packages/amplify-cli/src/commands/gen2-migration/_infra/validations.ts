@@ -5,6 +5,7 @@ import {
   DescribeStacksCommand,
   ListStackResourcesCommand,
   GetStackPolicyCommand,
+  GetTemplateCommand,
 } from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
 import CLITable from 'cli-table3';
@@ -160,18 +161,11 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const currentPolicy = JSON.parse(StackPolicyBody);
-    const expectedPolicy = {
-      Statement: [
-        {
-          Effect: 'Deny',
-          Action: 'Update:*',
-          Principal: '*',
-          Resource: '*',
-        },
-      ],
-    };
+    const hasLockStatement = currentPolicy.Statement.some(
+      (s: Record<string, string>) => s.Effect === 'Deny' && s.Action === 'Update:*' && s.Principal === '*' && s.Resource === '*',
+    );
 
-    if (JSON.stringify(currentPolicy) !== JSON.stringify(expectedPolicy)) {
+    if (!hasLockStatement) {
       throw new AmplifyError('MigrationError', {
         message: 'Stack policy does not match expected lock policy',
         resolution: 'Run the lock command to set the correct stack policy.',
@@ -204,6 +198,13 @@ export class AmplifyGen2MigrationValidations {
             logicalId: resource.LogicalResourceId,
           });
         } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
+          if (resource.ResourceType === 'AWS::DynamoDB::Table') {
+            const templateResponse = await this.gen1App.clients.cloudFormation.send(new GetTemplateCommand({ StackName: stackName }));
+            const template = JSON.parse(templateResponse.TemplateBody);
+            if (template.Resources[resource.LogicalResourceId].DeletionPolicy === 'Retain') {
+              continue;
+            }
+          }
           const category = parentCategory || extractCategory(resource.LogicalResourceId || '');
           const physicalId = resource.PhysicalResourceId || 'N/A';
           this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);

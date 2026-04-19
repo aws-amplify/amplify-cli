@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref",
+    "ParameterValue": "amplify-projectboa2604142-amplifyAuthauthenticatedU-1jxM3hVSjIDm"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPI73BB075CApiId",
+    "ParameterValue": "rvxoywjwergpdpazwnark4tqei"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref",
+    "ParameterValue": "amplify-projectboa2604142-amplifyAuthunauthenticate-LvEI2or1a1b4"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775dataamplifyDataGraphQLAPINONEDS68EBE495Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxb2cbfff775authNestedStackauthNestedStackResourceD386B68COutputsamplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref",
+    "ParameterValue": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
+  }
+]

@@ -80,6 +80,10 @@ test('imported-resources snapshot', async () => {
   await testSnapshot('imported-resources');
 });
 
+test('store-locator snapshot', async () => {
+  await testSnapshot('store-locator');
+});
+
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(
     appName,

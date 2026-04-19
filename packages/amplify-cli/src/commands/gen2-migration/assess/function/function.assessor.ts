@@ -19,8 +19,8 @@ export class FunctionAssessor implements Assessor {
 
     assessment.recordResource({
       resource: this.resource,
-      generate: this.isNonJsRuntime(runtime) ? unsupported(`uses non-JS runtime '${runtime}'`) : supported(),
-      refactor: supported(),
+      generate: this.isNonJsRuntime(runtime) ? unsupported('requires adding code after generate') : supported(),
+      refactor: notApplicable(),
     });
 
     const customPoliciesPath = `function/${this.resource.resourceName}/custom-policies.json`;
@@ -28,7 +28,7 @@ export class FunctionAssessor implements Assessor {
     if (this.hasCustomPolicies(customPoliciesPath)) {
       assessment.recordFeature({
         feature: { name: KNOWN_FEATURES.CUSTOM_FUNCTION_POLICIES, path: customPoliciesPath },
-        generate: unsupported('requires manual code changes'),
+        generate: unsupported('requires adding code after generate'),
         refactor: notApplicable(),
       });
     }

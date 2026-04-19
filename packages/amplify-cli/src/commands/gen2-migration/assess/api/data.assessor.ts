@@ -21,7 +21,7 @@ export class DataAssessor implements Assessor {
     if (this.gen1App.fileExists(overridesPath)) {
       assessment.recordFeature({
         feature: { name: KNOWN_FEATURES.OVERRIDES, path: overridesPath },
-        generate: unsupported('requires manual code changes'),
+        generate: unsupported('requires adding code after generate'),
         refactor: notApplicable(),
       });
     }

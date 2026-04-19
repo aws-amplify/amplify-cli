@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifymoodboarde2esandbox685dc54d14functionmoodboardKinesisTriggergen2xlambda7EBA9517Ref",
+    "OutputValue": "moodboardKinesisTrigger-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox685dc54d14functionmoodboardKinesisReadergen2xlambda2566B4CDRef",
+    "OutputValue": "moodboardKinesisReader-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox685dc54d14functionmoodboardGetRandomEmojigen2xlambda9EA3D3D3Ref",
+    "OutputValue": "moodboardGetRandomEmoji-gen2-x"
+  }
+]

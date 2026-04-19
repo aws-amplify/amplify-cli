@@ -2,6 +2,8 @@ import chalk from 'chalk';
 import CLITable from 'cli-table3';
 import { DiscoveredResource } from '../generate/_infra/gen1-app';
 
+const GUIDE_LINK = 'https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage';
+
 /**
  * Support level for a resource or feature dimension.
  */
@@ -143,7 +145,7 @@ export class Assessment {
     const lines: string[] = [];
 
     lines.push('');
-    lines.push(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
+    lines.push(chalk.bold(chalk.cyan(`Assessment For Migrating "${this.appName}" (env: ${this.envName})`)));
 
     if (this._resources.length > 0) {
       lines.push('');
@@ -154,11 +156,16 @@ export class Assessment {
     }
 
     if (this._features.length > 0) {
-      lines.push(chalk.bold('Features'));
+      lines.push(chalk.bold('Advanced Features'));
       lines.push('');
       lines.push(this.renderFeatureTable());
       lines.push('');
     }
+
+    lines.push(chalk.yellow('⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.'));
+    lines.push('');
+    lines.push(chalk.yellow(GUIDE_LINK));
+    lines.push('');
 
     return lines.join('\n');
   }

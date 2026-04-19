@@ -145,10 +145,11 @@ backend.moodboardKinesisReader.addEnvironment('ANALYTICS_MOODBOARDKINESIS_KINESI
   await fs.writeFile(backendPath, content, 'utf-8');
 }
 
-export async function postGenerate(appPath: string, envName = 'sandbox'): Promise<void> {
+export async function postGenerate(appPath: string, envName: string): Promise<void> {
   await updateBranchName(appPath);
   await convertFunctionToESM(appPath, 'moodboardGetRandomEmoji');
   await convertFunctionToESM(appPath, 'moodboardKinesisReader');
+  await convertFunctionToESM(appPath, 'moodboardKinesisTrigger');
   await removeHardcodedKinesisArn(appPath);
   await updateFrontendConfig(appPath);
   await updateSurpriseMeStreamName(appPath, envName);
@@ -156,8 +157,11 @@ export async function postGenerate(appPath: string, envName = 'sandbox'): Promis
 }
 
 async function main(): Promise<void> {
-  const [appPath = process.cwd(), envName] = process.argv.slice(2);
-  await postGenerate(appPath, envName);
+  const [appPath = process.cwd()] = process.argv.slice(2);
+  if (!process.env.ENV_NAME) {
+    throw new Error(`Missing ENV_NAME env variable`);
+  }
+  await postGenerate(appPath, process.env.ENV_NAME);
 }
 
 main().catch((error) => {

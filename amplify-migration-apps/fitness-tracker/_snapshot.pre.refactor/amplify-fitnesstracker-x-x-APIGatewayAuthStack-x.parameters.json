@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "authRoleName",
+    "ParameterValue": "amplify-fitnesstracker-x-x-authRole"
+  },
+  {
+    "ParameterKey": "nutritionapi",
+    "ParameterValue": "ma6towcpja"
+  },
+  {
+    "ParameterKey": "unauthRoleName",
+    "ParameterValue": "amplify-fitnesstracker-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "adminapi",
+    "ParameterValue": "nv2lhk3kt8"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]
