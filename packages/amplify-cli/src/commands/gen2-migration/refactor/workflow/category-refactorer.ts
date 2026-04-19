@@ -95,9 +95,9 @@ export abstract class CategoryRefactorer implements Planner {
 
     const updateSourceOps = await this.updateSource(source);
     const updateTargetOps = await this.updateTarget(target);
-    const beforeMoveOps = await this.beforeMove(blueprint.targetStackId);
+    const beforeMoveOps = await this.beforeMove(blueprint);
     const moveOps = await this.move(blueprint);
-    const afterMoveOps = await this.afterMove(blueprint.sourceStackId);
+    const afterMoveOps = await this.afterMove(blueprint);
 
     const operations = [
       sourceStatusOp,
@@ -138,14 +138,14 @@ export abstract class CategoryRefactorer implements Planner {
    * Forward: moves Gen2 resources to holding stack.
    * Rollback: no-op.
    */
-  protected abstract beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]>;
+  protected abstract beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
   /**
    * Post-move operations.
    * Forward: empty.
    * Rollback: restores holding stack resources into Gen2.
    */
-  protected abstract afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]>;
+  protected abstract afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
   // -- Shared workflow (concrete) --
 

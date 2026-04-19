@@ -109,7 +109,8 @@ export class Assessment {
       (ra) => ra.resource.category === resource.category && ra.resource.resourceName === resource.resourceName,
     );
     if (!entry) {
-      throw new Error(`No assessment recorded for resource '${resource.category}/${resource.resourceName}'`);
+      return { level: 'not-applicable' };
+      // throw new Error(`No assessment recorded for resource '${resource.category}/${resource.resourceName}'`);
     }
     switch (step) {
       case 'generate':

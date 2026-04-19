@@ -1,4 +1,3 @@
-import { CFNResource } from '../../_infra/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { findS3NestedStack, S3_BUCKET_TYPE } from './storage-forward';
 
@@ -17,14 +16,5 @@ export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
 
   protected resourceTypes(): string[] {
     return [S3_BUCKET_TYPE];
-  }
-
-  protected gen1LogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
-    switch (sourceResource.Type) {
-      case S3_BUCKET_TYPE:
-        return 'S3Bucket';
-      default:
-        return undefined;
-    }
   }
 }

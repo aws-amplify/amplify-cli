@@ -9,18 +9,14 @@ import { CUSTOM_RESOURCE_TYPES } from './custom-cdk-forward';
  */
 export class CustomCDKRollbackRefactorer extends RollbackCategoryRefactorer {
   protected async fetchSourceStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen2Branch, 'analytics');
+    return this.findNestedStack(this.gen2Branch, `custom${this.resource.resourceName}`);
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen1Env, 'analytics');
+    return this.findNestedStack(this.gen1Env, `custom${this.resource.resourceName}`);
   }
 
   protected resourceTypes(): string[] {
     return CUSTOM_RESOURCE_TYPES;
-  }
-
-  protected gen1LogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
-    return undefined;
   }
 }

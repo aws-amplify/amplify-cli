@@ -6,7 +6,7 @@ import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
 import { HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY, MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
 
 /**
@@ -28,7 +28,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     sourceStackId: string,
     targetStackId: string,
   ): Promise<ResourceMapping[]> {
-    const holdingStack = await this.cfn.findStack(this.getHoldingStackName(sourceStackId));
+    const holdingStack = await this.cfn.findStack(this.getHoldingStackName(extractStackNameFromId(sourceStackId)));
     if (!holdingStack) {
       // can happen if rollback is executed twice in a row
       return [];
@@ -60,11 +60,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     }
     return mappings;
   }
-
-  /**
-   * Returns the Gen1 logical ID for a Gen2 resource. Sub-classes implement per category.
-   */
-  protected abstract gen1LogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
 
   /**
    * Resolves the Gen2 source stack template for rollback.
@@ -107,7 +102,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    * Rollback: no pre-move operations.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async beforeMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+  protected async beforeMove(_blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
@@ -115,8 +110,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    * Restores holding stack resources into Gen2.
    * Templates are fetched fresh at execution time.
    */
-  protected async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackName = extractStackNameFromId(gen2StackId);
+  protected async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(blueprint.sourceStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
     this.debug(`Locating holding stack: ${holdingStackName}`);

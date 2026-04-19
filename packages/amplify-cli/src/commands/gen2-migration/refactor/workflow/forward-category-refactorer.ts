@@ -1,13 +1,14 @@
 import { Output, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource } from '../../_infra/cfn-template';
+import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
 import { AmplifyMigrationOperation } from '../../_infra/operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
+import { HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY } from '../cfn';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -117,8 +118,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Moves Gen2 resources to a holding stack before the main refactor.
    * Templates are fetched fresh at execution time.
    */
-  protected async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackName = extractStackNameFromId(gen2StackId);
+  protected async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(blueprint.targetStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
     this.debug(`Fetching template of gen2 stack: ${gen2StackName}`);
@@ -174,7 +175,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
-          await this.cfn.refactor(resourceMappings, this.resource);
+          await this.cfn.refactor(resourceMappings, this.resource, async (targetTemplate: CFNTemplate) => {
+            // store the blueprint mappings in the holding stack so we can retrieve them during rollback and auto map
+            // back to gen1 logical ids. append to existing since two source stacks can map to a single target (e.g cognito user pools).
+            const forwardMappings = (targetTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
+            forwardMappings.push(...blueprint.mappings);
+            targetTemplate.Metadata = { [HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY]: forwardMappings };
+          });
         },
       });
     }
@@ -186,7 +193,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Forward: no post-move operations. Holding stack survives for rollback.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async afterMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+  protected async afterMove(_blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
