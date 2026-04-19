@@ -19,7 +19,7 @@ export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
     return [S3_BUCKET_TYPE];
   }
 
-  protected targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
+  protected gen1LogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
     switch (sourceResource.Type) {
       case S3_BUCKET_TYPE:
         return 'S3Bucket';

@@ -7,7 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
 import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
-import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
+import { HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY, MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -28,9 +28,23 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     sourceStackId: string,
     targetStackId: string,
   ): Promise<ResourceMapping[]> {
+    const holdingStack = await this.cfn.findStack(this.getHoldingStackName(sourceStackId));
+    if (!holdingStack) {
+      // can happen if rollback is executed twice in a row
+      return [];
+    }
+
+    const holdingStackTemplate = await this.cfn.fetchTemplate(holdingStack.StackName);
+    const forwardMappings = (holdingStackTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
+
+    function findGen1LogicalId(gen2LogicalId: string) {
+      return forwardMappings.find((m) => m.Destination.LogicalResourceId === gen2LogicalId).Source.LogicalResourceId;
+    }
+
     const mappings: ResourceMapping[] = [];
+
     for (const [sourceId, resource] of sourceResources) {
-      const gen1LogicalId = this.targetLogicalId(sourceId, resource);
+      const gen1LogicalId = findGen1LogicalId(sourceId);
       if (!gen1LogicalId) {
         throw new AmplifyError('MigrationError', {
           message: `Failed building mappings: Unable to determine target id of resource ${sourceId} (${resource.Type})`,
@@ -50,7 +64,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
    * Returns the Gen1 logical ID for a Gen2 resource. Sub-classes implement per category.
    */
-  protected abstract targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
+  protected abstract gen1LogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
 
   /**
    * Resolves the Gen2 source stack template for rollback.
@@ -152,7 +166,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
             holdingStackName,
           )}' to '${extractStackNameFromId(gen2StackName)}'`;
-          const table = this.renderMappingTable(resourceMappings);
+          const table = await this.renderMappingTable(resourceMappings);
           return [`${header}\n\n${table}`];
         },
         execute: async () => {

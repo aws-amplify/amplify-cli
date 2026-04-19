@@ -8,8 +8,8 @@ const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 
-export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
-export const GEN1_WEB_CLIENT = 'UserPoolClientWeb';
+export const GEN1_NATIVE_APP_CLIENT_LOGICAL_ID = 'UserPoolClient';
+export const GEN1_WEB_CLIENT_LOGICAL_ID = 'UserPoolClientWeb';
 
 export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 export const GEN2_WEB_CLIENT = 'UserPoolAppClient';
@@ -71,26 +71,34 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     return parameters;
   }
 
-  protected override match(sourceId: string, sourceResource: CFNResource, targetId: string, targetResource: CFNResource): boolean {
-    if (sourceResource.Type !== targetResource.Type) {
-      return false;
+  protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {
+    if (sourceResource.Type !== USER_POOL_CLIENT_TYPE) {
+      return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
-    switch (sourceResource.Type) {
-      case USER_POOL_CLIENT_TYPE: {
-        switch (sourceId) {
-          case GEN1_WEB_CLIENT:
-            return targetId.includes(GEN2_WEB_CLIENT);
-          case GEN1_NATIVE_APP_CLIENT:
-            return targetId.includes(GEN2_NATIVE_APP_CLIENT);
-          default:
-            throw new AmplifyError('MigrationError', {
-              message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
-            });
-        }
+    let candidates: string[];
+    const targetResourceIds = targetResources.keys();
+
+    switch (sourceId) {
+      case GEN1_WEB_CLIENT_LOGICAL_ID: {
+        candidates = Array.from(targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT)));
+        break;
+      }
+      case GEN1_NATIVE_APP_CLIENT_LOGICAL_ID: {
+        candidates = Array.from(targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT)));
+        break;
       }
       default:
-        return true;
+        throw new AmplifyError('MigrationError', {
+          message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
+        });
     }
+
+    if (candidates.length !== 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to map Gen1 resource ${sourceId} (${sourceResource.Type}) to Gen2 resource`,
+      });
+    }
+    return candidates[0];
   }
 
   protected async fetchSourceStackId(): Promise<string | undefined> {

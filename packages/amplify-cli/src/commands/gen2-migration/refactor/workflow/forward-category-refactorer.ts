@@ -28,15 +28,18 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     sourceStackId: string,
     targetStackId: string,
   ): Promise<ResourceMapping[]> {
-    const usedTargetIds = new Set<string>();
+    // clone since we are mutating
+    const clonedTargetResources = new Map(Array.from(targetResources.entries()).map(([k, v]) => [k, structuredClone(v)]));
+
     const mappings: ResourceMapping[] = [];
     for (const [sourceId, sourceResource] of sourceResources) {
-      const targetId = this.findMatchingTarget(sourceId, sourceResource, targetResources, usedTargetIds, targetStackId);
-      usedTargetIds.add(targetId);
+      const targetId = await this.gen2LogicalId(sourceId, sourceResource, clonedTargetResources);
       mappings.push({
         Source: { StackName: extractStackNameFromId(sourceStackId), LogicalResourceId: sourceId },
         Destination: { StackName: extractStackNameFromId(targetStackId), LogicalResourceId: targetId },
       });
+      // delete so that subsequent resources cannot mistakenly reuse it
+      clonedTargetResources.delete(targetId);
     }
     return mappings;
   }
@@ -45,44 +48,14 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Finds exactly one matching target for a source resource.
    * Throws if zero or multiple matches are found.
    */
-  private findMatchingTarget(
-    sourceId: string,
-    sourceResource: CFNResource,
-    targetResources: Map<string, CFNResource>,
-    usedTargetIds: Set<string>,
-    targetStackId: string,
-  ): string {
-    const matched: string[] = [];
-    for (const [targetId, targetResource] of targetResources) {
-      if (usedTargetIds.has(targetId)) continue;
-      if (this.match(sourceId, sourceResource, targetId, targetResource)) {
-        matched.push(targetId);
-      }
-    }
-    if (matched.length === 0) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `Source resource '${sourceId}' (${
-          sourceResource.Type
-        }) has no corresponding target resource in stack: ${extractStackNameFromId(targetStackId)}`,
+  protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {
+    const candidates = Array.from(targetResources.keys().filter((r) => targetResources.get(r).Type === sourceResource.Type));
+    if (candidates.length !== 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to map Gen1 resource ${sourceId} (${sourceResource.Type}) to Gen2 resource`,
       });
     }
-    if (matched.length > 1) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `Source resource '${sourceId}' (${
-          sourceResource.Type
-        }) has multiple corresponding target resources in stack: ${extractStackNameFromId(targetStackId)}`,
-      });
-    }
-    return matched[0];
-  }
-
-  /**
-   * Returns true if a source resource corresponds to a target resource.
-   * Default: matches by type. Override for disambiguation (e.g., UserPoolClient).
-   */
-  protected match(_sourceId: string, sourceResource: CFNResource, _targetId: string, targetResource: CFNResource): boolean {
-    // default matching - assumes one resource per type in source/target
-    return sourceResource.Type === targetResource.Type;
+    return candidates[0];
   }
 
   /**
@@ -197,7 +170,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
           const header = `Move ${resourceMappings.length} resource(s) from '${gen2StackName}' to '${extractStackNameFromId(
             holdingStackName,
           )}'`;
-          const table = this.renderMappingTable(resourceMappings);
+          const table = await this.renderMappingTable(resourceMappings);
           return [`${header}\n\n${table}`];
         },
         execute: async () => {

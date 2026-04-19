@@ -78,8 +78,13 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceStatusOp = this.buildStackStatusValidation(sourceStackId);
     const destStatusOp = this.buildStackStatusValidation(destStackId);
 
+    this.logger.push(`${extractStackNameFromId(sourceStackId)} (Resolving)`);
     const source = await this.resolveSource(sourceStackId);
+    this.logger.pop();
+
+    this.logger.push(`${extractStackNameFromId(destStackId)} (Resolving)`);
     const target = await this.resolveTarget(destStackId);
+    this.logger.pop();
 
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
@@ -211,7 +216,7 @@ export abstract class CategoryRefactorer implements Planner {
     stack: ResolvedStack,
   ): Promise<{ readonly report: string | undefined; readonly changeSet: DescribeChangeSetOutput } | undefined> {
     const stackName = extractStackNameFromId(stack.stackId);
-    this.logger.push(stackName);
+    this.logger.push(`${stackName} (Creating ChangeSet)`);
     try {
       const changeSet = await this.cfn.createChangeSet({
         stackName: stack.stackId,
@@ -243,7 +248,7 @@ export abstract class CategoryRefactorer implements Planner {
         validate: () => undefined,
         describe: async () => {
           const header = `Move ${blueprint.mappings.length} resource(s) from '${sourceStackName}' to '${targetStackName}'`;
-          const table = this.renderMappingTable(blueprint.mappings);
+          const table = await this.renderMappingTable(blueprint.mappings);
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
@@ -285,13 +290,20 @@ export abstract class CategoryRefactorer implements Planner {
   /**
    * Renders a CLI table of move mappings.
    */
-  protected renderMappingTable(mappings: readonly ResourceMapping[]): string {
+  protected async renderMappingTable(mappings: readonly ResourceMapping[]): Promise<string> {
     const table = new CLITable({
-      head: ['Source Logical ID', 'Target Logical ID'],
+      head: ['Type', 'Source Logical ID', 'Target Logical ID'],
       style: { head: [] },
     });
+
+    const sourceResources = await this.gen2Branch.fetchStackResources(mappings[0].Source.StackName);
+
+    function findResourceType(logicalId: string) {
+      return sourceResources.find((r) => r.LogicalResourceId === logicalId)?.ResourceType;
+    }
+
     for (const m of mappings) {
-      table.push([m.Source.LogicalResourceId, m.Destination.LogicalResourceId]);
+      table.push([findResourceType(m.Source.LogicalResourceId), m.Source.LogicalResourceId, m.Destination.LogicalResourceId]);
     }
     return `${table.toString()}`;
   }

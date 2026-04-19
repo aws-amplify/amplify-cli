@@ -21,6 +21,8 @@ import { Cfn } from './refactor/cfn';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './assess';
+import { CustomCDKRollbackRefactorer } from './refactor/custom/custom-cdk-rollback';
+import { CustomCDKForwardRefactorer } from './refactor/custom/custom-cdk-forward';
 
 const GUIDE_LINK = 'https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#5-refactor';
 
@@ -62,6 +64,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           break;
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
+          break;
+        case 'custom:customCDK':
+          refactorers.push(new CustomCDKForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
 
         // stateless resources — nothing to refactor
@@ -145,6 +150,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           refactorers.push(
             new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
+          break;
+        case 'custom:customCDK':
+          refactorers.push(new CustomCDKRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
 
         // stateless resources — nothing to refactor

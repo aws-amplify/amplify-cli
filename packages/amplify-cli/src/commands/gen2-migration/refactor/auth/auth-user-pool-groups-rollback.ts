@@ -20,7 +20,7 @@ export class AuthUserPoolGroupsRollbackRefactorer extends RollbackCategoryRefact
     return this.findNestedStack(this.gen1Env, `auth${this.resource.resourceName}`);
   }
 
-  protected targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
+  protected gen1LogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
     switch (sourceResource.Type) {
       case USER_POOL_GROUP_TYPE:
         return `${sourceResource.Properties['GroupName']}Group`;

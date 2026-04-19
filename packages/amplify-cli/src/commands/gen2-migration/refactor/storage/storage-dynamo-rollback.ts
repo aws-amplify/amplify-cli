@@ -20,7 +20,7 @@ export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer 
     return [DYNAMO_TABLE_TYPE];
   }
 
-  protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
+  protected gen1LogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
     switch (sourceResource.Type) {
       case DYNAMO_TABLE_TYPE:
         return 'DynamoDBTable';

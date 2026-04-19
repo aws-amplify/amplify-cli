@@ -45,7 +45,9 @@ export function resolveOutputs(params: {
     // {"Ref": "LogicalId"} → replace with stack output value from Ref-based outputs
     if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
       const value = refLookup.get(node.Ref);
-      if (value !== undefined) return value;
+      const physicalId = stackResources.find((r) => r.LogicalResourceId === node.Ref)?.PhysicalResourceId;
+      const resolved = value ?? physicalId;
+      if (resolved !== undefined) return resolved;
     }
 
     // {"Fn::GetAtt": ["LogicalId", "AttrName"]} → resolve via GetAtt-based outputs + ARN builder

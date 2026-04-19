@@ -27,10 +27,10 @@ async function main(): Promise<void> {
       description: 'AWS profile to use',
       string: true,
     })
-    .option('step', {
+    .option('flow', {
       type: 'string',
-      description: 'Stop migration workflow at this step',
-      choices: ['deploy', 'migrate'],
+      description: 'E2E flow to execute on the app',
+      choices: ['deploy:gen1', 'deploy:gen2', 'migrate'],
       string: true,
     })
     .help()
@@ -49,19 +49,22 @@ async function main(): Promise<void> {
     throw new Error('--profile must be specified');
   }
 
-  const step = argv.step ?? 'migrate';
+  const flow = argv.flow ?? 'migrate';
 
   const app = new App(argv.app, argv.profile, argv.verbose);
   try {
-    switch (step) {
-      case 'deploy':
-        await app.deploy();
+    switch (flow) {
+      case 'deploy:gen1':
+        await app.deployGen1();
+        break;
+      case 'deploy:gen2':
+        await app.deployGen2();
         break;
       case 'migrate':
         await app.migrate();
         break;
       default:
-        throw new Error(`Unrecognized step: ${step}`);
+        throw new Error(`Unrecognized flow: ${flow}`);
     }
     if (process.env.UPDATE_SNAPSHOTS === '1') {
       app.updateSnapshots();

@@ -109,91 +109,13 @@ export class App {
   }
 
   // ============================================================
-  // Gen1 Lifecycle
+  // E2E Flow
   // ============================================================
-
-  /**
-   * Run `amplify init` to initialize the Gen1 project.
-   */
-  public async init(): Promise<void> {
-    this.logger.info('amplify init');
-    const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
-    const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
-
-    await initJSProjectWithProfile(this.targetAppPath, {
-      name: this.deploymentName,
-      envName: this.envName,
-      editor: 'Visual Studio Code',
-      framework,
-      srcDir: 'src',
-      distDir: 'dist',
-      buildCmd: 'npm run build',
-      startCmd: 'npm run start',
-      disableAmplifyAppCreation: false,
-      profileName: this.profile,
-    });
-    this.logger.info('amplify init completed');
-  }
-
-  /**
-   * Restore the pre-generate snapshot into the amplify/ directory.
-   */
-  public async configure(): Promise<void> {
-    this.logger.info('Configuring categories...');
-    const restore = (p: string): void => {
-      fs.removeSync(path.join(this.targetAppPath, 'amplify', p));
-      fs.copySync(path.join(this.targetAppPath, '.amplify.init', p), path.join(this.targetAppPath, 'amplify', p));
-    };
-
-    const metaPath = path.join(this.targetAppPath, 'amplify', 'backend', 'amplify-meta.json');
-    const oldMeta = JSON.parse(fs.readFileSync(metaPath, { encoding: 'utf-8' })) as { providers: Record<string, unknown> };
-
-    fs.moveSync(path.join(this.targetAppPath, 'amplify'), path.join(this.targetAppPath, '.amplify.init'));
-    fs.copySync(path.join(this.sourceAppPath, '_snapshot.pre.generate', 'amplify'), path.join(this.targetAppPath, 'amplify'));
-
-    restore('#current-cloud-backend');
-    restore('.config');
-    restore('team-provider-info.json');
-
-    const newMeta = JSON.parse(fs.readFileSync(metaPath, { encoding: 'utf-8' })) as { providers: Record<string, unknown> };
-    newMeta.providers['awscloudformation'] = oldMeta.providers['awscloudformation'];
-    fs.writeFileSync(metaPath, JSON.stringify(newMeta, null, 2));
-    fs.removeSync(path.join(this.targetAppPath, '.amplify.init'));
-    this.removeGitignoreLine('amplifyconfiguration.json');
-    this.logger.info('Categories configured');
-  }
-
-  /**
-   * Run `npm install` in the target directory.
-   */
-  public async installDeps(): Promise<void> {
-    this.logger.info('Installing dependencies...');
-    await execa('npm', ['install'], { cwd: this.targetAppPath });
-    this.logger.info('Finished installing dependencies');
-  }
-
-  /**
-   * Run `amplify status`.
-   */
-  public async status(): Promise<void> {
-    this.logger.info('amplify status');
-    await this.runAmplify(['status'], { stdio: 'inherit' });
-    this.logger.info('amplify status completed');
-  }
-
-  /**
-   * Run `amplify push --yes`.
-   */
-  public async push(): Promise<void> {
-    this.logger.info('amplify push');
-    await this.runAmplify(['push', '--yes', '--debug']);
-    this.logger.info('amplify push completed');
-  }
 
   /**
    * Runs all steps to fully deploy the Gen1 app.
    */
-  public async deploy(): Promise<void> {
+  public async deployGen1(): Promise<void> {
     await this.git.init();
     await this.init();
     await this.configure();
@@ -210,15 +132,11 @@ export class App {
     console.log('');
   }
 
-  // ============================================================
-  // Gen2 Migration
-  // ============================================================
-
   /**
-   * Runs the full migration workflow
+   * Runs all steps to fully deploy the Gen2 app.
    */
-  public async migrate(): Promise<void> {
-    await this.deploy();
+  public async deployGen2(): Promise<string> {
+    await this.deployGen1();
     await this.assess();
     await this.lock();
     await this.git.checkout(this.gen2BranchName, true);
@@ -242,6 +160,14 @@ export class App {
     await this.testGen1();
     await this.testGen2();
 
+    return gen2StackName;
+  }
+
+  /**
+   * Runs the full migration workflow
+   */
+  public async migrate(): Promise<void> {
+    const gen2StackName = await this.deployGen2();
     const gen1StackName = await this.findGen1RootStack();
 
     this.logger.info(`Capturing pre.refactor snapshot`);
@@ -279,146 +205,6 @@ export class App {
   }
 
   /**
-   * Run `amplify gen2-migration assess`.
-   */
-  public async assess(): Promise<void> {
-    await this.runMigrationStep('assess');
-  }
-
-  /**
-   * Run `amplify gen2-migration lock`.
-   */
-  public async lock(): Promise<void> {
-    const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
-    await this.runMigrationStep('lock', extraArgs);
-  }
-
-  /**
-   * Run `amplify gen2-migration generate`.
-   */
-  public async generate(): Promise<void> {
-    await this.runMigrationStep('generate');
-    this.removeGitignoreLine('amplify_outputs*');
-  }
-
-  /**
-   * Run `amplify gen2-migration refactor`.
-   */
-  public async refactor(gen2StackName: string): Promise<void> {
-    const extraArgs = ['--to', gen2StackName];
-    if (this.migrationConfig.refactor?.skipValidations) {
-      extraArgs.push('--skip-validations');
-    }
-    await this.runMigrationStep('refactor', extraArgs);
-  }
-
-  /**
-   * Deploy Gen2 app using `npx ampx sandbox --once`.
-   * Returns the Gen2 root stack name.
-   */
-  public async deployGen2Sandbox(): Promise<string> {
-    this.logger.info('Deploying Gen2 app using ampx sandbox...');
-    const startTime = Date.now();
-
-    const result = await execa('npx', ['ampx', 'sandbox', '--once', '--identifier', 'e2e'], {
-      cwd: this.targetAppPath,
-      reject: false,
-      stdio: 'inherit',
-      env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
-    });
-
-    if (result.exitCode !== 0) {
-      throw new Error('ampx sandbox failed');
-    }
-
-    this.logger.info(`ampx sandbox completed (${Date.now() - startTime}ms)`);
-
-    const stackPrefix = `amplify-${this.deploymentName}-e2e-sandbox`;
-    return this.findGen2RootStack(stackPrefix);
-  }
-
-  // ============================================================
-  // App Tests
-  // ============================================================
-
-  /**
-   * Run the Jest tests against the Gen1 config.
-   */
-  public async testGen1(): Promise<void> {
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.runNpmScript('test:gen1');
-  }
-
-  /**
-   * Run the Jest tests against the Gen2 config.
-   */
-  public async testGen2(): Promise<void> {
-    await this.git.checkout(this.gen2BranchName, false);
-    await this.runNpmScript('test:gen2');
-  }
-
-  // ============================================================
-  // App Hooks
-  // ============================================================
-
-  /**
-   * Run the Jest tests that validate stateful resources are shared.
-   */
-  public async testSharedData(): Promise<void> {
-    await this.git.checkout(this.gen2BranchName, false);
-
-    // these tests require both config files, so pull the gen1 config into the gen2 branch
-    await this.git.run('checkout', this.gen1BranchName, '--', 'src/amplifyconfiguration.json');
-    await this.runNpmScript('test:shared-data');
-  }
-
-  // ============================================================
-  // App Hooks
-  // ============================================================
-
-  /**
-   * Run the pre-push script.
-   */
-  public async prePush(): Promise<void> {
-    await this.runNpmScript('pre-push');
-  }
-
-  /**
-   * Run the post-push script.
-   */
-  public async postPush(): Promise<void> {
-    await this.runNpmScript('post-push');
-  }
-
-  /**
-   * Run the post-generate script.
-   */
-  public async postGenerate(): Promise<void> {
-    await this.runNpmScript('post-generate', { AWS_BRANCH: 'sandbox' });
-  }
-
-  /**
-   * Run the post-refactor script.
-   */
-  public async postRefactor(): Promise<void> {
-    await this.runNpmScript('post-refactor');
-  }
-
-  /**
-   * Run the post-sandbox script with the Gen2 root stack name.
-   */
-  public async postSandbox(gen2StackName: string): Promise<void> {
-    await this.runNpmScript('post-sandbox', { APP_GEN2_ROOT_STACK_NAME: gen2StackName });
-  }
-
-  /**
-   * Run the pre-sandbox script.
-   */
-  public async preSandbox(): Promise<void> {
-    await this.runNpmScript('pre-sandbox');
-  }
-
-  /**
    * Sanitizes and copies captured snapshots back to the source app directory.
    */
   public updateSnapshots(): void {
@@ -439,8 +225,168 @@ export class App {
     }
   }
 
+  private async init(): Promise<void> {
+    this.logger.info('amplify init');
+    const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
+    const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
+
+    await initJSProjectWithProfile(this.targetAppPath, {
+      name: this.deploymentName,
+      envName: this.envName,
+      editor: 'Visual Studio Code',
+      framework,
+      srcDir: 'src',
+      distDir: 'dist',
+      buildCmd: 'npm run build',
+      startCmd: 'npm run start',
+      disableAmplifyAppCreation: false,
+      profileName: this.profile,
+    });
+    this.logger.info('amplify init completed');
+  }
+
+  private async configure(): Promise<void> {
+    this.logger.info('Configuring categories...');
+    const restore = (p: string): void => {
+      fs.removeSync(path.join(this.targetAppPath, 'amplify', p));
+      fs.copySync(path.join(this.targetAppPath, '.amplify.init', p), path.join(this.targetAppPath, 'amplify', p));
+    };
+
+    const metaPath = path.join(this.targetAppPath, 'amplify', 'backend', 'amplify-meta.json');
+    const oldMeta = JSON.parse(fs.readFileSync(metaPath, { encoding: 'utf-8' })) as { providers: Record<string, unknown> };
+
+    fs.moveSync(path.join(this.targetAppPath, 'amplify'), path.join(this.targetAppPath, '.amplify.init'));
+    fs.copySync(path.join(this.sourceAppPath, '_snapshot.pre.generate', 'amplify'), path.join(this.targetAppPath, 'amplify'));
+
+    restore('#current-cloud-backend');
+    restore('.config');
+    restore('team-provider-info.json');
+
+    const newMeta = JSON.parse(fs.readFileSync(metaPath, { encoding: 'utf-8' })) as { providers: Record<string, unknown> };
+    newMeta.providers['awscloudformation'] = oldMeta.providers['awscloudformation'];
+    fs.writeFileSync(metaPath, JSON.stringify(newMeta, null, 2));
+    fs.removeSync(path.join(this.targetAppPath, '.amplify.init'));
+    this.removeGitignoreLine('amplifyconfiguration.json');
+    this.logger.info('Categories configured');
+  }
+
+  private async installDeps(): Promise<void> {
+    this.logger.info('Installing dependencies...');
+    await execa('npm', ['install'], { cwd: this.targetAppPath });
+    this.logger.info('Finished installing dependencies');
+  }
+
+  private async status(): Promise<void> {
+    this.logger.info('amplify status');
+    await this.runAmplify(['status'], { stdio: 'inherit' });
+    this.logger.info('amplify status completed');
+  }
+
+  private async push(): Promise<void> {
+    this.logger.info('amplify push');
+    await this.runAmplify(['push', '--yes', '--debug']);
+    this.logger.info('amplify push completed');
+  }
+
   // ============================================================
-  // Private Helpers
+  // Gen2 Migration Steps
+  // ============================================================
+
+  private async assess(): Promise<void> {
+    await this.runMigrationStep('assess');
+  }
+
+  private async lock(): Promise<void> {
+    const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
+    await this.runMigrationStep('lock', extraArgs);
+  }
+
+  private async generate(): Promise<void> {
+    await this.runMigrationStep('generate');
+    this.removeGitignoreLine('amplify_outputs*');
+  }
+
+  private async deployGen2Sandbox(): Promise<string> {
+    this.logger.info('Deploying Gen2 app using ampx sandbox...');
+    const startTime = Date.now();
+
+    const result = await execa('npx', ['ampx', 'sandbox', '--once', '--identifier', 'e2e'], {
+      cwd: this.targetAppPath,
+      reject: false,
+      stdio: 'inherit',
+      env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
+    });
+
+    if (result.exitCode !== 0) {
+      throw new Error('ampx sandbox failed');
+    }
+
+    this.logger.info(`ampx sandbox completed (${Date.now() - startTime}ms)`);
+
+    const stackPrefix = `amplify-${this.deploymentName}-e2e-sandbox`;
+    return this.findGen2RootStack(stackPrefix);
+  }
+
+  private async refactor(gen2StackName: string): Promise<void> {
+    const extraArgs = ['--to', gen2StackName];
+    if (this.migrationConfig.refactor?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+    await this.runMigrationStep('refactor', extraArgs);
+  }
+
+  // ============================================================
+  // App Tests
+  // ============================================================
+
+  private async testGen1(): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.runNpmScript('test:gen1');
+  }
+
+  private async testGen2(): Promise<void> {
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.runNpmScript('test:gen2');
+  }
+
+  private async testSharedData(): Promise<void> {
+    await this.git.checkout(this.gen2BranchName, false);
+
+    // these tests require both config files, so pull the gen1 config into the gen2 branch
+    await this.git.run('checkout', this.gen1BranchName, '--', 'src/amplifyconfiguration.json');
+    await this.runNpmScript('test:shared-data');
+  }
+
+  // ============================================================
+  // App Hooks
+  // ============================================================
+
+  private async prePush(): Promise<void> {
+    await this.runNpmScript('pre-push');
+  }
+
+  private async postPush(): Promise<void> {
+    await this.runNpmScript('post-push');
+  }
+
+  private async postGenerate(): Promise<void> {
+    await this.runNpmScript('post-generate', { AWS_BRANCH: 'sandbox' });
+  }
+
+  private async postRefactor(): Promise<void> {
+    await this.runNpmScript('post-refactor');
+  }
+
+  private async postSandbox(gen2StackName: string): Promise<void> {
+    await this.runNpmScript('post-sandbox', { APP_GEN2_ROOT_STACK_NAME: gen2StackName });
+  }
+
+  private async preSandbox(): Promise<void> {
+    await this.runNpmScript('pre-sandbox');
+  }
+
+  // ============================================================
+  // Helpers
   // ============================================================
 
   private removeGitignoreLine(line: string): void {

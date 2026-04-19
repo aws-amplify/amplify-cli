@@ -47,6 +47,7 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
 
 export const HOLDING_STACK_NAME_SUFFIX = '-holding';
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
+export const HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY = 'ForwardMappings';
 export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
@@ -141,7 +142,9 @@ export class Cfn {
 
     const sourceTemplate = await this.fetchTemplate(sourceStackId);
     const sourceTemplateClone = JSON.parse(JSON.stringify(sourceTemplate)) as CFNTemplate;
-    const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
+    const targetTemplate: CFNTemplate = targetStack
+      ? await this.fetchTemplate(targetStackId)
+      : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
 
     for (const mapping of resourceMappings) {
       if (mapping.Destination.LogicalResourceId in targetTemplate.Resources) {
@@ -167,6 +170,15 @@ export class Cfn {
         resource,
       });
       this.info(`Finished adding placeholder to source stack '${sourceStackName}'`);
+    }
+
+    if (targetStackName.endsWith(HOLDING_STACK_NAME_SUFFIX)) {
+      // store the forward mappings so we can retrieve them during rollback.
+      // this logic should be moved to the caller. append to existing since
+      // two source stacks can map to a single target (e.g cognito user pools).
+      const forwardMappings = (targetTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
+      forwardMappings.push(...resourceMappings);
+      targetTemplate.Metadata = { [HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY]: forwardMappings };
     }
 
     const input: CreateStackRefactorCommandInput = {

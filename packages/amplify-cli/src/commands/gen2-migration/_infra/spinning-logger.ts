@@ -146,6 +146,29 @@ export class SpinningLogger {
     this.spinner.start(this.buildSpinnerText());
   }
 
+  public pause() {
+    if (this.spinnerActive && !this.debugMode) {
+      this.spinner.stop();
+    }
+  }
+
+  public resume() {
+    this.spinner.start(this.buildSpinnerText());
+  }
+
+  /**
+   * Temporarily pauses the spinner, runs fn, then resumes.
+   */
+  public async withSpinnerPausedAsync(fn: () => Promise<void>): Promise<void> {
+    if (!this.spinnerActive || this.debugMode) {
+      await fn();
+      return;
+    }
+    this.spinner.stop();
+    await fn();
+    this.spinner.start(this.buildSpinnerText());
+  }
+
   private buildSpinnerText(): string {
     return this.segments.join(SpinningLogger.SEPARATOR);
   }
