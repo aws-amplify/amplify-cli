@@ -6,9 +6,8 @@
  * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH
  *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert quotegenerator function from CommonJS to ESM
- * 3. Convert PreTokenGeneration trigger function from CommonJS to ESM
- * 4. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
- * 5. Fix missing awsRegion in GraphQL API userPoolConfig
+ * 3. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
+ * 4. Fix missing awsRegion in GraphQL API userPoolConfig
  */
 
 import { execSync } from 'child_process';
@@ -58,48 +57,6 @@ async function convertQuotegeneratorToESM(appPath: string): Promise<void> {
   await fs.writeFile(handlerPath, updated, 'utf-8');
 }
 
-async function findPreTokenGenerationDir(appPath: string): Promise<string> {
-  const authDir = path.join(appPath, 'amplify', 'auth');
-  const entries = await fs.readdir(authDir);
-  const match = entries.find((e) => e.startsWith('projectboards') && e.includes('PreTokenGeneration'));
-  if (!match) throw new Error('PreTokenGeneration directory not found under amplify/auth/');
-  return path.join(authDir, match);
-}
-
-async function convertPreTokenGenerationToESM(appPath: string): Promise<void> {
-  const preTokenDir = await findPreTokenGenerationDir(appPath);
-
-  // Convert index.js
-  const indexPath = path.join(preTokenDir, 'index.js');
-  let indexContent = await fs.readFile(indexPath, 'utf-8');
-
-  // Replace dynamic require with static import
-  indexContent = indexContent.replace(
-    /const modules = moduleNames\.map\(\(name\) => require\(`\.\/\$\{name\}`\)\);/,
-    "const modules = [await import('./alter-claims.js')];",
-  );
-
-  // exports.handler = async (event, context) => { → export async function handler(event, context) {
-  indexContent = indexContent.replace(
-    /exports\.handler\s*=\s*async\s*\((\w+(?:,\s*\w+)*)\)\s*=>\s*\{/g,
-    'export async function handler($1) {',
-  );
-
-  await fs.writeFile(indexPath, indexContent, 'utf-8');
-
-  // Convert alter-claims.js
-  const alterClaimsPath = path.join(preTokenDir, 'alter-claims.js');
-  let alterClaimsContent = await fs.readFile(alterClaimsPath, 'utf-8');
-
-  // exports.handler = async (event) => { → export async function handler(event) {
-  alterClaimsContent = alterClaimsContent.replace(
-    /exports\.handler\s*=\s*async\s*\((\w+)\)\s*=>\s*\{/g,
-    'export async function handler($1) {',
-  );
-
-  await fs.writeFile(alterClaimsPath, alterClaimsContent, 'utf-8');
-}
-
 async function updateFrontendConfig(appPath: string): Promise<void> {
   const mainPath = path.join(appPath, 'src', 'main.tsx');
 
@@ -116,7 +73,6 @@ async function updateFrontendConfig(appPath: string): Promise<void> {
 export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertQuotegeneratorToESM(appPath);
-  await convertPreTokenGenerationToESM(appPath);
   await updateFrontendConfig(appPath);
 }
 
