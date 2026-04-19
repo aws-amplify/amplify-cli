@@ -1,9 +1,9 @@
 import { geostoreLocatorGeofence } from './storeLocatorGeofence-construct';
-import { Backend } from '@aws-amplify/backend';
+import { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
+export const defineStoreLocatorGeofence = (backend: Backend) => {
   const storeLocatorGeofenceStack = backend.createStack(
     'geostoreLocatorGeofence'
   );

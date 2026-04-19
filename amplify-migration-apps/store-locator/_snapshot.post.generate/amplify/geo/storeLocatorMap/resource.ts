@@ -1,9 +1,9 @@
 import { geostoreLocatorMap } from './storeLocatorMap-construct';
-import { Backend } from '@aws-amplify/backend';
+import { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineStoreLocatorMap = (backend: Backend<any>) => {
+export const defineStoreLocatorMap = (backend: Backend) => {
   const storeLocatorMapStack = backend.createStack('geostoreLocatorMap');
   const storeLocatorMap = new geostoreLocatorMap(
     storeLocatorMapStack,

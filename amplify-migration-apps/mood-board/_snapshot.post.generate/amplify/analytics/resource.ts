@@ -1,10 +1,10 @@
 import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
 import { analyticsmoodboardKinesis } from './moodboardKinesis-construct';
-import { Backend } from '@aws-amplify/backend';
+import { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineAnalytics = (backend: Backend<any>) => {
+export const defineAnalytics = (backend: Backend) => {
   const analyticsStack = backend.createStack('analytics');
   const analytics = new analyticsmoodboardKinesis(
     analyticsStack,

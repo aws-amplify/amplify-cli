@@ -1,9 +1,9 @@
 import { defineStoreLocatorMap } from './storeLocatorMap/resource';
 import { defineStoreLocatorSearch } from './storeLocatorSearch/resource';
 import { defineStoreLocatorGeofence } from './storeLocatorGeofence/resource';
-import { Backend } from '@aws-amplify/backend';
+import { Backend } from '../backend';
 
-export const defineGeo = (backend: Backend<any>) => {
+export const defineGeo = (backend: Backend) => {
   const storeLocatorMap = defineStoreLocatorMap(backend);
   const storeLocatorSearch = defineStoreLocatorSearch(backend);
   const storeLocatorGeofence = defineStoreLocatorGeofence(backend);
