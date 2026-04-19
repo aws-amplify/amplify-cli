@@ -77,7 +77,7 @@ function cfnDriftConsoleUrl(stackArn: string): string | undefined {
 /**
  * Build CloudFormation console URL for a changeset details page
  */
-function cfnChangesetConsoleUrl(changeSetArn: string, stackArn?: string): string | undefined {
+export function cfnChangesetConsoleUrl(changeSetArn: string, stackArn?: string): string | undefined {
   const region = regionFromArn(changeSetArn);
   if (!region) return undefined;
   const encodedStackId = encodeURIComponent(stackArn || '');

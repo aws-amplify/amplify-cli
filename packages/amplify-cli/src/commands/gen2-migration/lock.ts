@@ -9,9 +9,8 @@ import {
   StackResource,
 } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
-import { UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
+import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './generate/_infra/gen1-app';
-import CLITable from 'cli-table3';
 import { extractStackNameFromId } from './refactor/utils';
 import { Cfn } from './refactor/cfn';
 import { REFACTORED_RESOURCES } from './_infra/resource-types';
@@ -118,7 +117,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         case 'api:AppSync': {
           const apiStackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
           const apiNestedStacks = await this.listNestedStack(apiStackId);
-          operations.push(...(await this.enableModelTablesDeletionProtection(resource)));
           for (const tableName of await this.dynamoTableNames()) {
             const modelName = tableName.split('-')[0];
             this.logger.push(modelName);
@@ -272,27 +270,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     return this._dynamoTableNames;
   }
 
-  private async enableModelTablesDeletionProtection(resource: DiscoveredResource): Promise<AmplifyMigrationOperation[]> {
-    const operations = [];
-    for (const tableName of await this.dynamoTableNames()) {
-      operations.push({
-        resource,
-        validate: () => undefined,
-        describe: async () => [`Enable deletion protection for table '${tableName}'`],
-        execute: async () => {
-          await this.gen1App.clients.dynamoDB.send(
-            new UpdateTableCommand({
-              TableName: tableName,
-              DeletionProtectionEnabled: true,
-            }),
-          );
-          this.logger.info(`Enabled deletion protection for table '${tableName}'`);
-        },
-      });
-    }
-    return operations;
-  }
-
   private async retainResource(appResource: DiscoveredResource, stackId: string): Promise<AmplifyMigrationOperation[]> {
     const operations = [];
 
@@ -301,29 +278,19 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const stackName = extractStackNameFromId(stackId);
     const template = await cfn.fetchTemplate(stackId);
 
-    const table = new CLITable({
-      head: ['Logical ID', 'Type', 'DeletionPolicy/UpdateReplacePolicy (Before)', 'DeletionPolicy/UpdateReplacePolicy (After)'],
-      style: { head: [] },
-    });
-
-    for (const [logicalId, resource] of Object.entries(template.Resources)) {
-      const currentDeletion = resource.DeletionPolicy;
-      const currentUpdate = resource.UpdateReplacePolicy;
-      if (REFACTORED_RESOURCES.includes(resource.Type) && (currentDeletion !== 'Retain' || currentUpdate !== 'Retain')) {
+    for (const resource of Object.values(template.Resources)) {
+      if (REFACTORED_RESOURCES.includes(resource.Type)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
-        table.push([logicalId, resource.Type, `${currentDeletion}/${currentUpdate}`, 'Retain/Retain']);
       }
       if (resource.Type === 'AWS::DynamoDB::Table') {
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
         resource.Properties['DeletionProtectionEnabled'] = true;
       }
       if (resource.Type === 'AWS::Cognito::UserPool') {
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cognito-userpool.html#cfn-cognito-userpool-deletionprotection
         resource.Properties['DeletionProtection'] = 'ACTIVE';
       }
-    }
-
-    if (table.length === 0) {
-      return [];
     }
 
     const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
@@ -340,11 +307,15 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
     this.logger.pop();
 
+    if (!changeSet) {
+      return [];
+    }
+
     const changeSetReport = cfn.renderChangeSet(changeSet);
 
     operations.push({
       resource: appResource,
-      describe: async () => [`Apply 'Retain' removal policy to the following resources in stack ${stackName}\n${changeSetReport}`],
+      describe: async () => [`Apply the following ChangeSet to stack ${stackName}\n\n${changeSetReport}\n`],
       validate: () => undefined,
       execute: async () => {
         await cfn.executeChangeSet({
