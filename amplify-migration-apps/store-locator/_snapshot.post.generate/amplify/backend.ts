@@ -8,9 +8,15 @@ const backend = defineBackend({
   storelocator41a9495f41a9495fPostConfirmation: storelocator41a9495f41a9495fPostConfirmation.storelocator41a9495f41a9495fPostConfirmation,
 });
 
-geo.defineGeo(backend);
-
 export type Backend = typeof backend;
+
+export function postRefactor() {
+}
+
+geo.defineGeo(backend);
 
 auth.applyEscapeHatches(backend);
 storelocator41a9495f41a9495fPostConfirmation.applyEscapeHatches(backend);
+
+// Uncomment after refactor
+// postRefactor();

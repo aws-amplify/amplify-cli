@@ -16,9 +16,9 @@ const backend = defineBackend({
   moodboardKinesisTrigger: moodboardKinesisTrigger.moodboardKinesisTrigger,
 });
 
-const analyticsResult = analytics.defineAnalytics(backend);
-
 export type Backend = typeof backend;
+
+const analyticsResult = analytics.defineAnalytics(backend);
 
 export function postRefactor() {
   storage.postRefactor(backend);

@@ -15,10 +15,10 @@ const backend = defineBackend({
   recorduseractivity: recorduseractivity.recorduseractivity,
 });
 
+export type Backend = typeof backend;
+
 const activity = storageActivity.defineStorageActivity(backend);
 const bookmarks = storageBookmarks.defineStorageBookmarks(backend);
-
-export type Backend = typeof backend;
 
 export function postRefactor() {
   storage.postRefactor(backend);

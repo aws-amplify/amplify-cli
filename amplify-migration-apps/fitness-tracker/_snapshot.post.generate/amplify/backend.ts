@@ -15,13 +15,19 @@ const backend = defineBackend({
   admin: admin.admin,
 });
 
+export type Backend = typeof backend;
+
+export function postRefactor() {
+}
+
 nutritionapi.defineNutritionApi(backend);
 adminapi.defineAdminApi(backend);
-
-export type Backend = typeof backend;
 
 auth.applyEscapeHatches(backend);
 data.applyEscapeHatches(backend);
 fitnesstracker33f5545533f55455PreSignup.applyEscapeHatches(backend);
 lognutrition.applyEscapeHatches(backend);
 admin.applyEscapeHatches(backend);
+
+// Uncomment after refactor
+// postRefactor();
