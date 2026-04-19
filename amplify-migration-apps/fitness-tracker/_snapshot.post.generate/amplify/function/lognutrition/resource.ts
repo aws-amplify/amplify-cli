@@ -12,9 +12,9 @@ export const lognutrition = defineFunction({
   runtime: 22,
 });
 
-export const escape = (backend: Backend) => {
-
+export function applyEscapeHatches(backend: Backend) {
   backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
+  
   backend.lognutrition.addEnvironment(
     'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
     backend.data.apiId
@@ -27,5 +27,23 @@ export const escape = (backend: Backend) => {
     'API_FITNESSTRACKER_MEALTABLE_NAME',
     backend.data.resources.tables['Meal'].tableName
   );
-
+  backend.data.resources.tables['Meal'].grant(
+    backend.lognutrition.resources.lambda,
+    'dynamodb:Put*',
+    'dynamodb:Create*',
+    'dynamodb:BatchWriteItem',
+    'dynamodb:PartiQLInsert',
+    'dynamodb:Get*',
+    'dynamodb:BatchGetItem',
+    'dynamodb:List*',
+    'dynamodb:Describe*',
+    'dynamodb:Scan',
+    'dynamodb:Query',
+    'dynamodb:PartiQLSelect',
+    'dynamodb:Update*',
+    'dynamodb:RestoreTable*',
+    'dynamodb:PartiQLUpdate',
+    'dynamodb:Delete*',
+    'dynamodb:PartiQLDelete'
+  );
 };

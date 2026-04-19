@@ -12,7 +12,7 @@ export const admin = defineFunction({
   runtime: 22,
 });
 
-export const escape = (backend: Backend) => {
+export function applyEscapeHatches(backend: Backend) {
   backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
   backend.admin.addEnvironment(
     'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',

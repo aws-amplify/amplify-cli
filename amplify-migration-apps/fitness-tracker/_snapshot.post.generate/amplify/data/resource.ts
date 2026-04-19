@@ -52,30 +52,11 @@ export const data = defineData({
   schema,
 });
 
-export const escape = (backend: Backend) => {
+export function applyEscapeHatches(backend: Backend) {
   const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
   cfnGraphqlApi.additionalAuthenticationProviders = [
     {
       authenticationType: 'API_KEY',
     },
   ];
-  backend.data.resources.tables['Meal'].grant(
-    backend.lognutrition.resources.lambda,
-    'dynamodb:Put*',
-    'dynamodb:Create*',
-    'dynamodb:BatchWriteItem',
-    'dynamodb:PartiQLInsert',
-    'dynamodb:Get*',
-    'dynamodb:BatchGetItem',
-    'dynamodb:List*',
-    'dynamodb:Describe*',
-    'dynamodb:Scan',
-    'dynamodb:Query',
-    'dynamodb:PartiQLSelect',
-    'dynamodb:Update*',
-    'dynamodb:RestoreTable*',
-    'dynamodb:PartiQLUpdate',
-    'dynamodb:Delete*',
-    'dynamodb:PartiQLDelete'
-  );
 };

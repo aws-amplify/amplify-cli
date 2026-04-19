@@ -1,4 +1,7 @@
 import { defineData } from '@aws-amplify/backend';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Topic @model @auth(rules: [{ allow: public }]){
@@ -53,3 +56,16 @@ export const data = defineData({
   },
   schema,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  for (const model of ['Topic', 'Post', 'Comment']) {
+    const table = backend.data.resources.tables[model];
+    backend.recorduseractivity.resources.lambda.addEventSource(
+      new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST })
+    );
+    table.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
+    table.grantTableListStreams(
+      backend.recorduseractivity.resources.lambda.role!
+    );
+  }
+}

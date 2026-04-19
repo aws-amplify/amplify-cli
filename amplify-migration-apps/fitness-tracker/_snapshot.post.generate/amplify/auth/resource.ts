@@ -1,5 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
-import { fitnesstracker33f5545533f55455PreSignup } from './fitnesstracker33f5545533f55455PreSignup/resource';
+import { fitnesstracker33f5545533f55455PreSignup } from '../function/fitnesstracker33f5545533f55455PreSignup/resource';
 import { admin } from '../function/admin/resource';
 import type { Backend } from '../backend';
 import { Duration } from 'aws-cdk-lib';
@@ -35,8 +35,7 @@ export const auth = defineAuth({
   ],
 });
 
-export const escape = (backend: Backend) => {
-
+export function applyEscapeHatches(backend: Backend) {
   const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
   cfnUserPool.usernameAttributes = undefined;
   cfnUserPool.policies = {
@@ -60,5 +59,4 @@ export const escape = (backend: Backend) => {
     disableOAuth: true,
     generateSecret: false,
   });
-
 };
