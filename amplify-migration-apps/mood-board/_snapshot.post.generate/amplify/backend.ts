@@ -20,21 +20,17 @@ const analyticsResult = analytics.defineAnalytics(backend);
 
 export type Backend = typeof backend;
 
-export function postRefactor(backend: Backend) {
+export function postRefactor() {
   storage.postRefactor(backend);
   analytics.postRefactor(analyticsResult);
 }
 
-export function applyEscapeHatches(backend: Backend) {
-  auth.applyEscapeHatches(backend);
-  data.applyEscapeHatches(backend);
-  storage.applyEscapeHatches(backend);
-  moodboardGetRandomEmoji.applyEscapeHatches(backend);
-  moodboardKinesisReader.applyEscapeHatches(backend, analyticsResult);
-  moodboardKinesisTrigger.applyEscapeHatches(backend, analyticsResult);
-}
-
-applyEscapeHatches(backend);
+auth.applyEscapeHatches(backend);
+data.applyEscapeHatches(backend);
+storage.applyEscapeHatches(backend);
+moodboardGetRandomEmoji.applyEscapeHatches(backend);
+moodboardKinesisReader.applyEscapeHatches(backend, analyticsResult);
+moodboardKinesisTrigger.applyEscapeHatches(backend, analyticsResult);
 
 // Uncomment after refactor
-// postRefactor(backend);
+// postRefactor();

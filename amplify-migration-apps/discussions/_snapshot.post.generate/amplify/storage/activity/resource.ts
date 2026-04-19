@@ -80,6 +80,8 @@ export function defineStorageActivity(backend: Backend) {
     'STORAGE_ACTIVITY_NAME',
     activity.tableName
   );
+
+  return activity;
 }
 
 export function postRefactor(activity: Table) {

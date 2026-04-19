@@ -13,18 +13,14 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
-export function postRefactor(backend: Backend) {
+export function postRefactor() {
   storage.postRefactor(backend);
 }
 
-export function applyEscapeHatches(backend: Backend) {
-  auth.applyEscapeHatches(backend);
-  data.applyEscapeHatches(backend);
-  storage.applyEscapeHatches(backend);
-  quotegenerator.applyEscapeHatches(backend);
-}
-
-applyEscapeHatches(backend);
+auth.applyEscapeHatches(backend);
+data.applyEscapeHatches(backend);
+storage.applyEscapeHatches(backend);
+quotegenerator.applyEscapeHatches(backend);
 
 // Uncomment after refactor
-// postRefactor(backend);
+// postRefactor();

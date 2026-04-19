@@ -12,9 +12,5 @@ geo.defineGeo(backend);
 
 export type Backend = typeof backend;
 
-export function applyEscapeHatches(backend: Backend) {
-  auth.applyEscapeHatches(backend);
-  storelocator41a9495f41a9495fPostConfirmation.applyEscapeHatches(backend);
-}
-
-applyEscapeHatches(backend);
+auth.applyEscapeHatches(backend);
+storelocator41a9495f41a9495fPostConfirmation.applyEscapeHatches(backend);

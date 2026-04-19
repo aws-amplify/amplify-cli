@@ -15,26 +15,22 @@ const backend = defineBackend({
   recorduseractivity: recorduseractivity.recorduseractivity,
 });
 
-storageActivity.defineStorageActivity(backend);
-storageBookmarks.defineStorageBookmarks(backend);
+const activity = storageActivity.defineStorageActivity(backend);
+const bookmarks = storageBookmarks.defineStorageBookmarks(backend);
 
 export type Backend = typeof backend;
 
-export function postRefactor(backend: Backend) {
+export function postRefactor() {
   storage.postRefactor(backend);
-  storageActivity.postRefactor(backend);
-  storageBookmarks.postRefactor(backend);
+  storageActivity.postRefactor(activity);
+  storageBookmarks.postRefactor(bookmarks);
 }
 
-export function applyEscapeHatches(backend: Backend) {
-  auth.applyEscapeHatches(backend);
-  data.applyEscapeHatches(backend);
-  storage.applyEscapeHatches(backend);
-  fetchuseractivity.applyEscapeHatches(backend);
-  recorduseractivity.applyEscapeHatches(backend);
-}
-
-applyEscapeHatches(backend);
+auth.applyEscapeHatches(backend);
+data.applyEscapeHatches(backend);
+storage.applyEscapeHatches(backend);
+fetchuseractivity.applyEscapeHatches(backend);
+recorduseractivity.applyEscapeHatches(backend);
 
 // Uncomment after refactor
-// postRefactor(backend);
+// postRefactor();

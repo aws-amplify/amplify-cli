@@ -20,12 +20,8 @@ adminapi.defineAdminApi(backend);
 
 export type Backend = typeof backend;
 
-export function applyEscapeHatches(backend: Backend) {
-  auth.applyEscapeHatches(backend);
-  data.applyEscapeHatches(backend);
-  fitnesstracker33f5545533f55455PreSignup.applyEscapeHatches(backend);
-  lognutrition.applyEscapeHatches(backend);
-  admin.applyEscapeHatches(backend);
-}
-
-applyEscapeHatches(backend);
+auth.applyEscapeHatches(backend);
+data.applyEscapeHatches(backend);
+fitnesstracker33f5545533f55455PreSignup.applyEscapeHatches(backend);
+lognutrition.applyEscapeHatches(backend);
+admin.applyEscapeHatches(backend);
