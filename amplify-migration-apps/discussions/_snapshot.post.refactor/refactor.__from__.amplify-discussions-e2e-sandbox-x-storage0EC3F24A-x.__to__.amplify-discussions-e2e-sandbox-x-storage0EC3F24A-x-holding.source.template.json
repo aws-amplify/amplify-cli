@@ -280,9 +280,7 @@
         },
         "PolicyName": "amplifydiscussionse2esandbox11f7701e3cstorageAccess3FA725BAE",
         "Roles": [
-          {
-            "Ref": "referencetoamplifydiscussionse2esandbox11f7701e3cauthNestedStackauthNestedStackResource9C34EC9EOutputsamplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref"
-          }
+          "amplify-discussion2604142-amplifyAuthauthenticatedU-OFERj1VQgbh0"
         ]
       },
       "UpdateReplacePolicy": "Delete",

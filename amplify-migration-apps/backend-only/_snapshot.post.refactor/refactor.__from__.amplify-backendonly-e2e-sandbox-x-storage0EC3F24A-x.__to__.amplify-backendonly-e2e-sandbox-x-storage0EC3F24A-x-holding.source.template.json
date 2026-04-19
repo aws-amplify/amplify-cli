@@ -190,9 +190,7 @@
         },
         "PolicyName": "amplifybackendonlye2esandbox363d3cd24dstorageAccess367149079",
         "Roles": [
-          {
-            "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref"
-          }
+          "amplify-backendonl2604142-amplifyAuthunauthenticate-T0OFU3aW6x78"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -327,9 +325,7 @@
         },
         "PolicyName": "amplifybackendonlye2esandbox363d3cd24dstorageAccess4F48428D0",
         "Roles": [
-          {
-            "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef"
-          }
+          "amplify-backendonl2604142-amplifyAuthauthenticatedU-e2MZgmxI4x06"
         ]
       },
       "UpdateReplacePolicy": "Delete",
