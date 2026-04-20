@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
+import { STSClient, AssumeRoleCommand, AssumeRoleCommandOutput } from '@aws-sdk/client-sts';
 import { Logger } from './logger';
 
 /**
@@ -81,14 +81,7 @@ export class CredentialManager {
     }
     try {
       this.logger.info('Refreshing credentials...');
-      const sts = new STSClient({});
-      const assumed = await sts.send(
-        new AssumeRoleCommand({
-          RoleArn: this.source.roleArn,
-          RoleSessionName: `gen2-migration-e2e-${Date.now()}`,
-          DurationSeconds: SESSION_DURATION_SECONDS,
-        }),
-      );
+      const assumed = await this.assumeRoleAsOriginalIdentity();
       const creds = assumed.Credentials;
       if (!creds?.AccessKeyId || !creds?.SecretAccessKey || !creds?.SessionToken) {
         throw new Error('STS AssumeRole returned incomplete credentials');
@@ -107,6 +100,45 @@ export class CredentialManager {
       this.logger.info('Credentials refreshed');
     } catch (e) {
       this.logger.info(`Credential refresh failed: ${(e as Error).message} (continuing with existing credentials)`);
+    }
+  }
+
+  /**
+   * Call STS AssumeRole as the original caller (e.g., CodeBuild instance role),
+   * not as whoever is currently in `AWS_*` env vars. After the first refresh,
+   * env vars hold the assumed-role credentials; re-assuming from those would
+   * fail with "not authorized to perform sts:AssumeRole on <role>" because the
+   * role's trust policy only allows the original caller, not itself.
+   *
+   * Temporarily removing env vars forces the SDK default chain to skip them
+   * and fall through to container/instance metadata, which points at the
+   * original identity.
+   */
+  private async assumeRoleAsOriginalIdentity(): Promise<AssumeRoleCommandOutput> {
+    if (this.source.kind !== 'role') {
+      throw new Error('assumeRoleAsOriginalIdentity called outside role mode');
+    }
+    const saved = {
+      AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+      AWS_SESSION_TOKEN: process.env.AWS_SESSION_TOKEN,
+    };
+    delete process.env.AWS_ACCESS_KEY_ID;
+    delete process.env.AWS_SECRET_ACCESS_KEY;
+    delete process.env.AWS_SESSION_TOKEN;
+    try {
+      const sts = new STSClient({});
+      return await sts.send(
+        new AssumeRoleCommand({
+          RoleArn: this.source.roleArn,
+          RoleSessionName: `gen2-migration-e2e-${Date.now()}`,
+          DurationSeconds: SESSION_DURATION_SECONDS,
+        }),
+      );
+    } finally {
+      if (saved.AWS_ACCESS_KEY_ID !== undefined) process.env.AWS_ACCESS_KEY_ID = saved.AWS_ACCESS_KEY_ID;
+      if (saved.AWS_SECRET_ACCESS_KEY !== undefined) process.env.AWS_SECRET_ACCESS_KEY = saved.AWS_SECRET_ACCESS_KEY;
+      if (saved.AWS_SESSION_TOKEN !== undefined) process.env.AWS_SESSION_TOKEN = saved.AWS_SESSION_TOKEN;
     }
   }
 
