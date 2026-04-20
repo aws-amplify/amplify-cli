@@ -64,6 +64,28 @@ export class S3Renderer {
    * Produces the complete TypeScript AST for storage/resource.ts.
    */
   public render(opts: RenderDefineStorageOptions): ts.NodeArray<ts.Node> {
+    const { baseNodes, backendTypeImport } = this.renderDefineStorage(opts);
+
+    const allNodes: ts.Node[] = [];
+    let insertedBackendImport = false;
+    for (const node of baseNodes) {
+      if (!insertedBackendImport && !ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(backendTypeImport);
+        insertedBackendImport = true;
+      }
+      allNodes.push(node);
+    }
+
+    allNodes.push(newLineIdentifier, this.renderPostRefactor(opts.bucketName));
+    allNodes.push(newLineIdentifier, this.renderApplyEscapeHatches(opts));
+
+    return factory.createNodeArray(allNodes as ts.Statement[]);
+  }
+
+  private renderDefineStorage(opts: RenderDefineStorageOptions): {
+    readonly baseNodes: ts.NodeArray<ts.Node>;
+    readonly backendTypeImport: ts.ImportDeclaration;
+  } {
     const propertyAssignments: ts.PropertyAssignment[] = [];
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineStorage']) };
     const postImportStatements: ts.Node[] = [];
@@ -82,7 +104,6 @@ export class S3Renderer {
       additionalImportedBackendIdentifiers: namedImports,
     });
 
-    // Insert Backend type import after the other imports
     const backendTypeImport = factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
@@ -93,20 +114,7 @@ export class S3Renderer {
       factory.createStringLiteral('../backend'),
     );
 
-    const allNodes: ts.Node[] = [];
-    let insertedBackendImport = false;
-    for (const node of baseNodes) {
-      if (!insertedBackendImport && !ts.isImportDeclaration(node as ts.Node)) {
-        allNodes.push(backendTypeImport);
-        insertedBackendImport = true;
-      }
-      allNodes.push(node);
-    }
-
-    allNodes.push(newLineIdentifier, this.renderPostRefactor(opts.bucketName));
-    allNodes.push(newLineIdentifier, this.renderApplyEscapeHatches(opts));
-
-    return factory.createNodeArray(allNodes as ts.Statement[]);
+    return { baseNodes, backendTypeImport };
   }
 
   private renderPostRefactor(bucketName: string): ts.FunctionDeclaration {

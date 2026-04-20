@@ -49,6 +49,48 @@ export class DataRenderer {
    * Produces the complete TypeScript AST for data/resource.ts.
    */
   public render(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
+    const baseNodes = this.renderDefineData(opts);
+    const backendTypeImport = this.renderBackendTypeImport();
+
+    const allNodes: ts.Node[] = [];
+    let foundFirstNonImport = false;
+    for (const node of baseNodes) {
+      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(node);
+      } else {
+        if (!foundFirstNonImport) {
+          allNodes.push(backendTypeImport);
+          foundFirstNonImport = true;
+        }
+        allNodes.push(node);
+      }
+    }
+    if (!foundFirstNonImport) {
+      allNodes.push(backendTypeImport);
+    }
+
+    const escapeHatchDecl = this.renderApplyEscapeHatches(opts);
+    if (escapeHatchDecl) {
+      allNodes.push(newLineIdentifier);
+      allNodes.push(escapeHatchDecl);
+    }
+
+    return factory.createNodeArray(allNodes as ts.Statement[]);
+  }
+
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../backend'),
+    );
+  }
+
+  private renderDefineData(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
     const properties: ObjectLiteralElementLike[] = [];
     const namedImports: Record<string, Set<string>> = {
       '@aws-amplify/backend': new Set(['defineData']),
@@ -68,59 +110,29 @@ export class DataRenderer {
       factory.createVariableStatement([], factory.createVariableDeclarationList([schemaVarDecl], ts.NodeFlags.Const)),
     ];
 
-    const baseNodes = TS.renderResourceTsFile({
+    return TS.renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('data'),
       functionCallParameter: factory.createObjectLiteralExpression(properties, true),
       backendFunctionConstruct: 'defineData',
       postImportStatements: schemaStatements,
       additionalImportedBackendIdentifiers: namedImports,
     });
+  }
 
+  private renderApplyEscapeHatches(opts: RenderDefineDataOptions): ts.FunctionDeclaration | undefined {
     const needsEscapeHatches = opts.additionalAuthProviders && opts.additionalAuthProviders.length > 0 && opts.hasAuth;
+    if (!needsEscapeHatches) return undefined;
 
-    const backendTypeImport = factory.createImportDeclaration(
+    const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(opts.additionalAuthProviders!);
+    return factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../backend'),
+      'applyEscapeHatches',
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock(escapeHatchStatements, true),
     );
-
-    const allNodes: ts.Node[] = [];
-    let foundFirstNonImport = false;
-    for (const node of baseNodes) {
-      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
-        allNodes.push(node);
-      } else {
-        if (!foundFirstNonImport) {
-          allNodes.push(backendTypeImport);
-          foundFirstNonImport = true;
-        }
-        allNodes.push(node);
-      }
-    }
-    if (!foundFirstNonImport) {
-      allNodes.push(backendTypeImport);
-    }
-
-    if (needsEscapeHatches) {
-      const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(opts.additionalAuthProviders!);
-      const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
-        [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-        undefined,
-        'applyEscapeHatches',
-        undefined,
-        [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-        undefined,
-        factory.createBlock(escapeHatchStatements, true),
-      );
-      allNodes.push(newLineIdentifier);
-      allNodes.push(applyEscapeHatchesDecl);
-    }
-
-    return factory.createNodeArray(allNodes as ts.Statement[]);
   }
 
   private prepareSchema(raw: string): { schema: string; preSchemaStatements: ts.Node[] } {

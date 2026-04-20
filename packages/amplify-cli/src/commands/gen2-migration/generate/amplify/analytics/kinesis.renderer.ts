@@ -42,49 +42,53 @@ export class AnalyticsRenderer {
    * Produces the complete TypeScript AST for analytics/resource.ts.
    */
   public render(opts: RenderDefineAnalyticsOptions): ts.NodeArray<ts.Node> {
-    const imports = this.createImports(opts.constructClassName, opts.constructFileName);
-    const branchNameConst = TS.createBranchNameDeclaration();
-    const exportNodes = this.createExportStatement(opts);
-
-    return factory.createNodeArray([...imports, newLineIdentifier, branchNameConst, newLineIdentifier, ...exportNodes]);
+    return factory.createNodeArray([
+      ...this.renderImports(opts),
+      newLineIdentifier,
+      TS.createBranchNameDeclaration(),
+      newLineIdentifier,
+      this.renderDefineAnalytics(opts),
+      newLineIdentifier,
+      this.renderPostRefactor(opts),
+    ]);
   }
 
-  private createImports(constructClassName: string, constructFileName: string): ts.Node[] {
-    const cfnStreamImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        false,
+  private renderImports(opts: RenderDefineAnalyticsOptions): ts.ImportDeclaration[] {
+    return [
+      factory.createImportDeclaration(
         undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('CfnStream'))]),
+        factory.createImportClause(
+          false,
+          undefined,
+          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('CfnStream'))]),
+        ),
+        factory.createStringLiteral('aws-cdk-lib/aws-kinesis'),
       ),
-      factory.createStringLiteral('aws-cdk-lib/aws-kinesis'),
-    );
-
-    const constructImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        false,
+      factory.createImportDeclaration(
         undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(constructClassName))]),
+        factory.createImportClause(
+          false,
+          undefined,
+          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(opts.constructClassName))]),
+        ),
+        factory.createStringLiteral(`./${opts.constructFileName}`),
       ),
-      factory.createStringLiteral(`./${constructFileName}`),
-    );
-
-    const backendImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
+      factory.createImportDeclaration(
         undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+        factory.createImportClause(
+          true,
+          undefined,
+          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+        ),
+        factory.createStringLiteral('../backend'),
       ),
-      factory.createStringLiteral('../backend'),
-    );
-
-    return [cfnStreamImport, constructImport, backendImport];
+    ];
   }
 
-  private createStackCall(): ts.VariableStatement {
-    return factory.createVariableStatement(
+  private renderDefineAnalytics(opts: RenderDefineAnalyticsOptions): ts.FunctionDeclaration {
+    const { constructClassName, resourceName, shardCount } = opts;
+
+    const stackCall = factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
         [
@@ -102,12 +106,8 @@ export class AnalyticsRenderer {
         ts.NodeFlags.Const,
       ),
     );
-  }
 
-  private createConstructInstantiation(opts: RenderDefineAnalyticsOptions): ts.VariableStatement {
-    const { constructClassName, resourceName, shardCount } = opts;
-
-    return factory.createVariableStatement(
+    const constructInstantiation = factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
         [
@@ -140,8 +140,14 @@ export class AnalyticsRenderer {
                       factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
                     ]),
                   ),
-                  factory.createPropertyAssignment(factory.createIdentifier('authRoleName'), this.createAuthRoleAccess()),
-                  factory.createPropertyAssignment(factory.createIdentifier('unauthRoleName'), this.createUnauthRoleAccess()),
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('authRoleName'),
+                    TS.propAccess('backend', 'auth', 'resources', 'authenticatedUserIamRole', 'roleName') as ts.PropertyAccessExpression,
+                  ),
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('unauthRoleName'),
+                    TS.propAccess('backend', 'auth', 'resources', 'unauthenticatedUserIamRole', 'roleName') as ts.PropertyAccessExpression,
+                  ),
                   factory.createShorthandPropertyAssignment(factory.createIdentifier('branchName')),
                 ],
                 true,
@@ -152,38 +158,8 @@ export class AnalyticsRenderer {
         ts.NodeFlags.Const,
       ),
     );
-  }
 
-  private createAuthRoleAccess(): ts.PropertyAccessExpression {
-    return factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
-          factory.createIdentifier('resources'),
-        ),
-        factory.createIdentifier('authenticatedUserIamRole'),
-      ),
-      factory.createIdentifier('roleName'),
-    );
-  }
-
-  private createUnauthRoleAccess(): ts.PropertyAccessExpression {
-    return factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
-          factory.createIdentifier('resources'),
-        ),
-        factory.createIdentifier('unauthenticatedUserIamRole'),
-      ),
-      factory.createIdentifier('roleName'),
-    );
-  }
-
-  private createExportStatement(opts: RenderDefineAnalyticsOptions): ts.Node[] {
-    const returnStatement = factory.createReturnStatement(factory.createIdentifier('analytics'));
-
-    const defineAnalyticsFunc = factory.createFunctionDeclaration(
+    return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
       'defineAnalytics',
@@ -198,12 +174,12 @@ export class AnalyticsRenderer {
         ),
       ],
       undefined,
-      factory.createBlock([this.createStackCall(), this.createConstructInstantiation(opts), returnStatement], true),
+      factory.createBlock([stackCall, constructInstantiation, factory.createReturnStatement(factory.createIdentifier('analytics'))], true),
     );
+  }
 
-    // postRefactor function
-    const { constructClassName, streamName } = opts;
-    const postRefactorFunc = factory.createFunctionDeclaration(
+  private renderPostRefactor(opts: RenderDefineAnalyticsOptions): ts.FunctionDeclaration {
+    return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
       'postRefactor',
@@ -214,7 +190,7 @@ export class AnalyticsRenderer {
           undefined,
           'analytics',
           undefined,
-          factory.createTypeReferenceNode(constructClassName),
+          factory.createTypeReferenceNode(opts.constructClassName),
         ),
       ],
       undefined,
@@ -238,14 +214,12 @@ export class AnalyticsRenderer {
                 ),
                 factory.createIdentifier('name'),
               ),
-              factory.createStringLiteral(`${streamName}`),
+              factory.createStringLiteral(`${opts.streamName}`),
             ),
           ),
         ],
         true,
       ),
     );
-
-    return [defineAnalyticsFunc, newLineIdentifier, postRefactorFunc];
   }
 }

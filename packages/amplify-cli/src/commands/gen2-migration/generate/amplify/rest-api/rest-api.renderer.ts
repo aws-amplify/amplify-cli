@@ -68,27 +68,26 @@ export class RestApiRenderer {
    * imports, branchName, Backend type import, and the export function.
    */
   public render(restApi: RestApiDefinition): ts.NodeArray<ts.Node> {
-    const statements = this.renderApi(restApi);
-    const baseName = restApi.apiName.replace(/api$/i, '');
-    const properFunctionName = `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
+    return factory.createNodeArray([
+      ...this.renderImports(),
+      this.renderBackendTypeImport(),
+      newLineIdentifier,
+      TS.createBranchNameDeclaration(),
+      newLineIdentifier,
+      this.renderDefineApi(restApi),
+    ] as ts.Statement[]);
+  }
 
-    const exportFunc = factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      properFunctionName,
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(statements, true),
-    );
-
-    const importDecls: ts.ImportDeclaration[] = [
+  private renderImports(): ts.ImportDeclaration[] {
+    return [
       createNamedImportDecl('aws-cdk-lib/aws-apigateway', ['RestApi', 'LambdaIntegration', 'AuthorizationType', 'Cors', 'ResponseType']),
       createNamedImportDecl('aws-cdk-lib/aws-iam', ['Policy', 'PolicyStatement']),
       createNamedImportDecl('aws-cdk-lib', ['Stack']),
     ];
+  }
 
-    const backendTypeImport = factory.createImportDeclaration(
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
         true,
@@ -97,17 +96,22 @@ export class RestApiRenderer {
       ),
       factory.createStringLiteral('../../backend'),
     );
+  }
 
-    const branchNameConst = TS.createBranchNameDeclaration();
+  private renderDefineApi(restApi: RestApiDefinition): ts.FunctionDeclaration {
+    const statements = this.renderApi(restApi);
+    const baseName = restApi.apiName.replace(/api$/i, '');
+    const properFunctionName = `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
 
-    return factory.createNodeArray([
-      ...importDecls,
-      backendTypeImport,
-      newLineIdentifier,
-      branchNameConst,
-      newLineIdentifier,
-      exportFunc,
-    ] as ts.Statement[]);
+    return factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      properFunctionName,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock(statements, true),
+    );
   }
 
   /**

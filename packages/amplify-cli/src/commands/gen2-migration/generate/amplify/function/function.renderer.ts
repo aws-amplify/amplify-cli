@@ -117,44 +117,9 @@ export class FunctionRenderer {
     const baseNodes = this.renderDefineFunction(opts);
     const escapeHatchResult = this.renderApplyEscapeHatches(opts);
 
-    const additionalImports: Record<string, Set<string>> = { ...escapeHatchResult.additionalImports };
-
-    const backendTypeImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../../backend'),
-    );
-
-    let analyticsTypeImportDecl: ts.ImportDeclaration | undefined;
-    if (opts.analyticsConstructType) {
-      analyticsTypeImportDecl = factory.createImportDeclaration(
-        undefined,
-        factory.createImportClause(
-          true,
-          undefined,
-          factory.createNamedImports([
-            factory.createImportSpecifier(false, undefined, factory.createIdentifier(opts.analyticsConstructType)),
-          ]),
-        ),
-        factory.createStringLiteral(opts.analyticsConstructImportPath!),
-      );
-    }
-
-    const additionalImportDecls: ts.ImportDeclaration[] = [];
-    for (const [source, identifiers] of Object.entries(additionalImports)) {
-      const specs = Array.from(identifiers).map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
-      additionalImportDecls.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamedImports(specs)),
-          factory.createStringLiteral(source),
-        ),
-      );
-    }
+    const additionalImportDecls = this.renderCdkImports(escapeHatchResult.additionalImports);
+    const backendTypeImport = this.renderBackendTypeImport();
+    const analyticsTypeImportDecl = this.renderAnalyticsTypeImport(opts);
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -182,6 +147,48 @@ export class FunctionRenderer {
     }
 
     return factory.createNodeArray(allNodes as ts.Statement[]);
+  }
+
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../../backend'),
+    );
+  }
+
+  private renderAnalyticsTypeImport(opts: RenderCompleteFunctionOptions): ts.ImportDeclaration | undefined {
+    if (!opts.analyticsConstructType) return undefined;
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([
+          factory.createImportSpecifier(false, undefined, factory.createIdentifier(opts.analyticsConstructType)),
+        ]),
+      ),
+      factory.createStringLiteral(opts.analyticsConstructImportPath!),
+    );
+  }
+
+  private renderCdkImports(additionalImports: Record<string, Set<string>>): ts.ImportDeclaration[] {
+    const decls: ts.ImportDeclaration[] = [];
+    for (const [source, identifiers] of Object.entries(additionalImports)) {
+      const specs = Array.from(identifiers).map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+      decls.push(
+        factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(false, undefined, factory.createNamedImports(specs)),
+          factory.createStringLiteral(source),
+        ),
+      );
+    }
+    return decls;
   }
 
   /**

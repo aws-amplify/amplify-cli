@@ -20,13 +20,14 @@ export class DynamoDBGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly resource: DiscoveredResource;
   private readonly outputDir: string;
-  private readonly renderer = new DynamoDBRenderer();
+  private readonly renderer: DynamoDBRenderer;
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
+    this.renderer = new DynamoDBRenderer(resource.resourceName);
   }
 
   /**
@@ -47,7 +48,7 @@ export class DynamoDBGenerator implements Planner {
 
           // Write the resource.ts file for this DynamoDB table
           const resourceDir = path.join(this.outputDir, 'amplify', 'storage', this.resource.resourceName);
-          const nodes = this.renderer.render(table, this.resource.resourceName);
+          const nodes = this.renderer.render(table);
           const content = TS.printNodes(nodes);
           await fs.mkdir(resourceDir, { recursive: true });
           await fs.writeFile(path.join(resourceDir, 'resource.ts'), content, 'utf-8');

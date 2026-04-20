@@ -170,59 +170,19 @@ function createTriggersProperty(triggers: readonly AuthTrigger[]): PropertyAssig
  */
 export class AuthRenderer {
   /**
-   * Produces the TypeScript AST for the defineAuth() call.
-   */
-  private renderDefineAuth(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
-    const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
-    return this.renderStandardAuth(options, namedImports);
-  }
-
-  /**
    * Produces the complete auth/resource.ts file including defineAuth(),
    * applyEscapeHatches(), Backend type import, and CDK imports.
    */
   public render(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
-    const baseNodes = this.renderDefineAuth(options);
+    const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
+    const baseNodes = this.renderStandardAuth(options, namedImports);
 
     const hasIdentityProviders =
       options.userPoolClient?.SupportedIdentityProviders !== undefined && options.userPoolClient.SupportedIdentityProviders.length > 0;
 
-    const escapeHatchStatements = this.buildEscapeHatchStatements(options, hasIdentityProviders);
-    const additionalImports = this.buildAdditionalImports(options, hasIdentityProviders);
-
-    const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'applyEscapeHatches',
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(escapeHatchStatements, true),
-    );
-
-    const backendTypeImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../backend'),
-    );
-
-    const additionalImportDecls: ts.ImportDeclaration[] = [];
-    for (const [source, identifiers] of Object.entries(additionalImports)) {
-      const importSpecifiers = Array.from(identifiers).map((id) =>
-        factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
-      );
-      additionalImportDecls.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-          factory.createStringLiteral(source),
-        ),
-      );
-    }
+    const additionalImportDecls = this.renderCdkImports(options, hasIdentityProviders);
+    const backendTypeImport = this.renderBackendTypeImport();
+    const applyEscapeHatchesDecl = this.renderApplyEscapeHatches(options, hasIdentityProviders);
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -251,6 +211,49 @@ export class AuthRenderer {
     allNodes.push(applyEscapeHatchesDecl);
 
     return factory.createNodeArray(allNodes as ts.Statement[]);
+  }
+
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../backend'),
+    );
+  }
+
+  private renderCdkImports(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.ImportDeclaration[] {
+    const additionalImports = this.buildAdditionalImports(options, hasIdentityProviders);
+    const decls: ts.ImportDeclaration[] = [];
+    for (const [source, identifiers] of Object.entries(additionalImports)) {
+      const importSpecifiers = Array.from(identifiers).map((id) =>
+        factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
+      );
+      decls.push(
+        factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+          factory.createStringLiteral(source),
+        ),
+      );
+    }
+    return decls;
+  }
+
+  private renderApplyEscapeHatches(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.FunctionDeclaration {
+    const escapeHatchStatements = this.buildEscapeHatchStatements(options, hasIdentityProviders);
+    return factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      'applyEscapeHatches',
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock(escapeHatchStatements, true),
+    );
   }
 
   private renderStandardAuth(options: AuthRenderOptions, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {

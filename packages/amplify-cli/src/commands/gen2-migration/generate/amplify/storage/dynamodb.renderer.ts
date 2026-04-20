@@ -36,38 +36,37 @@ export interface DynamoDBTableDefinition {
 }
 
 /**
- * Renders CDK Table constructs for DynamoDB resources in backend.ts.
+ * Renders a complete storage/{name}/resource.ts file for a standalone
+ * DynamoDB table. Produces `defineStorageXxx(backend)` and `postRefactor(table)`.
  * Pure — no AWS calls, no side effects.
  */
 export class DynamoDBRenderer {
-  /**
-   * Returns the CDK import identifiers needed for DynamoDB tables.
-   */
-  private requiredImports(): { readonly source: string; readonly identifiers: string[] } {
-    return {
-      source: 'aws-cdk-lib/aws-dynamodb',
-      identifiers: ['Table', 'AttributeType', 'BillingMode', 'StreamViewType'],
-    };
+  private readonly resourceName: string;
+  private readonly capitalizedName: string;
+  private readonly functionName: string;
+
+  public constructor(resourceName: string) {
+    this.resourceName = resourceName;
+    this.capitalizedName = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
+    this.functionName = `defineStorage${this.capitalizedName}`;
   }
 
   /**
-   * Produces CDK Table construct statements for a single DynamoDB table.
+   * Renders the complete resource.ts file.
    */
-  private renderTable(table: DynamoDBTableDefinition, scopeVarName: string): ts.Statement[] {
-    return this.buildTableStatements(table, scopeVarName);
+  public render(table: DynamoDBTableDefinition): ts.NodeArray<ts.Node> {
+    return factory.createNodeArray([
+      this.renderBackendTypeImport(),
+      this.renderCdkImports(),
+      newLineIdentifier,
+      this.renderDefineStorage(table),
+      newLineIdentifier,
+      this.renderPostRefactor(table),
+    ]);
   }
 
-  /**
-   * Renders a complete resource.ts file for a standalone DynamoDB table.
-   * Exports `defineStorageXxx(backend)` and `postRefactor(table)`.
-   */
-  public render(table: DynamoDBTableDefinition, resourceName: string): ts.NodeArray<ts.Node> {
-    const capitalizedName = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
-    const functionName = `defineStorage${capitalizedName}`;
-    const scopeVarName = `storage${capitalizedName}Stack`;
-
-    // Imports
-    const backendTypeImport = factory.createImportDeclaration(
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
         true,
@@ -76,89 +75,82 @@ export class DynamoDBRenderer {
       ),
       factory.createStringLiteral('../../backend'),
     );
+  }
 
-    const { source, identifiers } = this.requiredImports();
-    const cdkImportSpecifiers = [...identifiers, 'CfnTable'].map((id) =>
+  private renderCdkImports(): ts.ImportDeclaration {
+    const cdkImportSpecifiers = ['Table', 'AttributeType', 'BillingMode', 'StreamViewType', 'CfnTable'].map((id) =>
       factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
     );
-    const cdkImport = factory.createImportDeclaration(
+    return factory.createImportDeclaration(
       undefined,
       factory.createImportClause(false, undefined, factory.createNamedImports(cdkImportSpecifiers)),
-      factory.createStringLiteral(source),
+      factory.createStringLiteral('aws-cdk-lib/aws-dynamodb'),
     );
+  }
 
-    // Build the function body
+  private renderDefineStorage(table: DynamoDBTableDefinition): ts.FunctionDeclaration {
+    const scopeVarName = `storage${this.capitalizedName}Stack`;
+    const sanitizedName = sanitizeVariableName(table.tableName.replace(/-[^-]+$/, ''));
+    const hasGSIs = table.gsis && table.gsis.length > 0;
+
     const bodyStatements: ts.Statement[] = [];
 
-    // const storageXxxStack = backend.createStack('storageXxx');
     bodyStatements.push(
       TS.constDecl(
         scopeVarName,
         factory.createCallExpression(TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression, undefined, [
-          factory.createStringLiteral('storage' + resourceName),
+          factory.createStringLiteral('storage' + this.resourceName),
         ]),
       ),
     );
 
-    // Table construct + GSIs
     bodyStatements.push(...this.buildTableStatements(table, scopeVarName));
-
-    // Grant statements for functions that access this table
-    // (These are contributed by the function generator via escape hatches)
-
-    // Return the table variable
-    const baseTableName = table.tableName.replace(/-[^-]+$/, '');
-    const sanitizedName = sanitizeVariableName(baseTableName);
-    const hasGSIs = table.gsis && table.gsis.length > 0;
 
     if (hasGSIs) {
       bodyStatements.push(factory.createReturnStatement(factory.createIdentifier(sanitizedName)));
     }
 
-    // Export function
-    const exportFunc = factory.createFunctionDeclaration(
+    return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
-      functionName,
+      this.functionName,
       undefined,
       [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
       undefined,
       factory.createBlock(bodyStatements, true),
     );
+  }
 
-    // postRefactor function
-    const postRefactorStatements: ts.Statement[] = [];
-    postRefactorStatements.push(
-      factory.createExpressionStatement(
-        factory.createAssignment(
-          factory.createPropertyAccessExpression(
-            factory.createParenthesizedExpression(
-              factory.createAsExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedName), factory.createIdentifier('node')),
-                  factory.createIdentifier('defaultChild'),
-                ),
-                factory.createTypeReferenceNode('CfnTable'),
+  private renderPostRefactor(table: DynamoDBTableDefinition): ts.FunctionDeclaration {
+    const sanitizedName = sanitizeVariableName(table.tableName.replace(/-[^-]+$/, ''));
+
+    const body = factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(
+            factory.createAsExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedName), factory.createIdentifier('node')),
+                factory.createIdentifier('defaultChild'),
               ),
+              factory.createTypeReferenceNode('CfnTable'),
             ),
-            factory.createIdentifier('tableName'),
           ),
-          factory.createStringLiteral(`${table.tableName}`),
+          factory.createIdentifier('tableName'),
         ),
+        factory.createStringLiteral(table.tableName),
       ),
     );
 
-    const postRefactorFunc = factory.createFunctionDeclaration(
+    return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
       'postRefactor',
       undefined,
       [factory.createParameterDeclaration(undefined, undefined, sanitizedName, undefined, factory.createTypeReferenceNode('Table'))],
       undefined,
-      factory.createBlock(postRefactorStatements, true),
+      factory.createBlock([body], true),
     );
-
-    return factory.createNodeArray([backendTypeImport, cdkImport, newLineIdentifier, exportFunc, newLineIdentifier, postRefactorFunc]);
   }
 
   private buildTableStatements(table: DynamoDBTableDefinition, scopeVarName: string): ts.Statement[] {

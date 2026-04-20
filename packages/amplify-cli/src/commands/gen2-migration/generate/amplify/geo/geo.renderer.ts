@@ -16,19 +16,53 @@ export class GeoRenderer {
    * instantiates the generated construct, and returns it.
    */
   public renderResource(params: GeoCodegenResult): ts.NodeArray<ts.Node> {
-    const { constructClassName, constructFileName, resourceName } = params;
+    return factory.createNodeArray([
+      this.renderConstructImport(params),
+      this.renderBackendTypeImport(),
+      newLineIdentifier,
+      TS.createBranchNameDeclaration(),
+      newLineIdentifier,
+      this.renderDefineResource(params),
+    ]);
+  }
 
-    const constructImport = factory.createImportDeclaration(
+  /**
+   * Renders the top-level geo/resource.ts aggregator that imports all
+   * sub-resources and calls backend.addOutput() with geo configuration.
+   */
+  public renderAggregator(resources: readonly GeoCodegenResult[]): ts.NodeArray<ts.Node> {
+    const backendImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../backend'),
+    );
+
+    return factory.createNodeArray([
+      ...this.renderAggregatorImports(resources),
+      backendImport,
+      newLineIdentifier,
+      this.renderDefineGeo(resources),
+    ]);
+  }
+
+  private renderConstructImport(params: GeoCodegenResult): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
         false,
         undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(constructClassName))]),
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(params.constructClassName))]),
       ),
-      factory.createStringLiteral(`./${constructFileName}`),
+      factory.createStringLiteral(`./${params.constructFileName}`),
     );
+  }
 
-    const backendImport = factory.createImportDeclaration(
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
         true,
@@ -37,8 +71,10 @@ export class GeoRenderer {
       ),
       factory.createStringLiteral('../../backend'),
     );
+  }
 
-    const branchNameConst = TS.createBranchNameDeclaration();
+  private renderDefineResource(params: GeoCodegenResult): ts.FunctionDeclaration {
+    const { constructClassName, resourceName } = params;
     const functionName = `define${resourceName.charAt(0).toUpperCase()}${resourceName.slice(1)}`;
 
     const createStackCall = TS.constDecl(
@@ -61,8 +97,7 @@ export class GeoRenderer {
 
     const returnStatement = factory.createReturnStatement(factory.createIdentifier(resourceName));
 
-    // export function defineXxx(backend: Backend) { ... }
-    const functionDeclaration = factory.createFunctionDeclaration(
+    return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
       factory.createIdentifier(functionName),
@@ -79,23 +114,10 @@ export class GeoRenderer {
       undefined,
       factory.createBlock([createStackCall, constructInstantiation, returnStatement], true),
     );
-
-    return factory.createNodeArray([
-      constructImport,
-      backendImport,
-      newLineIdentifier,
-      branchNameConst,
-      newLineIdentifier,
-      functionDeclaration,
-    ]);
   }
 
-  /**
-   * Renders the top-level geo/resource.ts aggregator that imports all
-   * sub-resources and calls backend.addOutput() with geo configuration.
-   */
-  public renderAggregator(resources: readonly GeoCodegenResult[]): ts.NodeArray<ts.Node> {
-    const resourceImports = resources.map((r) => {
+  private renderAggregatorImports(resources: readonly GeoCodegenResult[]): ts.ImportDeclaration[] {
+    return resources.map((r) => {
       const functionName = `define${r.resourceName.charAt(0).toUpperCase()}${r.resourceName.slice(1)}`;
       return factory.createImportDeclaration(
         undefined,
@@ -107,17 +129,9 @@ export class GeoRenderer {
         factory.createStringLiteral(`./${r.resourceName}/resource`),
       );
     });
+  }
 
-    const backendImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../backend'),
-    );
-
+  private renderDefineGeo(resources: readonly GeoCodegenResult[]): ts.FunctionDeclaration {
     const functionAssignments = resources.map((r) => {
       const functionName = `define${r.resourceName.charAt(0).toUpperCase()}${r.resourceName.slice(1)}`;
       return TS.constDecl(
@@ -128,8 +142,7 @@ export class GeoRenderer {
 
     const addOutputStatement = this.buildAddOutputStatement(resources);
 
-    // export function defineGeo(backend: Backend) { ... }
-    const functionDeclaration = factory.createFunctionDeclaration(
+    return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
       factory.createIdentifier('defineGeo'),
@@ -146,8 +159,6 @@ export class GeoRenderer {
       undefined,
       factory.createBlock([...functionAssignments, addOutputStatement], true),
     );
-
-    return factory.createNodeArray([...resourceImports, backendImport, newLineIdentifier, functionDeclaration]);
   }
 
   private buildConstructProps(params: GeoCodegenResult): ts.ObjectLiteralElementLike[] {
