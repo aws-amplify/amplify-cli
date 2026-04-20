@@ -1,33 +1,16 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
-import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionConfiguration } from '@aws-sdk/client-s3';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS, newLineIdentifier } from '../../_infra/ts';
+import { TS } from '../../_infra/ts';
 import { S3Renderer, AccessPatterns, StorageTriggerEvent, Permission } from './s3.renderer';
-
-const factory = ts.factory;
 
 /**
  * CLI v1 permission types from cli-inputs.json.
  */
 type CLIV1Permission = 'READ' | 'CREATE_AND_UPDATE' | 'DELETE';
-
-/**
- * Storage CLI inputs JSON shape.
- */
-interface StorageCLIInputsJSON {
-  readonly resourceName?: string;
-  readonly bucketName?: string;
-  readonly storageAccess?: string;
-  readonly guestAccess: readonly CLIV1Permission[];
-  readonly authAccess: readonly CLIV1Permission[];
-  readonly triggerFunction?: string;
-  readonly groupAccess?: Readonly<Record<string, readonly CLIV1Permission[]>>;
-}
 
 const PERMISSION_MAP: Readonly<Record<CLIV1Permission, readonly Permission[]>> = {
   READ: ['read'],
@@ -41,7 +24,6 @@ const PERMISSION_MAP: Readonly<Record<CLIV1Permission, readonly Permission[]>> =
  * Reads bucket config (acceleration, versioning, encryption) via
  * Gen1App.aws, reads cli-inputs.json for access patterns, and
  * generates amplify/storage/resource.ts with defineStorage().
- * Also contributes S3 bucket overrides to backend.ts.
  *
  * S3 triggers are contributed by FunctionGenerator via addTrigger().
  */
@@ -50,10 +32,9 @@ export class S3Generator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
-  private readonly defineStorage: S3Renderer;
+  private readonly renderer: S3Renderer;
   private readonly functionStorageAccess: Array<{
     readonly functionName: string;
-    readonly category: string;
     readonly permissions: readonly Permission[];
   }> = [];
   private readonly triggers: Partial<Record<StorageTriggerEvent, string>> = {};
@@ -63,43 +44,27 @@ export class S3Generator implements Planner {
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
-    this.defineStorage = new S3Renderer(gen1App.envName);
+    this.renderer = new S3Renderer(gen1App.envName);
   }
 
   /**
    * Registers a function's S3 storage access permissions.
    * Called by FunctionGenerator before S3Generator.execute() runs.
    */
-  public addFunctionStorageAccess(functionName: string, category: string, permissions: readonly Permission[]): void {
-    this.functionStorageAccess.push({ functionName, category, permissions });
+  public addFunctionStorageAccess(functionName: string, permissions: readonly Permission[]): void {
+    this.functionStorageAccess.push({ functionName, permissions });
   }
 
   /**
    * Registers an S3 trigger contributed by a function generator.
-   * Called by FunctionGenerator when its category is 'storage'.
    */
   public addTrigger(event: StorageTriggerEvent, functionName: string): void {
     this.triggers[event] = functionName;
   }
 
-  /**
-   * Plans the S3 storage generation operations.
-   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const storageName = this.gen1App.singleResourceName('storage', 'S3');
-    const storageMeta = (this.gen1App.meta('storage') ?? {})[storageName] as Record<string, unknown>;
-
-    return [await this.planS3(storageName, storageMeta)];
-  }
-
-  private async planS3(storageName: string, storageMeta: Record<string, unknown>): Promise<AmplifyMigrationOperation> {
-    const output = storageMeta.output as Record<string, string> | undefined;
-    const bucketName = output?.BucketName;
-    if (!bucketName) {
-      throw new Error(`Could not find bucket name for storage resource '${storageName}'`);
-    }
-
-    const cliInputs = this.gen1App.cliInputs('storage', storageName) as StorageCLIInputsJSON;
+    const storageName = this.resource.resourceName;
+    const bucketName = this.gen1App.metaOutput('storage', storageName, 'BucketName');
 
     const [accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketAccelerate(bucketName),
@@ -108,254 +73,43 @@ export class S3Generator implements Planner {
     ]);
 
     const storageDir = path.join(this.outputDir, 'amplify', 'storage');
-    const storageIdentifier = bucketName;
 
-    return {
-      resource: this.resource,
-      validate: () => undefined,
-      describe: async () => ['Generate amplify/storage/resource.ts'],
-      execute: async () => {
-        const accessPatterns = this.buildAccessPatterns(cliInputs);
-        const triggerFunctionCategories = new Map(Object.values(this.triggers).map((name) => [name, 'function']));
-        const nodes = this.defineStorage.render({
-          storageIdentifier,
-          accessPatterns,
-          triggers: this.triggers,
-          triggerFunctionCategories,
-        });
+    return [
+      {
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => ['Generate amplify/storage/resource.ts'],
+        execute: async () => {
+          const nodes = this.renderer.render({
+            storageIdentifier: bucketName,
+            accessPatterns: this.buildAccessPatterns(),
+            triggers: this.triggers,
+            bucketName,
+            accelerateStatus,
+            versioningStatus,
+            encryption,
+          });
 
-        const content = TS.printNodes(nodes);
-        await fs.mkdir(storageDir, { recursive: true });
-        await fs.writeFile(path.join(storageDir, 'resource.ts'), content, 'utf-8');
+          const content = TS.printNodes(nodes);
+          await fs.mkdir(storageDir, { recursive: true });
+          await fs.writeFile(path.join(storageDir, 'resource.ts'), content, 'utf-8');
 
-        // Build applyEscapeHatches and postRefactor functions
-        const escapeHatchStatements = this.buildEscapeHatchStatements(bucketName, accelerateStatus, versioningStatus, encryption);
-        const postRefactorStatements = this.buildPostRefactorStatements(bucketName);
-
-        // Build the complete resource.ts with escape hatches
-        const backendTypeImport = factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(
-            true,
-            undefined,
-            factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-          ),
-          factory.createStringLiteral('../backend'),
-        );
-
-        const postRefactorDecl = factory.createFunctionDeclaration(
-          [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-          undefined,
-          'postRefactor',
-          undefined,
-          [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-          undefined,
-          factory.createBlock(postRefactorStatements, true),
-        );
-
-        const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
-          [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-          undefined,
-          'applyEscapeHatches',
-          undefined,
-          [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-          undefined,
-          factory.createBlock(escapeHatchStatements, true),
-        );
-
-        // Reconstruct file with Backend import and functions
-        const allNodes: ts.Node[] = [];
-        let foundFirstNonImport = false;
-        for (const node of nodes) {
-          if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
-            allNodes.push(node);
-          } else {
-            if (!foundFirstNonImport) {
-              allNodes.push(backendTypeImport);
-              foundFirstNonImport = true;
-            }
-            allNodes.push(node);
-          }
-        }
-        if (!foundFirstNonImport) {
-          allNodes.push(backendTypeImport);
-        }
-        allNodes.push(newLineIdentifier);
-        allNodes.push(postRefactorDecl);
-        allNodes.push(newLineIdentifier);
-        allNodes.push(applyEscapeHatchesDecl);
-
-        const nodeArray = factory.createNodeArray(allNodes as ts.Statement[]);
-        const finalContent = TS.printNodes(nodeArray);
-        await fs.writeFile(path.join(storageDir, 'resource.ts'), finalContent, 'utf-8');
-
-        // Contribute to backend.ts using new API
-        this.backendGenerator.addNamespaceImport('storage', './storage/resource');
-        this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
-        this.backendGenerator.addApplyEscapeHatchesCall('storage');
-        this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
+          this.backendGenerator.addNamespaceImport('storage', './storage/resource');
+          this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
+          this.backendGenerator.addApplyEscapeHatchesCall('storage');
+          this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
+        },
       },
-    };
+    ];
   }
 
-  private buildPostRefactorStatements(bucketName: string): ts.Statement[] {
-    const statements: ts.Statement[] = [];
-    const cfnBucketDecl = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            's3Bucket',
-            undefined,
-            undefined,
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
-                  factory.createIdentifier('resources'),
-                ),
-                factory.createIdentifier('cfnResources'),
-              ),
-              factory.createIdentifier('cfnBucket'),
-            ),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-    statements.push(cfnBucketDecl);
-    statements.push(
-      factory.createExpressionStatement(
-        factory.createAssignment(
-          factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketName')),
-          factory.createStringLiteral(bucketName),
-        ),
-      ),
-    );
-    return statements;
-  }
-
-  private buildEscapeHatchStatements(
-    bucketName: string,
-    accelerateStatus: BucketAccelerateStatus | undefined,
-    versioningStatus: BucketVersioningStatus | undefined,
-    encryption: ServerSideEncryptionConfiguration | undefined,
-  ): ts.Statement[] {
-    const statements: ts.Statement[] = [];
-    const cfnBucketDecl = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            's3Bucket',
-            undefined,
-            undefined,
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
-                  factory.createIdentifier('resources'),
-                ),
-                factory.createIdentifier('cfnResources'),
-              ),
-              factory.createIdentifier('cfnBucket'),
-            ),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-    statements.push(cfnBucketDecl);
-
-    if (accelerateStatus) {
-      statements.push(
-        factory.createExpressionStatement(
-          factory.createAssignment(
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier('s3Bucket'),
-              factory.createIdentifier('accelerateConfiguration'),
-            ),
-            factory.createObjectLiteralExpression(
-              [factory.createPropertyAssignment('accelerationStatus', factory.createStringLiteral(accelerateStatus))],
-              false,
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (versioningStatus) {
-      statements.push(
-        factory.createExpressionStatement(
-          factory.createAssignment(
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier('s3Bucket'),
-              factory.createIdentifier('versioningConfiguration'),
-            ),
-            factory.createObjectLiteralExpression(
-              [factory.createPropertyAssignment('status', factory.createStringLiteral(versioningStatus))],
-              false,
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (encryption?.Rules?.[0]) {
-      const rule = encryption.Rules[0];
-      const sseProps: ts.PropertyAssignment[] = [];
-      if (rule.ApplyServerSideEncryptionByDefault) {
-        const sseDefaultProps: ts.PropertyAssignment[] = [];
-        if (rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm) {
-          sseDefaultProps.push(
-            factory.createPropertyAssignment(
-              'sseAlgorithm',
-              factory.createStringLiteral(rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm),
-            ),
-          );
-        }
-        if (rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID) {
-          sseDefaultProps.push(
-            factory.createPropertyAssignment(
-              'kmsMasterKeyId',
-              factory.createStringLiteral(rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID),
-            ),
-          );
-        }
-        sseProps.push(
-          factory.createPropertyAssignment('serverSideEncryptionByDefault', factory.createObjectLiteralExpression(sseDefaultProps, true)),
-        );
-      }
-      if (rule.BucketKeyEnabled !== undefined) {
-        sseProps.push(
-          factory.createPropertyAssignment('bucketKeyEnabled', rule.BucketKeyEnabled ? factory.createTrue() : factory.createFalse()),
-        );
-      }
-      statements.push(
-        factory.createExpressionStatement(
-          factory.createAssignment(
-            factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketEncryption')),
-            factory.createObjectLiteralExpression(
-              [
-                factory.createPropertyAssignment(
-                  'serverSideEncryptionConfiguration',
-                  factory.createArrayLiteralExpression([factory.createObjectLiteralExpression(sseProps, true)], true),
-                ),
-              ],
-              true,
-            ),
-          ),
-        ),
-      );
-    }
-    return statements;
-  }
-
-  private buildAccessPatterns(cliInputs: StorageCLIInputsJSON): AccessPatterns {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from cli-inputs.json
+  private buildAccessPatterns(): AccessPatterns {
+    const cliInputs = this.gen1App.cliInputs('storage', this.resource.resourceName) as any;
     let groups: AccessPatterns['groups'] | undefined;
     if (cliInputs.groupAccess && Object.keys(cliInputs.groupAccess).length > 0) {
       groups = Object.entries(cliInputs.groupAccess).reduce((acc, [key, value]) => {
-        acc[key] = value.flatMap((p) => PERMISSION_MAP[p]);
+        acc[key] = (value as CLIV1Permission[]).flatMap((p) => PERMISSION_MAP[p]);
         return acc;
       }, {} as Record<string, Permission[]>);
     }

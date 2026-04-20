@@ -1,5 +1,6 @@
 import ts, { CallExpression } from 'typescript';
-import { TS } from '../../_infra/ts';
+import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionConfiguration } from '@aws-sdk/client-s3';
+import { newLineIdentifier, TS } from '../../_infra/ts';
 
 const factory = ts.factory;
 
@@ -22,7 +23,6 @@ export interface AccessPatterns {
   readonly groups?: Readonly<Record<string, readonly Permission[]>>;
   readonly functions?: ReadonlyArray<{
     readonly functionName: string;
-    readonly category: string;
     readonly permissions: readonly Permission[];
   }>;
 }
@@ -34,11 +34,15 @@ export interface RenderDefineStorageOptions {
   readonly storageIdentifier: string;
   readonly accessPatterns?: AccessPatterns;
   readonly triggers?: Partial<Record<StorageTriggerEvent, string>>;
-  readonly triggerFunctionCategories: ReadonlyMap<string, string>;
+  readonly bucketName: string;
+  readonly accelerateStatus?: BucketAccelerateStatus;
+  readonly versioningStatus?: BucketVersioningStatus;
+  readonly encryption?: ServerSideEncryptionConfiguration;
 }
 
 /**
- * Renders a defineStorage() resource.ts file from Gen1 S3 configuration.
+ * Renders a complete storage/resource.ts file including defineStorage(),
+ * postRefactor(), and applyEscapeHatches().
  * Pure — no AWS calls, no side effects.
  */
 export class S3Renderer {
@@ -56,20 +60,164 @@ export class S3Renderer {
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineStorage']) };
     const postImportStatements: ts.Node[] = [];
 
-    const branchNameStatement = TS.createBranchNameDeclaration();
-    postImportStatements.push(branchNameStatement);
+    postImportStatements.push(TS.createBranchNameDeclaration());
 
     this.renderName(propertyAssignments, opts.storageIdentifier);
     this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
     this.renderTriggers(propertyAssignments, namedImports, opts);
 
-    return TS.renderResourceTsFile({
+    const baseNodes = TS.renderResourceTsFile({
       backendFunctionConstruct: 'defineStorage',
       exportedVariableName: factory.createIdentifier('storage'),
       functionCallParameter: factory.createObjectLiteralExpression(propertyAssignments),
       postImportStatements,
       additionalImportedBackendIdentifiers: namedImports,
     });
+
+    // Insert Backend type import after the other imports
+    const backendTypeImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../backend'),
+    );
+
+    const allNodes: ts.Node[] = [];
+    let insertedBackendImport = false;
+    for (const node of baseNodes) {
+      if (!insertedBackendImport && !ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(backendTypeImport);
+        insertedBackendImport = true;
+      }
+      allNodes.push(node);
+    }
+
+    allNodes.push(newLineIdentifier, this.renderPostRefactor(opts.bucketName));
+    allNodes.push(newLineIdentifier, this.renderApplyEscapeHatches(opts));
+
+    return factory.createNodeArray(allNodes as ts.Statement[]);
+  }
+
+  private renderPostRefactor(bucketName: string): ts.FunctionDeclaration {
+    const s3BucketDecl = this.createCfnBucketDecl();
+    const assignment = factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketName')),
+        factory.createStringLiteral(bucketName),
+      ),
+    );
+    return factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      'postRefactor',
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock([s3BucketDecl, assignment], true),
+    );
+  }
+
+  private renderApplyEscapeHatches(opts: RenderDefineStorageOptions): ts.FunctionDeclaration {
+    const statements: ts.Statement[] = [this.createCfnBucketDecl()];
+
+    if (opts.accelerateStatus) {
+      statements.push(
+        factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('s3Bucket'),
+              factory.createIdentifier('accelerateConfiguration'),
+            ),
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment('accelerationStatus', factory.createStringLiteral(opts.accelerateStatus)),
+            ]),
+          ),
+        ),
+      );
+    }
+
+    if (opts.versioningStatus) {
+      statements.push(
+        factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('s3Bucket'),
+              factory.createIdentifier('versioningConfiguration'),
+            ),
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment('status', factory.createStringLiteral(opts.versioningStatus)),
+            ]),
+          ),
+        ),
+      );
+    }
+
+    if (opts.encryption?.Rules?.[0]) {
+      statements.push(this.renderEncryption(opts.encryption.Rules[0]));
+    }
+
+    return factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      'applyEscapeHatches',
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock(statements, true),
+    );
+  }
+
+  private renderEncryption(rule: NonNullable<ServerSideEncryptionConfiguration['Rules']>[0]): ts.ExpressionStatement {
+    const sseProps: ts.PropertyAssignment[] = [];
+    if (rule.ApplyServerSideEncryptionByDefault) {
+      const sseDefaultProps: ts.PropertyAssignment[] = [];
+      if (rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm) {
+        sseDefaultProps.push(
+          factory.createPropertyAssignment(
+            'sseAlgorithm',
+            factory.createStringLiteral(rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm),
+          ),
+        );
+      }
+      if (rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID) {
+        sseDefaultProps.push(
+          factory.createPropertyAssignment(
+            'kmsMasterKeyId',
+            factory.createStringLiteral(rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID),
+          ),
+        );
+      }
+      sseProps.push(
+        factory.createPropertyAssignment('serverSideEncryptionByDefault', factory.createObjectLiteralExpression(sseDefaultProps, true)),
+      );
+    }
+    if (rule.BucketKeyEnabled !== undefined) {
+      sseProps.push(
+        factory.createPropertyAssignment('bucketKeyEnabled', rule.BucketKeyEnabled ? factory.createTrue() : factory.createFalse()),
+      );
+    }
+    return factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketEncryption')),
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'serverSideEncryptionConfiguration',
+              factory.createArrayLiteralExpression([factory.createObjectLiteralExpression(sseProps, true)], true),
+            ),
+          ],
+          true,
+        ),
+      ),
+    );
+  }
+
+  /** Creates `const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;` */
+  private createCfnBucketDecl(): ts.VariableStatement {
+    return TS.constDecl('s3Bucket', TS.propAccess('backend', 'storage', 'resources', 'cfnResources', 'cfnBucket'));
   }
 
   private renderName(target: ts.PropertyAssignment[], storageIdentifier: string): void {
@@ -91,10 +239,9 @@ export class S3Renderer {
 
     target.push(this.buildAccessProperty(opts.accessPatterns));
 
-    // Add function imports for function access patterns
     if (opts.accessPatterns.functions && opts.accessPatterns.functions.length > 0) {
       for (const functionAccess of opts.accessPatterns.functions) {
-        const functionImportPath = `../${functionAccess.category}/${functionAccess.functionName}/resource`;
+        const functionImportPath = `../function/${functionAccess.functionName}/resource`;
         if (!namedImports[functionImportPath]) {
           namedImports[functionImportPath] = new Set();
         }
@@ -102,7 +249,6 @@ export class S3Renderer {
       }
     }
 
-    // Add group permissions TODO comment
     if (opts.accessPatterns.groups) {
       postImportStatements.push(
         factory.createJSDocComment(
@@ -131,8 +277,7 @@ export class S3Renderer {
     target.push(factory.createPropertyAssignment('triggers', factory.createObjectLiteralExpression(triggerProps, true)));
 
     for (const functionName of Object.values(triggers)) {
-      const category = opts.triggerFunctionCategories.get(functionName) || 'function';
-      const functionImportPath = category === 'storage' ? `./${functionName}/resource` : `../${category}/${functionName}/resource`;
+      const functionImportPath = `../function/${functionName}/resource`;
       if (!namedImports[functionImportPath]) {
         namedImports[functionImportPath] = new Set();
       }
