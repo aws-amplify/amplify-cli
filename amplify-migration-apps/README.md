@@ -221,25 +221,21 @@ Some refactors target a `-holding` stack (visible in the target stack name). Res
 moved from the Gen2 stack to the holding stack (to make room), then from the Gen1 stack to the
 Gen2 stack. The holding stack persists as the final destination for the Gen2 stateful resources.
 
-## Sanitization
+## Normalization and Sanitization
 
-Sensitive values must be replaced with safe placeholder values before they are committed.
-Each app's `package.json` includes a `sanitize` script that invokes the shared `sanitize.ts`
-at the root of this directory. This runs automatically on commit via the Husky pre-commit hook,
-so you don't need to run it manually. If you do want to run it yourself:
+After snapshots are captured, they must be normalized and sanitized before committing.
+See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md#snapshot-post-processing)
+for details on what each step does.
+
+To run them manually on a single app:
 
 ```console
 cd amplify-migration-apps/<app-name>
-npm run sanitize
+npx tsx ../normalize.ts
+npx tsx ../sanitize.ts
 ```
 
-The script extracts values from `amplify-meta.json` and replaces them across all snapshot files:
-
-| Value            | Placeholder                        |
-| ---------------- | ---------------------------------- |
-| AWS Account ID   | `123456789012`                     |
-| Amplify App ID   | `<app-name-no-dashes>`             |
-| AppSync API Key  | `da2-fakeapikey00000000000000`     |
+Order matters — normalize first, then sanitize.
 
 ## Typechecking
 
@@ -258,17 +254,17 @@ directories from a deployed Amplify app. It requires AWS credentials with access
 deployed app's CloudFormation stacks and Amplify resources.
 
 ```console
-npx tsx snapshot.ts <step> <app-name> [deployed-app-path]
+npx tsx snapshot.ts <step> <app-dir> [deployed-app-path] [gen2-stack-name]
 ```
 
 Where `<step>` is one of:
 
-| Step             | Description                                                                 | Requires `deployed-app-path`? |
-| ---------------- | --------------------------------------------------------------------------- | ----------------------------- |
-| `pre.generate`   | Copies the Gen1 app's `amplify/`, `.gitignore`, and `package.json`          | Yes                           |
-| `post.generate`  | Copies the Gen2 output (`amplify/`, `.gitignore`, `amplify.yml`)            | Yes                           |
-| `pre.refactor`   | Downloads Gen1 and Gen2 CloudFormation templates from deployed stacks       | No (reads from AWS directly)  |
-| `post.refactor`  | Copies the refactor operations from `.amplify/refactor.operations`          | Yes                           |
+| Step             | Description                                                                 | Required args                          |
+| ---------------- | --------------------------------------------------------------------------- | -------------------------------------- |
+| `pre.generate`   | Copies the Gen1 app's `amplify/`, `.gitignore`, and `package.json`          | `deployed-app-path`                    |
+| `post.generate`  | Copies the Gen2 output (`amplify/`, `.gitignore`, `amplify.yml`)            | `deployed-app-path`                    |
+| `pre.refactor`   | Downloads Gen1 and Gen2 CloudFormation templates from deployed stacks       | `gen2-stack-name`                      |
+| `post.refactor`  | Copies the refactor operations from `.gen2-migration/refactor.operations`   | `deployed-app-path`                    |
 
 Examples:
 
@@ -280,7 +276,7 @@ npx tsx snapshot.ts pre.generate fitness-tracker /path/to/deployed/fitness-track
 npx tsx snapshot.ts post.generate fitness-tracker /path/to/deployed/fitness-tracker
 
 # Download CloudFormation templates for refactor input (requires AWS credentials)
-npx tsx snapshot.ts pre.refactor fitness-tracker
+npx tsx snapshot.ts pre.refactor fitness-tracker /path/to/deployed/fitness-tracker amplify-fitnesstracker-gen2main-branch-abc1234567
 
 # Capture the expected refactor output
 npx tsx snapshot.ts post.refactor fitness-tracker /path/to/deployed/fitness-tracker
@@ -288,49 +284,41 @@ npx tsx snapshot.ts post.refactor fitness-tracker /path/to/deployed/fitness-trac
 
 ## Adding an App
 
-1. Create a new directory under `<app-name>` that contains the entire Gen1 application, as is.
-2. Add the following script directives to the `package.json` file:
-
-    ```json
-    "scripts": {
-      "sanitize": "tsx ../sanitize.ts",
-      "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
-    }
-    ```
-
-3. Add the following to the `package.json` file:
-
-    ```json
-    "installConfig": {
-      "hoistingLimits": "workspaces"
-    },       
-    ```
-
-    This ensures dependencies in the app don't interfere or conflict with the main repo dependencies.
-
-4. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture all required snapshots.
-   Follow the app's migration guide, running the tool at each step:
+1. Create a new directory under `<app-name>` that contains the frontend code for your Gen1 application. 
+Make sure to follow the existing patterns and add tests as well.
+2. Run `amplify init`.
+3. Configure the backend using Gen1 CLI.
+4. Run `amplify push`.
+5. Add validation tests under `<app-name>/tests/` that exercise the new app's capabilities
+   (API queries, auth flows, storage operations, etc.). Follow the patterns in existing apps
+   like `project-boards/tests/` or `fitness-tracker/tests/`.
+6. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture the `pre.generate` snapshot.
 
     ```console
-    # Before running generate
-    npx tsx snapshot.ts pre.generate <app-name> /path/to/deployed/<app-name>
+    npx tsx snapshot.ts pre.generate <app-name>
 
-    # After running generate
-    npx tsx snapshot.ts post.generate <app-name> /path/to/deployed/<app-name>
+7. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
+   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`). The E2E may
+   fail if the new app exercises a bug in the migration tooling. In that case the snapshots
+   will not be updated — fix the bug first, then re-run.
 
-    # Before running refactor (requires AWS credentials)
-    npx tsx snapshot.ts pre.refactor <app-name>
+## Modifying an App
 
-    # After running refactor
-    npx tsx snapshot.ts post.refactor <app-name> /path/to/deployed/<app-name>
-    ```
-
-5. Run the sanitize script to replace sensitive values with placeholders:
+1. `cd` into a specific app and run `npm run deploy`.
+2. Locate the deployed app directory in output logs and `cd` into it.
+3. Update the backend using Gen1 CLI.
+4. Run `amplify push`.
+5. Add or update validation tests under `<app-name>/tests/` to cover the modified
+   capabilities. Follow the patterns in existing apps like `project-boards/tests/`.
+6. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture the `pre.generate` snapshot.
 
     ```console
-    cd amplify-migration-apps/<app-name>
-    npm run sanitize
-    ```
+    npx tsx snapshot.ts pre.generate <app-name>
+
+7. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
+   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`). The E2E may
+   fail if the app change exercises a bug in the migration tooling. In that case the
+   snapshots will not be updated — fix the bug first, then re-run.
 
 ## Snapshot Testing
 
@@ -426,7 +414,6 @@ Always review the diff after updating to make sure the changes are intentional.
 > because it detects the diff before writing the updated files. Run the tests a second time
 > (without `--updateSnapshot`) to verify the snapshots are now correct.
 
-
 ## Integration Testing (E2E)
 
 The [E2E system](../packages/amplify-gen2-migration-e2e-system/) automates the full migration
@@ -441,19 +428,10 @@ cd packages/amplify-cli && yarn build
 export AMPLIFY_PATH=$(pwd)/.bin/amplify-dev
 
 # Run the full migration for a specific app
-cd packages/amplify-gen2-migration-e2e-system
-npx tsx src/cli.ts --app project-boards --profile default
+cd amplify-migration-apps/<app-name>
+npm run test:e2e
 ```
 
-This will:
-1. Deploy the Gen1 app via `amplify push`
-2. Run `test:gen1` to validate the Gen1 stack
-3. Execute the full `gen2-migration` workflow (assess, lock, generate, deploy, refactor, redeploy)
-4. Run `test:gen1` and `test:gen2` after each deployment
-
 The system automatically runs npm scripts from the app's `package.json` at the right
-points in the workflow — `post-generate` after generate, `post-refactor` after refactor,
-and `post-push` after push. Scripts that resolve to `true` (no-op) are effectively skipped.
-
-See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
-CLI options and troubleshooting.
+points in the workflow. See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
+more details.

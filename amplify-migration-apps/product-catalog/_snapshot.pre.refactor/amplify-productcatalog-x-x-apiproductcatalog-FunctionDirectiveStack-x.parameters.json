@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
+    "ParameterValue": "amplify-productcatalog-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/2904294ac328b706f016848ccf5fa0abe614014d"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-productcatalog-x-x-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
+    "ParameterValue": "amplify-productcatalog-x-x-authRole"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
+    "ParameterValue": "x"
+  }
+]

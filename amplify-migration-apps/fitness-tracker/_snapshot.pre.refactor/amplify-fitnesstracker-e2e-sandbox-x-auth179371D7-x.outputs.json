@@ -1,0 +1,34 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref",
+    "OutputValue": "us-east-1:0bf2db5e-6a0d-41b3-a3e0-af7c7cc0de17"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBRef",
+    "OutputValue": "admin-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref",
+    "OutputValue": "amplify-fitnesstra2604152-amplifyAuthAdminGroupRole-jbCHSfemreQa"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref",
+    "OutputValue": "amplify-fitnesstra2604152-amplifyAuthunauthenticate-olNwR2UIG1LJ"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolFCF1A003Ref",
+    "OutputValue": "us-east-1_eVv98CKOt"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolAppClient98C89471Ref",
+    "OutputValue": "7mkj69caqhvhflsnbq89o6acn0"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref",
+    "OutputValue": "amplify-fitnesstra2604152-amplifyAuthauthenticatedU-aZ9LbK0lXc4U"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-x"
+  }
+]

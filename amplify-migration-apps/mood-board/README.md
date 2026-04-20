@@ -11,6 +11,7 @@ button that returns random emojis and tracks clicks via Kinesis analytics.
 - Board and MoodItem models use public auth (API key) - anyone can create/read/update/delete.
 - Authenticated users can invoke the getRandomEmoji Lambda and read Kinesis events.
 - Kinesis analytics tracks "Surprise Me" button clicks with timestamps.
+- Kinesis stream trigger automatically counts processed events in a DynamoDB table.
 
 ## Install Dependencies
 
@@ -82,6 +83,7 @@ GraphQL API with schema containing:
 - _MoodItem_ model with title, description, image, and board reference.
 - _getRandomEmoji_ query that returns random emojis by invoking a Lambda function using the `@function` directive.
 - _getKinesisEvents_ query that reads events from Kinesis stream using a Lambda function.
+- _KinesisEventCount_ model for tracking the number of events processed by the Kinesis trigger.
 
 ```console
 amplify add api
@@ -197,6 +199,52 @@ REGION
 ? Do you want to edit the local lambda function now? No
 ```
 
+### Function (moodboardKinesisTrigger)
+
+Node.js Lambda function triggered by the Kinesis stream. When records arrive in the stream,
+this function fires automatically and increments a global event counter in the `KinesisEventCount`
+DynamoDB table via the GraphQL API. Configured with mutation access to the API.
+
+```console
+amplify add function
+```
+
+```console
+? Select which capability you want to add: Lambda function (serverless function)
+? Provide an AWS Lambda function name: moodboardKinesisTrigger
+? Choose the runtime that you want to use: NodeJS
+? Choose the function template that you want to use: Lambda trigger
+? What event source do you want to associate with Lambda trigger? Amazon Kinesis Stream
+? Choose a Kinesis event source option Use Analytics category kinesis stream in the current Amplify project
+Selected resource moodboardKinesis
+
+✅ Available advanced settings:
+- Resource access permissions
+- Scheduled recurring invocation
+- Lambda layers configuration
+- Environment variables configuration
+- Secret values configuration
+
+? Do you want to configure advanced settings? Yes
+? Do you want to access other resources in this project from your Lambda function? Yes
+? Select the categories you want this function to have access to. api
+? Select the operations you want to permit on moodboard Mutation
+
+You can access the following resource attributes as environment variables from your Lambda function
+API_MOODBOARD_GRAPHQLAPIENDPOINTOUTPUT
+API_MOODBOARD_GRAPHQLAPIIDOUTPUT
+API_MOODBOARD_GRAPHQLAPIKEYOUTPUT
+ENV
+REGION
+
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to enable Lambda layers for this function? No
+? Do you want to configure environment variables for this function? No
+? Do you want to configure secret values this function can access? No
+✔ Choose the package manager that you want to use: · NPM
+? Do you want to edit the local lambda function now? No
+```
+
 ## Configure
 
 ```console
@@ -222,6 +270,8 @@ amplify push
 │ Function  │ moodboardGetRandomEmoji  │ Create    │ awscloudformation │
 ├───────────┼──────────────────────────┼───────────┼───────────────────┤
 │ Function  │ moodboardKinesisReader   │ Create    │ awscloudformation │
+├───────────┼──────────────────────────┼───────────┼───────────────────┤
+│ Function  │ moodboardKinesisTrigger  │ Create    │ awscloudformation │
 ├───────────┼──────────────────────────┼───────────┼───────────────────┤
 │ Analytics │ moodboardKinesis         │ Create    │ awscloudformation │
 └───────────┴──────────────────────────┴───────────┴───────────────────┘

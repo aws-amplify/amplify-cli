@@ -5,8 +5,13 @@ import os from 'os';
 import { getCLIPath, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
 import { Git } from './git';
+import * as snapshot from './snapshot';
+import { sanitize } from './sanitize';
+import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { normalize } from './normalize';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
+const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
 const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
 
 interface MigrationConfig {
@@ -42,10 +47,12 @@ interface RefactorConfig {
 export class App {
   private readonly deploymentName: string;
   private readonly gen2BranchName: string;
+  private readonly gen1BranchName = 'main';
 
   private readonly sourceAppPath: string;
   private readonly envName: string;
   private readonly migrationConfig: MigrationConfig;
+  private readonly snapshotAppPath: string;
 
   /**
    * Whether the refactor step should be skipped entirely for this app.
@@ -73,12 +80,21 @@ export class App {
     this.gen2BranchName = `gen2-${this.envName}`;
     this.amplifyPath = getCLIPath(true);
 
+    // temporary directory to store snapshot of each step
+    // callers can then call .updateSnapshot to copy over the snapshots
+    // into the original source path
+    this.snapshotAppPath = path.join(MIGRATION_SNAPSHOT_DIR, this.deploymentName);
+    fs.mkdirSync(this.snapshotAppPath, { recursive: true });
+
     // Copy source to temp directory
     this.targetAppPath = path.join(MIGRATION_TARGET_DIR, this.deploymentName);
     fs.mkdirSync(this.targetAppPath, { recursive: true });
     fs.copySync(this.sourceAppPath, this.targetAppPath, {
       filter: (src: string) => !src.includes('_snapshot') && !src.includes('node_modules'),
     });
+
+    this.logger.info(`App directory: ${this.targetAppPath}`);
+    this.logger.info(`Snapshot directory: ${this.snapshotAppPath}`);
 
     // Update package.json name for predictable Gen2 stack naming
     const packageJsonPath = path.join(this.targetAppPath, 'package.json');
@@ -89,7 +105,6 @@ export class App {
     this.migrationConfig = this.loadMigrationConfig();
     this.git = new Git(this.targetAppPath, this.logger);
 
-    this.logger.info(`App ${appName} prepared at ${this.targetAppPath}`);
     this.logger.info(`Deployment name: ${this.deploymentName}, env: ${this.envName}`);
   }
 
@@ -175,9 +190,93 @@ export class App {
     this.logger.info('amplify push completed');
   }
 
+  /**
+   * Runs all steps to fully deploy the Gen1 app.
+   */
+  public async deploy(): Promise<void> {
+    await this.git.init();
+    await this.init();
+    await this.configure();
+    await this.installDeps();
+    await this.status();
+    await this.prePush();
+    await this.push();
+    await this.postPush();
+    await this.testGen1();
+
+    this.logger.info(`Capturing pre.generate snapshot`);
+    console.log('');
+    await snapshot.capturePreGenerate(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
+  }
+
   // ============================================================
   // Gen2 Migration
   // ============================================================
+
+  /**
+   * Runs the full migration workflow
+   */
+  public async migrate(): Promise<void> {
+    await this.deploy();
+    await this.assess();
+    await this.lock();
+    await this.git.checkout(this.gen2BranchName, true);
+    await this.generate();
+
+    this.logger.info(`Capturing post.generate snapshot`);
+    console.log('');
+    await snapshot.capturePostGenerate(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
+
+    await this.git.commit('chore: generate');
+    await this.installDeps();
+    await this.git.commit('chore: install dependencies');
+    await this.postGenerate();
+    await this.git.diff();
+    await this.git.commit('chore: post generate');
+    await this.preSandbox();
+    const gen2StackName = await this.deployGen2Sandbox();
+    await this.postSandbox(gen2StackName);
+
+    await this.testGen1();
+    await this.testGen2();
+
+    const gen1StackName = await this.findGen1RootStack();
+
+    this.logger.info(`Capturing pre.refactor snapshot`);
+    console.log('');
+    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
+    console.log('');
+
+    if (this.skipRefactor) {
+      this.logger.info('Skipping refactor (configured in migration/config.json)');
+      return;
+    }
+
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.refactor(gen2StackName);
+
+    this.logger.info(`Capturing post.refactor snapshot`);
+    console.log('');
+    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.postRefactor();
+    await this.git.diff();
+    await this.git.commit('chore: post refactor');
+
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.testSharedData();
+  }
 
   /**
    * Run `amplify gen2-migration assess`.
@@ -195,7 +294,7 @@ export class App {
   }
 
   /**
-   * Run `amplify gen2-migration generate` and install dependencies.
+   * Run `amplify gen2-migration generate`.
    */
   public async generate(): Promise<void> {
     await this.runMigrationStep('generate');
@@ -221,7 +320,7 @@ export class App {
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
-    const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
+    const result = await execa('npx', ['ampx', 'sandbox', '--once', '--identifier', 'e2e'], {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
@@ -234,20 +333,19 @@ export class App {
 
     this.logger.info(`ampx sandbox completed (${Date.now() - startTime}ms)`);
 
-    const username = os.userInfo().username;
-    const stackPrefix = `amplify-${this.deploymentName}-${username}-sandbox`;
+    const stackPrefix = `amplify-${this.deploymentName}-e2e-sandbox`;
     return this.findGen2RootStack(stackPrefix);
   }
 
   // ============================================================
-  // App Scripts
+  // App Tests
   // ============================================================
 
   /**
    * Run the Jest tests against the Gen1 config.
    */
   public async testGen1(): Promise<void> {
-    await this.gitCheckoutGen1();
+    await this.git.checkout(this.gen1BranchName, false);
     await this.runNpmScript('test:gen1');
   }
 
@@ -255,9 +353,28 @@ export class App {
    * Run the Jest tests against the Gen2 config.
    */
   public async testGen2(): Promise<void> {
-    await this.gitCheckoutGen2();
+    await this.git.checkout(this.gen2BranchName, false);
     await this.runNpmScript('test:gen2');
   }
+
+  // ============================================================
+  // App Hooks
+  // ============================================================
+
+  /**
+   * Run the Jest tests that validate stateful resources are shared.
+   */
+  public async testSharedData(): Promise<void> {
+    await this.git.checkout(this.gen2BranchName, false);
+
+    // these tests require both config files, so pull the gen1 config into the gen2 branch
+    await this.git.run('checkout', this.gen1BranchName, '--', 'src/amplifyconfiguration.json');
+    await this.runNpmScript('test:shared-data');
+  }
+
+  // ============================================================
+  // App Hooks
+  // ============================================================
 
   /**
    * Run the pre-push script.
@@ -301,40 +418,25 @@ export class App {
     await this.runNpmScript('pre-sandbox');
   }
 
-  // ============================================================
-  // Git
-  // ============================================================
-
   /**
-   * Initialize a git repo and create the initial commit.
+   * Sanitizes and copies captured snapshots back to the source app directory.
    */
-  public async gitInit(): Promise<void> {
-    await this.git.init();
-  }
-
-  /**
-   * Commit all changes.
-   */
-  public async gitCommit(message: string): Promise<void> {
-    await this.git.commit(message);
-  }
-
-  public async gitDiff(): Promise<void> {
-    await this.git.diff();
-  }
-
-  /**
-   * Checkout the Gen1 (main) branch.
-   */
-  public async gitCheckoutGen1(): Promise<void> {
-    await this.git.checkout('main', false);
-  }
-
-  /**
-   * Checkout the Gen2 branch (creates it if create is true).
-   */
-  public async gitCheckoutGen2(create = false): Promise<void> {
-    await this.git.checkout(this.gen2BranchName, create);
+  public updateSnapshots(): void {
+    this.logger.info(`Normalizing snapshots`);
+    normalize(path.basename(this.sourceAppPath), this.snapshotAppPath);
+    this.logger.info(`Sanitizing snapshots`);
+    sanitize(path.basename(this.sourceAppPath), this.snapshotAppPath);
+    for (const snapshot of fs.readdirSync(this.snapshotAppPath).filter((f) => f.includes('_snapshot'))) {
+      const sourceSnapshotPath = path.join(this.sourceAppPath, snapshot);
+      this.logger.info(`Updating snapshot: ${sourceSnapshotPath}`);
+      if (fs.existsSync(sourceSnapshotPath)) {
+        fs.removeSync(sourceSnapshotPath);
+      }
+      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourceSnapshotPath, {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        filter: (src: string, _dst: string) => !src.includes('node_modules'),
+      });
+    }
   }
 
   // ============================================================
@@ -350,7 +452,6 @@ export class App {
       .filter((l) => l.trim() !== line)
       .join('\n');
     fs.writeFileSync(gitignorePath, updated, 'utf-8');
-    this.logger.info(`Removed '${line}' from .gitignore`);
   }
 
   private loadMigrationConfig(): MigrationConfig {
@@ -402,12 +503,17 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
+      env: { ...process.env, ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
     });
 
     if (result.exitCode !== 0) {
       throw new Error(`npm run ${scriptName} failed with exit code ${result.exitCode}`);
     }
+  }
+
+  private async findGen1RootStack(): Promise<string> {
+    const rootPattern = new RegExp(`^amplify-${this.deploymentName}-${this.envName}-[0-9a-f]{5}$`);
+    return findStackByPattern(rootPattern);
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
@@ -470,6 +576,17 @@ function generateTimeBasedName(appName: string): string {
  * Generates a random env name (2-10 lowercase letters).
  */
 function generateRandomEnvName(): string {
-  const length = Math.floor(Math.random() * 9) + 2;
-  return Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+  return Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+}
+
+async function findStackByPattern(pattern: RegExp): Promise<string> {
+  const cfnClient = new CloudFormationClient({});
+  for await (const page of paginateListStacks(
+    { client: cfnClient },
+    { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE] },
+  )) {
+    const match = page.StackSummaries?.find((s) => s.StackName && pattern.test(s.StackName));
+    if (match?.StackName) return match.StackName;
+  }
+  throw new Error(`No stack found matching pattern "${pattern.source}"`);
 }

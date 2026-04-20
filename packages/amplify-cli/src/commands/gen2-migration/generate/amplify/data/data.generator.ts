@@ -86,6 +86,11 @@ export class DataGenerator implements Planner {
           if (additionalAuthProviders && additionalAuthProviders.length > 0 && hasAuth) {
             this.contributeAdditionalAuthProviders(additionalAuthProviders);
           }
+
+          // Grant the Gen2 authenticated user IAM role access to the Gen1 AppSync API
+          if (hasAuth) {
+            this.contributeIamAuthGrant(apiId, authorizationModes, additionalAuthProviders);
+          }
         },
       },
     ];
@@ -177,6 +182,97 @@ export class DataGenerator implements Planner {
       ),
     );
     this.backendGenerator.addStatement(assignment);
+  }
+
+  /**
+   * Grants the Gen2 authenticated user IAM role access to the Gen1 AppSync API.
+   *
+   * Post-refactor, the identity pool moves to the Gen2 stack with a new AuthRole.
+   * If the Gen1 API uses AWS_IAM auth, the new role needs an explicit policy to
+   * call appsync:GraphQL on the Gen1 API during the transition period.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig from amplify-meta.json
+  private contributeIamAuthGrant(apiId: string, authorizationModes: any, additionalAuthProviders?: Array<Record<string, unknown>>): void {
+    const defaultAuthType = authorizationModes?.defaultAuthentication?.authenticationType;
+    const hasIamDefault = defaultAuthType === 'AWS_IAM';
+    const hasIamAdditional = additionalAuthProviders?.some((p) => p.authenticationType === 'AWS_IAM') ?? false;
+
+    if (!hasIamDefault && !hasIamAdditional) return;
+
+    this.backendGenerator.addImport('aws-cdk-lib', ['aws_iam']);
+
+    // backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
+    //   new aws_iam.PolicyStatement({ effect: aws_iam.Effect.ALLOW, actions: ['appsync:GraphQL'],
+    //     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<apiId>/*`] })
+    // )
+    const policyStatement = factory.createNewExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+      undefined,
+      [
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'effect',
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('Effect')),
+                factory.createIdentifier('ALLOW'),
+              ),
+            ),
+            factory.createPropertyAssignment(
+              'actions',
+              factory.createArrayLiteralExpression([factory.createStringLiteral('appsync:GraphQL')]),
+            ),
+            factory.createPropertyAssignment(
+              'resources',
+              factory.createArrayLiteralExpression([
+                factory.createTemplateExpression(factory.createTemplateHead('arn:aws:appsync:'), [
+                  factory.createTemplateSpan(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
+                        factory.createIdentifier('stack'),
+                      ),
+                      factory.createIdentifier('region'),
+                    ),
+                    factory.createTemplateMiddle(':'),
+                  ),
+                  factory.createTemplateSpan(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
+                        factory.createIdentifier('stack'),
+                      ),
+                      factory.createIdentifier('account'),
+                    ),
+                    factory.createTemplateTail(`:apis/${apiId}/*`),
+                  ),
+                ]),
+              ]),
+            ),
+          ],
+          true,
+        ),
+      ],
+    );
+
+    const addToPrincipalPolicy = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+              factory.createIdentifier('resources'),
+            ),
+            factory.createIdentifier('authenticatedUserIamRole'),
+          ),
+          factory.createIdentifier('addToPrincipalPolicy'),
+        ),
+        undefined,
+        [policyStatement],
+      ),
+    );
+
+    this.backendGenerator.addStatement(addToPrincipalPolicy);
   }
 }
 

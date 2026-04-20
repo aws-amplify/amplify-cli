@@ -3,7 +3,16 @@ import fs from 'node:fs/promises';
 import { Planner } from '../_infra/planner';
 import { AmplifyMigrationOperation } from '../_infra/operation';
 
-const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfiguration*', 'aws-exports*', 'node_modules', 'build', 'dist'];
+const GEN2_GITIGNORE_ENTRIES = [
+  '.gen2-migration',
+  '.amplify',
+  'amplify_outputs*',
+  'amplifyconfiguration*',
+  'aws-exports*',
+  'node_modules',
+  'build',
+  'dist',
+];
 
 /**
  * Updates .gitignore: removes the Gen1 amplify block and adds Gen2 entries.

@@ -13,13 +13,17 @@ if (typeof globalThis.crypto === 'undefined') {
   (globalThis as any).crypto = webcrypto;
 }
 
-const CONFIG_PATH = process.env.APP_CONFIG_PATH;
-if (!CONFIG_PATH) {
-  throw new Error('APP_CONFIG_PATH environment variable is required');
+export function configureAmplify(cfg?: any): any {
+  if (!cfg) {
+    const configPath = process.env.APP_CONFIG_PATH;
+    if (!configPath) {
+      throw new Error('APP_CONFIG_PATH environment variable is required');
+    }
+    cfg = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
+  }
+  Amplify.configure(cfg);
+  return cfg;
 }
-
-export const config = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
-Amplify.configure(config);
 
 export async function signUp(cfg: any): Promise<{ username: string; password: string }> {
   const gen2Auth = (cfg as any)?.auth;

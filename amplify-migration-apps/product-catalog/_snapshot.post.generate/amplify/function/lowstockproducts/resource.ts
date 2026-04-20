@@ -12,7 +12,7 @@ export const lowstockproducts = defineFunction({
     REGION: 'us-east-1',
     LOW_STOCK_THRESHOLD: '5',
     PRODUCT_CATALOG_SECRET:
-      '/amplify/productcatalog/main/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
+      '/amplify/productcatalog/x/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
   },
   runtime: 22,
 });

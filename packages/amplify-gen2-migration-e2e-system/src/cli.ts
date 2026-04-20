@@ -27,6 +27,12 @@ async function main(): Promise<void> {
       description: 'AWS profile to use',
       string: true,
     })
+    .option('step', {
+      type: 'string',
+      description: 'Stop migration workflow at this step',
+      choices: ['deploy', 'migrate'],
+      string: true,
+    })
     .help()
     .alias('help', 'h')
     .version()
@@ -43,68 +49,28 @@ async function main(): Promise<void> {
     throw new Error('--profile must be specified');
   }
 
+  const step = argv.step ?? 'migrate';
+
   const app = new App(argv.app, argv.profile, argv.verbose);
   try {
-    await migrate(app);
-    app.logger.info('Migration completed successfully');
+    switch (step) {
+      case 'deploy':
+        await app.deploy();
+        break;
+      case 'migrate':
+        await app.migrate();
+        break;
+      default:
+        throw new Error(`Unrecognized step: ${step}`);
+    }
+    if (process.env.UPDATE_SNAPSHOTS === '1') {
+      app.updateSnapshots();
+    }
+    app.logger.info(`Execution completed successfully (${app.targetAppPath})`);
   } catch (error) {
-    (error as Error).message = `Migration failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
+    (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
     throw error;
   }
-}
-
-async function migrate(app: App): Promise<void> {
-  app.logger.info(`Starting migration`);
-
-  await app.gitInit();
-  await app.init();
-  await app.configure();
-  await app.installDeps();
-  await app.status();
-  await app.prePush();
-  await app.push();
-  await app.postPush();
-  await app.gitCommit('chore: post push');
-
-  await app.testGen1();
-
-  await app.assess();
-  await app.lock();
-  await app.gitCheckoutGen2(true);
-  await app.generate();
-  await app.gitCommit('chore: generate');
-  await app.installDeps();
-  await app.gitCommit('chore: install dependencies');
-  await app.postGenerate();
-  await app.gitDiff();
-  await app.gitCommit('chore: post generate');
-  await app.preSandbox();
-  const gen2StackName = await app.deployGen2Sandbox();
-  await app.postSandbox(gen2StackName);
-
-  await app.testGen1();
-  await app.testGen2();
-
-  if (app.skipRefactor) {
-    app.logger.info('Skipping refactor (configured in migration/config.json)');
-    return;
-  }
-
-  await app.gitCheckoutGen1();
-  await app.refactor(gen2StackName);
-
-  await app.testGen1();
-  await app.testGen2();
-
-  await app.gitCheckoutGen2();
-  await app.postRefactor();
-  await app.gitDiff();
-  await app.gitCommit('chore: post refactor');
-
-  await app.deployGen2Sandbox();
-
-  await app.testGen1();
-  await app.testGen2();
 }
 
 function printBanner(): void {
