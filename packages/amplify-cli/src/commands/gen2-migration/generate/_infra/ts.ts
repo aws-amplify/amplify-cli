@@ -28,12 +28,13 @@ export class TS {
   /**
    * Prints a TypeScript AST node array to a formatted string.
    */
-  public static printNodes(nodes: ts.NodeArray<ts.Node>): string {
+  public static printNodes(nodes: ts.NodeArray<ts.Node>, printWidth?: number): string {
     const raw = printer.printList(ts.ListFormat.MultiLine, nodes, sourceFile);
     return prettier.format(raw, {
       parser: 'typescript',
       singleQuote: true,
       tabWidth: 2,
+      ...(printWidth !== undefined && { printWidth }),
     });
   }
 

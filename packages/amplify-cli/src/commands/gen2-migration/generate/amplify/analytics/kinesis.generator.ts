@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import * as cdk_from_cfn from 'cdk-from-cfn';
+import * as cdkFromCfn from 'cdk-from-cfn';
 import CFNConditionResolver from './cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import { Planner } from '../../../_infra/planner';
@@ -9,6 +9,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
+import * as prettier from 'prettier';
 
 /**
  * Generates a single Kinesis analytics resource and contributes to backend.ts.
@@ -41,7 +42,8 @@ export class AnalyticsKinesisGenerator implements Planner {
     }
 
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
-    const logicalId = (resourceMeta.providerMetadata as { logicalId: string }).logicalId;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const logicalId = (resourceMeta.providerMetadata as any).logicalId;
 
     return [
       {
@@ -67,10 +69,8 @@ export class AnalyticsKinesisGenerator implements Planner {
             throw new Error(`Could not find physical stream name for KinesisStream in nested stack: ${logicalId}`);
           }
 
-          const finalTemplate = await this.preTransmute(template, logicalId);
-          const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', logicalId, 'construct');
-
-          const prettier = await import('prettier');
+          const finalTemplate = await preTransmute(template, parameters);
+          const tsFile = cdkFromCfn.transmute(JSON.stringify(finalTemplate), 'typescript', logicalId, 'construct');
           const formatted = prettier.format(tsFile, {
             parser: 'typescript',
             singleQuote: true,
@@ -86,7 +86,7 @@ export class AnalyticsKinesisGenerator implements Planner {
           const nodes = this.renderer.render({
             constructClassName,
             constructFileName,
-            resourceName,
+            constructId: resourceName,
             shardCount,
             streamName,
           });
@@ -140,34 +140,33 @@ export class AnalyticsKinesisGenerator implements Planner {
     );
     return response.StackResources?.[0]?.PhysicalResourceId;
   }
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async preTransmute(template: any, logicalId: string): Promise<any> {
-    const result = JSON.parse(JSON.stringify(template));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function preTransmute(template: any, parameters: Parameter[]): Promise<any> {
+  const result = JSON.parse(JSON.stringify(template));
 
-    if (result.Parameters?.env) {
-      result.Parameters['branchName'] = result.Parameters.env;
-      delete result.Parameters.env;
-    }
-
-    const updateRefs = (obj: unknown): void => {
-      if (typeof obj === 'object' && obj !== null) {
-        const record = obj as Record<string, unknown>;
-        if (record.Ref === 'env') {
-          record.Ref = 'branchName';
-        }
-        Object.values(record).forEach(updateRefs);
-      }
-    };
-    updateRefs(result.Resources);
-
-    const parameters = await this.getNestedStackParameters(logicalId);
-    if (parameters.length > 0) {
-      const resolved = new CFNConditionResolver(result).resolve(parameters);
-      delete resolved.Conditions;
-      return resolved;
-    }
-
-    return result;
+  if (result.Parameters?.env) {
+    result.Parameters['branchName'] = result.Parameters.env;
+    delete result.Parameters.env;
   }
+
+  const updateRefs = (obj: unknown): void => {
+    if (typeof obj === 'object' && obj !== null) {
+      const record = obj as Record<string, unknown>;
+      if (record.Ref === 'env') {
+        record.Ref = 'branchName';
+      }
+      Object.values(record).forEach(updateRefs);
+    }
+  };
+  updateRefs(result.Resources);
+
+  if (parameters.length > 0) {
+    const resolved = new CFNConditionResolver(result).resolve(parameters);
+    delete resolved.Conditions;
+    return resolved;
+  }
+
+  return result;
 }

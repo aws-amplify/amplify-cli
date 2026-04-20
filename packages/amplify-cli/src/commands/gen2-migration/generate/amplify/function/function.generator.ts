@@ -171,15 +171,19 @@ export class FunctionGenerator implements Planner {
   private findAnalyticsConstructType(): string | undefined {
     const cat = this.gen1App.meta('analytics');
     if (!cat) return undefined;
-    for (const [name] of Object.entries(cat)) return `analytics${name}`;
+    for (const [name] of Object.entries(cat)) {
+      return `analytics${name}`;
+    }
     return undefined;
   }
 
-  private getAnalyticsConstructImportPath(): string {
+  private getAnalyticsConstructImportPath(): string | undefined {
     const cat = this.gen1App.meta('analytics');
-    if (!cat) return '../../analytics/unknown-construct';
-    for (const [name] of Object.entries(cat)) return `../../analytics/${name}-construct`;
-    return '../../analytics/unknown-construct';
+    if (!cat) return undefined;
+    for (const [name] of Object.entries(cat)) {
+      return `../../analytics/${name}-construct`;
+    }
+    return undefined;
   }
 
   private contributeAuthAccess(func: ResolvedFunction): void {

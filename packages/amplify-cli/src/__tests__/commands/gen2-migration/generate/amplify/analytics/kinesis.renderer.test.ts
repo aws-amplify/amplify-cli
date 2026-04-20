@@ -15,7 +15,7 @@ describe('AnalyticsRenderer', () => {
     const output = render({
       constructClassName: 'analyticsTodoKinesis',
       constructFileName: 'todoKinesis-construct',
-      resourceName: 'todoKinesis',
+      constructId: 'todoKinesis',
       shardCount: 1,
       streamName: 'todoKinesis-stream-abc123',
     });
@@ -53,7 +53,7 @@ describe('AnalyticsRenderer', () => {
     const output = render({
       constructClassName: 'analyticsMyStream',
       constructFileName: 'myStream-construct',
-      resourceName: 'myStream',
+      constructId: 'myStream',
       shardCount: 3,
       streamName: 'myStream-abc',
     });

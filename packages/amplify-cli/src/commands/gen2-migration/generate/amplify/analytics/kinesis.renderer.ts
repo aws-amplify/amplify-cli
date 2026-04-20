@@ -20,7 +20,7 @@ export interface RenderDefineAnalyticsOptions {
   /**
    * The resource name used for construct ID and props (e.g., 'todoprojectKinesis').
    */
-  readonly resourceName: string;
+  readonly constructId: string;
 
   /**
    * The number of shards for the Kinesis stream.
@@ -86,7 +86,7 @@ export class AnalyticsRenderer {
   }
 
   private renderDefineAnalytics(opts: RenderDefineAnalyticsOptions): ts.FunctionDeclaration {
-    const { constructClassName, resourceName, shardCount } = opts;
+    const { constructClassName, constructId: resourceName, shardCount } = opts;
 
     const stackCall = factory.createVariableStatement(
       undefined,

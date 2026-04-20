@@ -1,9 +1,9 @@
-import ts from 'typescript';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import * as prettier from 'prettier';
 import { Planner } from '../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../_infra/operation';
+import { TS } from '../_infra/ts';
+import { BackendRenderer, BackendRenderOptions } from './backend.renderer';
 
 /**
  * An entry in the defineBackend({ ... }) object literal.
@@ -36,10 +36,7 @@ interface PostDefineCall {
 /**
  * Accumulates namespace imports, defineBackend entries, escape-hatch
  * calls, and post-refactor calls from category generators, then
- * writes the final `backend.ts` file using string assembly.
- *
- * This is the ONE place where string assembly is acceptable — it
- * assembles the top-level file structure, not TypeScript AST nodes.
+ * delegates rendering to BackendRenderer and writes backend.ts.
  */
 export class BackendGenerator implements Planner {
   private readonly namespaceImports: NamespaceImport[] = [];
@@ -48,6 +45,7 @@ export class BackendGenerator implements Planner {
   private readonly postRefactorCalls: string[] = [];
   private readonly postDefineCalls: PostDefineCall[] = [];
   private readonly outputDir: string;
+  private readonly renderer = new BackendRenderer();
   private analyticsResultAlias: string | undefined;
   private analyticsResultVar: string | undefined;
 
@@ -137,7 +135,7 @@ export class BackendGenerator implements Planner {
   }
 
   /**
-   * Assembles all accumulated data into backend.ts using string assembly.
+   * Builds render options from accumulated data and delegates to the renderer.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const backendTsPath = path.join(this.outputDir, 'amplify', 'backend.ts');
@@ -147,73 +145,20 @@ export class BackendGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/backend.ts'],
         execute: async () => {
-          const lines: string[] = [];
+          const options: BackendRenderOptions = {
+            namespaceImports: this.namespaceImports,
+            defineBackendEntries: this.defineBackendEntries,
+            postDefineCalls: this.postDefineCalls,
+            postRefactorCalls: this.postRefactorCalls,
+            escapeHatchCalls: this.applyEscapeHatchesCalls.map((alias) => ({
+              alias,
+              needsAnalyticsArg: this.needsAnalyticsArg(alias),
+            })),
+            analyticsResultVar: this.analyticsResultVar,
+          };
 
-          // 1. Namespace imports sorted by category order
-          const sortedImports = [...this.namespaceImports].sort((a, b) => namespaceImportOrder(a.source) - namespaceImportOrder(b.source));
-          for (const imp of sortedImports) {
-            lines.push(`import * as ${imp.alias} from '${imp.source}';`);
-          }
-          lines.push(`import { defineBackend } from '@aws-amplify/backend';`);
-          lines.push('');
-
-          // 2. defineBackend call
-          const sortedEntries = [...this.defineBackendEntries].sort((a, b) => defineBackendOrder(a.key) - defineBackendOrder(b.key));
-          lines.push('const backend = defineBackend({');
-          for (const entry of sortedEntries) {
-            lines.push(`  ${entry.key}: ${entry.alias}.${entry.exportName},`);
-          }
-          lines.push('});');
-          lines.push('');
-
-          // 3. Export Backend type
-          lines.push('export type Backend = typeof backend;');
-          lines.push('');
-
-          // 4. Post-define calls (analytics, geo, DynamoDB tables)
-          for (const call of this.postDefineCalls) {
-            if (call.variableName) {
-              lines.push(`const ${call.variableName} = ${call.expression};`);
-            } else {
-              lines.push(`${call.expression};`);
-            }
-          }
-          if (this.postDefineCalls.length > 0) {
-            lines.push('');
-          }
-
-          // 5. postRefactor function
-          const sortedPostRefactorCalls = [...this.postRefactorCalls].sort((a, b) => postRefactorOrder(a) - postRefactorOrder(b));
-          lines.push('export function postRefactor() {');
-          for (const stmt of sortedPostRefactorCalls) {
-            lines.push(`  ${stmt}`);
-          }
-          lines.push('}');
-          lines.push('');
-
-          // 6. applyEscapeHatches calls
-          const sortedEscapeHatches = [...this.applyEscapeHatchesCalls].sort((a, b) => escapeHatchOrder(a) - escapeHatchOrder(b));
-          for (const alias of sortedEscapeHatches) {
-            if (this.analyticsResultAlias && this.needsAnalyticsArg(alias)) {
-              lines.push(`${alias}.applyEscapeHatches(backend, ${this.analyticsResultVar});`);
-            } else {
-              lines.push(`${alias}.applyEscapeHatches(backend);`);
-            }
-          }
-          lines.push('');
-
-          // 7. Commented postRefactor call
-          lines.push('// Uncomment after refactor');
-          lines.push('// postRefactor();');
-          lines.push('');
-
-          let content = lines.join('\n');
-          content = await prettier.format(content, {
-            parser: 'typescript',
-            singleQuote: true,
-            tabWidth: 2,
-            printWidth: 120,
-          });
+          const nodes = this.renderer.render(options);
+          const content = TS.printNodes(nodes, 120);
 
           await fs.mkdir(path.dirname(backendTsPath), { recursive: true });
           await fs.writeFile(backendTsPath, content, 'utf-8');
@@ -224,14 +169,9 @@ export class BackendGenerator implements Planner {
 
   /**
    * Determines if a function alias needs the analytics result argument.
-   * This is true when the function's resource.ts has an applyEscapeHatches
-   * that takes an analytics parameter (kinesis-related functions).
    */
   private needsAnalyticsArg(alias: string): boolean {
-    // The analytics alias itself doesn't get applyEscapeHatches
     if (alias === this.analyticsResultAlias) return false;
-    // Functions that were registered as needing analytics will be tracked
-    // by the function generator setting a flag
     return this.analyticsEscapeHatchAliases.has(alias);
   }
 
@@ -244,51 +184,4 @@ export class BackendGenerator implements Planner {
   public markNeedsAnalyticsArg(alias: string): void {
     this.analyticsEscapeHatchAliases.add(alias);
   }
-}
-
-/**
- * Sort order for namespace imports in backend.ts.
- */
-function namespaceImportOrder(source: string): number {
-  if (source === './auth/resource') return 0;
-  if (source === './data/resource') return 0.1;
-  if (source === './storage/resource') return 0.2;
-  if (source.startsWith('./storage/')) return 0.3;
-  if (source.startsWith('./function/') || source.startsWith('./auth/')) return 1;
-  if (source.startsWith('./api/')) return 1.5;
-  if (source.startsWith('./analytics/')) return 2;
-  if (source.startsWith('./geo/')) return 2.5;
-  return 3;
-}
-
-/**
- * Sort order for defineBackend entries.
- */
-function defineBackendOrder(key: string): number {
-  if (key === 'auth') return 0;
-  if (key === 'data') return 1;
-  if (key === 'storage') return 2;
-  return 3;
-}
-
-/**
- * Sort order for applyEscapeHatches calls.
- * Matches the defineBackend order: auth, data, storage, then functions.
- */
-function escapeHatchOrder(alias: string): number {
-  if (alias === 'auth') return 0;
-  if (alias === 'data') return 1;
-  if (alias === 'storage') return 2;
-  return 3;
-}
-
-/**
- * Sort order for postRefactor calls.
- * S3 storage first, then DynamoDB tables, then analytics.
- */
-function postRefactorOrder(statement: string): number {
-  if (statement.includes('storage.postRefactor')) return 0;
-  if (statement.includes('storageActivity') || statement.includes('storageBookmarks')) return 1;
-  if (statement.includes('analytics.postRefactor')) return 2;
-  return 3;
 }
