@@ -478,16 +478,18 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     const unexpected = changes.filter((change) => {
       const rc = change.ResourceChange;
-      return rc.Action !== 'Modify' || !allowedModifyTypes.has(rc.ResourceType);
+      if (!rc) return false; // Not a resource change — irrelevant to this validation
+      return rc.Action !== 'Modify' || !allowedModifyTypes.has(rc.ResourceType!);
     });
 
     if (unexpected.length > 0) {
       const descriptions = unexpected.map((c) => {
-        const rc = c.ResourceChange;
-        return `${rc.Action} ${rc.ResourceType} (${rc.LogicalResourceId})`;
+        const rc = c.ResourceChange!; // Safe: filter guarantees rc is defined
+        return `${rc.Action ?? 'Unknown'} ${rc.ResourceType ?? 'Unknown'} (${rc.LogicalResourceId ?? 'Unknown'})`;
       });
 
-      void this.gen1App.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackId, ChangeSetName: changeSetName }));
+      void this.gen1App.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackId, ChangeSetName: changeSetName }))
+        .catch((e: any) => this.logger.debug(`Failed to clean up changeset ${changeSetName}: ${e.message}`));
 
       throw new AmplifyError('MigrationError', {
         message: [
