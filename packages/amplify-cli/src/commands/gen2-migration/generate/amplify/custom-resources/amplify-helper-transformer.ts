@@ -349,6 +349,18 @@ export class AmplifyHelperTransformer {
   }
 
   /**
+   * Parses, transforms, and prints a cdk-stack.ts file in one call.
+   * Combines createSourceFile → transform → addBranchNameVariable → print.
+   */
+  public static transformAndPrint(filePath: string, content: string, projectName?: string): string {
+    const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
+    const transformed = AmplifyHelperTransformer.transform(sourceFile, projectName);
+    const withBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformed, projectName);
+    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+    return printer.printFile(withBranchName);
+  }
+
+  /**
    * Inserts branchName and projectName variable declarations after imports.
    */
   public static addBranchNameVariable(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {

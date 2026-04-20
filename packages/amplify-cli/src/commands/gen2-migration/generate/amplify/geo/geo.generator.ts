@@ -1,6 +1,5 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -8,8 +7,6 @@ import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { GeoRenderer } from './geo.renderer';
 import { GeoCfnConverter, GeoCodegenResult, GeoServiceName, GeoProviderMetadata } from './geo-cfn-converter';
-
-const factory = ts.factory;
 
 /**
  * Metadata for a single Gen1 geo resource from amplify-meta.json.

@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { newLineIdentifier, TS } from '../../_infra/ts';
 
 const factory = ts.factory;
 
@@ -60,6 +61,61 @@ export class RestApiRenderer {
   public constructor(hasAuth: boolean, functionNames: ReadonlySet<string>) {
     this.hasAuth = hasAuth;
     this.functionNames = functionNames;
+  }
+
+  /**
+   * Renders the complete resource.ts file for a REST API, including
+   * imports, branchName, Backend type import, and the export function.
+   */
+  public renderComplete(restApi: RestApiDefinition): ts.NodeArray<ts.Node> {
+    const statements = this.renderApi(restApi);
+    const baseName = restApi.apiName.replace(/api$/i, '');
+    const properFunctionName = `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
+
+    const exportFunc = factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      properFunctionName,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock(statements, true),
+    );
+
+    const importDecls: ts.ImportDeclaration[] = [
+      createNamedImportDecl('aws-cdk-lib/aws-apigateway', ['RestApi', 'LambdaIntegration', 'AuthorizationType', 'Cors', 'ResponseType']),
+      createNamedImportDecl('aws-cdk-lib/aws-iam', ['Policy', 'PolicyStatement']),
+      createNamedImportDecl('aws-cdk-lib', ['Stack']),
+    ];
+
+    const backendTypeImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../../backend'),
+    );
+
+    const branchNameConst = TS.createBranchNameDeclaration();
+
+    return factory.createNodeArray([
+      ...importDecls,
+      backendTypeImport,
+      newLineIdentifier,
+      branchNameConst,
+      newLineIdentifier,
+      exportFunc,
+    ] as ts.Statement[]);
+  }
+
+  /**
+   * Returns the function name for the REST API's export function.
+   */
+  public static functionName(apiName: string): string {
+    const baseName = apiName.replace(/api$/i, '');
+    return `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
   }
 
   /**
@@ -740,4 +796,14 @@ export class RestApiRenderer {
       ),
     );
   }
+}
+
+/** Creates a named import declaration. */
+function createNamedImportDecl(source: string, identifiers: string[]): ts.ImportDeclaration {
+  const importSpecifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+  return factory.createImportDeclaration(
+    undefined,
+    factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+    factory.createStringLiteral(source),
+  );
 }

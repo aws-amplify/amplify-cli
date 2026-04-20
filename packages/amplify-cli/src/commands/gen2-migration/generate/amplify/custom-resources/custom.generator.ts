@@ -1,6 +1,5 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
@@ -212,11 +211,7 @@ async function transformResource(destResourcePath: string, projectName: string |
   );
 
   // Apply AST-based transformations
-  const sourceFile = ts.createSourceFile(cdkStackFilePath, content, ts.ScriptTarget.Latest, true);
-  const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
-  const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
-  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-  content = printer.printFile(transformedWithBranchName);
+  content = AmplifyHelperTransformer.transformAndPrint(cdkStackFilePath, content, projectName);
 
   await fs.writeFile(cdkStackFilePath, content, { encoding: 'utf-8' });
 }

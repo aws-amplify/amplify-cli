@@ -10,7 +10,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
-import { TS } from '../../_infra/ts';
+import { newLineIdentifier, TS } from '../../_infra/ts';
 
 /**
  * A registered auth trigger — contributed by the function generator.
@@ -175,6 +175,82 @@ export class AuthRenderer {
   public render(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
     const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
     return this.renderStandardAuth(options, namedImports);
+  }
+
+  /**
+   * Produces the complete auth/resource.ts file including defineAuth(),
+   * applyEscapeHatches(), Backend type import, and CDK imports.
+   */
+  public renderComplete(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
+    const baseNodes = this.render(options);
+
+    const hasIdentityProviders =
+      options.userPoolClient?.SupportedIdentityProviders !== undefined && options.userPoolClient.SupportedIdentityProviders.length > 0;
+
+    const escapeHatchStatements = this.buildEscapeHatchStatements(options, hasIdentityProviders);
+    const additionalImports = this.buildAdditionalImports(options, hasIdentityProviders);
+
+    const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      'applyEscapeHatches',
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+      undefined,
+      factory.createBlock(escapeHatchStatements, true),
+    );
+
+    const backendTypeImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../backend'),
+    );
+
+    const additionalImportDecls: ts.ImportDeclaration[] = [];
+    for (const [source, identifiers] of Object.entries(additionalImports)) {
+      const importSpecifiers = Array.from(identifiers).map((id) =>
+        factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
+      );
+      additionalImportDecls.push(
+        factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+          factory.createStringLiteral(source),
+        ),
+      );
+    }
+
+    const allNodes: ts.Node[] = [];
+    let foundFirstNonImport = false;
+    for (const node of baseNodes) {
+      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(node);
+      } else {
+        if (!foundFirstNonImport) {
+          for (const decl of additionalImportDecls) {
+            allNodes.push(decl);
+          }
+          allNodes.push(backendTypeImport);
+          foundFirstNonImport = true;
+        }
+        allNodes.push(node);
+      }
+    }
+    if (!foundFirstNonImport) {
+      for (const decl of additionalImportDecls) {
+        allNodes.push(decl);
+      }
+      allNodes.push(backendTypeImport);
+    }
+
+    allNodes.push(newLineIdentifier);
+    allNodes.push(applyEscapeHatchesDecl);
+
+    return factory.createNodeArray(allNodes as ts.Statement[]);
   }
 
   private renderStandardAuth(options: AuthRenderOptions, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
@@ -910,6 +986,435 @@ export class AuthRenderer {
       }
       return [];
     });
+  }
+
+  // ── Escape hatch rendering ───────────────────────────────────────
+
+  /** Builds the statements for the applyEscapeHatches function body. */
+  private buildEscapeHatchStatements(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
+    if (Object.keys(userPoolOverrides).length > 0) {
+      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides));
+    }
+
+    if (options.identityPool?.AllowUnauthenticatedIdentities === false) {
+      statements.push(TS.constFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool'));
+      statements.push(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
+    }
+
+    if (options.webClient?.AllowedOAuthFlows) {
+      statements.push(TS.constFromBackend('cfnUserPoolClient', 'auth', 'resources', 'cfnResources', 'cfnUserPoolClient'));
+      statements.push(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
+    }
+
+    if (options.userPoolClient) {
+      statements.push(...this.buildUserPoolClientStatements(options.userPoolClient, hasIdentityProviders));
+    }
+
+    if (hasIdentityProviders) {
+      statements.push(...this.buildProviderSetupStatements());
+    }
+
+    return statements;
+  }
+
+  /** Builds additional imports needed for the applyEscapeHatches function. */
+  private buildAdditionalImports(options: AuthRenderOptions, hasIdentityProviders: boolean): Record<string, Set<string>> {
+    const imports: Record<string, Set<string>> = {};
+
+    if (options.userPoolClient) {
+      if (!imports['aws-cdk-lib']) imports['aws-cdk-lib'] = new Set();
+      imports['aws-cdk-lib'].add('Duration');
+    }
+
+    if (hasIdentityProviders) {
+      if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
+      imports['aws-cdk-lib/aws-cognito'].add('OAuthScope');
+      imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
+    }
+
+    return imports;
+  }
+
+  /** Builds cfnUserPool password policy and username attribute override statements. */
+  private buildUserPoolOverrideStatements(overrides: Record<string, string | boolean | number | string[] | undefined>): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+    const mappedPolicyType: Record<string, string> = {
+      MinimumLength: 'minimumLength',
+      RequireUppercase: 'requireUppercase',
+      RequireLowercase: 'requireLowercase',
+      RequireNumbers: 'requireNumbers',
+      RequireSymbols: 'requireSymbols',
+      PasswordHistorySize: 'passwordHistorySize',
+      TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
+    };
+
+    statements.push(TS.constFromBackend('cfnUserPool', 'auth', 'resources', 'cfnResources', 'cfnUserPool'));
+
+    const policies: { passwordPolicy: Record<string, number | string | boolean | string[]> } = {
+      passwordPolicy: {},
+    };
+
+    for (const [overridePath, value] of Object.entries(overrides)) {
+      if (overridePath.includes('PasswordPolicy')) {
+        const policyKey = overridePath.split('.')[2];
+        if (value !== undefined && policyKey in mappedPolicyType) {
+          policies.passwordPolicy[mappedPolicyType[policyKey]] = value;
+        }
+      } else {
+        statements.push(TS.assignProp('cfnUserPool', overridePath, value));
+      }
+    }
+
+    statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    return statements;
+  }
+
+  /** Builds userPool.addClient statements. */
+  private buildUserPoolClientStatements(userPoolClient: UserPoolClientType, hasIdentityProviders: boolean): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    statements.push(TS.constFromBackend('userPool', 'auth', 'resources', 'userPool'));
+
+    const clientProps: ts.PropertyAssignment[] = [];
+
+    if (userPoolClient.RefreshTokenValidity !== undefined) {
+      clientProps.push(
+        factory.createPropertyAssignment(
+          'refreshTokenValidity',
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('Duration'), factory.createIdentifier('days')),
+            undefined,
+            [factory.createNumericLiteral(userPoolClient.RefreshTokenValidity)],
+          ),
+        ),
+      );
+    }
+
+    if (userPoolClient.EnableTokenRevocation !== undefined) {
+      clientProps.push(
+        factory.createPropertyAssignment(
+          'enableTokenRevocation',
+          userPoolClient.EnableTokenRevocation ? factory.createTrue() : factory.createFalse(),
+        ),
+      );
+    }
+
+    if (userPoolClient.EnablePropagateAdditionalUserContextData !== undefined) {
+      clientProps.push(
+        factory.createPropertyAssignment(
+          'enablePropagateAdditionalUserContextData',
+          userPoolClient.EnablePropagateAdditionalUserContextData ? factory.createTrue() : factory.createFalse(),
+        ),
+      );
+    }
+
+    if (userPoolClient.AuthSessionValidity !== undefined) {
+      clientProps.push(
+        factory.createPropertyAssignment(
+          'authSessionValidity',
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('Duration'), factory.createIdentifier('minutes')),
+            undefined,
+            [factory.createNumericLiteral(userPoolClient.AuthSessionValidity)],
+          ),
+        ),
+      );
+    }
+
+    if (hasIdentityProviders) {
+      const providerMap: Record<string, string> = {
+        COGNITO: 'COGNITO',
+        Facebook: 'FACEBOOK',
+        Google: 'GOOGLE',
+        LoginWithAmazon: 'AMAZON',
+        SignInWithApple: 'APPLE',
+      };
+      const providerElements = userPoolClient.SupportedIdentityProviders!.map((provider) => {
+        const mapped = providerMap[provider] ?? provider.toUpperCase();
+        return factory.createPropertyAccessExpression(
+          factory.createIdentifier('UserPoolClientIdentityProvider'),
+          factory.createIdentifier(mapped),
+        );
+      });
+      clientProps.push(
+        factory.createPropertyAssignment('supportedIdentityProviders', factory.createArrayLiteralExpression(providerElements, true)),
+      );
+    }
+
+    if (
+      userPoolClient.AllowedOAuthFlows?.length ||
+      userPoolClient.AllowedOAuthScopes?.length ||
+      userPoolClient.CallbackURLs?.length ||
+      userPoolClient.LogoutURLs?.length
+    ) {
+      const oAuthProps: ts.PropertyAssignment[] = [];
+
+      if (userPoolClient.CallbackURLs?.length) {
+        oAuthProps.push(
+          factory.createPropertyAssignment(
+            'callbackUrls',
+            factory.createArrayLiteralExpression(userPoolClient.CallbackURLs.map((url) => factory.createStringLiteral(url))),
+          ),
+        );
+      }
+
+      if (userPoolClient.LogoutURLs?.length) {
+        oAuthProps.push(
+          factory.createPropertyAssignment(
+            'logoutUrls',
+            factory.createArrayLiteralExpression(userPoolClient.LogoutURLs.map((url) => factory.createStringLiteral(url))),
+          ),
+        );
+      }
+
+      if (userPoolClient.AllowedOAuthFlows?.length) {
+        oAuthProps.push(
+          factory.createPropertyAssignment(
+            'flows',
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment(
+                'authorizationCodeGrant',
+                userPoolClient.AllowedOAuthFlows.includes('code') ? factory.createTrue() : factory.createFalse(),
+              ),
+              factory.createPropertyAssignment(
+                'implicitCodeGrant',
+                userPoolClient.AllowedOAuthFlows.includes('implicit') ? factory.createTrue() : factory.createFalse(),
+              ),
+              factory.createPropertyAssignment(
+                'clientCredentials',
+                userPoolClient.AllowedOAuthFlows.includes('client_credentials') ? factory.createTrue() : factory.createFalse(),
+              ),
+            ]),
+          ),
+        );
+      }
+
+      if (userPoolClient.AllowedOAuthScopes?.length) {
+        const scopeMap: Record<string, string> = {
+          phone: 'PHONE',
+          email: 'EMAIL',
+          openid: 'OPENID',
+          profile: 'PROFILE',
+          'aws.cognito.signin.user.admin': 'COGNITO_ADMIN',
+        };
+        const scopeElements = userPoolClient.AllowedOAuthScopes.filter((s) => scopeMap[s]).map((scope) =>
+          factory.createPropertyAccessExpression(factory.createIdentifier('OAuthScope'), factory.createIdentifier(scopeMap[scope])),
+        );
+        oAuthProps.push(factory.createPropertyAssignment('scopes', factory.createArrayLiteralExpression(scopeElements, true)));
+      }
+
+      clientProps.push(factory.createPropertyAssignment('oAuth', factory.createObjectLiteralExpression(oAuthProps, true)));
+    }
+
+    if (userPoolClient.AllowedOAuthFlows?.length) {
+      clientProps.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('// flows'),
+          factory.createArrayLiteralExpression(userPoolClient.AllowedOAuthFlows.map((flow) => factory.createStringLiteral(flow, true))),
+        ),
+      );
+    }
+
+    const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;
+    clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
+    clientProps.push(
+      factory.createPropertyAssignment('generateSecret', userPoolClient.ClientSecret ? factory.createTrue() : factory.createFalse()),
+    );
+
+    const addClientCall = factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
+      undefined,
+      [factory.createStringLiteral('NativeAppClient'), factory.createObjectLiteralExpression(clientProps, true)],
+    );
+
+    if (hasIdentityProviders) {
+      statements.push(
+        factory.createVariableStatement(
+          undefined,
+          factory.createVariableDeclarationList(
+            [factory.createVariableDeclaration(factory.createIdentifier('userPoolClient'), undefined, undefined, addClientCall)],
+            ts.NodeFlags.Const,
+          ),
+        ),
+      );
+    } else {
+      statements.push(factory.createExpressionStatement(addClientCall));
+    }
+
+    return statements;
+  }
+
+  /** Builds the providerSetupResult code and commented tryRemoveChild. */
+  private buildProviderSetupStatements(): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    const findCall = factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+              factory.createIdentifier('stack'),
+            ),
+            factory.createIdentifier('node'),
+          ),
+          factory.createIdentifier('children'),
+        ),
+        factory.createIdentifier('find'),
+      ),
+      undefined,
+      [
+        factory.createArrowFunction(
+          undefined,
+          undefined,
+          [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('child'))],
+          undefined,
+          factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+          factory.createBinaryExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('child'), factory.createIdentifier('node')),
+              factory.createIdentifier('id'),
+            ),
+            factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+            factory.createStringLiteral('amplifyAuth'),
+          ),
+        ),
+      ],
+    );
+
+    const providerSetupDecl = factory.createVariableStatement(
+      undefined,
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'providerSetupResult',
+            undefined,
+            undefined,
+            factory.createPropertyAccessExpression(
+              factory.createParenthesizedExpression(
+                factory.createAsExpression(findCall, factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+              ),
+              factory.createIdentifier('providerSetupResult'),
+            ),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+    statements.push(providerSetupDecl);
+
+    const forEachStatement = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('keys')),
+            undefined,
+            [factory.createIdentifier('providerSetupResult')],
+          ),
+          factory.createIdentifier('forEach'),
+        ),
+        undefined,
+        [
+          factory.createArrowFunction(
+            undefined,
+            undefined,
+            [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('provider'))],
+            undefined,
+            factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+            factory.createBlock(
+              [
+                factory.createVariableStatement(
+                  undefined,
+                  factory.createVariableDeclarationList(
+                    [
+                      factory.createVariableDeclaration(
+                        'providerSetupPropertyValue',
+                        undefined,
+                        undefined,
+                        factory.createElementAccessExpression(
+                          factory.createIdentifier('providerSetupResult'),
+                          factory.createIdentifier('provider'),
+                        ),
+                      ),
+                    ],
+                    ts.NodeFlags.Const,
+                  ),
+                ),
+                factory.createIfStatement(
+                  factory.createLogicalAnd(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('providerSetupPropertyValue'),
+                      factory.createIdentifier('node'),
+                    ),
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createCallExpression(
+                          factory.createPropertyAccessExpression(
+                            factory.createPropertyAccessExpression(
+                              factory.createPropertyAccessExpression(
+                                factory.createIdentifier('providerSetupPropertyValue'),
+                                factory.createIdentifier('node'),
+                              ),
+                              factory.createIdentifier('id'),
+                            ),
+                            factory.createIdentifier('toLowerCase'),
+                          ),
+                          undefined,
+                          [],
+                        ),
+                        factory.createIdentifier('endsWith'),
+                      ),
+                      undefined,
+                      [factory.createStringLiteral('idp')],
+                    ),
+                  ),
+                  factory.createBlock(
+                    [
+                      factory.createExpressionStatement(
+                        factory.createCallExpression(
+                          factory.createPropertyAccessExpression(
+                            factory.createPropertyAccessExpression(
+                              factory.createIdentifier('userPoolClient'),
+                              factory.createIdentifier('node'),
+                            ),
+                            factory.createIdentifier('addDependency'),
+                          ),
+                          undefined,
+                          [factory.createIdentifier('providerSetupPropertyValue')],
+                        ),
+                      ),
+                    ],
+                    true,
+                  ),
+                ),
+              ],
+              true,
+            ),
+          ),
+        ],
+      ),
+    );
+    statements.push(forEachStatement);
+
+    const commentedStatement = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createPropertyAccessExpression(
+            factory.createIdentifier('// backend.auth.resources.userPool'),
+            factory.createIdentifier('node'),
+          ),
+          factory.createIdentifier('tryRemoveChild'),
+        ),
+        undefined,
+        [factory.createStringLiteral('UserPoolDomain')],
+      ),
+    );
+    statements.push(commentedStatement);
+
+    return statements;
   }
 }
 

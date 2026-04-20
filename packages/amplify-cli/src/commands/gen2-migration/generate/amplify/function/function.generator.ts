@@ -1,20 +1,17 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_infra/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS, newLineIdentifier } from '../../_infra/ts';
-import { FunctionRenderer, RenderDefineFunctionOptions, EnvVarEscapeHatch, classifyEnvVars } from './function.renderer';
+import { TS } from '../../_infra/ts';
+import { FunctionRenderer, RenderCompleteFunctionOptions, EnvVarEscapeHatch, classifyEnvVars } from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
-
-const factory = ts.factory;
 
 interface ResolvedFunction {
   readonly resourceName: string;
@@ -135,7 +132,16 @@ export class FunctionGenerator implements Planner {
 
   private async generateResource(func: ResolvedFunction, triggerModels: string[], hasKinesisTrigger: boolean): Promise<void> {
     const dirPath = path.join(this.outputDir, 'amplify', 'function', func.resourceName);
-    const renderOpts: RenderDefineFunctionOptions = {
+
+    const hasAnalytics = func.kinesisActions.length > 0 || hasKinesisTrigger;
+    let analyticsTypeImport: string | undefined;
+    let analyticsConstructImportPath: string | undefined;
+    if (hasAnalytics) {
+      analyticsTypeImport = this.findAnalyticsConstructType();
+      analyticsConstructImportPath = this.getAnalyticsConstructImportPath();
+    }
+
+    const renderOpts: RenderCompleteFunctionOptions = {
       resourceName: func.resourceName,
       entry: func.entry,
       name: func.deployedName,
@@ -144,14 +150,6 @@ export class FunctionGenerator implements Planner {
       runtime: func.runtime,
       schedule: func.schedule,
       environment: func.environment,
-    };
-
-    const hasAnalytics = func.kinesisActions.length > 0 || hasKinesisTrigger;
-    let analyticsTypeImport: string | undefined;
-    if (hasAnalytics) analyticsTypeImport = this.findAnalyticsConstructType();
-
-    const escapeHatchResult = this.renderer.renderApplyEscapeHatches({
-      resourceName: func.resourceName,
       escapeHatches: func.escapeHatches,
       dynamoActions: func.dynamoActions,
       kinesisActions: func.kinesisActions,
@@ -160,73 +158,12 @@ export class FunctionGenerator implements Planner {
       hasKinesisTrigger,
       hasAnalytics: hasAnalytics && !!analyticsTypeImport,
       analyticsConstructType: analyticsTypeImport,
-    });
+      analyticsConstructImportPath,
+    };
 
-    const baseNodes = this.renderer.render(renderOpts);
-    const additionalImports: Record<string, Set<string>> = { ...escapeHatchResult.additionalImports };
-    const backendImportPath = '../../backend';
+    const nodes = this.renderer.renderComplete(renderOpts);
+    const content = TS.printNodes(nodes);
 
-    const backendTypeImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral(backendImportPath),
-    );
-
-    let analyticsTypeImportDecl: ts.ImportDeclaration | undefined;
-    if (analyticsTypeImport) {
-      analyticsTypeImportDecl = factory.createImportDeclaration(
-        undefined,
-        factory.createImportClause(
-          true,
-          undefined,
-          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(analyticsTypeImport))]),
-        ),
-        factory.createStringLiteral(this.getAnalyticsConstructImportPath()),
-      );
-    }
-
-    const additionalImportDecls: ts.ImportDeclaration[] = [];
-    for (const [source, identifiers] of Object.entries(additionalImports)) {
-      const specs = Array.from(identifiers).map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
-      additionalImportDecls.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamedImports(specs)),
-          factory.createStringLiteral(source),
-        ),
-      );
-    }
-
-    const allNodes: ts.Node[] = [];
-    let foundFirstNonImport = false;
-    for (const node of baseNodes) {
-      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
-        allNodes.push(node);
-      } else {
-        if (!foundFirstNonImport) {
-          for (const decl of additionalImportDecls) allNodes.push(decl);
-          allNodes.push(backendTypeImport);
-          if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
-          foundFirstNonImport = true;
-        }
-        allNodes.push(node);
-      }
-    }
-    if (!foundFirstNonImport) {
-      for (const decl of additionalImportDecls) allNodes.push(decl);
-      allNodes.push(backendTypeImport);
-      if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
-    }
-    for (const stmt of escapeHatchResult.postExportStatements) {
-      allNodes.push(newLineIdentifier);
-      allNodes.push(stmt);
-    }
-
-    const content = TS.printNodes(factory.createNodeArray(allNodes as ts.Statement[]));
     await fs.mkdir(dirPath, { recursive: true });
     await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
     await this.copyFunctionSource(func.resourceName, dirPath);

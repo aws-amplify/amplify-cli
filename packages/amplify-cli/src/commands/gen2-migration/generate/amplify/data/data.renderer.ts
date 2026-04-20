@@ -1,5 +1,5 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
-import { TS } from '../../_infra/ts';
+import { newLineIdentifier, TS } from '../../_infra/ts';
 
 const factory = ts.factory;
 
@@ -18,6 +18,10 @@ export interface RenderDefineDataOptions {
   readonly authorizationModes?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
   readonly logging?: any;
+  /** Additional auth providers for the applyEscapeHatches function. */
+  readonly additionalAuthProviders?: readonly Record<string, unknown>[];
+  /** Whether the Gen1 app has an auth category (needed for user pool references). */
+  readonly hasAuth?: boolean;
 }
 
 const MIGRATED_TABLE_MAPPINGS_KEY = 'migratedAmplifyGen1DynamoDbTableMappings';
@@ -64,13 +68,59 @@ export class DataRenderer {
       factory.createVariableStatement([], factory.createVariableDeclarationList([schemaVarDecl], ts.NodeFlags.Const)),
     ];
 
-    return TS.renderResourceTsFile({
+    const baseNodes = TS.renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('data'),
       functionCallParameter: factory.createObjectLiteralExpression(properties, true),
       backendFunctionConstruct: 'defineData',
       postImportStatements: schemaStatements,
       additionalImportedBackendIdentifiers: namedImports,
     });
+
+    const needsEscapeHatches = opts.additionalAuthProviders && opts.additionalAuthProviders.length > 0 && opts.hasAuth;
+
+    const backendTypeImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../backend'),
+    );
+
+    const allNodes: ts.Node[] = [];
+    let foundFirstNonImport = false;
+    for (const node of baseNodes) {
+      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(node);
+      } else {
+        if (!foundFirstNonImport) {
+          allNodes.push(backendTypeImport);
+          foundFirstNonImport = true;
+        }
+        allNodes.push(node);
+      }
+    }
+    if (!foundFirstNonImport) {
+      allNodes.push(backendTypeImport);
+    }
+
+    if (needsEscapeHatches) {
+      const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(opts.additionalAuthProviders!);
+      const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
+        [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        undefined,
+        'applyEscapeHatches',
+        undefined,
+        [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+        undefined,
+        factory.createBlock(escapeHatchStatements, true),
+      );
+      allNodes.push(newLineIdentifier);
+      allNodes.push(applyEscapeHatchesDecl);
+    }
+
+    return factory.createNodeArray(allNodes as ts.Statement[]);
   }
 
   private prepareSchema(raw: string): { schema: string; preSchemaStatements: ts.Node[] } {
@@ -238,5 +288,52 @@ export class DataRenderer {
     if (props.length > 0) {
       properties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(props)));
     }
+  }
+
+  /** Builds additional auth provider override statements for applyEscapeHatches. */
+  private buildAdditionalAuthProviderStatements(providers: readonly Record<string, unknown>[]): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+    statements.push(TS.constFromBackend('cfnGraphqlApi', 'data', 'resources', 'cfnResources', 'cfnGraphqlApi'));
+
+    const providerElements = providers.map((provider) => {
+      const props: ts.PropertyAssignment[] = [];
+      if (provider.authenticationType) {
+        props.push(
+          factory.createPropertyAssignment('authenticationType', factory.createStringLiteral(provider.authenticationType as string)),
+        );
+      }
+      if (provider.userPoolConfig) {
+        const userPoolConfig = provider.userPoolConfig as Record<string, unknown>;
+        const userPoolConfigProps: ts.PropertyAssignment[] = [];
+        if (userPoolConfig.userPoolId) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              'userPoolId',
+              TS.propAccess('backend', 'auth', 'resources', 'userPool', 'userPoolId') as ts.PropertyAccessExpression,
+            ),
+          );
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              'awsRegion',
+              TS.propAccess('backend', 'auth', 'stack', 'region') as ts.PropertyAccessExpression,
+            ),
+          );
+        }
+        props.push(factory.createPropertyAssignment('userPoolConfig', factory.createObjectLiteralExpression(userPoolConfigProps, true)));
+      }
+      return factory.createObjectLiteralExpression(props, true);
+    });
+
+    const assignment = factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(
+          factory.createIdentifier('cfnGraphqlApi'),
+          factory.createIdentifier('additionalAuthenticationProviders'),
+        ),
+        factory.createArrayLiteralExpression(providerElements, true),
+      ),
+    );
+    statements.push(assignment);
+    return statements;
   }
 }

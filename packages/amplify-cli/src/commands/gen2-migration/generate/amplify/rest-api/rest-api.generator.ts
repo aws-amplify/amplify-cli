@@ -1,14 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS, newLineIdentifier } from '../../_infra/ts';
+import { TS } from '../../_infra/ts';
 import { CorsConfiguration, RestApiDefinition, RestApiPath, RestApiRenderer } from './rest-api.renderer';
-
-const factory = ts.factory;
 
 /**
  * Generates a single REST API (API Gateway) resource and contributes
@@ -32,9 +29,7 @@ export class RestApiGenerator implements Planner {
     this.resource = resource;
   }
 
-  /**
-   * Plans the REST API generation operation.
-   */
+  /** Plans the REST API generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const restApi = await RestApiGenerator.readRestApiConfig(this.gen1App, this.resource.resourceName);
     const functionCategory = this.gen1App.meta('function');
@@ -50,93 +45,19 @@ export class RestApiGenerator implements Planner {
           const apiDir = path.join(this.outputDir, 'amplify', 'api', restApi.apiName);
           const renderer = new RestApiRenderer(hasAuth, functionNames);
 
-          // Build the resource.ts content
-          const statements = renderer.renderApi(restApi);
-
-          // Create the function body with branchName + statements
-          const bodyStatements: ts.Statement[] = [...statements];
-
-          // Build the export function
-          // Build function name: nutritionapi -> defineNutritionApi
-          const apiName = restApi.apiName;
-          const baseName = apiName.replace(/api$/i, '');
-          const properFunctionName = `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
-
-          const exportFunc = factory.createFunctionDeclaration(
-            [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-            undefined,
-            properFunctionName,
-            undefined,
-            [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-            undefined,
-            factory.createBlock(bodyStatements, true),
-          );
-
-          // Build imports
-          const importDecls: ts.ImportDeclaration[] = [];
-          importDecls.push(
-            this.createNamedImportDecl('aws-cdk-lib/aws-apigateway', [
-              'RestApi',
-              'LambdaIntegration',
-              'AuthorizationType',
-              'Cors',
-              'ResponseType',
-            ]),
-          );
-          importDecls.push(this.createNamedImportDecl('aws-cdk-lib/aws-iam', ['Policy', 'PolicyStatement']));
-          importDecls.push(this.createNamedImportDecl('aws-cdk-lib', ['Stack']));
-
-          const backendTypeImport = factory.createImportDeclaration(
-            undefined,
-            factory.createImportClause(
-              true,
-              undefined,
-              factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-            ),
-            factory.createStringLiteral('../../backend'),
-          );
-
-          const branchNameConst = TS.createBranchNameDeclaration();
-
-          const allNodes: ts.Node[] = [
-            ...importDecls,
-            backendTypeImport,
-            newLineIdentifier,
-            branchNameConst,
-            newLineIdentifier,
-            exportFunc,
-          ];
-
-          const nodeArray = factory.createNodeArray(allNodes as ts.Statement[]);
-          const content = TS.printNodes(nodeArray);
+          const nodes = renderer.renderComplete(restApi);
+          const content = TS.printNodes(nodes);
 
           await fs.mkdir(apiDir, { recursive: true });
           await fs.writeFile(path.join(apiDir, 'resource.ts'), content, 'utf-8');
 
-          // Contribute to backend.ts
           const alias = restApi.apiName;
+          const properFunctionName = RestApiRenderer.functionName(restApi.apiName);
           this.backendGenerator.addNamespaceImport(alias, `./api/${restApi.apiName}/resource`);
           this.backendGenerator.addPostDefineStatement(`${alias}.${properFunctionName}(backend)`);
-
-          // Ensure functions used by this REST API are in defineBackend
-          if (restApi.uniqueFunctions) {
-            for (const funcName of restApi.uniqueFunctions) {
-              if (!functionNames.has(funcName)) continue;
-              // Functions are already contributed by FunctionGenerator
-            }
-          }
         },
       },
     ];
-  }
-
-  private createNamedImportDecl(source: string, identifiers: string[]): ts.ImportDeclaration {
-    const importSpecifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-      factory.createStringLiteral(source),
-    );
   }
 
   /**

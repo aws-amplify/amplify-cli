@@ -1,6 +1,5 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -8,8 +7,6 @@ import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
 import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
-
-const factory = ts.factory;
 
 /**
  * Generates a single Kinesis analytics resource and contributes to backend.ts.

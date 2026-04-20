@@ -1,5 +1,5 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
-import { TS } from '../../_infra/ts';
+import { newLineIdentifier, TS } from '../../_infra/ts';
 
 const factory = ts.factory;
 
@@ -15,6 +15,17 @@ export interface RenderDefineFunctionOptions {
   readonly runtime?: string;
   readonly schedule?: string;
   readonly environment?: Readonly<Record<string, string>>;
+}
+
+/**
+ * Options for rendering the complete function resource.ts file,
+ * including defineFunction() and applyEscapeHatches().
+ */
+export interface RenderCompleteFunctionOptions extends RenderDefineFunctionOptions, RenderApplyEscapeHatchesOptions {
+  /** The analytics construct type name for the type import, if needed. */
+  readonly analyticsConstructType?: string;
+  /** The import path for the analytics construct. */
+  readonly analyticsConstructImportPath?: string;
 }
 
 /**
@@ -96,6 +107,81 @@ export class FunctionRenderer {
       additionalImportedBackendIdentifiers: namedImports,
       postImportStatements,
     });
+  }
+
+  /**
+   * Renders the complete resource.ts file including defineFunction(),
+   * applyEscapeHatches(), all imports, and Backend/analytics type imports.
+   */
+  public renderComplete(opts: RenderCompleteFunctionOptions): ts.NodeArray<ts.Node> {
+    const baseNodes = this.render(opts);
+    const escapeHatchResult = this.renderApplyEscapeHatches(opts);
+
+    const additionalImports: Record<string, Set<string>> = { ...escapeHatchResult.additionalImports };
+
+    const backendTypeImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral('../../backend'),
+    );
+
+    let analyticsTypeImportDecl: ts.ImportDeclaration | undefined;
+    if (opts.analyticsConstructType) {
+      analyticsTypeImportDecl = factory.createImportDeclaration(
+        undefined,
+        factory.createImportClause(
+          true,
+          undefined,
+          factory.createNamedImports([
+            factory.createImportSpecifier(false, undefined, factory.createIdentifier(opts.analyticsConstructType)),
+          ]),
+        ),
+        factory.createStringLiteral(opts.analyticsConstructImportPath!),
+      );
+    }
+
+    const additionalImportDecls: ts.ImportDeclaration[] = [];
+    for (const [source, identifiers] of Object.entries(additionalImports)) {
+      const specs = Array.from(identifiers).map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+      additionalImportDecls.push(
+        factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(false, undefined, factory.createNamedImports(specs)),
+          factory.createStringLiteral(source),
+        ),
+      );
+    }
+
+    const allNodes: ts.Node[] = [];
+    let foundFirstNonImport = false;
+    for (const node of baseNodes) {
+      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(node);
+      } else {
+        if (!foundFirstNonImport) {
+          for (const decl of additionalImportDecls) allNodes.push(decl);
+          allNodes.push(backendTypeImport);
+          if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
+          foundFirstNonImport = true;
+        }
+        allNodes.push(node);
+      }
+    }
+    if (!foundFirstNonImport) {
+      for (const decl of additionalImportDecls) allNodes.push(decl);
+      allNodes.push(backendTypeImport);
+      if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
+    }
+    for (const stmt of escapeHatchResult.postExportStatements) {
+      allNodes.push(newLineIdentifier);
+      allNodes.push(stmt);
+    }
+
+    return factory.createNodeArray(allNodes as ts.Statement[]);
   }
 
   /**
