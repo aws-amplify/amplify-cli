@@ -571,38 +571,99 @@ export class App {
   // ============================================================
 
   /**
-   * Delete a CloudFormation stack. If it fails (e.g. due to a custom resource
-   * whose dependencies have already been removed), retry while retaining the
-   * failed resources.
+   * Delete a CloudFormation stack, handling the common failure mode where a
+   * custom resource (typically `CustomAuthTriggerResource`) fails to clean
+   * itself up because its service-token Lambda or the Cognito user pool it
+   * references has already been removed.
+   *
+   * Strategy:
+   *   1. Issue the delete and wait for completion.
+   *   2. If the stack reaches `DELETE_FAILED`, inspect its resources:
+   *      - For any nested stack that failed, recursively clean it up. This
+   *        matters because `RetainResources` on a parent stack cannot skip
+   *        resources inside a nested stack — the nested stack itself must be
+   *        deleted with its own `RetainResources` targeting the actual
+   *        problem leaf.
+   *      - After the recursive pass, retry the parent, retaining any nested
+   *        stacks or leaf resources that are still `DELETE_FAILED`.
    */
   private async deleteStackWithRetainOnFailure(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
     await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
-    try {
-      await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stackName });
+    if (await this.tryWaitForStackDelete(cfnClient, stackName)) return;
+
+    await this.cleanupNestedFailedStacks(cfnClient, stackName);
+
+    const failed = await this.listFailedResources(cfnClient, stackName);
+    if (failed.length === 0) {
+      this.logger.info(`Stack ${stackName} delete did not complete within timeout (continuing teardown)`);
       return;
-    } catch {
-      // fall through to retry with RetainResources
     }
 
+    this.logger.info(`Retrying delete of ${stackName} with retained resources: ${failed.join(', ')}`);
     try {
-      const { StackResources } = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName }));
-      const failed = (StackResources ?? [])
-        .filter((r) => r.ResourceStatus === 'DELETE_FAILED' && r.LogicalResourceId)
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .map((r) => r.LogicalResourceId!);
-      if (failed.length > 0) {
-        this.logger.info(`Retrying delete of ${stackName} with retained resources: ${failed.join(', ')}`);
-        await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: failed }));
-        try {
-          await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stackName });
-        } catch {
-          this.logger.info(`Stack ${stackName} retry did not complete within timeout (continuing teardown)`);
-        }
-      } else {
-        this.logger.info(`Stack ${stackName} delete did not complete within timeout (continuing teardown)`);
+      await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: failed }));
+      if (!(await this.tryWaitForStackDelete(cfnClient, stackName))) {
+        this.logger.info(`Stack ${stackName} retry did not complete within timeout (continuing teardown)`);
       }
     } catch (e) {
       this.logger.info(`Failed to retry stack ${stackName} delete: ${(e as Error).message} (continuing teardown)`);
+    }
+  }
+
+  /**
+   * Recursively delete any nested stacks of `stackName` that are in
+   * `DELETE_FAILED`. Each recursive call can itself retain problem leaf
+   * resources, so after this returns the parent's retry only needs to retain
+   * nested-stack logical IDs that remained stuck.
+   */
+  private async cleanupNestedFailedStacks(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
+    let resources;
+    try {
+      resources = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName }));
+    } catch (e) {
+      this.logger.info(`Failed to describe resources for ${stackName}: ${(e as Error).message} (continuing teardown)`);
+      return;
+    }
+    const nestedFailed = (resources.StackResources ?? []).filter(
+      (r) => r.ResourceType === 'AWS::CloudFormation::Stack' && r.ResourceStatus === 'DELETE_FAILED' && r.PhysicalResourceId,
+    );
+    for (const nested of nestedFailed) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const nestedName = nested.PhysicalResourceId!;
+      this.logger.info(`Recursively cleaning nested stack: ${nestedName}`);
+      await this.emptyStackBuckets(cfnClient, nestedName);
+      await this.deleteStackWithRetainOnFailure(cfnClient, nestedName);
+    }
+  }
+
+  /**
+   * List logical IDs of resources in `DELETE_FAILED` for the given stack.
+   */
+  private async listFailedResources(cfnClient: CloudFormationClient, stackName: string): Promise<string[]> {
+    try {
+      const { StackResources } = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName }));
+      return (
+        (StackResources ?? [])
+          .filter((r) => r.ResourceStatus === 'DELETE_FAILED' && r.LogicalResourceId)
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          .map((r) => r.LogicalResourceId!)
+      );
+    } catch (e) {
+      this.logger.info(`Failed to list failed resources for ${stackName}: ${(e as Error).message} (continuing teardown)`);
+      return [];
+    }
+  }
+
+  /**
+   * Wait for a stack delete to complete. Returns true on success, false on
+   * timeout or delete-failure (the caller decides how to recover).
+   */
+  private async tryWaitForStackDelete(cfnClient: CloudFormationClient, stackName: string): Promise<boolean> {
+    try {
+      await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stackName });
+      return true;
+    } catch {
+      return false;
     }
   }
 
