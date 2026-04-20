@@ -20,6 +20,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -29,6 +30,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -40,6 +49,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -49,6 +59,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = ['phone_number'];
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -64,6 +82,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -76,6 +95,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -92,6 +119,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -102,6 +130,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -118,6 +154,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -137,6 +174,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -157,6 +202,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -174,6 +220,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -189,6 +243,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -200,6 +255,14 @@ describe('AuthRenderer', () => {
             sms: true,
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -215,6 +278,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -226,6 +290,14 @@ describe('AuthRenderer', () => {
             sms: true,
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -242,8 +314,9 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
-        import { preSignUpFn } from './preSignUpFn/resource';
-        import { postConfirmFn } from './postConfirmFn/resource';
+        import { preSignUpFn } from '../function/preSignUpFn/resource';
+        import { postConfirmFn } from '../function/postConfirmFn/resource';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -257,6 +330,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -275,6 +356,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -292,6 +374,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -308,6 +398,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -327,6 +418,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -340,6 +439,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -357,6 +457,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -370,6 +478,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -387,6 +496,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -406,6 +523,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -424,6 +542,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -443,6 +569,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -464,6 +591,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -492,6 +627,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -519,6 +655,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -543,6 +687,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -563,6 +708,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -583,6 +736,7 @@ describe('AuthRenderer', () => {
 
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -610,6 +764,14 @@ describe('AuthRenderer', () => {
             mode: 'OFF',
           },
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -631,6 +793,7 @@ describe('AuthRenderer', () => {
       expect(output).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { adminFunc } from '../function/adminFunc/resource';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -644,6 +807,14 @@ describe('AuthRenderer', () => {
             allow.resource(adminFunc).to(['listUsers']),
           ],
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });
@@ -662,6 +833,7 @@ describe('AuthRenderer', () => {
         "import { defineAuth } from '@aws-amplify/backend';
         import { func1 } from '../function/func1/resource';
         import { func2 } from '../function/func2/resource';
+        import type { Backend } from '../backend';
 
         export const auth = defineAuth({
           loginWith: {
@@ -676,6 +848,14 @@ describe('AuthRenderer', () => {
             allow.resource(func2).to(['getUser']),
           ],
         });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = undefined;
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+        }
         "
       `);
     });

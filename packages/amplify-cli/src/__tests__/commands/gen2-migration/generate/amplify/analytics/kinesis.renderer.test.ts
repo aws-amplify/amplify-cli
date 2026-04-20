@@ -23,11 +23,11 @@ describe('AnalyticsRenderer', () => {
     expect(output).toMatchInlineSnapshot(`
       "import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
       import { analyticsTodoKinesis } from './todoKinesis-construct';
-      import { Backend } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-      export const defineAnalytics = (backend: Backend<any>) => {
+      export function defineAnalytics(backend: Backend) {
         const analyticsStack = backend.createStack('analytics');
         const analytics = new analyticsTodoKinesis(analyticsStack, 'todoKinesis', {
           kinesisStreamName: 'todoKinesis',
@@ -38,10 +38,13 @@ describe('AnalyticsRenderer', () => {
           unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
           branchName,
         });
-        //Use this kinesis stream name post-refactor
-        //(analytics.node.findChild('KinesisStream') as CfnStream).name = "todoKinesis-stream-abc123"
         return analytics;
-      };
+      }
+
+      export function postRefactor(analytics: analyticsTodoKinesis) {
+        (analytics.node.findChild('KinesisStream') as CfnStream).name =
+          'todoKinesis-stream-abc123';
+      }
       "
     `);
   });
@@ -58,11 +61,11 @@ describe('AnalyticsRenderer', () => {
     expect(output).toMatchInlineSnapshot(`
       "import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
       import { analyticsMyStream } from './myStream-construct';
-      import { Backend } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-      export const defineAnalytics = (backend: Backend<any>) => {
+      export function defineAnalytics(backend: Backend) {
         const analyticsStack = backend.createStack('analytics');
         const analytics = new analyticsMyStream(analyticsStack, 'myStream', {
           kinesisStreamName: 'myStream',
@@ -73,10 +76,13 @@ describe('AnalyticsRenderer', () => {
           unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
           branchName,
         });
-        //Use this kinesis stream name post-refactor
-        //(analytics.node.findChild('KinesisStream') as CfnStream).name = "myStream-abc"
         return analytics;
-      };
+      }
+
+      export function postRefactor(analytics: analyticsMyStream) {
+        (analytics.node.findChild('KinesisStream') as CfnStream).name =
+          'myStream-abc';
+      }
       "
     `);
   });

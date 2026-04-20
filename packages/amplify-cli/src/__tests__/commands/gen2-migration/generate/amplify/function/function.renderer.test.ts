@@ -1,11 +1,24 @@
-import { FunctionRenderer } from '../../../../../../commands/gen2-migration/generate/amplify/function/function.renderer';
+import {
+  FunctionRenderer,
+  RenderCompleteFunctionOptions,
+} from '../../../../../../commands/gen2-migration/generate/amplify/function/function.renderer';
 import { TS } from '../../../../../../commands/gen2-migration/generate/_infra/ts';
+
+const DEFAULT_ESCAPE_HATCH_OPTS = {
+  escapeHatches: [],
+  dynamoActions: [],
+  kinesisActions: [],
+  graphqlApiPermissions: { hasMutation: false, hasQuery: false },
+  triggerModels: [],
+  hasKinesisTrigger: false,
+  hasAnalytics: false,
+};
 
 describe('FunctionRenderer', () => {
   const renderer = new FunctionRenderer('d1abc2def3', 'main');
 
-  function render(...args: Parameters<FunctionRenderer['render']>): string {
-    return TS.printNodes(renderer.render(...args));
+  function render(opts: Partial<RenderCompleteFunctionOptions> & { resourceName: string; entry: string }): string {
+    return TS.printNodes(renderer.render({ ...DEFAULT_ESCAPE_HATCH_OPTS, ...opts }));
   }
 
   it('renders a basic defineFunction with entry point', () => {
@@ -16,12 +29,17 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
       export const myFunc = defineFunction({
         entry: './index.js',
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -35,6 +53,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -42,6 +61,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         name: \`myFunc-\${branchName}\`,
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -56,6 +79,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -64,6 +88,10 @@ describe('FunctionRenderer', () => {
         timeoutSeconds: 30,
         memoryMB: 256,
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -77,6 +105,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -84,6 +113,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         environment: { DB_HOST: 'localhost', DB_PORT: '5432' },
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -97,6 +130,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -104,6 +138,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         environment: { ENV: \`\${branchName}\` },
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -117,6 +155,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction, secret } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -124,6 +163,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         environment: { API_KEY: secret('API_KEY') },
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -137,6 +180,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -144,6 +188,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         runtime: 18,
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -167,6 +215,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -174,6 +223,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         schedule: 'every 5m',
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -187,6 +240,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -194,6 +248,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         schedule: '0 12 * * ? *',
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -207,6 +265,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -214,6 +273,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         schedule: 'every 1h',
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });
@@ -227,6 +290,7 @@ describe('FunctionRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -234,6 +298,10 @@ describe('FunctionRenderer', () => {
         entry: './index.js',
         schedule: 'every 7d',
       });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
       "
     `);
   });

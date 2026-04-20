@@ -16,6 +16,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! title: String! }\`;
 
@@ -44,6 +45,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! }\`;
 
@@ -78,6 +80,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! }\`;
 
@@ -121,6 +124,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! }\`;
 
@@ -163,6 +167,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! }\`;
 
@@ -192,6 +197,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! }\`;
 
@@ -219,6 +225,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! }\`;
 
@@ -245,6 +252,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
       const schema = \`type Todo @model { env: String @default(value: "\${branchName}") }\`;
@@ -281,6 +289,7 @@ describe('DataRenderer', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! } type Post @model { id: ID! }\`;
 

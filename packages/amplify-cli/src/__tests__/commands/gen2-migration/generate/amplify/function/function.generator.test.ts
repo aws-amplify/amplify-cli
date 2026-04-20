@@ -50,6 +50,7 @@ function createMockGen1App(): Gen1App {
     appId: 'd1abc2def3',
     envName: 'main',
     meta: jest.fn(),
+    metaOutput: jest.fn(),
     json: jest.fn().mockReturnValue({ Resources: {} }),
     file: jest.fn().mockReturnValue('{}'),
     singleResourceName: jest.fn(),
@@ -91,7 +92,9 @@ describe('FunctionGenerator', () => {
 
   it('throws when function category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
+    (gen1App.metaOutput as jest.Mock).mockImplementation(() => {
+      throw new Error("Function 'myFunc' not found in amplify-meta.json");
+    });
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
 
@@ -100,8 +103,8 @@ describe('FunctionGenerator', () => {
 
   it('throws when resource is not in function category', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue({
-      otherFunc: { service: 'Lambda', output: { Name: 'otherFunc-main' } },
+    (gen1App.metaOutput as jest.Mock).mockImplementation(() => {
+      throw new Error("Function 'myFunc' not found in amplify-meta.json");
     });
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -122,6 +125,7 @@ describe('FunctionGenerator', () => {
         }
         return undefined;
       });
+      (gen1App.metaOutput as jest.Mock).mockReturnValue('myFunc-main-abc');
       (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
         FunctionName: 'myFunc-main-abc',
         Handler: 'index.handler',
@@ -166,16 +170,16 @@ describe('FunctionGenerator', () => {
       expect(mockWriteFile).toHaveBeenCalledWith(expect.stringContaining('resource.ts'), '/* generated */', 'utf-8');
     });
 
-    it('registers import and defineBackend property on backendGenerator', async () => {
-      const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
-      const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
+    it('registers namespace import and defineBackend entry on backendGenerator', async () => {
+      const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+      const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
       const ops = await generator.plan();
       await ops[0].execute();
 
-      expect(addImportSpy).toHaveBeenCalledWith(expect.stringContaining('myFunc'), expect.arrayContaining(['myFunc']));
-      expect(addPropertySpy).toHaveBeenCalled();
+      expect(addNamespaceImportSpy).toHaveBeenCalledWith('myFunc', expect.stringContaining('myFunc'));
+      expect(addDefineBackendEntrySpy).toHaveBeenCalledWith('myFunc', 'myFunc', 'myFunc');
     });
 
     it('copies function source files', async () => {

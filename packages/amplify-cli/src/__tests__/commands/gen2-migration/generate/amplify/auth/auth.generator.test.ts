@@ -129,8 +129,8 @@ describe('AuthGenerator', () => {
     (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
     (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue(undefined);
 
-    const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
-    const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
+    const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+    const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, {
       category: 'auth',
@@ -151,8 +151,8 @@ describe('AuthGenerator', () => {
     expect(renderOpts.userPool).toBe(mockUserPool);
     expect(renderOpts.mfaConfig).toEqual({ MfaConfiguration: 'OFF' });
 
-    expect(addImportSpy).toHaveBeenCalledWith('./auth/resource', ['auth']);
-    expect(addPropertySpy).toHaveBeenCalled();
+    expect(addNamespaceImportSpy).toHaveBeenCalledWith('auth', './auth/resource');
+    expect(addDefineBackendEntrySpy).toHaveBeenCalledWith('auth', 'auth', 'auth');
   });
 
   it('passes function auth access to renderer', async () => {
@@ -219,7 +219,7 @@ describe('ReferenceAuthGenerator', () => {
     });
     (gen1App.aws.fetchGroupsByUserPoolId as jest.Mock).mockResolvedValue(undefined);
 
-    const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
+    const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
 
     const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, {
       category: 'auth',
@@ -240,7 +240,7 @@ describe('ReferenceAuthGenerator', () => {
     expect(renderArg.userPoolId).toBe('us-east-1_abc123');
     expect(renderArg.identityPoolId).toBe('us-east-1:pool-id');
 
-    expect(addImportSpy).toHaveBeenCalledWith('./auth/resource', ['auth']);
+    expect(addNamespaceImportSpy).toHaveBeenCalledWith('auth', './auth/resource');
   });
 });
 
@@ -291,20 +291,21 @@ describe('AuthGenerator backend.ts output', () => {
     const backendContent = backendTsCall![1] as string;
 
     expect(backendContent).toMatchInlineSnapshot(`
-      "import { auth } from './auth/resource';
+      "import * as auth from './auth/resource';
       import { defineBackend } from '@aws-amplify/backend';
 
       const backend = defineBackend({
-        auth,
+        auth: auth.auth,
       });
-      const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-      cfnUserPool.usernameAttributes = undefined;
-      cfnUserPool.aliasAttributes = ['email', 'preferred_username'];
-      cfnUserPool.policies = {
-        passwordPolicy: {
-          minimumLength: 8,
-        },
-      };
+
+      export type Backend = typeof backend;
+
+      export function postRefactor() {}
+
+      auth.applyEscapeHatches(backend);
+
+      // Uncomment after refactor
+      // postRefactor();
       "
     `);
   });

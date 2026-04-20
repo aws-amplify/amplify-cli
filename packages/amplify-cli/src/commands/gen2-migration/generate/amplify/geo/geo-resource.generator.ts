@@ -52,7 +52,7 @@ export abstract class GeoResourceGenerator implements Planner {
         validate: () => undefined,
         describe: async () => [`Generate amplify/geo/${resourceName}/resource.ts`],
         execute: async () => {
-          const { props, parameters } = await this.generateBase(resourceMeta.logicalId);
+          const { props, parameters } = await this.generateBase(resourceMeta.providerMetadata.logicalId);
           const resource = this.addResource(props, parameters);
           const nodes = this.renderer.render(resource);
           const content = TS.printNodes(nodes);

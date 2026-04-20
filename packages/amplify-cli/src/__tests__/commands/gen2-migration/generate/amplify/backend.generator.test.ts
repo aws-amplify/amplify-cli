@@ -1,12 +1,9 @@
-import ts from 'typescript';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import { BackendGenerator } from '../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 
 jest.unmock('fs-extra');
-
-const factory = ts.factory;
 
 describe('BackendGenerator', () => {
   let outputDir: string;
@@ -19,53 +16,47 @@ describe('BackendGenerator', () => {
     await fs.rm(outputDir, { recursive: true, force: true });
   });
 
-  describe('addImport', () => {
-    it('merges identifiers for the same source module', () => {
+  describe('addNamespaceImport', () => {
+    it('does not duplicate imports for the same alias', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addImport('@aws-amplify/backend', ['defineBackend']);
-      gen.addImport('@aws-amplify/backend', ['secret']);
+      gen.addNamespaceImport('auth', './auth/resource');
+      gen.addNamespaceImport('auth', './auth/resource');
 
-      // Verify via plan() output
       return verifyBackendTs(gen, (content) => {
-        expect(content).toContain('defineBackend');
-        expect(content).toContain('secret');
-        // Should appear in a single import, not two separate ones
-        const importCount = (content.match(/from '@aws-amplify\/backend'/g) || []).length;
-        expect(importCount).toBe(1);
+        const importLines = content.split('\n').filter((l) => l.includes("from './auth/resource'"));
+        expect(importLines).toHaveLength(1);
       });
     });
 
-    it('does not duplicate identifiers', () => {
+    it('adds multiple namespace imports for different aliases', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addImport('./auth/resource', ['auth']);
-      gen.addImport('./auth/resource', ['auth']);
+      gen.addNamespaceImport('auth', './auth/resource');
+      gen.addNamespaceImport('data', './data/resource');
 
       return verifyBackendTs(gen, (content) => {
-        // Should have exactly one import from './auth/resource'
-        const importLines = content.split('\n').filter((l) => l.includes("from './auth/resource'"));
-        expect(importLines).toHaveLength(1);
-        // The import specifier list should contain 'auth' only once
-        const specifierMatch = importLines[0].match(/\{([^}]+)\}/);
-        expect(specifierMatch).toBeDefined();
-        const specifiers = specifierMatch![1].split(',').map((s) => s.trim());
-        expect(specifiers.filter((s) => s === 'auth')).toHaveLength(1);
+        expect(content).toContain("import * as auth from './auth/resource'");
+        expect(content).toContain("import * as data from './data/resource'");
       });
     });
   });
 
-  describe('addDefineBackendProperty', () => {
-    it('sorts properties: auth, data, storage, then others', () => {
+  describe('addDefineBackendEntry', () => {
+    it('sorts entries: auth, data, storage, then others', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('storage'));
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('auth'));
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('data'));
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('myFunc'));
+      gen.addNamespaceImport('storage', './storage/resource');
+      gen.addNamespaceImport('auth', './auth/resource');
+      gen.addNamespaceImport('data', './data/resource');
+      gen.addNamespaceImport('myFunc', './function/myFunc/resource');
+      gen.addDefineBackendEntry('storage', 'storage', 'storage');
+      gen.addDefineBackendEntry('auth', 'auth', 'auth');
+      gen.addDefineBackendEntry('data', 'data', 'data');
+      gen.addDefineBackendEntry('myFunc', 'myFunc', 'myFunc');
 
       return verifyBackendTs(gen, (content) => {
-        const authIdx = content.indexOf('auth');
-        const dataIdx = content.indexOf('data');
-        const storageIdx = content.indexOf('storage');
-        const funcIdx = content.indexOf('myFunc');
+        const authIdx = content.indexOf('auth: auth.auth');
+        const dataIdx = content.indexOf('data: data.data');
+        const storageIdx = content.indexOf('storage: storage.storage');
+        const funcIdx = content.indexOf('myFunc: myFunc.myFunc');
         expect(authIdx).toBeLessThan(dataIdx);
         expect(dataIdx).toBeLessThan(storageIdx);
         expect(storageIdx).toBeLessThan(funcIdx);
@@ -73,62 +64,23 @@ describe('BackendGenerator', () => {
     });
   });
 
-  describe('ensureBranchName', () => {
-    it('emits branchName declaration exactly once', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.ensureBranchName();
-      gen.ensureBranchName();
-
-      return verifyBackendTs(gen, (content) => {
-        const matches = content.match(/const branchName/g) || [];
-        expect(matches).toHaveLength(1);
-      });
-    });
-  });
-
-  describe('createDynamoDBStack', () => {
-    it('returns unique variable names for different resources', () => {
-      const gen = new BackendGenerator(outputDir);
-      const varName1 = gen.createDynamoDBStack('activity');
-      const varName2 = gen.createDynamoDBStack('bookmarks');
-
-      expect(varName1).toBe('storageActivityStack');
-      expect(varName2).toBe('storageBookmarksStack');
-      expect(varName1).not.toBe(varName2);
-    });
-
-    it('emits separate createStack calls for each DDB table', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.createDynamoDBStack('activity');
-      gen.createDynamoDBStack('bookmarks');
-
-      return verifyBackendTs(gen, (content) => {
-        expect(content).toContain("backend.createStack('storageactivity')");
-        expect(content).toContain("backend.createStack('storagebookmarks')");
-        expect(content).toContain('const storageActivityStack');
-        expect(content).toContain('const storageBookmarksStack');
-      });
-    });
-  });
-
   describe('import sorting', () => {
-    it('sorts resource imports before CDK imports before @aws-amplify/backend', () => {
+    it('sorts resource imports: auth before data before storage before functions', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addImport('aws-cdk-lib', ['Stack']);
-      gen.addImport('./auth/resource', ['auth']);
-      gen.addImport('./data/resource', ['data']);
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('auth'));
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('data'));
+      gen.addNamespaceImport('myFunc', './function/myFunc/resource');
+      gen.addNamespaceImport('auth', './auth/resource');
+      gen.addNamespaceImport('data', './data/resource');
+      gen.addDefineBackendEntry('auth', 'auth', 'auth');
+      gen.addDefineBackendEntry('data', 'data', 'data');
+      gen.addDefineBackendEntry('myFunc', 'myFunc', 'myFunc');
 
       return verifyBackendTs(gen, (content) => {
         const authImportIdx = content.indexOf("from './auth/resource'");
         const dataImportIdx = content.indexOf("from './data/resource'");
-        const backendImportIdx = content.indexOf("from '@aws-amplify/backend'");
-        const cdkImportIdx = content.indexOf("from 'aws-cdk-lib'");
+        const funcImportIdx = content.indexOf("from './function/myFunc/resource'");
 
         expect(authImportIdx).toBeLessThan(dataImportIdx);
-        expect(dataImportIdx).toBeLessThan(backendImportIdx);
-        expect(backendImportIdx).toBeLessThan(cdkImportIdx);
+        expect(dataImportIdx).toBeLessThan(funcImportIdx);
       });
     });
   });
@@ -156,8 +108,8 @@ describe('BackendGenerator', () => {
 
     it('inserts a blank line between imports and defineBackend', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addImport('./auth/resource', ['auth']);
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('auth'));
+      gen.addNamespaceImport('auth', './auth/resource');
+      gen.addDefineBackendEntry('auth', 'auth', 'auth');
 
       return verifyBackendTs(gen, (content) => {
         const lines = content.split('\n');

@@ -4,37 +4,48 @@ import { TS } from '../../../../../../commands/gen2-migration/generate/_infra/ts
 describe('S3Renderer', () => {
   const renderer = new S3Renderer('main');
 
-  async function render(opts: RenderDefineStorageOptions): Promise<string> {
-    return TS.printNodes(await renderer.render(opts));
+  function render(opts: RenderDefineStorageOptions): string {
+    return TS.printNodes(renderer.render(opts));
   }
 
-  it('renders a basic defineStorage with name', async () => {
-    const output = await render({
+  it('renders a basic defineStorage with name', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
-      triggerFunctionCategories: new Map(),
+      bucketName: 'myBucket-main-abc123',
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
       export const storage = defineStorage({ name: \`myBucket-\${branchName}\` });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders auth access patterns', async () => {
-    const output = await render({
+  it('renders auth access patterns', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       accessPatterns: {
         auth: ['read', 'write'],
       },
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -46,21 +57,31 @@ describe('S3Renderer', () => {
           'private/{entity_id}/*': [allow.authenticated.to(['read', 'write'])],
         }),
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders guest access patterns', async () => {
-    const output = await render({
+  it('renders guest access patterns', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       accessPatterns: {
         guest: ['read'],
       },
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -70,22 +91,32 @@ describe('S3Renderer', () => {
           'public/*': [allow.guest.to(['read'])],
         }),
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders auth and guest access together with all paths', async () => {
-    const output = await render({
+  it('renders auth and guest access together with all paths', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       accessPatterns: {
         auth: ['read', 'write', 'delete'],
         guest: ['read'],
       },
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -104,24 +135,34 @@ describe('S3Renderer', () => {
           ],
         }),
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders group access patterns with TODO comment', async () => {
-    const output = await render({
+  it('renders group access patterns with TODO comment', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       accessPatterns: {
         auth: ['read'],
         groups: {
           admin: ['read', 'write', 'delete'],
         },
       },
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
       /**
@@ -144,22 +185,32 @@ describe('S3Renderer', () => {
           ],
         }),
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders function access patterns with imports', async () => {
-    const output = await render({
+  it('renders function access patterns with imports', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       accessPatterns: {
-        functions: [{ functionName: 'processImages', category: 'function', permissions: ['read', 'write'] }],
+        functions: [{ functionName: 'processImages', permissions: ['read', 'write'] }],
       },
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
       import { processImages } from '../function/processImages/resource';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -175,27 +226,34 @@ describe('S3Renderer', () => {
           ],
         }),
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders triggers with function imports', async () => {
-    const output = await render({
+  it('renders triggers with function imports', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       triggers: {
         onUpload: 'onUploadFn',
         onDelete: 'onDeleteFn',
       },
-      triggerFunctionCategories: new Map([
-        ['onUploadFn', 'function'],
-        ['onDeleteFn', 'function'],
-      ]),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
       import { onUploadFn } from '../function/onUploadFn/resource';
       import { onDeleteFn } from '../function/onDeleteFn/resource';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -206,22 +264,32 @@ describe('S3Renderer', () => {
           onDelete: onDeleteFn,
         },
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders storage trigger in same category with relative import', async () => {
-    const output = await render({
+  it('renders storage trigger in same category with relative import', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       triggers: {
         onUpload: 'triggerFn',
       },
-      triggerFunctionCategories: new Map([['triggerFn', 'storage']]),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
-      import { triggerFn } from './triggerFn/resource';
+      import { triggerFn } from '../function/triggerFn/resource';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -231,25 +299,35 @@ describe('S3Renderer', () => {
           onUpload: triggerFn,
         },
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('consolidates duplicate function permissions', async () => {
-    const output = await render({
+  it('consolidates duplicate function permissions', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       accessPatterns: {
         functions: [
-          { functionName: 'myFunc', category: 'function', permissions: ['read'] },
-          { functionName: 'myFunc', category: 'function', permissions: ['write'] },
+          { functionName: 'myFunc', permissions: ['read'] },
+          { functionName: 'myFunc', permissions: ['write'] },
         ],
       },
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).toMatchInlineSnapshot(`
       "import { defineStorage } from '@aws-amplify/backend';
       import { myFunc } from '../function/myFunc/resource';
+      import type { Backend } from '../backend';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -261,24 +339,33 @@ describe('S3Renderer', () => {
           'private/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
         }),
       });
+
+      export function postRefactor(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        s3Bucket.bucketName = 'myBucket-main-abc123';
+      }
+
+      export function applyEscapeHatches(backend: Backend) {
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+      }
       "
     `);
   });
 
-  it('renders no access property when no access patterns', async () => {
-    const output = await render({
+  it('renders no access property when no access patterns', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
-      triggerFunctionCategories: new Map(),
+      bucketName: 'myBucket-main-abc123',
     });
 
     expect(output).not.toContain('access');
   });
 
-  it('renders no triggers when empty', async () => {
-    const output = await render({
+  it('renders no triggers when empty', () => {
+    const output = render({
       storageIdentifier: 'myBucket-main',
+      bucketName: 'myBucket-main-abc123',
       triggers: {},
-      triggerFunctionCategories: new Map(),
     });
 
     expect(output).not.toContain('triggers');

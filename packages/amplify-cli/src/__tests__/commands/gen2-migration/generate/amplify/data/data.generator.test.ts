@@ -241,9 +241,9 @@ describe('DataGenerator', () => {
       expect(mockWriteFile).toHaveBeenCalledWith(expect.stringContaining('resource.ts'), '/* generated */', 'utf-8');
     });
 
-    it('registers import and defineBackend property on backendGenerator', async () => {
-      const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
-      const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
+    it('registers namespace import and defineBackend entry on backendGenerator', async () => {
+      const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+      const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
@@ -254,11 +254,11 @@ describe('DataGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      expect(addImportSpy).toHaveBeenCalledWith('./data/resource', ['data']);
-      expect(addPropertySpy).toHaveBeenCalledWith(expect.objectContaining({ name: expect.objectContaining({ escapedText: 'data' }) }));
+      expect(addNamespaceImportSpy).toHaveBeenCalledWith('data', './data/resource');
+      expect(addDefineBackendEntrySpy).toHaveBeenCalledWith('data', 'data', 'data');
     });
 
-    it('contributes additional auth providers to backendGenerator when auth exists', async () => {
+    it('contributes applyEscapeHatches call when auth exists and additional providers present', async () => {
       (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
         if (category === 'auth') return { myAuth: {} };
         return undefined;
@@ -269,7 +269,7 @@ describe('DataGenerator', () => {
         additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS', userPoolConfig: { userPoolId: 'pool-1' } }],
       });
 
-      const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
+      const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
@@ -280,18 +280,17 @@ describe('DataGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      // Two statements: cfnGraphqlApi declaration + assignment
-      expect(addStatementSpy).toHaveBeenCalledTimes(2);
+      expect(addApplyEscapeHatchesCallSpy).toHaveBeenCalledWith('data');
     });
 
-    it('does not contribute additional auth providers when auth category is absent', async () => {
+    it('does not contribute applyEscapeHatches call when auth category is absent', async () => {
       (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
         apiId: 'api-123',
         name: 'myApi',
         additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS' }],
       });
 
-      const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
+      const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
@@ -302,16 +301,16 @@ describe('DataGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      expect(addStatementSpy).not.toHaveBeenCalled();
+      expect(addApplyEscapeHatchesCallSpy).not.toHaveBeenCalled();
     });
 
-    it('does not contribute additional auth providers when list is empty', async () => {
+    it('does not contribute applyEscapeHatches call when additional providers list is empty', async () => {
       (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
         if (category === 'auth') return { myAuth: {} };
         return undefined;
       });
 
-      const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
+      const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
@@ -322,7 +321,7 @@ describe('DataGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      expect(addStatementSpy).not.toHaveBeenCalled();
+      expect(addApplyEscapeHatchesCallSpy).not.toHaveBeenCalled();
     });
   });
 });
