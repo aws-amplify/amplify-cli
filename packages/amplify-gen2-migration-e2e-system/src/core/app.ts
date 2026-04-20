@@ -8,6 +8,7 @@ import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
 import { normalize } from './normalize';
+import { CredentialManager, CredentialSource } from './credentials';
 import {
   CloudFormationClient,
   DeleteStackCommand,
@@ -18,7 +19,6 @@ import {
   waitUntilStackDeleteComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
-import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { S3Client, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
@@ -72,13 +72,14 @@ export class App {
     return this.migrationConfig.refactor?.skip === true;
   }
   private readonly amplifyPath: string;
+  private readonly credentials: CredentialManager;
 
   public readonly logger: Logger;
   public readonly targetAppPath: string;
 
   private readonly git: Git;
 
-  constructor(public readonly appName: string, private readonly profile: string, verbose = false) {
+  constructor(public readonly appName: string, credentialSource: CredentialSource, verbose = false) {
     this.sourceAppPath = path.join(MIGRATION_APPS_DIR, appName);
     if (!fs.existsSync(this.sourceAppPath)) {
       throw new Error(`App not found: ${this.sourceAppPath}`);
@@ -90,6 +91,10 @@ export class App {
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
     this.amplifyPath = getCLIPath(true);
+
+    const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
+    const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
+    this.credentials = new CredentialManager(credentialSource, region, generatedProfile, this.logger);
 
     // temporary directory to store snapshot of each step
     // callers can then call .updateSnapshot to copy over the snapshots
@@ -127,6 +132,7 @@ export class App {
    * Run `amplify init` to initialize the Gen1 project.
    */
   public async init(): Promise<void> {
+    await this.credentials.refresh();
     this.logger.info('amplify init');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
@@ -141,7 +147,7 @@ export class App {
       buildCmd: 'npm run build',
       startCmd: 'npm run start',
       disableAmplifyAppCreation: false,
-      profileName: this.profile,
+      profileName: this.credentials.profile,
     });
     this.logger.info('amplify init completed');
   }
@@ -196,6 +202,7 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
+    await this.credentials.refresh();
     this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
     this.logger.info('amplify push completed');
@@ -293,6 +300,7 @@ export class App {
    * Run `amplify gen2-migration assess`.
    */
   public async assess(): Promise<void> {
+    await this.credentials.refresh();
     await this.runMigrationStep('assess');
   }
 
@@ -300,6 +308,7 @@ export class App {
    * Run `amplify gen2-migration lock`.
    */
   public async lock(): Promise<void> {
+    await this.credentials.refresh();
     const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
     await this.runMigrationStep('lock', extraArgs);
   }
@@ -308,6 +317,7 @@ export class App {
    * Run `amplify gen2-migration generate`.
    */
   public async generate(): Promise<void> {
+    await this.credentials.refresh();
     await this.runMigrationStep('generate');
     this.removeGitignoreLine('amplify_outputs*');
   }
@@ -316,6 +326,7 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
+    await this.credentials.refresh();
     const extraArgs = ['--to', gen2StackName];
     if (this.migrationConfig.refactor?.skipValidations) {
       extraArgs.push('--skip-validations');
@@ -328,6 +339,7 @@ export class App {
    * Returns the Gen2 root stack name.
    */
   public async deployGen2Sandbox(): Promise<string> {
+    await this.credentials.refresh();
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
@@ -462,30 +474,7 @@ export class App {
     this.logger.info('Starting teardown...');
 
     // Refresh credentials in case the original session expired during a long test.
-    // Uses the CodeBuild instance role (which doesn't expire) to re-assume the test account role.
-    const roleArn = process.env.TEST_ACCOUNT_ROLE;
-    if (roleArn) {
-      try {
-        this.logger.info('Refreshing credentials for teardown...');
-        const sts = new STSClient({});
-        const assumed = await sts.send(
-          new AssumeRoleCommand({
-            RoleArn: roleArn,
-            RoleSessionName: `teardown-${Date.now()}`,
-            DurationSeconds: 900,
-          }),
-        );
-        const creds = assumed.Credentials;
-        if (creds?.AccessKeyId && creds?.SecretAccessKey && creds?.SessionToken) {
-          const credsFile = path.join(os.homedir(), '.aws', 'credentials');
-          const content = `[${this.profile}]\naws_access_key_id = ${creds.AccessKeyId}\naws_secret_access_key = ${creds.SecretAccessKey}\naws_session_token = ${creds.SessionToken}\n`;
-          fs.writeFileSync(credsFile, content, 'utf-8');
-          this.logger.info('Credentials refreshed');
-        }
-      } catch (e) {
-        this.logger.info(`Credential refresh failed: ${(e as Error).message} (continuing with existing credentials)`);
-      }
-    }
+    await this.credentials.refresh();
 
     // Delete Gen1 CFN stacks first. We do this before Gen2 because the
     // migration may have moved resources between stacks, and deleting Gen2

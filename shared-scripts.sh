@@ -825,46 +825,27 @@ function _runGen2MigrationE2E {
     # Load test account credentials
     _loadTestAccountCredentials
 
-    # Configure AWS profile for the migration CLI
-    # The migration CLI requires a named profile, so we create one with the assumed role credentials
-    mkdir -p ~/.aws
-    cat > ~/.aws/credentials << EOF
-[amplify-migration-test]
-aws_access_key_id = $AWS_ACCESS_KEY_ID
-aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
-aws_session_token = $AWS_SESSION_TOKEN
-EOF
+    # Bootstrap CDK if not already done (required for ampx sandbox)
+    # Uses env-var credentials from _loadTestAccountCredentials. Idempotent.
+    echo "Bootstrapping CDK for region ${CLI_REGION:-us-east-1}..."
+    npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/${CLI_REGION:-us-east-1} || echo "Bootstrap may already exist or failed, continuing..."
 
-    cat > ~/.aws/config << EOF
-[profile amplify-migration-test]
-region = ${CLI_REGION:-us-east-1}
-output = json
-EOF
-
-    export AWS_PROFILE=amplify-migration-test
-
-    # Unset credential env vars to avoid conflicts with AWS_PROFILE
-    # The credentials are now stored in ~/.aws/credentials
+    # Unset env credentials so the migration CLI is the sole auth source.
+    # The CLI reads TEST_ACCOUNT_ROLE, assumes the role via STS, and writes a named
+    # profile to ~/.aws/credentials. It also refreshes the profile before each
+    # long-running step so sessions don't expire mid-migration.
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
-
-    # Bootstrap CDK if not already done (required for ampx sandbox)
-    # This is idempotent - safe to run even if already bootstrapped
-    echo "Bootstrapping CDK for region ${CLI_REGION:-us-east-1}..."
-    npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/${CLI_REGION:-us-east-1} || echo "Bootstrap may already exist or failed, continuing..."
 
     # Configure git identity for commits during migration
     git config --global user.email "amplify-cli-e2e@test.com"
     git config --global user.name "Amplify CLI E2E Test Name"
 
-    # Navigate to the migration app directory
-    cd $CODEBUILD_SRC_DIR/amplify-migration-apps/$MIGRATION_APP
-
     # Run the e2e migration test
-    # The test:e2e script runs the migration CLI which handles the full workflow
     echo "Starting migration E2E test for $MIGRATION_APP"
-    npm run test:e2e
+    cd $CODEBUILD_SRC_DIR/packages/amplify-gen2-migration-e2e-system
+    npx tsx src/cli.ts --app $MIGRATION_APP ${TEARDOWN:+--teardown}
 
     echo "Migration E2E test completed for $MIGRATION_APP"
 }
