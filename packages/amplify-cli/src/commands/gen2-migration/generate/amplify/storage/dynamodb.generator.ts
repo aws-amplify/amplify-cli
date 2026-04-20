@@ -63,10 +63,7 @@ export class DynamoDBGenerator implements Planner {
   }
 
   private async fetchTable(): Promise<DynamoDBTableDefinition> {
-    const storageMeta = this.gen1App.meta('storage');
-    const resourceMeta = storageMeta?.[this.resource.resourceName] as Record<string, unknown> | undefined;
-    const output = resourceMeta?.output as Record<string, string> | undefined;
-    const actualTableName = output?.Name || this.resource.resourceName;
+    const actualTableName = this.gen1App.metaOutput('storage', this.resource.resourceName, 'Name');
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {

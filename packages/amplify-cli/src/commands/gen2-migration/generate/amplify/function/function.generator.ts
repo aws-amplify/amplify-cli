@@ -90,14 +90,7 @@ export class FunctionGenerator implements Planner {
   }
 
   private async resolve(): Promise<ResolvedFunction> {
-    const functionCategory = this.gen1App.meta('function');
-    if (!functionCategory || !functionCategory[this.resource.resourceName]) {
-      throw new Error(`Function '${this.resource.resourceName}' not found in amplify-meta.json`);
-    }
-    const resourceMeta = functionCategory[this.resource.resourceName] as Record<string, unknown>;
-    const output = resourceMeta.output as Record<string, string> | undefined;
-    const deployedName = output?.Name;
-    if (!deployedName) throw new Error(`Function '${this.resource.resourceName}' has no deployed name in amplify-meta.json output`);
+    const deployedName = this.gen1App.metaOutput('function', this.resource.resourceName, 'Name');
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
     if (!config) throw new Error(`Lambda function '${deployedName}' not found`);

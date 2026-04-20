@@ -89,17 +89,16 @@ export class RestApiGenerator implements Planner {
 
     const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
     const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
-
-    const output = (apiObj.output ?? {}) as Record<string, string>;
-    const gen1ApiId = output.ApiId;
-    if (!gen1ApiId) {
-      throw new Error(`REST API '${resourceName}' has no ApiId in amplify-meta.json output`);
+    if (!defaultFunctionName) {
+      throw new Error(`REST API '${resourceName}' has no function dependency in amplify-meta.json`);
     }
+
+    const gen1ApiId = gen1App.metaOutput('api', resourceName, 'ApiId');
     const gen1RootResourceId = await gen1App.aws.fetchRestApiRootResourceId(gen1ApiId);
 
     return {
       apiName: resourceName,
-      functionName: defaultFunctionName || 'defaultFunction',
+      functionName: defaultFunctionName,
       paths,
       authType,
       corsConfiguration: cliInputs.corsConfiguration,
