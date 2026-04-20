@@ -21,7 +21,7 @@ import { S3Generator } from './generate/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
-import { GeoGenerator, GeoAggregatorGenerator } from './generate/amplify/geo/geo.generator';
+import { GeoGenerator, GeoMapGenerator } from './generate/amplify/geo/geo.generator';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -65,7 +65,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     // Cross-category state captured during the loop.
     let authGenerator: AuthGenerator | undefined;
     let s3Generator: S3Generator | undefined;
-    const geoGenerators: GeoGenerator[] = [];
+    let geoGenerator: GeoGenerator | undefined;
     const functionGenerators: FunctionGenerator[] = [];
 
     const discovered = this.gen1App.discover();
@@ -117,9 +117,10 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'geo:Map':
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection': {
-          const geoGen = new GeoGenerator(this.gen1App, outputDir, resource);
-          generators.push(geoGen);
-          geoGenerators.push(geoGen);
+          if (!geoGenerator) {
+            geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+          }
+          generators.push(new GeoMapGenerator(this.gen1App, outputDir, resource, geoGenerator));
           break;
         }
         case 'function:Lambda': {
@@ -152,8 +153,8 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     }
 
     // Geo aggregator runs after all per-resource geo generators.
-    if (geoGenerators.length > 0) {
-      generators.push(new GeoAggregatorGenerator(backendGenerator, outputDir, geoGenerators));
+    if (geoGenerator) {
+      generators.push(geoGenerator);
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates
