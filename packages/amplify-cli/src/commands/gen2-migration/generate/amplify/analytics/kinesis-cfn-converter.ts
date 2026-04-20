@@ -2,36 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import CFNConditionResolver from './cfn-condition-resolver';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
-
-/**
- * Raw Kinesis analytics entry from Gen1 amplify-meta.json (no name field).
- */
-export interface KinesisAnalyticsMetaEntry {
-  /**
-   * Service type — Kinesis or Pinpoint.
-   */
-  readonly service: 'Kinesis' | 'Pinpoint';
-
-  /**
-   * Provider metadata containing S3 template URL and logical ID.
-   */
-  readonly providerMetadata: {
-    readonly s3TemplateURL: string;
-    readonly logicalId: string;
-  };
-}
-
-/**
- * Resolved Kinesis analytics definition with name from the meta key.
- */
-export interface KinesisAnalyticsDefinition extends KinesisAnalyticsMetaEntry {
-  /**
-   * Resource name from the amplify-meta.json key.
-   */
-  readonly name: string;
-}
 
 /**
  * Result of analytics codegen containing metadata needed for resource.ts generation.
@@ -67,7 +38,7 @@ export interface AnalyticsCodegenResult {
  * Converts Kinesis CloudFormation templates to CDK constructs using cdk-from-cfn.
  *
  * Fetches the nested stack's CFN template from S3, resolves conditions
- * using deployed stack parameters, and runs the cdk-from-cfn transmuter
+ * using deployed stack parameters, and runs the cdk-from-cfn
  * to produce a TypeScript CDK construct file.
  */
 export class KinesisCfnConverter {
@@ -75,18 +46,15 @@ export class KinesisCfnConverter {
   private readonly fileWriter: (content: string, filePath: string) => Promise<void>;
   private readonly cfnClient?: CloudFormationClient;
   private readonly rootStackName?: string;
-  private readonly s3Client: S3Client;
 
   public constructor(
     dir: string,
     fileWriter: (content: string, filePath: string) => Promise<void>,
-    s3Client: S3Client,
     cfnClient?: CloudFormationClient,
     rootStackName?: string,
   ) {
     this.dir = dir;
     this.fileWriter = fileWriter;
-    this.s3Client = s3Client;
     this.cfnClient = cfnClient;
     this.rootStackName = rootStackName;
   }
@@ -97,13 +65,14 @@ export class KinesisCfnConverter {
    * Downloads the template from S3, resolves CFN conditions using deployed
    * parameters, runs cdk-from-cfn, and writes the generated construct file.
    */
-  public async generateKinesisAnalyticsL1Code(definition: KinesisAnalyticsDefinition): Promise<AnalyticsCodegenResult> {
-    const resourceName = definition.name;
+  public async generateKinesisAnalyticsL1Code(
+    resourceName: string,
+    nestedStackLogicalId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    template: any,
+  ): Promise<AnalyticsCodegenResult> {
     const constructFileName = `${resourceName}-construct`;
     const filePath = path.join(this.dir, 'amplify', 'analytics', `${constructFileName}.ts`);
-    const templateS3Url = definition.providerMetadata.s3TemplateURL;
-    const template = await getCfnTemplateFromS3(templateS3Url, this.s3Client);
-    const nestedStackLogicalId = definition.providerMetadata.logicalId;
 
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
     const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
@@ -256,31 +225,4 @@ export class KinesisCfnConverter {
 
     return result;
   }
-}
-
-/**
- * Downloads a CloudFormation template from S3 given its URL.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<any> {
-  const url = new URL(s3Url);
-  let bucket: string;
-  let key: string;
-
-  const virtualHostMatch = url.hostname.match(/^(.+)\.s3[.-].*\.amazonaws\.com$/);
-
-  if (virtualHostMatch) {
-    bucket = virtualHostMatch[1];
-    key = url.pathname.slice(1);
-  } else {
-    const splitPath = url.pathname.split('/');
-    bucket = splitPath[1];
-    key = splitPath.slice(2).join('/');
-  }
-
-  const response = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-  if (!response.Body) {
-    throw new Error(`Failed to retrieve S3 object: ${s3Url}`);
-  }
-  return JSON.parse(await response.Body.transformToString());
 }

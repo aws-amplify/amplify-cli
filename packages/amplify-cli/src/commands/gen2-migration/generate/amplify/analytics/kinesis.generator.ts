@@ -6,7 +6,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
-import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
+import { KinesisCfnConverter } from './kinesis-cfn-converter';
 
 /**
  * Generates a single Kinesis analytics resource and contributes to backend.ts.
@@ -42,12 +42,7 @@ export class AnalyticsKinesisGenerator implements Planner {
 
     const rootStackName = this.gen1App.rootStackName;
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
-
-    const definition: KinesisAnalyticsDefinition = {
-      name: this.resource.resourceName,
-      service: 'Kinesis',
-      providerMetadata: resourceMeta.providerMetadata as KinesisAnalyticsDefinition['providerMetadata'],
-    };
+    const logicalId = (resourceMeta.providerMetadata as { logicalId: string }).logicalId;
 
     return [
       {
@@ -60,15 +55,16 @@ export class AnalyticsKinesisGenerator implements Planner {
             await fs.writeFile(filePath, content, 'utf-8');
           };
 
+          const template = this.gen1App.json(`analytics/${this.resource.resourceName}/kinesis-cloudformation-template.json`);
+
           const kinesisCfnConverter = new KinesisCfnConverter(
             this.outputDir,
             fileWriter,
-            this.gen1App.clients.s3,
             this.gen1App.clients.cloudFormation,
             rootStackName,
           );
 
-          const codegenResult = await kinesisCfnConverter.generateKinesisAnalyticsL1Code(definition);
+          const codegenResult = await kinesisCfnConverter.generateKinesisAnalyticsL1Code(this.resource.resourceName, logicalId, template);
 
           const nodes = this.renderer.render({
             constructClassName: codegenResult.constructClassName,
