@@ -22,7 +22,8 @@ export function defineAdminApi(backend: Backend) {
       'Access-Control-Allow-Origin': "'*'",
       'Access-Control-Allow-Headers':
         "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
@@ -32,17 +33,20 @@ export function defineAdminApi(backend: Backend) {
       'Access-Control-Allow-Origin': "'*'",
       'Access-Control-Allow-Headers':
         "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
-  const adminIntegration = new LambdaIntegration(backend.admin.resources.lambda);
+  const adminIntegration = new LambdaIntegration(
+    backend.admin.resources.lambda
+  );
   const gen1adminapiApi = RestApi.fromRestApiAttributes(
     adminapiStack,
     'Gen1adminapiApi',
     {
-      restApiId: 'oxq86r59h6',
-      rootResourceId: 'oxq86r59h6-root',
+      restApiId: 'nv2lhk3kt8',
+      rootResourceId: 'nv2lhk3kt8-root',
     }
   );
   const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {

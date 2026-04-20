@@ -10,15 +10,15 @@ import { defineBackend } from '@aws-amplify/backend';
 const backend = defineBackend({
   auth: auth.auth,
   data: data.data,
-  fitnesstracker33f5545533f55455PreSignup: fitnesstracker33f5545533f55455PreSignup.fitnesstracker33f5545533f55455PreSignup,
+  fitnesstracker33f5545533f55455PreSignup:
+    fitnesstracker33f5545533f55455PreSignup.fitnesstracker33f5545533f55455PreSignup,
   lognutrition: lognutrition.lognutrition,
   admin: admin.admin,
 });
 
 export type Backend = typeof backend;
 
-export function postRefactor() {
-}
+export function postRefactor() {}
 
 nutritionapi.defineNutritionApi(backend);
 adminapi.defineAdminApi(backend);

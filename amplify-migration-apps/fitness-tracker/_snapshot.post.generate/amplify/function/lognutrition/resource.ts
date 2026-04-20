@@ -14,7 +14,6 @@ export const lognutrition = defineFunction({
 
 export function applyEscapeHatches(backend: Backend) {
   backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
-  
   backend.lognutrition.addEnvironment(
     'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
     backend.data.apiId
@@ -46,4 +45,4 @@ export function applyEscapeHatches(backend: Backend) {
     'dynamodb:Delete*',
     'dynamodb:PartiQLDelete'
   );
-};
+}

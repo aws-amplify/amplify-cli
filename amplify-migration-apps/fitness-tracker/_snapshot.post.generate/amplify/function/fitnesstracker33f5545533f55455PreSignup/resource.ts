@@ -20,4 +20,4 @@ export const fitnesstracker33f5545533f55455PreSignup = defineFunction({
 
 export function applyEscapeHatches(backend: Backend) {
   backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${branchName}`;
-};
+}

@@ -22,7 +22,8 @@ export function defineNutritionApi(backend: Backend) {
       'Access-Control-Allow-Origin': "'*'",
       'Access-Control-Allow-Headers':
         "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
@@ -32,7 +33,8 @@ export function defineNutritionApi(backend: Backend) {
       'Access-Control-Allow-Origin': "'*'",
       'Access-Control-Allow-Headers':
         "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
@@ -43,8 +45,8 @@ export function defineNutritionApi(backend: Backend) {
     nutritionapiStack,
     'Gen1nutritionapiApi',
     {
-      restApiId: 'hmydcaubcb',
-      rootResourceId: 'hmydcaubcb-root',
+      restApiId: 'ma6towcpja',
+      rootResourceId: 'ma6towcpja-root',
     }
   );
   const gen1nutritionapiPolicy = new Policy(

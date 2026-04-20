@@ -18,4 +18,4 @@ export function applyEscapeHatches(backend: Backend) {
     'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
     backend.auth.resources.userPool.userPoolId
   );
-};
+}

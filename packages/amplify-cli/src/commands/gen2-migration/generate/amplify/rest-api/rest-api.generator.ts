@@ -116,7 +116,7 @@ export class RestApiGenerator implements Planner {
           // Contribute to backend.ts
           const alias = restApi.apiName;
           this.backendGenerator.addNamespaceImport(alias, `./api/${restApi.apiName}/resource`);
-          this.backendGenerator.addPostDefineCall(alias, `${alias}.${properFunctionName}(backend)`);
+          this.backendGenerator.addPostDefineStatement(`${alias}.${properFunctionName}(backend)`);
 
           // Ensure functions used by this REST API are in defineBackend
           if (restApi.uniqueFunctions) {

@@ -59,4 +59,4 @@ export function applyEscapeHatches(backend: Backend) {
       authenticationType: 'API_KEY',
     },
   ];
-};
+}

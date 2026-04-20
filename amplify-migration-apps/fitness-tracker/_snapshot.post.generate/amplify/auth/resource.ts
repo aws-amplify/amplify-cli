@@ -1,8 +1,8 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { fitnesstracker33f5545533f55455PreSignup } from '../function/fitnesstracker33f5545533f55455PreSignup/resource';
 import { admin } from '../function/admin/resource';
-import type { Backend } from '../backend';
 import { Duration } from 'aws-cdk-lib';
+import type { Backend } from '../backend';
 
 export const auth = defineAuth({
   loginWith: {
@@ -59,4 +59,4 @@ export function applyEscapeHatches(backend: Backend) {
     disableOAuth: true,
     generateSecret: false,
   });
-};
+}
