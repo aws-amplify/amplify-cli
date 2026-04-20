@@ -487,46 +487,10 @@ export class App {
       }
     }
 
-    // Delete Gen2 sandbox stack
-    try {
-      this.logger.info('Deleting Gen2 sandbox...');
-      await this.git.checkout(this.gen2BranchName, false);
-      const sandboxResult = await execa('npx', ['ampx', 'sandbox', 'delete', '--yes'], {
-        cwd: this.targetAppPath,
-        reject: false,
-        stdio: 'inherit',
-        env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
-      });
-      if (sandboxResult.exitCode !== 0) {
-        this.logger.info(`ampx sandbox delete exited with code ${sandboxResult.exitCode} (continuing teardown)`);
-      } else {
-        this.logger.info('Gen2 sandbox deleted');
-      }
-    } catch (e) {
-      this.logger.info(`Gen2 sandbox delete failed: ${(e as Error).message} (continuing teardown)`);
-    }
-
-    // Delete holding stacks created during refactor
-    try {
-      this.logger.info('Deleting holding stacks...');
-      const cfnClient = new CloudFormationClient({});
-      for await (const page of paginateListStacks(
-        { client: cfnClient },
-        { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.REVIEW_IN_PROGRESS] },
-      )) {
-        for (const stack of page.StackSummaries ?? []) {
-          if (stack.StackName?.includes(this.deploymentName) && stack.StackName.endsWith('-holding')) {
-            this.logger.info(`Deleting holding stack: ${stack.StackName}`);
-            await this.emptyStackBuckets(cfnClient, stack.StackName);
-            await this.deleteStackWithRetainOnFailure(cfnClient, stack.StackName);
-          }
-        }
-      }
-    } catch (e) {
-      this.logger.info(`Holding stack cleanup failed: ${(e as Error).message} (continuing teardown)`);
-    }
-
-    // Delete Gen1 CFN stacks directly (amplify delete doesn't work after migration mutates the workspace)
+    // Delete Gen1 CFN stacks first. We do this before Gen2 because the
+    // migration may have moved resources between stacks, and deleting Gen2
+    // first can leave Gen1 stacks in a state where their custom resources
+    // reference resources that no longer exist.
     try {
       this.logger.info('Deleting Gen1 CloudFormation stacks...');
       const cfnClient = new CloudFormationClient({});
@@ -569,6 +533,45 @@ export class App {
       }
     } catch (e) {
       this.logger.info(`Amplify app cleanup failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    // Delete Gen2 sandbox stack
+    try {
+      this.logger.info('Deleting Gen2 sandbox...');
+      await this.git.checkout(this.gen2BranchName, false);
+      const sandboxResult = await execa('npx', ['ampx', 'sandbox', 'delete', '--yes'], {
+        cwd: this.targetAppPath,
+        reject: false,
+        stdio: 'inherit',
+        env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
+      });
+      if (sandboxResult.exitCode !== 0) {
+        this.logger.info(`ampx sandbox delete exited with code ${sandboxResult.exitCode} (continuing teardown)`);
+      } else {
+        this.logger.info('Gen2 sandbox deleted');
+      }
+    } catch (e) {
+      this.logger.info(`Gen2 sandbox delete failed: ${(e as Error).message} (continuing teardown)`);
+    }
+
+    // Delete holding stacks created during refactor (Gen2-related)
+    try {
+      this.logger.info('Deleting holding stacks...');
+      const cfnClient = new CloudFormationClient({});
+      for await (const page of paginateListStacks(
+        { client: cfnClient },
+        { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.REVIEW_IN_PROGRESS] },
+      )) {
+        for (const stack of page.StackSummaries ?? []) {
+          if (stack.StackName?.includes(this.deploymentName) && stack.StackName.endsWith('-holding')) {
+            this.logger.info(`Deleting holding stack: ${stack.StackName}`);
+            await this.emptyStackBuckets(cfnClient, stack.StackName);
+            await this.deleteStackWithRetainOnFailure(cfnClient, stack.StackName);
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.info(`Holding stack cleanup failed: ${(e as Error).message} (continuing teardown)`);
     }
 
     this.logger.info('Teardown complete');
