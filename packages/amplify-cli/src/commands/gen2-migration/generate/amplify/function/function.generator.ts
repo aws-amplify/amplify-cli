@@ -289,7 +289,7 @@ export class FunctionGenerator implements Planner {
         if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) permissions.add(S3_ACTION_TO_PERMISSION[action]);
       }
     }
-    if (permissions.size > 0) this.s3Generator.addFunctionStorageAccess(this.resource.resourceName, Array.from(permissions));
+    if (permissions.size > 0) this.s3Generator.addFunctionAccess(this.resource.resourceName, Array.from(permissions));
   }
 
   private contributeStorageTrigger(): void {

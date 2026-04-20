@@ -5,7 +5,7 @@ import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
-import { S3Renderer, AccessPatterns, StorageTriggerEvent, Permission } from './s3.renderer';
+import { S3Renderer, AccessPatterns, Permission, FunctionAccess, StorageTriggers } from './s3.renderer';
 
 /**
  * CLI v1 permission types from cli-inputs.json.
@@ -33,11 +33,8 @@ export class S3Generator implements Planner {
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
   private readonly renderer: S3Renderer;
-  private readonly functionStorageAccess: Array<{
-    readonly functionName: string;
-    readonly permissions: readonly Permission[];
-  }> = [];
-  private readonly triggers: Partial<Record<StorageTriggerEvent, string>> = {};
+  private readonly functionAccess: FunctionAccess[] = [];
+  private readonly triggers: StorageTriggers = {};
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
@@ -51,15 +48,15 @@ export class S3Generator implements Planner {
    * Registers a function's S3 storage access permissions.
    * Called by FunctionGenerator before S3Generator.execute() runs.
    */
-  public addFunctionStorageAccess(functionName: string, permissions: readonly Permission[]): void {
-    this.functionStorageAccess.push({ functionName, permissions });
+  public addFunctionAccess(functionName: string, permissions: readonly Permission[]): void {
+    this.functionAccess.push({ functionName, permissions });
   }
 
   /**
    * Registers an S3 trigger contributed by a function generator.
    */
-  public addTrigger(event: StorageTriggerEvent, functionName: string): void {
-    this.triggers[event] = functionName;
+  public addTrigger(event: 'onUpload' | 'onDelete', functionName: string): void {
+    (this.triggers as Record<string, string>)[event] = functionName;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -118,7 +115,7 @@ export class S3Generator implements Planner {
       guest: cliInputs.guestAccess.flatMap((p) => PERMISSION_MAP[p]),
       auth: cliInputs.authAccess.flatMap((p) => PERMISSION_MAP[p]),
       groups,
-      functions: this.functionStorageAccess.length > 0 ? this.functionStorageAccess : undefined,
+      functions: this.functionAccess.length > 0 ? this.functionAccess : undefined,
     };
   }
 }

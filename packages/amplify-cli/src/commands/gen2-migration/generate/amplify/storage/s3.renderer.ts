@@ -10,9 +10,20 @@ const factory = ts.factory;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
 
 /**
- * S3 trigger event types.
+ * S3 trigger configuration.
  */
-export type StorageTriggerEvent = 'onDelete' | 'onUpload';
+export interface StorageTriggers {
+  readonly onUpload?: string;
+  readonly onDelete?: string;
+}
+
+/**
+ * A function's S3 access permissions.
+ */
+export interface FunctionAccess {
+  readonly functionName: string;
+  readonly permissions: readonly Permission[];
+}
 
 /**
  * Access patterns for S3 storage.
@@ -21,10 +32,7 @@ export interface AccessPatterns {
   readonly auth?: readonly Permission[];
   readonly guest?: readonly Permission[];
   readonly groups?: Readonly<Record<string, readonly Permission[]>>;
-  readonly functions?: ReadonlyArray<{
-    readonly functionName: string;
-    readonly permissions: readonly Permission[];
-  }>;
+  readonly functions?: readonly FunctionAccess[];
 }
 
 /**
@@ -33,7 +41,7 @@ export interface AccessPatterns {
 export interface RenderDefineStorageOptions {
   readonly storageIdentifier: string;
   readonly accessPatterns?: AccessPatterns;
-  readonly triggers?: Partial<Record<StorageTriggerEvent, string>>;
+  readonly triggers?: StorageTriggers;
   readonly bucketName: string;
   readonly accelerateStatus?: BucketAccelerateStatus;
   readonly versioningStatus?: BucketVersioningStatus;
