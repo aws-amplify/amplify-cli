@@ -191,7 +191,8 @@ export class BackendGenerator implements Planner {
           }
 
           // 6. applyEscapeHatches calls
-          for (const alias of this.applyEscapeHatchesCalls) {
+          const sortedEscapeHatches = [...this.applyEscapeHatchesCalls].sort((a, b) => escapeHatchOrder(a) - escapeHatchOrder(b));
+          for (const alias of sortedEscapeHatches) {
             if (this.analyticsResultAlias && this.needsAnalyticsArg(alias)) {
               lines.push(`${alias}.applyEscapeHatches(backend, ${this.analyticsResultVar});`);
             } else {
@@ -266,5 +267,16 @@ function defineBackendOrder(key: string): number {
   if (key === 'auth') return 0;
   if (key === 'data') return 1;
   if (key === 'storage') return 2;
+  return 3;
+}
+
+/**
+ * Sort order for applyEscapeHatches calls.
+ * Matches the defineBackend order: auth, data, storage, then functions.
+ */
+function escapeHatchOrder(alias: string): number {
+  if (alias === 'auth') return 0;
+  if (alias === 'data') return 1;
+  if (alias === 'storage') return 2;
   return 3;
 }

@@ -116,7 +116,7 @@ export class S3Generator implements Planner {
       describe: async () => ['Generate amplify/storage/resource.ts'],
       execute: async () => {
         const accessPatterns = this.buildAccessPatterns(cliInputs);
-        const triggerFunctionCategories = new Map(Object.values(this.triggers).map((name) => [name, 'storage']));
+        const triggerFunctionCategories = new Map(Object.values(this.triggers).map((name) => [name, 'function']));
         const nodes = this.defineStorage.render({
           storageIdentifier,
           accessPatterns,
