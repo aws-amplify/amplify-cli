@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-storagemoodboardStorage-x.description.txt
-{"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"storage-S3","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
-========
-{"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.1.0","stackType":"storage-S3","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
->>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-storagemoodboardstorage-1NUS2YUQP7X9L.description.txt

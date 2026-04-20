@@ -1,6 +1,0 @@
-[
-  {
-    "ParameterKey": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feanalyticsNestedStackanalyticsNestedStackResourceED0D5C26Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feanalyticsmoodboardKinesisKinesisStream9A121783Arn",
-    "ParameterValue": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
-  }
-]

@@ -1,0 +1,19 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "{\"stackType\":\"auth-Cognito\"}",
+  "Resources": {
+    "UserPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {}
+    }
+  },
+  "Outputs": {},
+  "Parameters": {
+    "hostedUIProviderMeta": {
+      "Type": "String"
+    },
+    "hostedUIProviderCreds": {
+      "Type": "String"
+    }
+  }
+}
