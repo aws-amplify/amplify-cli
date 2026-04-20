@@ -4,7 +4,7 @@ import { storage } from './storage/resource';
 import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
 import { lowstockproducts } from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, aws_iam } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -49,6 +49,15 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     },
   },
 ];
+backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
+  new aws_iam.PolicyStatement({
+    effect: aws_iam.Effect.ALLOW,
+    actions: ['appsync:GraphQL'],
+    resources: [
+      `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/3oy6oxkj6ffojmc2upd52ftdsq/*`,
+    ],
+  })
+);
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.S3Trigger1ef46783.resources.cfnResources.cfnFunction.functionName = `S3Trigger1ef46783-${branchName}`;
 backend.S3Trigger1ef46783.addEnvironment(
