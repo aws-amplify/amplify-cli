@@ -16,6 +16,7 @@ import {
   waitUntilStackDeleteComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
+import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -456,6 +457,32 @@ export class App {
    */
   public async teardown(): Promise<void> {
     this.logger.info('Starting teardown...');
+
+    // Refresh credentials in case the original session expired during a long test.
+    // Uses the CodeBuild instance role (which doesn't expire) to re-assume the test account role.
+    const roleArn = process.env.TEST_ACCOUNT_ROLE;
+    if (roleArn) {
+      try {
+        this.logger.info('Refreshing credentials for teardown...');
+        const sts = new STSClient({});
+        const assumed = await sts.send(
+          new AssumeRoleCommand({
+            RoleArn: roleArn,
+            RoleSessionName: `teardown-${Date.now()}`,
+            DurationSeconds: 900,
+          }),
+        );
+        const creds = assumed.Credentials;
+        if (creds?.AccessKeyId && creds?.SecretAccessKey && creds?.SessionToken) {
+          const credsFile = path.join(os.homedir(), '.aws', 'credentials');
+          const content = `[${this.profile}]\naws_access_key_id = ${creds.AccessKeyId}\naws_secret_access_key = ${creds.SecretAccessKey}\naws_session_token = ${creds.SessionToken}\n`;
+          fs.writeFileSync(credsFile, content, 'utf-8');
+          this.logger.info('Credentials refreshed');
+        }
+      } catch (e) {
+        this.logger.info(`Credential refresh failed: ${(e as Error).message} (continuing with existing credentials)`);
+      }
+    }
 
     // Delete Gen2 sandbox stack
     try {
