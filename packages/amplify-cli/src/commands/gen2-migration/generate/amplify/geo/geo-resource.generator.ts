@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import CFNConditionResolver from '../analytics/cfn-condition-resolver';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
@@ -79,7 +78,7 @@ export abstract class GeoResourceGenerator implements Planner {
   ): Promise<{ readonly base: GeoCodegenResultBase; readonly paramMap: ReadonlyMap<string, string> }> {
     const constructFileName = `${resourceName}-construct`;
     const filePath = path.join(this.outputDir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
-    const template = await getCfnTemplateFromS3(providerMetadata.s3TemplateURL, this.gen1App.clients.s3);
+    const template = this.gen1App.json(`geo/${resourceName}/${resourceName}-cloudformation-template.json`);
     const nestedStackLogicalId = providerMetadata.logicalId;
 
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
@@ -259,28 +258,4 @@ export abstract class GeoResourceGenerator implements Planner {
 
     return result;
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<any> {
-  const url = new URL(s3Url);
-  let bucket: string;
-  let key: string;
-
-  const virtualHostMatch = url.hostname.match(/^(.+)\.s3[.-].*\.amazonaws\.com$/);
-
-  if (virtualHostMatch) {
-    bucket = virtualHostMatch[1];
-    key = url.pathname.slice(1);
-  } else {
-    const splitPath = url.pathname.split('/');
-    bucket = splitPath[1];
-    key = splitPath.slice(2).join('/');
-  }
-
-  const response = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-  if (!response.Body) {
-    throw new Error(`Failed to retrieve S3 object: ${s3Url}`);
-  }
-  return JSON.parse(await response.Body.transformToString());
 }
