@@ -11,12 +11,14 @@ import { normalize } from './normalize';
 import {
   CloudFormationClient,
   DeleteStackCommand,
+  ListStackResourcesCommand,
   paginateListStacks,
   StackStatus,
   waitUntilStackDeleteComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
+import { S3Client, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -514,6 +516,7 @@ export class App {
         for (const stack of page.StackSummaries ?? []) {
           if (stack.StackName?.includes(this.deploymentName) && stack.StackName.endsWith('-holding')) {
             this.logger.info(`Deleting holding stack: ${stack.StackName}`);
+            await this.emptyStackBuckets(cfnClient, stack.StackName);
             await cfnClient.send(new DeleteStackCommand({ StackName: stack.StackName }));
           }
         }
@@ -542,6 +545,7 @@ export class App {
         for (const stack of page.StackSummaries ?? []) {
           if (stack.StackName?.startsWith(stackPrefix) && !stack.RootId) {
             this.logger.info(`Deleting stack: ${stack.StackName}`);
+            await this.emptyStackBuckets(cfnClient, stack.StackName);
             await cfnClient.send(new DeleteStackCommand({ StackName: stack.StackName }));
             try {
               await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stack.StackName });
@@ -577,6 +581,38 @@ export class App {
   // ============================================================
   // Private Helpers
   // ============================================================
+
+  /**
+   * Empty all S3 buckets owned by the given CloudFormation stack.
+   * CloudFormation cannot delete a bucket with objects, so we must empty them first.
+   */
+  private async emptyStackBuckets(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
+    const resources = await cfnClient.send(new ListStackResourcesCommand({ StackName: stackName }));
+    const buckets = (resources.StackResourceSummaries ?? [])
+      .filter((r) => r.ResourceType === 'AWS::S3::Bucket' && r.PhysicalResourceId)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .map((r) => r.PhysicalResourceId!);
+    if (buckets.length === 0) return;
+
+    const s3 = new S3Client({});
+    for (const bucket of buckets) {
+      try {
+        this.logger.info(`Emptying bucket: ${bucket}`);
+        let continuationToken: string | undefined;
+        do {
+          const page = await s3.send(new ListObjectsV2Command({ Bucket: bucket, ContinuationToken: continuationToken }));
+          if (page.Contents && page.Contents.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const objects = page.Contents.filter((o) => o.Key).map((o) => ({ Key: o.Key! }));
+            await s3.send(new DeleteObjectsCommand({ Bucket: bucket, Delete: { Objects: objects, Quiet: true } }));
+          }
+          continuationToken = page.NextContinuationToken;
+        } while (continuationToken);
+      } catch (e) {
+        this.logger.info(`Failed to empty bucket ${bucket}: ${(e as Error).message} (continuing)`);
+      }
+    }
+  }
 
   private removeGitignoreLine(line: string): void {
     const gitignorePath = path.join(this.targetAppPath, '.gitignore');
