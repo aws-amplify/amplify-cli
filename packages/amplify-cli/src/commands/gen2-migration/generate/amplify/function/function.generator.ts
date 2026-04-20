@@ -74,7 +74,7 @@ export class FunctionGenerator implements Planner {
     const hasKinesisTrigger = this.detectKinesisTrigger(func);
     this.contributeAuthAccess(func);
     this.contributeAuthTrigger();
-    await this.contributeStorageAccess(this.category);
+    await this.contributeStorageAccess();
     this.contributeStorageTrigger();
 
     return [
@@ -154,7 +154,7 @@ export class FunctionGenerator implements Planner {
       analyticsConstructImportPath,
     };
 
-    const nodes = this.renderer.renderComplete(renderOpts);
+    const nodes = this.renderer.render(renderOpts);
     const content = TS.printNodes(nodes);
 
     await fs.mkdir(dirPath, { recursive: true });
@@ -198,7 +198,7 @@ export class FunctionGenerator implements Planner {
     if (event) this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
   }
 
-  private async contributeStorageAccess(category: string): Promise<void> {
+  private async contributeStorageAccess(): Promise<void> {
     if (!this.s3Generator) return;
     const S3_ACTION_TO_PERMISSION: Readonly<Record<string, Permission>> = {
       's3:GetObject': 'read',

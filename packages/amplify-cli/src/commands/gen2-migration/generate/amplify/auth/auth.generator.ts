@@ -80,7 +80,7 @@ export class AuthGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
-          const nodeArray = this.defineAuth.renderComplete(renderOptions);
+          const nodeArray = this.defineAuth.render(renderOptions);
           let content = TS.printNodes(nodeArray);
 
           content = content.replace(/\(allow, _unused\)/g, '(allow: any)');

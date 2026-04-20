@@ -170,9 +170,9 @@ function createTriggersProperty(triggers: readonly AuthTrigger[]): PropertyAssig
  */
 export class AuthRenderer {
   /**
-   * Produces the complete TypeScript AST for auth/resource.ts.
+   * Produces the TypeScript AST for the defineAuth() call.
    */
-  public render(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
+  private renderDefineAuth(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
     const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
     return this.renderStandardAuth(options, namedImports);
   }
@@ -181,8 +181,8 @@ export class AuthRenderer {
    * Produces the complete auth/resource.ts file including defineAuth(),
    * applyEscapeHatches(), Backend type import, and CDK imports.
    */
-  public renderComplete(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
-    const baseNodes = this.render(options);
+  public render(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
+    const baseNodes = this.renderDefineAuth(options);
 
     const hasIdentityProviders =
       options.userPoolClient?.SupportedIdentityProviders !== undefined && options.userPoolClient.SupportedIdentityProviders.length > 0;

@@ -67,7 +67,7 @@ export class RestApiRenderer {
    * Renders the complete resource.ts file for a REST API, including
    * imports, branchName, Backend type import, and the export function.
    */
-  public renderComplete(restApi: RestApiDefinition): ts.NodeArray<ts.Node> {
+  public render(restApi: RestApiDefinition): ts.NodeArray<ts.Node> {
     const statements = this.renderApi(restApi);
     const baseName = restApi.apiName.replace(/api$/i, '');
     const properFunctionName = `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
@@ -121,7 +121,7 @@ export class RestApiRenderer {
   /**
    * Renders CDK statements for a single REST API in backend.ts.
    */
-  public renderApi(restApi: RestApiDefinition): ts.Statement[] {
+  private renderApi(restApi: RestApiDefinition): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const sanitizedName = restApi.apiName.replace(/[^a-zA-Z0-9]/g, '');
     const stackVarName = `${sanitizedName}Stack`;

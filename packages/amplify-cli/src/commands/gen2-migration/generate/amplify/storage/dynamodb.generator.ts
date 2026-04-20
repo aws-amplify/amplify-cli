@@ -41,14 +41,13 @@ export class DynamoDBGenerator implements Planner {
         validate: () => undefined,
         describe: async () => [`Generate DynamoDB table ${this.resource.resourceName} in amplify/backend.ts`],
         execute: async () => {
-          const imports = this.renderer.requiredImports();
           const capitalizedName = this.resource.resourceName.charAt(0).toUpperCase() + this.resource.resourceName.slice(1);
           const functionName = `defineStorage${capitalizedName}`;
           const storageAlias = `storage${capitalizedName}`;
 
           // Write the resource.ts file for this DynamoDB table
           const resourceDir = path.join(this.outputDir, 'amplify', 'storage', this.resource.resourceName);
-          const nodes = this.renderer.renderResourceFile(table, this.resource.resourceName);
+          const nodes = this.renderer.render(table, this.resource.resourceName);
           const content = TS.printNodes(nodes);
           await fs.mkdir(resourceDir, { recursive: true });
           await fs.writeFile(path.join(resourceDir, 'resource.ts'), content, 'utf-8');

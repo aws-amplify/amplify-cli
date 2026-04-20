@@ -43,7 +43,7 @@ export class DynamoDBRenderer {
   /**
    * Returns the CDK import identifiers needed for DynamoDB tables.
    */
-  public requiredImports(): { readonly source: string; readonly identifiers: string[] } {
+  private requiredImports(): { readonly source: string; readonly identifiers: string[] } {
     return {
       source: 'aws-cdk-lib/aws-dynamodb',
       identifiers: ['Table', 'AttributeType', 'BillingMode', 'StreamViewType'],
@@ -53,7 +53,7 @@ export class DynamoDBRenderer {
   /**
    * Produces CDK Table construct statements for a single DynamoDB table.
    */
-  public renderTable(table: DynamoDBTableDefinition, scopeVarName: string): ts.Statement[] {
+  private renderTable(table: DynamoDBTableDefinition, scopeVarName: string): ts.Statement[] {
     return this.buildTableStatements(table, scopeVarName);
   }
 
@@ -61,7 +61,7 @@ export class DynamoDBRenderer {
    * Renders a complete resource.ts file for a standalone DynamoDB table.
    * Exports `defineStorageXxx(backend)` and `postRefactor(table)`.
    */
-  public renderResourceFile(table: DynamoDBTableDefinition, resourceName: string): ts.NodeArray<ts.Node> {
+  public render(table: DynamoDBTableDefinition, resourceName: string): ts.NodeArray<ts.Node> {
     const capitalizedName = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
     const functionName = `defineStorage${capitalizedName}`;
     const scopeVarName = `storage${capitalizedName}Stack`;

@@ -45,7 +45,7 @@ export class RestApiGenerator implements Planner {
           const apiDir = path.join(this.outputDir, 'amplify', 'api', restApi.apiName);
           const renderer = new RestApiRenderer(hasAuth, functionNames);
 
-          const nodes = renderer.renderComplete(restApi);
+          const nodes = renderer.render(restApi);
           const content = TS.printNodes(nodes);
 
           await fs.mkdir(apiDir, { recursive: true });

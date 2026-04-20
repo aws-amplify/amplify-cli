@@ -65,9 +65,9 @@ export class FunctionRenderer {
   }
 
   /**
-   * Produces the complete TypeScript AST for a function's resource.ts.
+   * Produces the TypeScript AST for the defineFunction() call.
    */
-  public render(opts: RenderDefineFunctionOptions): ts.NodeArray<ts.Node> {
+  private renderDefineFunction(opts: RenderDefineFunctionOptions): ts.NodeArray<ts.Node> {
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineFunction']) };
     const postImportStatements: ts.Node[] = [];
     const properties: ObjectLiteralElementLike[] = [];
@@ -113,8 +113,8 @@ export class FunctionRenderer {
    * Renders the complete resource.ts file including defineFunction(),
    * applyEscapeHatches(), all imports, and Backend/analytics type imports.
    */
-  public renderComplete(opts: RenderCompleteFunctionOptions): ts.NodeArray<ts.Node> {
-    const baseNodes = this.render(opts);
+  public render(opts: RenderCompleteFunctionOptions): ts.NodeArray<ts.Node> {
+    const baseNodes = this.renderDefineFunction(opts);
     const escapeHatchResult = this.renderApplyEscapeHatches(opts);
 
     const additionalImports: Record<string, Set<string>> = { ...escapeHatchResult.additionalImports };
@@ -189,7 +189,7 @@ export class FunctionRenderer {
    * additional imports needed for it. Returns AST nodes to append
    * as postExportStatements in the resource.ts file.
    */
-  public renderApplyEscapeHatches(opts: RenderApplyEscapeHatchesOptions): {
+  private renderApplyEscapeHatches(opts: RenderApplyEscapeHatchesOptions): {
     readonly postExportStatements: ts.Node[];
     readonly additionalImports: Record<string, Set<string>>;
   } {
