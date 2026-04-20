@@ -44,6 +44,7 @@ interface ResolvedFunction {
   readonly kinesisActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
   readonly authAccess: AuthPermissions;
+  readonly unmappedAuthActions: readonly string[];
 }
 
 /**
@@ -132,6 +133,7 @@ export class FunctionGenerator implements Planner {
           await this.generateResource(func);
           this.contributeOverrides(func);
           this.contributeGrants(func);
+          this.contributeAuthEscapeHatch(func);
           if (triggerModels.length > 0) {
             this.contributeDynamoTrigger(func.resourceName, triggerModels);
           }
@@ -177,11 +179,18 @@ export class FunctionGenerator implements Planner {
     const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
 
     // Extract DynamoDB/Kinesis actions and GraphQL API permissions from the function's CloudFormation template
-    const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess: cfnAuthAccess } = this.extractCfnPermissions();
+    const {
+      dynamoActions,
+      kinesisActions,
+      graphqlApiPermissions,
+      authAccess: cfnAuthAccess,
+      unmappedAuthActions: cfnUnmapped,
+    } = this.extractCfnPermissions();
 
     // For auth trigger functions, also extract permissions from the auth-trigger CFN template.
-    const triggerAuthAccess = this.extractAuthTriggerCfnPermissions();
+    const { permissions: triggerAuthAccess, unmapped: triggerUnmapped } = this.extractAuthTriggerCfnPermissions();
     const authAccess = { ...cfnAuthAccess, ...triggerAuthAccess };
+    const unmappedAuthActions = [...new Set([...cfnUnmapped, ...triggerUnmapped])];
 
     return {
       resourceName: this.resource.resourceName,
@@ -198,6 +207,7 @@ export class FunctionGenerator implements Planner {
       kinesisActions,
       graphqlApiPermissions,
       authAccess,
+      unmappedAuthActions,
     };
   }
 
@@ -259,6 +269,62 @@ export class FunctionGenerator implements Planner {
     if (Object.keys(func.authAccess).length > 0) {
       this.authGenerator.addFunctionAuthAccess({ resourceName: this.resource.resourceName, permissions: func.authAccess });
     }
+  }
+
+  /** Emits `addToRolePolicy` in backend.ts for cognito-idp actions that don't map to any Gen2 auth permission. */
+  private contributeAuthEscapeHatch(func: ResolvedFunction): void {
+    if (func.unmappedAuthActions.length === 0) return;
+
+    this.backendGenerator.addImport('aws-cdk-lib', ['aws_iam']);
+
+    const lambdaRef = factory.createPropertyAccessExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
+        factory.createIdentifier('resources'),
+      ),
+      factory.createIdentifier('lambda'),
+    );
+
+    const policyStatement = factory.createNewExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+      undefined,
+      [
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'actions',
+              factory.createArrayLiteralExpression(func.unmappedAuthActions.map((a) => factory.createStringLiteral(a))),
+            ),
+            factory.createPropertyAssignment(
+              'resources',
+              factory.createArrayLiteralExpression([
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+                      factory.createIdentifier('resources'),
+                    ),
+                    factory.createIdentifier('userPool'),
+                  ),
+                  factory.createIdentifier('userPoolArn'),
+                ),
+              ]),
+            ),
+          ],
+          true,
+        ),
+      ],
+    );
+
+    this.backendGenerator.addStatement(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(lambdaRef, factory.createIdentifier('addToRolePolicy')),
+          undefined,
+          [policyStatement],
+        ),
+      ),
+    );
   }
 
   private contributeAuthTrigger(): void {
@@ -548,13 +614,20 @@ export class FunctionGenerator implements Planner {
     kinesisActions: string[];
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
     authAccess: AuthPermissions;
+    unmappedAuthActions: string[];
   } {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') {
-      return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false }, authAccess: {} };
+      return {
+        dynamoActions: [],
+        kinesisActions: [],
+        graphqlApiPermissions: { hasMutation: false, hasQuery: false },
+        authAccess: {},
+        unmappedAuthActions: [],
+      };
     }
 
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
@@ -593,8 +666,8 @@ export class FunctionGenerator implements Planner {
       }
     }
 
-    const authAccess = resolveAuthAccess(cognitoActions);
-    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery }, authAccess };
+    const { permissions: authAccess, unmapped: unmappedAuthActions } = resolveAuthAccess(cognitoActions);
+    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery }, authAccess, unmappedAuthActions };
   }
 
   /**
@@ -605,12 +678,12 @@ export class FunctionGenerator implements Planner {
    * This method reads that template and extracts cognito-idp actions from IAM policies
    * that reference this function.
    */
-  private extractAuthTriggerCfnPermissions(): AuthPermissions {
-    if (this.category !== 'auth') return {};
+  private extractAuthTriggerCfnPermissions(): { permissions: AuthPermissions; unmapped: string[] } {
+    if (this.category !== 'auth') return { permissions: {}, unmapped: [] };
 
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
-    if (!this.gen1App.fileExists(templatePath)) return {};
+    if (!this.gen1App.fileExists(templatePath)) return { permissions: {}, unmapped: [] };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
@@ -1179,14 +1252,10 @@ const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
   'cognito-idp:UpdateUserAttributes': 'updateUserAttributes',
   'cognito-idp:SetUserMFAPreference': 'setUserMfaPreference',
   'cognito-idp:SetUserSettings': 'setUserSettings',
-  'cognito-idp:GetGroup': 'manageGroups',
-  'cognito-idp:CreateGroup': 'manageGroups',
-  'cognito-idp:DeleteGroup': 'manageGroups',
-  'cognito-idp:UpdateGroup': 'manageGroups',
 };
 
-function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
-  if (cognitoActions.length === 0) return {};
+function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermissions; unmapped: string[] } {
+  if (cognitoActions.length === 0) return { permissions: {}, unmapped: [] };
   const result: Record<string, boolean> = {};
   const covered = new Set<string>();
 
@@ -1198,12 +1267,15 @@ function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
   }
 
   for (const action of cognitoActions) {
-    if (!covered.has(action) && AUTH_ACTION_MAPPING[action]) {
+    if (covered.has(action)) continue;
+    if (AUTH_ACTION_MAPPING[action]) {
       result[AUTH_ACTION_MAPPING[action]] = true;
+      covered.add(action);
     }
   }
 
-  return result as AuthPermissions;
+  const unmapped = cognitoActions.filter((a) => !covered.has(a));
+  return { permissions: result as AuthPermissions, unmapped };
 }
 
 // ── Auth trigger suffix mapping ───────────────────────────────────
