@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
-import { GeoCodegenResult } from './geo-cfn-converter';
+import { GeoCodegenResult } from './geo.types';
 
 const factory = ts.factory;
 

@@ -21,7 +21,10 @@ import { S3Generator } from './generate/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
-import { GeoGenerator, GeoMapGenerator } from './generate/amplify/geo/geo.generator';
+import { GeoGenerator } from './generate/amplify/geo/geo.generator';
+import { GeoMapGenerator } from './generate/amplify/geo/geo-map.generator';
+import { GeoPlaceIndexGenerator } from './generate/amplify/geo/geo-place-index.generator';
+import { GeoGeofenceCollectionGenerator } from './generate/amplify/geo/geo-geofence-collection.generator';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -114,13 +117,25 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'analytics:Kinesis':
           generators.push(new AnalyticsKinesisGenerator(this.gen1App, backendGenerator, outputDir, resource));
           break;
-        case 'geo:Map':
-        case 'geo:PlaceIndex':
-        case 'geo:GeofenceCollection': {
+        case 'geo:Map': {
           if (!geoGenerator) {
             geoGenerator = new GeoGenerator(backendGenerator, outputDir);
           }
           generators.push(new GeoMapGenerator(this.gen1App, outputDir, resource, geoGenerator));
+          break;
+        }
+        case 'geo:PlaceIndex': {
+          if (!geoGenerator) {
+            geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+          }
+          generators.push(new GeoPlaceIndexGenerator(this.gen1App, outputDir, resource, geoGenerator));
+          break;
+        }
+        case 'geo:GeofenceCollection': {
+          if (!geoGenerator) {
+            geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+          }
+          generators.push(new GeoGeofenceCollectionGenerator(this.gen1App, outputDir, resource, geoGenerator));
           break;
         }
         case 'function:Lambda': {

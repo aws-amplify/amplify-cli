@@ -3,93 +3,83 @@ import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import CFNConditionResolver from '../analytics/cfn-condition-resolver';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { Planner } from '../../../_infra/planner';
+import { AmplifyMigrationOperation } from '../../../_infra/operation';
+import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
+import { TS } from '../../_infra/ts';
+import { GeoResourceRenderer } from './geo-resource.renderer';
+import { GeoCodegenResult, GeoCodegenResultBase, GeoProviderMetadata } from './geo.types';
+import { GeoGenerator } from './geo.generator';
 
 /**
- * Geo service type from Gen1 amplify-meta.json.
- */
-export type GeoServiceName = 'Map' | 'PlaceIndex' | 'GeofenceCollection';
-
-/**
- * Provider metadata for a Gen1 geo resource.
- */
-export interface GeoProviderMetadata {
-  readonly s3TemplateURL: string;
-  readonly logicalId: string;
-}
-
-/**
- * Base fields common to all geo codegen results.
- */
-interface GeoCodegenResultBase {
-  readonly constructClassName: string;
-  readonly constructFileName: string;
-  readonly resourceName: string;
-  readonly userPoolIdParamName: string;
-  readonly groupRoles: ReadonlyArray<{ readonly paramName: string; readonly groupName: string }>;
-  readonly isDefault: string;
-}
-
-export interface MapCodegenResult extends GeoCodegenResultBase {
-  readonly serviceName: 'Map';
-  readonly mapName: string;
-  readonly mapStyle: string;
-}
-
-export interface PlaceIndexCodegenResult extends GeoCodegenResultBase {
-  readonly serviceName: 'PlaceIndex';
-  readonly indexName: string;
-  readonly dataProvider: string;
-  readonly dataSourceIntendedUse: string;
-}
-
-export interface GeofenceCollectionCodegenResult extends GeoCodegenResultBase {
-  readonly serviceName: 'GeofenceCollection';
-  readonly collectionName: string;
-}
-
-export type GeoCodegenResult = MapCodegenResult | PlaceIndexCodegenResult | GeofenceCollectionCodegenResult;
-
-/**
- * Converts geo CloudFormation templates to CDK constructs using cdk-from-cfn.
+ * Base class for geo sub-resource generators.
+ * Handles the common logic of converting CFN, rendering, and contributing
+ * the codegen result to the GeoGenerator aggregator.
  *
- * Handles all three geo service types (Map, PlaceIndex, GeofenceCollection).
- * Downloads the nested stack's CFN template from S3, resolves conditions,
- * fixes Fn::FindInMap dictionary lookups, and runs cdk-from-cfn to produce
- * a TypeScript CDK construct file.
+ * Subclasses implement buildCodegenResult() to produce the service-specific
+ * codegen result from the base result and parameter map.
  */
-export class GeoCfnConverter {
-  private readonly dir: string;
-  private readonly fileWriter: (content: string, filePath: string) => Promise<void>;
-  private readonly s3Client: S3Client;
-  private readonly cfnClient?: CloudFormationClient;
-  private readonly rootStackName?: string;
+export abstract class GeoResourceGenerator implements Planner {
+  protected readonly gen1App: Gen1App;
+  protected readonly outputDir: string;
+  protected readonly resource: DiscoveredResource;
+  private readonly geoGenerator: GeoGenerator;
+  private readonly renderer = new GeoResourceRenderer();
 
-  public constructor(
-    dir: string,
-    fileWriter: (content: string, filePath: string) => Promise<void>,
-    s3Client: S3Client,
-    cfnClient?: CloudFormationClient,
-    rootStackName?: string,
-  ) {
-    this.dir = dir;
-    this.fileWriter = fileWriter;
-    this.s3Client = s3Client;
-    this.cfnClient = cfnClient;
-    this.rootStackName = rootStackName;
+  protected constructor(gen1App: Gen1App, outputDir: string, resource: DiscoveredResource, geoGenerator: GeoGenerator) {
+    this.gen1App = gen1App;
+    this.outputDir = outputDir;
+    this.resource = resource;
+    this.geoGenerator = geoGenerator;
   }
 
   /**
-   * Converts a geo CloudFormation template to a CDK L1 construct.
+   * Builds the service-specific codegen result from the common base
+   * and the raw parameter map.
    */
-  public async generateGeoL1Code(
+  protected abstract buildCodegenResult(base: GeoCodegenResultBase, paramMap: ReadonlyMap<string, string>): GeoCodegenResult;
+
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
+    const resourceName = this.resource.resourceName;
+    const geoCategory = this.gen1App.meta('geo');
+    if (!geoCategory || !geoCategory[resourceName]) return [];
+
+    const meta = geoCategory[resourceName] as { providerMetadata: GeoProviderMetadata };
+    const geoDir = path.join(this.outputDir, 'amplify', 'geo');
+
+    return [
+      {
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => [`Generate amplify/geo/${resourceName}/resource.ts`],
+        execute: async () => {
+          const { base, paramMap } = await this.generateBase(resourceName, meta.providerMetadata);
+          const codegenResult = this.buildCodegenResult(base, paramMap);
+          this.geoGenerator.addCodegenResult(codegenResult);
+
+          const nodes = this.renderer.render(codegenResult);
+          const content = TS.printNodes(nodes);
+
+          const resourceDir = path.join(geoDir, resourceName);
+          await fs.mkdir(resourceDir, { recursive: true });
+          await fs.writeFile(path.join(resourceDir, 'resource.ts'), content, 'utf-8');
+        },
+      },
+    ];
+  }
+
+  /**
+   * Generates the CDK construct file and returns the common base result
+   * plus the raw parameter map for service-specific extraction.
+   */
+  private async generateBase(
     resourceName: string,
-    service: GeoServiceName,
     providerMetadata: GeoProviderMetadata,
-  ): Promise<GeoCodegenResult> {
+  ): Promise<{ readonly base: GeoCodegenResultBase; readonly paramMap: ReadonlyMap<string, string> }> {
     const constructFileName = `${resourceName}-construct`;
-    const filePath = path.join(this.dir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
-    const template = await getCfnTemplateFromS3(providerMetadata.s3TemplateURL, this.s3Client);
+    const filePath = path.join(this.outputDir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
+    const template = await getCfnTemplateFromS3(providerMetadata.s3TemplateURL, this.gen1App.clients.s3);
     const nestedStackLogicalId = providerMetadata.logicalId;
 
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
@@ -106,7 +96,11 @@ export class GeoCfnConverter {
       tabWidth: 2,
       printWidth: 80,
     });
-    await this.fileWriter(formatted, filePath);
+    const fileWriter = async (content: string, fp: string): Promise<void> => {
+      await fs.mkdir(path.dirname(fp), { recursive: true });
+      await fs.writeFile(fp, content, 'utf-8');
+    };
+    await fileWriter(formatted, filePath);
 
     const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
     if (!classNameMatch) {
@@ -142,51 +136,27 @@ export class GeoCfnConverter {
       isDefault: paramMap.get('isDefault') ?? 'false',
     };
 
-    switch (service) {
-      case 'Map':
-        return {
-          ...base,
-          serviceName: 'Map',
-          mapName: paramMap.get('mapName') ?? resourceName,
-          mapStyle: paramMap.get('mapStyle') ?? '',
-        };
-      case 'PlaceIndex':
-        return {
-          ...base,
-          serviceName: 'PlaceIndex',
-          indexName: paramMap.get('indexName') ?? resourceName,
-          dataProvider: paramMap.get('dataProvider') ?? '',
-          dataSourceIntendedUse: paramMap.get('dataSourceIntendedUse') ?? '',
-        };
-      case 'GeofenceCollection':
-        return {
-          ...base,
-          serviceName: 'GeofenceCollection',
-          collectionName: paramMap.get('collectionName') ?? resourceName,
-        };
-      default: {
-        const _exhaustiveCheck: never = service;
-        throw new Error(`Unsupported geo service type: ${_exhaustiveCheck}`);
-      }
-    }
+    return { base, paramMap };
   }
 
   private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
-    if (!this.cfnClient || !this.rootStackName) return undefined;
+    const cfnClient = this.gen1App.clients.cloudFormation;
+    const rootStackName = this.gen1App.rootStackName;
+    if (!cfnClient || !rootStackName) return undefined;
 
-    const response = await this.cfnClient.send(
-      new DescribeStackResourcesCommand({ StackName: this.rootStackName, LogicalResourceId: logicalId }),
-    );
+    const response = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: rootStackName, LogicalResourceId: logicalId }));
     return response.StackResources?.[0]?.PhysicalResourceId;
   }
 
   private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {
-    if (!this.cfnClient || !this.rootStackName) return [];
+    const cfnClient = this.gen1App.clients.cloudFormation;
+    const rootStackName = this.gen1App.rootStackName;
+    if (!cfnClient || !rootStackName) return [];
 
     const nestedStackName = await this.getNestedStackPhysicalName(logicalId);
     if (!nestedStackName) return [];
 
-    const response = await this.cfnClient.send(new DescribeStacksCommand({ StackName: nestedStackName }));
+    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: nestedStackName }));
     return response.Stacks?.[0]?.Parameters ?? [];
   }
 
