@@ -17,6 +17,7 @@
     "@aws-amplify/amplify-e2e-core": "workspace:^",
     "@aws-sdk/client-amplify": "^3.919.0",
     "@aws-sdk/client-cloudformation": "^3.919.0",
+    "@aws-sdk/client-s3": "^3.919.0",
     "@aws-sdk/client-sts": "^3.919.0",
     "@paralleldrive/cuid2": "^3.0.6",
     "chalk": "^4.1.2",

@@ -1242,6 +1242,8 @@ __metadata:
     "@aws-amplify/amplify-e2e-core": "workspace:^"
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-cloudformation": ^3.919.0
+    "@aws-sdk/client-s3": ^3.919.0
+    "@aws-sdk/client-sts": ^3.919.0
     "@cdklabs/cdk-atmosphere-client": latest
     "@paralleldrive/cuid2": ^3.0.6
     "@types/fs-extra": ^11.0.4
