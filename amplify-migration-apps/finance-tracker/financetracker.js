@@ -1,13 +1,12 @@
 /* Amplify Params - DO NOT EDIT
-	API_FINANCETRACKER_GRAPHQLAPIENDPOINTOUTPUT
-	API_FINANCETRACKER_GRAPHQLAPIIDOUTPUT
-	API_FINANCETRACKER_GRAPHQLAPIKEYOUTPUT
-	AUTH_FINANCETRACKERB192A2D4_USERPOOLID
+	API_FINANCETRACKER2_GRAPHQLAPIIDOUTPUT
+	API_FINANCETRACKER2_TRANSACTIONTABLE_ARN
+	API_FINANCETRACKER2_TRANSACTIONTABLE_NAME
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */ const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
-const { SNSClient, PublishCommand, SubscribeCommand } = require('@aws-sdk/client-sns');
+const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 
 const dynamoClient = new DynamoDBClient({});
 const dynamodb = DynamoDBDocumentClient.from(dynamoClient);
@@ -77,7 +76,7 @@ async function calculateSummaryFromDB() {
   console.log('calculateSummaryFromDB called');
 
   // Try to get table name from environment variable
-  let tableName = process.env.API_FINANCETRACKER_TRANSACTIONTABLE_NAME;
+  let tableName = process.env.API_FINANCETRACKER2_TRANSACTIONTABLE_NAME;
   console.log('Table name from env:', tableName);
 
   // If table name has NONE, we need to find the actual API ID
@@ -166,7 +165,7 @@ async function sendMonthlyReport(args) {
   }
 
   try {
-    // Use the SNS topic created by the custom resource
+    // Use the SNS topic created by the custom resource (subscription managed by CDK)
     const topicArn = process.env.MONTHLY_REPORT_TOPIC_ARN;
     console.log('Using topic ARN from environment:', topicArn);
 
@@ -174,11 +173,7 @@ async function sendMonthlyReport(args) {
       throw new Error('Monthly report topic ARN not configured');
     }
 
-    // Subscribe the user's email to the topic
-    await subscribeEmailToTopic(topicArn, email);
-    console.log('Email subscribed to topic');
-
-    const tableName = process.env.API_FINANCETRACKER_TRANSACTIONTABLE_NAME;
+    const tableName = process.env.API_FINANCETRACKER2_TRANSACTIONTABLE_NAME;
     console.log('Table name:', tableName);
 
     // Get financial summary from DynamoDB
@@ -272,7 +267,7 @@ async function sendBudgetAlert(args) {
   const { email, category, exceeded } = args;
 
   try {
-    // Use the SNS topic created by the custom resource
+    // Use the SNS topic created by the custom resource (subscription managed by CDK)
     const topicArn = process.env.BUDGET_ALERT_TOPIC_ARN;
     console.log('Using topic ARN from environment:', topicArn);
 
@@ -280,11 +275,7 @@ async function sendBudgetAlert(args) {
       throw new Error('Budget alert topic ARN not configured');
     }
 
-    // Subscribe the user's email to the topic
-    await subscribeEmailToTopic(topicArn, email);
-    console.log('Email subscribed to topic');
-
-    const tableName = process.env.API_FINANCETRACKER_TRANSACTIONTABLE_NAME;
+    const tableName = process.env.API_FINANCETRACKER2_TRANSACTIONTABLE_NAME;
 
     // Get category spending from DynamoDB
     const result = await dynamodb.send(
@@ -352,36 +343,5 @@ Finance Tracker Team`,
   }
 }
 
-// Helper function to subscribe an email to an existing SNS topic
-async function subscribeEmailToTopic(topicArn, email) {
-  console.log('Subscribing email to topic:', topicArn);
-  console.log('Email for subscription:', email);
-
-  try {
-    // Subscribe the email to the topic
-    console.log('Attempting to subscribe email to topic...');
-    const subscribeResult = await sns.send(
-      new SubscribeCommand({
-        TopicArn: topicArn,
-        Protocol: 'email',
-        Endpoint: email,
-      }),
-    );
-
-    console.log('Subscription result:', JSON.stringify(subscribeResult, null, 2));
-    console.log('Subscription ARN:', subscribeResult.SubscriptionArn);
-
-    if (subscribeResult.SubscriptionArn === 'pending confirmation') {
-      console.log('Email subscription pending confirmation - user needs to check email');
-    }
-
-    return subscribeResult.SubscriptionArn;
-  } catch (error) {
-    console.error('Error in subscribeEmailToTopic:', error);
-    console.error('Error name:', error.name);
-    console.error('Error code:', error.code);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
-    throw new Error(`Failed to subscribe email to SNS topic: ${error.message}`);
-  }
-}
+// Email subscriptions are now managed by the CDK custom resource (customfinance)
+// The Lambda only publishes messages to the pre-configured SNS topics

@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from '../API';
+import * as APITypes from "../API";
 type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
@@ -17,7 +17,33 @@ export const calculateFinancialSummary = /* GraphQL */ `query CalculateFinancial
     __typename
   }
 }
-` as GeneratedQuery<APITypes.CalculateFinancialSummaryQueryVariables, APITypes.CalculateFinancialSummaryQuery>;
+` as GeneratedQuery<
+  APITypes.CalculateFinancialSummaryQueryVariables,
+  APITypes.CalculateFinancialSummaryQuery
+>;
+export const getTransactionsByCategory = /* GraphQL */ `query GetTransactionsByCategory($category: String!, $limit: Int) {
+  getTransactionsByCategory(category: $category, limit: $limit) {
+    items {
+      id
+      description
+      amount
+      type
+      category
+      date
+      receiptUrl
+      owner
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetTransactionsByCategoryQueryVariables,
+  APITypes.GetTransactionsByCategoryQuery
+>;
 export const getTransaction = /* GraphQL */ `query GetTransaction($id: ID!) {
   getTransaction(id: $id) {
     id
@@ -33,7 +59,10 @@ export const getTransaction = /* GraphQL */ `query GetTransaction($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetTransactionQueryVariables, APITypes.GetTransactionQuery>;
+` as GeneratedQuery<
+  APITypes.GetTransactionQueryVariables,
+  APITypes.GetTransactionQuery
+>;
 export const listTransactions = /* GraphQL */ `query ListTransactions(
   $filter: ModelTransactionFilterInput
   $limit: Int
@@ -57,7 +86,10 @@ export const listTransactions = /* GraphQL */ `query ListTransactions(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListTransactionsQueryVariables, APITypes.ListTransactionsQuery>;
+` as GeneratedQuery<
+  APITypes.ListTransactionsQueryVariables,
+  APITypes.ListTransactionsQuery
+>;
 export const getBudget = /* GraphQL */ `query GetBudget($id: ID!) {
   getBudget(id: $id) {
     id
@@ -91,7 +123,10 @@ export const listBudgets = /* GraphQL */ `query ListBudgets(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListBudgetsQueryVariables, APITypes.ListBudgetsQuery>;
+` as GeneratedQuery<
+  APITypes.ListBudgetsQueryVariables,
+  APITypes.ListBudgetsQuery
+>;
 export const getFinancialSummary = /* GraphQL */ `query GetFinancialSummary($id: ID!) {
   getFinancialSummary(id: $id) {
     id
@@ -105,7 +140,10 @@ export const getFinancialSummary = /* GraphQL */ `query GetFinancialSummary($id:
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetFinancialSummaryQueryVariables, APITypes.GetFinancialSummaryQuery>;
+` as GeneratedQuery<
+  APITypes.GetFinancialSummaryQueryVariables,
+  APITypes.GetFinancialSummaryQuery
+>;
 export const listFinancialSummaries = /* GraphQL */ `query ListFinancialSummaries(
   $filter: ModelFinancialSummaryFilterInput
   $limit: Int
@@ -131,4 +169,7 @@ export const listFinancialSummaries = /* GraphQL */ `query ListFinancialSummarie
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListFinancialSummariesQueryVariables, APITypes.ListFinancialSummariesQuery>;
+` as GeneratedQuery<
+  APITypes.ListFinancialSummariesQueryVariables,
+  APITypes.ListFinancialSummariesQuery
+>;

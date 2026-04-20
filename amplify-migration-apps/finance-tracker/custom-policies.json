@@ -1,32 +1,18 @@
 [
   {
-    "Action": [
-      "sns:Publish",
-      "sns:ListTopics",
-      "sns:CreateTopic",
-      "sns:Subscribe"
-    ],
+    "Action": ["sns:Publish"],
     "Resource": ["*"]
   },
   {
-    "Action": [
-      "dynamodb:Scan",
-      "dynamodb:Query",
-      "dynamodb:GetItem"
-    ],
+    "Action": ["dynamodb:Scan", "dynamodb:Query", "dynamodb:GetItem"],
     "Resource": [
       {
-        "Fn::Sub": [
-          "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*",
-          {}
-        ]
+        "Fn::Sub": ["arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*", {}]
       }
     ]
   },
   {
-    "Action": [
-      "sts:GetCallerIdentity"
-    ],
+    "Action": ["sts:GetCallerIdentity"],
     "Resource": ["*"]
   }
 ]

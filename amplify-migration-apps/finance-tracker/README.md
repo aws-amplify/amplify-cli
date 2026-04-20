@@ -67,7 +67,7 @@ GraphQL API with schema containing:
 - _calculateFinancialSummary_ query that computes financial metrics by invoking a Lambda function using the `@function` directive.
 - _sendMonthlyReport_ and _sendBudgetAlert_ mutations that trigger notifications via a Lambda function using the `@function` directive.
 
-Uses API key for default authorization.
+Uses Amazon Cognito User Pools for default authorization, with API key as an additional auth type.
 
 ```console
 amplify add api
@@ -76,10 +76,11 @@ amplify add api
 ```console
 ? Select from one of the below mentioned services: GraphQL
 ? Here is the GraphQL API that we will create. Select a setting to edit or continue Authorization modes: API key (default, expiration time: 7 days from now)
-? Choose the default authorization type for the API API key
+? Choose the default authorization type for the API Amazon Cognito User Pool
+? Configure additional auth types? Yes
+? Select the additional authorization types you want to configure for the API API key
 ✔ Enter a description for the API key: · graphql
-✔ After how many days from now the API key should expire (1-365): · 100
-? Configure additional auth types? No
+✔ After how many days from now the API key should expire (1-365): · 365
 ? Here is the GraphQL API that we will create. Select a setting to edit or continue Continue
 ? Choose a schema template: One-to-many relationship (e.g., "Blogs" with "Posts" and "Comments")
 ✔ Do you want to edit the schema now? (Y/n) · no
@@ -118,6 +119,54 @@ amplify add storage
 ✔ What kind of access do you want for Authenticated users? · create/update, read, delete
 ✔ What kind of access do you want for Guest users? · read
 ✔ Do you want to add a Lambda Trigger for your S3 Bucket? (y/N) · no
+```
+
+### Custom: SNS Topics (`customfinance`)
+
+CDK custom resource that creates two SNS topics for budget alerts and monthly reports,
+with email subscriptions managed at the infrastructure level.
+
+```console
+amplify add custom
+```
+
+```console
+✔ How do you want to define this custom resource? · AWS CDK
+✔ Provide a name for your custom resource · customfinance
+✔ Do you want to edit the CDK stack now? (Y/n) · no
+```
+
+### Custom: VTL Resolver (`customresolver`)
+
+A second CDK custom resource that creates an AppSync VTL resolver for querying transactions
+by category. This depends on the GraphQL API and tests the migration of custom resolvers
+with API dependencies.
+
+```console
+amplify add custom
+```
+
+```console
+✔ How do you want to define this custom resource? · AWS CDK
+✔ Provide a name for your custom resource · customresolver
+✔ Do you want to edit the CDK stack now? (Y/n) · no
+```
+
+After creation, register the API dependency by editing `amplify/backend/backend-config.json`
+to add `customresolver` with `dependsOn` on `api/financetracker`:
+
+```json
+"customresolver": {
+  "dependsOn": [
+    {
+      "attributes": ["GraphQLAPIIdOutput", "GraphQLAPIEndpointOutput", "GraphQLAPIKeyOutput"],
+      "category": "api",
+      "resourceName": "financetracker"
+    }
+  ],
+  "providerPlugin": "awscloudformation",
+  "service": "customCDK"
+}
 ```
 
 ### Function
@@ -160,52 +209,9 @@ You can access the following resource attributes as environment variables from y
 ? Do you want to edit the local lambda function now? No
 ```
 
-The CLI only handles basic resource access permissions. The custom IAM policies and environment variables need to be added by manually editing the function's config files.
+The CLI only handles basic resource access permissions. The custom IAM policies and environment variables are already included in the repo and will be copied into the function directory by `npm run configure`. However, the dependency configuration needs to be added manually. The CLI does not provide a way to specify which custom resource output attributes (`BudgetAlertTopicArn`, `MonthlyReportTopicArn`) the function depends on — this must be configured by editing the file directly.
 
-**Edit in `./amplify/backend/function/financetracker7f7c2ad7/custom-policies.json`:**
-
-```json
-[
-  {
-    "Action": ["sns:Publish", "sns:ListTopics", "sns:CreateTopic", "sns:Subscribe"],
-    "Resource": ["*"]
-  },
-  {
-    "Action": ["dynamodb:Scan", "dynamodb:Query", "dynamodb:GetItem"],
-    "Resource": [
-      {
-        "Fn::Sub": ["arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*", {}]
-      }
-    ]
-  },
-  {
-    "Action": ["sts:GetCallerIdentity"],
-    "Resource": ["*"]
-  }
-]
-```
-
-**Edit in `./amplify/backend/function/financetracker7f7c2ad7/financetracker7f7c2ad7-cloudformation-template.json`:**
-
-In the `Environment.Variables` section of the `LambdaFunction` resource, add:
-
-```json
-"BUDGET_ALERT_TOPIC_ARN": {
-  "Fn::ImportValue": {
-    "Fn::Sub": "financetracker-BudgetAlertTopicArn-${env}"
-  }
-},
-"MONTHLY_REPORT_TOPIC_ARN": {
-  "Fn::ImportValue": {
-    "Fn::Sub": "financetracker-MonthlyReportTopicArn-${env}"
-  }
-},
-"API_FINANCETRACKER_TRANSACTIONTABLE_NAME": {
-  "Fn::Sub": "Transaction-${apifinancetrackerGraphQLAPIIdOutput}-${env}"
-}
-```
-
-**Edit in `./amplify/backend/function/financetracker7f7c2ad7/function-parameters.json`:**
+**Edit `./amplify/backend/function/financetracker7f7c2ad7/function-parameters.json`:**
 
 ```json
 {
@@ -220,26 +226,74 @@ In the `Environment.Variables` section of the `LambdaFunction` resource, add:
 }
 ```
 
-### Custom
+The `dependsOn` in `function-parameters.json` tells the Amplify CLI to resolve the custom resource outputs and pass them as CloudFormation parameters to the function stack. However, the CloudFormation template must also declare those parameters and wire them to Lambda environment variables. The naming convention is `{category}{resourceName}{attribute}`.
 
-CDK custom resource for additional infrastructure.
+**Add to `./amplify/backend/function/financetracker7f7c2ad7/financetracker7f7c2ad7-cloudformation-template.json` Parameters:**
+
+```json
+"customcustomfinanceBudgetAlertTopicArn": { "Type": "String" },
+"customcustomfinanceMonthlyReportTopicArn": { "Type": "String" },
+"dependsOn": { "Type": "String", "Default": "" },
+"lambdaLayers": { "Type": "String", "Default": "" }
+```
+
+`dependsOn` and `lambdaLayers` are metadata the Amplify CLI always passes — they must exist as parameters with defaults or CloudFormation rejects them.
+
+**Add to the same file's `LambdaFunction` Environment Variables:**
+
+```json
+"BUDGET_ALERT_TOPIC_ARN": { "Ref": "customcustomfinanceBudgetAlertTopicArn" },
+"MONTHLY_REPORT_TOPIC_ARN": { "Ref": "customcustomfinanceMonthlyReportTopicArn" }
+```
+
+**Add to `./amplify/backend/backend-config.json`** under the function's `dependsOn` array:
+
+```json
+{
+  "category": "custom",
+  "resourceName": "customfinance",
+  "attributes": ["BudgetAlertTopicArn", "MonthlyReportTopicArn"]
+}
+```
+
+Next, update the function to grant it access to the DynamoDB Transaction table:
 
 ```console
-amplify add custom
+amplify update function
 ```
 
 ```console
-✔ How do you want to define this custom resource? · AWS CDK
-✔ Provide a name for your custom resource · customfinance
-✔ Do you want to edit the CDK stack now? (Y/n) · no
+? Select the Lambda function you want to update financetracker7f7c2ad7
+General information
+- Name: financetracker7f7c2ad7
+- Runtime: nodejs
+
+Resource access permission
+- Not configured
+
+Scheduled recurring invocation
+- Not configured
+
+Lambda layers
+- Not configured
+
+Environment variables:
+- Not configured
+
+Secrets configuration
+- Not configured
+
+? Which setting do you want to update? Resource access permissions
+? Select the categories you want this function to have access to. storage
+? Storage has 4 resources in this project. Select the one you would like your Lambda to access Transaction:@model(appsync)
+? Select the operations you want to permit on Transaction:@model(appsync) create, read, update, delete
+
+You can access the following resource attributes as environment variables from your Lambda function
+        API_FINANCETRACKER_GRAPHQLAPIIDOUTPUT
+        API_FINANCETRACKER_TRANSACTIONTABLE_ARN
+        API_FINANCETRACKER_TRANSACTIONTABLE_NAME
+? Do you want to edit the local lambda function now? No
 ```
-
-## Deploy Backend
-
-```console
-amplify push
-```
-
 ```console
 ┌──────────┬──────────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name            │ Operation │ Provider plugin   │
@@ -250,9 +304,11 @@ amplify push
 ├──────────┼──────────────────────────┼───────────┼───────────────────┤
 │ Storage  │ s3c787456e               │ Create    │ awscloudformation │
 ├──────────┼──────────────────────────┼───────────┼───────────────────┤
-│ Function │ financetracker7f7c2ad7   │ Create    │ awscloudformation │
-├──────────┼──────────────────────────┼───────────┼───────────────────┤
 │ Custom   │ customfinance            │ Create    │ awscloudformation │
+├──────────┼──────────────────────────┼───────────┼───────────────────┤
+│ Custom   │ customresolver           │ Create    │ awscloudformation │
+├──────────┼──────────────────────────┼───────────┼───────────────────┤
+│ Function │ financetracker7f7c2ad7   │ Create    │ awscloudformation │
 └──────────┴──────────────────────────┴───────────┴───────────────────┘
 
 ✔ Are you sure you want to continue? (Y/n) · yes
@@ -299,39 +355,19 @@ npx amplify gen2-migration generate
 
 After running `gen2-migration generate`, the following manual changes are needed to get the Gen2 branch to deploy successfully.
 
-#### 1. Lambda Function: Add `package.json`
+#### 1. Lambda Handler: Convert to ESM
 
-Create `amplify/function/financetrackere30b1453/package.json` with AWS SDK v3 dependencies:
-
-```json
-{
-  "name": "financetrackere30b1453",
-  "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.821.0",
-    "@aws-sdk/lib-dynamodb": "^3.821.0",
-    "@aws-sdk/client-sns": "^3.821.0",
-    "@aws-sdk/client-sts": "^3.821.0"
-  }
-}
-```
-
-#### 2. Lambda Handler: Convert to ESM
-
-In `amplify/function/financetrackere30b1453/handler.ts`, convert CommonJS to ESM syntax:
+In `amplify/function/financetrackerc3d67c94/index.js`, convert CommonJS to ESM syntax:
 
 - Change `require()` calls to `import` statements:
 
 ```diff
--const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+-const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
 -const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
--const { SNSClient, PublishCommand, CreateTopicCommand, SubscribeCommand } = require('@aws-sdk/client-sns');
--const { STSClient, GetCallerIdentityCommand } = require('@aws-sdk/client-sts');
+-const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 +import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 +import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
-+import { SNSClient, PublishCommand, CreateTopicCommand, SubscribeCommand } from '@aws-sdk/client-sns';
-+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
++import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 ```
 
 - Change `exports.handler` to `export const handler`:
@@ -341,86 +377,88 @@ In `amplify/function/financetrackere30b1453/handler.ts`, convert CommonJS to ESM
 +export const handler = async (event) => {
 ```
 
-- Remove the inline `require` for `ListTablesCommand` in `calculateSummaryFromDB()` (it's now imported at the top level):
+#### 3. Root `package.json`: Install AWS SDK and Upgrade TypeScript
 
-```diff
--    const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
+Amplify Gen 2 uses esbuild to bundle Lambda functions. esbuild couldn't resolve
+`@aws-sdk/client-dynamodb`, `@aws-sdk/lib-dynamodb`, and `@aws-sdk/client-sns` because
+they weren't installed. The Gen 2 `defineFunction()` API's `FunctionBundlingOptions` only
+supports `minify` — there is no `externalPackages` or `nodeModules` option to mark them
+as external.
+
+Install the SDK packages as dependencies so esbuild can resolve and bundle them:
+
+```bash
+npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb @aws-sdk/client-sns
 ```
 
-#### 3. Lambda `resource.ts`: Add ESM Bundling and `resourceGroupName`
-
-In `amplify/function/financetrackere30b1453/resource.ts`:
-
-- Add ESM bundling configuration with external AWS SDK
-- Add `resourceGroupName: "data"`
+Also upgrade TypeScript. The tsconfig uses `erasableSyntaxOnly` which requires TS 5.8+:
 
 ```diff
- export const financetrackere30b1453 = defineFunction({
-   ...
--  runtime: 22
-+  bundling: {
-+    format: "esm",
-+    minify: false,
-+    esbuildArgs: { "--external:@aws-sdk/*": "" }
-+  },
-+  environment: { ... },
-+  runtime: 22,
-+  resourceGroupName: "data"
- });
-```
-
-#### 4. Root `package.json`: Add AWS SDK Dependencies
-
-Add the AWS SDK v3 packages to the project root `package.json` dependencies:
-
-```json
-"@aws-sdk/client-dynamodb": "^3.821.0",
-"@aws-sdk/lib-dynamodb": "^3.821.0",
-"@aws-sdk/client-sns": "^3.821.0",
-"@aws-sdk/client-sts": "^3.821.0"
+-  "typescript": "^4.9.5",
++  "typescript": "~5.8.0",
 ```
 
 Then run `npm install` to update `package-lock.json`.
 
-#### 5. Data Resource: Switch Default Auth to `userPool`
+#### 4. Schema: Add Auth Directives to Custom Operations and Return Types
 
-In `amplify/data/resource.ts`, change the default authorization mode from API key to user pool:
+In the schema within `amplify/data/resource.ts`, the `globalAuthRule` (`allow: public`)
+only applies to `@model` types. Custom Query/Mutation fields and their return types need
+explicit auth directives.
+
+Add `@auth(rules: [{ allow: public }])` to custom Query/Mutation fields, and `@aws_api_key`
+to custom return types:
 
 ```diff
- authorizationModes: {
--  defaultAuthorizationMode: "apiKey",
--  apiKeyAuthorizationMode: { expiresInDays: 100 },
--  userPoolAuthorizationMode: { }
-+  defaultAuthorizationMode: "userPool",
-+  apiKeyAuthorizationMode: { expiresInDays: 100 }
- },
++type CalculatedSummary @aws_api_key {
+-type CalculatedSummary {
+   totalIncome: Float!
+   totalExpenses: Float!
+   balance: Float!
+   savingsRate: Float!
+ }
+
++type NotificationResult @aws_api_key {
+-type NotificationResult {
+   success: Boolean!
+   message: String!
+ }
+
++type TransactionConnection @aws_api_key {
+-type TransactionConnection {
+   items: [Transaction]
+   nextToken: String
+ }
+
+ type Query {
+-  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackere30b1453-dev")
++  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackere30b1453-dev") @auth(rules: [{ allow: public }])
+   getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
+ }
+
+ type Mutation {
+-  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackere30b1453-dev")
+-  sendBudgetAlert(...): NotificationResult @function(name: "financetrackere30b1453-dev")
++  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackere30b1453-dev") @auth(rules: [{ allow: public }])
++  sendBudgetAlert(...): NotificationResult @function(name: "financetrackere30b1453-dev") @auth(rules: [{ allow: public }])
+ }
 ```
 
-#### 6. Frontend `App.tsx`: Add `authMode: 'userPool'` to GraphQL Calls
+- `@auth(rules: [{ allow: public }])` on fields allows API key access (matching Gen1's default auth mode).
+- `@aws_api_key` on return types is required because field-level `@auth` doesn't propagate to return type fields. Without it, you get "Not Authorized to access success on type NotificationResult".
+- Amplify's `@auth` can't be used on non-`@model` types (causes `Types annotated with @auth must also be annotated with @model`), so the AppSync-native `@aws_api_key` directive is used on return types instead.
 
-In `src/App.tsx`, add `authMode: 'userPool'` to all `client.graphql()` calls:
+#### 5. Frontend `App.tsx`: Add `authMode: 'apiKey'` to GraphQL Calls
 
-```diff
--const result: any = await client.graphql({ query: listTransactions });
-+const result: any = await client.graphql({
-+  query: listTransactions,
-+  authMode: 'userPool'
-+});
-```
-
-```diff
- await client.graphql({
-   query: createTransaction,
-   variables: { input },
-+  authMode: 'userPool'
- });
-```
+In `src/App.tsx`, add `authMode: 'apiKey'` to all Lambda-backed `client.graphql()` calls.
+When a user is signed in, the Amplify client defaults to Cognito auth, but the schema
+uses API key as the default auth mode (matching Gen1). Without this, signed-in users get
+"Not Authorized" errors on custom operations.
 
 ```diff
--const result: any = await client.graphql({ query: calculateFinancialSummaryQuery
-+const result: any = await client.graphql({
-+  query: calculateFinancialSummaryQuery,
-+  authMode: 'userPool'
+ const result: any = await client.graphql({
+   query: calculateFinancialSummaryQuery,
++  authMode: 'apiKey'
  });
 ```
 
@@ -429,8 +467,47 @@ In `src/App.tsx`, add `authMode: 'userPool'` to all `client.graphql()` calls:
    query: sendMonthlyReportMutation,
 -  variables: { email: userEmail }
 +  variables: { email: userEmail },
-+  authMode: 'userPool'
++  authMode: 'apiKey'
  });
+```
+
+Apply to all Lambda-backed operations: `calculateFinancialSummary`, `sendMonthlyReport`,
+`sendBudgetAlert`.
+
+#### 6. Fix Custom Resolver Circular Dependency
+
+In `amplify/backend.ts`, place the custom resolver in the data stack instead of its own:
+
+```diff
+-new customresolver_cdkStack(
+-  backend.createStack('customresolver'),
+-  'customresolver',
+-  backend
+-);
++const dataStack = backend.data.resources.cfnResources.cfnGraphqlApi.stack;
++new customresolver_cdkStack(dataStack, 'customresolver', backend);
+```
+
+The custom resolver depends on the GraphQL API ID from the data stack. A separate stack
+causes a circular dependency between nested stacks. Placing it in the data stack eliminates
+the cross-stack reference.
+
+#### 7. Grant Lambda SNS Publish Permission
+
+In `amplify/backend.ts`, the Gen 2 Lambda doesn't have IAM permission to publish to SNS
+topics. In Gen 1 this was handled by `custom-policies.json`, which doesn't apply in Gen 2.
+
+Add the SNS publish policy to the Lambda role:
+
+```ts
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+
+backend.financetrackere30b1453.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['sns:Publish'],
+    resources: ['*'],
+  })
+);
 ```
 
 ---

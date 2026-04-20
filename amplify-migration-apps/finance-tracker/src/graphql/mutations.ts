@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from '../API';
+import * as APITypes from "../API";
 type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationInput: InputType;
   __generatedMutationOutput: OutputType;
@@ -15,7 +15,10 @@ export const sendMonthlyReport = /* GraphQL */ `mutation SendMonthlyReport($emai
     __typename
   }
 }
-` as GeneratedMutation<APITypes.SendMonthlyReportMutationVariables, APITypes.SendMonthlyReportMutation>;
+` as GeneratedMutation<
+  APITypes.SendMonthlyReportMutationVariables,
+  APITypes.SendMonthlyReportMutation
+>;
 export const sendBudgetAlert = /* GraphQL */ `mutation SendBudgetAlert(
   $email: String!
   $category: String!
@@ -27,7 +30,10 @@ export const sendBudgetAlert = /* GraphQL */ `mutation SendBudgetAlert(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.SendBudgetAlertMutationVariables, APITypes.SendBudgetAlertMutation>;
+` as GeneratedMutation<
+  APITypes.SendBudgetAlertMutationVariables,
+  APITypes.SendBudgetAlertMutation
+>;
 export const createTransaction = /* GraphQL */ `mutation CreateTransaction(
   $input: CreateTransactionInput!
   $condition: ModelTransactionConditionInput
@@ -46,7 +52,10 @@ export const createTransaction = /* GraphQL */ `mutation CreateTransaction(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.CreateTransactionMutationVariables, APITypes.CreateTransactionMutation>;
+` as GeneratedMutation<
+  APITypes.CreateTransactionMutationVariables,
+  APITypes.CreateTransactionMutation
+>;
 export const updateTransaction = /* GraphQL */ `mutation UpdateTransaction(
   $input: UpdateTransactionInput!
   $condition: ModelTransactionConditionInput
@@ -65,7 +74,10 @@ export const updateTransaction = /* GraphQL */ `mutation UpdateTransaction(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.UpdateTransactionMutationVariables, APITypes.UpdateTransactionMutation>;
+` as GeneratedMutation<
+  APITypes.UpdateTransactionMutationVariables,
+  APITypes.UpdateTransactionMutation
+>;
 export const deleteTransaction = /* GraphQL */ `mutation DeleteTransaction(
   $input: DeleteTransactionInput!
   $condition: ModelTransactionConditionInput
@@ -84,7 +96,10 @@ export const deleteTransaction = /* GraphQL */ `mutation DeleteTransaction(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.DeleteTransactionMutationVariables, APITypes.DeleteTransactionMutation>;
+` as GeneratedMutation<
+  APITypes.DeleteTransactionMutationVariables,
+  APITypes.DeleteTransactionMutation
+>;
 export const createBudget = /* GraphQL */ `mutation CreateBudget(
   $input: CreateBudgetInput!
   $condition: ModelBudgetConditionInput
@@ -100,7 +115,10 @@ export const createBudget = /* GraphQL */ `mutation CreateBudget(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.CreateBudgetMutationVariables, APITypes.CreateBudgetMutation>;
+` as GeneratedMutation<
+  APITypes.CreateBudgetMutationVariables,
+  APITypes.CreateBudgetMutation
+>;
 export const updateBudget = /* GraphQL */ `mutation UpdateBudget(
   $input: UpdateBudgetInput!
   $condition: ModelBudgetConditionInput
@@ -116,7 +134,10 @@ export const updateBudget = /* GraphQL */ `mutation UpdateBudget(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.UpdateBudgetMutationVariables, APITypes.UpdateBudgetMutation>;
+` as GeneratedMutation<
+  APITypes.UpdateBudgetMutationVariables,
+  APITypes.UpdateBudgetMutation
+>;
 export const deleteBudget = /* GraphQL */ `mutation DeleteBudget(
   $input: DeleteBudgetInput!
   $condition: ModelBudgetConditionInput
@@ -132,7 +153,10 @@ export const deleteBudget = /* GraphQL */ `mutation DeleteBudget(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.DeleteBudgetMutationVariables, APITypes.DeleteBudgetMutation>;
+` as GeneratedMutation<
+  APITypes.DeleteBudgetMutationVariables,
+  APITypes.DeleteBudgetMutation
+>;
 export const createFinancialSummary = /* GraphQL */ `mutation CreateFinancialSummary(
   $input: CreateFinancialSummaryInput!
   $condition: ModelFinancialSummaryConditionInput
@@ -149,7 +173,10 @@ export const createFinancialSummary = /* GraphQL */ `mutation CreateFinancialSum
     __typename
   }
 }
-` as GeneratedMutation<APITypes.CreateFinancialSummaryMutationVariables, APITypes.CreateFinancialSummaryMutation>;
+` as GeneratedMutation<
+  APITypes.CreateFinancialSummaryMutationVariables,
+  APITypes.CreateFinancialSummaryMutation
+>;
 export const updateFinancialSummary = /* GraphQL */ `mutation UpdateFinancialSummary(
   $input: UpdateFinancialSummaryInput!
   $condition: ModelFinancialSummaryConditionInput
@@ -166,7 +193,10 @@ export const updateFinancialSummary = /* GraphQL */ `mutation UpdateFinancialSum
     __typename
   }
 }
-` as GeneratedMutation<APITypes.UpdateFinancialSummaryMutationVariables, APITypes.UpdateFinancialSummaryMutation>;
+` as GeneratedMutation<
+  APITypes.UpdateFinancialSummaryMutationVariables,
+  APITypes.UpdateFinancialSummaryMutation
+>;
 export const deleteFinancialSummary = /* GraphQL */ `mutation DeleteFinancialSummary(
   $input: DeleteFinancialSummaryInput!
   $condition: ModelFinancialSummaryConditionInput
@@ -183,4 +213,7 @@ export const deleteFinancialSummary = /* GraphQL */ `mutation DeleteFinancialSum
     __typename
   }
 }
-` as GeneratedMutation<APITypes.DeleteFinancialSummaryMutationVariables, APITypes.DeleteFinancialSummaryMutation>;
+` as GeneratedMutation<
+  APITypes.DeleteFinancialSummaryMutationVariables,
+  APITypes.DeleteFinancialSummaryMutation
+>;

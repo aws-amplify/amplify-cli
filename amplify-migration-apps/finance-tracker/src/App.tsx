@@ -69,6 +69,24 @@ const sendBudgetAlertMutation = /* GraphQL */ `
   }
 `;
 
+// Custom resolver query - uses the VTL resolver created in customresolver CDK stack
+const getTransactionsByCategoryQuery = /* GraphQL */ `
+  query GetTransactionsByCategory($category: String!, $limit: Int) {
+    getTransactionsByCategory(category: $category, limit: $limit) {
+      items {
+        id
+        description
+        amount
+        type
+        category
+        date
+        receiptUrl
+      }
+      nextToken
+    }
+  }
+`;
+
 interface Transaction {
   id: string;
   description: string;
@@ -94,6 +112,12 @@ function App() {
 
   // Auth state
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+
+  // Category filter state (uses custom VTL resolver)
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [showFiltered, setShowFiltered] = useState(false);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
@@ -278,6 +302,34 @@ function App() {
       // Don't use fallback - show error to user
       alert('Failed to calculate summary from Lambda. Check console for details.');
     }
+  };
+
+  // Filter transactions by category using the custom VTL resolver
+  const handleFilterByCategory = async () => {
+    if (!filterCategory.trim()) {
+      setShowFiltered(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      const result: any = await client.graphql({
+        query: getTransactionsByCategoryQuery,
+        variables: { category: filterCategory, limit: 50 },
+      });
+      setFilteredTransactions(result.data.getTransactionsByCategory.items || []);
+      setShowFiltered(true);
+    } catch (error) {
+      console.error('Error filtering by category:', error);
+      alert('Failed to filter transactions by category');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setFilterCategory('');
+    setFilteredTransactions([]);
+    setShowFiltered(false);
   };
 
   const handleSendMonthlyReport = async () => {
@@ -522,10 +574,34 @@ function App() {
 
         <div className="transactions-section">
           <h2>Recent Transactions</h2>
+
+          {/* Category filter - uses custom VTL resolver */}
+          <div className="category-filter">
+            <input
+              type="text"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              placeholder="Filter by category..."
+            />
+            <button onClick={handleFilterByCategory} className="btn-secondary" disabled={loading}>
+              🔍 Filter
+            </button>
+            {showFiltered && (
+              <button onClick={handleClearFilter} className="btn-secondary">
+                ✕ Clear
+              </button>
+            )}
+            {showFiltered && (
+              <p className="filter-info">
+                Showing {filteredTransactions.length} transactions in "{filterCategory}"
+              </p>
+            )}
+          </div>
+
           {loading && <p>Loading...</p>}
-          {transactions.length === 0 && !loading && <p className="empty-state">No transactions yet. Add your first one!</p>}
+          {!showFiltered && transactions.length === 0 && !loading && <p className="empty-state">No transactions yet. Add your first one!</p>}
           <div className="transactions-list">
-            {transactions.map((transaction) => (
+            {(showFiltered ? filteredTransactions : transactions).map((transaction) => (
               <div key={transaction.id} className={`transaction-item ${transaction.type.toLowerCase()}`}>
                 <div className="transaction-info">
                   <h4>{transaction.description}</h4>

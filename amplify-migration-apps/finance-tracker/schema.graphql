@@ -48,8 +48,14 @@ type NotificationResult {
   message: String!
 }
 
+type TransactionConnection {
+  items: [Transaction]
+  nextToken: String
+}
+
 type Query {
   calculateFinancialSummary: CalculatedSummary @function(name: "financetrackere30b1453-main")
+  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
 }
 
 type Mutation {

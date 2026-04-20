@@ -366,3 +366,28 @@ body {
   color: #888;
   font-size: 0.9rem;
 }
+
+/* Category filter */
+.category-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.category-filter input {
+  flex: 1;
+  min-width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-info {
+  width: 100%;
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
