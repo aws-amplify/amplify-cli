@@ -635,7 +635,7 @@ export class FunctionGenerator implements Planner {
       }
     }
 
-    return resolveAuthTriggerAccess(cognitoActions);
+    return resolveAuthAccess(cognitoActions);
   }
 
   /**
@@ -1179,6 +1179,10 @@ const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
   'cognito-idp:UpdateUserAttributes': 'updateUserAttributes',
   'cognito-idp:SetUserMFAPreference': 'setUserMfaPreference',
   'cognito-idp:SetUserSettings': 'setUserSettings',
+  'cognito-idp:GetGroup': 'manageGroups',
+  'cognito-idp:CreateGroup': 'manageGroups',
+  'cognito-idp:DeleteGroup': 'manageGroups',
+  'cognito-idp:UpdateGroup': 'manageGroups',
 };
 
 function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
@@ -1196,35 +1200,6 @@ function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
   for (const action of cognitoActions) {
     if (!covered.has(action) && AUTH_ACTION_MAPPING[action]) {
       result[AUTH_ACTION_MAPPING[action]] = true;
-    }
-  }
-
-  return result as AuthPermissions;
-}
-
-/**
- * Maps cognito-idp IAM actions from auth-trigger CFN templates to Gen2 auth permissions.
- *
- * Auth trigger policies (e.g., "Add User To Group") use actions like `GetGroup` and
- * `CreateGroup` that aren't in the standard `AUTH_ACTION_MAPPING` (which covers actions
- * from function-level `AmplifyResourcesPolicy`). This function extends the base mapping
- * with trigger-specific actions that map to `manageGroups`.
- */
-const AUTH_TRIGGER_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
-  ...AUTH_ACTION_MAPPING,
-  'cognito-idp:GetGroup': 'manageGroups',
-  'cognito-idp:CreateGroup': 'manageGroups',
-  'cognito-idp:DeleteGroup': 'manageGroups',
-  'cognito-idp:UpdateGroup': 'manageGroups',
-};
-
-function resolveAuthTriggerAccess(cognitoActions: string[]): AuthPermissions {
-  if (cognitoActions.length === 0) return {};
-  const result: Record<string, boolean> = {};
-
-  for (const action of cognitoActions) {
-    if (AUTH_TRIGGER_ACTION_MAPPING[action]) {
-      result[AUTH_TRIGGER_ACTION_MAPPING[action]] = true;
     }
   }
 

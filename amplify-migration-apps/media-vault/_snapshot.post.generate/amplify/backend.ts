@@ -5,7 +5,7 @@ import { thumbnailgen } from './storage/thumbnailgen/resource';
 import { addusertogroup } from './function/addusertogroup/resource';
 import { removeuserfromgroup } from './function/removeuserfromgroup/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, aws_iam } from 'aws-cdk-lib';
 import {
   OAuthScope,
   UserPoolClientIdentityProvider,
@@ -113,4 +113,24 @@ backend.removeuserfromgroup.resources.cfnResources.cfnFunction.functionName = `r
 backend.removeuserfromgroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
+);
+backend.addusertogroup.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: [
+      "cognito-idp:CreateGroup",
+      "cognito-idp:DeleteGroup",
+      "cognito-idp:UpdateGroup",
+    ],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  })
+);
+backend.removeuserfromgroup.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: [
+      "cognito-idp:CreateGroup",
+      "cognito-idp:DeleteGroup",
+      "cognito-idp:UpdateGroup",
+    ],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  })
 );
