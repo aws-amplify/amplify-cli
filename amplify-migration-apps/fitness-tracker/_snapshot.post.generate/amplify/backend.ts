@@ -18,10 +18,10 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
-export function postRefactor() {}
-
 nutritionapi.defineNutritionApi(backend);
 adminapi.defineAdminApi(backend);
+
+export function postRefactor() {}
 
 auth.applyEscapeHatches(backend);
 data.applyEscapeHatches(backend);

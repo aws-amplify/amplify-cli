@@ -27,7 +27,6 @@ export function postRefactor() {
 }
 
 auth.applyEscapeHatches(backend);
-data.applyEscapeHatches(backend);
 storage.applyEscapeHatches(backend);
 fetchuseractivity.applyEscapeHatches(backend);
 recorduseractivity.applyEscapeHatches(backend);

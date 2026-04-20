@@ -170,15 +170,7 @@ export class BackendGenerator implements Planner {
           lines.push('export type Backend = typeof backend;');
           lines.push('');
 
-          // 4. postRefactor function
-          lines.push('export function postRefactor() {');
-          for (const stmt of this.postRefactorCalls) {
-            lines.push(`  ${stmt}`);
-          }
-          lines.push('}');
-          lines.push('');
-
-          // 5. Post-define calls (analytics, geo, DynamoDB tables)
+          // 4. Post-define calls (analytics, geo, DynamoDB tables)
           for (const call of this.postDefineCalls) {
             if (call.variableName) {
               lines.push(`const ${call.variableName} = ${call.expression};`);
@@ -189,6 +181,15 @@ export class BackendGenerator implements Planner {
           if (this.postDefineCalls.length > 0) {
             lines.push('');
           }
+
+          // 5. postRefactor function
+          const sortedPostRefactorCalls = [...this.postRefactorCalls].sort((a, b) => postRefactorOrder(a) - postRefactorOrder(b));
+          lines.push('export function postRefactor() {');
+          for (const stmt of sortedPostRefactorCalls) {
+            lines.push(`  ${stmt}`);
+          }
+          lines.push('}');
+          lines.push('');
 
           // 6. applyEscapeHatches calls
           const sortedEscapeHatches = [...this.applyEscapeHatchesCalls].sort((a, b) => escapeHatchOrder(a) - escapeHatchOrder(b));
@@ -278,5 +279,16 @@ function escapeHatchOrder(alias: string): number {
   if (alias === 'auth') return 0;
   if (alias === 'data') return 1;
   if (alias === 'storage') return 2;
+  return 3;
+}
+
+/**
+ * Sort order for postRefactor calls.
+ * S3 storage first, then DynamoDB tables, then analytics.
+ */
+function postRefactorOrder(statement: string): number {
+  if (statement.includes('storage.postRefactor')) return 0;
+  if (statement.includes('storageActivity') || statement.includes('storageBookmarks')) return 1;
+  if (statement.includes('analytics.postRefactor')) return 2;
   return 3;
 }

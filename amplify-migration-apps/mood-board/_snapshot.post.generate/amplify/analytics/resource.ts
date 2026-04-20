@@ -24,5 +24,6 @@ export function defineAnalytics(backend: Backend) {
 }
 
 export function postRefactor(analytics: analyticsmoodboardKinesis) {
-  (analytics.node.findChild('KinesisStream') as CfnStream).name = 'moodboardKinesis-x';
+  (analytics.node.findChild('KinesisStream') as CfnStream).name =
+    'moodboardKinesis-x';
 }

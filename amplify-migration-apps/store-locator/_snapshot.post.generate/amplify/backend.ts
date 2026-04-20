@@ -11,9 +11,9 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
-export function postRefactor() {}
-
 geo.defineGeo(backend);
+
+export function postRefactor() {}
 
 auth.applyEscapeHatches(backend);
 storelocator41a9495f41a9495fPostConfirmation.applyEscapeHatches(backend);

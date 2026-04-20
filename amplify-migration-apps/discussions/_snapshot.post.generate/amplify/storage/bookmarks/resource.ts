@@ -23,7 +23,6 @@ export function defineStorageBookmarks(backend: Backend) {
     readCapacity: 5,
     writeCapacity: 5,
   });
-
   return bookmarks;
 }
 

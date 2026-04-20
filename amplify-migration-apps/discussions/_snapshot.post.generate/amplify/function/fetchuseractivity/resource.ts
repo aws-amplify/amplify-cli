@@ -14,4 +14,26 @@ export const fetchuseractivity = defineFunction({
 
 export function applyEscapeHatches(backend: Backend) {
   backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
+  backend.fetchuseractivity.addEnvironment(
+    'STORAGE_ACTIVITY_STREAMARN',
+    activity.tableStreamArn!
+  );
+  backend.fetchuseractivity.addEnvironment(
+    'STORAGE_ACTIVITY_ARN',
+    activity.tableArn
+  );
+  backend.fetchuseractivity.addEnvironment(
+    'STORAGE_ACTIVITY_NAME',
+    activity.tableName
+  );
+  activity.grant(
+    backend.fetchuseractivity.resources.lambda,
+    'dynamodb:Get*',
+    'dynamodb:BatchGetItem',
+    'dynamodb:List*',
+    'dynamodb:Describe*',
+    'dynamodb:Scan',
+    'dynamodb:Query',
+    'dynamodb:PartiQLSelect'
+  );
 }

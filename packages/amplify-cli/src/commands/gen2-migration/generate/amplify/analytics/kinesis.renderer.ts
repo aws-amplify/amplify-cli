@@ -183,9 +183,10 @@ export class AnalyticsRenderer {
   private createExportStatement(opts: RenderDefineAnalyticsOptions): ts.Node[] {
     const returnStatement = factory.createReturnStatement(factory.createIdentifier('analytics'));
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Using 'any' for generated code to avoid complex type inference
-    const arrowFunction = factory.createArrowFunction(
+    const defineAnalyticsFunc = factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
+      'defineAnalytics',
       undefined,
       [
         factory.createParameterDeclaration(
@@ -193,20 +194,11 @@ export class AnalyticsRenderer {
           undefined,
           factory.createIdentifier('backend'),
           undefined,
-          factory.createTypeReferenceNode(factory.createIdentifier('Backend'), [factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)]),
+          factory.createTypeReferenceNode('Backend'),
         ),
       ],
       undefined,
-      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       factory.createBlock([this.createStackCall(), this.createConstructInstantiation(opts), returnStatement], true),
-    );
-
-    const defineAnalyticsExport = factory.createVariableStatement(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      factory.createVariableDeclarationList(
-        [factory.createVariableDeclaration(factory.createIdentifier('defineAnalytics'), undefined, undefined, arrowFunction)],
-        ts.NodeFlags.Const,
-      ),
     );
 
     // postRefactor function
@@ -254,6 +246,6 @@ export class AnalyticsRenderer {
       ),
     );
 
-    return [defineAnalyticsExport, newLineIdentifier, postRefactorFunc];
+    return [defineAnalyticsFunc, newLineIdentifier, postRefactorFunc];
   }
 }

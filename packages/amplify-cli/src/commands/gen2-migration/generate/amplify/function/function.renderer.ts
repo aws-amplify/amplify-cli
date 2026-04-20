@@ -177,7 +177,7 @@ export class FunctionRenderer {
       }
       additionalImports['aws-cdk-lib/aws-lambda'].add('StartingPosition');
       additionalImports['aws-cdk-lib/aws-kinesis'] = new Set(['Stream']);
-      statements.push(createKinesisTrigger(opts.resourceName));
+      statements.push(...createKinesisTrigger(opts.resourceName));
     }
 
     // Build the function parameters
@@ -649,7 +649,7 @@ function createDynamoTrigger(functionName: string, models: readonly string[]): t
 }
 
 /** Creates a Kinesis stream trigger. */
-function createKinesisTrigger(functionName: string): ts.Block {
+function createKinesisTrigger(functionName: string): ts.Statement[] {
   const fromStreamArn = factory.createVariableStatement(
     [],
     factory.createVariableDeclarationList(
@@ -706,7 +706,7 @@ function createKinesisTrigger(functionName: string): ts.Block {
     ),
   );
 
-  return factory.createBlock([fromStreamArn, addEventSource], true);
+  return [fromStreamArn, addEventSource];
 }
 
 /** Converts a nodejs runtime string to a version number. */

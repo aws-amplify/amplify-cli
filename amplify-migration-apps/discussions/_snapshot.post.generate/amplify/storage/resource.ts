@@ -16,6 +16,11 @@ export const storage = defineStorage({
   }),
 });
 
+export function postRefactor(backend: Backend) {
+  const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+  s3Bucket.bucketName = 'discus-avatarsx-x';
+}
+
 export function applyEscapeHatches(backend: Backend) {
   const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
   s3Bucket.bucketEncryption = {
@@ -28,9 +33,4 @@ export function applyEscapeHatches(backend: Backend) {
       },
     ],
   };
-}
-
-export function postRefactor(backend: Backend) {
-  const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-  s3Bucket.bucketName = 'discus-avatarsx-x';
 }

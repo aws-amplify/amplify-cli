@@ -64,7 +64,7 @@ export class DynamoDBRenderer {
   public renderResourceFile(table: DynamoDBTableDefinition, resourceName: string): ts.NodeArray<ts.Node> {
     const capitalizedName = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
     const functionName = `defineStorage${capitalizedName}`;
-    const scopeVarName = `storage${resourceName}Stack`;
+    const scopeVarName = `storage${capitalizedName}Stack`;
 
     // Imports
     const backendTypeImport = factory.createImportDeclaration(
@@ -258,16 +258,6 @@ export class DynamoDBRenderer {
         ),
       );
     }
-
-    // Table name comment
-    const tableNameComment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
-    ts.addSyntheticLeadingComment(
-      tableNameComment,
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      ` Add this property to the Table above post refactor: tableName: '${table.tableName}'`,
-      true,
-    );
-    statements.push(tableNameComment as unknown as ts.Statement);
 
     if (table.gsis) {
       for (const gsi of table.gsis) {

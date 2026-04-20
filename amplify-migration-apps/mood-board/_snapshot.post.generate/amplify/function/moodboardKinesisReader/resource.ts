@@ -14,7 +14,10 @@ export const moodboardKinesisReader = defineFunction({
   runtime: 22,
 });
 
-export function applyEscapeHatches(backend: Backend, analytics: analyticsmoodboardKinesis) {
+export function applyEscapeHatches(
+  backend: Backend,
+  analytics: analyticsmoodboardKinesis
+) {
   backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${branchName}`;
   backend.moodboardKinesisReader.addEnvironment(
     'ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN',

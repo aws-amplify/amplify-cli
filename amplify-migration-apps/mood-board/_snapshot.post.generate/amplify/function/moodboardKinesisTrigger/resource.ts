@@ -16,7 +16,10 @@ export const moodboardKinesisTrigger = defineFunction({
   runtime: 22,
 });
 
-export function applyEscapeHatches(backend: Backend, analytics: analyticsmoodboardKinesis) {
+export function applyEscapeHatches(
+  backend: Backend,
+  analytics: analyticsmoodboardKinesis
+) {
   backend.moodboardKinesisTrigger.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisTrigger-${branchName}`;
   backend.moodboardKinesisTrigger.addEnvironment(
     'API_MOODBOARD_GRAPHQLAPIKEYOUTPUT',

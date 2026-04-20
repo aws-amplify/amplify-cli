@@ -1,12 +1,12 @@
 import { defineAuth, secret } from '@aws-amplify/backend';
 import { addusertogroup } from '../function/addusertogroup/resource';
 import { removeuserfromgroup } from '../function/removeuserfromgroup/resource';
-import type { Backend } from '../backend';
 import { Duration } from 'aws-cdk-lib';
 import {
   OAuthScope,
   UserPoolClientIdentityProvider,
 } from 'aws-cdk-lib/aws-cognito';
+import type { Backend } from '../backend';
 
 export const auth = defineAuth({
   loginWith: {
@@ -82,7 +82,8 @@ export function applyEscapeHatches(backend: Backend) {
       temporaryPasswordValidityDays: 7,
     },
   };
-  const cfnUserPoolClient = backend.auth.resources.cfnResources.cfnUserPoolClient;
+  const cfnUserPoolClient =
+    backend.auth.resources.cfnResources.cfnUserPoolClient;
   cfnUserPoolClient.allowedOAuthFlows = ['code'];
   const userPool = backend.auth.resources.userPool;
   const userPoolClient = userPool.addClient('NativeAppClient', {
@@ -94,7 +95,7 @@ export function applyEscapeHatches(backend: Backend) {
       UserPoolClientIdentityProvider.FACEBOOK,
       UserPoolClientIdentityProvider.GOOGLE,
       UserPoolClientIdentityProvider.COGNITO,
-    ],
+    ],,
     oAuth: {
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
