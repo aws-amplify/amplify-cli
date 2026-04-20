@@ -11,6 +11,7 @@ import { normalize } from './normalize';
 import {
   CloudFormationClient,
   DeleteStackCommand,
+  DescribeStackResourcesCommand,
   ListStackResourcesCommand,
   paginateListStacks,
   StackStatus,
@@ -517,7 +518,7 @@ export class App {
           if (stack.StackName?.includes(this.deploymentName) && stack.StackName.endsWith('-holding')) {
             this.logger.info(`Deleting holding stack: ${stack.StackName}`);
             await this.emptyStackBuckets(cfnClient, stack.StackName);
-            await cfnClient.send(new DeleteStackCommand({ StackName: stack.StackName }));
+            await this.deleteStackWithRetainOnFailure(cfnClient, stack.StackName);
           }
         }
       }
@@ -546,12 +547,7 @@ export class App {
           if (stack.StackName?.startsWith(stackPrefix) && !stack.RootId) {
             this.logger.info(`Deleting stack: ${stack.StackName}`);
             await this.emptyStackBuckets(cfnClient, stack.StackName);
-            await cfnClient.send(new DeleteStackCommand({ StackName: stack.StackName }));
-            try {
-              await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stack.StackName });
-            } catch {
-              this.logger.info(`Stack ${stack.StackName} delete did not complete within timeout (continuing teardown)`);
-            }
+            await this.deleteStackWithRetainOnFailure(cfnClient, stack.StackName);
           }
         }
       }
@@ -581,6 +577,42 @@ export class App {
   // ============================================================
   // Private Helpers
   // ============================================================
+
+  /**
+   * Delete a CloudFormation stack. If it fails (e.g. due to a custom resource
+   * whose dependencies have already been removed), retry while retaining the
+   * failed resources.
+   */
+  private async deleteStackWithRetainOnFailure(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
+    await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
+    try {
+      await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stackName });
+      return;
+    } catch {
+      // fall through to retry with RetainResources
+    }
+
+    try {
+      const { StackResources } = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName }));
+      const failed = (StackResources ?? [])
+        .filter((r) => r.ResourceStatus === 'DELETE_FAILED' && r.LogicalResourceId)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .map((r) => r.LogicalResourceId!);
+      if (failed.length > 0) {
+        this.logger.info(`Retrying delete of ${stackName} with retained resources: ${failed.join(', ')}`);
+        await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: failed }));
+        try {
+          await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stackName });
+        } catch {
+          this.logger.info(`Stack ${stackName} retry did not complete within timeout (continuing teardown)`);
+        }
+      } else {
+        this.logger.info(`Stack ${stackName} delete did not complete within timeout (continuing teardown)`);
+      }
+    } catch (e) {
+      this.logger.info(`Failed to retry stack ${stackName} delete: ${(e as Error).message} (continuing teardown)`);
+    }
+  }
 
   /**
    * Empty all S3 buckets owned by the given CloudFormation stack.
