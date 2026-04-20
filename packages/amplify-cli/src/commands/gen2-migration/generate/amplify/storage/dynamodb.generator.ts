@@ -1,8 +1,11 @@
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
+import { TS } from '../../_infra/ts';
 import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
 
 /**
@@ -16,11 +19,13 @@ export class DynamoDBGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly resource: DiscoveredResource;
+  private readonly outputDir: string;
   private readonly renderer = new DynamoDBRenderer();
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resource: DiscoveredResource) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
+    this.outputDir = outputDir;
     this.resource = resource;
   }
 
@@ -37,12 +42,21 @@ export class DynamoDBGenerator implements Planner {
         describe: async () => [`Generate DynamoDB table ${this.resource.resourceName} in amplify/backend.ts`],
         execute: async () => {
           const imports = this.renderer.requiredImports();
-          this.backendGenerator.addImport(imports.source, imports.identifiers);
-          const scopeVarName = this.backendGenerator.createDynamoDBStack(this.resource.resourceName);
+          const capitalizedName = this.resource.resourceName.charAt(0).toUpperCase() + this.resource.resourceName.slice(1);
+          const functionName = `defineStorage${capitalizedName}`;
+          const storageAlias = `storage${capitalizedName}`;
 
-          for (const statement of this.renderer.renderTable(table, scopeVarName)) {
-            this.backendGenerator.addEarlyStatement(statement);
-          }
+          // Write the resource.ts file for this DynamoDB table
+          const resourceDir = path.join(this.outputDir, 'amplify', 'storage', this.resource.resourceName);
+          const nodes = this.renderer.renderResourceFile(table, this.resource.resourceName);
+          const content = TS.printNodes(nodes);
+          await fs.mkdir(resourceDir, { recursive: true });
+          await fs.writeFile(path.join(resourceDir, 'resource.ts'), content, 'utf-8');
+
+          // Contribute to backend.ts
+          this.backendGenerator.addNamespaceImport(storageAlias, `./storage/${this.resource.resourceName}/resource`);
+          this.backendGenerator.addPostDefineCall(this.resource.resourceName, `${storageAlias}.${functionName}(backend)`);
+          this.backendGenerator.addPostRefactorCall(`${storageAlias}.postRefactor(${this.resource.resourceName});`);
         },
       },
     ];

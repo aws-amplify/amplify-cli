@@ -44,9 +44,9 @@ export class AnalyticsRenderer {
   public render(opts: RenderDefineAnalyticsOptions): ts.NodeArray<ts.Node> {
     const imports = this.createImports(opts.constructClassName, opts.constructFileName);
     const branchNameConst = TS.createBranchNameDeclaration();
-    const exportStatement = this.createExportStatement(opts);
+    const exportNodes = this.createExportStatement(opts);
 
-    return factory.createNodeArray([...imports, newLineIdentifier, branchNameConst, newLineIdentifier, exportStatement]);
+    return factory.createNodeArray([...imports, newLineIdentifier, branchNameConst, newLineIdentifier, ...exportNodes]);
   }
 
   private createImports(constructClassName: string, constructFileName: string): ts.Node[] {
@@ -73,11 +73,11 @@ export class AnalyticsRenderer {
     const backendImport = factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
-        false,
+        true,
         undefined,
         factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
       ),
-      factory.createStringLiteral('@aws-amplify/backend'),
+      factory.createStringLiteral('../backend'),
     );
 
     return [cfnStreamImport, constructImport, backendImport];
@@ -180,22 +180,8 @@ export class AnalyticsRenderer {
     );
   }
 
-  private createExportStatement(opts: RenderDefineAnalyticsOptions): ts.VariableStatement {
-    const { streamName } = opts;
-
+  private createExportStatement(opts: RenderDefineAnalyticsOptions): ts.Node[] {
     const returnStatement = factory.createReturnStatement(factory.createIdentifier('analytics'));
-    const postRefactorComment = ts.addSyntheticLeadingComment(
-      returnStatement,
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      'Use this kinesis stream name post-refactor',
-      true,
-    );
-    const postRefactorCode = ts.addSyntheticLeadingComment(
-      postRefactorComment,
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      `(analytics.node.findChild('KinesisStream') as CfnStream).name = "${streamName}"`,
-      false,
-    );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Using 'any' for generated code to avoid complex type inference
     const arrowFunction = factory.createArrowFunction(
@@ -212,15 +198,62 @@ export class AnalyticsRenderer {
       ],
       undefined,
       factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-      factory.createBlock([this.createStackCall(), this.createConstructInstantiation(opts), postRefactorCode], true),
+      factory.createBlock([this.createStackCall(), this.createConstructInstantiation(opts), returnStatement], true),
     );
 
-    return factory.createVariableStatement(
+    const defineAnalyticsExport = factory.createVariableStatement(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(factory.createIdentifier('defineAnalytics'), undefined, undefined, arrowFunction)],
         ts.NodeFlags.Const,
       ),
     );
+
+    // postRefactor function
+    const { constructClassName, streamName } = opts;
+    const postRefactorFunc = factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      'postRefactor',
+      undefined,
+      [
+        factory.createParameterDeclaration(
+          undefined,
+          undefined,
+          'analytics',
+          undefined,
+          factory.createTypeReferenceNode(constructClassName),
+        ),
+      ],
+      undefined,
+      factory.createBlock(
+        [
+          factory.createExpressionStatement(
+            factory.createAssignment(
+              factory.createPropertyAccessExpression(
+                factory.createParenthesizedExpression(
+                  factory.createAsExpression(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(factory.createIdentifier('analytics'), factory.createIdentifier('node')),
+                        factory.createIdentifier('findChild'),
+                      ),
+                      undefined,
+                      [factory.createStringLiteral('KinesisStream')],
+                    ),
+                    factory.createTypeReferenceNode('CfnStream'),
+                  ),
+                ),
+                factory.createIdentifier('name'),
+              ),
+              factory.createStringLiteral(`${streamName}`),
+            ),
+          ),
+        ],
+        true,
+      ),
+    );
+
+    return [defineAnalyticsExport, newLineIdentifier, postRefactorFunc];
   }
 }

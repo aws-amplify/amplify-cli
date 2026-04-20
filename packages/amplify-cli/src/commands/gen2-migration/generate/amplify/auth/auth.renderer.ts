@@ -477,7 +477,7 @@ export class AuthRenderer {
     properties.push(createTriggersProperty(triggers));
 
     for (const trigger of triggers) {
-      const importPath = `./${trigger.resourceName}/resource`;
+      const importPath = `../function/${trigger.resourceName}/resource`;
       if (!namedImports[importPath]) {
         namedImports[importPath] = new Set();
       }

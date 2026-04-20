@@ -5,13 +5,13 @@ import { defineBackend } from '@aws-amplify/backend';
 
 const backend = defineBackend({
   auth: auth.auth,
-  storelocator41a9495f41a9495fPostConfirmation: storelocator41a9495f41a9495fPostConfirmation.storelocator41a9495f41a9495fPostConfirmation,
+  storelocator41a9495f41a9495fPostConfirmation:
+    storelocator41a9495f41a9495fPostConfirmation.storelocator41a9495f41a9495fPostConfirmation,
 });
 
 export type Backend = typeof backend;
 
-export function postRefactor() {
-}
+export function postRefactor() {}
 
 geo.defineGeo(backend);
 

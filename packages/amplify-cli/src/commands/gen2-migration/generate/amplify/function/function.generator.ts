@@ -6,8 +6,8 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_infra/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
-import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
+import { TS, newLineIdentifier } from '../../_infra/ts';
+import { FunctionRenderer, RenderDefineFunctionOptions, EnvVarEscapeHatch, classifyEnvVars } from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
@@ -16,19 +16,6 @@ import { Permission } from '../storage/s3.renderer';
 
 const factory = ts.factory;
 
-/**
- * An environment variable that references a Gen2 backend resource.
- * The expression is the TypeScript AST node for the value argument
- * of `backend.functionName.addEnvironment(name, expression)`.
- */
-interface EnvVarEscapeHatch {
-  readonly name: string;
-  readonly expression: ts.Expression;
-}
-
-/**
- * Resolved function definition combining local metadata and AWS config.
- */
 interface ResolvedFunction {
   readonly resourceName: string;
   readonly category: string;
@@ -46,9 +33,6 @@ interface ResolvedFunction {
   readonly authAccess: AuthPermissions;
 }
 
-/**
- * Constructor options for FunctionGenerator.
- */
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
   readonly backendGenerator: BackendGenerator;
@@ -58,17 +42,6 @@ interface FunctionGeneratorOptions {
   readonly category: string;
 }
 
-/**
- * Generates Lambda function resources and contributes to backend.ts
- * for a single Gen1 function.
- *
- * 1. Fetches Lambda config via Gen1App.aws.fetchFunctionConfig()
- * 2. Fetches CloudWatch schedules via Gen1App.aws.fetchFunctionSchedule()
- * 3. Generates amplify/{category}/{name}/resource.ts with defineFunction()
- * 4. Copies Gen1 function source files
- * 5. Contributes function imports, name overrides, env var escape hatches,
- *    table grants, graphql grants, and dynamo triggers to backend.ts
- */
 export class FunctionGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
@@ -90,29 +63,13 @@ export class FunctionGenerator implements Planner {
     this.renderer = new FunctionRenderer(options.gen1App.appId, options.gen1App.envName);
   }
 
-  /**
-   * Wires the auth generator after construction. Called by the orchestrator
-   * after all generators are created, because the discovery loop may create
-   * FunctionGenerator before AuthGenerator exists. Must be called before plan().
-   */
   public setAuthGenerator(authGenerator: AuthGenerator): void {
     this.authGenerator = authGenerator;
   }
-
-  /**
-   * Wires the S3 generator after construction. Called by the orchestrator
-   * after all generators are created, because the discovery loop may create
-   * FunctionGenerator before S3Generator exists. Must be called before plan().
-   */
   public setS3Generator(s3Generator: S3Generator): void {
     this.s3Generator = s3Generator;
   }
 
-  /**
-   * Resolves this function's config and returns a single operation
-   * that generates resource.ts, copies source files, and contributes
-   * all backend.ts statements (imports, overrides, grants, triggers).
-   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const func = await this.resolve();
     await this.mergeFunctionDependencies(func);
@@ -129,40 +86,24 @@ export class FunctionGenerator implements Planner {
         validate: () => undefined,
         describe: async () => [`Generate amplify/${this.category}/${func.resourceName}/resource.ts`],
         execute: async () => {
-          await this.generateResource(func);
-          this.contributeOverrides(func);
-          this.contributeGrants(func);
-          if (triggerModels.length > 0) {
-            this.contributeDynamoTrigger(func.resourceName, triggerModels);
-          }
-          if (hasKinesisTrigger) {
-            this.contributeKinesisTrigger(func.resourceName);
-          }
+          await this.generateResource(func, triggerModels, hasKinesisTrigger);
         },
       },
     ];
   }
 
-  /**
-   * Resolves this function's deployed config from AWS.
-   */
   private async resolve(): Promise<ResolvedFunction> {
     const functionCategory = this.gen1App.meta('function');
     if (!functionCategory || !functionCategory[this.resource.resourceName]) {
       throw new Error(`Function '${this.resource.resourceName}' not found in amplify-meta.json`);
     }
-
     const resourceMeta = functionCategory[this.resource.resourceName] as Record<string, unknown>;
     const output = resourceMeta.output as Record<string, string> | undefined;
     const deployedName = output?.Name;
-    if (!deployedName) {
-      throw new Error(`Function '${this.resource.resourceName}' has no deployed name in amplify-meta.json output`);
-    }
+    if (!deployedName) throw new Error(`Function '${this.resource.resourceName}' has no deployed name in amplify-meta.json output`);
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
-    if (!config) {
-      throw new Error(`Lambda function '${deployedName}' not found`);
-    }
+    if (!config) throw new Error(`Lambda function '${deployedName}' not found`);
 
     const runtime = config.Runtime;
     if (runtime && !runtime.startsWith('nodejs')) {
@@ -171,12 +112,7 @@ export class FunctionGenerator implements Planner {
 
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
     const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
-
-    // Classify environment variables: retained ones stay in defineFunction(),
-    // escape hatches become addEnvironment() calls in backend.ts.
     const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
-
-    // Extract DynamoDB/Kinesis actions and GraphQL API permissions from the function's CloudFormation template
     const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess } = this.extractCfnPermissions();
 
     return {
@@ -197,12 +133,8 @@ export class FunctionGenerator implements Planner {
     };
   }
 
-  /**
-   * Generates resource.ts, copies source files, and registers the
-   * function import + defineBackend property in backend.ts.
-   */
-  private async generateResource(func: ResolvedFunction): Promise<void> {
-    const dirPath = path.join(this.outputDir, 'amplify', this.category, func.resourceName);
+  private async generateResource(func: ResolvedFunction, triggerModels: string[], hasKinesisTrigger: boolean): Promise<void> {
+    const dirPath = path.join(this.outputDir, 'amplify', 'function', func.resourceName);
     const renderOpts: RenderDefineFunctionOptions = {
       resourceName: func.resourceName,
       entry: func.entry,
@@ -214,42 +146,112 @@ export class FunctionGenerator implements Planner {
       environment: func.environment,
     };
 
-    const nodes = this.renderer.render(renderOpts);
-    const content = TS.printNodes(nodes);
+    const hasAnalytics = func.kinesisActions.length > 0 || hasKinesisTrigger;
+    let analyticsTypeImport: string | undefined;
+    if (hasAnalytics) analyticsTypeImport = this.findAnalyticsConstructType();
 
+    const escapeHatchResult = this.renderer.renderApplyEscapeHatches({
+      resourceName: func.resourceName,
+      escapeHatches: func.escapeHatches,
+      dynamoActions: func.dynamoActions,
+      kinesisActions: func.kinesisActions,
+      graphqlApiPermissions: func.graphqlApiPermissions,
+      triggerModels,
+      hasKinesisTrigger,
+      hasAnalytics: hasAnalytics && !!analyticsTypeImport,
+      analyticsConstructType: analyticsTypeImport,
+    });
+
+    const baseNodes = this.renderer.render(renderOpts);
+    const additionalImports: Record<string, Set<string>> = { ...escapeHatchResult.additionalImports };
+    const backendImportPath = '../../backend';
+
+    const backendTypeImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        true,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+      ),
+      factory.createStringLiteral(backendImportPath),
+    );
+
+    let analyticsTypeImportDecl: ts.ImportDeclaration | undefined;
+    if (analyticsTypeImport) {
+      analyticsTypeImportDecl = factory.createImportDeclaration(
+        undefined,
+        factory.createImportClause(
+          true,
+          undefined,
+          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(analyticsTypeImport))]),
+        ),
+        factory.createStringLiteral(this.getAnalyticsConstructImportPath()),
+      );
+    }
+
+    const additionalImportDecls: ts.ImportDeclaration[] = [];
+    for (const [source, identifiers] of Object.entries(additionalImports)) {
+      const specs = Array.from(identifiers).map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+      additionalImportDecls.push(
+        factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(false, undefined, factory.createNamedImports(specs)),
+          factory.createStringLiteral(source),
+        ),
+      );
+    }
+
+    const allNodes: ts.Node[] = [];
+    let foundFirstNonImport = false;
+    for (const node of baseNodes) {
+      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+        allNodes.push(node);
+      } else {
+        if (!foundFirstNonImport) {
+          for (const decl of additionalImportDecls) allNodes.push(decl);
+          allNodes.push(backendTypeImport);
+          if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
+          foundFirstNonImport = true;
+        }
+        allNodes.push(node);
+      }
+    }
+    if (!foundFirstNonImport) {
+      for (const decl of additionalImportDecls) allNodes.push(decl);
+      allNodes.push(backendTypeImport);
+      if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
+    }
+    for (const stmt of escapeHatchResult.postExportStatements) {
+      allNodes.push(newLineIdentifier);
+      allNodes.push(stmt);
+    }
+
+    const content = TS.printNodes(factory.createNodeArray(allNodes as ts.Statement[]));
     await fs.mkdir(dirPath, { recursive: true });
     await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
     await this.copyFunctionSource(func.resourceName, dirPath);
 
-    this.backendGenerator.addImport(`./${this.category}/${func.resourceName}/resource`, [func.resourceName]);
-    this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier(func.resourceName)));
+    const alias = func.resourceName;
+    this.backendGenerator.addNamespaceImport(alias, `./function/${func.resourceName}/resource`);
+    this.backendGenerator.addDefineBackendEntry(func.resourceName, alias, func.resourceName);
+    this.backendGenerator.addApplyEscapeHatchesCall(alias);
+    if (hasAnalytics && analyticsTypeImport) this.backendGenerator.markNeedsAnalyticsArg(alias);
   }
 
-  /**
-   * Contributes function name override and env var escape hatches to backend.ts.
-   */
-  private contributeOverrides(func: ResolvedFunction): void {
-    this.backendGenerator.ensureBranchName();
-    this.backendGenerator.addStatement(createFunctionNameOverride(func.resourceName));
-    for (const hatch of func.escapeHatches) {
-      this.backendGenerator.addStatement(createAddEnvironmentCall(func.resourceName, hatch));
-    }
+  private findAnalyticsConstructType(): string | undefined {
+    const cat = this.gen1App.meta('analytics');
+    if (!cat) return undefined;
+    for (const [name] of Object.entries(cat)) return `analytics${name}`;
+    return undefined;
   }
 
-  /**
-   * Contributes DynamoDB table grants and GraphQL API grants to backend.ts.
-   */
-  private contributeGrants(func: ResolvedFunction): void {
-    this.contributeTableGrants(func);
-    this.contributeStorageTableGrants(func);
-    this.contributeGraphqlApiGrants(func);
-    this.contributeKinesisGrants(func);
+  private getAnalyticsConstructImportPath(): string {
+    const cat = this.gen1App.meta('analytics');
+    if (!cat) return '../../analytics/unknown-construct';
+    for (const [name] of Object.entries(cat)) return `../../analytics/${name}-construct`;
+    return '../../analytics/unknown-construct';
   }
 
-  /**
-   * Parses Cognito auth access from the function's CFN template
-   * and contributes it to the AuthGenerator.
-   */
   private contributeAuthAccess(func: ResolvedFunction): void {
     if (!this.authGenerator) return;
     if (Object.keys(func.authAccess).length > 0) {
@@ -263,80 +265,49 @@ export class FunctionGenerator implements Planner {
     if (!this.resource.resourceName.startsWith(authResourceName)) return;
     const suffix = this.resource.resourceName.slice(authResourceName.length);
     const event = TRIGGER_SUFFIX_TO_EVENT[suffix];
-    if (event) {
-      this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
-    }
+    if (event) this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
   }
 
-  /**
-   * Parses S3 storage access from the function's CFN template
-   * and contributes it to the S3Generator.
-   */
   private async contributeStorageAccess(category: string): Promise<void> {
     if (!this.s3Generator) return;
-
     const S3_ACTION_TO_PERMISSION: Readonly<Record<string, Permission>> = {
       's3:GetObject': 'read',
       's3:PutObject': 'write',
       's3:DeleteObject': 'delete',
       's3:ListBucket': 'read',
     };
-
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
-
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
     const permissions = new Set<Permission>();
-
     for (const stmt of Array.isArray(statements) ? statements : [statements]) {
       if (stmt.Effect !== 'Allow') continue;
       const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
       for (const action of actions) {
-        if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) {
-          permissions.add(S3_ACTION_TO_PERMISSION[action]);
-        }
+        if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) permissions.add(S3_ACTION_TO_PERMISSION[action]);
       }
     }
-
-    if (permissions.size > 0) {
-      this.s3Generator.addFunctionStorageAccess(this.resource.resourceName, category, Array.from(permissions));
-    }
+    if (permissions.size > 0) this.s3Generator.addFunctionStorageAccess(this.resource.resourceName, category, Array.from(permissions));
   }
 
-  /**
-   * Detects S3 trigger events from the storage CFN template and
-   * contributes them to the S3Generator. Only runs when this
-   * function's category is 'storage' (i.e., it's a storage trigger).
-   */
   private contributeStorageTrigger(): void {
     if (!this.s3Generator || this.category !== 'storage') return;
-
     const storageCategory = this.gen1App.meta('storage');
     if (!storageCategory) return;
-
-    const s3Entry = Object.entries(storageCategory).find(([, value]) => (value as Record<string, unknown>).service === 'S3');
+    const s3Entry = Object.entries(storageCategory).find(([, v]) => (v as Record<string, unknown>).service === 'S3');
     if (!s3Entry) return;
-
     const [storageName] = s3Entry;
     const templatePath = `storage/${storageName}/build/cloudformation-template.json`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
-
     const lambdaConfigs = template?.Resources?.S3Bucket?.Properties?.NotificationConfiguration?.LambdaConfigurations ?? [];
-
     for (const config of lambdaConfigs) {
       const functionRef = config?.Function?.Ref as string | undefined;
       if (!functionRef || !functionRef.includes(this.resource.resourceName)) continue;
-
       const event = config.Event as string | undefined;
-      if (event?.includes('ObjectCreated')) {
-        this.s3Generator.addTrigger('onUpload', this.resource.resourceName);
-      } else if (event?.includes('ObjectRemoved')) {
-        this.s3Generator.addTrigger('onDelete', this.resource.resourceName);
-      }
+      if (event?.includes('ObjectCreated')) this.s3Generator.addTrigger('onUpload', this.resource.resourceName);
+      else if (event?.includes('ObjectRemoved')) this.s3Generator.addTrigger('onDelete', this.resource.resourceName);
     }
   }
 
@@ -346,14 +317,14 @@ export class FunctionGenerator implements Planner {
       await fs.cp(srcDir, destDir, {
         recursive: true,
         filter: (src) => {
-          const basename = path.basename(src);
+          const b = path.basename(src);
           return (
-            basename !== 'node_modules' &&
-            basename !== '.yarn' &&
-            basename !== 'package.json' &&
-            basename !== 'package-lock.json' &&
-            basename !== 'yarn.lock' &&
-            basename !== 'pnpm-lock.yaml'
+            b !== 'node_modules' &&
+            b !== '.yarn' &&
+            b !== 'package.json' &&
+            b !== 'package-lock.json' &&
+            b !== 'yarn.lock' &&
+            b !== 'pnpm-lock.yaml'
           );
         },
       });
@@ -362,9 +333,6 @@ export class FunctionGenerator implements Planner {
     }
   }
 
-  /**
-   * Reads this function's package.json and merges dependencies into the root package.json.
-   */
   private async mergeFunctionDependencies(func: ResolvedFunction): Promise<void> {
     const packageJsonPath = path.join('amplify', 'backend', 'function', func.resourceName, 'src', 'package.json');
     try {
@@ -372,173 +340,48 @@ export class FunctionGenerator implements Planner {
         packageJsonPath,
       );
       if (pkg?.dependencies) {
-        for (const [name, version] of Object.entries(pkg.dependencies)) {
-          this.packageJsonGenerator.addDependency(name, version);
-        }
+        for (const [n, v] of Object.entries(pkg.dependencies)) this.packageJsonGenerator.addDependency(n, v);
       }
       if (pkg?.devDependencies) {
-        for (const [name, version] of Object.entries(pkg.devDependencies)) {
-          this.packageJsonGenerator.addDevDependency(name, version);
-        }
+        for (const [n, v] of Object.entries(pkg.devDependencies)) this.packageJsonGenerator.addDevDependency(n, v);
       }
     } catch (e) {
       throw new Error(`Failed to read package.json for function '${this.resource.resourceName}': ${e}`);
     }
   }
 
-  /**
-   * Generates DynamoDB table grant statements for this function
-   * accessing AppSync-managed tables (detected via API_*TABLE_* env vars).
-   */
-  private contributeTableGrants(func: ResolvedFunction): void {
-    if (func.dynamoActions.length === 0) return;
-
-    // Extract unique table names from escape hatches that reference API tables
-    const tableNames = new Set<string>();
-    for (const hatch of func.escapeHatches) {
-      if (hatch.name.startsWith('API_') && hatch.name.includes('TABLE_')) {
-        const tableName = extractTableName(hatch.name);
-        if (tableName) tableNames.add(tableName);
-      }
+  private async detectDynamoTriggerModels(func: ResolvedFunction): Promise<string[]> {
+    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
+    const template = this.gen1App.json(templatePath);
+    const models: string[] = [];
+    for (const resource of Object.values(template.Resources ?? {})) {
+      const res = resource as Record<string, unknown>;
+      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
+      const props = res.Properties as Record<string, unknown> | undefined;
+      const eventSourceArn = props?.EventSourceArn as Record<string, unknown> | undefined;
+      const fnImportValue = eventSourceArn?.['Fn::ImportValue'] as Record<string, string> | undefined;
+      const fnSub = fnImportValue?.['Fn::Sub'];
+      if (!fnSub) continue;
+      const match = fnSub.match(/:GetAtt:(\w+)Table:StreamArn/);
+      if (match) models.push(match[1]);
     }
-    if (tableNames.size === 0) return;
-
-    for (const tableName of tableNames) {
-      const grantCall = factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-            factory.createElementAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
-                  factory.createIdentifier('resources'),
-                ),
-                factory.createIdentifier('tables'),
-              ),
-              factory.createStringLiteral(tableName),
-            ),
-            factory.createIdentifier('grant'),
-          ),
-          undefined,
-          [
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
-                factory.createIdentifier('resources'),
-              ),
-              factory.createIdentifier('lambda'),
-            ),
-            ...func.dynamoActions.map((action) => factory.createStringLiteral(action)),
-          ],
-        ),
-      );
-      this.backendGenerator.addStatement(grantCall);
-    }
+    return models;
   }
 
-  /**
-   * Generates GraphQL API grant statements for this function when it
-   * has AppSync mutation or query permissions.
-   */
-  private contributeGraphqlApiGrants(func: ResolvedFunction): void {
-    const { hasMutation, hasQuery } = func.graphqlApiPermissions;
-    if (!hasMutation && !hasQuery) return;
-
-    const lambdaRef = factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
-        factory.createIdentifier('resources'),
-      ),
-      factory.createIdentifier('lambda'),
-    );
-
-    const graphqlApi = factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
-        factory.createIdentifier('resources'),
-      ),
-      factory.createIdentifier('graphqlApi'),
-    );
-
-    if (hasMutation) {
-      this.backendGenerator.addStatement(
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(graphqlApi, factory.createIdentifier('grantMutation')),
-            undefined,
-            [lambdaRef],
-          ),
-        ),
-      );
+  private detectKinesisTrigger(func: ResolvedFunction): boolean {
+    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
+    const template = this.gen1App.json(templatePath);
+    for (const resource of Object.values(template.Resources ?? {})) {
+      const res = resource as Record<string, unknown>;
+      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
+      const props = res.Properties as Record<string, unknown> | undefined;
+      const eventSourceArn = props?.EventSourceArn as Record<string, string> | undefined;
+      if (!eventSourceArn || !('Ref' in eventSourceArn)) continue;
+      if (/^analytics\w+kinesisStreamArn$/.test(eventSourceArn.Ref)) return true;
     }
-
-    if (hasQuery) {
-      this.backendGenerator.addStatement(
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(graphqlApi, factory.createIdentifier('grantQuery')),
-            undefined,
-            [lambdaRef],
-          ),
-        ),
-      );
-    }
+    return false;
   }
 
-  /**
-   * Contributes addToRolePolicy statements for functions with Kinesis stream access.
-   * Generates: backend.funcName.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({...}))
-   */
-  private contributeKinesisGrants(func: ResolvedFunction): void {
-    if (func.kinesisActions.length === 0) return;
-
-    this.backendGenerator.addImport('aws-cdk-lib', ['aws_iam']);
-
-    const lambdaRef = factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
-        factory.createIdentifier('resources'),
-      ),
-      factory.createIdentifier('lambda'),
-    );
-
-    const policyStatement = factory.createNewExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
-      undefined,
-      [
-        factory.createObjectLiteralExpression(
-          [
-            factory.createPropertyAssignment(
-              'actions',
-              factory.createArrayLiteralExpression(func.kinesisActions.map((action) => factory.createStringLiteral(action))),
-            ),
-            factory.createPropertyAssignment(
-              'resources',
-              factory.createArrayLiteralExpression([
-                factory.createPropertyAccessExpression(factory.createIdentifier('analytics'), factory.createIdentifier('kinesisStreamArn')),
-              ]),
-            ),
-          ],
-          true,
-        ),
-      ],
-    );
-
-    this.backendGenerator.addStatement(
-      factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(lambdaRef, factory.createIdentifier('addToRolePolicy')),
-          undefined,
-          [policyStatement],
-        ),
-      ),
-    );
-  }
-
-  /**
-   * Reads the function's CloudFormation template from the cloud backend
-   * and extracts DynamoDB IAM actions and GraphQL API permissions.
-   */
   private extractCfnPermissions(): {
     dynamoActions: string[];
     kinesisActions: string[];
@@ -546,20 +389,17 @@ export class FunctionGenerator implements Planner {
     authAccess: AuthPermissions;
   } {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') {
       return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false }, authAccess: {} };
     }
-
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
     const dynamoActions: string[] = [];
     const kinesisActions: string[] = [];
     const cognitoActions: string[] = [];
     let hasMutation = false;
     let hasQuery = false;
-
     for (const stmt of statements) {
       const stmtActions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
       for (const action of stmtActions) {
@@ -580,7 +420,6 @@ export class FunctionGenerator implements Planner {
           }
         }
       }
-
       const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
       for (const resource of resources) {
         const resourceStr = JSON.stringify(resource);
@@ -588,486 +427,14 @@ export class FunctionGenerator implements Planner {
         if (resourceStr.includes('/types/Query/')) hasQuery = true;
       }
     }
-
-    const authAccess = resolveAuthAccess(cognitoActions);
-    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery }, authAccess };
-  }
-
-  /**
-   * Generates grant statements for this function accessing standalone
-   * DynamoDB tables (STORAGE_ env vars).
-   */
-  private contributeStorageTableGrants(func: ResolvedFunction): void {
-    if (func.dynamoActions.length === 0) return;
-
-    // Extract the table variable name from STORAGE_ escape hatches (excluding S3 bucket)
-    const tableNames = new Set<string>();
-    for (const hatch of func.escapeHatches) {
-      if (!hatch.name.startsWith('STORAGE_') || hatch.name.endsWith('BUCKETNAME')) continue;
-      const match = hatch.name.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
-      if (match) {
-        tableNames.add(match[1].toLowerCase());
-      }
-    }
-    if (tableNames.size === 0) return;
-
-    for (const tableName of tableNames) {
-      const grantCall = factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grant')),
-          undefined,
-          [
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
-                factory.createIdentifier('resources'),
-              ),
-              factory.createIdentifier('lambda'),
-            ),
-            ...func.dynamoActions.map((action) => factory.createStringLiteral(action)),
-          ],
-        ),
-      );
-      this.backendGenerator.addStatement(grantCall);
-    }
-  }
-
-  /**
-   * Detects DynamoDB stream trigger models for this function by reading
-   * its CloudFormation template for EventSourceMapping resources.
-   */
-  private async detectDynamoTriggerModels(func: ResolvedFunction): Promise<string[]> {
-    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = this.gen1App.json(templatePath);
-    const models: string[] = [];
-
-    for (const resource of Object.values(template.Resources ?? {})) {
-      const res = resource as Record<string, unknown>;
-      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
-
-      const props = res.Properties as Record<string, unknown> | undefined;
-      const eventSourceArn = props?.EventSourceArn as Record<string, unknown> | undefined;
-      const fnImportValue = eventSourceArn?.['Fn::ImportValue'] as Record<string, string> | undefined;
-      const fnSub = fnImportValue?.['Fn::Sub'];
-      if (!fnSub) continue;
-
-      const match = fnSub.match(/:GetAtt:(\w+)Table:StreamArn/);
-      if (match) {
-        models.push(match[1]);
-      }
-    }
-
-    return models;
-  }
-
-  /**
-   * Generates DynamoDB stream event source code for this function.
-   */
-  private contributeDynamoTrigger(functionName: string, models: string[]): void {
-    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['DynamoEventSource']);
-    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
-
-    const forStatement = factory.createForOfStatement(
-      undefined,
-      factory.createVariableDeclarationList(
-        [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
-        ts.NodeFlags.Const,
-      ),
-      factory.createArrayLiteralExpression(models.map((model) => factory.createStringLiteral(model))),
-      factory.createBlock(
-        [
-          // const table = backend.data.resources.tables[model];
-          factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  'table',
-                  undefined,
-                  undefined,
-                  factory.createElementAccessExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('backend.data.resources'),
-                      factory.createIdentifier('tables'),
-                    ),
-                    factory.createIdentifier('model'),
-                  ),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          ),
-          // backend.functionName.resources.lambda.addEventSource(...)
-          factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources`),
-                  factory.createIdentifier('lambda'),
-                ),
-                factory.createIdentifier('addEventSource'),
-              ),
-              undefined,
-              [
-                factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
-                  factory.createIdentifier('table'),
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'startingPosition',
-                      factory.createPropertyAccessExpression(
-                        factory.createIdentifier('StartingPosition'),
-                        factory.createIdentifier('LATEST'),
-                      ),
-                    ),
-                  ]),
-                ]),
-              ],
-            ),
-          ),
-          // table.grantStreamRead(backend.functionName.resources.lambda.role!)
-          factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantStreamRead')),
-              undefined,
-              [
-                factory.createNonNullExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${functionName}.resources.lambda`),
-                    factory.createIdentifier('role'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // table.grantTableListStreams(backend.functionName.resources.lambda.role!)
-          factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantTableListStreams')),
-              undefined,
-              [
-                factory.createNonNullExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${functionName}.resources.lambda`),
-                    factory.createIdentifier('role'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-        true,
-      ),
-    );
-    this.backendGenerator.addStatement(forStatement);
-  }
-
-  /**
-   * Detects a Kinesis stream trigger by parsing this function's
-   * CloudFormation template for an EventSourceMapping resource that
-   * references a Kinesis stream ARN via `Ref: analytics<name>kinesisStreamArn`.
-   */
-  private detectKinesisTrigger(func: ResolvedFunction): boolean {
-    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = this.gen1App.json(templatePath);
-
-    for (const resource of Object.values(template.Resources ?? {})) {
-      const res = resource as Record<string, unknown>;
-      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
-
-      const props = res.Properties as Record<string, unknown> | undefined;
-      const eventSourceArn = props?.EventSourceArn as Record<string, string> | undefined;
-      if (!eventSourceArn || !('Ref' in eventSourceArn)) continue;
-
-      if (/^analytics\w+kinesisStreamArn$/.test(eventSourceArn.Ref)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Generates Kinesis stream event source wiring for this function.
-   * Uses Stream.fromStreamArn() to create an L2 reference from the
-   * analytics construct's ARN, then adds a KinesisEventSource.
-   */
-  private contributeKinesisTrigger(functionName: string): void {
-    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['KinesisEventSource']);
-    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
-    this.backendGenerator.addImport('aws-cdk-lib/aws-kinesis', ['Stream']);
-
-    // const kinesisStream = Stream.fromStreamArn(backend.func.resources.lambda.stack, 'KinesisStream', analytics.kinesisStreamArn)
-    const fromStreamArn = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'kinesisStream',
-            undefined,
-            undefined,
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('Stream'), factory.createIdentifier('fromStreamArn')),
-              undefined,
-              [
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier(`backend.${functionName}`),
-                      factory.createIdentifier('resources'),
-                    ),
-                    factory.createIdentifier('lambda'),
-                  ),
-                  factory.createIdentifier('stack'),
-                ),
-                factory.createStringLiteral('KinesisStream'),
-                factory.createPropertyAccessExpression(factory.createIdentifier('analytics'), factory.createIdentifier('kinesisStreamArn')),
-              ],
-            ),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-    this.backendGenerator.addStatement(fromStreamArn);
-
-    // backend.func.resources.lambda.addEventSource(new KinesisEventSource(kinesisStream, { startingPosition: StartingPosition.LATEST }))
-    this.backendGenerator.addStatement(
-      factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier(`backend.${functionName}.resources`),
-              factory.createIdentifier('lambda'),
-            ),
-            factory.createIdentifier('addEventSource'),
-          ),
-          undefined,
-          [
-            factory.createNewExpression(factory.createIdentifier('KinesisEventSource'), undefined, [
-              factory.createIdentifier('kinesisStream'),
-              factory.createObjectLiteralExpression([
-                factory.createPropertyAssignment(
-                  'startingPosition',
-                  factory.createPropertyAccessExpression(factory.createIdentifier('StartingPosition'), factory.createIdentifier('LATEST')),
-                ),
-              ]),
-            ]),
-          ],
-        ),
-      ),
-    );
+    return {
+      dynamoActions,
+      kinesisActions,
+      graphqlApiPermissions: { hasMutation, hasQuery },
+      authAccess: resolveAuthAccess(cognitoActions),
+    };
   }
 }
-
-/**
- * Classifies Lambda environment variables into two groups:
- * - retained: stay in the defineFunction() environment block
- * - escapeHatches: become addEnvironment() calls in backend.ts
- *
- * Each escape hatch carries the pre-built AST expression for the Gen2
- * resource it references. The ordering within escapeHatches follows
- * suffix order within each prefix group (API_, STORAGE_, AUTH_) to
- * produce deterministic output.
- */
-function classifyEnvVars(variables: Record<string, string>): {
-  readonly retained: Record<string, string>;
-  readonly escapeHatches: readonly EnvVarEscapeHatch[];
-} {
-  const retained: Record<string, string> = {};
-  const escapeHatches: EnvVarEscapeHatch[] = [];
-
-  // Collect escape hatches in suffix order within each prefix group.
-  // This produces deterministic output matching the expected snapshots.
-  const suffixGroups: ReadonlyArray<{
-    readonly prefix: string;
-    readonly suffixes: ReadonlyArray<{ readonly suffix: string; readonly build: (envVar: string) => ts.Expression }>;
-  }> = [
-    {
-      prefix: 'API_',
-      suffixes: [
-        { suffix: '_GRAPHQLAPIKEYOUTPUT', build: () => nonNull(backendPath('data', 'apiKey')) },
-        { suffix: '_GRAPHQLAPIENDPOINTOUTPUT', build: () => backendPath('data', 'graphqlUrl') },
-        { suffix: '_GRAPHQLAPIIDOUTPUT', build: () => backendPath('data', 'apiId') },
-        {
-          suffix: 'TABLE_ARN',
-          build: (envVar) => backendTableProp(extractTableName(envVar) ?? 'unknown', 'tableArn'),
-        },
-        {
-          suffix: 'TABLE_NAME',
-          build: (envVar) => backendTableProp(extractTableName(envVar) ?? 'unknown', 'tableName'),
-        },
-      ],
-    },
-    {
-      // Longer suffixes first: _STREAMARN before _ARN, _BUCKETNAME before _NAME.
-      // This prevents _STREAMARN from incorrectly matching the _ARN suffix.
-      prefix: 'STORAGE_',
-      suffixes: [
-        { suffix: '_STREAMARN', build: (envVar) => nonNull(directProp(extractStorageVarName(envVar), 'tableStreamArn')) },
-        { suffix: '_BUCKETNAME', build: () => backendPath('storage', 'resources', 'bucket', 'bucketName') },
-        { suffix: '_ARN', build: (envVar) => directProp(extractStorageVarName(envVar), 'tableArn') },
-        { suffix: '_NAME', build: (envVar) => directProp(extractStorageVarName(envVar), 'tableName') },
-      ],
-    },
-    {
-      prefix: 'AUTH_',
-      suffixes: [{ suffix: '_USERPOOLID', build: () => backendPath('auth', 'resources', 'userPool', 'userPoolId') }],
-    },
-    {
-      prefix: 'FUNCTION_',
-      suffixes: [
-        {
-          suffix: '_NAME',
-          build: (envVar) => {
-            const match = envVar.match(/FUNCTION_(.+?)_NAME/);
-            const funcName = match ? match[1].toLowerCase() : 'unknown';
-            return backendPath(funcName, 'resources', 'lambda', 'functionName');
-          },
-        },
-      ],
-    },
-    {
-      prefix: 'ANALYTICS_',
-      suffixes: [
-        {
-          suffix: '_KINESISSTREAMARN',
-          build: () => directProp('analytics', 'kinesisStreamArn'),
-        },
-      ],
-    },
-  ];
-
-  // Build escape hatches preserving suffix order within each prefix group.
-  // The `classified` set prevents double-matching (e.g., _STREAMARN already
-  // matched won't re-match _ARN).
-  const classified = new Set<string>();
-  for (const { prefix, suffixes } of suffixGroups) {
-    for (const { suffix, build } of suffixes) {
-      for (const envVar of Object.keys(variables)) {
-        if (envVar.startsWith(prefix) && envVar.endsWith(suffix) && !classified.has(envVar)) {
-          escapeHatches.push({ name: envVar, expression: build(envVar) });
-          classified.add(envVar);
-        }
-      }
-    }
-  }
-
-  // Everything not classified is retained in defineFunction()
-  for (const [key, value] of Object.entries(variables)) {
-    if (!classified.has(key)) {
-      retained[key] = value;
-    }
-  }
-
-  return { retained, escapeHatches };
-}
-
-/**
- * Creates `backend.functionName.addEnvironment(name, expression)`.
- */
-function createAddEnvironmentCall(functionName: string, hatch: EnvVarEscapeHatch): ts.ExpressionStatement {
-  return factory.createExpressionStatement(
-    factory.createCallExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
-        factory.createIdentifier('addEnvironment'),
-      ),
-      undefined,
-      [factory.createStringLiteral(hatch.name), hatch.expression],
-    ),
-  );
-}
-
-// ── AST expression builders for env var escape hatches ──────────────
-
-/**
- * Builds `backend.a.b.c` from path segments.
- */
-function backendPath(...segments: string[]): ts.Expression {
-  return TS.propAccess('backend', ...segments);
-}
-
-/**
- * Builds `backend.data.resources.tables['tableName'].property`.
- */
-function backendTableProp(tableName: string, property: string): ts.Expression {
-  const tables = factory.createPropertyAccessExpression(
-    factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
-      factory.createIdentifier('resources'),
-    ),
-    factory.createIdentifier('tables'),
-  );
-  const indexed = factory.createElementAccessExpression(tables, factory.createStringLiteral(tableName));
-  return factory.createPropertyAccessExpression(indexed, factory.createIdentifier(property));
-}
-
-/**
- * Builds `varName.property` (no `backend.` prefix — for standalone DynamoDB tables).
- */
-function directProp(varName: string, property: string): ts.Expression {
-  return TS.propAccess(varName, property);
-}
-
-/**
- * Wraps an expression with TypeScript non-null assertion (`expr!`).
- */
-function nonNull(expr: ts.Expression): ts.Expression {
-  return factory.createNonNullExpression(expr);
-}
-
-/**
- * Extracts the table name from an API_*TABLE_* env var.
- * 'API_MYAPI_MEALTABLE_ARN' → 'Meal'
- */
-function extractTableName(envVar: string): string | undefined {
-  const match = envVar.match(/API_.*_(.+?)TABLE_/);
-  if (!match) return undefined;
-  const raw = match[1];
-  return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
-}
-
-/**
- * Extracts the lowercase variable name from a STORAGE_* env var.
- * 'STORAGE_ACTIVITY_ARN' → 'activity'
- * 'STORAGE_ACTIVITYTABLE_NAME' → 'activity' (strips TABLE suffix)
- */
-function extractStorageVarName(envVar: string): string {
-  const tableMatch = envVar.match(/STORAGE_(.+?)TABLE_/);
-  if (tableMatch) return tableMatch[1].toLowerCase();
-  const fallbackMatch = envVar.match(/STORAGE_(.+?)_/);
-  if (fallbackMatch) return fallbackMatch[1].toLowerCase();
-  return 'unknown';
-}
-
-/**
- * Creates `backend.{funcName}.resources.cfnResources.cfnFunction.functionName = `{funcName}-${branchName}`;`
- */
-function createFunctionNameOverride(funcName: string): ts.ExpressionStatement {
-  const lhs = factory.createPropertyAccessExpression(
-    factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(funcName)),
-          factory.createIdentifier('resources'),
-        ),
-        factory.createIdentifier('cfnResources'),
-      ),
-      factory.createIdentifier('cfnFunction'),
-    ),
-    factory.createIdentifier('functionName'),
-  );
-
-  const rhs = factory.createTemplateExpression(factory.createTemplateHead(`${funcName}-`), [
-    factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-  ]);
-
-  return factory.createExpressionStatement(factory.createAssignment(lhs, rhs));
-}
-
-// ── Auth access extraction from CFN policy ────────────────────────
 
 const GROUPED_AUTH_PERMISSIONS: Readonly<Record<string, readonly string[]>> = {
   manageUsers: [
@@ -1140,24 +507,17 @@ function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
   if (cognitoActions.length === 0) return {};
   const result: Record<string, boolean> = {};
   const covered = new Set<string>();
-
   for (const [group, required] of Object.entries(GROUPED_AUTH_PERMISSIONS)) {
     if (required.every((a) => cognitoActions.includes(a))) {
       result[group] = true;
       for (const a of required) covered.add(a);
     }
   }
-
   for (const action of cognitoActions) {
-    if (!covered.has(action) && AUTH_ACTION_MAPPING[action]) {
-      result[AUTH_ACTION_MAPPING[action]] = true;
-    }
+    if (!covered.has(action) && AUTH_ACTION_MAPPING[action]) result[AUTH_ACTION_MAPPING[action]] = true;
   }
-
   return result as AuthPermissions;
 }
-
-// ── Auth trigger suffix mapping ───────────────────────────────────
 
 const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {
   PreSignup: 'preSignUp',

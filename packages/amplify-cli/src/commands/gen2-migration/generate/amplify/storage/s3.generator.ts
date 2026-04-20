@@ -6,7 +6,7 @@ import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { TS, newLineIdentifier } from '../../_infra/ts';
 import { S3Renderer, AccessPatterns, StorageTriggerEvent, Permission } from './s3.renderer';
 
 const factory = ts.factory;
@@ -128,20 +128,78 @@ export class S3Generator implements Planner {
         await fs.mkdir(storageDir, { recursive: true });
         await fs.writeFile(path.join(storageDir, 'resource.ts'), content, 'utf-8');
 
-        this.backendGenerator.addImport('./storage/resource', ['storage']);
-        this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier('storage')));
+        // Build applyEscapeHatches and postRefactor functions
+        const escapeHatchStatements = this.buildEscapeHatchStatements(bucketName, accelerateStatus, versioningStatus, encryption);
+        const postRefactorStatements = this.buildPostRefactorStatements(bucketName);
 
-        this.contributeOverrides(bucketName, accelerateStatus, versioningStatus, encryption);
+        // Build the complete resource.ts with escape hatches
+        const backendTypeImport = factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(
+            true,
+            undefined,
+            factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+          ),
+          factory.createStringLiteral('../backend'),
+        );
+
+        const postRefactorDecl = factory.createFunctionDeclaration(
+          [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+          undefined,
+          'postRefactor',
+          undefined,
+          [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+          undefined,
+          factory.createBlock(postRefactorStatements, true),
+        );
+
+        const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
+          [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+          undefined,
+          'applyEscapeHatches',
+          undefined,
+          [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+          undefined,
+          factory.createBlock(escapeHatchStatements, true),
+        );
+
+        // Reconstruct file with Backend import and functions
+        const allNodes: ts.Node[] = [];
+        let foundFirstNonImport = false;
+        for (const node of nodes) {
+          if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+            allNodes.push(node);
+          } else {
+            if (!foundFirstNonImport) {
+              allNodes.push(backendTypeImport);
+              foundFirstNonImport = true;
+            }
+            allNodes.push(node);
+          }
+        }
+        if (!foundFirstNonImport) {
+          allNodes.push(backendTypeImport);
+        }
+        allNodes.push(newLineIdentifier);
+        allNodes.push(postRefactorDecl);
+        allNodes.push(newLineIdentifier);
+        allNodes.push(applyEscapeHatchesDecl);
+
+        const nodeArray = factory.createNodeArray(allNodes as ts.Statement[]);
+        const finalContent = TS.printNodes(nodeArray);
+        await fs.writeFile(path.join(storageDir, 'resource.ts'), finalContent, 'utf-8');
+
+        // Contribute to backend.ts using new API
+        this.backendGenerator.addNamespaceImport('storage', './storage/resource');
+        this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
+        this.backendGenerator.addApplyEscapeHatchesCall('storage');
+        this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
       },
     };
   }
 
-  private contributeOverrides(
-    bucketName: string,
-    accelerateStatus: BucketAccelerateStatus | undefined,
-    versioningStatus: BucketVersioningStatus | undefined,
-    encryption: ServerSideEncryptionConfiguration | undefined,
-  ): void {
+  private buildPostRefactorStatements(bucketName: string): ts.Statement[] {
+    const statements: ts.Statement[] = [];
     const cfnBucketDecl = factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -165,22 +223,52 @@ export class S3Generator implements Planner {
         ts.NodeFlags.Const,
       ),
     );
-    this.backendGenerator.addStatement(cfnBucketDecl);
-
-    const bucketNameComment1 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
-    ts.addSyntheticLeadingComment(bucketNameComment1, ts.SyntaxKind.SingleLineCommentTrivia, ' Use this bucket name post refactor', true);
-    const bucketNameComment2 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
-    ts.addSyntheticLeadingComment(
-      bucketNameComment2,
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      ` s3Bucket.bucketName = '${bucketName}';`,
-      true,
+    statements.push(cfnBucketDecl);
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createAssignment(
+          factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketName')),
+          factory.createStringLiteral(bucketName),
+        ),
+      ),
     );
-    this.backendGenerator.addStatement(bucketNameComment1 as unknown as ts.Statement);
-    this.backendGenerator.addStatement(bucketNameComment2 as unknown as ts.Statement);
+    return statements;
+  }
+
+  private buildEscapeHatchStatements(
+    bucketName: string,
+    accelerateStatus: BucketAccelerateStatus | undefined,
+    versioningStatus: BucketVersioningStatus | undefined,
+    encryption: ServerSideEncryptionConfiguration | undefined,
+  ): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+    const cfnBucketDecl = factory.createVariableStatement(
+      [],
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            's3Bucket',
+            undefined,
+            undefined,
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
+                  factory.createIdentifier('resources'),
+                ),
+                factory.createIdentifier('cfnResources'),
+              ),
+              factory.createIdentifier('cfnBucket'),
+            ),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+    statements.push(cfnBucketDecl);
 
     if (accelerateStatus) {
-      this.backendGenerator.addStatement(
+      statements.push(
         factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
@@ -197,7 +285,7 @@ export class S3Generator implements Planner {
     }
 
     if (versioningStatus) {
-      this.backendGenerator.addStatement(
+      statements.push(
         factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
@@ -243,7 +331,7 @@ export class S3Generator implements Planner {
           factory.createPropertyAssignment('bucketKeyEnabled', rule.BucketKeyEnabled ? factory.createTrue() : factory.createFalse()),
         );
       }
-      this.backendGenerator.addStatement(
+      statements.push(
         factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketEncryption')),
@@ -260,6 +348,7 @@ export class S3Generator implements Planner {
         ),
       );
     }
+    return statements;
   }
 
   private buildAccessPatterns(cliInputs: StorageCLIInputsJSON): AccessPatterns {

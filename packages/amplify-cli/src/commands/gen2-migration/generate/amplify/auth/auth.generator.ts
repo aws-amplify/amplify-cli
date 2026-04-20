@@ -6,7 +6,7 @@ import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { TS, newLineIdentifier } from '../../_infra/ts';
 import { AuthRenderOptions, AuthRenderer, AuthTrigger, FunctionAccess } from './auth.renderer';
 
 const factory = ts.factory;
@@ -14,11 +14,10 @@ const factory = ts.factory;
 /**
  * Generates auth resource files and contributes to backend.ts.
  *
- * Reads the Gen1 Cognito configuration (user pool, identity pool,
- * identity providers, MFA, groups, triggers) and generates
- * amplify/auth/resource.ts with a defineAuth() call. Also contributes
- * auth imports and CDK overrides (password policy, user pool client
- * settings, identity pool config) to backend.ts.
+ * Reads the Gen1 Cognito configuration and generates
+ * amplify/auth/resource.ts with defineAuth() + applyEscapeHatches().
+ * Contributes namespace import, defineBackend entry, and
+ * applyEscapeHatches call to backend.ts.
  */
 export class AuthGenerator implements Planner {
   private readonly gen1App: Gen1App;
@@ -37,10 +36,7 @@ export class AuthGenerator implements Planner {
     this.defineAuth = new AuthRenderer();
   }
 
-  /**
-   * Registers a function's auth access permissions.
-   * Called by FunctionGenerator before AuthGenerator.plan() runs.
-   */
+  /** Registers a function's auth access permissions. */
   public addFunctionAuthAccess(access: FunctionAccess): void {
     this.access.push(access);
   }
@@ -49,9 +45,7 @@ export class AuthGenerator implements Planner {
     this.triggers.push(trigger);
   }
 
-  /**
-   * Plans the main auth generation operation (resource.ts + backend.ts overrides).
-   */
+  /** Plans the main auth generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     const userPoolId = this.gen1App.metaOutput('auth', authResourceName, 'UserPoolId');
@@ -92,8 +86,80 @@ export class AuthGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
-          const nodes = this.defineAuth.render(renderOptions);
-          let content = TS.printNodes(nodes);
+          // Render the base defineAuth nodes
+          const baseNodes = this.defineAuth.render(renderOptions);
+
+          // Build the applyEscapeHatches function
+          const escapeHatchStatements = this.buildEscapeHatchStatements(renderOptions, hasIdentityProviders);
+          const additionalImports = this.buildAdditionalImports(renderOptions, hasIdentityProviders);
+
+          // Build the applyEscapeHatches function declaration
+          const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
+            [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+            undefined,
+            'applyEscapeHatches',
+            undefined,
+            [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+            undefined,
+            factory.createBlock(escapeHatchStatements, true),
+          );
+
+          // Build Backend type import
+          const backendTypeImport = factory.createImportDeclaration(
+            undefined,
+            factory.createImportClause(
+              true,
+              undefined,
+              factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+            ),
+            factory.createStringLiteral('../backend'),
+          );
+
+          // Build additional import declarations
+          const additionalImportDecls: ts.ImportDeclaration[] = [];
+          for (const [source, identifiers] of Object.entries(additionalImports)) {
+            const importSpecifiers = Array.from(identifiers).map((id) =>
+              factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
+            );
+            additionalImportDecls.push(
+              factory.createImportDeclaration(
+                undefined,
+                factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+                factory.createStringLiteral(source),
+              ),
+            );
+          }
+
+          // Reconstruct the full file
+          const allNodes: ts.Node[] = [];
+          let foundFirstNonImport = false;
+          for (const node of baseNodes) {
+            if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+              allNodes.push(node);
+            } else {
+              if (!foundFirstNonImport) {
+                for (const decl of additionalImportDecls) {
+                  allNodes.push(decl);
+                }
+                allNodes.push(backendTypeImport);
+                foundFirstNonImport = true;
+              }
+              allNodes.push(node);
+            }
+          }
+          if (!foundFirstNonImport) {
+            for (const decl of additionalImportDecls) {
+              allNodes.push(decl);
+            }
+            allNodes.push(backendTypeImport);
+          }
+
+          // Add the applyEscapeHatches function
+          allNodes.push(newLineIdentifier);
+          allNodes.push(applyEscapeHatchesDecl);
+
+          const nodeArray = factory.createNodeArray(allNodes as ts.Statement[]);
+          let content = TS.printNodes(nodeArray);
 
           content = content.replace(/\(allow, _unused\)/g, '(allow: any)');
           content = content.replace(/(access: \(allow: any\) => \[[\s\S]*?\n {4}\])/g, '$1,');
@@ -101,54 +167,71 @@ export class AuthGenerator implements Planner {
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
 
-          this.contributeToBackend(renderOptions);
-
-          if (hasIdentityProviders) {
-            this.contributeProviderSetup();
-          }
+          // Contribute to backend.ts using new API
+          this.backendGenerator.addNamespaceImport('auth', './auth/resource');
+          this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
+          this.backendGenerator.addApplyEscapeHatchesCall('auth');
         },
       },
     ];
   }
 
-  /**
-   * Adds auth imports and CDK overrides to backend.ts.
-   *
-   * Generates password policy overrides, identity pool config,
-   * and user pool client overrides as post-defineBackend statements.
-   */
-  private contributeToBackend(options: AuthRenderOptions): void {
-    const authIdentifier = factory.createIdentifier('auth');
-    this.backendGenerator.addImport('./auth/resource', ['auth']);
-    this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(authIdentifier));
+  /** Builds the statements for the applyEscapeHatches function body. */
+  private buildEscapeHatchStatements(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.Statement[] {
+    const statements: ts.Statement[] = [];
 
     // Password policy and username attributes overrides
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
     if (Object.keys(userPoolOverrides).length > 0) {
-      this.contributeUserPoolOverrides(userPoolOverrides);
+      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides));
     }
 
     // Identity pool: disable guest access
     if (options.identityPool?.AllowUnauthenticatedIdentities === false) {
-      this.contributeIdentityPoolOverrides();
+      statements.push(TS.constFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool'));
+      statements.push(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
     }
 
-    // cfnUserPoolClient override for OAuth flows (must come before addClient)
+    // cfnUserPoolClient override for OAuth flows
     if (options.webClient?.AllowedOAuthFlows) {
-      this.backendGenerator.addConstFromBackend('cfnUserPoolClient', 'auth', 'resources', 'cfnResources', 'cfnUserPoolClient');
-      this.backendGenerator.addStatement(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
+      statements.push(TS.constFromBackend('cfnUserPoolClient', 'auth', 'resources', 'cfnResources', 'cfnUserPoolClient'));
+      statements.push(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
     }
 
     // User pool client overrides (native app client)
     if (options.userPoolClient) {
-      this.contributeUserPoolClientOverrides(options.userPoolClient);
+      statements.push(...this.buildUserPoolClientStatements(options.userPoolClient, hasIdentityProviders));
     }
+
+    // Provider setup code
+    if (hasIdentityProviders) {
+      statements.push(...this.buildProviderSetupStatements());
+    }
+
+    return statements;
   }
 
-  /**
-   * Generates cfnUserPool password policy and username attribute overrides.
-   */
-  private contributeUserPoolOverrides(overrides: Record<string, string | boolean | number | string[] | undefined>): void {
+  /** Builds additional imports needed for the applyEscapeHatches function. */
+  private buildAdditionalImports(options: AuthRenderOptions, hasIdentityProviders: boolean): Record<string, Set<string>> {
+    const imports: Record<string, Set<string>> = {};
+
+    if (options.userPoolClient) {
+      if (!imports['aws-cdk-lib']) imports['aws-cdk-lib'] = new Set();
+      imports['aws-cdk-lib'].add('Duration');
+    }
+
+    if (hasIdentityProviders) {
+      if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
+      imports['aws-cdk-lib/aws-cognito'].add('OAuthScope');
+      imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
+    }
+
+    return imports;
+  }
+
+  /** Builds cfnUserPool password policy and username attribute override statements. */
+  private buildUserPoolOverrideStatements(overrides: Record<string, string | boolean | number | string[] | undefined>): ts.Statement[] {
+    const statements: ts.Statement[] = [];
     const mappedPolicyType: Record<string, string> = {
       MinimumLength: 'minimumLength',
       RequireUppercase: 'requireUppercase',
@@ -159,8 +242,7 @@ export class AuthGenerator implements Planner {
       TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
     };
 
-    // const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-    this.backendGenerator.addConstFromBackend('cfnUserPool', 'auth', 'resources', 'cfnResources', 'cfnUserPool');
+    statements.push(TS.constFromBackend('cfnUserPool', 'auth', 'resources', 'cfnResources', 'cfnUserPool'));
 
     const policies: { passwordPolicy: Record<string, number | string | boolean | string[]> } = {
       passwordPolicy: {},
@@ -173,41 +255,19 @@ export class AuthGenerator implements Planner {
           policies.passwordPolicy[mappedPolicyType[policyKey]] = value;
         }
       } else {
-        // Handle non-password overrides (e.g., usernameAttributes)
-        this.backendGenerator.addStatement(TS.assignProp('cfnUserPool', overridePath, value));
+        statements.push(TS.assignProp('cfnUserPool', overridePath, value));
       }
     }
 
-    // cfnUserPool.policies = { passwordPolicy: { ... } }
-    this.backendGenerator.addStatement(TS.assignProp('cfnUserPool', 'policies', policies));
+    statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    return statements;
   }
 
-  /**
-   * Generates cfnIdentityPool.allowUnauthenticatedIdentities = false.
-   */
-  private contributeIdentityPoolOverrides(): void {
-    this.backendGenerator.addConstFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool');
-    this.backendGenerator.addStatement(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
-  }
+  /** Builds userPool.addClient statements. */
+  private buildUserPoolClientStatements(userPoolClient: UserPoolClientType, hasIdentityProviders: boolean): ts.Statement[] {
+    const statements: ts.Statement[] = [];
 
-  /**
-   * Generates userPool.addClient('NativeAppClient', { ... }) for the
-   * Gen1 native app client configuration. When identity providers are
-   * present, assigns the result to `const userPoolClient` and generates
-   * the provider setup code and tryRemoveChild comment.
-   */
-  private contributeUserPoolClientOverrides(userPoolClient: UserPoolClientType): void {
-    this.backendGenerator.addImport('aws-cdk-lib', ['Duration']);
-
-    const hasIdentityProviders =
-      userPoolClient.SupportedIdentityProviders !== undefined && userPoolClient.SupportedIdentityProviders.length > 0;
-
-    if (hasIdentityProviders) {
-      this.backendGenerator.addImport('aws-cdk-lib/aws-cognito', ['OAuthScope', 'UserPoolClientIdentityProvider']);
-    }
-
-    // const userPool = backend.auth.resources.userPool;
-    this.backendGenerator.addConstFromBackend('userPool', 'auth', 'resources', 'userPool');
+    statements.push(TS.constFromBackend('userPool', 'auth', 'resources', 'userPool'));
 
     const clientProps: ts.PropertyAssignment[] = [];
 
@@ -255,7 +315,6 @@ export class AuthGenerator implements Planner {
       );
     }
 
-    // SupportedIdentityProviders
     if (hasIdentityProviders) {
       const providerMap: Record<string, string> = {
         COGNITO: 'COGNITO',
@@ -276,7 +335,6 @@ export class AuthGenerator implements Planner {
       );
     }
 
-    // oAuth block
     if (
       userPoolClient.AllowedOAuthFlows?.length ||
       userPoolClient.AllowedOAuthScopes?.length ||
@@ -342,7 +400,6 @@ export class AuthGenerator implements Planner {
       clientProps.push(factory.createPropertyAssignment('oAuth', factory.createObjectLiteralExpression(oAuthProps, true)));
     }
 
-    // Commented-out flows property when OAuth flows exist
     if (userPoolClient.AllowedOAuthFlows?.length) {
       clientProps.push(
         factory.createPropertyAssignment(
@@ -352,16 +409,12 @@ export class AuthGenerator implements Planner {
       );
     }
 
-    // disableOAuth
     const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;
     clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
-
-    // generateSecret
     clientProps.push(
       factory.createPropertyAssignment('generateSecret', userPoolClient.ClientSecret ? factory.createTrue() : factory.createFalse()),
     );
 
-    // Build the addClient call
     const addClientCall = factory.createCallExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
       undefined,
@@ -369,8 +422,7 @@ export class AuthGenerator implements Planner {
     );
 
     if (hasIdentityProviders) {
-      // const userPoolClient = userPool.addClient(...)
-      this.backendGenerator.addStatement(
+      statements.push(
         factory.createVariableStatement(
           undefined,
           factory.createVariableDeclarationList(
@@ -380,19 +432,16 @@ export class AuthGenerator implements Planner {
         ),
       );
     } else {
-      // userPool.addClient(...)
-      this.backendGenerator.addStatement(factory.createExpressionStatement(addClientCall));
+      statements.push(factory.createExpressionStatement(addClientCall));
     }
+
+    return statements;
   }
 
-  /**
-   * Generates the providerSetupResult code and the commented-out
-   * tryRemoveChild line for apps with social identity providers.
-   * Must run after storage overrides so it appears in the correct
-   * position in backend.ts.
-   */
-  private contributeProviderSetup(): void {
-    // const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;
+  /** Builds the providerSetupResult code and commented tryRemoveChild. */
+  private buildProviderSetupStatements(): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
     const findCall = factory.createCallExpression(
       factory.createPropertyAccessExpression(
         factory.createPropertyAccessExpression(
@@ -446,9 +495,8 @@ export class AuthGenerator implements Planner {
         ts.NodeFlags.Const,
       ),
     );
-    this.backendGenerator.addStatement(providerSetupDecl);
+    statements.push(providerSetupDecl);
 
-    // Object.keys(providerSetupResult).forEach(...)
     const forEachStatement = factory.createExpressionStatement(
       factory.createCallExpression(
         factory.createPropertyAccessExpression(
@@ -540,9 +588,8 @@ export class AuthGenerator implements Planner {
         ],
       ),
     );
-    this.backendGenerator.addStatement(forEachStatement);
+    statements.push(forEachStatement);
 
-    // // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
     const commentedStatement = factory.createExpressionStatement(
       factory.createCallExpression(
         factory.createPropertyAccessExpression(
@@ -556,6 +603,8 @@ export class AuthGenerator implements Planner {
         [factory.createStringLiteral('UserPoolDomain')],
       ),
     );
-    this.backendGenerator.addStatement(commentedStatement);
+    statements.push(commentedStatement);
+
+    return statements;
   }
 }

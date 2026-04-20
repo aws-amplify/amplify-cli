@@ -125,25 +125,15 @@ export class CustomResourceGenerator implements Planner {
   private contributeToBackend(className: string | undefined, dependencies: string[]): void {
     if (!className) return;
 
-    this.backendGenerator.addImport(`./custom/${this.resourceName}/resource`, [className]);
-
-    const args: ts.Expression[] = [
-      ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
-        undefined,
-        [ts.factory.createStringLiteral(this.resourceName)],
-      ),
-      ts.factory.createStringLiteral(this.resourceName),
-    ];
-
-    // Pass the backend object when the resource has dependencies
+    // Custom resources render directly into backend.ts as CDK constructs
+    // They use addPostDefineCall to instantiate after defineBackend
+    const args: string[] = [`backend.createStack('${this.resourceName}')`, `'${this.resourceName}'`];
     if (dependencies.length > 0) {
-      args.push(ts.factory.createIdentifier('backend'));
+      args.push('backend');
     }
 
-    this.backendGenerator.addStatement(
-      ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, args)),
-    );
+    this.backendGenerator.addNamespaceImport(this.resourceName, `./custom/${this.resourceName}/resource`);
+    this.backendGenerator.addPostDefineCall(`_custom_${this.resourceName}`, `new ${this.resourceName}.${className}(${args.join(', ')})`);
   }
 }
 

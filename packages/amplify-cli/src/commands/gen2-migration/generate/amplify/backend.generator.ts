@@ -1,106 +1,143 @@
 import ts from 'typescript';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import * as prettier from 'prettier';
 import { Planner } from '../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../_infra/operation';
-import { TS } from '../_infra/ts';
-
-const factory = ts.factory;
 
 /**
- * Accumulates imports, statements, and defineBackend properties from
- * category generators, then writes the final `backend.ts` file.
+ * An entry in the defineBackend({ ... }) object literal.
+ */
+interface DefineBackendEntry {
+  /** Property key in defineBackend (e.g. 'auth'). */
+  readonly key: string;
+  /** Namespace alias (e.g. 'auth'). */
+  readonly alias: string;
+  /** Exported name from the resource module (e.g. 'auth'). */
+  readonly exportName: string;
+}
+
+/**
+ * A namespace import: `import * as alias from source;`
+ */
+interface NamespaceImport {
+  readonly alias: string;
+  readonly source: string;
+}
+
+/**
+ * A post-define call: `const varName = alias.funcName(backend);`
+ */
+interface PostDefineCall {
+  readonly variableName: string;
+  readonly expression: string;
+}
+
+/**
+ * Accumulates namespace imports, defineBackend entries, escape-hatch
+ * calls, and post-refactor calls from category generators, then
+ * writes the final `backend.ts` file using string assembly.
  *
- * Category generators call `addImport()`, `addStatement()`, and
- * `addDefineBackendProperty()` during their `plan()` phase. When
- * `BackendGenerator.plan()` runs last, it assembles everything into
- * a single `backend.ts` file.
+ * This is the ONE place where string assembly is acceptable — it
+ * assembles the top-level file structure, not TypeScript AST nodes.
  */
 export class BackendGenerator implements Planner {
-  private readonly imports: Array<{ readonly source: string; readonly identifiers: string[] }> = [];
-  private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
-  private readonly postDefineStatements: ts.Statement[] = [];
-  private readonly earlyStatements: ts.Statement[] = [];
+  private readonly namespaceImports: NamespaceImport[] = [];
+  private readonly defineBackendEntries: DefineBackendEntry[] = [];
+  private readonly applyEscapeHatchesCalls: string[] = [];
+  private readonly postRefactorCalls: string[] = [];
+  private readonly postDefineCalls: PostDefineCall[] = [];
   private readonly outputDir: string;
-  private hasBranchName = false;
-  private hasStorageStack = false;
+  private analyticsResultAlias: string | undefined;
+  private analyticsResultVar: string | undefined;
 
   public constructor(outputDir: string) {
     this.outputDir = outputDir;
   }
 
   /**
-   * Adds named imports to backend.ts, merging identifiers into an
-   * existing entry when the source module already has one.
+   * Adds a namespace import: `import * as alias from 'source';`
    */
-  public addImport(source: string, identifiers: string[]): void {
-    const existing = this.imports.find((i) => i.source === source);
-    if (existing) {
-      for (const id of identifiers) {
-        if (!existing.identifiers.includes(id)) {
-          existing.identifiers.push(id);
-        }
-      }
-    } else {
-      this.imports.push({ source, identifiers: [...identifiers] });
+  public addNamespaceImport(alias: string, source: string): void {
+    if (!this.namespaceImports.some((i) => i.alias === alias)) {
+      this.namespaceImports.push({ alias, source });
     }
   }
 
   /**
-   * Adds a property to the `defineBackend({ ... })` call.
+   * Adds an entry to the `defineBackend({ key: alias.exportName })` call.
    */
-  public addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void {
-    this.defineBackendProperties.push(property);
+  public addDefineBackendEntry(key: string, alias: string, exportName: string): void {
+    if (!this.defineBackendEntries.some((e) => e.key === key)) {
+      this.defineBackendEntries.push({ key, alias, exportName });
+    }
   }
 
   /**
-   * Adds a statement after the `defineBackend()` call (overrides, escape hatches).
+   * Adds `alias.applyEscapeHatches(backend)` or
+   * `alias.applyEscapeHatches(backend, analyticsResult)` to the
+   * escape-hatches section.
    */
-  public addStatement(statement: ts.Statement): void {
-    this.postDefineStatements.push(statement);
-  }
-
-  /** Adds `const varName = backend.a.b.c;` after defineBackend(). */
-  public addConstFromBackend(varName: string, ...path: string[]): void {
-    this.postDefineStatements.push(TS.constDecl(varName, TS.propAccess('backend', ...path)));
+  public addApplyEscapeHatchesCall(alias: string): void {
+    this.applyEscapeHatchesCalls.push(alias);
   }
 
   /**
-   * Adds a statement right after `defineBackend()`, before regular post-define
-   * statements. Used for DynamoDB table constructs that must precede auth overrides.
+   * Adds a statement inside the `postRefactor()` function body.
+   * The statement string is emitted as-is (e.g. `storage.postRefactor(backend)`).
    */
-  public addEarlyStatement(statement: ts.Statement): void {
-    this.earlyStatements.push(statement);
+  public addPostRefactorCall(statement: string): void {
+    this.postRefactorCalls.push(statement);
   }
 
   /**
-   * Ensures the `branchName` variable is declared exactly once in backend.ts.
-   * Multiple generators (REST API, functions) may need it.
+   * Adds a post-define call: `const varName = expression;`
+   * These appear right after defineBackend and before postRefactor.
    */
-  public ensureBranchName(): void {
-    if (this.hasBranchName) return;
-    this.hasBranchName = true;
-    this.postDefineStatements.push(TS.constDecl('branchName', factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"')));
+  public addPostDefineCall(variableName: string, expression: string): void {
+    this.postDefineCalls.push({ variableName, expression });
   }
 
   /**
-   * Creates a per-DDB-table stack via `backend.createStack('storage' + resourceName)`.
-   * Returns the variable name used to reference the stack (e.g., `storageActivityStack`).
-   * Each DDB table gets its own nested stack, enabling multi-table support.
+   * Adds a plain post-define statement (no variable assignment).
+   * These appear right after defineBackend and before postRefactor.
    */
-  public createDynamoDBStack(resourceName: string): string {
-    const varName = `storage${resourceName.charAt(0).toUpperCase()}${resourceName.slice(1)}Stack`;
-    const stackExpression = factory.createCallExpression(
-      TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression,
-      undefined,
-      [factory.createStringLiteral('storage' + resourceName)],
-    );
-    this.earlyStatements.push(TS.constDecl(varName, stackExpression));
-    return varName;
+  public addPostDefineStatement(statement: string): void {
+    this.postDefineCalls.push({ variableName: '', expression: statement });
   }
 
   /**
-   * Assembles all accumulated imports, properties, and statements into backend.ts.
+   * Records the analytics namespace alias so that escape-hatch calls
+   * for functions that depend on analytics can pass `analyticsResult`.
+   */
+  public addAnalyticsResultAlias(alias: string): void {
+    this.analyticsResultAlias = alias;
+  }
+
+  /**
+   * Sets the variable name that holds the analytics result
+   * (e.g. 'analyticsResult').
+   */
+  public setAnalyticsResultVar(varName: string): void {
+    this.analyticsResultVar = varName;
+  }
+
+  /**
+   * Returns the analytics result variable name, if set.
+   */
+  public getAnalyticsResultVar(): string | undefined {
+    return this.analyticsResultVar;
+  }
+
+  /**
+   * Returns the analytics result alias, if set.
+   */
+  public getAnalyticsResultAlias(): string | undefined {
+    return this.analyticsResultAlias;
+  }
+
+  /**
+   * Assembles all accumulated data into backend.ts using string assembly.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const backendTsPath = path.join(this.outputDir, 'amplify', 'backend.ts');
@@ -110,64 +147,71 @@ export class BackendGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/backend.ts'],
         execute: async () => {
-          const nodes: ts.Node[] = [];
+          const lines: string[] = [];
 
-          // Sort imports: relative resource imports first (auth, data, storage,
-          // then other resources), then CDK sub-modules, then @aws-amplify/backend,
-          // then analytics, then CDK root, then CDK cognito.
-          this.addImport('@aws-amplify/backend', ['defineBackend']);
-          const sortedImports = [...this.imports].sort((a, b) => importOrder(a.source) - importOrder(b.source));
-
+          // 1. Namespace imports sorted by category order
+          const sortedImports = [...this.namespaceImports].sort((a, b) => namespaceImportOrder(a.source) - namespaceImportOrder(b.source));
           for (const imp of sortedImports) {
-            nodes.push(createImportDeclaration(imp.source, imp.identifiers));
+            lines.push(`import * as ${imp.alias} from '${imp.source}';`);
+          }
+          lines.push(`import { defineBackend } from '@aws-amplify/backend';`);
+          lines.push('');
+
+          // 2. defineBackend call
+          const sortedEntries = [...this.defineBackendEntries].sort((a, b) => defineBackendOrder(a.key) - defineBackendOrder(b.key));
+          lines.push('const backend = defineBackend({');
+          for (const entry of sortedEntries) {
+            lines.push(`  ${entry.key}: ${entry.alias}.${entry.exportName},`);
+          }
+          lines.push('});');
+          lines.push('');
+
+          // 3. Export Backend type
+          lines.push('export type Backend = typeof backend;');
+          lines.push('');
+
+          // 4. postRefactor function
+          lines.push('export function postRefactor() {');
+          for (const stmt of this.postRefactorCalls) {
+            lines.push(`  ${stmt}`);
+          }
+          lines.push('}');
+          lines.push('');
+
+          // 5. Post-define calls (analytics, geo, DynamoDB tables)
+          for (const call of this.postDefineCalls) {
+            if (call.variableName) {
+              lines.push(`const ${call.variableName} = ${call.expression};`);
+            } else {
+              lines.push(`${call.expression};`);
+            }
+          }
+          if (this.postDefineCalls.length > 0) {
+            lines.push('');
           }
 
-          // Sort defineBackend properties: auth first, then data, storage, then functions
-          const sortedProperties = [...this.defineBackendProperties].sort((a, b) => {
-            const getName = (prop: ts.ObjectLiteralElementLike): string => {
-              if (ts.isShorthandPropertyAssignment(prop)) return prop.name.text;
-              if (ts.isPropertyAssignment(prop)) return prop.name.getText?.() ?? '';
-              return '';
-            };
-            const order = (name: string): number => {
-              if (name === 'auth') return 0;
-              if (name === 'data') return 1;
-              if (name === 'storage') return 2;
-              return 3;
-            };
-            return order(getName(a)) - order(getName(b));
+          // 6. applyEscapeHatches calls
+          for (const alias of this.applyEscapeHatchesCalls) {
+            if (this.analyticsResultAlias && this.needsAnalyticsArg(alias)) {
+              lines.push(`${alias}.applyEscapeHatches(backend, ${this.analyticsResultVar});`);
+            } else {
+              lines.push(`${alias}.applyEscapeHatches(backend);`);
+            }
+          }
+          lines.push('');
+
+          // 7. Commented postRefactor call
+          lines.push('// Uncomment after refactor');
+          lines.push('// postRefactor();');
+          lines.push('');
+
+          let content = lines.join('\n');
+          content = await prettier.format(content, {
+            parser: 'typescript',
+            singleQuote: true,
+            tabWidth: 2,
+            printWidth: 120,
           });
-
-          // const backend = defineBackend({ auth, data, storage, ... })
-          const callExpr = factory.createCallExpression(factory.createIdentifier('defineBackend'), undefined, [
-            factory.createObjectLiteralExpression(sortedProperties, true),
-          ]);
-          nodes.push(TS.constDecl('backend', callExpr));
-
-          nodes.push(...this.earlyStatements);
-          nodes.push(...this.postDefineStatements);
-
-          const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
-          let content = TS.printNodes(nodeArray);
-
-          // Add blank line between the last import and the first non-import statement
-          const lines = content.split('\n');
-          let lastImportIndex = -1;
-          let inImport = false;
-          for (let i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith('import ')) {
-              inImport = true;
-              lastImportIndex = i;
-            }
-            if (inImport && lines[i].includes(' from ')) {
-              lastImportIndex = i;
-              inImport = false;
-            }
-          }
-          if (lastImportIndex >= 0 && lastImportIndex < lines.length - 1 && lines[lastImportIndex + 1] !== '') {
-            lines.splice(lastImportIndex + 1, 0, '');
-            content = lines.join('\n');
-          }
 
           await fs.mkdir(path.dirname(backendTsPath), { recursive: true });
           await fs.writeFile(backendTsPath, content, 'utf-8');
@@ -175,38 +219,52 @@ export class BackendGenerator implements Planner {
       },
     ];
   }
-}
 
-function createImportDeclaration(source: string, identifiers: string[]): ts.ImportDeclaration {
-  const importSpecifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
-  return factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-    factory.createStringLiteral(source),
-  );
+  /**
+   * Determines if a function alias needs the analytics result argument.
+   * This is true when the function's resource.ts has an applyEscapeHatches
+   * that takes an analytics parameter (kinesis-related functions).
+   */
+  private needsAnalyticsArg(alias: string): boolean {
+    // The analytics alias itself doesn't get applyEscapeHatches
+    if (alias === this.analyticsResultAlias) return false;
+    // Functions that were registered as needing analytics will be tracked
+    // by the function generator setting a flag
+    return this.analyticsEscapeHatchAliases.has(alias);
+  }
+
+  private readonly analyticsEscapeHatchAliases = new Set<string>();
+
+  /**
+   * Marks a function alias as needing the analytics result in its
+   * applyEscapeHatches call.
+   */
+  public markNeedsAnalyticsArg(alias: string): void {
+    this.analyticsEscapeHatchAliases.add(alias);
+  }
 }
 
 /**
- * Returns a numeric sort key for import source paths.
- *
- * Groups:
- * 0 — category resource imports (./auth/resource, ./data/resource, ./storage/resource)
- * 1 — other relative resource imports (nested resource paths)
- * 2 — CDK sub-module imports except aws-cognito
- * 3 — @aws-amplify/backend
- * 4 — analytics imports
- * 5 — CDK root (aws-cdk-lib)
- * 6 — aws-cdk-lib/aws-cognito (after Duration so OAuth types appear last)
+ * Sort order for namespace imports in backend.ts.
  */
-function importOrder(source: string): number {
+function namespaceImportOrder(source: string): number {
   if (source === './auth/resource') return 0;
   if (source === './data/resource') return 0.1;
   if (source === './storage/resource') return 0.2;
-  if (source.startsWith('./') && source.endsWith('/resource') && !source.startsWith('./analytics')) return 1;
-  if (source.startsWith('aws-cdk-lib/') && source !== 'aws-cdk-lib/aws-cognito') return 2;
-  if (source === '@aws-amplify/backend') return 3;
-  if (source.startsWith('./analytics')) return 4;
-  if (source === 'aws-cdk-lib') return 5;
-  if (source === 'aws-cdk-lib/aws-cognito') return 6;
-  return 2.5;
+  if (source.startsWith('./storage/')) return 0.3;
+  if (source.startsWith('./function/') || source.startsWith('./auth/')) return 1;
+  if (source.startsWith('./api/')) return 1.5;
+  if (source.startsWith('./analytics/')) return 2;
+  if (source.startsWith('./geo/')) return 2.5;
+  return 3;
+}
+
+/**
+ * Sort order for defineBackend entries.
+ */
+function defineBackendOrder(key: string): number {
+  if (key === 'auth') return 0;
+  if (key === 'data') return 1;
+  if (key === 'storage') return 2;
+  return 3;
 }

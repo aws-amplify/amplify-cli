@@ -103,23 +103,8 @@ export class GeoGenerator implements Planner {
         await fs.writeFile(path.join(geoDir, 'resource.ts'), content, 'utf-8');
 
         // Contribute to backend.ts
-        this.backendGenerator.addImport('./geo/resource', ['defineGeo']);
-        this.backendGenerator.addEarlyStatement(
-          factory.createVariableStatement(
-            undefined,
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  'geo',
-                  undefined,
-                  undefined,
-                  factory.createCallExpression(factory.createIdentifier('defineGeo'), undefined, [factory.createIdentifier('backend')]),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          ),
-        );
+        this.backendGenerator.addNamespaceImport('geo', './geo/resource');
+        this.backendGenerator.addPostDefineStatement(`geo.defineGeo(backend)`);
       },
     });
 

@@ -102,14 +102,14 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          generators.push(new DynamoDBGenerator(this.gen1App, backendGenerator, resource));
+          generators.push(new DynamoDBGenerator(this.gen1App, backendGenerator, outputDir, resource));
           break;
         }
         case 'api:AppSync':
           generators.push(new DataGenerator(this.gen1App, backendGenerator, outputDir, resource));
           break;
         case 'api:API Gateway':
-          generators.push(new RestApiGenerator(this.gen1App, backendGenerator, resource));
+          generators.push(new RestApiGenerator(this.gen1App, backendGenerator, outputDir, resource));
           break;
         case 'analytics:Kinesis':
           generators.push(new AnalyticsKinesisGenerator(this.gen1App, backendGenerator, outputDir, resource));

@@ -6,7 +6,7 @@ import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { TS, newLineIdentifier } from '../../_infra/ts';
 import { DataRenderer, DataTableMapping } from './data.renderer';
 
 const factory = ts.factory;
@@ -75,16 +75,66 @@ export class DataGenerator implements Planner {
             logging,
           });
 
-          const content = TS.printNodes(nodes);
+          // Build applyEscapeHatches if needed
+          const postExportStatements: ts.Node[] = [];
+          const additionalImports: Record<string, Set<string>> = {};
+
+          if (additionalAuthProviders && additionalAuthProviders.length > 0 && hasAuth) {
+            const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(additionalAuthProviders);
+            const applyEscapeHatchesDecl = factory.createFunctionDeclaration(
+              [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+              undefined,
+              'applyEscapeHatches',
+              undefined,
+              [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
+              undefined,
+              factory.createBlock(escapeHatchStatements, true),
+            );
+            postExportStatements.push(applyEscapeHatchesDecl);
+          }
+
+          // Add Backend type import and reconstruct file
+          const backendTypeImport = factory.createImportDeclaration(
+            undefined,
+            factory.createImportClause(
+              true,
+              undefined,
+              factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+            ),
+            factory.createStringLiteral('../backend'),
+          );
+
+          const allNodes: ts.Node[] = [];
+          let foundFirstNonImport = false;
+          for (const node of nodes) {
+            if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
+              allNodes.push(node);
+            } else {
+              if (!foundFirstNonImport) {
+                allNodes.push(backendTypeImport);
+                foundFirstNonImport = true;
+              }
+              allNodes.push(node);
+            }
+          }
+          if (!foundFirstNonImport) {
+            allNodes.push(backendTypeImport);
+          }
+          for (const stmt of postExportStatements) {
+            allNodes.push(newLineIdentifier);
+            allNodes.push(stmt);
+          }
+
+          const nodeArray = factory.createNodeArray(allNodes as ts.Statement[]);
+          const content = TS.printNodes(nodeArray);
           await fs.mkdir(dataDir, { recursive: true });
           await fs.writeFile(path.join(dataDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addImport('./data/resource', ['data']);
-          this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier('data')));
-
-          // Add additional auth providers override to backend.ts
+          // Contribute to backend.ts using new API
+          this.backendGenerator.addNamespaceImport('data', './data/resource');
+          this.backendGenerator.addDefineBackendEntry('data', 'data', 'data');
           if (additionalAuthProviders && additionalAuthProviders.length > 0 && hasAuth) {
-            this.contributeAdditionalAuthProviders(additionalAuthProviders);
+            this.backendGenerator.addApplyEscapeHatchesCall('data');
           }
         },
       },
@@ -92,11 +142,10 @@ export class DataGenerator implements Planner {
   }
 
   /**
-   * Contributes additional auth provider overrides to backend.ts.
-   * Generates: `cfnGraphqlApi.additionalAuthenticationProviders = [...]`
+   * Builds additional auth provider override statements for applyEscapeHatches.
    */
-  private contributeAdditionalAuthProviders(providers: Array<Record<string, unknown>>): void {
-    // const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+  private buildAdditionalAuthProviderStatements(providers: Array<Record<string, unknown>>): ts.Statement[] {
+    const statements: ts.Statement[] = [];
     const cfnGraphqlApiDecl = factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -120,7 +169,7 @@ export class DataGenerator implements Planner {
         ts.NodeFlags.Const,
       ),
     );
-    this.backendGenerator.addStatement(cfnGraphqlApiDecl);
+    statements.push(cfnGraphqlApiDecl);
 
     // cfnGraphqlApi.additionalAuthenticationProviders = [{ authenticationType: '...' }, ...]
     const providerElements = providers.map((provider) => {
@@ -176,7 +225,8 @@ export class DataGenerator implements Planner {
         factory.createArrayLiteralExpression(providerElements, true),
       ),
     );
-    this.backendGenerator.addStatement(assignment);
+    statements.push(assignment);
+    return statements;
   }
 }
 

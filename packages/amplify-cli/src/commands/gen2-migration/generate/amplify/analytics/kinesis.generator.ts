@@ -86,25 +86,11 @@ export class AnalyticsKinesisGenerator implements Planner {
           await fs.mkdir(analyticsDir, { recursive: true });
           await fs.writeFile(path.join(analyticsDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addImport('./analytics/resource', ['defineAnalytics']);
-          this.backendGenerator.addEarlyStatement(
-            factory.createVariableStatement(
-              undefined,
-              factory.createVariableDeclarationList(
-                [
-                  factory.createVariableDeclaration(
-                    'analytics',
-                    undefined,
-                    undefined,
-                    factory.createCallExpression(factory.createIdentifier('defineAnalytics'), undefined, [
-                      factory.createIdentifier('backend'),
-                    ]),
-                  ),
-                ],
-                ts.NodeFlags.Const,
-              ),
-            ),
-          );
+          this.backendGenerator.addNamespaceImport('analytics', './analytics/resource');
+          this.backendGenerator.addPostDefineCall('analyticsResult', `analytics.defineAnalytics(backend)`);
+          this.backendGenerator.setAnalyticsResultVar('analyticsResult');
+          this.backendGenerator.addAnalyticsResultAlias('analytics');
+          this.backendGenerator.addPostRefactorCall(`analytics.postRefactor(analyticsResult);`);
         },
       },
     ];

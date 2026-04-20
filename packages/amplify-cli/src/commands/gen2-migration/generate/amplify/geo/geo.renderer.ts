@@ -31,11 +31,11 @@ export class GeoRenderer {
     const backendImport = factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
-        false,
+        true,
         undefined,
         factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
       ),
-      factory.createStringLiteral('@aws-amplify/backend'),
+      factory.createStringLiteral('../../backend'),
     );
 
     const branchNameConst = TS.createBranchNameDeclaration();
@@ -61,9 +61,11 @@ export class GeoRenderer {
 
     const returnStatement = factory.createReturnStatement(factory.createIdentifier(resourceName));
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend<any> in generated code
-    const arrowFunction = factory.createArrowFunction(
+    // export function defineXxx(backend: Backend) { ... }
+    const functionDeclaration = factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
+      factory.createIdentifier(functionName),
       undefined,
       [
         factory.createParameterDeclaration(
@@ -71,20 +73,11 @@ export class GeoRenderer {
           undefined,
           factory.createIdentifier('backend'),
           undefined,
-          factory.createTypeReferenceNode(factory.createIdentifier('Backend'), [factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)]),
+          factory.createTypeReferenceNode(factory.createIdentifier('Backend')),
         ),
       ],
       undefined,
-      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       factory.createBlock([createStackCall, constructInstantiation, returnStatement], true),
-    );
-
-    const exportStatement = factory.createVariableStatement(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      factory.createVariableDeclarationList(
-        [factory.createVariableDeclaration(factory.createIdentifier(functionName), undefined, undefined, arrowFunction)],
-        ts.NodeFlags.Const,
-      ),
     );
 
     return factory.createNodeArray([
@@ -93,7 +86,7 @@ export class GeoRenderer {
       newLineIdentifier,
       branchNameConst,
       newLineIdentifier,
-      exportStatement,
+      functionDeclaration,
     ]);
   }
 
@@ -118,11 +111,11 @@ export class GeoRenderer {
     const backendImport = factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
-        false,
+        true,
         undefined,
         factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
       ),
-      factory.createStringLiteral('@aws-amplify/backend'),
+      factory.createStringLiteral('../backend'),
     );
 
     const functionAssignments = resources.map((r) => {
@@ -135,9 +128,11 @@ export class GeoRenderer {
 
     const addOutputStatement = this.buildAddOutputStatement(resources);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Backend<any> in generated code
-    const arrowFunction = factory.createArrowFunction(
+    // export function defineGeo(backend: Backend) { ... }
+    const functionDeclaration = factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
+      factory.createIdentifier('defineGeo'),
       undefined,
       [
         factory.createParameterDeclaration(
@@ -145,23 +140,14 @@ export class GeoRenderer {
           undefined,
           factory.createIdentifier('backend'),
           undefined,
-          factory.createTypeReferenceNode(factory.createIdentifier('Backend'), [factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)]),
+          factory.createTypeReferenceNode(factory.createIdentifier('Backend')),
         ),
       ],
       undefined,
-      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       factory.createBlock([...functionAssignments, addOutputStatement], true),
     );
 
-    const exportStatement = factory.createVariableStatement(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      factory.createVariableDeclarationList(
-        [factory.createVariableDeclaration(factory.createIdentifier('defineGeo'), undefined, undefined, arrowFunction)],
-        ts.NodeFlags.Const,
-      ),
-    );
-
-    return factory.createNodeArray([...resourceImports, backendImport, newLineIdentifier, exportStatement]);
+    return factory.createNodeArray([...resourceImports, backendImport, newLineIdentifier, functionDeclaration]);
   }
 
   private buildConstructProps(params: GeoCodegenResult): ts.ObjectLiteralElementLike[] {
