@@ -15,7 +15,7 @@ export class GeoRenderer {
    * Produces a defineXxx function that creates a CDK stack,
    * instantiates the generated construct, and returns it.
    */
-  public renderResource(params: GeoCodegenResult): ts.NodeArray<ts.Node> {
+  public render(params: GeoCodegenResult): ts.NodeArray<ts.Node> {
     return factory.createNodeArray([
       this.renderConstructImport(params),
       this.renderBackendTypeImport(),

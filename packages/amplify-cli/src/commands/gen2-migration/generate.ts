@@ -21,7 +21,7 @@ import { S3Generator } from './generate/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
-import { GeoGenerator } from './generate/amplify/geo/geo.generator';
+import { GeoGenerator, GeoAggregatorGenerator } from './generate/amplify/geo/geo.generator';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -65,7 +65,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     // Cross-category state captured during the loop.
     let authGenerator: AuthGenerator | undefined;
     let s3Generator: S3Generator | undefined;
-    let geoGenerator: GeoGenerator | undefined;
+    const geoGenerators: GeoGenerator[] = [];
     const functionGenerators: FunctionGenerator[] = [];
 
     const discovered = this.gen1App.discover();
@@ -116,13 +116,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         case 'geo:Map':
         case 'geo:PlaceIndex':
-        case 'geo:GeofenceCollection':
-          // All geo services share a single GeoGenerator instance.
-          if (!geoGenerator) {
-            geoGenerator = new GeoGenerator(this.gen1App, backendGenerator, outputDir, resource);
-            generators.push(geoGenerator);
-          }
+        case 'geo:GeofenceCollection': {
+          const geoGen = new GeoGenerator(this.gen1App, outputDir, resource);
+          generators.push(geoGen);
+          geoGenerators.push(geoGen);
           break;
+        }
         case 'function:Lambda': {
           const functionCategoryMap = computeFunctionCategories(this.gen1App);
           const funcGen = new FunctionGenerator({
@@ -150,6 +149,11 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     for (const funcGen of functionGenerators) {
       if (authGenerator) funcGen.setAuthGenerator(authGenerator);
       if (s3Generator) funcGen.setS3Generator(s3Generator);
+    }
+
+    // Geo aggregator runs after all per-resource geo generators.
+    if (geoGenerators.length > 0) {
+      generators.push(new GeoAggregatorGenerator(backendGenerator, outputDir, geoGenerators));
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates
