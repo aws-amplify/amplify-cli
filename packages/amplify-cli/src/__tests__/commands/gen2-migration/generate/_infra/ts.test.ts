@@ -8,9 +8,9 @@ function print(node: ts.Node): string {
   return printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 }
 
-describe('constDecl', () => {
+describe('declareConst', () => {
   it('creates a const variable statement', () => {
-    const result = TS.constDecl('foo', ts.factory.createStringLiteral('bar'));
+    const result = TS.declareConst('foo', ts.factory.createStringLiteral('bar'));
     expect(print(result)).toBe(`const foo = "bar";`);
   });
 });

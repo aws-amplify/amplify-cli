@@ -22,9 +22,9 @@ import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
 import { GeoGenerator } from './generate/amplify/geo/geo.generator';
-import { GeoMapGenerator } from './generate/amplify/geo/geo-map.generator';
-import { GeoPlaceIndexGenerator } from './generate/amplify/geo/geo-place-index.generator';
-import { GeoGeofenceCollectionGenerator } from './generate/amplify/geo/geo-geofence-collection.generator';
+import { GeoMapGenerator } from './generate/amplify/geo/map.generator';
+import { GeoPlaceIndexGenerator } from './generate/amplify/geo/place-index.generator';
+import { GeoGeofenceCollectionGenerator } from './generate/amplify/geo/geofence-collection.generator';
 
 const AMPLIFY_DIR = 'amplify';
 

@@ -1,24 +1,29 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
-import { GeoCodegenResult } from './geo.types';
+import type { GeoResourceProps } from './geo.generator';
 
 const factory = ts.factory;
 
 /**
- * Renders the top-level geo/resource.ts aggregator file.
- * Pure AST construction — no AWS calls, no side effects.
+ * Renders the top-level geo/resource.ts file.
+ * Receives pre-grouped arrays so it never inspects service type.
  */
-export class GeoAggregatorRenderer {
-  public render(resources: readonly GeoCodegenResult[]): ts.NodeArray<ts.Node> {
+export class GeoRenderer {
+  public render(
+    maps: readonly GeoResourceProps[],
+    placeIndices: readonly GeoResourceProps[],
+    geofenceCollections: readonly GeoResourceProps[],
+  ): ts.NodeArray<ts.Node> {
+    const allResources = [...maps, ...placeIndices, ...geofenceCollections];
     return factory.createNodeArray([
-      ...this.renderImports(resources),
+      ...this.renderImports(allResources),
       this.renderBackendTypeImport(),
       newLineIdentifier,
-      this.renderDefineGeo(resources),
+      this.renderDefineGeo(allResources, maps, placeIndices, geofenceCollections),
     ]);
   }
 
-  private renderImports(resources: readonly GeoCodegenResult[]): ts.ImportDeclaration[] {
+  private renderImports(resources: readonly GeoResourceProps[]): ts.ImportDeclaration[] {
     return resources.map((r) => {
       const functionName = `define${r.resourceName.charAt(0).toUpperCase()}${r.resourceName.slice(1)}`;
       return factory.createImportDeclaration(
@@ -45,16 +50,21 @@ export class GeoAggregatorRenderer {
     );
   }
 
-  private renderDefineGeo(resources: readonly GeoCodegenResult[]): ts.FunctionDeclaration {
-    const functionAssignments = resources.map((r) => {
+  private renderDefineGeo(
+    allResources: readonly GeoResourceProps[],
+    maps: readonly GeoResourceProps[],
+    placeIndices: readonly GeoResourceProps[],
+    geofenceCollections: readonly GeoResourceProps[],
+  ): ts.FunctionDeclaration {
+    const functionAssignments = allResources.map((r) => {
       const functionName = `define${r.resourceName.charAt(0).toUpperCase()}${r.resourceName.slice(1)}`;
-      return TS.constDecl(
+      return TS.declareConst(
         r.resourceName,
         factory.createCallExpression(factory.createIdentifier(functionName), undefined, [factory.createIdentifier('backend')]),
       );
     });
 
-    const addOutputStatement = this.buildAddOutputStatement(resources);
+    const addOutputStatement = this.buildAddOutputStatement(allResources, maps, placeIndices, geofenceCollections);
 
     return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
@@ -75,20 +85,21 @@ export class GeoAggregatorRenderer {
     );
   }
 
-  private buildAddOutputStatement(resources: readonly GeoCodegenResult[]): ts.ExpressionStatement {
-    const maps = resources.filter((r) => r.serviceName === 'Map');
-    const placeIndexes = resources.filter((r) => r.serviceName === 'PlaceIndex');
-    const geofenceCollections = resources.filter((r) => r.serviceName === 'GeofenceCollection');
-
+  private buildAddOutputStatement(
+    allResources: readonly GeoResourceProps[],
+    maps: readonly GeoResourceProps[],
+    placeIndices: readonly GeoResourceProps[],
+    geofenceCollections: readonly GeoResourceProps[],
+  ): ts.ExpressionStatement {
     const geoProps: ts.ObjectLiteralElementLike[] = [];
 
-    const firstResource = maps[0] ?? placeIndexes[0] ?? geofenceCollections[0];
+    const firstResource = allResources[0];
     geoProps.push(
       factory.createPropertyAssignment(factory.createIdentifier('aws_region'), TS.propAccess(firstResource.resourceName, 'region')),
     );
 
     if (maps.length > 0) geoProps.push(this.buildMapsSection(maps));
-    if (placeIndexes.length > 0) geoProps.push(this.buildSearchIndicesSection(placeIndexes));
+    if (placeIndices.length > 0) geoProps.push(this.buildSearchIndicesSection(placeIndices));
     if (geofenceCollections.length > 0) geoProps.push(this.buildGeofenceCollectionsSection(geofenceCollections));
 
     return factory.createExpressionStatement(
@@ -101,7 +112,7 @@ export class GeoAggregatorRenderer {
     );
   }
 
-  private buildMapsSection(maps: readonly GeoCodegenResult[]): ts.PropertyAssignment {
+  private buildMapsSection(maps: readonly GeoResourceProps[]): ts.PropertyAssignment {
     const mapItems = maps.map((m) =>
       factory.createPropertyAssignment(
         factory.createComputedPropertyName(TS.propAccess(m.resourceName, 'name')),
@@ -124,9 +135,9 @@ export class GeoAggregatorRenderer {
     );
   }
 
-  private buildSearchIndicesSection(placeIndexes: readonly GeoCodegenResult[]): ts.PropertyAssignment {
-    const indexItems = placeIndexes.map((p) => TS.propAccess(p.resourceName, 'name'));
-    const defaultIndex = placeIndexes.find((p) => p.isDefault === 'true') ?? placeIndexes[0];
+  private buildSearchIndicesSection(placeIndices: readonly GeoResourceProps[]): ts.PropertyAssignment {
+    const indexItems = placeIndices.map((p) => TS.propAccess(p.resourceName, 'name'));
+    const defaultIndex = placeIndices.find((p) => p.isDefault === 'true') ?? placeIndices[0];
 
     return factory.createPropertyAssignment(
       factory.createIdentifier('search_indices'),
@@ -140,7 +151,7 @@ export class GeoAggregatorRenderer {
     );
   }
 
-  private buildGeofenceCollectionsSection(geofenceCollections: readonly GeoCodegenResult[]): ts.PropertyAssignment {
+  private buildGeofenceCollectionsSection(geofenceCollections: readonly GeoResourceProps[]): ts.PropertyAssignment {
     const collectionItems = geofenceCollections.map((g) => TS.propAccess(g.resourceName, 'name'));
     const defaultCollection = geofenceCollections.find((g) => g.isDefault === 'true') ?? geofenceCollections[0];
 

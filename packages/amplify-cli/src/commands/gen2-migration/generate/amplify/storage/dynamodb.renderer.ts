@@ -96,7 +96,7 @@ export class DynamoDBRenderer {
     const bodyStatements: ts.Statement[] = [];
 
     bodyStatements.push(
-      TS.constDecl(
+      TS.declareConst(
         scopeVarName,
         factory.createCallExpression(TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression, undefined, [
           factory.createStringLiteral('storage' + this.resourceName),

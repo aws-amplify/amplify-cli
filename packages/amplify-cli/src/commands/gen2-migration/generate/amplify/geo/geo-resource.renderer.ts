@@ -1,15 +1,16 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
-import { GeoCodegenResult } from './geo.types';
+import { GeoResourceProps } from './geo.generator';
 
 const factory = ts.factory;
 
 /**
  * Renders a per-resource geo/{resourceName}/resource.ts file.
  * Pure AST construction — no AWS calls, no side effects.
+ * Fully generic: service-specific props come from the generator.
  */
 export class GeoResourceRenderer {
-  public render(params: GeoCodegenResult): ts.NodeArray<ts.Node> {
+  public render(params: GeoResourceProps): ts.NodeArray<ts.Node> {
     return factory.createNodeArray([
       this.renderConstructImport(params),
       this.renderBackendTypeImport(),
@@ -20,7 +21,7 @@ export class GeoResourceRenderer {
     ]);
   }
 
-  private renderConstructImport(params: GeoCodegenResult): ts.ImportDeclaration {
+  private renderConstructImport(params: GeoResourceProps): ts.ImportDeclaration {
     return factory.createImportDeclaration(
       undefined,
       factory.createImportClause(
@@ -44,11 +45,11 @@ export class GeoResourceRenderer {
     );
   }
 
-  private renderDefineResource(params: GeoCodegenResult): ts.FunctionDeclaration {
+  private renderDefineResource(params: GeoResourceProps): ts.FunctionDeclaration {
     const { constructClassName, resourceName } = params;
     const functionName = `define${resourceName.charAt(0).toUpperCase()}${resourceName.slice(1)}`;
 
-    const createStackCall = TS.constDecl(
+    const createStackCall = TS.declareConst(
       `${resourceName}Stack`,
       factory.createCallExpression(TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression, undefined, [
         factory.createStringLiteral(`geo${resourceName}`),
@@ -57,7 +58,7 @@ export class GeoResourceRenderer {
 
     const constructProps = this.buildConstructProps(params);
 
-    const constructInstantiation = TS.constDecl(
+    const constructInstantiation = TS.declareConst(
       resourceName,
       factory.createNewExpression(factory.createIdentifier(constructClassName), undefined, [
         factory.createIdentifier(`${resourceName}Stack`),
@@ -87,10 +88,10 @@ export class GeoResourceRenderer {
     );
   }
 
-  private buildConstructProps(params: GeoCodegenResult): ts.ObjectLiteralElementLike[] {
+  private buildConstructProps(params: GeoResourceProps): ts.ObjectLiteralElementLike[] {
     const props: ts.ObjectLiteralElementLike[] = [];
 
-    if (params.serviceName === 'Map' || params.serviceName === 'PlaceIndex') {
+    if (params.needsAuthAndUnauthRoles) {
       props.push(factory.createPropertyAssignment(factory.createIdentifier('authRoleName'), createAuthRoleAccess()));
       props.push(factory.createPropertyAssignment(factory.createIdentifier('unauthRoleName'), createUnauthRoleAccess()));
     }
@@ -105,38 +106,14 @@ export class GeoResourceRenderer {
       );
     }
 
-    props.push(...this.getServiceSpecificProps(params));
+    for (const prop of params.serviceSpecificProps) {
+      props.push(factory.createPropertyAssignment(factory.createIdentifier(prop.key), factory.createStringLiteral(prop.value)));
+    }
+
     props.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('branchName')));
     props.push(factory.createPropertyAssignment(factory.createIdentifier('isDefault'), factory.createStringLiteral(params.isDefault)));
 
     return props;
-  }
-
-  private getServiceSpecificProps(params: GeoCodegenResult): ts.PropertyAssignment[] {
-    switch (params.serviceName) {
-      case 'Map':
-        return [
-          factory.createPropertyAssignment(factory.createIdentifier('mapName'), factory.createStringLiteral(params.mapName)),
-          factory.createPropertyAssignment(factory.createIdentifier('mapStyle'), factory.createStringLiteral(params.mapStyle)),
-        ];
-      case 'PlaceIndex':
-        return [
-          factory.createPropertyAssignment(factory.createIdentifier('indexName'), factory.createStringLiteral(params.indexName)),
-          factory.createPropertyAssignment(factory.createIdentifier('dataProvider'), factory.createStringLiteral(params.dataProvider)),
-          factory.createPropertyAssignment(
-            factory.createIdentifier('dataSourceIntendedUse'),
-            factory.createStringLiteral(params.dataSourceIntendedUse),
-          ),
-        ];
-      case 'GeofenceCollection':
-        return [
-          factory.createPropertyAssignment(factory.createIdentifier('collectionName'), factory.createStringLiteral(params.collectionName)),
-        ];
-      default: {
-        const _exhaustiveCheck: never = params;
-        throw new Error(`Unsupported geo service type: ${(_exhaustiveCheck as GeoCodegenResult).serviceName}`);
-      }
-    }
   }
 }
 

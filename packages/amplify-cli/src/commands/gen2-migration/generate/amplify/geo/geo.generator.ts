@@ -4,30 +4,59 @@ import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { TS } from '../../_infra/ts';
-import { GeoAggregatorRenderer } from './geo-aggregator.renderer';
-import { GeoCodegenResult } from './geo.types';
+import { GeoRenderer } from './geo.renderer';
 
 /**
- * Generates the top-level geo/resource.ts aggregator.
- * Sub-resource generators (GeoMapGenerator, GeoPlaceIndexGenerator,
- * GeoGeofenceCollectionGenerator) contribute their codegen results
- * via addCodegenResult(). Must be planned after all sub-resource
- * generators have executed.
+ * Base fields common to all geo resource props.
+ * Service-specific construct props are carried as plain key/value
+ * pairs so the renderer stays generic.
+ */
+export interface GeoResourceProps {
+  readonly constructClassName: string;
+  readonly constructFileName: string;
+  readonly resourceName: string;
+  readonly userPoolIdParamName: string;
+  readonly groupRoles: ReadonlyArray<{ readonly paramName: string; readonly groupName: string }>;
+  readonly isDefault: string;
+  /** Whether the construct needs authRoleName / unauthRoleName props. */
+  readonly needsAuthAndUnauthRoles: boolean;
+  /** Service-specific construct props (e.g. mapName, indexName). */
+  readonly serviceSpecificProps: ReadonlyArray<{ readonly key: string; readonly value: string }>;
+}
+
+/**
+ * Generates the top-level geo/resource.ts.
+ * Sub-resource generators contribute their props via the typed
+ * add methods. Must be planned after all sub-resource generators
+ * have executed.
  */
 export class GeoGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
-  private readonly codegenResults: GeoCodegenResult[] = [];
-  private readonly renderer = new GeoAggregatorRenderer();
+  private readonly renderer = new GeoRenderer();
+
+  private readonly maps: GeoResourceProps[] = [];
+  private readonly placeIndices: GeoResourceProps[] = [];
+  private readonly geofenceCollections: GeoResourceProps[] = [];
 
   public constructor(backendGenerator: BackendGenerator, outputDir: string) {
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
   }
 
-  /** Called by sub-resource generators to contribute their results. */
-  public addCodegenResult(result: GeoCodegenResult): void {
-    this.codegenResults.push(result);
+  /** Register a Map resource. */
+  public addMap(props: GeoResourceProps): void {
+    this.maps.push(props);
+  }
+
+  /** Register a PlaceIndex resource. */
+  public addPlaceIndex(props: GeoResourceProps): void {
+    this.placeIndices.push(props);
+  }
+
+  /** Register a GeofenceCollection resource. */
+  public addGeofenceCollection(props: GeoResourceProps): void {
+    this.geofenceCollections.push(props);
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -38,7 +67,7 @@ export class GeoGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/geo/resource.ts'],
         execute: async () => {
-          const nodes = this.renderer.render(this.codegenResults);
+          const nodes = this.renderer.render(this.maps, this.placeIndices, this.geofenceCollections);
           const content = TS.printNodes(nodes);
 
           await fs.mkdir(geoDir, { recursive: true });

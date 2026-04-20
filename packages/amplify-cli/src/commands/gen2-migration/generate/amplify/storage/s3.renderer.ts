@@ -233,7 +233,7 @@ export class S3Renderer {
 
   /** Creates `const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;` */
   private createCfnBucketDecl(): ts.VariableStatement {
-    return TS.constDecl('s3Bucket', TS.propAccess('backend', 'storage', 'resources', 'cfnResources', 'cfnBucket'));
+    return TS.declareConst('s3Bucket', TS.propAccess('backend', 'storage', 'resources', 'cfnResources', 'cfnBucket'));
   }
 
   private renderName(target: ts.PropertyAssignment[], storageIdentifier: string): void {

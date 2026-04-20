@@ -47,7 +47,7 @@ export class TS {
   /**
    * Creates `const {name} = {initializer};`
    */
-  public static constDecl(name: string, initializer: ts.Expression): ts.VariableStatement {
+  public static declareConst(name: string, initializer: ts.Expression): ts.VariableStatement {
     return factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -72,7 +72,7 @@ export class TS {
    * Creates `const {name} = backend.{...path};`
    */
   public static constFromBackend(name: string, ...path: string[]): ts.VariableStatement {
-    return TS.constDecl(name, TS.propAccess('backend', ...path));
+    return TS.declareConst(name, TS.propAccess('backend', ...path));
   }
 
   /**
@@ -113,7 +113,7 @@ export class TS {
    * Creates a `const branchName = process.env.AWS_BRANCH ?? "sandbox"` AST node.
    */
   public static createBranchNameDeclaration(): ts.VariableStatement {
-    return TS.constDecl('branchName', factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'));
+    return TS.declareConst('branchName', factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'));
   }
 
   /**

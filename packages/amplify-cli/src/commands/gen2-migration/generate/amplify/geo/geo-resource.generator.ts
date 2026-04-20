@@ -8,22 +8,21 @@ import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { GeoResourceRenderer } from './geo-resource.renderer';
-import { GeoCodegenResult, GeoCodegenResultBase, GeoProviderMetadata } from './geo.types';
-import { GeoGenerator } from './geo.generator';
+import { GeoResourceProps, GeoGenerator } from './geo.generator';
 
 /**
  * Base class for geo sub-resource generators.
  * Handles the common logic of converting CFN, rendering, and contributing
- * the codegen result to the GeoGenerator aggregator.
+ * the codegen result to the GeoGenerator.
  *
- * Subclasses implement buildCodegenResult() to produce the service-specific
+ * Sub-classes implement buildCodegenResult() to produce the service-specific
  * codegen result from the base result and parameter map.
  */
 export abstract class GeoResourceGenerator implements Planner {
   protected readonly gen1App: Gen1App;
   protected readonly outputDir: string;
   protected readonly resource: DiscoveredResource;
-  private readonly geoGenerator: GeoGenerator;
+  protected readonly geoGenerator: GeoGenerator;
   private readonly renderer = new GeoResourceRenderer();
 
   protected constructor(gen1App: Gen1App, outputDir: string, resource: DiscoveredResource, geoGenerator: GeoGenerator) {
@@ -37,14 +36,14 @@ export abstract class GeoResourceGenerator implements Planner {
    * Builds the service-specific codegen result from the common base
    * and the raw parameter map.
    */
-  protected abstract buildCodegenResult(base: GeoCodegenResultBase, paramMap: ReadonlyMap<string, string>): GeoCodegenResult;
+  protected abstract addResource(base: GeoResourceProps, parameters: ReadonlyMap<string, string>): GeoResourceProps;
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const resourceName = this.resource.resourceName;
     const geoCategory = this.gen1App.meta('geo');
-    if (!geoCategory || !geoCategory[resourceName]) return [];
 
-    const meta = geoCategory[resourceName] as { providerMetadata: GeoProviderMetadata };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const resourceMeta = geoCategory[resourceName] as any;
     const geoDir = path.join(this.outputDir, 'amplify', 'geo');
 
     return [
@@ -53,11 +52,9 @@ export abstract class GeoResourceGenerator implements Planner {
         validate: () => undefined,
         describe: async () => [`Generate amplify/geo/${resourceName}/resource.ts`],
         execute: async () => {
-          const { base, paramMap } = await this.generateBase(resourceName, meta.providerMetadata);
-          const codegenResult = this.buildCodegenResult(base, paramMap);
-          this.geoGenerator.addCodegenResult(codegenResult);
-
-          const nodes = this.renderer.render(codegenResult);
+          const { props, parameters } = await this.generateBase(resourceMeta.logicalId);
+          const resource = this.addResource(props, parameters);
+          const nodes = this.renderer.render(resource);
           const content = TS.printNodes(nodes);
 
           const resourceDir = path.join(geoDir, resourceName);
@@ -73,13 +70,11 @@ export abstract class GeoResourceGenerator implements Planner {
    * plus the raw parameter map for service-specific extraction.
    */
   private async generateBase(
-    resourceName: string,
-    providerMetadata: GeoProviderMetadata,
-  ): Promise<{ readonly base: GeoCodegenResultBase; readonly paramMap: ReadonlyMap<string, string> }> {
-    const constructFileName = `${resourceName}-construct`;
-    const filePath = path.join(this.outputDir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
-    const template = this.gen1App.json(`geo/${resourceName}/${resourceName}-cloudformation-template.json`);
-    const nestedStackLogicalId = providerMetadata.logicalId;
+    nestedStackLogicalId: string,
+  ): Promise<{ readonly props: GeoResourceProps; readonly parameters: ReadonlyMap<string, string> }> {
+    const constructFileName = `${this.resource.resourceName}-construct`;
+    const filePath = path.join(this.outputDir, 'amplify', 'geo', this.resource.resourceName, `${constructFileName}.ts`);
+    const template = this.gen1App.json(`geo/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`);
 
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
     const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
@@ -103,7 +98,7 @@ export abstract class GeoResourceGenerator implements Planner {
 
     const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
     if (!classNameMatch) {
-      throw new Error(`Failed to extract class name from generated construct for geo resource: ${resourceName}`);
+      throw new Error(`Failed to extract class name from generated construct for geo resource: ${this.resource.resourceName}`);
     }
     const constructClassName = classNameMatch[1];
 
@@ -126,16 +121,18 @@ export abstract class GeoResourceGenerator implements Planner {
       }
     }
 
-    const base: GeoCodegenResultBase = {
+    const base: GeoResourceProps = {
       constructClassName,
       constructFileName,
-      resourceName,
+      resourceName: this.resource.resourceName,
       userPoolIdParamName,
       groupRoles,
       isDefault: paramMap.get('isDefault') ?? 'false',
+      needsAuthAndUnauthRoles: false,
+      serviceSpecificProps: [],
     };
 
-    return { base, paramMap };
+    return { props: base, parameters: paramMap };
   }
 
   private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {

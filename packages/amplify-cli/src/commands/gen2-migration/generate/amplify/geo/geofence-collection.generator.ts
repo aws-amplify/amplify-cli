@@ -1,7 +1,6 @@
 import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
-import { GeoCodegenResult, GeoCodegenResultBase } from './geo.types';
 import { GeoResourceGenerator } from './geo-resource.generator';
-import { GeoGenerator } from './geo.generator';
+import { GeoGenerator, GeoResourceProps } from './geo.generator';
 
 /**
  * Generates a geo GeofenceCollection resource file.
@@ -11,11 +10,13 @@ export class GeoGeofenceCollectionGenerator extends GeoResourceGenerator {
     super(gen1App, outputDir, resource, geoGenerator);
   }
 
-  protected buildCodegenResult(base: GeoCodegenResultBase, paramMap: ReadonlyMap<string, string>): GeoCodegenResult {
-    return {
+  protected addResource(base: GeoResourceProps, parameters: ReadonlyMap<string, string>): GeoResourceProps {
+    const props: GeoResourceProps = {
       ...base,
-      serviceName: 'GeofenceCollection',
-      collectionName: paramMap.get('collectionName') ?? this.resource.resourceName,
+      needsAuthAndUnauthRoles: false,
+      serviceSpecificProps: [{ key: 'collectionName', value: parameters.get('collectionName') ?? this.resource.resourceName }],
     };
+    this.geoGenerator.addGeofenceCollection(props);
+    return props;
   }
 }
