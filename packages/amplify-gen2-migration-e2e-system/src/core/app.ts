@@ -2,7 +2,7 @@ import execa from 'execa';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { getCLIPath, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, initJSProjectWithProfile, amplifyPullNonInteractive } from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
 import { Git } from './git';
 import * as snapshot from './snapshot';
@@ -276,6 +276,11 @@ export class App {
     await this.testGen2();
 
     await this.testSharedData();
+
+    await this.git.checkout(this.gen1BranchName, false);
+    await amplifyPullNonInteractive(this.targetAppPath, { appId: this.getAmplifyAppId(), envName: this.envName });
+    await this.decommission();
+    await this.testGen2();
   }
 
   /**
@@ -299,6 +304,13 @@ export class App {
   public async generate(): Promise<void> {
     await this.runMigrationStep('generate');
     this.removeGitignoreLine('amplify_outputs*');
+  }
+
+  /**
+   * Run `amplify gen2-migration decommission` to tear down the Gen1 environment.
+   */
+  public async decommission(): Promise<void> {
+    await this.runMigrationStep('decommission');
   }
 
   /**
@@ -458,6 +470,16 @@ export class App {
     const configPath = path.join(this.targetAppPath, 'migration', 'config.json');
     if (!fs.existsSync(configPath)) return {};
     return JSON.parse(fs.readFileSync(configPath, 'utf-8')) as MigrationConfig;
+  }
+
+  private getAmplifyAppId(): string {
+    const tpiPath = path.join(this.targetAppPath, 'amplify', 'team-provider-info.json');
+    const tpi = JSON.parse(fs.readFileSync(tpiPath, 'utf-8')) as Record<string, Record<string, Record<string, string>>>;
+    const appId = tpi[this.envName]?.awscloudformation?.AmplifyAppId;
+    if (!appId) {
+      throw new Error(`AmplifyAppId not found in team-provider-info.json for env ${this.envName}`);
+    }
+    return appId;
   }
 
   private async runAmplify(args: string[], options?: { stdio?: 'inherit' }): Promise<void> {
