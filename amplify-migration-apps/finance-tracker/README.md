@@ -75,12 +75,6 @@ amplify add api
 
 ```console
 ? Select from one of the below mentioned services: GraphQL
-? Here is the GraphQL API that we will create. Select a setting to edit or continue Authorization modes: API key (default, expiration time: 7 days from now)
-? Choose the default authorization type for the API Amazon Cognito User Pool
-? Configure additional auth types? Yes
-? Select the additional authorization types you want to configure for the API API key
-✔ Enter a description for the API key: · graphql
-✔ After how many days from now the API key should expire (1-365): · 365
 ? Here is the GraphQL API that we will create. Select a setting to edit or continue Continue
 ? Choose a schema template: One-to-many relationship (e.g., "Blogs" with "Posts" and "Comments")
 ✔ Do you want to edit the schema now? (Y/n) · no
