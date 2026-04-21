@@ -23,13 +23,13 @@ function cloudGen2Migration {
     
     echo "AWS Account: $account_number"
     echo "Project: $E2E_PROJECT_NAME"
-    echo "Buildspec: codebuild_specs/gen2_migration_pr_workflow.yml"
+    echo "Buildspec: codebuild_specs/gen2_migration_e2e_pr_workflow.yml"
     
     RESULT=$(aws codebuild start-build-batch \
       --profile="${profile_name}" \
       --project-name $E2E_PROJECT_NAME \
       --source-version=$CURR_BRANCH \
-      --buildspec-override "codebuild_specs/gen2_migration_pr_workflow.yml" \
+      --buildspec-override "codebuild_specs/gen2_migration_e2e_pr_workflow.yml" \
       --environment-variables-override name=BRANCH_NAME,value=$CURR_BRANCH,type=PLAINTEXT \
       --query 'buildBatch.id' --output text)
     

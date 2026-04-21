@@ -6,7 +6,7 @@
 # The workflow first builds the CLI binaries, then runs migration tests concurrently.
 #
 # To trigger this workflow, configure a CodeBuild project with:
-#   - Buildspec: codebuild_specs/gen2_migration_pr_workflow.yml
+#   - Buildspec: codebuild_specs/gen2_migration_e2e_pr_workflow.yml
 #   - Environment variables: TEST_ACCOUNT_ROLE (IAM role ARN for test account)
 #
 version: 0.2

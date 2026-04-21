@@ -11,9 +11,6 @@ export AMPLIFY_PATH=$(pwd)/.bin/amplify-dev
 # Local dev: migrate an app using a named AWS profile
 npx tsx src/cli.ts --app project-boards --profile default
 
-# CI: migrate using an IAM role that gets re-assumed before each long step
-npx tsx src/cli.ts --app project-boards --roleArn arn:aws:iam::123456789012:role/TestRole
-
 # Verbose logging
 npx tsx src/cli.ts --app project-boards --profile default --verbose
 ```
@@ -23,17 +20,13 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 | Option       | Alias | Description                                                                                                                                                          |
 | ------------ | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--app`      | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`.                                                                                   |
-| `--profile`  |       | AWS profile to use. Mutually exclusive with `--roleArn`.                                                                                                             |
-| `--roleArn`  |       | IAM role ARN to re-assume before each long-running step. Defaults to `TEST_ACCOUNT_ROLE` env var. Mutually exclusive with `--profile`.                               |
 | `--verbose`  | `-v`  | Enable debug-level logging.                                                                                                                                          |
 | `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to `migrate`.                                                                                              |
 | `--teardown` |       | Delete all deployed resources after execution.                                                                                                                       |
 
-Exactly one credential source must be supplied. Resolution order: `--roleArn` flag, `--profile` flag, `TEST_ACCOUNT_ROLE` env var. `AWS_PROFILE` is intentionally not a fallback — pass `--profile` explicitly for local dev.
-
 ### Credential Refresh
 
-Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `--roleArn` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
+Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `TEST_ACCOUNT_ROLE` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
 
 ## Migration Workflow
 

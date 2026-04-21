@@ -4,7 +4,8 @@
 import * as yargs from 'yargs';
 import chalk from 'chalk';
 import { App } from './core/app';
-import { resolveCredentialSource } from './core/credentials';
+import { Teardown } from './core/teardown';
+import { resolveProfile } from './core/credentials';
 
 async function main(): Promise<void> {
   // eslint-disable-next-line spellcheck/spell-checker
@@ -25,14 +26,7 @@ async function main(): Promise<void> {
     })
     .option('profile', {
       type: 'string',
-      description: 'AWS profile to use (mutually exclusive with --roleArn)',
-      string: true,
-    })
-    .option('roleArn', {
-      type: 'string',
-      description:
-        'AWS IAM role ARN to re-assume before each long-running step (mutually exclusive with --profile). ' +
-        'Defaults to the TEST_ACCOUNT_ROLE env var when neither flag is set.',
+      description: 'AWS profile to use',
       string: true,
     })
     .option('step', {
@@ -46,13 +40,11 @@ async function main(): Promise<void> {
       description: 'Delete all deployed resources after execution',
       default: false,
     })
-    .conflicts('profile', 'roleArn')
     .help()
     .alias('help', 'h')
     .version()
     .alias('version', 'V')
-    .example('$0 -a project-boards --profile default', 'Migrate specific app using a local AWS profile')
-    .example('$0 -a project-boards --roleArn arn:aws:iam::123456789012:role/TestRole', 'Migrate using a re-assumable IAM role (CI)').argv;
+    .example('$0 -a project-boards --profile default', 'Migrate specific app using a local AWS profile').argv;
 
   printBanner();
 
@@ -61,10 +53,10 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const credentialSource = resolveCredentialSource({ profile: argv.profile, roleArn: argv.roleArn });
   const step = argv.step ?? 'migrate';
 
-  const app = new App(argv.app, credentialSource, argv.verbose);
+  const profile = resolveProfile(argv.profile);
+  const app = new App(argv.app, profile, argv.verbose);
   try {
     switch (step) {
       case 'deploy':
@@ -85,7 +77,7 @@ async function main(): Promise<void> {
     throw error;
   } finally {
     if (argv.teardown) {
-      await app.teardown();
+      await new Teardown(app).clean();
     }
   }
 }

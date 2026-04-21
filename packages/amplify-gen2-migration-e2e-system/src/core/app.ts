@@ -8,18 +8,8 @@ import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
 import { normalize } from './normalize';
-import { CredentialManager, CredentialSource } from './credentials';
-import {
-  CloudFormationClient,
-  DeleteStackCommand,
-  DescribeStackResourcesCommand,
-  ListStackResourcesCommand,
-  paginateListStacks,
-  StackStatus,
-  waitUntilStackDeleteComplete,
-} from '@aws-sdk/client-cloudformation';
-import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
-import { S3Client, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
+import { AwsCredentials, CredentialManager } from './credentials';
+import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -56,8 +46,8 @@ interface RefactorConfig {
  * Exposes all lifecycle operations as public methods.
  */
 export class App {
-  private readonly deploymentName: string;
-  private readonly gen2BranchName: string;
+  readonly deploymentName: string;
+  readonly gen2BranchName: string;
   private readonly gen1BranchName = 'main';
 
   private readonly sourceAppPath: string;
@@ -77,9 +67,12 @@ export class App {
   public readonly logger: Logger;
   public readonly targetAppPath: string;
 
-  private readonly git: Git;
+  readonly git: Git;
 
-  constructor(public readonly appName: string, credentialSource: CredentialSource, verbose = false) {
+  /** Latest assumed-role credentials, or undefined in profile mode. */
+  private credentialEnv: AwsCredentials | undefined;
+
+  constructor(public readonly appName: string, profile: string | undefined, verbose = false) {
     this.sourceAppPath = path.join(MIGRATION_APPS_DIR, appName);
     if (!fs.existsSync(this.sourceAppPath)) {
       throw new Error(`App not found: ${this.sourceAppPath}`);
@@ -94,7 +87,7 @@ export class App {
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
     const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
-    this.credentials = new CredentialManager(credentialSource, region, generatedProfile, this.logger);
+    this.credentials = new CredentialManager(profile, region, generatedProfile, this.logger);
 
     // temporary directory to store snapshot of each step
     // callers can then call .updateSnapshot to copy over the snapshots
@@ -132,7 +125,7 @@ export class App {
    * Run `amplify init` to initialize the Gen1 project.
    */
   public async init(): Promise<void> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     this.logger.info('amplify init');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
@@ -202,7 +195,7 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
     this.logger.info('amplify push completed');
@@ -300,7 +293,7 @@ export class App {
    * Run `amplify gen2-migration assess`.
    */
   public async assess(): Promise<void> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     await this.runMigrationStep('assess');
   }
 
@@ -308,7 +301,7 @@ export class App {
    * Run `amplify gen2-migration lock`.
    */
   public async lock(): Promise<void> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
     await this.runMigrationStep('lock', extraArgs);
   }
@@ -317,7 +310,7 @@ export class App {
    * Run `amplify gen2-migration generate`.
    */
   public async generate(): Promise<void> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     await this.runMigrationStep('generate');
     this.removeGitignoreLine('amplify_outputs*');
   }
@@ -326,7 +319,7 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     const extraArgs = ['--to', gen2StackName];
     if (this.migrationConfig.refactor?.skipValidations) {
       extraArgs.push('--skip-validations');
@@ -339,7 +332,7 @@ export class App {
    * Returns the Gen2 root stack name.
    */
   public async deployGen2Sandbox(): Promise<string> {
-    await this.credentials.refresh();
+    await this.refreshCredentials();
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
@@ -347,7 +340,7 @@ export class App {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
-      env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
+      env: this.getEnv({ AWS_BRANCH: this.gen2BranchName }),
     });
 
     if (result.exitCode !== 0) {
@@ -463,241 +456,41 @@ export class App {
   }
 
   // ============================================================
-  // Teardown
+  // Credential Helpers
   // ============================================================
 
   /**
-   * Delete all deployed resources (Gen1 backend + Gen2 sandbox + holding stacks).
-   * Runs in a best-effort manner — logs errors but does not throw.
+   * Refresh credentials and store the result. Call before any AWS operation.
    */
-  public async teardown(): Promise<void> {
-    this.logger.info('Starting teardown...');
+  async refreshCredentials(): Promise<void> {
+    this.credentialEnv = await this.credentials.refresh();
+  }
 
-    // Refresh credentials in case the original session expired during a long test.
-    await this.credentials.refresh();
+  /**
+   * Build an env object for subprocess execution, merging `process.env` with
+   * the latest assumed-role credentials (if any) and optional extras.
+   */
+  getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
+    return { ...process.env, ...this.credentialEnv, ...extra };
+  }
 
-    // Delete Gen1 CFN stacks first. We do this before Gen2 because the
-    // migration may have moved resources between stacks, and deleting Gen2
-    // first can leave Gen1 stacks in a state where their custom resources
-    // reference resources that no longer exist.
-    try {
-      this.logger.info('Deleting Gen1 CloudFormation stacks...');
-      const cfnClient = new CloudFormationClient({});
-      const stackPrefix = `amplify-${this.deploymentName}-`;
-      for await (const page of paginateListStacks(
-        { client: cfnClient },
-        {
-          StackStatusFilter: [
-            StackStatus.CREATE_COMPLETE,
-            StackStatus.UPDATE_COMPLETE,
-            StackStatus.UPDATE_ROLLBACK_COMPLETE,
-            StackStatus.ROLLBACK_COMPLETE,
-            StackStatus.DELETE_FAILED,
-          ],
-        },
-      )) {
-        for (const stack of page.StackSummaries ?? []) {
-          if (stack.StackName?.startsWith(stackPrefix) && !stack.RootId) {
-            this.logger.info(`Deleting stack: ${stack.StackName}`);
-            await this.emptyStackBuckets(cfnClient, stack.StackName);
-            await this.deleteStackWithRetainOnFailure(cfnClient, stack.StackName);
-          }
-        }
-      }
-    } catch (e) {
-      this.logger.info(`Gen1 stack cleanup failed: ${(e as Error).message} (continuing teardown)`);
-    }
-
-    // Delete the Amplify console app
-    try {
-      this.logger.info('Deleting Amplify console app...');
-      const amplifyClient = new AmplifyClient({});
-      const apps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 }));
-      const app = apps.apps?.find((a) => a.name === this.deploymentName);
-      if (app?.appId) {
-        await amplifyClient.send(new DeleteAppCommand({ appId: app.appId }));
-        this.logger.info(`Deleted Amplify app: ${this.deploymentName} (${app.appId})`);
-      } else {
-        this.logger.info(`Amplify app ${this.deploymentName} not found (may already be deleted)`);
-      }
-    } catch (e) {
-      this.logger.info(`Amplify app cleanup failed: ${(e as Error).message} (continuing teardown)`);
-    }
-
-    // Delete Gen2 sandbox stack
-    try {
-      this.logger.info('Deleting Gen2 sandbox...');
-      await this.git.checkout(this.gen2BranchName, false);
-      const sandboxResult = await execa('npx', ['ampx', 'sandbox', 'delete', '--yes'], {
-        cwd: this.targetAppPath,
-        reject: false,
-        stdio: 'inherit',
-        env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
-      });
-      if (sandboxResult.exitCode !== 0) {
-        this.logger.info(`ampx sandbox delete exited with code ${sandboxResult.exitCode} (continuing teardown)`);
-      } else {
-        this.logger.info('Gen2 sandbox deleted');
-      }
-    } catch (e) {
-      this.logger.info(`Gen2 sandbox delete failed: ${(e as Error).message} (continuing teardown)`);
-    }
-
-    // Delete holding stacks created during refactor (Gen2-related)
-    try {
-      this.logger.info('Deleting holding stacks...');
-      const cfnClient = new CloudFormationClient({});
-      for await (const page of paginateListStacks(
-        { client: cfnClient },
-        { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.REVIEW_IN_PROGRESS] },
-      )) {
-        for (const stack of page.StackSummaries ?? []) {
-          if (stack.StackName?.includes(this.deploymentName) && stack.StackName.endsWith('-holding')) {
-            this.logger.info(`Deleting holding stack: ${stack.StackName}`);
-            await this.emptyStackBuckets(cfnClient, stack.StackName);
-            await this.deleteStackWithRetainOnFailure(cfnClient, stack.StackName);
-          }
-        }
-      }
-    } catch (e) {
-      this.logger.info(`Holding stack cleanup failed: ${(e as Error).message} (continuing teardown)`);
-    }
-
-    this.logger.info('Teardown complete');
+  /**
+   * Build an AWS SDK client config with explicit credentials when in role mode.
+   */
+  getClientConfig(): { credentials?: { accessKeyId: string; secretAccessKey: string; sessionToken: string } } {
+    if (!this.credentialEnv) return {};
+    return {
+      credentials: {
+        accessKeyId: this.credentialEnv.AWS_ACCESS_KEY_ID,
+        secretAccessKey: this.credentialEnv.AWS_SECRET_ACCESS_KEY,
+        sessionToken: this.credentialEnv.AWS_SESSION_TOKEN,
+      },
+    };
   }
 
   // ============================================================
   // Private Helpers
   // ============================================================
-
-  /**
-   * Delete a CloudFormation stack, handling the common failure mode where a
-   * custom resource (typically `CustomAuthTriggerResource`) fails to clean
-   * itself up because its service-token Lambda or the Cognito user pool it
-   * references has already been removed.
-   *
-   * Strategy:
-   *   1. Issue the delete and wait for completion.
-   *   2. If the stack reaches `DELETE_FAILED`, inspect its resources:
-   *      - For any nested stack that failed, recursively clean it up. This
-   *        matters because `RetainResources` on a parent stack cannot skip
-   *        resources inside a nested stack — the nested stack itself must be
-   *        deleted with its own `RetainResources` targeting the actual
-   *        problem leaf.
-   *      - After the recursive pass, retry the parent, retaining any nested
-   *        stacks or leaf resources that are still `DELETE_FAILED`.
-   */
-  private async deleteStackWithRetainOnFailure(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
-    await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
-    if (await this.tryWaitForStackDelete(cfnClient, stackName)) return;
-
-    await this.cleanupNestedFailedStacks(cfnClient, stackName);
-
-    const failed = await this.listFailedResources(cfnClient, stackName);
-    if (failed.length === 0) {
-      this.logger.info(`Stack ${stackName} delete did not complete within timeout (continuing teardown)`);
-      return;
-    }
-
-    this.logger.info(`Retrying delete of ${stackName} with retained resources: ${failed.join(', ')}`);
-    try {
-      await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: failed }));
-      if (!(await this.tryWaitForStackDelete(cfnClient, stackName))) {
-        this.logger.info(`Stack ${stackName} retry did not complete within timeout (continuing teardown)`);
-      }
-    } catch (e) {
-      this.logger.info(`Failed to retry stack ${stackName} delete: ${(e as Error).message} (continuing teardown)`);
-    }
-  }
-
-  /**
-   * Recursively delete any nested stacks of `stackName` that are in
-   * `DELETE_FAILED`. Each recursive call can itself retain problem leaf
-   * resources, so after this returns the parent's retry only needs to retain
-   * nested-stack logical IDs that remained stuck.
-   */
-  private async cleanupNestedFailedStacks(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
-    let resources;
-    try {
-      resources = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName }));
-    } catch (e) {
-      this.logger.info(`Failed to describe resources for ${stackName}: ${(e as Error).message} (continuing teardown)`);
-      return;
-    }
-    const nestedFailed = (resources.StackResources ?? []).filter(
-      (r) => r.ResourceType === 'AWS::CloudFormation::Stack' && r.ResourceStatus === 'DELETE_FAILED' && r.PhysicalResourceId,
-    );
-    for (const nested of nestedFailed) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const nestedName = nested.PhysicalResourceId!;
-      this.logger.info(`Recursively cleaning nested stack: ${nestedName}`);
-      await this.emptyStackBuckets(cfnClient, nestedName);
-      await this.deleteStackWithRetainOnFailure(cfnClient, nestedName);
-    }
-  }
-
-  /**
-   * List logical IDs of resources in `DELETE_FAILED` for the given stack.
-   */
-  private async listFailedResources(cfnClient: CloudFormationClient, stackName: string): Promise<string[]> {
-    try {
-      const { StackResources } = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName }));
-      return (
-        (StackResources ?? [])
-          .filter((r) => r.ResourceStatus === 'DELETE_FAILED' && r.LogicalResourceId)
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          .map((r) => r.LogicalResourceId!)
-      );
-    } catch (e) {
-      this.logger.info(`Failed to list failed resources for ${stackName}: ${(e as Error).message} (continuing teardown)`);
-      return [];
-    }
-  }
-
-  /**
-   * Wait for a stack delete to complete. Returns true on success, false on
-   * timeout or delete-failure (the caller decides how to recover).
-   */
-  private async tryWaitForStackDelete(cfnClient: CloudFormationClient, stackName: string): Promise<boolean> {
-    try {
-      await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 300 }, { StackName: stackName });
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Empty all S3 buckets owned by the given CloudFormation stack.
-   * CloudFormation cannot delete a bucket with objects, so we must empty them first.
-   */
-  private async emptyStackBuckets(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
-    const resources = await cfnClient.send(new ListStackResourcesCommand({ StackName: stackName }));
-    const buckets = (resources.StackResourceSummaries ?? [])
-      .filter((r) => r.ResourceType === 'AWS::S3::Bucket' && r.PhysicalResourceId)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .map((r) => r.PhysicalResourceId!);
-    if (buckets.length === 0) return;
-
-    const s3 = new S3Client({});
-    for (const bucket of buckets) {
-      try {
-        this.logger.info(`Emptying bucket: ${bucket}`);
-        let continuationToken: string | undefined;
-        do {
-          const page = await s3.send(new ListObjectsV2Command({ Bucket: bucket, ContinuationToken: continuationToken }));
-          if (page.Contents && page.Contents.length > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const objects = page.Contents.filter((o) => o.Key).map((o) => ({ Key: o.Key! }));
-            await s3.send(new DeleteObjectsCommand({ Bucket: bucket, Delete: { Objects: objects, Quiet: true } }));
-          }
-          continuationToken = page.NextContinuationToken;
-        } while (continuationToken);
-      } catch (e) {
-        this.logger.info(`Failed to empty bucket ${bucket}: ${(e as Error).message} (continuing)`);
-      }
-    }
-  }
 
   private removeGitignoreLine(line: string): void {
     const gitignorePath = path.join(this.targetAppPath, '.gitignore');
@@ -723,6 +516,7 @@ export class App {
       const result = await execa(this.amplifyPath, args, {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
+        env: this.getEnv(),
       });
       if (result.exitCode !== 0) {
         throw new Error(`amplify ${args[0]} failed with exit code ${result.exitCode}`);
@@ -741,6 +535,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
+      env: this.getEnv(),
     });
 
     if (result.exitCode !== 0) {
@@ -759,7 +554,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
+      env: this.getEnv({ ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv }),
     });
 
     if (result.exitCode !== 0) {
@@ -769,7 +564,7 @@ export class App {
 
   private async findGen1RootStack(): Promise<string> {
     const rootPattern = new RegExp(`^amplify-${this.deploymentName}-${this.envName}-[0-9a-f]{5}$`);
-    return findStackByPattern(rootPattern);
+    return findStackByPattern(rootPattern, this.getClientConfig());
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
@@ -786,7 +581,7 @@ export class App {
         '--output',
         'text',
       ],
-      { reject: false },
+      { reject: false, env: this.getEnv() },
     );
 
     if (result.exitCode !== 0) {
@@ -835,8 +630,11 @@ function generateRandomEnvName(): string {
   return Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
 }
 
-async function findStackByPattern(pattern: RegExp): Promise<string> {
-  const cfnClient = new CloudFormationClient({});
+async function findStackByPattern(
+  pattern: RegExp,
+  clientConfig: ConstructorParameters<typeof CloudFormationClient>[0] = {},
+): Promise<string> {
+  const cfnClient = new CloudFormationClient(clientConfig);
   for await (const page of paginateListStacks(
     { client: cfnClient },
     { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE] },
