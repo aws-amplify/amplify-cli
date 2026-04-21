@@ -798,7 +798,7 @@ export class AuthRenderer {
       | undefined,
   ): PropertyAssignment {
     const userAttributeIdentifier = factory.createIdentifier('userAttributes');
-    const userAttributeProperties = [];
+    const userAttributeProperties: PropertyAssignment[] = [];
 
     if (standardAttributes !== undefined) {
       const standardAttributeProperties = Object.entries(standardAttributes).map(([key, value]) => {

@@ -90,8 +90,8 @@ describe('resolveOutputs', () => {
       region: 'us-east-1',
       accountId: '123456789',
     });
-    expect(result.Outputs.UserPoolIdOutput.Value).toBe('us-east-1_ABC');
-    expect(result.Outputs.UserPoolArnOutput.Value).toBe('arn:aws:cognito-idp:us-east-1:123:userpool/ABC');
+    expect(result.Outputs!.UserPoolIdOutput.Value).toBe('us-east-1_ABC');
+    expect(result.Outputs!.UserPoolArnOutput.Value).toBe('arn:aws:cognito-idp:us-east-1:123:userpool/ABC');
   });
 
   it('throws when Kinesis stream physical ID is not an ARN', () => {
