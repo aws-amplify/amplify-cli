@@ -4,7 +4,7 @@
     "OutputValue": "moodboardKinesis-gen2-x"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14analyticsmoodboardKinesisKinesisStream0B86977BArn",
+    "OutputKey": "amplifymoodboarde2esandboxc96fcebd0banalyticsmoodboardKinesisKinesisStream25FDAD72Arn",
     "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
   },
   {

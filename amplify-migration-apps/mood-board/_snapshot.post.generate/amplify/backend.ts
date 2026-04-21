@@ -7,9 +7,13 @@ import { moodboardKinesisTrigger } from './function/moodboardKinesisTrigger/reso
 import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
+import { readdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
 import { Duration, aws_iam } from 'aws-cdk-lib';
+import * as assets from 'aws-cdk-lib/aws-s3-assets';
 
 const backend = defineBackend({
   auth,
@@ -51,6 +55,34 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     },
   },
 ];
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const resolversDir = join(__dirname, 'data/resolvers');
+const resolverFiles = readdirSync(resolversDir).filter(
+  (f) => f.endsWith('.req.vtl') || f.endsWith('.res.vtl')
+);
+for (const file of resolverFiles) {
+  const parts = file.replace('.req.vtl', '').replace('.res.vtl', '').split('.');
+  const [typeName, fieldName] = parts;
+  const isRequest = file.endsWith('.req.vtl');
+  const functionId = `${typeName}${
+    fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+  }DataResolverFn`;
+  const pipelineFunction =
+    backend.data.resources.cfnResources.cfnFunctionConfigurations[functionId];
+  if (pipelineFunction) {
+    const templatePath = join(resolversDir, file);
+    const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, {
+      path: templatePath,
+    });
+    if (isRequest) {
+      pipelineFunction.requestMappingTemplateS3Location =
+        vtlTemplate.s3ObjectUrl;
+    } else {
+      pipelineFunction.responseMappingTemplateS3Location =
+        vtlTemplate.s3ObjectUrl;
+    }
+  }
+}
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c4x-x';
