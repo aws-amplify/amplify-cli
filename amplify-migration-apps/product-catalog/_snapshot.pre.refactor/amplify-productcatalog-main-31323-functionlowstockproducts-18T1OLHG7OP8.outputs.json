@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/productcatalogLambdaRole1ca4fb61-main"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lowstockproducts-main"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "lowstockproducts-main"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "productcatalogLambdaRole1ca4fb61-main"
+  }
+]

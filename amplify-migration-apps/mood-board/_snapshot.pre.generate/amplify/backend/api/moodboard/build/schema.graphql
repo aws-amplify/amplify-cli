@@ -17,20 +17,11 @@ type Board {
   updatedAt: AWSDateTime!
 }
 
-type KinesisEventCount {
-  id: ID!
-  processedAt: AWSDateTime!
-  createdAt: AWSDateTime!
-  updatedAt: AWSDateTime!
-}
-
 type Query {
   getMoodItem(id: ID!): MoodItem
   listMoodItems(filter: ModelMoodItemFilterInput, limit: Int, nextToken: String): ModelMoodItemConnection
   getBoard(id: ID!): Board
   listBoards(filter: ModelBoardFilterInput, limit: Int, nextToken: String): ModelBoardConnection
-  getKinesisEventCount(id: ID!): KinesisEventCount
-  listKinesisEventCounts(filter: ModelKinesisEventCountFilterInput, limit: Int, nextToken: String): ModelKinesisEventCountConnection
   moodItemsByBoardID(boardID: ID!, sortDirection: ModelSortDirection, filter: ModelMoodItemFilterInput, limit: Int, nextToken: String): ModelMoodItemConnection
   getRandomEmoji: String @aws_cognito_user_pools
   getKinesisEvents: AWSJSON @aws_cognito_user_pools
@@ -243,9 +234,6 @@ type Mutation {
   createBoard(input: CreateBoardInput!, condition: ModelBoardConditionInput): Board
   updateBoard(input: UpdateBoardInput!, condition: ModelBoardConditionInput): Board
   deleteBoard(input: DeleteBoardInput!, condition: ModelBoardConditionInput): Board
-  createKinesisEventCount(input: CreateKinesisEventCountInput!, condition: ModelKinesisEventCountConditionInput): KinesisEventCount
-  updateKinesisEventCount(input: UpdateKinesisEventCountInput!, condition: ModelKinesisEventCountConditionInput): KinesisEventCount
-  deleteKinesisEventCount(input: DeleteKinesisEventCountInput!, condition: ModelKinesisEventCountConditionInput): KinesisEventCount
 }
 
 input ModelSubscriptionMoodItemFilterInput {
@@ -267,9 +255,6 @@ type Subscription {
   onCreateBoard(filter: ModelSubscriptionBoardFilterInput): Board @aws_subscribe(mutations: ["createBoard"])
   onUpdateBoard(filter: ModelSubscriptionBoardFilterInput): Board @aws_subscribe(mutations: ["updateBoard"])
   onDeleteBoard(filter: ModelSubscriptionBoardFilterInput): Board @aws_subscribe(mutations: ["deleteBoard"])
-  onCreateKinesisEventCount(filter: ModelSubscriptionKinesisEventCountFilterInput): KinesisEventCount @aws_subscribe(mutations: ["createKinesisEventCount"])
-  onUpdateKinesisEventCount(filter: ModelSubscriptionKinesisEventCountFilterInput): KinesisEventCount @aws_subscribe(mutations: ["updateKinesisEventCount"])
-  onDeleteKinesisEventCount(filter: ModelSubscriptionKinesisEventCountFilterInput): KinesisEventCount @aws_subscribe(mutations: ["deleteKinesisEventCount"])
 }
 
 type ModelBoardConnection {
@@ -317,51 +302,4 @@ input ModelSubscriptionBoardFilterInput {
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionBoardFilterInput]
   or: [ModelSubscriptionBoardFilterInput]
-}
-
-type ModelKinesisEventCountConnection {
-  items: [KinesisEventCount]!
-  nextToken: String
-}
-
-input ModelKinesisEventCountFilterInput {
-  id: ModelIDInput
-  processedAt: ModelStringInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-  and: [ModelKinesisEventCountFilterInput]
-  or: [ModelKinesisEventCountFilterInput]
-  not: ModelKinesisEventCountFilterInput
-}
-
-input ModelKinesisEventCountConditionInput {
-  processedAt: ModelStringInput
-  and: [ModelKinesisEventCountConditionInput]
-  or: [ModelKinesisEventCountConditionInput]
-  not: ModelKinesisEventCountConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-}
-
-input CreateKinesisEventCountInput {
-  id: ID
-  processedAt: AWSDateTime!
-}
-
-input UpdateKinesisEventCountInput {
-  id: ID!
-  processedAt: AWSDateTime
-}
-
-input DeleteKinesisEventCountInput {
-  id: ID!
-}
-
-input ModelSubscriptionKinesisEventCountFilterInput {
-  id: ModelSubscriptionIDInput
-  processedAt: ModelSubscriptionStringInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionKinesisEventCountFilterInput]
-  or: [ModelSubscriptionKinesisEventCountFilterInput]
 }

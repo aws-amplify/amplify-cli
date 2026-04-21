@@ -2,15 +2,12 @@
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { signUp, configureAmplify } from './signup';
+import { signUp, config } from './signup';
 
 let username: string;
 let password: string;
 
-let config: any;
-
 beforeAll(async () => {
-  config = configureAmplify();
   const creds = await signUp(config);
   username = creds.username;
   password = creds.password;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
-import { signUp, configureAmplify } from './signup';
+import { signUp, config } from './signup';
 import {
   getTopic, listTopics,
   getPost, listPosts,
@@ -20,7 +20,6 @@ let username: string;
 let password: string;
 
 beforeAll(async () => {
-  const config = configureAmplify();
   const creds = await signUp(config);
   username = creds.username;
   password = creds.password;

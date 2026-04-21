@@ -1,16 +1,16 @@
 {
-  "x": {
+  "main": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-storelocator-x-x-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole",
+      "AuthRoleName": "amplify-storelocator-main-f9ca7-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-main-f9ca7-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-storelocator-x-x-deployment",
-      "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
-      "StackName": "amplify-storelocator-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/48dbdfc0-387e-11f1-abb7-12a98fd563d9",
+      "DeploymentBucketName": "amplify-storelocator-main-f9ca7-deployment",
+      "UnauthRoleName": "amplify-storelocator-main-f9ca7-unauthRole",
+      "StackName": "amplify-storelocator-main-f9ca7",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-main-f9ca7/06c2ecf0-279e-11f1-a161-0ea0286337e9",
       "AmplifyAppId": "storelocator",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-main-f9ca7-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
@@ -20,7 +20,7 @@
       "function": {
         "storelocator41a9495f41a9495fPostConfirmation": {
           "GROUP": "storeLocatorAdmin",
-          "deploymentBucketName": "amplify-storelocator-x-x-deployment",
+          "deploymentBucketName": "amplify-storelocator-main-f9ca7-deployment",
           "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip"
         }
       },

@@ -21,6 +21,6 @@ export const defineAnalytics = (backend: Backend<any>) => {
     }
   );
   //Use this kinesis stream name post-refactor
-  //(analytics.node.findChild('KinesisStream') as CfnStream).name = "moodboardKinesis-x"
+  //(analytics.node.findChild('KinesisStream') as CfnStream).name = "moodboardKinesis-main"
   return analytics;
 };

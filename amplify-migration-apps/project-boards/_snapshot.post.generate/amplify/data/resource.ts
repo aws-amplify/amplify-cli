@@ -49,10 +49,10 @@ export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-      branchName: 'x',
+      branchName: 'main',
       modelNameToTableNameMapping: {
-        Project: 'Project-feqgb7ww75f5lklhnep4rre3va-x',
-        Todo: 'Todo-feqgb7ww75f5lklhnep4rre3va-x',
+        Project: 'Project-47mmg7n7zzcmnhcdcrkmgul4xe-main',
+        Todo: 'Todo-47mmg7n7zzcmnhcdcrkmgul4xe-main',
       },
     },
   ],

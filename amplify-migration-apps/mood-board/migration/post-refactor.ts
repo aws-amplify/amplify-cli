@@ -59,18 +59,15 @@ async function updateSurpriseMeStreamName(appPath: string, envName: string): Pro
   await fs.writeFile(constantsPath, updated, 'utf-8');
 }
 
-export async function postRefactor(appPath: string, envName: string): Promise<void> {
+export async function postRefactor(appPath: string, envName = 'main'): Promise<void> {
   await uncommentKinesisStreamName(appPath, envName);
   await uncommentS3BucketName(appPath);
   await updateSurpriseMeStreamName(appPath, envName);
 }
 
 async function main(): Promise<void> {
-  const [appPath = process.cwd()] = process.argv.slice(2);
-  if (!process.env.ENV_NAME) {
-    throw new Error(`Missing ENV_NAME env variable`);
-  }
-  await postRefactor(appPath, process.env.ENV_NAME);
+  const [appPath = process.cwd(), envName] = process.argv.slice(2);
+  await postRefactor(appPath, envName);
 }
 
 main().catch((error) => {

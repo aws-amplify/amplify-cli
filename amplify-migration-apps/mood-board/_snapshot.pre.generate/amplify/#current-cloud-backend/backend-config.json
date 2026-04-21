@@ -87,29 +87,6 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
-    },
-    "moodboardKinesisTrigger": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributes": [
-            "kinesisStreamArn"
-          ],
-          "category": "analytics",
-          "resourceName": "moodboardKinesis"
-        },
-        {
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ],
-          "category": "api",
-          "resourceName": "moodboard"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
     }
   },
   "parameters": {
@@ -142,22 +119,6 @@
         {
           "category": "function",
           "resourceName": "moodboardKinesisReader"
-        }
-      ]
-    },
-    "AMPLIFY_function_moodboardKinesisTrigger_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "moodboardKinesisTrigger"
-        }
-      ]
-    },
-    "AMPLIFY_function_moodboardKinesisTrigger_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "moodboardKinesisTrigger"
         }
       ]
     }

@@ -202,7 +202,7 @@
     "authmoodboard759ae00a": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/auth/moodboard759ae00a-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-main-1959a-deployment/amplify-cfn-templates/auth/moodboard759ae00a-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "moodboard759ae00a_identitypool_759ae00a",
           "allowUnauthenticatedIdentities": true,
@@ -249,14 +249,14 @@
           },
           "breakCircularDependency": true,
           "dependsOn": "",
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "apimoodboard": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-main-1959a-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "moodboard",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
@@ -267,16 +267,16 @@
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "amplify-moodboard-x-x-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/d8800cf8bceb9cdcf9019f6adb81f22f33346101",
-          "env": "x"
+          "S3DeploymentBucket": "amplify-moodboard-main-1959a-deployment",
+          "S3DeploymentRootKey": "amplify-appsync-files/f7ab9fca95eecad3a59047fb5fd92dfef9d55ad4",
+          "env": "main"
         }
       }
     },
     "storagemoodboardStorage": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-main-1959a-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "moodboard20e29595008142e3ad16f01c4066e1c4",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
@@ -302,27 +302,27 @@
           "s3PermissionsAuthenticatedUploads": "s3:PutObject",
           "s3PermissionsGuestPublic": "s3:GetObject",
           "s3PermissionsGuestUploads": "DISALLOW",
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "functionmoodboardGetRandomEmoji": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboardGetRandomEmoji-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-main-1959a-deployment/amplify-cfn-templates/function/moodboardGetRandomEmoji-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-moodboard-x-x-deployment",
+          "deploymentBucketName": "amplify-moodboard-main-1959a-deployment",
           "s3Key": "amplify-builds/moodboardGetRandomEmoji-59616d4f4b546a305a75-build.zip",
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "functionmoodboardKinesisReader": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboardKinesisReader-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-main-1959a-deployment/amplify-cfn-templates/function/moodboardKinesisReader-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-moodboard-x-x-deployment",
+          "deploymentBucketName": "amplify-moodboard-main-1959a-deployment",
           "s3Key": "amplify-builds/moodboardKinesisReader-4934782b72546e51707a-build.zip",
           "analyticsmoodboardKinesiskinesisStreamArn": {
             "Fn::GetAtt": [
@@ -330,49 +330,14 @@
               "Outputs.kinesisStreamArn"
             ]
           },
-          "env": "x"
-        }
-      }
-    },
-    "functionmoodboardKinesisTrigger": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/function/moodboardKinesisTrigger-cloudformation-template.json",
-        "Parameters": {
-          "deploymentBucketName": "amplify-moodboard-x-x-deployment",
-          "s3Key": "amplify-builds/moodboardKinesisTrigger-327a374a39456c64746b-build.zip",
-          "analyticsmoodboardKinesiskinesisStreamArn": {
-            "Fn::GetAtt": [
-              "analyticsmoodboardKinesis",
-              "Outputs.kinesisStreamArn"
-            ]
-          },
-          "apimoodboardGraphQLAPIIdOutput": {
-            "Fn::GetAtt": [
-              "apimoodboard",
-              "Outputs.GraphQLAPIIdOutput"
-            ]
-          },
-          "apimoodboardGraphQLAPIEndpointOutput": {
-            "Fn::GetAtt": [
-              "apimoodboard",
-              "Outputs.GraphQLAPIEndpointOutput"
-            ]
-          },
-          "apimoodboardGraphQLAPIKeyOutput": {
-            "Fn::GetAtt": [
-              "apimoodboard",
-              "Outputs.GraphQLAPIKeyOutput"
-            ]
-          },
-          "env": "x"
+          "env": "main"
         }
       }
     },
     "analyticsmoodboardKinesis": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-x-x-deployment/amplify-cfn-templates/analytics/kinesis-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-moodboard-main-1959a-deployment/amplify-cfn-templates/analytics/kinesis-cloudformation-template.json",
         "Parameters": {
           "kinesisStreamName": "moodboardKinesis",
           "kinesisStreamShardCount": 1,
@@ -384,7 +349,7 @@
           },
           "authPolicyName": "kinesis_amplify_bca5ce95",
           "unauthPolicyName": "kinesis_amplify_bca5ce95",
-          "env": "x"
+          "env": "main"
         }
       }
     },

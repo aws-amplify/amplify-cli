@@ -32,7 +32,7 @@ const activity = new Table(storageActivityStack, 'activity', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'userId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'activity-x'
+// Add this property to the Table above post refactor: tableName: 'activity-main'
 activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
   partitionKey: { name: 'userId', type: AttributeType.STRING },
@@ -49,7 +49,7 @@ const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'postId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'bookmarks-x'
+// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
 bookmarks.addGlobalSecondaryIndex({
   indexName: 'byPost',
   partitionKey: { name: 'postId', type: AttributeType.STRING },
@@ -184,7 +184,7 @@ activity.grantStreamRead(backend.activityTrigger.resources.lambda.role!);
 activity.grantTableListStreams(backend.activityTrigger.resources.lambda.role!);
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'discus-avatarsx-x';
+// s3Bucket.bucketName = 'discus-avatarsc39a5-main';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

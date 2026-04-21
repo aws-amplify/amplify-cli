@@ -3,7 +3,6 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import BoardList from './components/BoardList';
 import MoodItemList from './components/MoodItemList';
 import SurpriseMeButton from './components/SurpriseMeButton';
-import KinesisTriggerLogs from './components/KinesisTriggerLogs';
 import './App.css';
 
 function App() {
@@ -23,7 +22,6 @@ function App() {
             </div>
           </header>
           <SurpriseMeButton />
-          <KinesisTriggerLogs />
           <BoardList selectedBoardId={selectedBoardId} onSelectBoard={setSelectedBoardId} />
           <MoodItemList selectedBoardId={selectedBoardId} />
         </div>

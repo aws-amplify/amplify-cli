@@ -189,6 +189,9 @@ export async function postGenerate(appPath: string): Promise<void> {
   // Break circular dependencies by assigning functions to the stack of the resource they access
   await setResourceGroupName(path.join(appPath, 'amplify', 'function', 'lognutrition', 'resource.ts'), 'data');
   await setResourceGroupName(path.join(appPath, 'amplify', 'function', 'admin', 'resource.ts'), 'auth');
+
+  const preSignupDir = await findPreSignupDir(appPath);
+  await setResourceGroupName(path.join(preSignupDir, 'resource.ts'), 'auth');
 }
 
 async function main(): Promise<void> {

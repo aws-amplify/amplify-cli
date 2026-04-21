@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signIn, signOut } from 'aws-amplify/auth';
 import { uploadData, getUrl, remove } from 'aws-amplify/storage';
-import { signUp, configureAmplify } from './signup';
+import { signUp, config } from './signup';
 
 let username: string;
 let password: string;
 
 beforeAll(async () => {
-  const config = configureAmplify();
   const creds = await signUp(config);
   username = creds.username;
   password = creds.password;

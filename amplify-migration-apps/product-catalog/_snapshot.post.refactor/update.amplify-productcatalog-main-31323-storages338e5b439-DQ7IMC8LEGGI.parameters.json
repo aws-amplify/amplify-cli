@@ -1,0 +1,102 @@
+[
+  {
+    "ParameterKey": "bucketName",
+    "ParameterValue": "productcatalogf95af07481f845caa6594c26ac9c8ed3"
+  },
+  {
+    "ParameterKey": "functionS3Trigger1ef46783Name",
+    "ParameterValue": "S3Trigger1ef46783-main"
+  },
+  {
+    "ParameterKey": "s3PublicPolicy",
+    "ParameterValue": "Public_policy_38e5b439"
+  },
+  {
+    "ParameterKey": "AuthenticatedAllowList",
+    "ParameterValue": "ALLOW"
+  },
+  {
+    "ParameterKey": "functionS3Trigger1ef46783LambdaExecutionRole",
+    "ParameterValue": "S3Trigger1ef46783LambdaRole1ef46783-main"
+  },
+  {
+    "ParameterKey": "unauthRoleName",
+    "ParameterValue": "amplify-productcatalog-main-31323-unauthRole"
+  },
+  {
+    "ParameterKey": "s3PrivatePolicy",
+    "ParameterValue": "Private_policy_38e5b439"
+  },
+  {
+    "ParameterKey": "selectedGuestPermissions",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedPublic",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedUploads",
+    "ParameterValue": "s3:PutObject"
+  },
+  {
+    "ParameterKey": "s3UploadsPolicy",
+    "ParameterValue": "Uploads_policy_38e5b439"
+  },
+  {
+    "ParameterKey": "functionS3Trigger1ef46783Arn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:S3Trigger1ef46783-main"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedProtected",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsGuestUploads",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "s3ReadPolicy",
+    "ParameterValue": "read_policy_38e5b439"
+  },
+  {
+    "ParameterKey": "selectedAuthenticatedPermissions",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsGuestPublic",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedPrivate",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "unauthPolicyName",
+    "ParameterValue": "s3_amplify_38e5b439"
+  },
+  {
+    "ParameterKey": "authRoleName",
+    "ParameterValue": "amplify-productcatalog-main-31323-authRole"
+  },
+  {
+    "ParameterKey": "GuestAllowList",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "triggerFunction",
+    "ParameterValue": "S3Trigger1ef46783"
+  },
+  {
+    "ParameterKey": "authPolicyName",
+    "ParameterValue": "s3_amplify_38e5b439"
+  },
+  {
+    "ParameterKey": "s3ProtectedPolicy",
+    "ParameterValue": "Protected_policy_38e5b439"
+  }
+]
