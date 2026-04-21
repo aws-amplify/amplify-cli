@@ -85,7 +85,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
             .some((r) => {
-              const meta = (this.gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              const meta = (this.gen1App.categoryMeta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
               return meta?.serviceType === 'imported';
             });
 
@@ -259,9 +259,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
  */
 function computeFunctionCategories(gen1App: Gen1App): ReadonlyMap<string, string> {
   const categoryMap = new Map<string, string>();
-  const auth = gen1App.meta('auth') as Record<string, Record<string, unknown>> | undefined;
-  const storage = gen1App.meta('storage') as Record<string, Record<string, unknown>> | undefined;
-  const functions = gen1App.meta('function') as Record<string, Record<string, unknown>> | undefined;
+  const auth = gen1App.categoryMeta('auth') as Record<string, Record<string, unknown>> | undefined;
+  const storage = gen1App.categoryMeta('storage') as Record<string, Record<string, unknown>> | undefined;
+  const functions = gen1App.categoryMeta('function') as Record<string, Record<string, unknown>> | undefined;
 
   if (auth) {
     for (const authResource of Object.values(auth)) {

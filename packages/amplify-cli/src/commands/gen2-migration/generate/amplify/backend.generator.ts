@@ -3,51 +3,64 @@ import fs from 'node:fs/promises';
 import { Planner } from '../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../_infra/operation';
 import { TS } from '../_infra/ts';
-import { BackendRenderer, BackendRenderOptions } from './backend.renderer';
-
-/**
- * An entry in the defineBackend({ ... }) object literal.
- */
-interface DefineBackendEntry {
-  /** Property key in defineBackend (e.g. 'auth'). */
-  readonly key: string;
-  /** Namespace alias (e.g. 'auth'). */
-  readonly alias: string;
-  /** Exported name from the resource module (e.g. 'auth'). */
-  readonly exportName: string;
-}
-
-/**
- * A namespace import: `import * as alias from source;`
- */
-interface NamespaceImport {
-  readonly alias: string;
-  readonly source: string;
-}
-
-/**
- * A post-define call: `const varName = alias.funcName(backend);`
- */
-interface PostDefineCall {
-  readonly variableName: string;
-  readonly expression: string;
-}
+import {
+  BackendRenderer,
+  BackendRenderOptions,
+  NamespaceImport,
+  DefineBackendEntry,
+  PostDefineBackendCall,
+  EscapeHatchCall,
+} from './backend.renderer';
 
 /**
  * Accumulates namespace imports, defineBackend entries, escape-hatch
  * calls, and post-refactor calls from category generators, then
  * delegates rendering to BackendRenderer and writes backend.ts.
+ *
+ * @example Generated output:
+ *
+ * ```ts
+ * import * as auth from './auth/resource';
+ * import * as data from './data/resource';
+ * import * as storage from './storage/resource';
+ * import * as myFunc from './function/myFunc/resource';
+ * import * as analytics from './analytics/resource';
+ * import { defineBackend } from '@aws-amplify/backend';
+ *
+ * const backend = defineBackend({
+ *   auth: auth.auth,
+ *   data: data.data,
+ *   storage: storage.storage,
+ *   myFunc: myFunc.myFunc,
+ * });
+ *
+ * export type Backend = typeof backend;
+ *
+ * const analyticsResult = analytics.defineAnalytics(backend);
+ *
+ * export function postRefactor() {
+ *   storage.postRefactor(backend);
+ *   analytics.postRefactor(analyticsResult);
+ * }
+ *
+ * auth.applyEscapeHatches(backend);
+ * data.applyEscapeHatches(backend);
+ * storage.applyEscapeHatches(backend);
+ * myFunc.applyEscapeHatches(backend, analyticsResult);
+ *
+ * // Uncomment after refactor
+ * // postRefactor();
+ * ```
  */
 export class BackendGenerator implements Planner {
   private readonly namespaceImports: NamespaceImport[] = [];
   private readonly defineBackendEntries: DefineBackendEntry[] = [];
-  private readonly applyEscapeHatchesCalls: string[] = [];
+  private readonly applyEscapeHatchesCalls: EscapeHatchCall[] = [];
   private readonly postRefactorCalls: string[] = [];
-  private readonly postDefineCalls: PostDefineCall[] = [];
+  private readonly postDefineBackendCalls: PostDefineBackendCall[] = [];
+  private readonly postDefineBackendStatements: string[] = [];
   private readonly outputDir: string;
   private readonly renderer = new BackendRenderer();
-  private analyticsResultAlias: string | undefined;
-  private analyticsResultVar: string | undefined;
 
   public constructor(outputDir: string) {
     this.outputDir = outputDir;
@@ -57,27 +70,22 @@ export class BackendGenerator implements Planner {
    * Adds a namespace import: `import * as alias from 'source';`
    */
   public addNamespaceImport(alias: string, source: string): void {
-    if (!this.namespaceImports.some((i) => i.alias === alias)) {
-      this.namespaceImports.push({ alias, source });
-    }
+    this.namespaceImports.push({ alias, source });
   }
 
   /**
    * Adds an entry to the `defineBackend({ key: alias.exportName })` call.
    */
   public addDefineBackendEntry(key: string, alias: string, exportName: string): void {
-    if (!this.defineBackendEntries.some((e) => e.key === key)) {
-      this.defineBackendEntries.push({ key, alias, exportName });
-    }
+    this.defineBackendEntries.push({ key, alias, exportName });
   }
 
   /**
-   * Adds `alias.applyEscapeHatches(backend)` or
-   * `alias.applyEscapeHatches(backend, analyticsResult)` to the
-   * escape-hatches section.
+   * Adds an `alias.applyEscapeHatches(backend, ...extraArgs)` call.
+   * Extra arguments (e.g. variable names) are passed through as-is.
    */
-  public addApplyEscapeHatchesCall(alias: string): void {
-    this.applyEscapeHatchesCalls.push(alias);
+  public addApplyEscapeHatchesCall(call: EscapeHatchCall): void {
+    this.applyEscapeHatchesCalls.push(call);
   }
 
   /**
@@ -92,46 +100,16 @@ export class BackendGenerator implements Planner {
    * Adds a post-define call: `const varName = expression;`
    * These appear right after defineBackend and before postRefactor.
    */
-  public addPostDefineCall(variableName: string, expression: string): void {
-    this.postDefineCalls.push({ variableName, expression });
+  public addPostDefineBackendCall(variableName: string, expression: string): void {
+    this.postDefineBackendCalls.push({ variableName, expression });
   }
 
   /**
    * Adds a plain post-define statement (no variable assignment).
    * These appear right after defineBackend and before postRefactor.
    */
-  public addPostDefineStatement(statement: string): void {
-    this.postDefineCalls.push({ variableName: '', expression: statement });
-  }
-
-  /**
-   * Records the analytics namespace alias so that escape-hatch calls
-   * for functions that depend on analytics can pass `analyticsResult`.
-   */
-  public addAnalyticsResultAlias(alias: string): void {
-    this.analyticsResultAlias = alias;
-  }
-
-  /**
-   * Sets the variable name that holds the analytics result
-   * (e.g. 'analyticsResult').
-   */
-  public setAnalyticsResultVar(varName: string): void {
-    this.analyticsResultVar = varName;
-  }
-
-  /**
-   * Returns the analytics result variable name, if set.
-   */
-  public getAnalyticsResultVar(): string | undefined {
-    return this.analyticsResultVar;
-  }
-
-  /**
-   * Returns the analytics result alias, if set.
-   */
-  public getAnalyticsResultAlias(): string | undefined {
-    return this.analyticsResultAlias;
+  public addPostDefineBackendStatement(statement: string): void {
+    this.postDefineBackendStatements.push(statement);
   }
 
   /**
@@ -148,13 +126,10 @@ export class BackendGenerator implements Planner {
           const options: BackendRenderOptions = {
             namespaceImports: this.namespaceImports,
             defineBackendEntries: this.defineBackendEntries,
-            postDefineCalls: this.postDefineCalls,
+            postDefineBackendCalls: this.postDefineBackendCalls,
+            postDefineBackendStatements: this.postDefineBackendStatements,
             postRefactorCalls: this.postRefactorCalls,
-            escapeHatchCalls: this.applyEscapeHatchesCalls.map((alias) => ({
-              alias,
-              needsAnalyticsArg: this.needsAnalyticsArg(alias),
-            })),
-            analyticsResultVar: this.analyticsResultVar,
+            escapeHatchCalls: this.applyEscapeHatchesCalls,
           };
 
           const nodes = this.renderer.render(options);
@@ -165,23 +140,5 @@ export class BackendGenerator implements Planner {
         },
       },
     ];
-  }
-
-  /**
-   * Determines if a function alias needs the analytics result argument.
-   */
-  private needsAnalyticsArg(alias: string): boolean {
-    if (alias === this.analyticsResultAlias) return false;
-    return this.analyticsEscapeHatchAliases.has(alias);
-  }
-
-  private readonly analyticsEscapeHatchAliases = new Set<string>();
-
-  /**
-   * Marks a function alias as needing the analytics result in its
-   * applyEscapeHatches call.
-   */
-  public markNeedsAnalyticsArg(alias: string): void {
-    this.analyticsEscapeHatchAliases.add(alias);
   }
 }

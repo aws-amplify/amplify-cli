@@ -231,7 +231,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       // project doesn't have a GraphQL API
       return undefined;
     }
-    return this.gen1App.metaOutput(graphQL.category, graphQL.resourceName, 'GraphQLAPIIdOutput');
+    return this.gen1App.resourceMetaOutput(graphQL, 'GraphQLAPIIdOutput');
   }
 
   private async fetchGraphQLModelTables(graphQLApiId: string): Promise<string[]> {

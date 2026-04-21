@@ -4,15 +4,48 @@ import { newLineIdentifier, TS } from '../_infra/ts';
 const factory = ts.factory;
 
 /**
+ * A namespace import: `import * as alias from 'source';`
+ */
+export interface NamespaceImport {
+  readonly alias: string;
+  readonly source: string;
+}
+
+/**
+ * An entry in the `defineBackend({ ... })` object literal.
+ */
+export interface DefineBackendEntry {
+  readonly key: string;
+  readonly alias: string;
+  readonly exportName: string;
+}
+
+/**
+ * A post-defineBackend const declaration: `const varName = expression;`
+ */
+export interface PostDefineBackendCall {
+  readonly variableName: string;
+  readonly expression: string;
+}
+
+/**
+ * An `alias.applyEscapeHatches(backend, ...extraArgs)` call.
+ */
+export interface EscapeHatchCall {
+  readonly alias: string;
+  readonly extraArgs: readonly string[];
+}
+
+/**
  * Options for rendering the backend.ts file.
  */
 export interface BackendRenderOptions {
-  readonly namespaceImports: ReadonlyArray<{ readonly alias: string; readonly source: string }>;
-  readonly defineBackendEntries: ReadonlyArray<{ readonly key: string; readonly alias: string; readonly exportName: string }>;
-  readonly postDefineCalls: ReadonlyArray<{ readonly variableName: string; readonly expression: string }>;
+  readonly namespaceImports: readonly NamespaceImport[];
+  readonly defineBackendEntries: readonly DefineBackendEntry[];
+  readonly postDefineBackendCalls: readonly PostDefineBackendCall[];
+  readonly postDefineBackendStatements: readonly string[];
   readonly postRefactorCalls: readonly string[];
-  readonly escapeHatchCalls: ReadonlyArray<{ readonly alias: string; readonly needsAnalyticsArg: boolean }>;
-  readonly analyticsResultVar?: string;
+  readonly escapeHatchCalls: readonly EscapeHatchCall[];
 }
 
 /**
@@ -43,11 +76,14 @@ export class BackendRenderer {
     nodes.push(this.renderBackendTypeExport());
     nodes.push(newLineIdentifier);
 
-    // 4. Post-define calls
-    for (const call of options.postDefineCalls) {
-      nodes.push(this.renderPostDefineCall(call));
+    // 4. Post-define calls and statements
+    for (const call of options.postDefineBackendCalls) {
+      nodes.push(TS.declareConst(call.variableName, factory.createIdentifier(call.expression)));
     }
-    if (options.postDefineCalls.length > 0) {
+    for (const stmt of options.postDefineBackendStatements) {
+      nodes.push(factory.createExpressionStatement(factory.createIdentifier(stmt)));
+    }
+    if (options.postDefineBackendCalls.length > 0 || options.postDefineBackendStatements.length > 0) {
       nodes.push(newLineIdentifier);
     }
 
@@ -59,7 +95,7 @@ export class BackendRenderer {
     // 6. applyEscapeHatches calls
     const sortedEscapeHatches = [...options.escapeHatchCalls].sort((a, b) => escapeHatchOrder(a.alias) - escapeHatchOrder(b.alias));
     for (const entry of sortedEscapeHatches) {
-      nodes.push(this.renderEscapeHatchCall(entry, options.analyticsResultVar));
+      nodes.push(this.renderEscapeHatchCall(entry));
     }
     nodes.push(newLineIdentifier);
 
@@ -89,9 +125,7 @@ export class BackendRenderer {
     );
   }
 
-  private renderDefineBackendCall(
-    entries: ReadonlyArray<{ readonly key: string; readonly alias: string; readonly exportName: string }>,
-  ): ts.VariableStatement {
+  private renderDefineBackendCall(entries: readonly DefineBackendEntry[]): ts.VariableStatement {
     const properties = entries.map((entry) =>
       factory.createPropertyAssignment(factory.createIdentifier(entry.key), TS.propAccess(entry.alias, entry.exportName)),
     );
@@ -109,13 +143,6 @@ export class BackendRenderer {
     );
   }
 
-  private renderPostDefineCall(call: { readonly variableName: string; readonly expression: string }): ts.Node {
-    if (call.variableName) {
-      return TS.declareConst(call.variableName, factory.createIdentifier(call.expression));
-    }
-    return factory.createExpressionStatement(factory.createIdentifier(call.expression));
-  }
-
   private renderPostRefactorFunction(calls: readonly string[]): ts.FunctionDeclaration {
     const statements = calls.map((stmt) => factory.createExpressionStatement(factory.createIdentifier(stmt)));
     return factory.createFunctionDeclaration(
@@ -129,13 +156,10 @@ export class BackendRenderer {
     );
   }
 
-  private renderEscapeHatchCall(
-    entry: { readonly alias: string; readonly needsAnalyticsArg: boolean },
-    analyticsResultVar: string | undefined,
-  ): ts.ExpressionStatement {
+  private renderEscapeHatchCall(entry: EscapeHatchCall): ts.ExpressionStatement {
     const args: ts.Expression[] = [factory.createIdentifier('backend')];
-    if (entry.needsAnalyticsArg && analyticsResultVar) {
-      args.push(factory.createIdentifier(analyticsResultVar));
+    for (const arg of entry.extraArgs) {
+      args.push(factory.createIdentifier(arg));
     }
     return factory.createExpressionStatement(
       factory.createCallExpression(TS.propAccess(entry.alias, 'applyEscapeHatches') as ts.PropertyAccessExpression, undefined, args),

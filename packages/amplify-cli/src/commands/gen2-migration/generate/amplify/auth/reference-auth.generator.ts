@@ -27,7 +27,7 @@ export class ReferenceAuthGenerator implements Planner {
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const authCategory = this.gen1App.meta('auth');
+    const authCategory = this.gen1App.categoryMeta('auth');
     if (!authCategory) {
       throw new Error('Auth category not found in amplify-meta.json — ReferenceAuthGenerator should only be created when auth exists');
     }

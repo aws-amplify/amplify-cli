@@ -90,7 +90,7 @@ export class FunctionGenerator implements Planner {
   }
 
   private async resolve(): Promise<ResolvedFunction> {
-    const deployedName = this.gen1App.metaOutput('function', this.resource.resourceName, 'Name');
+    const deployedName = this.gen1App.resourceMetaOutput(this.resource, 'Name');
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
     if (!config) throw new Error(`Lambda function '${deployedName}' not found`);
@@ -164,12 +164,15 @@ export class FunctionGenerator implements Planner {
     const alias = func.resourceName;
     this.backendGenerator.addNamespaceImport(alias, `./function/${func.resourceName}/resource`);
     this.backendGenerator.addDefineBackendEntry(func.resourceName, alias, func.resourceName);
-    this.backendGenerator.addApplyEscapeHatchesCall(alias);
-    if (hasAnalytics && analyticsTypeImport) this.backendGenerator.markNeedsAnalyticsArg(alias);
+    if (hasAnalytics && analyticsTypeImport) {
+      this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: ['analyticsResult'] });
+    } else {
+      this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: [] });
+    }
   }
 
   private findAnalyticsConstructType(): string | undefined {
-    const cat = this.gen1App.meta('analytics');
+    const cat = this.gen1App.categoryMeta('analytics');
     if (!cat) return undefined;
     for (const [name] of Object.entries(cat)) {
       return `analytics${name}`;
@@ -178,7 +181,7 @@ export class FunctionGenerator implements Planner {
   }
 
   private getAnalyticsConstructImportPath(): string | undefined {
-    const cat = this.gen1App.meta('analytics');
+    const cat = this.gen1App.categoryMeta('analytics');
     if (!cat) return undefined;
     for (const [name] of Object.entries(cat)) {
       return `../../analytics/${name}-construct`;
@@ -228,7 +231,7 @@ export class FunctionGenerator implements Planner {
 
   private contributeStorageTrigger(): void {
     if (!this.s3Generator || this.category !== 'storage') return;
-    const storageCategory = this.gen1App.meta('storage');
+    const storageCategory = this.gen1App.categoryMeta('storage');
     if (!storageCategory) return;
     const s3Entry = Object.entries(storageCategory).find(([, v]) => (v as Record<string, unknown>).service === 'S3');
     if (!s3Entry) return;

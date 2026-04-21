@@ -134,12 +134,33 @@ export class Gen1App {
   /**
    * Returns the category block from amplify-meta.json, or undefined if empty/absent.
    */
-  public meta(category: string): Record<string, unknown> | undefined {
+  public categoryMeta(category: string): Record<string, unknown> | undefined {
     const block = (this._meta as Record<string, unknown>)[category];
     if (block && typeof block === 'object' && Object.keys(block as object).length > 0) {
       return block as Record<string, unknown>;
     }
     return undefined;
+  }
+
+  /**
+   * Returns the meta entry for a specific discovered resource.
+   * Throws if the category or resource is not found.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public resourceMeta(resource: DiscoveredResource): Record<string, any> {
+    const category = this.categoryMeta(resource.category);
+    if (!category) {
+      throw new AmplifyError('MigrationError', {
+        message: `Category '${resource.category}' not found in amplify-meta.json`,
+      });
+    }
+    const entry = category[resource.resourceName];
+    if (!entry || typeof entry !== 'object') {
+      throw new AmplifyError('MigrationError', {
+        message: `Resource '${resource.resourceName}' not found in '${resource.category}' category in amplify-meta.json`,
+      });
+    }
+    return entry as Record<string, any>;
   }
 
   /**
@@ -175,12 +196,12 @@ export class Gen1App {
   /**
    * Returns a resource output value from amplify-meta.json.
    */
-  public metaOutput(category: string, resourceName: string, outputKey: string): string {
+  public resourceMetaOutput(resource: DiscoveredResource, outputKey: string): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
-    const value = (this._meta as any)[category]?.[resourceName]?.output?.[outputKey];
+    const value = (this._meta as any)[resource.category]?.[resource.resourceName]?.output?.[outputKey];
     if (value === undefined) {
       throw new AmplifyError('MigrationError', {
-        message: `Missing output '${outputKey}' for resource '${resourceName}' in category '${category}'`,
+        message: `Missing output '${outputKey}' for resource '${resource.resourceName}' in category '${resource.category}'`,
       });
     }
     return value;
@@ -190,7 +211,7 @@ export class Gen1App {
    * Returns the name of the single resource in a category matching a service type.
    */
   public singleResourceName(category: string, service: string): string {
-    const categoryBlock = this.meta(category);
+    const categoryBlock = this.categoryMeta(category);
     if (!categoryBlock) {
       throw new AmplifyError('MigrationError', { message: `Category '${category}' not found in amplify-meta.json` });
     }

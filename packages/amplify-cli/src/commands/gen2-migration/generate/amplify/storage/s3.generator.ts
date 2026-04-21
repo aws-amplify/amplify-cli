@@ -61,7 +61,7 @@ export class S3Generator implements Planner {
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const storageName = this.resource.resourceName;
-    const bucketName = this.gen1App.metaOutput('storage', storageName, 'BucketName');
+    const bucketName = this.gen1App.resourceMetaOutput(this.resource, 'BucketName');
 
     const [accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketAccelerate(bucketName),
@@ -93,7 +93,7 @@ export class S3Generator implements Planner {
 
           this.backendGenerator.addNamespaceImport('storage', './storage/resource');
           this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
-          this.backendGenerator.addApplyEscapeHatchesCall('storage');
+          this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'storage', extraArgs: [] });
           this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
         },
       },

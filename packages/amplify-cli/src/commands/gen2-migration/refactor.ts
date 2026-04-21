@@ -41,7 +41,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
             .some((r) => {
-              const meta = (this.gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              const meta = (this.gen1App.categoryMeta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
               return meta?.serviceType === 'imported';
             });
           if (!isReferenceAuth) {
@@ -122,7 +122,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
             .some((r) => {
-              const meta = (this.gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              const meta = (this.gen1App.categoryMeta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
               return meta?.serviceType === 'imported';
             });
           if (!isReferenceAuth) {

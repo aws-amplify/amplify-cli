@@ -44,12 +44,12 @@ export class AuthGenerator implements Planner {
   /** Plans the main auth generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
-    const userPoolId = this.gen1App.metaOutput('auth', authResourceName, 'UserPoolId');
+    const userPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
     const userPool = await this.gen1App.aws.fetchUserPool(userPoolId);
 
-    const appClientIdWeb = this.gen1App.metaOutput('auth', authResourceName, 'AppClientIDWeb');
-    const appClientId = this.gen1App.metaOutput('auth', authResourceName, 'AppClientID');
-    const identityPoolId = this.gen1App.metaOutput('auth', authResourceName, 'IdentityPoolId');
+    const appClientIdWeb = this.gen1App.resourceMetaOutput(this.resource, 'AppClientIDWeb');
+    const appClientId = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
+    const identityPoolId = this.gen1App.resourceMetaOutput(this.resource, 'IdentityPoolId');
 
     const [mfaConfig, webClient, userPoolClient, identityProviders, identityGroups, identityPool] = await Promise.all([
       this.gen1App.aws.fetchMfaConfig(userPoolId),
@@ -91,7 +91,7 @@ export class AuthGenerator implements Planner {
 
           this.backendGenerator.addNamespaceImport('auth', './auth/resource');
           this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
-          this.backendGenerator.addApplyEscapeHatchesCall('auth');
+          this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'auth', extraArgs: [] });
         },
       },
     ];

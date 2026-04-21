@@ -36,7 +36,7 @@ export class DataGenerator implements Planner {
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const apiName = this.gen1App.singleResourceName('api', 'AppSync');
     const schema = this.gen1App.file(path.join('api', apiName, 'schema.graphql'));
-    const apiId = this.gen1App.metaOutput('api', apiName, 'GraphQLAPIIdOutput');
+    const apiId = this.gen1App.resourceMetaOutput(this.resource, 'GraphQLAPIIdOutput');
 
     const tableMappings = createTableMappings(schema, apiId, this.gen1App.envName);
 
@@ -45,7 +45,7 @@ export class DataGenerator implements Planner {
       throw new Error(`AppSync API '${apiId}' not found`);
     }
 
-    const authorizationModes = this.gen1App.metaOutput('api', apiName, 'authConfig');
+    const authorizationModes = this.gen1App.resourceMetaOutput(this.resource, 'authConfig');
     const additionalAuthProviders = graphqlApi.additionalAuthenticationProviders?.map((provider) => ({
       authenticationType: provider.authenticationType,
       ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
@@ -55,7 +55,7 @@ export class DataGenerator implements Planner {
 
     const logging = extractLoggingConfig(graphqlApi);
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
-    const hasAuth = this.gen1App.meta('auth') !== undefined;
+    const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
     const needsEscapeHatches = additionalAuthProviders && additionalAuthProviders.length > 0 && hasAuth;
 
     return [
@@ -80,7 +80,7 @@ export class DataGenerator implements Planner {
           this.backendGenerator.addNamespaceImport('data', './data/resource');
           this.backendGenerator.addDefineBackendEntry('data', 'data', 'data');
           if (needsEscapeHatches) {
-            this.backendGenerator.addApplyEscapeHatchesCall('data');
+            this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'data', extraArgs: [] });
           }
         },
       },

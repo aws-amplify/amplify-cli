@@ -55,7 +55,7 @@ export class DynamoDBGenerator implements Planner {
 
           // Contribute to backend.ts
           this.backendGenerator.addNamespaceImport(storageAlias, `./storage/${this.resource.resourceName}/resource`);
-          this.backendGenerator.addPostDefineCall(this.resource.resourceName, `${storageAlias}.${functionName}(backend)`);
+          this.backendGenerator.addPostDefineBackendCall(this.resource.resourceName, `${storageAlias}.${functionName}(backend)`);
           this.backendGenerator.addPostRefactorCall(`${storageAlias}.postRefactor(${this.resource.resourceName});`);
         },
       },
@@ -63,7 +63,7 @@ export class DynamoDBGenerator implements Planner {
   }
 
   private async fetchTable(): Promise<DynamoDBTableDefinition> {
-    const actualTableName = this.gen1App.metaOutput('storage', this.resource.resourceName, 'Name');
+    const actualTableName = this.gen1App.resourceMetaOutput(this.resource, 'Name');
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {

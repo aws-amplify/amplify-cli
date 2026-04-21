@@ -31,10 +31,10 @@ export class RestApiGenerator implements Planner {
 
   /** Plans the REST API generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const restApi = await RestApiGenerator.readRestApiConfig(this.gen1App, this.resource.resourceName);
-    const functionCategory = this.gen1App.meta('function');
+    const restApi = await RestApiGenerator.readRestApiConfig(this.gen1App, this.resource);
+    const functionCategory = this.gen1App.categoryMeta('function');
     const functionNames = new Set<string>(Object.keys((functionCategory as object) ?? {}));
-    const hasAuth = this.gen1App.meta('auth') !== undefined;
+    const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
 
     return [
       {
@@ -54,7 +54,7 @@ export class RestApiGenerator implements Planner {
           const alias = restApi.apiName;
           const properFunctionName = RestApiRenderer.functionName(restApi.apiName);
           this.backendGenerator.addNamespaceImport(alias, `./api/${restApi.apiName}/resource`);
-          this.backendGenerator.addPostDefineStatement(`${alias}.${properFunctionName}(backend)`);
+          this.backendGenerator.addPostDefineBackendStatement(`${alias}.${properFunctionName}(backend)`);
         },
       },
     ];
@@ -64,20 +64,20 @@ export class RestApiGenerator implements Planner {
    * Reads the REST API definition for a single API Gateway resource
    * from local cli-inputs.json and amplify-meta.json.
    */
-  private static async readRestApiConfig(gen1App: Gen1App, resourceName: string): Promise<RestApiDefinition> {
-    const apiCategory = gen1App.meta('api');
+  private static async readRestApiConfig(gen1App: Gen1App, resource: DiscoveredResource): Promise<RestApiDefinition> {
+    const apiCategory = gen1App.categoryMeta('api');
     if (!apiCategory) {
       throw new Error('API category not found in amplify-meta.json');
     }
 
-    const apiObj = apiCategory[resourceName] as Record<string, unknown> | undefined;
+    const apiObj = apiCategory[resource.resourceName] as Record<string, unknown> | undefined;
     if (!apiObj || apiObj.service !== 'API Gateway') {
-      throw new Error(`REST API '${resourceName}' not found in amplify-meta.json`);
+      throw new Error(`REST API '${resource.resourceName}' not found in amplify-meta.json`);
     }
 
-    const cliInputs = gen1App.cliInputs('api', resourceName) as RestApiCliInputs | undefined;
+    const cliInputs = gen1App.cliInputs('api', resource.resourceName) as RestApiCliInputs | undefined;
     if (!cliInputs) {
-      throw new Error(`Failed to read cli-inputs.json for REST API '${resourceName}'`);
+      throw new Error(`Failed to read cli-inputs.json for REST API '${resource.resourceName}'`);
     }
 
     const paths = cliInputs.paths ? parseRestApiPaths(cliInputs.paths) : [{ path: '/{proxy+}', methods: ['ANY'] }];
@@ -90,14 +90,14 @@ export class RestApiGenerator implements Planner {
     const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
     const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
     if (!defaultFunctionName) {
-      throw new Error(`REST API '${resourceName}' has no function dependency in amplify-meta.json`);
+      throw new Error(`REST API '${resource.resourceName}' has no function dependency in amplify-meta.json`);
     }
 
-    const gen1ApiId = gen1App.metaOutput('api', resourceName, 'ApiId');
+    const gen1ApiId = gen1App.resourceMetaOutput(resource, 'ApiId');
     const gen1RootResourceId = await gen1App.aws.fetchRestApiRootResourceId(gen1ApiId);
 
     return {
-      apiName: resourceName,
+      apiName: resource.resourceName,
       functionName: defaultFunctionName,
       paths,
       authType,

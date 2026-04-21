@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
-import CFNConditionResolver from '../analytics/cfn-condition-resolver';
+import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
@@ -40,10 +40,7 @@ export abstract class GeoResourceGenerator implements Planner {
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const resourceName = this.resource.resourceName;
-    const geoCategory = this.gen1App.meta('geo');
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const resourceMeta = geoCategory[resourceName] as any;
+    const resourceMeta = this.gen1App.resourceMeta(this.resource);
     const geoDir = path.join(this.outputDir, 'amplify', 'geo');
 
     return [
@@ -220,8 +217,10 @@ export abstract class GeoResourceGenerator implements Planner {
     // Resolve CFN conditions using deployed stack parameters
     const parameters = await this.getNestedStackParameters(logicalId);
     if (parameters.length > 0) {
-      const resolved = new CFNConditionResolver(result).resolve(parameters);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const resolved = resolveConditions(result, parameters) as any;
       delete resolved.Conditions;
+      return resolved;
       return resolved;
     }
 

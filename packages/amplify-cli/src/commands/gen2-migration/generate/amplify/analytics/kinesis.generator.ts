@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import * as cdkFromCfn from 'cdk-from-cfn';
-import CFNConditionResolver from './cfn-condition-resolver';
+import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
@@ -35,15 +35,9 @@ export class AnalyticsKinesisGenerator implements Planner {
 
   /** Plans the Kinesis analytics generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const analyticsCategory = this.gen1App.meta('analytics');
-    const resourceMeta = analyticsCategory?.[this.resource.resourceName] as Record<string, unknown> | undefined;
-    if (!resourceMeta) {
-      throw new Error(`Analytics resource '${this.resource.resourceName}' not found in amplify-meta.json`);
-    }
-
+    const resourceMeta = this.gen1App.resourceMeta(this.resource);
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const logicalId = (resourceMeta.providerMetadata as any).logicalId;
+    const logicalId = resourceMeta.providerMetadata.logicalId;
 
     return [
       {
@@ -57,18 +51,10 @@ export class AnalyticsKinesisGenerator implements Planner {
           const constructFileName = `${resourceName}-construct`;
           const constructFilePath = path.join(this.outputDir, 'amplify', 'analytics', `${constructFileName}.ts`);
 
-          const parameters = await this.getNestedStackParameters(logicalId);
-          const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
-          if (!shardCountParam?.ParameterValue) {
-            throw new Error(`kinesisStreamShardCount parameter not found for nested stack with logical ID: ${logicalId}`);
-          }
-          const shardCount = parseInt(shardCountParam.ParameterValue, 10);
+          const shardCount = parseInt(this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamShardCount'), 10);
+          const streamName = this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamId');
 
-          const streamName = await this.getNestedStackResourcePhysicalId(logicalId, 'KinesisStream');
-          if (!streamName) {
-            throw new Error(`Could not find physical stream name for KinesisStream in nested stack: ${logicalId}`);
-          }
-
+          const parameters = await this.fetchNestedStackParameters(logicalId);
           const finalTemplate = await preTransmute(template, parameters);
           const tsFile = cdkFromCfn.transmute(JSON.stringify(finalTemplate), 'typescript', logicalId, 'construct');
           const formatted = prettier.format(tsFile, {
@@ -97,48 +83,24 @@ export class AnalyticsKinesisGenerator implements Planner {
           await fs.writeFile(path.join(analyticsDir, 'resource.ts'), content, 'utf-8');
 
           this.backendGenerator.addNamespaceImport('analytics', './analytics/resource');
-          this.backendGenerator.addPostDefineCall('analyticsResult', `analytics.defineAnalytics(backend)`);
-          this.backendGenerator.setAnalyticsResultVar('analyticsResult');
-          this.backendGenerator.addAnalyticsResultAlias('analytics');
+          this.backendGenerator.addPostDefineBackendCall('analyticsResult', `analytics.defineAnalytics(backend)`);
           this.backendGenerator.addPostRefactorCall(`analytics.postRefactor(analyticsResult);`);
         },
       },
     ];
   }
 
-  private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
-    const cfnClient = this.gen1App.clients.cloudFormation;
-    const rootStackName = this.gen1App.rootStackName;
-    if (!cfnClient || !rootStackName) return undefined;
-
-    const response = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: rootStackName, LogicalResourceId: logicalId }));
-    return response.StackResources?.[0]?.PhysicalResourceId;
-  }
-
-  private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {
-    const cfnClient = this.gen1App.clients.cloudFormation;
-    const rootStackName = this.gen1App.rootStackName;
-    if (!cfnClient || !rootStackName) return [];
-
-    const nestedStackName = await this.getNestedStackPhysicalName(logicalId);
-    if (!nestedStackName) return [];
-
-    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: nestedStackName }));
-    return response.Stacks?.[0]?.Parameters ?? [];
-  }
-
-  private async getNestedStackResourcePhysicalId(nestedStackLogicalId: string, resourceLogicalId: string): Promise<string | undefined> {
-    const cfnClient = this.gen1App.clients.cloudFormation;
-    const rootStackName = this.gen1App.rootStackName;
-    if (!cfnClient || !rootStackName) return undefined;
-
-    const nestedStackName = await this.getNestedStackPhysicalName(nestedStackLogicalId);
-    if (!nestedStackName) return undefined;
-
-    const response = await cfnClient.send(
-      new DescribeStackResourcesCommand({ StackName: nestedStackName, LogicalResourceId: resourceLogicalId }),
+  private async fetchNestedStackParameters(logicalId: string): Promise<Parameter[]> {
+    const resourcesResponse = await this.gen1App.clients.cloudFormation.send(
+      new DescribeStackResourcesCommand({ StackName: this.gen1App.rootStackName, LogicalResourceId: logicalId }),
     );
-    return response.StackResources?.[0]?.PhysicalResourceId;
+    const nestedStackName = resourcesResponse.StackResources?.[0]?.PhysicalResourceId;
+    if (!nestedStackName) {
+      throw new Error(`Nested stack not found for logical ID '${logicalId}' in stack '${this.gen1App.rootStackName}'`);
+    }
+
+    const stacksResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: nestedStackName }));
+    return stacksResponse.Stacks?.[0]?.Parameters ?? [];
   }
 }
 
@@ -163,7 +125,8 @@ async function preTransmute(template: any, parameters: Parameter[]): Promise<any
   updateRefs(result.Resources);
 
   if (parameters.length > 0) {
-    const resolved = new CFNConditionResolver(result).resolve(parameters);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const resolved = resolveConditions(result, parameters) as any;
     delete resolved.Conditions;
     return resolved;
   }

@@ -13,7 +13,7 @@ export class AuthCognitoAssessor implements Assessor {
    * Records resource-level and feature-level support for this auth resource.
    */
   public record(assessment: Assessment): void {
-    const meta = (this.gen1App.meta('auth') ?? {})[this.resource.resourceName] as Record<string, unknown> | undefined;
+    const meta = (this.gen1App.categoryMeta('auth') ?? {})[this.resource.resourceName] as Record<string, unknown> | undefined;
     const isImported = meta?.serviceType === 'imported';
 
     if (!isImported) {

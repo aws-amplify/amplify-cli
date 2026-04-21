@@ -74,7 +74,7 @@ export class GeoGenerator implements Planner {
           await fs.writeFile(path.join(geoDir, 'resource.ts'), content, 'utf-8');
 
           this.backendGenerator.addNamespaceImport('geo', './geo/resource');
-          this.backendGenerator.addPostDefineStatement(`geo.defineGeo(backend)`);
+          this.backendGenerator.addPostDefineBackendStatement(`geo.defineGeo(backend)`);
         },
       },
     ];
