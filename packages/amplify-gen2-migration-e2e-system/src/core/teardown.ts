@@ -12,7 +12,7 @@ import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/clien
 import { S3Client, paginateListObjectsV2, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import { App } from './app';
 
-/** Maximum number of delete-and-retry passes for stuck stacks. */
+/** Maximum number of discover-and-delete passes for stuck stacks. */
 const MAX_DELETE_PASSES = 5;
 
 /** Seconds to wait for a single stack deletion before giving up. */
@@ -74,7 +74,7 @@ export class Teardown {
       this.app.logger.info('Deleting Gen1 CloudFormation stacks...');
       const cfnClient = new CloudFormationClient(this.app.getClientConfig());
       const stackPrefix = `amplify-${this.app.deploymentName}-`;
-      const stacks = await this.discoverStacks(
+      await this.deleteStacksWithRetry(
         cfnClient,
         [
           StackStatus.CREATE_COMPLETE,
@@ -85,7 +85,6 @@ export class Teardown {
         ],
         (name) => name.startsWith(stackPrefix),
       );
-      await this.deleteStacksWithRetry(cfnClient, stacks);
     } catch (e) {
       this.recordError('Gen1 stack cleanup', e);
     }
@@ -132,12 +131,11 @@ export class Teardown {
     try {
       this.app.logger.info('Deleting holding stacks...');
       const cfnClient = new CloudFormationClient(this.app.getClientConfig());
-      const stacks = await this.discoverStacks(
+      await this.deleteStacksWithRetry(
         cfnClient,
         [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.REVIEW_IN_PROGRESS],
         (name) => name.includes(this.app.deploymentName) && name.endsWith('-holding'),
       );
-      await this.deleteStacksWithRetry(cfnClient, stacks);
     } catch (e) {
       this.recordError('Holding stack cleanup', e);
     }
@@ -148,7 +146,10 @@ export class Teardown {
   // ============================================================
 
   /**
-   * Discover root stacks matching a filter predicate.
+   * Discover all stacks matching a name predicate, regardless of whether
+   * they are root or nested. After a parent is deleted with
+   * `RetainResources`, its formerly-nested children become orphans that
+   * must be cleaned up in subsequent passes.
    */
   private async discoverStacks(
     cfnClient: CloudFormationClient,
@@ -158,7 +159,7 @@ export class Teardown {
     const stacks: string[] = [];
     for await (const page of paginateListStacks({ client: cfnClient }, { StackStatusFilter: statusFilter })) {
       for (const stack of page.StackSummaries ?? []) {
-        if (stack.StackName && !stack.RootId && predicate(stack.StackName)) {
+        if (stack.StackName && predicate(stack.StackName)) {
           stacks.push(stack.StackName);
         }
       }
@@ -167,30 +168,42 @@ export class Teardown {
   }
 
   /**
-   * Delete a set of stacks using a retry loop that handles nested failures.
+   * Repeatedly discover and delete stacks matching a predicate.
    *
    * Each pass:
-   *   1. Empty all S3 buckets in every stack.
-   *   2. Issue `DeleteStack` on each.
-   *   3. Wait for DELETE_COMPLETE or DELETE_FAILED.
-   *   4. For failures, retry with `RetainResources` for stuck resources.
+   *   1. Re-discover all matching stacks (picks up orphaned nested stacks
+   *      from previous passes).
+   *   2. Empty all S3 buckets in every discovered stack.
+   *   3. Issue `DeleteStack` on each.
+   *   4. Wait for DELETE_COMPLETE or DELETE_FAILED.
+   *   5. For failures, retry with `RetainResources` for stuck resources.
    *
-   * Repeats up to `MAX_DELETE_PASSES` times. Each pass peels off another
-   * layer of nested stacks that couldn't be deleted in the previous pass.
+   * Repeats up to {@link MAX_DELETE_PASSES} times. Each pass peels off one
+   * layer:
+   *   - Pass 1: root stack R fails because child stack C fails → retain C,
+   *     R deletes successfully.
+   *   - Pass 2: re-discover finds C (now orphaned, in DELETE_FAILED) →
+   *     retain its stuck custom resource X, C deletes successfully.
+   *   - Pass 3: if X was itself a nested stack, repeat.
    */
-  private async deleteStacksWithRetry(cfnClient: CloudFormationClient, stacks: string[]): Promise<void> {
-    let remaining = [...stacks];
+  private async deleteStacksWithRetry(
+    cfnClient: CloudFormationClient,
+    statusFilter: StackStatus[],
+    predicate: (name: string) => boolean,
+  ): Promise<void> {
+    for (let pass = 0; pass < MAX_DELETE_PASSES; pass++) {
+      const stacks = await this.discoverStacks(cfnClient, statusFilter, predicate);
+      if (stacks.length === 0) return;
 
-    for (let pass = 0; pass < MAX_DELETE_PASSES && remaining.length > 0; pass++) {
       if (pass > 0) {
-        this.app.logger.info(`Delete pass ${pass + 1} for ${remaining.length} remaining stack(s)`);
+        this.app.logger.info(`Delete pass ${pass + 1} for ${stacks.length} remaining stack(s)`);
       }
 
-      for (const stackName of remaining) {
+      for (const stackName of stacks) {
         await this.emptyStackBuckets(cfnClient, stackName);
       }
 
-      for (const stackName of remaining) {
+      for (const stackName of stacks) {
         this.app.logger.info(`Deleting stack: ${stackName}`);
         try {
           await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
@@ -199,8 +212,7 @@ export class Teardown {
         }
       }
 
-      const stillFailed: string[] = [];
-      for (const stackName of remaining) {
+      for (const stackName of stacks) {
         if (await this.waitForDelete(cfnClient, stackName)) continue;
 
         const failedResources = await this.listFailedResources(cfnClient, stackName);
@@ -211,17 +223,14 @@ export class Teardown {
           } catch (e) {
             this.recordError(`Retry delete (${stackName})`, e);
           }
-        }
-
-        if (!(await this.waitForDelete(cfnClient, stackName))) {
-          stillFailed.push(stackName);
+          await this.waitForDelete(cfnClient, stackName);
         }
       }
-
-      remaining = stillFailed;
     }
 
-    for (const stackName of remaining) {
+    // Final check: anything still around after all passes is an error.
+    const leftover = await this.discoverStacks(cfnClient, statusFilter, predicate);
+    for (const stackName of leftover) {
       this.recordError('Stack delete', new Error(`${stackName} could not be deleted after ${MAX_DELETE_PASSES} passes`));
     }
   }
