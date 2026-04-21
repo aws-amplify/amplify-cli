@@ -14,14 +14,14 @@ import { type StackDriftNode, type CloudFormationDriftResults } from '../detect-
 import { extractCategory } from '../../gen2-migration/_infra/categories';
 
 interface DriftBlock {
-  categoryName: string;
-  logicalId?: string;
-  type: 'cf' | 'template' | 'local';
-  cfDrift?: StackResourceDrift;
-  driftDetectionId?: string;
-  templateChange?: ResourceChangeWithNested;
-  changeSetId?: string;
-  stackArn?: string;
+  readonly categoryName: string;
+  readonly logicalId?: string;
+  readonly type: 'cf' | 'template' | 'local';
+  readonly cfDrift?: StackResourceDrift;
+  readonly driftDetectionId?: string;
+  readonly templateChange?: ResourceChangeWithNested;
+  readonly changeSetId?: string;
+  readonly stackArn?: string;
 }
 
 /**

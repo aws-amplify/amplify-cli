@@ -12,7 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration, aws_iam, Stack } from 'aws-cdk-lib';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -83,6 +83,23 @@ backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchN
 backend.admin.addEnvironment(
   'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
+);
+backend.admin.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: [
+      'cognito-idp:Describe*',
+      'cognito-identity:Describe*',
+      'cognito-identity:Get*',
+      'cognito-identity:List*',
+      'cognito-sync:Describe*',
+      'cognito-sync:Get*',
+      'cognito-sync:List*',
+      'iam:ListOpenIdConnectProviders',
+      'iam:ListRoles',
+      'sns:ListPlatformApplications',
+    ],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  })
 );
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
