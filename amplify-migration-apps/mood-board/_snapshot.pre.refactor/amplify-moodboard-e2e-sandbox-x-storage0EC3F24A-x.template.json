@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777": {
+    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -65,11 +65,11 @@
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x/Bucket/Resource"
       }
     },
-    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketPolicy895BB6E2": {
+    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketPolicy3B9C9171": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777"
+          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
         },
         "PolicyDocument": {
           "Statement": [
@@ -87,7 +87,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                     "Arn"
                   ]
                 },
@@ -97,7 +97,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -126,7 +126,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                     "Arn"
                   ]
                 },
@@ -136,7 +136,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -156,7 +156,7 @@
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x/Bucket/Policy/Resource"
       }
     },
-    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketAutoDeleteObjectsCustomResourceD1338BC5": {
+    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketAutoDeleteObjectsCustomResourceD9B4EAB6": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": {
@@ -166,11 +166,11 @@
           ]
         },
         "BucketName": {
-          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777"
+          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
         }
       },
       "DependsOn": [
-        "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketPolicy895BB6E2"
+        "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketPolicy3B9C9171"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -230,7 +230,7 @@
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777"
+                "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
               },
               " S3 bucket."
             ]
@@ -248,26 +248,26 @@
         "aws:asset:property": "Code"
       }
     },
-    "MOODBOARD20E29595008142E3AD16F01C4066E1C493DC2GEN2IHPTUTGFRBBUCKETNAMEParameterB48EE1A9": {
+    "MOODBOARD20E29595008142E3AD16F01C4066E1C47DE24GEN2DGPVVCWECQBUCKETNAMEParameterB3838DF7": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/moodboard/e2e-sandbox-x/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_493_DC_2_GEN_2_IHPTUTGFRB_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/moodboard/e2e-sandbox-x/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_47_DE_24_GEN_2_DGPVVCWECQ_BUCKET_NAME",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": {
-          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777"
+          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_493_DC_2_GEN_2_IHPTUTGFRB_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_47_DE_24_GEN_2_DGPVVCWECQ_BUCKET_NAMEParameter/Resource"
       }
     },
-    "amplifymoodboarde2esandboxc96fcebd0bstorageAccess3D7DBBB1A": {
+    "amplifymoodboarde2esandbox685dc54d14storageAccess3589DB9D8": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -281,7 +281,7 @@
                   [
                     {
                       "Fn::GetAtt": [
-                        "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                        "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                         "Arn"
                       ]
                     },
@@ -303,7 +303,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                  "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                   "Arn"
                 ]
               }
@@ -311,10 +311,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymoodboarde2esandboxc96fcebd0bstorageAccess3D7DBBB1A",
+        "PolicyName": "amplifymoodboarde2esandbox685dc54d14storageAccess3589DB9D8",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandboxc96fcebd0bauthNestedStackauthNestedStackResource1B229FB0Outputsamplifymoodboarde2esandboxc96fcebd0bauthamplifyAuthunauthenticatedUserRoleA76A43F5Ref"
+            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
           }
         ]
       },
@@ -324,7 +324,7 @@
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/amplify-moodboard-e2e-sandbox-x--storageAccess3/Resource"
       }
     },
-    "amplifymoodboarde2esandboxc96fcebd0bstorageAccess42267B7E7": {
+    "amplifymoodboarde2esandbox685dc54d14storageAccess459CF4654": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -339,7 +339,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -353,7 +353,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -367,7 +367,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -387,7 +387,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -401,7 +401,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -415,7 +415,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -442,7 +442,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                  "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                   "Arn"
                 ]
               }
@@ -457,7 +457,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -471,7 +471,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -485,7 +485,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777",
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
                           "Arn"
                         ]
                       },
@@ -498,10 +498,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifymoodboarde2esandboxc96fcebd0bstorageAccess42267B7E7",
+        "PolicyName": "amplifymoodboarde2esandbox685dc54d14storageAccess459CF4654",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandboxc96fcebd0bauthNestedStackauthNestedStackResource1B229FB0Outputsamplifymoodboarde2esandboxc96fcebd0bauthamplifyAuthauthenticatedUserRole049E5E6ARef"
+            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
           }
         ]
       },
@@ -514,7 +514,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VNTWvDMAz9Lc3Z0UrKLru13bkLzXGM4TpaUBLbYMnthvF/H6lh2Y4Dgd7jfTXQPG5hu9E3rk0/1TNdIJ2QBftOtJmUvvF74h2kQzQTijp+uIJeU2Xpk1z1VP0OL37ewV1iKNZ9FP+MMwq+XEY0wlV+U0Vq/Uzma20t/B/dJdCJFrTo7tVZMVtInQRyQ6uDtigYlo0fkhVpC2ldLyhndYws3p6RfQwGF2nFf6Q2+Cv1GA6aUe2ZUTrRA7khK+d7hJEfrk0Dy21GJqpDdEIW4Vz+N04URGx6AQAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Tk3pxIXbNs5QrccJoSw1ldsmkWJ3G4ry31EXicKRk1/reT9qqJ8qqDb6yqXpxnKiM8RXZMGuFW1Gpa/8EXkLcT+bEUUdPl1Wp1hYupErnovf4cXPW7gjhmzdzeJfcELBt/OARrhI7yqjxk9kvtbW/P+jOwda0YIW3b06KWYLsZVArm900BYFw7Lx8yRF2kJc17NKSR1mFm+PyH4OBhe06j+oCf5CHYa9ZlQ7ZpRWdE+uT8r5DmHgh0tdQ/0I1WZgojLMTsgiHPP9BuZ0Chp6AQAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/CDKMetadata/Default"
@@ -789,17 +789,17 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandboxc96fcebd0bauthNestedStackauthNestedStackResource1B229FB0Outputsamplifymoodboarde2esandboxc96fcebd0bauthamplifyAuthunauthenticatedUserRoleA76A43F5Ref": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandboxc96fcebd0bauthNestedStackauthNestedStackResource1B229FB0Outputsamplifymoodboarde2esandboxc96fcebd0bauthamplifyAuthauthenticatedUserRole049E5E6ARef": {
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandboxc96fcebd0bstoragemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket02A53300Ref": {
+    "amplifymoodboarde2esandbox685dc54d14storagemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket41195188Ref": {
       "Value": {
-        "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket034A1777"
+        "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
       }
     }
   }

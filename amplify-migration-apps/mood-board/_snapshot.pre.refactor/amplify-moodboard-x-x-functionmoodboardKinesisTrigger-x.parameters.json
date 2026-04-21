@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/moodboardKinesisTrigger-327a374a39456c64746b-build.zip"
+    "ParameterValue": "amplify-builds/moodboardKinesisTrigger-5a615250796c76626f49-build.zip"
   },
   {
     "ParameterKey": "analyticsmoodboardKinesiskinesisStreamArn",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "apimoodboardGraphQLAPIIdOutput",
-    "ParameterValue": "7necxhrq35hpvgia65dw7lve54"
+    "ParameterValue": "g26hrobfy5b5pniveska5ylg4u"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -29,6 +29,6 @@
   },
   {
     "ParameterKey": "apimoodboardGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://s26pkllx4fgytdk7l4gc6afega.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "https://e4tubez5fjbb3nezriwdcqaade.appsync-api.us-east-1.amazonaws.com/graphql"
   }
 ]
