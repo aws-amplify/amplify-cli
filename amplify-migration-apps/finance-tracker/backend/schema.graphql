@@ -46,6 +46,7 @@ type NotificationResult {
 
 type Query {
   calculateFinancialSummary: CalculatedSummary @function(name: "financetracker-${env}") @auth(rules: [{ allow: public }])
+  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
 }
 
 type Mutation {

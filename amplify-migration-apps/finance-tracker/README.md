@@ -400,6 +400,28 @@ backend.financetrackere30b1453.resources.lambda.addToRolePolicy(
 );
 ```
 
+#### 5. Wire SNS Topic ARNs to Lambda Environment Variables
+
+In `amplify/backend.ts`, the custom resource instance needs to be captured so its topic
+ARNs can be passed as environment variables to the Lambda function. In Gen 1 this was
+handled by `function-parameters.json` and CloudFormation parameter resolution.
+
+```diff
+-new financereport_cdkStack(
++const financereport = new financereport_cdkStack(
+   backend.createStack('financereport'),
+   'financereport'
+ );
++backend.financetrackerfinal82393814.addEnvironment(
++  'BUDGET_ALERT_TOPIC_ARN',
++  financereport.budgetAlertTopic.topicArn
++);
++backend.financetrackerfinal82393814.addEnvironment(
++  'MONTHLY_REPORT_TOPIC_ARN',
++  financereport.monthlyReportTopic.topicArn
++);
+```
+
 ---
 
 Commit and push the changes:

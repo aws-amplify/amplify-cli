@@ -7,6 +7,7 @@
  * 2. Convert Lambda function from CommonJS to ESM
  * 3. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 4. Add SNS publish IAM policy to backend.ts for the Lambda function
+ * 5. Wire SNS topic ARNs as Lambda environment variables in backend.ts
  */
 
 import { execSync } from 'child_process';
@@ -123,11 +124,60 @@ backend.${fnDir}.resources.lambda.addToRolePolicy(
   await fs.writeFile(backendPath, content, 'utf-8');
 }
 
+/**
+ * Capture the custom resource instance and pass SNS topic ARNs
+ * as environment variables to the Lambda function.
+ */
+async function wireSnsTopicEnvVars(appPath: string): Promise<void> {
+  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
+  let content = await fs.readFile(backendPath, 'utf-8');
+
+  if (content.includes('BUDGET_ALERT_TOPIC_ARN')) return;
+
+  // Find the custom resource stack name (e.g. customfinance, financereport)
+  // Pattern: new <ClassName>(backend.createStack('<stackName>'), '<stackName>')
+  const customResMatch = content.match(
+    /new\s+(\w+)\(\s*backend\.createStack\(\s*['"](\w*finance\w*)['"]\s*\)\s*,\s*['"]\2['"]/,
+  );
+
+  if (!customResMatch) {
+    console.warn('Could not find custom finance resource instantiation in backend.ts');
+    return;
+  }
+
+  const [fullMatch, , stackName] = customResMatch;
+
+  // Capture the instance: new X(...) -> const stackName = new X(...)
+  if (!content.includes(`const ${stackName} = ${fullMatch.split('(')[0]}`)) {
+    content = content.replace(
+      fullMatch,
+      `const ${stackName} = ${fullMatch}`,
+    );
+  }
+
+  const fnDir = resolveFunctionDir(appPath);
+  const envBlock = `
+// Wire SNS topic ARNs to Lambda environment variables
+backend.${fnDir}.addEnvironment(
+  'BUDGET_ALERT_TOPIC_ARN',
+  ${stackName}.budgetAlertTopic.topicArn
+);
+backend.${fnDir}.addEnvironment(
+  'MONTHLY_REPORT_TOPIC_ARN',
+  ${stackName}.monthlyReportTopic.topicArn
+);
+`;
+
+  content = content.trimEnd() + '\n' + envBlock;
+  await fs.writeFile(backendPath, content, 'utf-8');
+}
+
 export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertLambdaToESM(appPath);
   await updateFrontendConfig(appPath);
   await addSnsPublishPolicy(appPath);
+  await wireSnsTopicEnvVars(appPath);
 }
 
 async function main(): Promise<void> {
