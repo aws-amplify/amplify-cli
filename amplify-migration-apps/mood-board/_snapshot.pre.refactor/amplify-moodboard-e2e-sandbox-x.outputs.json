@@ -1,11 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "vppk4cllu9eci0le4q6lako9l"
-========
     "OutputValue": "6dkse6kuhg779dhl6glmefrmrq"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "socialProviders",
@@ -17,11 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj"
-========
     "OutputValue": "amplify-moodboard26041519-moodboard20e29595008142e-qpktfs41rj1z"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "signupAttributes",
@@ -29,11 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "vppk4cllu9eci0le4q6lako9l"
-========
     "OutputValue": "6dkse6kuhg779dhl6glmefrmrq"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -89,19 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "https://lp7bz3rbqfbdhnsnxy374lor6y.appsync-api.us-east-1.amazonaws.com/graphql"
-  },
-  {
-    "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "gtx5hixzhrfdpblkbo7dtrwo4m"
-========
     "OutputValue": "https://mpfp3754i5h4livlltnjpjrfla.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
     "OutputValue": "lni7x3hwoncrhp3t6pnlk4wxtm"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "authRegion",
@@ -109,19 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "[\"{\\\"name\\\":\\\"discus-avatars223a2-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-discussions-ge-discusavatars223a2gen2ma-8njufkvldxtj\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
-  },
-  {
-    "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-discussions-ge-amplifydataamplifycodege-h4p61o5ozzbf/model-schema.graphql"
-========
     "OutputValue": "[\"{\\\"name\\\":\\\"moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-moodboard26041519-moodboard20e29595008142e-qpktfs41rj1z\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
     "OutputValue": "s3://amplify-moodboard26041519-amplifydataamplifycodege-ytkavmopvf6i/model-schema.graphql"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "groups",
@@ -129,11 +101,7 @@
   },
   {
     "OutputKey": "definedFunctions",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "[\"activityTrigger79c26ead-gen2-main\",\"fetchuseractivity-gen2-main\",\"recorduseractivity-gen2-main\"]"
-========
     "OutputValue": "[\"moodboardGetRandomEmoji-gen2-x\",\"moodboardKinesisReader-gen2-x\",\"moodboardKinesisTrigger-gen2-x\"]"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "passwordlessOptions",
@@ -157,19 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-<<<<<<<< HEAD:amplify-migration-apps/discussions/_snapshot.pre.refactor/amplify-discussions-gen2main-branch-e3e983762f.outputs.json
-    "OutputValue": "us-east-1_C52AD7Zfd"
-  },
-  {
-    "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:fb5a1900-4eb6-4c32-940d-e03ebcd22130"
-========
     "OutputValue": "us-east-1_5iU0nP22B"
   },
   {
     "OutputKey": "identityPoolId",
     "OutputValue": "us-east-1:3a5eeecb-0ea0-4cbe-93f4-2094213caf65"
->>>>>>>> origin/gen2-migration:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.outputs.json
   },
   {
     "OutputKey": "verificationMechanisms",
