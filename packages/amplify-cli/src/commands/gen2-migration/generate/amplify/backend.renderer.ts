@@ -59,17 +59,15 @@ export class BackendRenderer {
   public render(options: BackendRenderOptions): ts.NodeArray<ts.Node> {
     const nodes: ts.Node[] = [];
 
-    // 1. Namespace imports sorted by category order
-    const sortedImports = [...options.namespaceImports].sort((a, b) => namespaceImportOrder(a.source) - namespaceImportOrder(b.source));
-    for (const imp of sortedImports) {
+    // 1. Namespace imports
+    for (const imp of options.namespaceImports) {
       nodes.push(this.renderNamespaceImport(imp.alias, imp.source));
     }
     nodes.push(this.renderDefineBackendImport());
     nodes.push(newLineIdentifier);
 
     // 2. defineBackend call
-    const sortedEntries = [...options.defineBackendEntries].sort((a, b) => defineBackendOrder(a.key) - defineBackendOrder(b.key));
-    nodes.push(this.renderDefineBackendCall(sortedEntries));
+    nodes.push(this.renderDefineBackendCall(options.defineBackendEntries));
     nodes.push(newLineIdentifier);
 
     // 3. Export Backend type
@@ -80,21 +78,19 @@ export class BackendRenderer {
     for (const call of options.postDefineBackendCalls) {
       nodes.push(TS.declareConst(call.variableName, factory.createIdentifier(call.expression)));
     }
-    for (const stmt of options.postDefineBackendStatements) {
-      nodes.push(factory.createExpressionStatement(factory.createIdentifier(stmt)));
+    for (const statement of options.postDefineBackendStatements) {
+      nodes.push(factory.createExpressionStatement(factory.createIdentifier(statement)));
     }
     if (options.postDefineBackendCalls.length > 0 || options.postDefineBackendStatements.length > 0) {
       nodes.push(newLineIdentifier);
     }
 
     // 5. postRefactor function
-    const sortedPostRefactorCalls = [...options.postRefactorCalls].sort((a, b) => postRefactorOrder(a) - postRefactorOrder(b));
-    nodes.push(this.renderPostRefactorFunction(sortedPostRefactorCalls));
+    nodes.push(this.renderPostRefactorFunction(options.postRefactorCalls));
     nodes.push(newLineIdentifier);
 
     // 6. applyEscapeHatches calls
-    const sortedEscapeHatches = [...options.escapeHatchCalls].sort((a, b) => escapeHatchOrder(a.alias) - escapeHatchOrder(b.alias));
-    for (const entry of sortedEscapeHatches) {
+    for (const entry of options.escapeHatchCalls) {
       nodes.push(this.renderEscapeHatchCall(entry));
     }
     nodes.push(newLineIdentifier);
@@ -106,23 +102,11 @@ export class BackendRenderer {
   }
 
   private renderNamespaceImport(alias: string, source: string): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(alias))),
-      factory.createStringLiteral(source),
-    );
+    return TS.namespaceImport(alias, source);
   }
 
   private renderDefineBackendImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        false,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('defineBackend'))]),
-      ),
-      factory.createStringLiteral('@aws-amplify/backend'),
-    );
+    return TS.namedImport('@aws-amplify/backend', 'defineBackend');
   }
 
   private renderDefineBackendCall(entries: readonly DefineBackendEntry[]): ts.VariableStatement {
@@ -144,7 +128,7 @@ export class BackendRenderer {
   }
 
   private renderPostRefactorFunction(calls: readonly string[]): ts.FunctionDeclaration {
-    const statements = calls.map((stmt) => factory.createExpressionStatement(factory.createIdentifier(stmt)));
+    const statements = calls.map((statement) => factory.createExpressionStatement(factory.createIdentifier(statement)));
     return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,
@@ -167,54 +151,9 @@ export class BackendRenderer {
   }
 
   private renderCommentedPostRefactor(): ts.EmptyStatement {
-    const emptyStmt = factory.createEmptyStatement();
-    ts.addSyntheticLeadingComment(emptyStmt, ts.SyntaxKind.SingleLineCommentTrivia, ' Uncomment after refactor', true);
-    ts.addSyntheticLeadingComment(emptyStmt, ts.SyntaxKind.SingleLineCommentTrivia, ' postRefactor();', true);
-    return emptyStmt;
+    const emptyStatement = factory.createEmptyStatement();
+    ts.addSyntheticLeadingComment(emptyStatement, ts.SyntaxKind.SingleLineCommentTrivia, ' Uncomment after refactor', true);
+    ts.addSyntheticLeadingComment(emptyStatement, ts.SyntaxKind.SingleLineCommentTrivia, ' postRefactor();', true);
+    return emptyStatement;
   }
-}
-
-/**
- * Sort order for namespace imports in backend.ts.
- */
-function namespaceImportOrder(source: string): number {
-  if (source === './auth/resource') return 0;
-  if (source === './data/resource') return 0.1;
-  if (source === './storage/resource') return 0.2;
-  if (source.startsWith('./storage/')) return 0.3;
-  if (source.startsWith('./function/') || source.startsWith('./auth/')) return 1;
-  if (source.startsWith('./api/')) return 1.5;
-  if (source.startsWith('./analytics/')) return 2;
-  if (source.startsWith('./geo/')) return 2.5;
-  return 3;
-}
-
-/**
- * Sort order for defineBackend entries.
- */
-function defineBackendOrder(key: string): number {
-  if (key === 'auth') return 0;
-  if (key === 'data') return 1;
-  if (key === 'storage') return 2;
-  return 3;
-}
-
-/**
- * Sort order for applyEscapeHatches calls.
- */
-function escapeHatchOrder(alias: string): number {
-  if (alias === 'auth') return 0;
-  if (alias === 'data') return 1;
-  if (alias === 'storage') return 2;
-  return 3;
-}
-
-/**
- * Sort order for postRefactor calls.
- */
-function postRefactorOrder(statement: string): number {
-  if (statement.includes('storage.postRefactor')) return 0;
-  if (statement.includes('storageActivity') || statement.includes('storageBookmarks')) return 1;
-  if (statement.includes('analytics.postRefactor')) return 2;
-  return 3;
 }

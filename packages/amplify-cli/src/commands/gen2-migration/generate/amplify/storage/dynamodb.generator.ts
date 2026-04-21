@@ -40,7 +40,7 @@ export class DynamoDBGenerator implements Planner {
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Generate DynamoDB table ${this.resource.resourceName} in amplify/backend.ts`],
+        describe: async () => [`Generate amplify/storage/${this.resource.resourceName}/resource.ts`],
         execute: async () => {
           const capitalizedName = this.resource.resourceName.charAt(0).toUpperCase() + this.resource.resourceName.slice(1);
           const functionName = `defineStorage${capitalizedName}`;

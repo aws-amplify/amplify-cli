@@ -26,28 +26,12 @@ export class GeoRenderer {
   private renderImports(resources: readonly GeoResourceProps[]): ts.ImportDeclaration[] {
     return resources.map((r) => {
       const functionName = `define${r.resourceName.charAt(0).toUpperCase()}${r.resourceName.slice(1)}`;
-      return factory.createImportDeclaration(
-        undefined,
-        factory.createImportClause(
-          false,
-          undefined,
-          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(functionName))]),
-        ),
-        factory.createStringLiteral(`./${r.resourceName}/resource`),
-      );
+      return TS.namedImport(`./${r.resourceName}/resource`, functionName);
     });
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../backend'),
-    );
+    return TS.typeImport('../backend', 'Backend');
   }
 
   private renderDefineGeo(
@@ -66,23 +50,7 @@ export class GeoRenderer {
 
     const addOutputStatement = this.buildAddOutputStatement(allResources, maps, placeIndices, geofenceCollections);
 
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      factory.createIdentifier('defineGeo'),
-      undefined,
-      [
-        factory.createParameterDeclaration(
-          undefined,
-          undefined,
-          factory.createIdentifier('backend'),
-          undefined,
-          factory.createTypeReferenceNode(factory.createIdentifier('Backend')),
-        ),
-      ],
-      undefined,
-      factory.createBlock([...functionAssignments, addOutputStatement], true),
-    );
+    return TS.exportedFunction('defineGeo', [...functionAssignments, addOutputStatement]);
   }
 
   private buildAddOutputStatement(

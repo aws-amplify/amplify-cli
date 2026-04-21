@@ -4,47 +4,17 @@ import { newLineIdentifier, TS } from '../../_infra/ts';
 const factory = ts.factory;
 
 /**
- * A single path entry in a REST API configuration.
- */
-export interface RestApiPath {
-  readonly path: string;
-  readonly methods: readonly string[];
-  readonly authType?: string;
-  readonly lambdaFunction?: string;
-  readonly userPoolGroups?: readonly string[];
-  readonly permissions?: {
-    readonly hasAuth?: boolean;
-    readonly groups?: Readonly<Record<string, readonly string[]>>;
-  };
-}
-
-/**
- * CORS configuration for a REST API.
- */
-export interface CorsConfiguration {
-  readonly allowCredentials?: boolean;
-  readonly allowHeaders?: readonly string[];
-  readonly allowMethods?: readonly string[];
-  readonly allowOrigins?: readonly string[];
-  readonly exposeHeaders?: readonly string[];
-  readonly maxAge?: number;
-}
-
-/**
  * Complete definition of a REST API extracted from Gen1 cli-inputs.json.
  */
-export interface RestApiDefinition {
+/* eslint-disable @typescript-eslint/no-explicit-any -- paths are untyped Gen1 cli-inputs.json */
+export interface RestApiRenderOptions {
   readonly apiName: string;
-  readonly functionName: string;
-  readonly paths: readonly RestApiPath[];
-  readonly authType?: string;
-  readonly corsConfiguration?: CorsConfiguration;
-  readonly uniqueFunctions?: readonly string[];
-  /** Gen1 API Gateway REST API ID from amplify-meta.json output. */
+  readonly exportedFunctionName: string;
+  readonly paths: Record<string, any>;
   readonly gen1ApiId: string;
-  /** Gen1 API Gateway root resource ID fetched via GetResources. */
   readonly gen1RootResourceId: string;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /**
  * Renders CDK constructs for REST API (API Gateway) resources.
@@ -56,18 +26,16 @@ export interface RestApiDefinition {
  */
 export class RestApiRenderer {
   private readonly hasAuth: boolean;
-  private readonly functionNames: ReadonlySet<string>;
 
-  public constructor(hasAuth: boolean, functionNames: ReadonlySet<string>) {
+  public constructor(hasAuth: boolean) {
     this.hasAuth = hasAuth;
-    this.functionNames = functionNames;
   }
 
   /**
    * Renders the complete resource.ts file for a REST API, including
    * imports, branchName, Backend type import, and the export function.
    */
-  public render(restApi: RestApiDefinition): ts.NodeArray<ts.Node> {
+  public render(restApi: RestApiRenderOptions): ts.NodeArray<ts.Node> {
     return factory.createNodeArray([
       ...this.renderImports(),
       this.renderBackendTypeImport(),
@@ -80,81 +48,80 @@ export class RestApiRenderer {
 
   private renderImports(): ts.ImportDeclaration[] {
     return [
-      createNamedImportDecl('aws-cdk-lib/aws-apigateway', ['RestApi', 'LambdaIntegration', 'AuthorizationType', 'Cors', 'ResponseType']),
-      createNamedImportDecl('aws-cdk-lib/aws-iam', ['Policy', 'PolicyStatement']),
-      createNamedImportDecl('aws-cdk-lib', ['Stack']),
+      TS.namedImport('aws-cdk-lib/aws-apigateway', 'RestApi', 'LambdaIntegration', 'AuthorizationType', 'Cors', 'ResponseType'),
+      TS.namedImport('aws-cdk-lib/aws-iam', 'Policy', 'PolicyStatement'),
+      TS.namedImport('aws-cdk-lib', 'Stack'),
     ];
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../../backend'),
-    );
+    return TS.typeImport('../../backend', 'Backend');
   }
 
-  private renderDefineApi(restApi: RestApiDefinition): ts.FunctionDeclaration {
+  private renderDefineApi(restApi: RestApiRenderOptions): ts.FunctionDeclaration {
     const statements = this.renderApi(restApi);
-    const baseName = restApi.apiName.replace(/api$/i, '');
-    const properFunctionName = `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
 
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      properFunctionName,
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(statements, true),
-    );
+    return TS.exportedFunction(restApi.exportedFunctionName, statements);
   }
 
-  /**
-   * Returns the function name for the REST API's export function.
-   */
-  public static functionName(apiName: string): string {
-    const baseName = apiName.replace(/api$/i, '');
-    return `define${baseName.charAt(0).toUpperCase() + baseName.slice(1)}Api`;
-  }
-
-  /**
-   * Renders CDK statements for a single REST API in backend.ts.
-   */
-  private renderApi(restApi: RestApiDefinition): ts.Statement[] {
+  /** Renders CDK statements for a single REST API in backend.ts. */
+  private renderApi(restApi: RestApiRenderOptions): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const sanitizedName = restApi.apiName.replace(/[^a-zA-Z0-9]/g, '');
-    const stackVarName = `${sanitizedName}Stack`;
     const apiVarName = `${sanitizedName}Api`;
     const gen1ApiVarName = `gen1${sanitizedName}Api`;
     const gen1PolicyVarName = `gen1${sanitizedName}Policy`;
 
-    statements.push(this.renderStack(restApi, stackVarName));
-    statements.push(this.renderRestApiConstruct(restApi, stackVarName, apiVarName));
+    statements.push(this.renderStack(restApi, 'stack'));
+    statements.push(this.renderRestApiConstruct(restApi, 'stack', apiVarName));
     statements.push(...this.renderGatewayResponses(apiVarName));
 
     const integrations = this.renderLambdaIntegrations(restApi);
     statements.push(...integrations.statements);
 
-    statements.push(this.renderGen1ApiReference(restApi, stackVarName, gen1ApiVarName));
-    statements.push(this.renderGen1Policy(restApi, stackVarName, gen1ApiVarName, gen1PolicyVarName));
+    statements.push(this.renderGen1ApiReference(restApi, 'stack', gen1ApiVarName));
+    statements.push(this.renderGen1Policy(restApi, 'stack', gen1ApiVarName, gen1PolicyVarName));
 
-    if (restApi.authType && this.hasAuth) {
+    if (this.hasPathAuth(restApi) && this.hasAuth) {
       statements.push(this.renderGen1PolicyAttachment(gen1PolicyVarName));
     }
 
     statements.push(...this.renderPaths(restApi, apiVarName, integrations.map));
-    statements.push(...this.renderPathPolicies(restApi, apiVarName, stackVarName));
+    statements.push(...this.renderPathPolicies(restApi, apiVarName, 'stack'));
     statements.push(this.renderOutput(apiVarName));
 
     return statements;
   }
 
-  private renderStack(restApi: RestApiDefinition, stackVarName: string): ts.Statement {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw cli-inputs path config
+  private extractMethods(pathConfig: any): string[] {
+    if (pathConfig.permissions?.auth?.length > 0) {
+      return this.mapPermissionsToMethods(pathConfig.permissions.auth);
+    }
+    if (pathConfig.permissions?.groups) {
+      const allPermissions = new Set<string>();
+      for (const permissions of Object.values(pathConfig.permissions.groups) as string[][]) {
+        for (const permission of permissions) {
+          allPermissions.add(permission);
+        }
+      }
+      return this.mapPermissionsToMethods(Array.from(allPermissions));
+    }
+    return ['GET'];
+  }
+
+  private mapPermissionsToMethods(permissions: readonly string[]): string[] {
+    const methodMap: Record<string, string> = {
+      read: 'GET',
+      create: 'POST',
+      update: 'PUT',
+      delete: 'DELETE',
+    };
+    const methods = permissions.map((p) => methodMap[p]).filter((m): m is string => m !== undefined);
+    return methods.length > 0 ? methods : ['GET'];
+  }
+
+  private renderStack(restApi: RestApiRenderOptions, stackVarName: string): ts.Statement {
     return factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -175,7 +142,7 @@ export class RestApiRenderer {
     );
   }
 
-  private renderRestApiConstruct(restApi: RestApiDefinition, stackVarName: string, apiVarName: string): ts.Statement {
+  private renderRestApiConstruct(restApi: RestApiRenderOptions, stackVarName: string, apiVarName: string): ts.Statement {
     return factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -222,10 +189,7 @@ export class RestApiRenderer {
           factory.createStringLiteral(name),
           factory.createObjectLiteralExpression(
             [
-              factory.createPropertyAssignment(
-                'type',
-                factory.createPropertyAccessExpression(factory.createIdentifier('ResponseType'), factory.createIdentifier(responseType)),
-              ),
+              TS.enumProp('type', 'ResponseType', responseType),
               factory.createPropertyAssignment(
                 'responseHeaders',
                 factory.createObjectLiteralExpression(
@@ -258,18 +222,19 @@ export class RestApiRenderer {
     );
   }
 
-  private renderLambdaIntegrations(restApi: RestApiDefinition): {
+  private renderLambdaIntegrations(restApi: RestApiRenderOptions): {
     readonly statements: ts.Statement[];
     readonly map: ReadonlyMap<string, string>;
   } {
     const statements: ts.Statement[] = [];
     const map = new Map<string, string>();
 
-    if (!restApi.uniqueFunctions) {
-      return { statements, map };
+    const uniqueFunctions = new Set<string>();
+    for (const pathConfig of Object.values(restApi.paths)) {
+      uniqueFunctions.add(pathConfig.lambdaFunction);
     }
 
-    for (const funcName of restApi.uniqueFunctions) {
+    for (const funcName of uniqueFunctions) {
       const integrationVarName = `${funcName}Integration`;
       map.set(funcName, integrationVarName);
 
@@ -302,7 +267,7 @@ export class RestApiRenderer {
     return { statements, map };
   }
 
-  private renderGen1ApiReference(restApi: RestApiDefinition, stackVarName: string, gen1ApiVarName: string): ts.Statement {
+  private renderGen1ApiReference(restApi: RestApiRenderOptions, stackVarName: string, gen1ApiVarName: string): ts.Statement {
     return factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -337,7 +302,7 @@ export class RestApiRenderer {
   }
 
   private renderGen1Policy(
-    restApi: RestApiDefinition,
+    restApi: RestApiRenderOptions,
     stackVarName: string,
     gen1ApiVarName: string,
     gen1PolicyVarName: string,
@@ -368,8 +333,8 @@ export class RestApiRenderer {
                             factory.createPropertyAssignment(
                               'resources',
                               factory.createArrayLiteralExpression([
-                                ...restApi.paths.flatMap((apiPath) =>
-                                  apiPath.methods.map((method) =>
+                                ...Object.entries(restApi.paths).flatMap(([, pathConfig]) =>
+                                  this.extractMethods(pathConfig).map((method) =>
                                     factory.createTemplateExpression(factory.createTemplateHead(''), [
                                       factory.createTemplateSpan(
                                         factory.createCallExpression(
@@ -420,16 +385,13 @@ export class RestApiRenderer {
     );
   }
 
-  private renderPaths(restApi: RestApiDefinition, apiVarName: string, integrations: ReadonlyMap<string, string>): ts.Statement[] {
+  private renderPaths(restApi: RestApiRenderOptions, apiVarName: string, integrations: ReadonlyMap<string, string>): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
-    for (const apiPath of restApi.paths) {
-      const pathSegments = apiPath.path.split('/').filter((segment) => segment && segment !== '{proxy+}');
+    for (const [pathName, pathConfig] of Object.entries(restApi.paths)) {
+      const pathSegments = pathName.split('/').filter((segment) => segment && segment !== '{proxy+}');
 
-      let resourceName = pathSegments.join('').replace(/[^a-zA-Z0-9]/g, '') || 'root';
-      if (this.functionNames.has(resourceName)) {
-        resourceName = `${resourceName}Resource`;
-      }
+      const resourceName = pathSegments.join('').replace(/[^a-zA-Z0-9]/g, '') || 'root';
 
       let resourceExpression: ts.Expression = factory.createPropertyAccessExpression(
         factory.createIdentifier(apiVarName),
@@ -443,22 +405,11 @@ export class RestApiRenderer {
         if (isLastSegment) {
           const resourceOptions: ts.PropertyAssignment[] = [];
 
-          if (apiPath.authType === 'private') {
+          if (pathConfig.permissions?.setting === 'private') {
             resourceOptions.push(
               factory.createPropertyAssignment(
                 'defaultMethodOptions',
-                factory.createObjectLiteralExpression(
-                  [
-                    factory.createPropertyAssignment(
-                      'authorizationType',
-                      factory.createPropertyAccessExpression(
-                        factory.createIdentifier('AuthorizationType'),
-                        factory.createIdentifier('IAM'),
-                      ),
-                    ),
-                  ],
-                  true,
-                ),
+                factory.createObjectLiteralExpression([TS.enumProp('authorizationType', 'AuthorizationType', 'IAM')], true),
               ),
             );
           }
@@ -485,7 +436,7 @@ export class RestApiRenderer {
         ),
       );
 
-      const integrationVar = integrations.get(apiPath.lambdaFunction ?? '') ?? `${apiPath.lambdaFunction}Integration`;
+      const integrationVar = integrations.get(pathConfig.lambdaFunction) ?? `${pathConfig.lambdaFunction}Integration`;
 
       statements.push(
         factory.createExpressionStatement(
@@ -524,14 +475,8 @@ export class RestApiRenderer {
       'defaultCorsPreflightOptions',
       factory.createObjectLiteralExpression(
         [
-          factory.createPropertyAssignment(
-            'allowOrigins',
-            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
-          ),
-          factory.createPropertyAssignment(
-            'allowMethods',
-            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
-          ),
+          TS.enumProp('allowOrigins', 'Cors', 'ALL_ORIGINS'),
+          TS.enumProp('allowMethods', 'Cors', 'ALL_METHODS'),
           factory.createPropertyAssignment(
             'allowHeaders',
             factory.createArrayLiteralExpression([
@@ -550,17 +495,17 @@ export class RestApiRenderer {
     );
   }
 
-  private renderPathPolicies(restApi: RestApiDefinition, apiVarName: string, stackVarName: string): ts.Statement[] {
+  private renderPathPolicies(restApi: RestApiRenderOptions, apiVarName: string, stackVarName: string): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
-    for (const apiPath of restApi.paths) {
-      if (apiPath.permissions?.hasAuth) {
-        statements.push(...this.renderAuthPathPolicy(apiPath, apiVarName, stackVarName));
+    for (const [pathName, pathConfig] of Object.entries(restApi.paths)) {
+      if (pathConfig.permissions?.auth?.length > 0) {
+        statements.push(...this.renderAuthPathPolicy(pathName, pathConfig, apiVarName, stackVarName));
       }
 
-      if (apiPath.permissions?.groups) {
-        for (const groupName of Object.keys(apiPath.permissions.groups)) {
-          statements.push(...this.renderGroupPathPolicy(apiPath, apiVarName, stackVarName, groupName));
+      if (pathConfig.permissions?.groups) {
+        for (const groupName of Object.keys(pathConfig.permissions.groups)) {
+          statements.push(...this.renderGroupPathPolicy(pathName, pathConfig, apiVarName, stackVarName, groupName));
         }
       }
     }
@@ -568,11 +513,12 @@ export class RestApiRenderer {
     return statements;
   }
 
-  private renderAuthPathPolicy(apiPath: RestApiPath, apiVarName: string, stackVarName: string): ts.Statement[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw cli-inputs path config
+  private renderAuthPathPolicy(pathName: string, pathConfig: any, apiVarName: string, stackVarName: string): ts.Statement[] {
     const comment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
-    ts.addSyntheticLeadingComment(comment, ts.SyntaxKind.SingleLineCommentTrivia, ` ${apiPath.path} - all authenticated users`, true);
+    ts.addSyntheticLeadingComment(comment, ts.SyntaxKind.SingleLineCommentTrivia, ` ${pathName} - all authenticated users`, true);
 
-    const policyName = `${apiPath.path.replace(/[^a-zA-Z0-9]/g, '')}AuthPolicy`;
+    const policyName = `${pathName.replace(/[^a-zA-Z0-9]/g, '')}AuthPolicy`;
 
     const attachCall = factory.createExpressionStatement(
       factory.createCallExpression(
@@ -603,14 +549,14 @@ export class RestApiRenderer {
                           factory.createPropertyAssignment(
                             'resources',
                             factory.createArrayLiteralExpression([
-                              ...apiPath.methods.flatMap((method) => [
+                              ...this.extractMethods(pathConfig).flatMap((method) => [
                                 factory.createCallExpression(
                                   factory.createPropertyAccessExpression(
                                     factory.createIdentifier(apiVarName),
                                     factory.createIdentifier('arnForExecuteApi'),
                                   ),
                                   undefined,
-                                  [factory.createStringLiteral(method), factory.createStringLiteral(apiPath.path)],
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(pathName)],
                                 ),
                                 factory.createCallExpression(
                                   factory.createPropertyAccessExpression(
@@ -618,7 +564,7 @@ export class RestApiRenderer {
                                     factory.createIdentifier('arnForExecuteApi'),
                                   ),
                                   undefined,
-                                  [factory.createStringLiteral(method), factory.createStringLiteral(`${apiPath.path}/*`)],
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(`${pathName}/*`)],
                                 ),
                               ]),
                             ]),
@@ -640,11 +586,19 @@ export class RestApiRenderer {
     return [comment as unknown as ts.Statement, attachCall];
   }
 
-  private renderGroupPathPolicy(apiPath: RestApiPath, apiVarName: string, stackVarName: string, groupName: string): ts.Statement[] {
+  /* eslint-disable @typescript-eslint/no-explicit-any -- raw cli-inputs path config */
+  private renderGroupPathPolicy(
+    pathName: string,
+    pathConfig: any,
+    apiVarName: string,
+    stackVarName: string,
+    groupName: string,
+  ): ts.Statement[] {
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     const comment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
-    ts.addSyntheticLeadingComment(comment, ts.SyntaxKind.SingleLineCommentTrivia, ` ${apiPath.path} - ${groupName} group only`, true);
+    ts.addSyntheticLeadingComment(comment, ts.SyntaxKind.SingleLineCommentTrivia, ` ${pathName} - ${groupName} group only`, true);
 
-    const policyName = `${apiPath.path.replace(/[^a-zA-Z0-9]/g, '')}${groupName}Policy`;
+    const policyName = `${pathName.replace(/[^a-zA-Z0-9]/g, '')}${groupName}Policy`;
 
     const attachCall = factory.createExpressionStatement(
       factory.createCallExpression(
@@ -681,14 +635,14 @@ export class RestApiRenderer {
                           factory.createPropertyAssignment(
                             'resources',
                             factory.createArrayLiteralExpression([
-                              ...apiPath.methods.flatMap((method) => [
+                              ...this.extractMethods(pathConfig).flatMap((method) => [
                                 factory.createCallExpression(
                                   factory.createPropertyAccessExpression(
                                     factory.createIdentifier(apiVarName),
                                     factory.createIdentifier('arnForExecuteApi'),
                                   ),
                                   undefined,
-                                  [factory.createStringLiteral(method), factory.createStringLiteral(apiPath.path)],
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(pathName)],
                                 ),
                                 factory.createCallExpression(
                                   factory.createPropertyAccessExpression(
@@ -696,7 +650,7 @@ export class RestApiRenderer {
                                     factory.createIdentifier('arnForExecuteApi'),
                                   ),
                                   undefined,
-                                  [factory.createStringLiteral(method), factory.createStringLiteral(`${apiPath.path}/*`)],
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(`${pathName}/*`)],
                                 ),
                               ]),
                             ]),
@@ -800,14 +754,11 @@ export class RestApiRenderer {
       ),
     );
   }
-}
 
-/** Creates a named import declaration. */
-function createNamedImportDecl(source: string, identifiers: string[]): ts.ImportDeclaration {
-  const importSpecifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
-  return factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-    factory.createStringLiteral(source),
-  );
+  private hasPathAuth(restApi: RestApiRenderOptions): boolean {
+    return Object.values(restApi.paths).some(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw cli-inputs path config
+      (p: any) => p.permissions?.setting === 'private' || p.permissions?.setting === 'protected',
+    );
+  }
 }

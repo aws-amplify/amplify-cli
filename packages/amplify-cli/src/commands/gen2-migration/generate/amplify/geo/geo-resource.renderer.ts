@@ -22,27 +22,11 @@ export class GeoResourceRenderer {
   }
 
   private renderConstructImport(params: GeoResourceProps): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        false,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(params.constructClassName))]),
-      ),
-      factory.createStringLiteral(`./${params.constructFileName}`),
-    );
+    return TS.namedImport(`./${params.constructFileName}`, params.constructClassName);
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../../backend'),
-    );
+    return TS.typeImport('../../backend', 'Backend');
   }
 
   private renderDefineResource(params: GeoResourceProps): ts.FunctionDeclaration {
@@ -69,23 +53,7 @@ export class GeoResourceRenderer {
 
     const returnStatement = factory.createReturnStatement(factory.createIdentifier(resourceName));
 
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      factory.createIdentifier(functionName),
-      undefined,
-      [
-        factory.createParameterDeclaration(
-          undefined,
-          undefined,
-          factory.createIdentifier('backend'),
-          undefined,
-          factory.createTypeReferenceNode(factory.createIdentifier('Backend')),
-        ),
-      ],
-      undefined,
-      factory.createBlock([createStackCall, constructInstantiation, returnStatement], true),
-    );
+    return TS.exportedFunction(functionName, [createStackCall, constructInstantiation, returnStatement]);
   }
 
   private buildConstructProps(params: GeoResourceProps): ts.ObjectLiteralElementLike[] {

@@ -150,43 +150,18 @@ export class FunctionRenderer {
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../../backend'),
-    );
+    return TS.typeImport('../../backend', 'Backend');
   }
 
   private renderAnalyticsTypeImport(opts: RenderCompleteFunctionOptions): ts.ImportDeclaration | undefined {
     if (!opts.analyticsConstructType) return undefined;
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([
-          factory.createImportSpecifier(false, undefined, factory.createIdentifier(opts.analyticsConstructType)),
-        ]),
-      ),
-      factory.createStringLiteral(opts.analyticsConstructImportPath!),
-    );
+    return TS.typeImport(opts.analyticsConstructImportPath!, opts.analyticsConstructType);
   }
 
   private renderCdkImports(additionalImports: Record<string, Set<string>>): ts.ImportDeclaration[] {
     const decls: ts.ImportDeclaration[] = [];
     for (const [source, identifiers] of Object.entries(additionalImports)) {
-      const specs = Array.from(identifiers).map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
-      decls.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamedImports(specs)),
-          factory.createStringLiteral(source),
-        ),
-      );
+      decls.push(TS.namedImport(source, ...Array.from(identifiers)));
     }
     return decls;
   }
@@ -273,14 +248,12 @@ export class FunctionRenderer {
       statements.push(...createKinesisTrigger(opts.resourceName));
     }
 
-    // Build the function parameters
-    const params: ts.ParameterDeclaration[] = [
-      factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend')),
-    ];
+    // Build the extra parameters (beyond backend: Backend)
+    const extraParams: ts.ParameterDeclaration[] = [];
 
     // Add analytics parameter if needed
     if (opts.hasAnalytics && opts.analyticsConstructType) {
-      params.push(
+      extraParams.push(
         factory.createParameterDeclaration(
           undefined,
           undefined,
@@ -291,15 +264,7 @@ export class FunctionRenderer {
       );
     }
 
-    const funcDecl = factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'applyEscapeHatches',
-      undefined,
-      params,
-      undefined,
-      factory.createBlock(statements, true),
-    );
+    const funcDecl = TS.exportedFunction('applyEscapeHatches', statements, extraParams.length > 0 ? extraParams : undefined);
 
     return { postExportStatements: [funcDecl], additionalImports };
   }
@@ -694,15 +659,7 @@ function createDynamoTrigger(functionName: string, models: readonly string[]): t
             [
               factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
                 factory.createIdentifier('table'),
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    'startingPosition',
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('StartingPosition'),
-                      factory.createIdentifier('LATEST'),
-                    ),
-                  ),
-                ]),
+                factory.createObjectLiteralExpression([TS.enumProp('startingPosition', 'StartingPosition', 'LATEST')]),
               ]),
             ],
           ),
@@ -788,12 +745,7 @@ function createKinesisTrigger(functionName: string): ts.Statement[] {
       [
         factory.createNewExpression(factory.createIdentifier('KinesisEventSource'), undefined, [
           factory.createIdentifier('kinesisStream'),
-          factory.createObjectLiteralExpression([
-            factory.createPropertyAssignment(
-              'startingPosition',
-              factory.createPropertyAccessExpression(factory.createIdentifier('StartingPosition'), factory.createIdentifier('LATEST')),
-            ),
-          ]),
+          factory.createObjectLiteralExpression([TS.enumProp('startingPosition', 'StartingPosition', 'LATEST')]),
         ]),
       ],
     ),

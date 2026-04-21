@@ -38,9 +38,9 @@ export interface AccessPatterns {
 /**
  * Options for rendering a defineStorage() resource file.
  */
-export interface RenderDefineStorageOptions {
-  readonly storageIdentifier: string;
-  readonly accessPatterns?: AccessPatterns;
+export interface S3RenderOptions {
+  readonly name: string;
+  readonly access?: AccessPatterns;
   readonly triggers?: StorageTriggers;
   readonly bucketName: string;
   readonly accelerateStatus?: BucketAccelerateStatus;
@@ -54,90 +54,80 @@ export interface RenderDefineStorageOptions {
  * Pure — no AWS calls, no side effects.
  */
 export class S3Renderer {
-  private readonly envName: string;
-
-  public constructor(envName: string) {
-    this.envName = envName;
-  }
-
   /**
    * Produces the complete TypeScript AST for storage/resource.ts.
    */
-  public render(opts: RenderDefineStorageOptions): ts.NodeArray<ts.Node> {
-    const { baseNodes, backendTypeImport } = this.renderDefineStorage(opts);
-
-    const allNodes: ts.Node[] = [];
-    let insertedBackendImport = false;
-    for (const node of baseNodes) {
-      if (!insertedBackendImport && !ts.isImportDeclaration(node as ts.Node)) {
-        allNodes.push(backendTypeImport);
-        insertedBackendImport = true;
-      }
-      allNodes.push(node);
-    }
-
-    allNodes.push(newLineIdentifier, this.renderPostRefactor(opts.bucketName));
-    allNodes.push(newLineIdentifier, this.renderApplyEscapeHatches(opts));
-
-    return factory.createNodeArray(allNodes as ts.Statement[]);
-  }
-
-  private renderDefineStorage(opts: RenderDefineStorageOptions): {
-    readonly baseNodes: ts.NodeArray<ts.Node>;
-    readonly backendTypeImport: ts.ImportDeclaration;
-  } {
+  public render(opts: S3RenderOptions): ts.NodeArray<ts.Node> {
     const propertyAssignments: ts.PropertyAssignment[] = [];
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineStorage']) };
     const postImportStatements: ts.Node[] = [];
 
     postImportStatements.push(TS.createBranchNameDeclaration());
 
-    this.renderName(propertyAssignments, opts.storageIdentifier);
+    this.renderName(propertyAssignments, opts.name);
     this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
     this.renderTriggers(propertyAssignments, namedImports, opts);
 
-    const baseNodes = TS.renderResourceTsFile({
-      backendFunctionConstruct: 'defineStorage',
-      exportedVariableName: factory.createIdentifier('storage'),
-      functionCallParameter: factory.createObjectLiteralExpression(propertyAssignments),
-      postImportStatements,
-      additionalImportedBackendIdentifiers: namedImports,
-    });
+    const nodes: ts.Node[] = [
+      ...this.renderImportStatements(namedImports),
+      this.renderBackendTypeImport(),
+      newLineIdentifier,
+      ...postImportStatements,
+      newLineIdentifier,
+      this.renderDefineStorageExport(propertyAssignments),
+      newLineIdentifier,
+      this.renderPostRefactor(opts.bucketName),
+      newLineIdentifier,
+      this.renderApplyEscapeHatches(opts),
+    ];
 
-    const backendTypeImport = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+    return factory.createNodeArray(nodes);
+  }
+
+  private renderImportStatements(namedImports: Readonly<Record<string, Set<string>>>): ts.ImportDeclaration[] {
+    const imports: ts.ImportDeclaration[] = [];
+    for (const [source, identifiers] of Object.entries(namedImports)) {
+      imports.push(TS.namedImport(source, ...Array.from(identifiers)));
+    }
+    return imports;
+  }
+
+  private renderBackendTypeImport(): ts.ImportDeclaration {
+    return TS.typeImport('../backend', 'Backend');
+  }
+
+  private renderDefineStorageExport(propertyAssignments: ts.PropertyAssignment[]): ts.VariableStatement {
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'storage',
+            undefined,
+            undefined,
+            factory.createCallExpression(factory.createIdentifier('defineStorage'), undefined, [
+              factory.createObjectLiteralExpression(propertyAssignments),
+            ]),
+          ),
+        ],
+        ts.NodeFlags.Const,
       ),
-      factory.createStringLiteral('../backend'),
     );
-
-    return { baseNodes, backendTypeImport };
   }
 
   private renderPostRefactor(bucketName: string): ts.FunctionDeclaration {
-    const s3BucketDecl = this.createCfnBucketDecl();
+    const s3BucketDeclaration = this.createCfnBucketDeclaration();
     const assignment = factory.createExpressionStatement(
       factory.createAssignment(
         factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketName')),
         factory.createStringLiteral(bucketName),
       ),
     );
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'postRefactor',
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock([s3BucketDecl, assignment], true),
-    );
+    return TS.exportedFunction('postRefactor', [s3BucketDeclaration, assignment]);
   }
 
-  private renderApplyEscapeHatches(opts: RenderDefineStorageOptions): ts.FunctionDeclaration {
-    const statements: ts.Statement[] = [this.createCfnBucketDecl()];
+  private renderApplyEscapeHatches(opts: S3RenderOptions): ts.FunctionDeclaration {
+    const statements: ts.Statement[] = [this.createCfnBucketDeclaration()];
 
     if (opts.accelerateStatus) {
       statements.push(
@@ -147,9 +137,7 @@ export class S3Renderer {
               factory.createIdentifier('s3Bucket'),
               factory.createIdentifier('accelerateConfiguration'),
             ),
-            factory.createObjectLiteralExpression([
-              factory.createPropertyAssignment('accelerationStatus', factory.createStringLiteral(opts.accelerateStatus)),
-            ]),
+            factory.createObjectLiteralExpression([TS.stringProp('accelerationStatus', opts.accelerateStatus)]),
           ),
         ),
       );
@@ -163,9 +151,7 @@ export class S3Renderer {
               factory.createIdentifier('s3Bucket'),
               factory.createIdentifier('versioningConfiguration'),
             ),
-            factory.createObjectLiteralExpression([
-              factory.createPropertyAssignment('status', factory.createStringLiteral(opts.versioningStatus)),
-            ]),
+            factory.createObjectLiteralExpression([TS.stringProp('status', opts.versioningStatus)]),
           ),
         ),
       );
@@ -175,15 +161,7 @@ export class S3Renderer {
       statements.push(this.renderEncryption(opts.encryption.Rules[0]));
     }
 
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'applyEscapeHatches',
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(statements, true),
-    );
+    return TS.exportedFunction('applyEscapeHatches', statements);
   }
 
   private renderEncryption(rule: NonNullable<ServerSideEncryptionConfiguration['Rules']>[0]): ts.ExpressionStatement {
@@ -191,20 +169,10 @@ export class S3Renderer {
     if (rule.ApplyServerSideEncryptionByDefault) {
       const sseDefaultProps: ts.PropertyAssignment[] = [];
       if (rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm) {
-        sseDefaultProps.push(
-          factory.createPropertyAssignment(
-            'sseAlgorithm',
-            factory.createStringLiteral(rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm),
-          ),
-        );
+        sseDefaultProps.push(TS.stringProp('sseAlgorithm', rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm));
       }
       if (rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID) {
-        sseDefaultProps.push(
-          factory.createPropertyAssignment(
-            'kmsMasterKeyId',
-            factory.createStringLiteral(rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID),
-          ),
-        );
+        sseDefaultProps.push(TS.stringProp('kmsMasterKeyId', rule.ApplyServerSideEncryptionByDefault.KMSMasterKeyID));
       }
       sseProps.push(
         factory.createPropertyAssignment('serverSideEncryptionByDefault', factory.createObjectLiteralExpression(sseDefaultProps, true)),
@@ -232,7 +200,7 @@ export class S3Renderer {
   }
 
   /** Creates `const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;` */
-  private createCfnBucketDecl(): ts.VariableStatement {
+  private createCfnBucketDeclaration(): ts.VariableStatement {
     return TS.declareConst('s3Bucket', TS.propAccess('backend', 'storage', 'resources', 'cfnResources', 'cfnBucket'));
   }
 
@@ -249,14 +217,14 @@ export class S3Renderer {
     target: ts.PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
     postImportStatements: ts.Node[],
-    opts: RenderDefineStorageOptions,
+    opts: S3RenderOptions,
   ): void {
-    if (!opts.accessPatterns) return;
+    if (!opts.access) return;
 
-    target.push(this.buildAccessProperty(opts.accessPatterns));
+    target.push(this.buildAccessProperty(opts.access));
 
-    if (opts.accessPatterns.functions && opts.accessPatterns.functions.length > 0) {
-      for (const functionAccess of opts.accessPatterns.functions) {
+    if (opts.access.functions && opts.access.functions.length > 0) {
+      for (const functionAccess of opts.access.functions) {
         const functionImportPath = `../function/${functionAccess.functionName}/resource`;
         if (!namedImports[functionImportPath]) {
           namedImports[functionImportPath] = new Set();
@@ -265,7 +233,7 @@ export class S3Renderer {
       }
     }
 
-    if (opts.accessPatterns.groups) {
+    if (opts.access.groups) {
       postImportStatements.push(
         factory.createJSDocComment(
           factory.createNodeArray([
@@ -279,11 +247,7 @@ export class S3Renderer {
     }
   }
 
-  private renderTriggers(
-    target: ts.PropertyAssignment[],
-    namedImports: Record<string, Set<string>>,
-    opts: RenderDefineStorageOptions,
-  ): void {
+  private renderTriggers(target: ts.PropertyAssignment[], namedImports: Record<string, Set<string>>, opts: S3RenderOptions): void {
     const triggers = opts.triggers;
     if (!triggers || Object.keys(triggers).length === 0) return;
 

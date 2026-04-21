@@ -33,7 +33,6 @@ export class AnalyticsKinesisGenerator implements Planner {
     this.renderer = new AnalyticsRenderer(resource);
   }
 
-  /** Plans the Kinesis analytics generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const resourceMeta = this.gen1App.resourceMeta(this.resource);
     const logicalId = resourceMeta.providerMetadata.logicalId;

@@ -1,8 +1,10 @@
+import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { DataRenderer } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.renderer';
 import { TS } from '../../../../../../commands/gen2-migration/generate/_infra/ts';
 
 describe('DataRenderer', () => {
   const renderer = new DataRenderer('main');
+  const emptyApi = {} as GraphqlApi;
 
   function render(...args: Parameters<DataRenderer['render']>): string {
     return TS.printNodes(renderer.render(...args));
@@ -12,6 +14,7 @@ describe('DataRenderer', () => {
     const output = render({
       schema: 'type Todo @model { id: ID! title: String! }',
       tableMappings: { Todo: 'Todo-abc123-main' },
+      graphqlApi: emptyApi,
     });
 
     expect(output).toMatchInlineSnapshot(`
@@ -41,6 +44,7 @@ describe('DataRenderer', () => {
       authorizationModes: {
         defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       },
+      graphqlApi: emptyApi,
     });
 
     expect(output).toMatchInlineSnapshot(`
@@ -76,6 +80,7 @@ describe('DataRenderer', () => {
           apiKeyConfig: { apiKeyExpirationDays: 30, description: 'My API Key' },
         },
       },
+      graphqlApi: emptyApi,
     });
 
     expect(output).toMatchInlineSnapshot(`
@@ -120,6 +125,7 @@ describe('DataRenderer', () => {
           },
         ],
       },
+      graphqlApi: emptyApi,
     });
 
     expect(output).toMatchInlineSnapshot(`
@@ -163,6 +169,7 @@ describe('DataRenderer', () => {
           },
         ],
       },
+      graphqlApi: emptyApi,
     });
 
     expect(output).toMatchInlineSnapshot(`
@@ -192,7 +199,7 @@ describe('DataRenderer', () => {
     const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
-      logging: { fieldLogLevel: 'error', excludeVerboseContent: true },
+      graphqlApi: { logConfig: { fieldLogLevel: 'ERROR', excludeVerboseContent: true } } as GraphqlApi,
     });
 
     expect(output).toMatchInlineSnapshot(`
@@ -220,6 +227,7 @@ describe('DataRenderer', () => {
     const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
+      graphqlApi: emptyApi,
       logging: true,
     });
 

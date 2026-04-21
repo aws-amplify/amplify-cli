@@ -41,7 +41,7 @@ export class S3Generator implements Planner {
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
-    this.renderer = new S3Renderer(gen1App.envName);
+    this.renderer = new S3Renderer();
   }
 
   /**
@@ -60,7 +60,6 @@ export class S3Generator implements Planner {
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const storageName = this.resource.resourceName;
     const bucketName = this.gen1App.resourceMetaOutput(this.resource, 'BucketName');
 
     const [accelerateStatus, versioningStatus, encryption] = await Promise.all([
@@ -78,8 +77,8 @@ export class S3Generator implements Planner {
         describe: async () => ['Generate amplify/storage/resource.ts'],
         execute: async () => {
           const nodes = this.renderer.render({
-            storageIdentifier: bucketName,
-            accessPatterns: this.buildAccessPatterns(),
+            name: bucketName,
+            access: this.buildAccessPatterns(),
             triggers: this.triggers,
             bucketName,
             accelerateStatus,

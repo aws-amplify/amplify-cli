@@ -214,46 +214,21 @@ export class AuthRenderer {
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../backend'),
-    );
+    return TS.typeImport('../backend', 'Backend');
   }
 
   private renderCdkImports(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.ImportDeclaration[] {
     const additionalImports = this.buildAdditionalImports(options, hasIdentityProviders);
     const decls: ts.ImportDeclaration[] = [];
     for (const [source, identifiers] of Object.entries(additionalImports)) {
-      const importSpecifiers = Array.from(identifiers).map((id) =>
-        factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
-      );
-      decls.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-          factory.createStringLiteral(source),
-        ),
-      );
+      decls.push(TS.namedImport(source, ...Array.from(identifiers)));
     }
     return decls;
   }
 
   private renderApplyEscapeHatches(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.FunctionDeclaration {
     const escapeHatchStatements = this.buildEscapeHatchStatements(options, hasIdentityProviders);
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'applyEscapeHatches',
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(escapeHatchStatements, true),
-    );
+    return TS.exportedFunction('applyEscapeHatches', escapeHatchStatements);
   }
 
   private renderStandardAuth(options: AuthRenderOptions, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {

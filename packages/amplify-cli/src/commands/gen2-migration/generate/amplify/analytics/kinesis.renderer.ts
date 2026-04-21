@@ -41,33 +41,9 @@ export class AnalyticsRenderer {
 
   private renderImports(opts: AnalyticsRenderOptions): ts.ImportDeclaration[] {
     return [
-      factory.createImportDeclaration(
-        undefined,
-        factory.createImportClause(
-          false,
-          undefined,
-          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('CfnStream'))]),
-        ),
-        factory.createStringLiteral('aws-cdk-lib/aws-kinesis'),
-      ),
-      factory.createImportDeclaration(
-        undefined,
-        factory.createImportClause(
-          false,
-          undefined,
-          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(opts.constructClassName))]),
-        ),
-        factory.createStringLiteral(`./${opts.constructFileName}`),
-      ),
-      factory.createImportDeclaration(
-        undefined,
-        factory.createImportClause(
-          true,
-          undefined,
-          factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-        ),
-        factory.createStringLiteral('../backend'),
-      ),
+      TS.namedImport('aws-cdk-lib/aws-kinesis', 'CfnStream'),
+      TS.namedImport(`./${opts.constructFileName}`, opts.constructClassName),
+      TS.typeImport('../backend', 'Backend'),
     ];
   }
 
@@ -147,23 +123,11 @@ export class AnalyticsRenderer {
       ),
     );
 
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'defineAnalytics',
-      undefined,
-      [
-        factory.createParameterDeclaration(
-          undefined,
-          undefined,
-          factory.createIdentifier('backend'),
-          undefined,
-          factory.createTypeReferenceNode('Backend'),
-        ),
-      ],
-      undefined,
-      factory.createBlock([stackCall, constructInstantiation, factory.createReturnStatement(factory.createIdentifier('analytics'))], true),
-    );
+    return TS.exportedFunction('defineAnalytics', [
+      stackCall,
+      constructInstantiation,
+      factory.createReturnStatement(factory.createIdentifier('analytics')),
+    ]);
   }
 
   private renderPostRefactor(opts: AnalyticsRenderOptions): ts.FunctionDeclaration {
@@ -184,26 +148,13 @@ export class AnalyticsRenderer {
       undefined,
       factory.createBlock(
         [
-          factory.createExpressionStatement(
-            factory.createAssignment(
-              factory.createPropertyAccessExpression(
-                factory.createParenthesizedExpression(
-                  factory.createAsExpression(
-                    factory.createCallExpression(
-                      factory.createPropertyAccessExpression(
-                        factory.createPropertyAccessExpression(factory.createIdentifier('analytics'), factory.createIdentifier('node')),
-                        factory.createIdentifier('findChild'),
-                      ),
-                      undefined,
-                      [factory.createStringLiteral('KinesisStream')],
-                    ),
-                    factory.createTypeReferenceNode('CfnStream'),
-                  ),
-                ),
-                factory.createIdentifier('name'),
-              ),
-              factory.createStringLiteral(`${opts.streamName}`),
-            ),
+          TS.castAssign(
+            factory.createCallExpression(TS.propAccess('analytics', 'node', 'findChild') as ts.PropertyAccessExpression, undefined, [
+              factory.createStringLiteral('KinesisStream'),
+            ]),
+            'CfnStream',
+            'name',
+            factory.createStringLiteral(`${opts.streamName}`),
           ),
         ],
         true,

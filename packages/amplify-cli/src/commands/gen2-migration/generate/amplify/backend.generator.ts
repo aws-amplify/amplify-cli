@@ -16,41 +16,6 @@ import {
  * Accumulates namespace imports, defineBackend entries, escape-hatch
  * calls, and post-refactor calls from category generators, then
  * delegates rendering to BackendRenderer and writes backend.ts.
- *
- * @example Generated output:
- *
- * ```ts
- * import * as auth from './auth/resource';
- * import * as data from './data/resource';
- * import * as storage from './storage/resource';
- * import * as myFunc from './function/myFunc/resource';
- * import * as analytics from './analytics/resource';
- * import { defineBackend } from '@aws-amplify/backend';
- *
- * const backend = defineBackend({
- *   auth: auth.auth,
- *   data: data.data,
- *   storage: storage.storage,
- *   myFunc: myFunc.myFunc,
- * });
- *
- * export type Backend = typeof backend;
- *
- * const analyticsResult = analytics.defineAnalytics(backend);
- *
- * export function postRefactor() {
- *   storage.postRefactor(backend);
- *   analytics.postRefactor(analyticsResult);
- * }
- *
- * auth.applyEscapeHatches(backend);
- * data.applyEscapeHatches(backend);
- * storage.applyEscapeHatches(backend);
- * myFunc.applyEscapeHatches(backend, analyticsResult);
- *
- * // Uncomment after refactor
- * // postRefactor();
- * ```
  */
 export class BackendGenerator implements Planner {
   private readonly namespaceImports: NamespaceImport[] = [];

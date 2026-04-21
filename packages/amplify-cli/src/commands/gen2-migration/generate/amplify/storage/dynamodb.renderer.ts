@@ -66,26 +66,11 @@ export class DynamoDBRenderer {
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
-      ),
-      factory.createStringLiteral('../../backend'),
-    );
+    return TS.typeImport('../../backend', 'Backend');
   }
 
   private renderCdkImports(): ts.ImportDeclaration {
-    const cdkImportSpecifiers = ['Table', 'AttributeType', 'BillingMode', 'StreamViewType', 'CfnTable'].map((id) =>
-      factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)),
-    );
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(false, undefined, factory.createNamedImports(cdkImportSpecifiers)),
-      factory.createStringLiteral('aws-cdk-lib/aws-dynamodb'),
-    );
+    return TS.namedImport('aws-cdk-lib/aws-dynamodb', 'Table', 'AttributeType', 'BillingMode', 'StreamViewType', 'CfnTable');
   }
 
   private renderDefineStorage(table: DynamoDBTableDefinition): ts.FunctionDeclaration {
@@ -110,36 +95,17 @@ export class DynamoDBRenderer {
       bodyStatements.push(factory.createReturnStatement(factory.createIdentifier(sanitizedName)));
     }
 
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      this.functionName,
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(bodyStatements, true),
-    );
+    return TS.exportedFunction(this.functionName, bodyStatements);
   }
 
   private renderPostRefactor(table: DynamoDBTableDefinition): ts.FunctionDeclaration {
     const sanitizedName = sanitizeVariableName(table.tableName.replace(/-[^-]+$/, ''));
 
-    const body = factory.createExpressionStatement(
-      factory.createAssignment(
-        factory.createPropertyAccessExpression(
-          factory.createParenthesizedExpression(
-            factory.createAsExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedName), factory.createIdentifier('node')),
-                factory.createIdentifier('defaultChild'),
-              ),
-              factory.createTypeReferenceNode('CfnTable'),
-            ),
-          ),
-          factory.createIdentifier('tableName'),
-        ),
-        factory.createStringLiteral(table.tableName),
-      ),
+    const body = TS.castAssign(
+      TS.propAccess(sanitizedName, 'node', 'defaultChild'),
+      'CfnTable',
+      'tableName',
+      factory.createStringLiteral(table.tableName),
     );
 
     return factory.createFunctionDeclaration(
@@ -162,23 +128,11 @@ export class DynamoDBRenderer {
       factory.createPropertyAssignment(
         'partitionKey',
         factory.createObjectLiteralExpression([
-          factory.createPropertyAssignment('name', factory.createStringLiteral(table.partitionKey.name)),
-          factory.createPropertyAssignment(
-            'type',
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier('AttributeType'),
-              factory.createIdentifier(table.partitionKey.type),
-            ),
-          ),
+          TS.stringProp('name', table.partitionKey.name),
+          TS.enumProp('type', 'AttributeType', table.partitionKey.type),
         ]),
       ),
-      factory.createPropertyAssignment(
-        'billingMode',
-        factory.createPropertyAccessExpression(
-          factory.createIdentifier('BillingMode'),
-          factory.createIdentifier(table.billingMode || 'PROVISIONED'),
-        ),
-      ),
+      TS.enumProp('billingMode', 'BillingMode', table.billingMode || 'PROVISIONED'),
     ];
 
     if (table.billingMode !== 'PAY_PER_REQUEST') {
@@ -187,15 +141,7 @@ export class DynamoDBRenderer {
     }
 
     if (table.streamEnabled && table.streamViewType) {
-      tableProps.push(
-        factory.createPropertyAssignment(
-          'stream',
-          factory.createPropertyAccessExpression(
-            factory.createIdentifier('StreamViewType'),
-            factory.createIdentifier(table.streamViewType),
-          ),
-        ),
-      );
+      tableProps.push(TS.enumProp('stream', 'StreamViewType', table.streamViewType));
     }
 
     if (table.sortKey) {
@@ -203,14 +149,8 @@ export class DynamoDBRenderer {
         factory.createPropertyAssignment(
           'sortKey',
           factory.createObjectLiteralExpression([
-            factory.createPropertyAssignment('name', factory.createStringLiteral(table.sortKey.name)),
-            factory.createPropertyAssignment(
-              'type',
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier('AttributeType'),
-                factory.createIdentifier(table.sortKey.type),
-              ),
-            ),
+            TS.stringProp('name', table.sortKey.name),
+            TS.enumProp('type', 'AttributeType', table.sortKey.type),
           ]),
         ),
       );
@@ -262,18 +202,12 @@ export class DynamoDBRenderer {
 
   private renderGSI(tableVarName: string, gsi: DynamoDBGSI): ts.Statement {
     const gsiProps: ts.PropertyAssignment[] = [
-      factory.createPropertyAssignment('indexName', factory.createStringLiteral(gsi.indexName)),
+      TS.stringProp('indexName', gsi.indexName),
       factory.createPropertyAssignment(
         'partitionKey',
         factory.createObjectLiteralExpression([
-          factory.createPropertyAssignment('name', factory.createStringLiteral(gsi.partitionKey.name)),
-          factory.createPropertyAssignment(
-            'type',
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier('AttributeType'),
-              factory.createIdentifier(gsi.partitionKey.type),
-            ),
-          ),
+          TS.stringProp('name', gsi.partitionKey.name),
+          TS.enumProp('type', 'AttributeType', gsi.partitionKey.type),
         ]),
       ),
     ];
@@ -283,11 +217,8 @@ export class DynamoDBRenderer {
         factory.createPropertyAssignment(
           'sortKey',
           factory.createObjectLiteralExpression([
-            factory.createPropertyAssignment('name', factory.createStringLiteral(gsi.sortKey.name)),
-            factory.createPropertyAssignment(
-              'type',
-              factory.createPropertyAccessExpression(factory.createIdentifier('AttributeType'), factory.createIdentifier(gsi.sortKey.type)),
-            ),
+            TS.stringProp('name', gsi.sortKey.name),
+            TS.enumProp('type', 'AttributeType', gsi.sortKey.type),
           ]),
         ),
       );

@@ -2,7 +2,7 @@ import ts from 'typescript';
 import { DataGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { DataRenderer, RenderDefineDataOptions } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.renderer';
+import { DataRenderer, DataRenderOptions } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.renderer';
 
 jest.unmock('fs-extra');
 
@@ -165,7 +165,7 @@ describe('DataGenerator', () => {
       expect(descriptions[0]).toContain('data/resource.ts');
     });
 
-    it('calls renderer.render with schema, tableMappings, authorizationModes, and logging', async () => {
+    it('calls renderer.render with schema, tableMappings, authorizationModes, and graphqlApi', async () => {
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
         resourceName: 'testApi',
@@ -176,21 +176,27 @@ describe('DataGenerator', () => {
       await ops[0].execute();
 
       expect(mockRender).toHaveBeenCalledTimes(1);
-      const renderOpts: RenderDefineDataOptions = mockRender.mock.calls[0][0];
+      const renderOpts: DataRenderOptions = mockRender.mock.calls[0][0];
       expect(renderOpts.schema).toBe('type Todo @model { id: ID! }');
       expect(renderOpts.tableMappings).toEqual({ Todo: 'Todo-api-123-main' });
       expect(renderOpts.authorizationModes).toEqual({
         defaultAuthentication: { authenticationType: 'API_KEY' },
       });
+      expect(renderOpts.graphqlApi).toEqual({
+        apiId: 'api-123',
+        name: 'myApi',
+        additionalAuthenticationProviders: [],
+      });
     });
 
-    it('passes logging config from graphqlApi to renderer', async () => {
-      (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    it('passes graphqlApi with logConfig to renderer', async () => {
+      const graphqlApi = {
         apiId: 'api-123',
         name: 'myApi',
         additionalAuthenticationProviders: [],
         logConfig: { fieldLogLevel: 'ERROR', excludeVerboseContent: true },
-      });
+      };
+      (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(graphqlApi);
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
@@ -201,17 +207,18 @@ describe('DataGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      const renderOpts: RenderDefineDataOptions = mockRender.mock.calls[0][0];
-      expect(renderOpts.logging).toEqual({ fieldLogLevel: 'error', excludeVerboseContent: true });
+      const renderOpts: DataRenderOptions = mockRender.mock.calls[0][0];
+      expect(renderOpts.graphqlApi).toEqual(graphqlApi);
     });
 
-    it('passes undefined logging when logConfig has NONE fieldLogLevel', async () => {
-      (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    it('passes graphqlApi with NONE logConfig to renderer unchanged', async () => {
+      const graphqlApi = {
         apiId: 'api-123',
         name: 'myApi',
         additionalAuthenticationProviders: [],
         logConfig: { fieldLogLevel: 'NONE' },
-      });
+      };
+      (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(graphqlApi);
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
         category: 'api',
@@ -222,8 +229,8 @@ describe('DataGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      const renderOpts: RenderDefineDataOptions = mockRender.mock.calls[0][0];
-      expect(renderOpts.logging).toBeUndefined();
+      const renderOpts: DataRenderOptions = mockRender.mock.calls[0][0];
+      expect(renderOpts.graphqlApi).toEqual(graphqlApi);
     });
 
     it('writes renderer output to amplify/data/resource.ts via printNodes', async () => {

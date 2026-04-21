@@ -1,12 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
-import { DataRenderer, DataTableMapping } from './data.renderer';
+import { DataRenderer } from './data.renderer';
 
 /**
  * Generates the AppSync/GraphQL data resource and contributes to backend.ts.
@@ -22,41 +21,30 @@ export class DataGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
-  private readonly defineData: DataRenderer;
+  private readonly renderer: DataRenderer;
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
-    this.defineData = new DataRenderer(gen1App.envName);
+    this.renderer = new DataRenderer(gen1App.envName);
   }
 
-  /** Plans the GraphQL data generation operations. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const apiName = this.gen1App.singleResourceName('api', 'AppSync');
-    const schema = this.gen1App.file(path.join('api', apiName, 'schema.graphql'));
+    const schema = this.gen1App.file(path.join('api', this.resource.resourceName, 'schema.graphql'));
     const apiId = this.gen1App.resourceMetaOutput(this.resource, 'GraphQLAPIIdOutput');
 
-    const tableMappings = createTableMappings(schema, apiId, this.gen1App.envName);
+    const tableMappings = this.createTableMappings(schema, apiId);
 
     const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
     if (!graphqlApi) {
       throw new Error(`AppSync API '${apiId}' not found`);
     }
 
-    const authorizationModes = this.gen1App.resourceMetaOutput(this.resource, 'authConfig');
-    const additionalAuthProviders = graphqlApi.additionalAuthenticationProviders?.map((provider) => ({
-      authenticationType: provider.authenticationType,
-      ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
-      ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
-      ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
-    }));
-
-    const logging = extractLoggingConfig(graphqlApi);
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
-    const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
-    const needsEscapeHatches = additionalAuthProviders && additionalAuthProviders.length > 0 && hasAuth;
+    const needsEscapeHatches =
+      graphqlApi.additionalAuthenticationProviders !== undefined && graphqlApi.additionalAuthenticationProviders.length > 0;
 
     return [
       {
@@ -64,13 +52,11 @@ export class DataGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/data/resource.ts'],
         execute: async () => {
-          const nodes = this.defineData.render({
+          const nodes = this.renderer.render({
             schema,
             tableMappings,
-            authorizationModes,
-            logging,
-            additionalAuthProviders,
-            hasAuth,
+            authorizationModes: this.gen1App.resourceMetaOutput(this.resource, 'authConfig'),
+            graphqlApi,
           });
 
           const content = TS.printNodes(nodes);
@@ -86,28 +72,13 @@ export class DataGenerator implements Planner {
       },
     ];
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
-function extractLoggingConfig(graphqlApi: GraphqlApi): any {
-  const logConfig = graphqlApi.logConfig;
-  if (!logConfig?.fieldLogLevel || logConfig.fieldLogLevel === 'NONE') {
-    return undefined;
+  private createTableMappings(schema: string, apiId: string): Record<string, string> {
+    const modelRegex = /type\s+(\w+)\s+@model/g;
+    const mapping: Record<string, string> = {};
+    let match: RegExpExecArray | null;
+    while ((match = modelRegex.exec(schema)) !== null) {
+      mapping[match[1]] = [match[1], apiId, this.gen1App.envName].join('-');
+    }
+    return mapping;
   }
-  return {
-    fieldLogLevel: logConfig.fieldLogLevel.toLowerCase(),
-    ...(logConfig.excludeVerboseContent !== undefined && {
-      excludeVerboseContent: logConfig.excludeVerboseContent,
-    }),
-  };
-}
-
-function createTableMappings(schema: string, apiId: string, envName: string): DataTableMapping {
-  const modelRegex = /type\s+(\w+)\s+@model/g;
-  const mapping: DataTableMapping = {};
-  let match: RegExpExecArray | null;
-  while ((match = modelRegex.exec(schema)) !== null) {
-    mapping[match[1]] = [match[1], apiId, envName].join('-');
-  }
-  return mapping;
 }

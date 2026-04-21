@@ -1,28 +1,20 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
+import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { newLineIdentifier, TS } from '../../_infra/ts';
 
 const factory = ts.factory;
 
 /**
- * Maps model names to their corresponding DynamoDB table names.
- */
-export type DataTableMapping = Record<string, string>;
-
-/**
  * Options for rendering a defineData() resource file.
  */
-export interface RenderDefineDataOptions {
+/* eslint-disable @typescript-eslint/no-explicit-any -- authorizationModes is untyped JSON */
+export interface DataRenderOptions {
   readonly schema: string;
-  readonly tableMappings: DataTableMapping;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from amplify-meta.json authConfig
+  readonly tableMappings: Record<string, string>;
   readonly authorizationModes?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
-  readonly logging?: any;
-  /** Additional auth providers for the applyEscapeHatches function. */
-  readonly additionalAuthProviders?: readonly Record<string, unknown>[];
-  /** Whether the Gen1 app has an auth category (needed for user pool references). */
-  readonly hasAuth?: boolean;
+  readonly graphqlApi: GraphqlApi;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const MIGRATED_TABLE_MAPPINGS_KEY = 'migratedAmplifyGen1DynamoDbTableMappings';
 
@@ -48,91 +40,76 @@ export class DataRenderer {
   /**
    * Produces the complete TypeScript AST for data/resource.ts.
    */
-  public render(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
-    const baseNodes = this.renderDefineData(opts);
-    const backendTypeImport = this.renderBackendTypeImport();
+  public render(opts: DataRenderOptions): ts.NodeArray<ts.Node> {
+    const { schema, preSchemaStatements } = this.prepareSchema(opts.schema);
 
-    const allNodes: ts.Node[] = [];
-    let foundFirstNonImport = false;
-    for (const node of baseNodes) {
-      if (!foundFirstNonImport && ts.isImportDeclaration(node as ts.Node)) {
-        allNodes.push(node);
-      } else {
-        if (!foundFirstNonImport) {
-          allNodes.push(backendTypeImport);
-          foundFirstNonImport = true;
-        }
-        allNodes.push(node);
-      }
-    }
-    if (!foundFirstNonImport) {
-      allNodes.push(backendTypeImport);
+    const nodes: ts.Node[] = [
+      this.renderNamedImport('defineData', '@aws-amplify/backend'),
+      this.renderBackendTypeImport(),
+      newLineIdentifier,
+      ...preSchemaStatements,
+      this.renderSchemaDeclaration(schema),
+      newLineIdentifier,
+      this.renderDefineDataExport(opts),
+    ];
+
+    const escapeHatchFunction = this.renderApplyEscapeHatches(opts);
+    if (escapeHatchFunction) {
+      nodes.push(newLineIdentifier, escapeHatchFunction);
     }
 
-    const escapeHatchDecl = this.renderApplyEscapeHatches(opts);
-    if (escapeHatchDecl) {
-      allNodes.push(newLineIdentifier);
-      allNodes.push(escapeHatchDecl);
-    }
+    return factory.createNodeArray(nodes);
+  }
 
-    return factory.createNodeArray(allNodes as ts.Statement[]);
+  private renderNamedImport(identifier: string, source: string): ts.ImportDeclaration {
+    return TS.namedImport(source, identifier);
   }
 
   private renderBackendTypeImport(): ts.ImportDeclaration {
-    return factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(
-        true,
-        undefined,
-        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
+    return TS.typeImport('../backend', 'Backend');
+  }
+
+  private renderSchemaDeclaration(schema: string): ts.VariableStatement {
+    return factory.createVariableStatement(
+      [],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration('schema', undefined, undefined, factory.createIdentifier('`' + schema + '`'))],
+        ts.NodeFlags.Const,
       ),
-      factory.createStringLiteral('../backend'),
     );
   }
 
-  private renderDefineData(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
+  private renderDefineDataExport(opts: DataRenderOptions): ts.VariableStatement {
     const properties: ObjectLiteralElementLike[] = [];
-    const namedImports: Record<string, Set<string>> = {
-      '@aws-amplify/backend': new Set(['defineData']),
-    };
-
-    const { schema, preSchemaStatements } = this.prepareSchema(opts.schema);
-
     this.renderTableMappings(properties, opts.tableMappings);
     this.renderAuthorizationModes(properties, opts.authorizationModes);
-    this.renderLogging(properties, opts.logging);
-
+    this.renderLogging(properties, this.extractLoggingConfig(opts.graphqlApi));
     properties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
 
-    const schemaVarDecl = factory.createVariableDeclaration('schema', undefined, undefined, factory.createIdentifier('`' + schema + '`'));
-    const schemaStatements: ts.Node[] = [
-      ...preSchemaStatements,
-      factory.createVariableStatement([], factory.createVariableDeclarationList([schemaVarDecl], ts.NodeFlags.Const)),
-    ];
-
-    return TS.renderResourceTsFile({
-      exportedVariableName: factory.createIdentifier('data'),
-      functionCallParameter: factory.createObjectLiteralExpression(properties, true),
-      backendFunctionConstruct: 'defineData',
-      postImportStatements: schemaStatements,
-      additionalImportedBackendIdentifiers: namedImports,
-    });
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'data',
+            undefined,
+            undefined,
+            factory.createCallExpression(factory.createIdentifier('defineData'), undefined, [
+              factory.createObjectLiteralExpression(properties, true),
+            ]),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
   }
 
-  private renderApplyEscapeHatches(opts: RenderDefineDataOptions): ts.FunctionDeclaration | undefined {
-    const needsEscapeHatches = opts.additionalAuthProviders && opts.additionalAuthProviders.length > 0 && opts.hasAuth;
-    if (!needsEscapeHatches) return undefined;
+  private renderApplyEscapeHatches(opts: DataRenderOptions): ts.FunctionDeclaration | undefined {
+    const providers = this.extractAdditionalAuthProviders(opts.graphqlApi);
+    if (!providers || providers.length === 0) return undefined;
 
-    const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(opts.additionalAuthProviders!);
-    return factory.createFunctionDeclaration(
-      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-      undefined,
-      'applyEscapeHatches',
-      undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend'))],
-      undefined,
-      factory.createBlock(escapeHatchStatements, true),
-    );
+    const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(providers);
+    return TS.exportedFunction('applyEscapeHatches', escapeHatchStatements);
   }
 
   private prepareSchema(raw: string): { schema: string; preSchemaStatements: ts.Node[] } {
@@ -148,7 +125,7 @@ export class DataRenderer {
     };
   }
 
-  private renderTableMappings(properties: ObjectLiteralElementLike[], tableMappings: DataTableMapping): void {
+  private renderTableMappings(properties: ObjectLiteralElementLike[], tableMappings: Record<string, string>): void {
     const mappingProps: ObjectLiteralElementLike[] = [];
     for (const [tableName, tableId] of Object.entries(tableMappings)) {
       mappingProps.push(factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)));
@@ -157,7 +134,7 @@ export class DataRenderer {
     const branchNameProp = ts.addSyntheticLeadingComment(
       factory.createPropertyAssignment('branchName', factory.createStringLiteral(this.envName)),
       ts.SyntaxKind.SingleLineCommentTrivia,
-      'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
+      'The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
       true,
     );
 
@@ -171,6 +148,7 @@ export class DataRenderer {
     properties.push(factory.createPropertyAssignment(MIGRATED_TABLE_MAPPINGS_KEY, factory.createArrayLiteralExpression([envMapping])));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from amplify-meta.json authConfig
   private renderAuthorizationModes(properties: ObjectLiteralElementLike[], authorizationModes?: any): void {
     if (!authorizationModes) return;
 
@@ -272,6 +250,7 @@ export class DataRenderer {
     target.push(factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(props)));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
   private renderLogging(properties: ObjectLiteralElementLike[], logging?: any): void {
     if (!logging) return;
 
@@ -300,6 +279,31 @@ export class DataRenderer {
     if (props.length > 0) {
       properties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(props)));
     }
+  }
+
+  /** Extracts logging configuration from the raw AppSync API object. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
+  private extractLoggingConfig(graphqlApi: GraphqlApi): any {
+    const logConfig = graphqlApi.logConfig;
+    if (!logConfig?.fieldLogLevel || logConfig.fieldLogLevel === 'NONE') {
+      return undefined;
+    }
+    return {
+      fieldLogLevel: logConfig.fieldLogLevel.toLowerCase(),
+      ...(logConfig.excludeVerboseContent !== undefined && {
+        excludeVerboseContent: logConfig.excludeVerboseContent,
+      }),
+    };
+  }
+
+  /** Extracts additional auth providers from the raw AppSync API object. */
+  private extractAdditionalAuthProviders(graphqlApi: GraphqlApi): Record<string, unknown>[] | undefined {
+    return graphqlApi.additionalAuthenticationProviders?.map((provider) => ({
+      authenticationType: provider.authenticationType,
+      ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
+      ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
+      ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
+    }));
   }
 
   /** Builds additional auth provider override statements for applyEscapeHatches. */

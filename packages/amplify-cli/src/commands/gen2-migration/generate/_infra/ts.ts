@@ -77,6 +77,96 @@ export class TS {
   }
 
   /**
+   * Creates `import { a, b } from 'source';`
+   */
+  public static namedImport(source: string, ...identifiers: string[]): ts.ImportDeclaration {
+    const specifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(false, undefined, factory.createNamedImports(specifiers)),
+      factory.createStringLiteral(source),
+    );
+  }
+
+  /**
+   * Creates `import type { a, b } from 'source';`
+   */
+  public static typeImport(source: string, ...identifiers: string[]): ts.ImportDeclaration {
+    const specifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(true, undefined, factory.createNamedImports(specifiers)),
+      factory.createStringLiteral(source),
+    );
+  }
+
+  /**
+   * Creates `import * as alias from 'source';`
+   */
+  public static namespaceImport(alias: string, source: string): ts.ImportDeclaration {
+    return factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(alias))),
+      factory.createStringLiteral(source),
+    );
+  }
+
+  /**
+   * Creates `(expr as Type).prop = value;` as an expression statement.
+   */
+  public static castAssign(expr: ts.Expression, typeName: string, prop: string, value: ts.Expression): ts.ExpressionStatement {
+    return factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(factory.createAsExpression(expr, factory.createTypeReferenceNode(typeName))),
+          factory.createIdentifier(prop),
+        ),
+        value,
+      ),
+    );
+  }
+
+  /**
+   * Creates `factory.createPropertyAssignment('key', factory.createStringLiteral('value'))`.
+   */
+  public static stringProp(key: string, value: string): ts.PropertyAssignment {
+    return factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value));
+  }
+
+  /**
+   * Creates `factory.createPropertyAssignment('key', Enum.VALUE)`.
+   */
+  public static enumProp(key: string, enumName: string, value: string): ts.PropertyAssignment {
+    return factory.createPropertyAssignment(
+      factory.createIdentifier(key),
+      factory.createPropertyAccessExpression(factory.createIdentifier(enumName), factory.createIdentifier(value)),
+    );
+  }
+
+  /**
+   * Creates an exported function: `export function name(backend: Backend, ...extraParams) { ...body }`
+   */
+  public static exportedFunction(
+    name: string,
+    body: readonly ts.Statement[],
+    extraParams?: readonly ts.ParameterDeclaration[],
+  ): ts.FunctionDeclaration {
+    const params: ts.ParameterDeclaration[] = [
+      factory.createParameterDeclaration(undefined, undefined, 'backend', undefined, factory.createTypeReferenceNode('Backend')),
+      ...(extraParams ?? []),
+    ];
+    return factory.createFunctionDeclaration(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      name,
+      undefined,
+      params,
+      undefined,
+      factory.createBlock([...body], true),
+    );
+  }
+
+  /**
    * Creates `{target}.{property} = {value};` as an expression statement.
    */
   public static assignProp(
