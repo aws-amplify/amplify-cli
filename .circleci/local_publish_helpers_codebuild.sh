@@ -28,7 +28,11 @@ function uploadPkgCliCodeBuild {
     set -e
 
     cd out/
-    export version=$(./amplify-pkg-linux-x64 --version)
+    # Use tail -n 1 to extract just the version line: the Amplify CLI can emit
+    # preamble warnings (e.g., missing/inactive plugin notices) on stdout before
+    # the version itself. Capturing the full output would word-split those
+    # warnings into invalid positional args when interpolated into `aws s3 cp`.
+    export version=$(./amplify-pkg-linux-x64 --version 2>/dev/null | tail -n 1)
 
     # validate that version is uploaded in right build
     if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -49,10 +53,10 @@ function uploadPkgCliCodeBuild {
     # It's ok to re-upload binaries for the same build to make this step idempotent
     # Versioning is handled by cb-publish-step-1-set-versions script
     # Version conflicts are caught at cb-publish-step-2-verdaccio script
-    aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64.tgz
-    aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64.tgz
-    aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64.tgz
-    aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
+    aws s3 cp amplify-pkg-win-x64.tgz "s3://$PKG_CLI_BUCKET_NAME/$version/amplify-pkg-win-x64.tgz"
+    aws s3 cp amplify-pkg-macos-x64.tgz "s3://$PKG_CLI_BUCKET_NAME/$version/amplify-pkg-macos-x64.tgz"
+    aws s3 cp amplify-pkg-linux-arm64.tgz "s3://$PKG_CLI_BUCKET_NAME/$version/amplify-pkg-linux-arm64.tgz"
+    aws s3 cp amplify-pkg-linux-x64.tgz "s3://$PKG_CLI_BUCKET_NAME/$version/amplify-pkg-linux-x64.tgz"
 
     cd ..
 }
@@ -64,7 +68,7 @@ function generatePkgCli {
   cp ../yarn.lock ./
   yarn workspaces focus --production
 
-  # Workaround for yao-pkg/pkg#195: pkg's snapshot filesystem can't resolve
+  # Workaround for yao-pkg/pkg#189: pkg's snapshot filesystem can't resolve
   # ESM imports from .mjs files referenced by the "module-sync" export condition.
   # We strip just the "module-sync" line from each affected package.json so pkg
   # falls back to the "default" (CJS) condition instead.
