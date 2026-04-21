@@ -5,7 +5,7 @@ set -euxo pipefail
 function_name=$(ls amplify/backend/function | grep -v financetracker48ceb8c2 | head -1)
 
 # Copy GraphQL schema
-cp -f backend/schema.graphql ./amplify/backend/api/financetrackerfinal/schema.graphql
+cp -f backend/schema.graphql ./amplify/backend/api/financetracker/schema.graphql
 
 # Copy Lambda function source
 cp -f backend/financetracker.js ./amplify/backend/function/${function_name}/src/index.js

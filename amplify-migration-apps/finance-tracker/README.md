@@ -173,7 +173,7 @@ amplify add function
 
 ```console
 ? Select which capability you want to add: Lambda function (serverless function)
-? Provide an AWS Lambda function name: financetracker7f7c2ad7
+? Provide an AWS Lambda function name: financetracker
 ? Choose the runtime that you want to use: NodeJS
 ? Choose the function template that you want to use: Hello World
 
@@ -216,6 +216,12 @@ The CLI only handles basic resource access permissions. The custom IAM policies 
 }
 ```
 
+## Configure
+
+```console
+npm run configure
+```
+
 Next, update the function to grant it access to the DynamoDB Transaction table:
 
 ```console
@@ -255,11 +261,6 @@ You can access the following resource attributes as environment variables from y
 ? Do you want to edit the local lambda function now? No
 ```
 
-## Configure
-
-```console
-npm run configure
-```
 ## Deploy Backend
 
 ```console
