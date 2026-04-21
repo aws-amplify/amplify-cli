@@ -634,16 +634,20 @@ export class FunctionGenerator implements Planner {
     const dynamoActions: string[] = [];
     const kinesisActions: string[] = [];
     const cognitoActions: string[] = [];
+    const otherAuthActions: string[] = [];
     let hasMutation = false;
     let hasQuery = false;
 
     for (const stmt of statements) {
       const stmtActions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+      const stmtResources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
+      const targetsUserPool = JSON.stringify(stmtResources).includes('userpool/') || JSON.stringify(stmtResources).includes('UserPool');
+
       for (const action of stmtActions) {
         if (typeof action !== 'string') continue;
         if (action.startsWith('dynamodb:')) dynamoActions.push(action);
-        if (action.startsWith('kinesis:') && !kinesisActions.includes(action)) kinesisActions.push(action);
-        if (action.startsWith('cognito-idp:')) {
+        else if (action.startsWith('kinesis:') && !kinesisActions.includes(action)) kinesisActions.push(action);
+        else if (action.startsWith('cognito-idp:')) {
           if (action === 'cognito-idp:AdminList*') {
             for (const a of ['cognito-idp:AdminListDevices', 'cognito-idp:AdminListGroupsForUser']) {
               if (!cognitoActions.includes(a)) cognitoActions.push(a);
@@ -655,6 +659,8 @@ export class FunctionGenerator implements Planner {
           } else if (!cognitoActions.includes(action)) {
             cognitoActions.push(action);
           }
+        } else if (targetsUserPool && !otherAuthActions.includes(action)) {
+          otherAuthActions.push(action);
         }
       }
 
@@ -667,7 +673,13 @@ export class FunctionGenerator implements Planner {
     }
 
     const { permissions: authAccess, unmapped: unmappedAuthActions } = resolveAuthAccess(cognitoActions);
-    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery }, authAccess, unmappedAuthActions };
+    return {
+      dynamoActions,
+      kinesisActions,
+      graphqlApiPermissions: { hasMutation, hasQuery },
+      authAccess,
+      unmappedAuthActions: [...unmappedAuthActions, ...otherAuthActions],
+    };
   }
 
   /**

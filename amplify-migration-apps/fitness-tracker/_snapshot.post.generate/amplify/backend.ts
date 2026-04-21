@@ -85,7 +85,18 @@ backend.admin.addEnvironment(
 );
 backend.admin.resources.lambda.addToRolePolicy(
   new aws_iam.PolicyStatement({
-    actions: ['cognito-idp:Describe*'],
+    actions: [
+      'cognito-idp:Describe*',
+      'cognito-identity:Describe*',
+      'cognito-identity:Get*',
+      'cognito-identity:List*',
+      'cognito-sync:Describe*',
+      'cognito-sync:Get*',
+      'cognito-sync:List*',
+      'iam:ListOpenIdConnectProviders',
+      'iam:ListRoles',
+      'sns:ListPlatformApplications',
+    ],
     resources: [backend.auth.resources.userPool.userPoolArn],
   })
 );
