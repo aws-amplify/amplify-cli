@@ -32,11 +32,14 @@ function getProfileIndex(profileName: string): number {
     });
     const index = profiles.indexOf(profileName);
     if (index === -1) {
-      throw Error(`Profile: ${profileName} not found.`);
+      console.warn(`Profile "${profileName}" not found in AWS config file. Falling back to default selection.`);
+      return 0;
     }
     return index;
-  } catch (error) {
-    throw Error(`Failed to read config file when getting AWS profile: ${(error as Error).message}`);
+  } catch (e) {
+    // Config file missing or unreadable (e.g. CI with env-var credentials only) — accept the default selection
+    console.warn('Unable to read AWS config file for profile selection. Falling back to default selection.', e);
+    return 0;
   }
 }
 
