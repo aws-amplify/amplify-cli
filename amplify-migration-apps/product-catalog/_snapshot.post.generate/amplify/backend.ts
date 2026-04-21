@@ -54,7 +54,7 @@ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
     effect: aws_iam.Effect.ALLOW,
     actions: ['appsync:GraphQL'],
     resources: [
-      `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/3oy6oxkj6ffojmc2upd52ftdsq/*`,
+      `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/hscmwhprkbaljmcpavj3dcztrq/*`,
     ],
   })
 );
@@ -104,13 +104,29 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-
-for (const cfnResource of backend.auth.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool', 'AWS::Cognito::UserPoolClient', 'AWS::Cognito::IdentityPoolRoleAttachment', 'AWS::Cognito::UserPoolGroup'].includes(c.cfnResourceType))) {
+for (const cfnResource of backend.auth.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      [
+        'AWS::Cognito::UserPool',
+        'AWS::Cognito::IdentityPool',
+        'AWS::Cognito::UserPoolClient',
+        'AWS::Cognito::IdentityPoolRoleAttachment',
+        'AWS::Cognito::UserPoolDomain',
+        'AWS::Cognito::UserPoolGroup',
+      ].includes(c.cfnResourceType)
+  )) {
   (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
   (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }
-
-for (const cfnResource of backend.storage.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::S3::Bucket'].includes(c.cfnResourceType))) {
+for (const cfnResource of backend.storage.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
+  )) {
   (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
   (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }

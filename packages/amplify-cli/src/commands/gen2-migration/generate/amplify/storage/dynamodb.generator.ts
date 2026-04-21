@@ -44,7 +44,7 @@ export class DynamoDBGenerator implements Planner {
             this.backendGenerator.addEarlyStatement(statement);
           }
 
-          this.backendGenerator.addRetentionOverrideLoop(scopeVarName, 'AWS::DynamoDB::Table');
+          this.backendGenerator.addVariableRetentionLoop(scopeVarName, ['AWS::DynamoDB::Table']);
         },
       },
     ];

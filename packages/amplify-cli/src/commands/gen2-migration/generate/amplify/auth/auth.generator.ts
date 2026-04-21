@@ -122,7 +122,7 @@ export class AuthGenerator implements Planner {
     this.backendGenerator.addImport('./auth/resource', ['auth']);
     this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(authIdentifier));
 
-    this.backendGenerator.addRefactoredResourceTypes('auth', [
+    this.backendGenerator.addBackendStackRetentionLoop('auth', [
       'AWS::Cognito::UserPool',
       'AWS::Cognito::IdentityPool',
       'AWS::Cognito::UserPoolClient',

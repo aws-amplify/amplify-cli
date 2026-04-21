@@ -21,7 +21,7 @@ export class BackendGenerator implements Planner {
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly earlyStatements: ts.Statement[] = [];
-  private readonly refactoredResourceTypesByStack: Map<string, string[]> = new Map();
+  private readonly retentionStatements: ts.Statement[] = [];
   private readonly outputDir: string;
   private hasBranchName = false;
   private hasStorageStack = false;
@@ -101,104 +101,120 @@ export class BackendGenerator implements Planner {
   }
 
   /**
-   * Emits a for-of loop as an early statement that applies
-   * `addOverride('DeletionPolicy', 'Retain')` and
-   * `addOverride('UpdateReplacePolicy', 'Retain')` to CfnResources of the
-   * given type inside a stack referenced by a local variable.
+   * Emits a for-of loop that applies `addOverride('UpdateReplacePolicy', 'Retain')`
+   * and `addOverride('DeletionPolicy', 'Retain')` to CfnResources matching the given
+   * types inside a construct tree rooted at `nodeExpression`.
    *
-   * Used for custom stacks (e.g. DynamoDB) where the stack is not a
-   * standard backend category property.
+   * The loop is appended to the retention statements block, which is emitted at the
+   * end of backend.ts after all other statements.
    */
-  public addRetentionOverrideLoop(stackVarName: string, resourceType: string): void {
+  public addRetentionLoop(nodeExpression: ts.Expression, types: readonly string[]): void {
     this.addImport('aws-cdk-lib', ['CfnResource']);
-    this.earlyStatements.push(BackendGenerator.createRetentionLoop(stackVarName, resourceType));
+    this.retentionStatements.push(BackendGenerator.createRetentionLoop(nodeExpression, types));
+  }
+
+  /**
+   * Convenience method that emits a retention loop for `backend.<stackName>.stack.node`.
+   */
+  public addBackendStackRetentionLoop(stackName: string, types: readonly string[]): void {
+    const nodeExpr = factory.createPropertyAccessExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), stackName),
+        'stack',
+      ),
+      'node',
+    );
+    this.addRetentionLoop(nodeExpr, types);
+  }
+
+  /**
+   * Convenience method that emits a retention loop for a local variable's node tree
+   * (e.g. `activity.node` or `analytics.node`).
+   */
+  public addVariableRetentionLoop(varName: string, types: readonly string[]): void {
+    const nodeExpr = factory.createPropertyAccessExpression(factory.createIdentifier(varName), 'node');
+    this.addRetentionLoop(nodeExpr, types);
   }
 
   /**
    * Creates a for-of loop AST node that applies retention overrides to
-   * CfnResources of a given type inside a stack.
+   * CfnResources matching the given types inside a construct tree.
    */
-  private static createRetentionLoop(stackVarName: string, resourceType: string): ts.ForOfStatement {
+  private static createRetentionLoop(nodeExpression: ts.Expression, types: readonly string[]): ts.ForOfStatement {
     const filterCallback = factory.createArrowFunction(
       undefined,
       undefined,
-      [factory.createParameterDeclaration(undefined, undefined, 'n')],
+      [factory.createParameterDeclaration(undefined, undefined, 'c')],
       undefined,
       factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), 'isCfnResource'),
-        undefined,
-        [factory.createIdentifier('n')],
+      factory.createBinaryExpression(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), 'isCfnResource'),
+          undefined,
+          [factory.createIdentifier('c')],
+        ),
+        factory.createToken(ts.SyntaxKind.AmpersandAmpersandToken),
+        types.length === 1
+          ? factory.createBinaryExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('c'), 'cfnResourceType'),
+              factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+              factory.createStringLiteral(types[0]),
+            )
+          : factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createArrayLiteralExpression(
+                  types.map((t) => factory.createStringLiteral(t)),
+                  false,
+                ),
+                'includes',
+              ),
+              undefined,
+              [factory.createPropertyAccessExpression(factory.createIdentifier('c'), 'cfnResourceType')],
+            ),
       ),
     );
 
     const iterableExpr = factory.createCallExpression(
       factory.createPropertyAccessExpression(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier(stackVarName), 'node'),
-            'findAll',
-          ),
-          undefined,
-          [],
-        ),
+        factory.createCallExpression(factory.createPropertyAccessExpression(nodeExpression, 'findAll'), undefined, []),
         'filter',
       ),
       undefined,
       [filterCallback],
     );
 
-    const condition = factory.createBinaryExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'cfnResourceType'),
-      factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
-      factory.createStringLiteral(resourceType),
-    );
-
-    const addOverrideDeletion = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'addOverride'),
-        undefined,
-        [factory.createStringLiteral('DeletionPolicy'), factory.createStringLiteral('Retain')],
-      ),
-    );
-
     const addOverrideUpdate = factory.createExpressionStatement(
       factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'addOverride'),
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(
+            factory.createAsExpression(factory.createIdentifier('cfnResource'), factory.createTypeReferenceNode('CfnResource')),
+          ),
+          'addOverride',
+        ),
         undefined,
         [factory.createStringLiteral('UpdateReplacePolicy'), factory.createStringLiteral('Retain')],
       ),
     );
 
-    const ifStatement = factory.createIfStatement(condition, factory.createBlock([addOverrideDeletion, addOverrideUpdate], true));
+    const addOverrideDeletion = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(
+            factory.createAsExpression(factory.createIdentifier('cfnResource'), factory.createTypeReferenceNode('CfnResource')),
+          ),
+          'addOverride',
+        ),
+        undefined,
+        [factory.createStringLiteral('DeletionPolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
 
     return factory.createForOfStatement(
       undefined,
       factory.createVariableDeclarationList([factory.createVariableDeclaration('cfnResource')], ts.NodeFlags.Const),
       iterableExpr,
-      factory.createBlock([ifStatement], true),
+      factory.createBlock([addOverrideUpdate, addOverrideDeletion], true),
     );
-  }
-
-  /**
-   * Registers CloudFormation resource types that will be refactored during
-   * the migration, scoped to a specific backend stack. At the end of
-   * backend.ts, a per-stack block is emitted that applies
-   * `addOverride('DeletionPolicy', 'Retain')` and
-   * `addOverride('UpdateReplacePolicy', 'Retain')` to all matching
-   * CfnResources so they survive the stack update when Gen2 takes ownership.
-   */
-  public addRefactoredResourceTypes(stackName: string, types: readonly string[]): void {
-    let existing = this.refactoredResourceTypesByStack.get(stackName);
-    if (!existing) {
-      existing = [];
-      this.refactoredResourceTypesByStack.set(stackName, existing);
-    }
-    for (const t of types) {
-      if (!existing.includes(t)) {
-        existing.push(t);
-      }
-    }
   }
 
   /**
@@ -218,9 +234,6 @@ export class BackendGenerator implements Planner {
           // then other resources), then CDK sub-modules, then @aws-amplify/backend,
           // then analytics, then CDK root, then CDK cognito.
           this.addImport('@aws-amplify/backend', ['defineBackend']);
-          if (this.refactoredResourceTypesByStack.size > 0) {
-            this.addImport('aws-cdk-lib', ['CfnResource', 'RemovalPolicy']);
-          }
           const sortedImports = [...this.imports].sort((a, b) => importOrder(a.source) - importOrder(b.source));
 
           for (const imp of sortedImports) {
@@ -251,11 +264,7 @@ export class BackendGenerator implements Planner {
 
           nodes.push(...this.earlyStatements);
           nodes.push(...this.postDefineStatements);
-
-          // Emit the per-stack retention override blocks if any types were registered.
-          if (this.refactoredResourceTypesByStack.size > 0) {
-            nodes.push(...this.renderRefactoredResourceTypesBlock());
-          }
+          nodes.push(...this.retentionStatements);
 
           const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
           let content = TS.printNodes(nodeArray);
@@ -284,103 +293,6 @@ export class BackendGenerator implements Planner {
         },
       },
     ];
-  }
-  /**
-   * Renders per-stack blocks that apply `addOverride('DeletionPolicy', 'Retain')`
-   * and `addOverride('UpdateReplacePolicy', 'Retain')` to CfnResources whose
-   * type matches the registered list for each stack.
-   */
-  private renderRefactoredResourceTypesBlock(): ts.Statement[] {
-    const statements: ts.Statement[] = [];
-
-    for (const [stackName, types] of this.refactoredResourceTypesByStack) {
-      const filterCallback = factory.createArrowFunction(
-        undefined,
-        undefined,
-        [factory.createParameterDeclaration(undefined, undefined, 'n')],
-        undefined,
-        factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), 'isCfnResource'),
-          undefined,
-          [factory.createIdentifier('n')],
-        ),
-      );
-
-      // backend.<stackName>.stack.node.findAll().filter(...)
-      const iterableExpr = factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), stackName),
-                  'stack',
-                ),
-                'node',
-              ),
-              'findAll',
-            ),
-            undefined,
-            [],
-          ),
-          'filter',
-        ),
-        undefined,
-        [filterCallback],
-      );
-
-      // Build the condition: either a single === check or an .includes() check
-      let condition: ts.Expression;
-      if (types.length === 1) {
-        condition = factory.createBinaryExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'cfnResourceType'),
-          factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
-          factory.createStringLiteral(types[0]),
-        );
-      } else {
-        condition = factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-            factory.createArrayLiteralExpression(
-              types.map((t) => factory.createStringLiteral(t)),
-              true,
-            ),
-            'includes',
-          ),
-          undefined,
-          [factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'cfnResourceType')],
-        );
-      }
-
-      const addOverrideDeletion = factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'addOverride'),
-          undefined,
-          [factory.createStringLiteral('DeletionPolicy'), factory.createStringLiteral('Retain')],
-        ),
-      );
-
-      const addOverrideUpdate = factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'addOverride'),
-          undefined,
-          [factory.createStringLiteral('UpdateReplacePolicy'), factory.createStringLiteral('Retain')],
-        ),
-      );
-
-      const ifStatement = factory.createIfStatement(condition, factory.createBlock([addOverrideDeletion, addOverrideUpdate], true));
-
-      const forOfStatement = factory.createForOfStatement(
-        undefined,
-        factory.createVariableDeclarationList([factory.createVariableDeclaration('cfnResource')], ts.NodeFlags.Const),
-        iterableExpr,
-        factory.createBlock([ifStatement], true),
-      );
-
-      statements.push(forOfStatement);
-    }
-
-    return statements;
   }
 }
 

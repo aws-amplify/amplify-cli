@@ -175,29 +175,27 @@ describe('BackendGenerator', () => {
     assertion(content);
   }
 
-  describe('addRefactoredResourceTypes', () => {
-    it('emits a per-stack retention loop with addOverride for a single type', () => {
+  describe('addBackendStackRetentionLoop', () => {
+    it('emits a retention loop with addOverride for a single type', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+      gen.addBackendStackRetentionLoop('storage', ['AWS::S3::Bucket']);
 
       return verifyBackendTs(gen, (content) => {
         expect(content).toContain('backend.storage.stack.node');
-        expect(content).toContain("cfnResource.cfnResourceType === 'AWS::S3::Bucket'");
-        expect(content).toContain("cfnResource.addOverride('DeletionPolicy', 'Retain')");
-        expect(content).toContain("cfnResource.addOverride('UpdateReplacePolicy', 'Retain')");
-        expect(content).not.toContain('applyRemovalPolicy');
+        expect(content).toContain("c.cfnResourceType === 'AWS::S3::Bucket'");
+        expect(content).toContain("addOverride('DeletionPolicy', 'Retain')");
+        expect(content).toContain("addOverride('UpdateReplacePolicy', 'Retain')");
         expect(content).not.toContain('REFACTORED_RESOURCE_TYPES');
       });
     });
 
-    it('emits .includes() check when multiple types are registered for a stack', () => {
+    it('emits .includes() check when multiple types are registered', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addRefactoredResourceTypes('auth', ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool']);
+      gen.addBackendStackRetentionLoop('auth', ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool']);
 
       return verifyBackendTs(gen, (content) => {
         expect(content).toContain('backend.auth.stack.node');
         expect(content).toContain('.includes(');
-        expect(content).toContain('cfnResource.cfnResourceType');
         expect(content).toContain("'AWS::Cognito::UserPool'");
         expect(content).toContain("'AWS::Cognito::IdentityPool'");
       });
@@ -205,8 +203,8 @@ describe('BackendGenerator', () => {
 
     it('emits separate loops for different stacks', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addRefactoredResourceTypes('auth', ['AWS::Cognito::UserPool']);
-      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+      gen.addBackendStackRetentionLoop('auth', ['AWS::Cognito::UserPool']);
+      gen.addBackendStackRetentionLoop('storage', ['AWS::S3::Bucket']);
 
       return verifyBackendTs(gen, (content) => {
         expect(content).toContain('backend.auth.stack.node');
@@ -214,29 +212,16 @@ describe('BackendGenerator', () => {
       });
     });
 
-    it('deduplicates types registered for the same stack', () => {
+    it('imports CfnResource when types are registered', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
-      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
-
-      return verifyBackendTs(gen, (content) => {
-        const matches = content.match(/AWS::S3::Bucket/g) || [];
-        // Should appear once in the condition, not duplicated
-        expect(matches).toHaveLength(1);
-      });
-    });
-
-    it('imports CfnResource and RemovalPolicy when types are registered', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.addRefactoredResourceTypes('storage', ['AWS::S3::Bucket']);
+      gen.addBackendStackRetentionLoop('storage', ['AWS::S3::Bucket']);
 
       return verifyBackendTs(gen, (content) => {
         expect(content).toContain('CfnResource');
-        expect(content).toContain('RemovalPolicy');
       });
     });
 
-    it('does not emit retention block when no types are registered', () => {
+    it('does not emit retention block when no loops are added', () => {
       const gen = new BackendGenerator(outputDir);
 
       return verifyBackendTs(gen, (content) => {
@@ -246,41 +231,40 @@ describe('BackendGenerator', () => {
     });
   });
 
-  describe('addRetentionOverrideLoop', () => {
-    it('emits a retention loop referencing a stack variable', () => {
+  describe('addVariableRetentionLoop', () => {
+    it('emits a retention loop referencing a variable', () => {
       const gen = new BackendGenerator(outputDir);
       const stackVar = gen.createDynamoDBStack('activity');
-      gen.addRetentionOverrideLoop(stackVar, 'AWS::DynamoDB::Table');
+      gen.addVariableRetentionLoop(stackVar, ['AWS::DynamoDB::Table']);
 
       return verifyBackendTs(gen, (content) => {
         expect(content).toContain('storageActivityStack.node');
-        expect(content).toContain("cfnResource.cfnResourceType === 'AWS::DynamoDB::Table'");
-        expect(content).toContain("cfnResource.addOverride('DeletionPolicy', 'Retain')");
-        expect(content).toContain("cfnResource.addOverride('UpdateReplacePolicy', 'Retain')");
+        expect(content).toContain("c.cfnResourceType === 'AWS::DynamoDB::Table'");
+        expect(content).toContain("addOverride('DeletionPolicy', 'Retain')");
+        expect(content).toContain("addOverride('UpdateReplacePolicy', 'Retain')");
       });
     });
 
     it('imports CfnResource when called', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addRetentionOverrideLoop('myStack', 'AWS::DynamoDB::Table');
+      gen.addVariableRetentionLoop('myStack', ['AWS::DynamoDB::Table']);
 
       return verifyBackendTs(gen, (content) => {
         expect(content).toContain('CfnResource');
       });
     });
 
-    it('emits the loop as an early statement before post-define statements', () => {
+    it('emits retention loops after post-define statements', () => {
       const gen = new BackendGenerator(outputDir);
-      const stackVar = gen.createDynamoDBStack('items');
-      gen.addRetentionOverrideLoop(stackVar, 'AWS::DynamoDB::Table');
       gen.addStatement(factory.createExpressionStatement(factory.createIdentifier('// post-define marker')));
+      gen.addVariableRetentionLoop('myStack', ['AWS::DynamoDB::Table']);
 
       return verifyBackendTs(gen, (content) => {
-        const loopIdx = content.indexOf('storageItemsStack.node');
         const markerIdx = content.indexOf('post-define marker');
-        expect(loopIdx).toBeGreaterThan(-1);
+        const loopIdx = content.indexOf('myStack.node');
         expect(markerIdx).toBeGreaterThan(-1);
-        expect(loopIdx).toBeLessThan(markerIdx);
+        expect(loopIdx).toBeGreaterThan(-1);
+        expect(markerIdx).toBeLessThan(loopIdx);
       });
     });
   });

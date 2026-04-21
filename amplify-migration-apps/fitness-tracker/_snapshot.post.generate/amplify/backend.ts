@@ -312,8 +312,20 @@ backend.addOutput({
     },
   },
 });
-
-for (const cfnResource of backend.auth.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool', 'AWS::Cognito::UserPoolClient', 'AWS::Cognito::IdentityPoolRoleAttachment', 'AWS::Cognito::UserPoolGroup'].includes(c.cfnResourceType))) {
+for (const cfnResource of backend.auth.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      [
+        'AWS::Cognito::UserPool',
+        'AWS::Cognito::IdentityPool',
+        'AWS::Cognito::UserPoolClient',
+        'AWS::Cognito::IdentityPoolRoleAttachment',
+        'AWS::Cognito::UserPoolDomain',
+        'AWS::Cognito::UserPoolGroup',
+      ].includes(c.cfnResourceType)
+  )) {
   (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
   (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }

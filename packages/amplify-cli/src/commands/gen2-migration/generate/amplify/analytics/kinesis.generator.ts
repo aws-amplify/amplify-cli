@@ -105,6 +105,8 @@ export class AnalyticsKinesisGenerator implements Planner {
               ),
             ),
           );
+
+          this.backendGenerator.addVariableRetentionLoop('analytics', ['AWS::Kinesis::Stream']);
         },
       },
     ];
