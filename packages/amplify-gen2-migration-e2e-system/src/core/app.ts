@@ -146,7 +146,7 @@ export class App {
       distDir: 'dist',
       buildCmd: 'npm run build',
       startCmd: 'npm run start',
-      disableAmplifyAppCreation: false,
+      disableAmplifyAppCreation: process.env.IS_AMPLIFY_CI === 'true',
       profileName: this.credentials.profile,
     });
     this.logger.info('amplify init completed');

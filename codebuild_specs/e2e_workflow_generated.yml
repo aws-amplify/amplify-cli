@@ -136,6 +136,70 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - upb
+    - identifier: migrate_backend_only
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: backend-only
+      depend-on:
+        - upb
+    - identifier: migrate_discussions
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: discussions
+      depend-on:
+        - upb
+    - identifier: migrate_fitness_tracker
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: fitness-tracker
+      depend-on:
+        - upb
+    - identifier: migrate_media_vault
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: media-vault
+      depend-on:
+        - upb
+    - identifier: migrate_mood_board
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: mood-board
+      depend-on:
+        - upb
+    - identifier: migrate_product_catalog
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: product-catalog
+      depend-on:
+        - upb
+    - identifier: migrate_project_boards
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: project-boards
+      depend-on:
+        - upb
+    - identifier: migrate_store_locator
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: store-locator
+      depend-on:
+        - upb
     - identifier: cleanup_resources
       buildspec: codebuild_specs/cleanup_resources.yml
       depend-on:
