@@ -1,35 +1,16 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
+import { DiscoveredResource } from '../../_infra/gen1-app';
 
 const factory = ts.factory;
 
 /**
  * Options for rendering an analytics resource.ts file.
  */
-export interface RenderDefineAnalyticsOptions {
-  /**
-   * The class name of the generated construct (e.g., 'analyticstodoprojectKinesis').
-   */
+export interface AnalyticsRenderOptions {
   readonly constructClassName: string;
-
-  /**
-   * The file name of the generated construct without extension (e.g., 'todoprojectKinesis-construct').
-   */
   readonly constructFileName: string;
-
-  /**
-   * The resource name used for construct ID and props (e.g., 'todoprojectKinesis').
-   */
-  readonly constructId: string;
-
-  /**
-   * The number of shards for the Kinesis stream.
-   */
   readonly shardCount: number;
-
-  /**
-   * The actual deployed Kinesis stream name from Gen1.
-   */
   readonly streamName: string;
 }
 
@@ -38,10 +19,15 @@ export interface RenderDefineAnalyticsOptions {
  * Pure — no AWS calls, no side effects.
  */
 export class AnalyticsRenderer {
+  private readonly resource: DiscoveredResource;
+
+  public constructor(resource: DiscoveredResource) {
+    this.resource = resource;
+  }
   /**
    * Produces the complete TypeScript AST for analytics/resource.ts.
    */
-  public render(opts: RenderDefineAnalyticsOptions): ts.NodeArray<ts.Node> {
+  public render(opts: AnalyticsRenderOptions): ts.NodeArray<ts.Node> {
     return factory.createNodeArray([
       ...this.renderImports(opts),
       newLineIdentifier,
@@ -53,7 +39,7 @@ export class AnalyticsRenderer {
     ]);
   }
 
-  private renderImports(opts: RenderDefineAnalyticsOptions): ts.ImportDeclaration[] {
+  private renderImports(opts: AnalyticsRenderOptions): ts.ImportDeclaration[] {
     return [
       factory.createImportDeclaration(
         undefined,
@@ -85,15 +71,17 @@ export class AnalyticsRenderer {
     ];
   }
 
-  private renderDefineAnalytics(opts: RenderDefineAnalyticsOptions): ts.FunctionDeclaration {
-    const { constructClassName, constructId: resourceName, shardCount } = opts;
+  private renderDefineAnalytics(opts: AnalyticsRenderOptions): ts.FunctionDeclaration {
+    const { constructClassName, shardCount } = opts;
+    const resourceName = this.resource.resourceName;
+    const constructId = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
 
     const stackCall = factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
         [
           factory.createVariableDeclaration(
-            'analyticsStack',
+            'stack',
             undefined,
             undefined,
             factory.createCallExpression(
@@ -116,8 +104,8 @@ export class AnalyticsRenderer {
             undefined,
             undefined,
             factory.createNewExpression(factory.createIdentifier(constructClassName), undefined, [
-              factory.createIdentifier('analyticsStack'),
-              factory.createStringLiteral(resourceName),
+              factory.createIdentifier('stack'),
+              factory.createStringLiteral(constructId),
               factory.createObjectLiteralExpression(
                 [
                   factory.createPropertyAssignment(
@@ -178,7 +166,7 @@ export class AnalyticsRenderer {
     );
   }
 
-  private renderPostRefactor(opts: RenderDefineAnalyticsOptions): ts.FunctionDeclaration {
+  private renderPostRefactor(opts: AnalyticsRenderOptions): ts.FunctionDeclaration {
     return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,

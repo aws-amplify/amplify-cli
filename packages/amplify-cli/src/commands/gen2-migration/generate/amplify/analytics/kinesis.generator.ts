@@ -30,33 +30,30 @@ export class AnalyticsKinesisGenerator implements Planner {
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
-    this.renderer = new AnalyticsRenderer();
+    this.renderer = new AnalyticsRenderer(resource);
   }
 
   /** Plans the Kinesis analytics generation operation. */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const resourceMeta = this.gen1App.resourceMeta(this.resource);
-    const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
     const logicalId = resourceMeta.providerMetadata.logicalId;
+
+    const resourceName = this.resource.resourceName;
+    const constructFileName = `${resourceName}-construct`.toLowerCase();
+    const constructClassName = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
+    const constructFilePath = path.join(this.outputDir, 'amplify', 'analytics', `${constructFileName}.ts`);
+    const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
 
     return [
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Generate amplify/analytics/${this.resource.resourceName}/resource.ts`],
+        describe: async () => [`Generate amplify/analytics/${constructFileName}.ts`],
         execute: async () => {
-          const resourceName = this.resource.resourceName;
           const template = this.gen1App.json(`analytics/${resourceName}/kinesis-cloudformation-template.json`);
-
-          const constructFileName = `${resourceName}-construct`;
-          const constructFilePath = path.join(this.outputDir, 'amplify', 'analytics', `${constructFileName}.ts`);
-
-          const shardCount = parseInt(this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamShardCount'), 10);
-          const streamName = this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamId');
-
           const parameters = await this.fetchNestedStackParameters(logicalId);
           const finalTemplate = await preTransmute(template, parameters);
-          const tsFile = cdkFromCfn.transmute(JSON.stringify(finalTemplate), 'typescript', logicalId, 'construct');
+          const tsFile = cdkFromCfn.transmute(JSON.stringify(finalTemplate), 'typescript', constructClassName, 'construct');
           const formatted = prettier.format(tsFile, {
             parser: 'typescript',
             singleQuote: true,
@@ -65,14 +62,19 @@ export class AnalyticsKinesisGenerator implements Planner {
           });
           await fs.mkdir(path.dirname(constructFilePath), { recursive: true });
           await fs.writeFile(constructFilePath, formatted, 'utf-8');
-
-          const classNameMatch = tsFile.match(/export class (\w+) extends/);
-          const constructClassName = classNameMatch ? classNameMatch[1] : `analytics${resourceName}`;
+        },
+      },
+      {
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => [`Generate amplify/analytics/resource.ts`],
+        execute: async () => {
+          const shardCount = parseInt(this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamShardCount'), 10);
+          const streamName = this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamId');
 
           const nodes = this.renderer.render({
             constructClassName,
             constructFileName,
-            constructId: resourceName,
             shardCount,
             streamName,
           });

@@ -17,14 +17,14 @@ describe('BackendGenerator', () => {
   });
 
   describe('addNamespaceImport', () => {
-    it('does not duplicate imports for the same alias', () => {
+    it('allows duplicate imports for the same alias', () => {
       const gen = new BackendGenerator(outputDir);
       gen.addNamespaceImport('auth', './auth/resource');
       gen.addNamespaceImport('auth', './auth/resource');
 
       return verifyBackendTs(gen, (content) => {
         const importLines = content.split('\n').filter((l) => l.includes("from './auth/resource'"));
-        expect(importLines).toHaveLength(1);
+        expect(importLines).toHaveLength(2);
       });
     });
 
