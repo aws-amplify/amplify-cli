@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-moodboard-x-x-deployment",
       "UnauthRoleName": "amplify-moodboard-x-x-unauthRole",
       "StackName": "amplify-moodboard-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/89310e30-3926-11f1-aaf3-0afff4ed678f",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/15457050-3da0-11f1-a831-0e292143be33",
       "AmplifyAppId": "moodboard"
     },
     "categories": {
@@ -16,10 +16,6 @@
         "moodboard759ae00a": {}
       },
       "function": {
-        "moodboardKinesisTrigger": {
-          "deploymentBucketName": "amplify-moodboard-x-x-deployment",
-          "s3Key": "amplify-builds/moodboardKinesisTrigger-5a615250796c76626f49-build.zip"
-        },
         "moodboardGetRandomEmoji": {
           "deploymentBucketName": "amplify-moodboard-x-x-deployment",
           "s3Key": "amplify-builds/moodboardGetRandomEmoji-59616d4f4b546a305a75-build.zip"
@@ -27,6 +23,10 @@
         "moodboardKinesisReader": {
           "deploymentBucketName": "amplify-moodboard-x-x-deployment",
           "s3Key": "amplify-builds/moodboardKinesisReader-4934782b72546e51707a-build.zip"
+        },
+        "moodboardKinesisTrigger": {
+          "deploymentBucketName": "amplify-moodboard-x-x-deployment",
+          "s3Key": "amplify-builds/moodboardKinesisTrigger-327a374a39456c64746b-build.zip"
         }
       },
       "api": {
