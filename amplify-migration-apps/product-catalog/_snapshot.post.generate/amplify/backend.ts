@@ -4,7 +4,7 @@ import { storage } from './storage/resource';
 import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
 import { lowstockproducts } from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, aws_iam } from 'aws-cdk-lib';
+import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -104,3 +104,13 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
+
+for (const cfnResource of backend.auth.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool', 'AWS::Cognito::UserPoolClient', 'AWS::Cognito::IdentityPoolRoleAttachment', 'AWS::Cognito::UserPoolGroup'].includes(c.cfnResourceType))) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+
+for (const cfnResource of backend.storage.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::S3::Bucket'].includes(c.cfnResourceType))) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}

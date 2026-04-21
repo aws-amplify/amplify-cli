@@ -12,7 +12,7 @@ import {
   StreamViewType,
 } from 'aws-cdk-lib/aws-dynamodb';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { CfnResource, Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -156,3 +156,23 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
+
+for (const cfnResource of backend.auth.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::Cognito::UserPool', 'AWS::Cognito::IdentityPool', 'AWS::Cognito::UserPoolClient', 'AWS::Cognito::IdentityPoolRoleAttachment', 'AWS::Cognito::UserPoolGroup'].includes(c.cfnResourceType))) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+
+for (const cfnResource of backend.storage.stack.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::S3::Bucket'].includes(c.cfnResourceType))) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+
+for (const cfnResource of activity.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::DynamoDB::Table'].includes(c.cfnResourceType))) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+
+for (const cfnResource of bookmarks.node.findAll().filter(c => CfnResource.isCfnResource(c) && ['AWS::DynamoDB::Table'].includes(c.cfnResourceType))) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
