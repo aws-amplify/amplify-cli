@@ -5,6 +5,9 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 
 export class cdkStack extends cdk.Stack {
+  public readonly budgetAlertTopic: sns.Topic;
+  public readonly monthlyReportTopic: sns.Topic;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
     super(scope, id, props);
 
@@ -16,31 +19,31 @@ export class cdkStack extends cdk.Stack {
     const amplifyProjectInfo = AmplifyHelpers.getProjectInfo();
 
     // 1. SNS Topic for Budget Alerts
-    const budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', {
+    this.budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', {
       displayName: 'Fin Tracker Budget Alerts',
     });
 
-    budgetAlertTopic.addSubscription(
+    this.budgetAlertTopic.addSubscription(
       new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com')
     );
 
     new cdk.CfnOutput(this, 'BudgetAlertTopicArn', {
-      value: budgetAlertTopic.topicArn,
+      value: this.budgetAlertTopic.topicArn,
       description: 'SNS Topic ARN for budget alerts',
       exportName: `${amplifyProjectInfo.projectName}-BudgetAlertTopicArn-${cdk.Fn.ref('env')}`,
     });
 
     // 2. SNS Topic for Monthly Reports
-    const monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', {
+    this.monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', {
       displayName: 'Finance Tracker Monthly Reports',
     });
 
-    monthlyReportTopic.addSubscription(
+    this.monthlyReportTopic.addSubscription(
       new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com')
     );
 
     new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
-      value: monthlyReportTopic.topicArn,
+      value: this.monthlyReportTopic.topicArn,
       description: 'SNS Topic ARN for monthly reports',
       exportName: `${amplifyProjectInfo.projectName}-MonthlyReportTopicArn-${cdk.Fn.ref('env')}`,
     });

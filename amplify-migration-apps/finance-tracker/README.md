@@ -211,40 +211,6 @@ You can access the following resource attributes as environment variables from y
 
 The CLI only handles basic resource access permissions. The custom IAM policies and environment variables are already included in the repo and will be copied into the function directory by `npm run configure`. However, the dependency configuration needs to be added manually. The CLI does not provide a way to specify which custom resource output attributes (`BudgetAlertTopicArn`, `MonthlyReportTopicArn`) the function depends on — this must be configured by editing the file directly.
 
-**Edit `./amplify/backend/function/financetracker7f7c2ad7/function-parameters.json`:**
-
-```json
-{
-  "lambdaLayers": [],
-  "dependsOn": [
-    {
-      "category": "custom",
-      "resourceName": "customfinance",
-      "attributes": ["BudgetAlertTopicArn", "MonthlyReportTopicArn"]
-    }
-  ]
-}
-```
-
-The `dependsOn` in `function-parameters.json` tells the Amplify CLI to resolve the custom resource outputs and pass them as CloudFormation parameters to the function stack. However, the CloudFormation template must also declare those parameters and wire them to Lambda environment variables. The naming convention is `{category}{resourceName}{attribute}`.
-
-**Add to `./amplify/backend/function/financetracker7f7c2ad7/financetracker7f7c2ad7-cloudformation-template.json` Parameters:**
-
-```json
-"customcustomfinanceBudgetAlertTopicArn": { "Type": "String" },
-"customcustomfinanceMonthlyReportTopicArn": { "Type": "String" },
-"dependsOn": { "Type": "String", "Default": "" },
-"lambdaLayers": { "Type": "String", "Default": "" }
-```
-
-`dependsOn` and `lambdaLayers` are metadata the Amplify CLI always passes — they must exist as parameters with defaults or CloudFormation rejects them.
-
-**Add to the same file's `LambdaFunction` Environment Variables:**
-
-```json
-"BUDGET_ALERT_TOPIC_ARN": { "Ref": "customcustomfinanceBudgetAlertTopicArn" },
-"MONTHLY_REPORT_TOPIC_ARN": { "Ref": "customcustomfinanceMonthlyReportTopicArn" }
-```
 
 **Add to `./amplify/backend/backend-config.json`** under the function's `dependsOn` array:
 
@@ -294,6 +260,18 @@ You can access the following resource attributes as environment variables from y
         API_FINANCETRACKER_TRANSACTIONTABLE_NAME
 ? Do you want to edit the local lambda function now? No
 ```
+
+## Configure
+
+```console
+npm run configure
+```
+## Deploy Backend
+
+```console
+amplify push
+```
+
 ```console
 ┌──────────┬──────────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name            │ Operation │ Provider plugin   │
@@ -377,6 +355,15 @@ In `amplify/function/financetrackerc3d67c94/index.js`, convert CommonJS to ESM s
 +export const handler = async (event) => {
 ```
 
+#### 2. Update Frontend Config Import
+
+In `src/main.tsx`, update the Amplify config import to use the Gen2 outputs file:
+
+```diff
+-import amplifyconfig from './amplifyconfiguration.json';
++import amplifyconfig from '../amplify_outputs.json';
+```
+
 #### 3. Root `package.json`: Install AWS SDK and Upgrade TypeScript
 
 Amplify Gen 2 uses esbuild to bundle Lambda functions. esbuild couldn't resolve
@@ -400,99 +387,7 @@ Also upgrade TypeScript. The tsconfig uses `erasableSyntaxOnly` which requires T
 
 Then run `npm install` to update `package-lock.json`.
 
-#### 4. Schema: Add Auth Directives to Custom Operations and Return Types
-
-In the schema within `amplify/data/resource.ts`, the `globalAuthRule` (`allow: public`)
-only applies to `@model` types. Custom Query/Mutation fields and their return types need
-explicit auth directives.
-
-Add `@auth(rules: [{ allow: public }])` to custom Query/Mutation fields, and `@aws_api_key`
-to custom return types:
-
-```diff
-+type CalculatedSummary @aws_api_key {
--type CalculatedSummary {
-   totalIncome: Float!
-   totalExpenses: Float!
-   balance: Float!
-   savingsRate: Float!
- }
-
-+type NotificationResult @aws_api_key {
--type NotificationResult {
-   success: Boolean!
-   message: String!
- }
-
-+type TransactionConnection @aws_api_key {
--type TransactionConnection {
-   items: [Transaction]
-   nextToken: String
- }
-
- type Query {
--  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackere30b1453-dev")
-+  calculateFinancialSummary: CalculatedSummary @function(name: "financetrackere30b1453-dev") @auth(rules: [{ allow: public }])
-   getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
- }
-
- type Mutation {
--  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackere30b1453-dev")
--  sendBudgetAlert(...): NotificationResult @function(name: "financetrackere30b1453-dev")
-+  sendMonthlyReport(email: String!): NotificationResult @function(name: "financetrackere30b1453-dev") @auth(rules: [{ allow: public }])
-+  sendBudgetAlert(...): NotificationResult @function(name: "financetrackere30b1453-dev") @auth(rules: [{ allow: public }])
- }
-```
-
-- `@auth(rules: [{ allow: public }])` on fields allows API key access (matching Gen1's default auth mode).
-- `@aws_api_key` on return types is required because field-level `@auth` doesn't propagate to return type fields. Without it, you get "Not Authorized to access success on type NotificationResult".
-- Amplify's `@auth` can't be used on non-`@model` types (causes `Types annotated with @auth must also be annotated with @model`), so the AppSync-native `@aws_api_key` directive is used on return types instead.
-
-#### 5. Frontend `App.tsx`: Add `authMode: 'apiKey'` to GraphQL Calls
-
-In `src/App.tsx`, add `authMode: 'apiKey'` to all Lambda-backed `client.graphql()` calls.
-When a user is signed in, the Amplify client defaults to Cognito auth, but the schema
-uses API key as the default auth mode (matching Gen1). Without this, signed-in users get
-"Not Authorized" errors on custom operations.
-
-```diff
- const result: any = await client.graphql({
-   query: calculateFinancialSummaryQuery,
-+  authMode: 'apiKey'
- });
-```
-
-```diff
- const result: any = await client.graphql({
-   query: sendMonthlyReportMutation,
--  variables: { email: userEmail }
-+  variables: { email: userEmail },
-+  authMode: 'apiKey'
- });
-```
-
-Apply to all Lambda-backed operations: `calculateFinancialSummary`, `sendMonthlyReport`,
-`sendBudgetAlert`.
-
-#### 6. Fix Custom Resolver Circular Dependency
-
-In `amplify/backend.ts`, place the custom resolver in the data stack instead of its own:
-
-```diff
--new customresolver_cdkStack(
--  backend.createStack('customresolver'),
--  'customresolver',
--  backend
--);
-+const dataStack = backend.data.resources.cfnResources.cfnGraphqlApi.stack;
-+new customresolver_cdkStack(dataStack, 'customresolver', backend);
-```
-
-The custom resolver depends on the GraphQL API ID from the data stack. A separate stack
-causes a circular dependency between nested stacks. Placing it in the data stack eliminates
-the cross-stack reference.
-
-#### 7. Grant Lambda SNS Publish Permission
+#### 4. Grant Lambda SNS Publish Permission
 
 In `amplify/backend.ts`, the Gen 2 Lambda doesn't have IAM permission to publish to SNS
 topics. In Gen 1 this was handled by `custom-policies.json`, which doesn't apply in Gen 2.
