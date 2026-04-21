@@ -54,7 +54,7 @@ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
     effect: aws_iam.Effect.ALLOW,
     actions: ['appsync:GraphQL'],
     resources: [
-      `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/3oy6oxkj6ffojmc2upd52ftdsq/*`,
+      `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/hscmwhprkbaljmcpavj3dcztrq/*`,
     ],
   })
 );
