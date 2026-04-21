@@ -10,17 +10,21 @@
  *    `amplify push --yes` doesn't prompt for missing values.
  * 3. Creates the PRODUCT_CATALOG_SECRET in SSM Parameter Store so the
  *    Gen1 lowstockproducts Lambda can resolve it at runtime.
+ *
+ * The "app id" used for the secret path is a static placeholder rather than
+ * the real Amplify console app id. This keeps the CI flow independent of
+ * Amplify console app creation (which is disabled via `disableAmplifyAppCreation`
+ * when running under IS_AMPLIFY_CI) and matches the value baked into the
+ * pre-refactor snapshot. The Lambda only uses this as a path segment in SSM,
+ * so the literal value doesn't matter as long as `pre-push` writes the secret
+ * at the same path the Lambda reads from.
  */
 
 import fs from 'fs';
 import path from 'path';
 import { SSMClient, PutParameterCommand } from '@aws-sdk/client-ssm';
 
-function readAmplifyAppId(appPath: string): string {
-  const metaPath = path.join(appPath, 'amplify', 'backend', 'amplify-meta.json');
-  const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
-  return meta.providers?.awscloudformation?.AmplifyAppId as string;
-}
+const SECRETS_PATH_APP_ID = 'productcatalog';
 
 function readEnvName(appPath: string): string {
   const tpiPath = path.join(appPath, 'amplify', 'team-provider-info.json');
@@ -41,7 +45,7 @@ function updateCustomRoles(appPath: string, appName: string): void {
   fs.writeFileSync(filePath, JSON.stringify({ adminRoleNames: [`amplify-${trimmedName}`] }, null, 2), 'utf-8');
 }
 
-function setFunctionParameters(appPath: string, envName: string, amplifyAppId: string): void {
+function setFunctionParameters(appPath: string, envName: string): void {
   const tpiPath = path.join(appPath, 'amplify', 'team-provider-info.json');
   const tpi = JSON.parse(fs.readFileSync(tpiPath, 'utf-8'));
 
@@ -50,13 +54,13 @@ function setFunctionParameters(appPath: string, envName: string, amplifyAppId: s
   tpi[envName].categories.function.lowstockproducts = {
     ...tpi[envName].categories.function.lowstockproducts,
     lowStockThreshold: '5',
-    secretsPathAmplifyAppId: amplifyAppId,
+    secretsPathAmplifyAppId: SECRETS_PATH_APP_ID,
   };
   fs.writeFileSync(tpiPath, JSON.stringify(tpi, null, 2), 'utf-8');
 }
 
-async function createGen1Secret(amplifyAppId: string, envName: string): Promise<void> {
-  const parameterName = `/amplify/${amplifyAppId}/${envName}/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET`;
+async function createGen1Secret(envName: string): Promise<void> {
+  const parameterName = `/amplify/${SECRETS_PATH_APP_ID}/${envName}/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET`;
   const ssm = new SSMClient({});
   await ssm.send(new PutParameterCommand({
     Name: parameterName,
@@ -69,13 +73,12 @@ async function createGen1Secret(amplifyAppId: string, envName: string): Promise<
 async function main(): Promise<void> {
   const [appPath = process.cwd()] = process.argv.slice(2);
 
-  const amplifyAppId = readAmplifyAppId(appPath);
   const envName = readEnvName(appPath);
   const appName = readDeploymentName(appPath);
 
   updateCustomRoles(appPath, appName);
-  setFunctionParameters(appPath, envName, amplifyAppId);
-  await createGen1Secret(amplifyAppId, envName);
+  setFunctionParameters(appPath, envName);
+  await createGen1Secret(envName);
 }
 
 main().catch((error) => {
