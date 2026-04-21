@@ -293,6 +293,7 @@ describe('AuthGenerator backend.ts output', () => {
     expect(backendContent).toMatchInlineSnapshot(`
       "import { auth } from './auth/resource';
       import { defineBackend } from '@aws-amplify/backend';
+      import { CfnResource } from 'aws-cdk-lib';
 
       const backend = defineBackend({
         auth,
@@ -305,6 +306,23 @@ describe('AuthGenerator backend.ts output', () => {
           minimumLength: 8,
         },
       };
+      for (const cfnResource of backend.auth.stack.node
+        .findAll()
+        .filter(
+          (c) =>
+            CfnResource.isCfnResource(c) &&
+            [
+              'AWS::Cognito::UserPool',
+              'AWS::Cognito::IdentityPool',
+              'AWS::Cognito::UserPoolClient',
+              'AWS::Cognito::IdentityPoolRoleAttachment',
+              'AWS::Cognito::UserPoolDomain',
+              'AWS::Cognito::UserPoolGroup',
+            ].includes(c.cfnResourceType)
+        )) {
+        (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+        (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+      }
       "
     `);
   });
