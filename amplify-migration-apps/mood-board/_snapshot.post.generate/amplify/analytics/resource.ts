@@ -1,6 +1,7 @@
 import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
 import { analyticsmoodboardKinesis } from './moodboardKinesis-construct';
 import { Backend } from '@aws-amplify/backend';
+import { CfnResource } from 'aws-cdk-lib';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -20,6 +21,14 @@ export const defineAnalytics = (backend: Backend<any>) => {
       branchName,
     }
   );
+  for (const cfnResource of analyticsStack.node
+    .findAll()
+    .filter((n) => CfnResource.isCfnResource(n))) {
+    if (cfnResource.cfnResourceType === 'AWS::Kinesis::Stream') {
+      cfnResource.addOverride('DeletionPolicy', 'Retain');
+      cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
+    }
+  }
   //Use this kinesis stream name post-refactor
   //(analytics.node.findChild('KinesisStream') as CfnStream).name = "moodboardKinesis-x"
   return analytics;

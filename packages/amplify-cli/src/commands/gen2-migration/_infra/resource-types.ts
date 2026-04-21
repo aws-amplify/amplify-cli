@@ -41,7 +41,6 @@ export const REFACTORED_RESOURCES = [
   'AWS::Cognito::IdentityPool',
   'AWS::Cognito::UserPoolClient',
   'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolDomain',
   'AWS::Cognito::UserPoolGroup',
 
   // Storage + Api
