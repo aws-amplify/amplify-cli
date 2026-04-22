@@ -422,7 +422,7 @@ export class DataGenerator implements Planner {
     this.backendGenerator.addImport('fs', ['readdirSync']);
     this.backendGenerator.addNamespaceImport('aws-cdk-lib/aws-s3-assets', 'assets');
 
-    // const resolverFiles = readdirSync(resolversDir).filter(f => f.endsWith(".req.vtl") || f.endsWith(".res.vtl"));
+    // const resolverFiles = readdirSync(resolversDir).filter(f => (f.endsWith(".req.vtl") || f.endsWith(".res.vtl")) && f.split(".").length === 4);
     this.backendGenerator.addStatement(
       TS.constDecl(
         'resolverFiles',
@@ -440,16 +440,33 @@ export class DataGenerator implements Planner {
               undefined,
               factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
               factory.createBinaryExpression(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('f'), factory.createIdentifier('endsWith')),
-                  undefined,
-                  [factory.createStringLiteral('.req.vtl')],
+                factory.createParenthesizedExpression(
+                  factory.createBinaryExpression(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('f'), factory.createIdentifier('endsWith')),
+                      undefined,
+                      [factory.createStringLiteral('.req.vtl')],
+                    ),
+                    factory.createToken(ts.SyntaxKind.BarBarToken),
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('f'), factory.createIdentifier('endsWith')),
+                      undefined,
+                      [factory.createStringLiteral('.res.vtl')],
+                    ),
+                  ),
                 ),
-                factory.createToken(ts.SyntaxKind.BarBarToken),
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('f'), factory.createIdentifier('endsWith')),
-                  undefined,
-                  [factory.createStringLiteral('.res.vtl')],
+                factory.createToken(ts.SyntaxKind.AmpersandAmpersandToken),
+                factory.createBinaryExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('f'), factory.createIdentifier('split')),
+                      undefined,
+                      [factory.createStringLiteral('.')],
+                    ),
+                    factory.createIdentifier('length'),
+                  ),
+                  factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+                  factory.createNumericLiteral('4'),
                 ),
               ),
             ),
