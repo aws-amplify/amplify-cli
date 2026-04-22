@@ -1,18 +1,18 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14analyticsNestedStackanalyticsNestedStackResource450FEA80Outputsamplifymoodboarde2esandbox685dc54d14analyticsmoodboardKinesisKinesisStream0B86977BArn",
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataNestedStackdataNestedStackResourceBF06AAB8Outputsamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPIDefaultApiKey06DEB334ApiKey",
+    "ParameterValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791analyticsNestedStackanalyticsNestedStackResource1A9121E8Outputsamplifymoodboarde2esandbox6bf2e5f791analyticsmoodboardKinesisKinesisStreamFD0ACD32Arn",
     "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataNestedStackdataNestedStackResourceDB3F3A95Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791GraphQLUrl",
-    "ParameterValue": "https://mpfp3754i5h4livlltnjpjrfla.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataNestedStackdataNestedStackResourceBF06AAB8Outputsamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId",
+    "ParameterValue": "5h3zmmmytzgavjtaxhlxpkblve"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataNestedStackdataNestedStackResourceDB3F3A95Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId",
-    "ParameterValue": "lni7x3hwoncrhp3t6pnlk4wxtm"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox685dc54d14dataNestedStackdataNestedStackResourceDB3F3A95Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPIDefaultApiKeyB2AB63AEApiKey",
-    "ParameterValue": "da2-fakeapikey00000000000000"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataNestedStackdataNestedStackResourceBF06AAB8Outputsamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17GraphQLUrl",
+    "ParameterValue": "https://ogepmnedpjeiplcpkiyuzrtwfi.appsync-api.us-east-1.amazonaws.com/graphql"
   }
 ]

@@ -1,27 +1,27 @@
 [
   {
     "OutputKey": "GetAttMoodItemTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-g26hrobfy5b5pniveska5ylg4u-x/stream/2026-04-15T23:57:22.278",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-b3t3v6vbgjhs5iogt6g4tvqnee-x/stream/2026-04-22T17:21:05.663",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "g26hrobfy5b5pniveska5ylg4u:GetAtt:MoodItemTable:StreamArn"
+    "ExportName": "b3t3v6vbgjhs5iogt6g4tvqnee:GetAtt:MoodItemTable:StreamArn"
   },
   {
     "OutputKey": "GetAttMoodItemDataSourceName",
     "OutputValue": "MoodItemTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "g26hrobfy5b5pniveska5ylg4u:GetAtt:MoodItemDataSource:Name"
+    "ExportName": "b3t3v6vbgjhs5iogt6g4tvqnee:GetAtt:MoodItemDataSource:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMoodItemTable5135EED9Ref",
-    "OutputValue": "MoodItem-g26hrobfy5b5pniveska5ylg4u-x"
+    "OutputValue": "MoodItem-b3t3v6vbgjhs5iogt6g4tvqnee-x"
   },
   {
     "OutputKey": "transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId",
-    "OutputValue": "76d7mcfjujcszn2bao5ud4r34y"
+    "OutputValue": "74okmdhaxncxfbhlc6rga64okm"
   },
   {
     "OutputKey": "transformerrootstackMoodItemSubscriptionOnCreateMoodItemDataResolverFnSubscriptionOnCreateMoodItemDataResolverFnAppSyncFunctionE0588344FunctionId",
-    "OutputValue": "rcieoro7irf2thbr2k73dhvi4a"
+    "OutputValue": "p2fyjfmnjndkfbfohxtjsbkbwy"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMoodItemDataSource0777FF0CName",
@@ -29,28 +29,28 @@
   },
   {
     "OutputKey": "transformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId",
-    "OutputValue": "7gcwmfyxjfc2hfsg4wv6g74ibe"
+    "OutputValue": "omrng7il6rdwxa5tx4seuilhiu"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMutationupdateMoodIteminit0FunctionMutationupdateMoodIteminit0FunctionAppSyncFunctionA5BB53A1FunctionId",
-    "OutputValue": "payn2i2knvfyljovv2mixvi75e"
+    "OutputValue": "4tnh4icstjcjrof5zufwi76o5i"
   },
   {
     "OutputKey": "transformerrootstackMoodItemQuerygetMoodItemauth0FunctionQuerygetMoodItemauth0FunctionAppSyncFunctionBB402264FunctionId",
-    "OutputValue": "6cvppxjcw5dmpkd7qvbxind4hq"
+    "OutputValue": "aamatfrnjrhxzgjqovxfkgjlsi"
   },
   {
     "OutputKey": "transformerrootstackMoodItemMutationcreateMoodItemauth0FunctionMutationcreateMoodItemauth0FunctionAppSyncFunction8743A884FunctionId",
-    "OutputValue": "qu72vtxaijcprnjn6dtfq7nwjq"
+    "OutputValue": "3rpg7c67y5aylprmycycvgefka"
   },
   {
     "OutputKey": "GetAttMoodItemTableName",
-    "OutputValue": "MoodItem-g26hrobfy5b5pniveska5ylg4u-x",
+    "OutputValue": "MoodItem-b3t3v6vbgjhs5iogt6g4tvqnee-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "g26hrobfy5b5pniveska5ylg4u:GetAtt:MoodItemTable:Name"
+    "ExportName": "b3t3v6vbgjhs5iogt6g4tvqnee:GetAtt:MoodItemTable:Name"
   },
   {
     "OutputKey": "transformerrootstackMoodItemSubscriptiononCreateMoodItemauth0FunctionSubscriptiononCreateMoodItemauth0FunctionAppSyncFunction643A2F06FunctionId",
-    "OutputValue": "44lyones3nbsje6xsdylciyoea"
+    "OutputValue": "w3skk52nuvfzvkphifnwbtkuq4"
   }
 ]

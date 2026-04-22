@@ -128,7 +128,7 @@
           ]
         },
         "Description": "moodBoard API Key",
-        "Expires": 1807833377
+        "Expires": 1808414399
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -258,6 +258,12 @@
             "Fn::GetAtt": [
               "MoodItem",
               "Outputs.transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId"
+            ]
+          },
+          "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": {
+            "Fn::GetAtt": [
+              "GraphQLAPINONEDS95A13CF0",
+              "Name"
             ]
           },
           "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId": {

@@ -278,7 +278,7 @@
     }
   },
   "Resources": {
-    "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceServiceRole33380CC2": {
+    "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceServiceRole25277EC2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -311,10 +311,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceServiceRoleDefaultPolicy038E7192": {
+    "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceServiceRoleDefaultPolicy1D3F4064": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -364,24 +364,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceServiceRoleDefaultPolicy038E7192",
+        "PolicyName": "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceServiceRoleDefaultPolicy1D3F4064",
         "Roles": [
           {
-            "Ref": "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceServiceRole33380CC2"
+            "Ref": "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceServiceRole25277EC2"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource": {
+    "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -399,10 +399,10 @@
             ]
           }
         },
-        "Name": "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource",
+        "Name": "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceServiceRole33380CC2",
+            "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceServiceRole25277EC2",
             "Arn"
           ]
         },
@@ -411,44 +411,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource/Resource"
       }
     },
-    "InvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceInvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceAppSyncFunction6A9B4777": {
+    "InvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceInvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceAppSyncFunction41E27E61": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource",
+            "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource",
+        "Name": "InvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c2d1cd3ae7dc20a398df3c83d9c785dd0b2edb2a1942563a1ff4295219149dd.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/692c16b9629b9e4bf1d389faf417129177a2569f6d4ed197ca2b7adc400fc6ab.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "MoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource"
+        "MoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource/InvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource/InvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerygetRandomEmojiResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "FieldName": "getRandomEmoji",
         "Kind": "PIPELINE",
@@ -462,7 +462,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceInvokeMoodboardGetRandomEmojiGen2DgpvvcwecqLambdaDataSourceAppSyncFunction6A9B4777",
+                "InvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceInvokeMoodboardGetRandomEmojiGen2HuubbabeimLambdaDataSourceAppSyncFunction41E27E61",
                 "FunctionId"
               ]
             }
@@ -478,7 +478,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthauthenticatedUserRoleADB79311Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -486,11 +486,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthunauthenticatedUserRole3AD88229Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthIdentityPool012DFA1BRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -507,7 +507,7 @@
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/queryGetRandomEmojiResolver"
       }
     },
-    "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceServiceRole692C21DC": {
+    "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceServiceRole9603550A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -540,10 +540,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceServiceRoleDefaultPolicy63704F63": {
+    "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceServiceRoleDefaultPolicy8873DD9E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -593,24 +593,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceServiceRoleDefaultPolicy63704F63",
+        "PolicyName": "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceServiceRoleDefaultPolicy8873DD9E",
         "Roles": [
           {
-            "Ref": "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceServiceRole692C21DC"
+            "Ref": "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceServiceRole9603550A"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource": {
+    "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -628,10 +628,10 @@
             ]
           }
         },
-        "Name": "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource",
+        "Name": "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceServiceRole692C21DC",
+            "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceServiceRole9603550A",
             "Arn"
           ]
         },
@@ -640,44 +640,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource/Resource"
       }
     },
-    "InvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceInvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceAppSyncFunction5813D1AD": {
+    "InvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceInvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceAppSyncFunction25094C1F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource",
+            "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource",
+        "Name": "InvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d3a7858956bb086cfa5d0c642f2994abe7d4db49617921bbb896ad3bba17cd6.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ab77821466d1350ee213b8008caa1e794a3bc59efbdd4c98931f5a8952aa826.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "MoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource"
+        "MoodboardKinesisReaderGen2HuubbabeimLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource/InvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSource/InvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerygetKinesisEventsResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "FieldName": "getKinesisEvents",
         "Kind": "PIPELINE",
@@ -691,7 +691,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceInvokeMoodboardKinesisReaderGen2DgpvvcwecqLambdaDataSourceAppSyncFunction5813D1AD",
+                "InvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceInvokeMoodboardKinesisReaderGen2HuubbabeimLambdaDataSourceAppSyncFunction25094C1F",
                 "FunctionId"
               ]
             }
@@ -707,7 +707,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthauthenticatedUserRoleADB79311Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -715,11 +715,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthunauthenticatedUserRole3AD88229Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthIdentityPool012DFA1BRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -740,10 +740,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPINONEDSAA5D71AFName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryGetRandomEmojiAuthFN",
@@ -762,10 +762,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+          "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPINONEDSAA5D71AFName"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryGetKinesisEventsAuthFN",
@@ -783,7 +783,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WO0WrDMAxFv6Xvjpa57APajD2NMZIPKKqjBDWOXCK7pYT8e7HLHvZ0dK90L7JgP2qod3jXyvVT5fkM6w9ppL6L6CbTDNIE6TlyEIN3Pa0e53OP8JXEZfOISgavV32Ig/W7LD8xYhfS4ijn/6u/XBNk4DEtWJqbQVrS4G+0bIZxhrUNvtwX/gbP7pHla9qM7k+oSlHhkGF0D8fkJor5n80Us4s4soybkdATXPTtZi3Yd6h3F2WuliSRZ4L2xSdsLuvcCwEAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQW7DMAwE35K7zLpO84DGRU9FUdgPCBiJNhjLVGBKCQLDfy+koIeehrvkLthAc6ih3uFdK+umyvMZ1m/SSK6PaCfTDtIGcRw5iMG7nlaP89khfCax2TyiksHrVR9iYf0qyw+M2Ie0WMr5/+ov1wYZeEwLluZ2kI40+Bstm2GcYe2CL/eFP8GzfWT5nDaj+xOqUlR4zzC6h2OyE8X8z2aK2UccWcbNSHAEF325NW/weoB6d1HmakkSeSbonvwFp1tZPAsBAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
@@ -792,19 +792,19 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+    "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
+    "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthauthenticatedUserRoleADB79311Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
+    "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthunauthenticatedUserRole3AD88229Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
+    "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthIdentityPool012DFA1BRef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+    "referencetoamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPINONEDSAA5D71AFName": {
       "Type": "String"
     }
   }

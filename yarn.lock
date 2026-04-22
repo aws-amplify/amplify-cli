@@ -2124,7 +2124,6 @@ __metadata:
     ejs: ^3.1.7
     env-editor: ^0.5.0
     execa: ^5.1.1
-    fast-check: ^3.23.2
     folder-hash: ^4.0.2
     fs-extra: ^8.1.0
     glob: ^11.0.1
@@ -30251,7 +30250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-check@npm:^3.15.0, fast-check@npm:^3.23.2":
+"fast-check@npm:^3.15.0":
   version: 3.23.2
   resolution: "fast-check@npm:3.23.2"
   dependencies:
