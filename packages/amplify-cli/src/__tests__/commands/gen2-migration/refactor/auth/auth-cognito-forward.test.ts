@@ -18,7 +18,12 @@ import {
   ResourceMapping,
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
-import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  CognitoIdentityProviderClient,
+  DescribeIdentityProviderCommand,
+  DescribeUserPoolCommand,
+  ListIdentityProvidersCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 
 const ts = new Date();
@@ -197,8 +202,19 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     cfnMock.on(DeleteChangeSetCommand).resolves({});
 
     const cognitoMock = mockClient(CognitoIdentityProviderClient);
+    cognitoMock.on(DescribeUserPoolCommand).resolves({
+      UserPool: { Id: 'us-east-1_ABC123', Domain: 'test-domain' },
+    });
+    cognitoMock.on(ListIdentityProvidersCommand).resolves({
+      Providers: [{ ProviderName: 'Google', ProviderType: 'Google' }],
+    });
     cognitoMock.on(DescribeIdentityProviderCommand).resolves({
-      IdentityProvider: { ProviderDetails: { client_id: 'google-id', client_secret: 'google-secret' } },
+      IdentityProvider: {
+        ProviderName: 'Google',
+        ProviderType: 'Google',
+        ProviderDetails: { client_id: 'google-id', client_secret: 'google-secret', authorize_scopes: 'openid email profile' },
+        AttributeMapping: { email: 'email' },
+      },
     });
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
@@ -218,7 +234,8 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
 
     const ops = await refactorer.plan();
 
-    expect(cognitoMock.commandCalls(DescribeIdentityProviderCommand)).toHaveLength(1);
+    // Called once by retrieveOAuthValues and once by fetchSocialAuthConfig
+    expect(cognitoMock.commandCalls(DescribeIdentityProviderCommand)).toHaveLength(2);
     expect(ops.length).toBeGreaterThanOrEqual(4);
 
     const { CreateChangeSetCommand: CreateCS } = await import('@aws-sdk/client-cloudformation');

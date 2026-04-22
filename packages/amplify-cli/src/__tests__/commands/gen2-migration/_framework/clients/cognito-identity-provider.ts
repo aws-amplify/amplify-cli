@@ -124,9 +124,12 @@ export class CognitoIdentityProviderMock {
 
         const usernameAttributes: string[] = authCliInputs.cognitoConfig.usernameAttributes ?? [];
         const aliasAttributes: string[] = authCliInputs.cognitoConfig.aliasAttributes ?? [];
+        const authMeta = this.app.meta.auth?.[authResourceName];
+        const domain = authMeta?.output?.HostedUIDomain;
         return {
           UserPool: {
             Id: input.UserPoolId,
+            Domain: domain,
             EmailVerificationMessage: authCliInputs.cognitoConfig.emailVerificationMessage,
             EmailVerificationSubject: authCliInputs.cognitoConfig.emailVerificationSubject,
             SchemaAttributes: template.Resources.UserPool.Properties.Schema,

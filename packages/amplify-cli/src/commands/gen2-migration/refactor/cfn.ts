@@ -14,12 +14,14 @@ import {
   GetTemplateCommand,
   Parameter,
   ResourceMapping,
+  ResourceToImport,
   Stack,
   UpdateStackCommand,
   UpdateStackCommandInput,
   waitUntilChangeSetCreateComplete,
   waitUntilStackCreateComplete,
   waitUntilStackDeleteComplete,
+  waitUntilStackImportComplete,
   waitUntilStackRefactorCreateComplete,
   waitUntilStackRefactorExecuteComplete,
   waitUntilStackUpdateComplete,
@@ -280,6 +282,55 @@ export class Cfn {
   }
 
   /**
+   * Imports existing physical resources into a stack via CreateChangeSet(IMPORT).
+   * The template must include resource definitions matching the physical state.
+   */
+  public async importResources(params: {
+    readonly stackName: string;
+    readonly templateBody: CFNTemplate;
+    readonly resourcesToImport: ResourceToImport[];
+    readonly resource?: DiscoveredResource;
+  }): Promise<void> {
+    const { stackName, templateBody, resourcesToImport, resource } = params;
+    const displayName = extractStackNameFromId(stackName);
+    const changeSetName = `import-resources-${Date.now()}`;
+
+    writeImportSnapshot({
+      stackName,
+      templateBody: JSON.stringify(templateBody),
+      parameters: [],
+      resourcesToImport,
+    });
+
+    this.info(`Creating import changeset for ${displayName} (${resourcesToImport.length} resource(s))`, resource);
+
+    await this.client.send(
+      new CreateChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+        ChangeSetType: 'IMPORT',
+        TemplateBody: JSON.stringify(templateBody),
+        ResourcesToImport: resourcesToImport,
+        Capabilities: [CFN_IAM_CAPABILITY],
+      }),
+    );
+
+    this.info(`Waiting for import changeset creation: ${displayName}`, resource);
+    await waitUntilChangeSetCreateComplete(
+      { client: this.client, maxWaitTime: 120 },
+      { StackName: stackName, ChangeSetName: changeSetName },
+    );
+
+    this.info(`Executing import changeset: ${displayName}`, resource);
+    await this.client.send(new ExecuteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+
+    this.info(`Waiting for import to complete: ${displayName}`, resource);
+    await waitUntilStackImportComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: stackName });
+
+    this.info(`Import complete: ${displayName}`, resource);
+  }
+
+  /**
    * Deletes a change set without executing it.
    */
   public async deleteChangeSet(changeSet: DescribeChangeSetOutput): Promise<void> {
@@ -429,6 +480,17 @@ interface WriteUpdateSnapshotInput {
   readonly stackName: string;
   readonly templateBody: string;
   readonly parameters: Parameter[];
+}
+
+interface WriteImportSnapshotInput extends WriteUpdateSnapshotInput {
+  readonly resourcesToImport: ResourceToImport[];
+}
+
+function writeImportSnapshot(input: WriteImportSnapshotInput): void {
+  const stackName = extractStackNameFromId(input.stackName);
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `import.${stackName}.template.json`), formatTemplateBody(input.templateBody));
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `import.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2));
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `import.${stackName}.resources.json`), JSON.stringify(input.resourcesToImport, null, 2));
 }
 
 function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
