@@ -213,22 +213,22 @@
         }
       }
     },
-    "authdiscussions3e730a8c3e730a8c": {
+    "authdiscussionsc578c16ec578c16e": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/auth/discussions3e730a8c3e730a8c-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/auth/discussionsc578c16ec578c16e-cloudformation-template.json",
         "Parameters": {
-          "identityPoolName": "discussions3e730a8c_identitypool_3e730a8c",
+          "identityPoolName": "discussionsc578c16e_identitypool_c578c16e",
           "allowUnauthenticatedIdentities": false,
-          "resourceNameTruncated": "discus3e730a8c",
-          "userPoolName": "discussions3e730a8c_userpool_3e730a8c",
+          "resourceNameTruncated": "discusc578c16e",
+          "userPoolName": "discussionsc578c16e_userpool_c578c16e",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
           "smsAuthenticationMessage": "Your authentication code is {####}",
           "smsVerificationMessage": "Your verification code is {####}",
-          "emailVerificationSubject": "Your verification code",
-          "emailVerificationMessage": "Your verification code is {####}",
+          "emailVerificationSubject": "Verification",
+          "emailVerificationMessage": "Here is your verification code {####}",
           "defaultPasswordPolicy": false,
           "passwordPolicyMinLength": 8,
           "passwordPolicyCharacters": "",
@@ -238,10 +238,10 @@
           "userpoolClientRefreshTokenValidity": "120",
           "userpoolClientWriteAttributes": "email",
           "userpoolClientReadAttributes": "email",
-          "userpoolClientLambdaRole": "discus3e730a8c_userpoolclient_lambda_role",
+          "userpoolClientLambdaRole": "discusc578c16e_userpoolclient_lambda_role",
           "userpoolClientSetAttributes": false,
-          "sharedId": "3e730a8c",
-          "resourceName": "discussions3e730a8c3e730a8c",
+          "sharedId": "c578c16e",
+          "resourceName": "discussionsc578c16ec578c16e",
           "authSelections": "identityPoolAndUserPool",
           "useDefault": "manual",
           "thirdPartyAuth": false,
@@ -272,42 +272,13 @@
         }
       }
     },
-    "functionactivityTrigger79c26ead": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/activityTrigger79c26ead-cloudformation-template.json",
-        "Parameters": {
-          "deploymentBucketName": "amplify-discussions-x-x-deployment",
-          "s3Key": "amplify-builds/activityTrigger79c26ead-4d4b593370674f615679-build.zip",
-          "storageactivityName": {
-            "Fn::GetAtt": [
-              "storageactivity",
-              "Outputs.Name"
-            ]
-          },
-          "storageactivityArn": {
-            "Fn::GetAtt": [
-              "storageactivity",
-              "Outputs.Arn"
-            ]
-          },
-          "storageactivityStreamArn": {
-            "Fn::GetAtt": [
-              "storageactivity",
-              "Outputs.StreamArn"
-            ]
-          },
-          "env": "x"
-        }
-      }
-    },
     "functionfetchuseractivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-discussions-x-x-deployment",
-          "s3Key": "amplify-builds/fetchuseractivity-6b674566646263635077-build.zip",
+          "s3Key": "amplify-builds/fetchuseractivity-73456b7375664f416269-build.zip",
           "storageactivityName": {
             "Fn::GetAtt": [
               "storageactivity",
@@ -336,7 +307,7 @@
         "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/recorduseractivity-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-discussions-x-x-deployment",
-          "s3Key": "amplify-builds/recorduseractivity-42744a4e393579416f31-build.zip",
+          "s3Key": "amplify-builds/recorduseractivity-54696a587a7168467354-build.zip",
           "apidiscussionsGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
               "apidiscussions",
@@ -349,6 +320,35 @@
               "Outputs.GraphQLAPIEndpointOutput"
             ]
           },
+          "storageactivityName": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.Name"
+            ]
+          },
+          "storageactivityArn": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.Arn"
+            ]
+          },
+          "storageactivityStreamArn": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.StreamArn"
+            ]
+          },
+          "env": "x"
+        }
+      }
+    },
+    "functionactivityTrigger": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/activityTrigger-cloudformation-template.json",
+        "Parameters": {
+          "deploymentBucketName": "amplify-discussions-x-x-deployment",
+          "s3Key": "amplify-builds/activityTrigger-4c2b61507333584d5642-build.zip",
           "storageactivityName": {
             "Fn::GetAtt": [
               "storageactivity",
@@ -399,13 +399,13 @@
           "authRoleName": {
             "Ref": "AuthRoleName"
           },
-          "s3PrivatePolicy": "Private_policy_5f6a0280",
-          "s3ProtectedPolicy": "Protected_policy_5f6a0280",
-          "s3PublicPolicy": "Public_policy_5f6a0280",
-          "s3ReadPolicy": "read_policy_5f6a0280",
-          "s3UploadsPolicy": "Uploads_policy_5f6a0280",
-          "authPolicyName": "s3_amplify_5f6a0280",
-          "unauthPolicyName": "s3_amplify_5f6a0280",
+          "s3PrivatePolicy": "Private_policy_bf41454d",
+          "s3ProtectedPolicy": "Protected_policy_bf41454d",
+          "s3PublicPolicy": "Public_policy_bf41454d",
+          "s3ReadPolicy": "read_policy_bf41454d",
+          "s3UploadsPolicy": "Uploads_policy_bf41454d",
+          "authPolicyName": "s3_amplify_bf41454d",
+          "unauthPolicyName": "s3_amplify_bf41454d",
           "AuthenticatedAllowList": "ALLOW",
           "GuestAllowList": "DISALLOW",
           "s3PermissionsAuthenticatedPrivate": "s3:PutObject,s3:GetObject,s3:DeleteObject",
@@ -436,7 +436,7 @@
       "DependsOn": [
         "AuthRole",
         "UnauthRole",
-        "authdiscussions3e730a8c3e730a8c"
+        "authdiscussionsc578c16ec578c16e"
       ],
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -546,7 +546,7 @@
         },
         "idpId": {
           "Fn::GetAtt": [
-            "authdiscussions3e730a8c3e730a8c",
+            "authdiscussionsc578c16ec578c16e",
             "Outputs.IdentityPoolId"
           ]
         },

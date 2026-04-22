@@ -43,7 +43,7 @@
       "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x"
     },
     "StreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-17T02:44:56.175"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-21T22:50:17.491"
     },
     "PartitionKeyName": {
       "Value": "userId"

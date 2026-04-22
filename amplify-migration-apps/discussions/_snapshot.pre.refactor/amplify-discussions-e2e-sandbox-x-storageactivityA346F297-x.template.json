@@ -352,7 +352,7 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox70eded89e6storageactivity85D6A81CArn": {
+    "amplifydiscussionse2esandbox1aa0693a85storageactivity086E97B7Arn": {
       "Value": {
         "Fn::GetAtt": [
           "activity1E902D9C",
@@ -360,7 +360,7 @@
         ]
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6storageactivity85D6A81CStreamArn": {
+    "amplifydiscussionse2esandbox1aa0693a85storageactivity086E97B7StreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "activity1E902D9C",
@@ -368,7 +368,7 @@
         ]
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6storageactivity85D6A81CRef": {
+    "amplifydiscussionse2esandbox1aa0693a85storageactivity086E97B7Ref": {
       "Value": {
         "Ref": "activity1E902D9C"
       }

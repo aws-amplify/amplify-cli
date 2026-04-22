@@ -208,7 +208,7 @@
             }
           ]
         },
-        "PolicyName": "Public_policy_5f6a0280",
+        "PolicyName": "Public_policy_bf41454d",
         "Roles": [
           "amplify-discussions-x-x-authRole"
         ]
@@ -244,7 +244,7 @@
             }
           ]
         },
-        "PolicyName": "Protected_policy_5f6a0280",
+        "PolicyName": "Protected_policy_bf41454d",
         "Roles": [
           "amplify-discussions-x-x-authRole"
         ]
@@ -280,7 +280,7 @@
             }
           ]
         },
-        "PolicyName": "Private_policy_5f6a0280",
+        "PolicyName": "Private_policy_bf41454d",
         "Roles": [
           "amplify-discussions-x-x-authRole"
         ]
@@ -316,7 +316,7 @@
             }
           ]
         },
-        "PolicyName": "Uploads_policy_5f6a0280",
+        "PolicyName": "Uploads_policy_bf41454d",
         "Roles": [
           "amplify-discussions-x-x-authRole"
         ]
@@ -370,7 +370,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "read_policy_5f6a0280",
+        "PolicyName": "read_policy_bf41454d",
         "Roles": [
           "amplify-discussions-x-x-authRole"
         ]

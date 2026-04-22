@@ -18,8 +18,8 @@
         "AutoVerifiedAttributes": [
           "email"
         ],
-        "EmailVerificationMessage": "Your verification code is {####}",
-        "EmailVerificationSubject": "Your verification code",
+        "EmailVerificationMessage": "Here is your verification code {####}",
+        "EmailVerificationSubject": "Verification",
         "MfaConfiguration": "OFF",
         "Policies": {
           "PasswordPolicy": {
@@ -62,8 +62,8 @@
         },
         "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
-          "EmailMessage": "Your verification code is {####}",
-          "EmailSubject": "Your verification code",
+          "EmailMessage": "Here is your verification code {####}",
+          "EmailSubject": "Verification",
           "SmsMessage": "The verification code to your new account is {####}"
         }
       },
@@ -608,27 +608,27 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox70eded89e6authamplifyAuthUserPoolE62A968ERef": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthUserPoolF0A8042DRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6authamplifyAuthUserPoolAppClient0977C3A8Ref": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthUserPoolAppClient1C0852F1Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthIdentityPool756EF28ARef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthauthenticatedUserRoleD73407FARef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthunauthenticatedUserRole7FBD9846Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

@@ -1,46 +1,46 @@
 [
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref",
-    "ParameterValue": "amplify-discussion2604162-amplifyAuthauthenticatedU-DpI98VU4kxL1"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthauthenticatedUserRoleD73407FARef",
+    "ParameterValue": "amplify-discussion2604211-amplifyAuthauthenticatedU-C44PnqP4Uuxb"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref",
-    "ParameterValue": "amplify-discussion2604162-amplifyAuthunauthenticate-fQoBMJqeFfIK"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef",
-    "ParameterValue": "us-east-1:71501d31-e722-454c-ac1a-ccb858fb39f8"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentNestedStackCommentNestedStackResource9CC8A2F1Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentCommentTable5BAC1EE7TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-x6yep2wyvjefhbpic6h5h4vdji-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPI2549CB71ApiId",
-    "ParameterValue": "3d5zemsh3rg7hjsazykqv6g37q"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataPostNestedStackPostNestedStackResource1BD049D0Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostTable43EFBEF5TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-x6yep2wyvjefhbpic6h5h4vdji-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicNestedStackTopicNestedStackResource9BC3F506Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicTopicTable6CE3EC67TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-x6yep2wyvjefhbpic6h5h4vdji-x"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicNestedStackTopicNestedStackResource9BC3F506Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicTopicDataSource609F6FB1Name",
-    "ParameterValue": "TopicTable"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataGraphQLAPINONEDS48863254Name",
-    "ParameterValue": "NONE_DS"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataPostNestedStackPostNestedStackResource1BD049D0Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostDataSourceB13E6321Name",
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostNestedStackPostNestedStackResource63670ACDOutputsamplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostDataSource11706137Name",
     "ParameterValue": "PostTable"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentNestedStackCommentNestedStackResource9CC8A2F1Outputsamplifydiscussionse2esandbox70eded89e6dataamplifyDataCommentCommentDataSourceD78410CAName",
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostNestedStackPostNestedStackResource63670ACDOutputsamplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostTableC03ED863TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataCommentNestedStackCommentNestedStackResource50FC4D44Outputsamplifydiscussionse2esandbox1aa0693a85dataamplifyDataCommentCommentDataSource4EF4B461Name",
     "ParameterValue": "CommentTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataCommentNestedStackCommentNestedStackResource50FC4D44Outputsamplifydiscussionse2esandbox1aa0693a85dataamplifyDataCommentCommentTable2F22BB54TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-kvgq5sominembcf7pb3nqurkby-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataGraphQLAPI7A910277ApiId",
+    "ParameterValue": "bwws6527mfbflgntwwz2xouc2m"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicNestedStackTopicNestedStackResourceDD5C72CAOutputsamplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicTopicDataSourceB589116BName",
+    "ParameterValue": "TopicTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataGraphQLAPINONEDS68B60DB8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthIdentityPool756EF28ARef",
+    "ParameterValue": "us-east-1:701bc84c-26fa-4050-96fb-629ca8a899ac"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicNestedStackTopicNestedStackResourceDD5C72CAOutputsamplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicTopicTableCE750319TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-kvgq5sominembcf7pb3nqurkby-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthunauthenticatedUserRole7FBD9846Ref",
+    "ParameterValue": "amplify-discussion2604211-amplifyAuthunauthenticate-z2eY3avB0pOy"
   }
 ]

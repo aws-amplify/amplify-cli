@@ -4,10 +4,6 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref",
-    "ParameterValue": "amplify-discussion2604162-amplifyAuthauthenticatedU-DpI98VU4kxL1"
-  },
-  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
@@ -16,12 +12,8 @@
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthunauthenticatedUserRoleBFC3E247Ref",
-    "ParameterValue": "amplify-discussion2604162-amplifyAuthunauthenticate-fQoBMJqeFfIK"
-  },
-  {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthIdentityPool151D1C7ARef",
-    "ParameterValue": "us-east-1:71501d31-e722-454c-ac1a-ccb858fb39f8"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthauthenticatedUserRoleD73407FARef",
+    "ParameterValue": "amplify-discussion2604211-amplifyAuthauthenticatedU-C44PnqP4Uuxb"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -32,7 +24,15 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthUserPoolE62A968ERef",
-    "ParameterValue": "us-east-1_hSkvuYzs4"
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthUserPoolF0A8042DRef",
+    "ParameterValue": "us-east-1_EZWSnJ3qi"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthIdentityPool756EF28ARef",
+    "ParameterValue": "us-east-1:701bc84c-26fa-4050-96fb-629ca8a899ac"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthunauthenticatedUserRole7FBD9846Ref",
+    "ParameterValue": "amplify-discussion2604211-amplifyAuthunauthenticate-z2eY3avB0pOy"
   }
 ]

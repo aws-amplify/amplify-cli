@@ -7,7 +7,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "auth": {
-    "discussions3e730a8c3e730a8c": {
+    "discussionsc578c16ec578c16e": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "CreatedSNSRole": "string",
@@ -19,7 +19,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
-    "activityTrigger79c26ead": {
+    "activityTrigger": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

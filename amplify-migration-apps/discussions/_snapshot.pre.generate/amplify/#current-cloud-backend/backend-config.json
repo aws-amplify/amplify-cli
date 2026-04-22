@@ -18,7 +18,7 @@
     }
   },
   "auth": {
-    "discussions3e730a8c3e730a8c": {
+    "discussionsc578c16ec578c16e": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -47,7 +47,7 @@
     }
   },
   "function": {
-    "activityTrigger79c26ead": {
+    "activityTrigger": {
       "build": true,
       "dependsOn": [
         {
@@ -105,19 +105,19 @@
     }
   },
   "parameters": {
-    "AMPLIFY_function_activityTrigger79c26ead_deploymentBucketName": {
+    "AMPLIFY_function_activityTrigger_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "activityTrigger79c26ead"
+          "resourceName": "activityTrigger"
         }
       ]
     },
-    "AMPLIFY_function_activityTrigger79c26ead_s3Key": {
+    "AMPLIFY_function_activityTrigger_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "activityTrigger79c26ead"
+          "resourceName": "activityTrigger"
         }
       ]
     },

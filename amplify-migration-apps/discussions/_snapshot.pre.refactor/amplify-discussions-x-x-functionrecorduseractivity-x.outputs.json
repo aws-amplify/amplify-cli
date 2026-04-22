@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "LambdaExecutionRoleArn",
-    "OutputValue": "arn:aws:iam::123456789012:role/discussionsLambdaRole16a766d9-x"
+    "OutputValue": "arn:aws:iam::123456789012:role/discussionsLambdaRole62a425ae-x"
   },
   {
     "OutputKey": "Region",
@@ -17,6 +17,6 @@
   },
   {
     "OutputKey": "LambdaExecutionRole",
-    "OutputValue": "discussionsLambdaRole16a766d9-x"
+    "OutputValue": "discussionsLambdaRole62a425ae-x"
   }
 ]

@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostDataSourceB13E6321Name",
-    "OutputValue": "PostTable"
+    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostTableC03ED863TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x/stream/2026-04-21T22:51:15.388"
   },
   {
     "OutputKey": "GetAttPostTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:46:05.461",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x/stream/2026-04-21T22:51:15.388",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "3d5zemsh3rg7hjsazykqv6g37q:GetAtt:PostTable:StreamArn"
+    "ExportName": "bwws6527mfbflgntwwz2xouc2m:GetAtt:PostTable:StreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostTable43EFBEF5TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:46:05.461"
+    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostDataSource11706137Name",
+    "OutputValue": "PostTable"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataPostPostTable43EFBEF5TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-x6yep2wyvjefhbpic6h5h4vdji-x"
+    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostTableC03ED863TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x"
   },
   {
     "OutputKey": "GetAttPostTableName",
-    "OutputValue": "Post-x6yep2wyvjefhbpic6h5h4vdji-x",
+    "OutputValue": "Post-kvgq5sominembcf7pb3nqurkby-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "3d5zemsh3rg7hjsazykqv6g37q:GetAtt:PostTable:Name"
+    "ExportName": "bwws6527mfbflgntwwz2xouc2m:GetAtt:PostTable:Name"
   }
 ]

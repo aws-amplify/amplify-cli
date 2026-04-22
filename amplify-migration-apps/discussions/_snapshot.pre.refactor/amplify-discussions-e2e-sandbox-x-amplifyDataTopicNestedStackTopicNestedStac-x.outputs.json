@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "GetAttTopicTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:45:16.990",
-    "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "3d5zemsh3rg7hjsazykqv6g37q:GetAtt:TopicTable:StreamArn"
-  },
-  {
-    "OutputKey": "GetAttTopicTableName",
-    "OutputValue": "Topic-x6yep2wyvjefhbpic6h5h4vdji-x",
-    "Description": "Your DynamoDB table name.",
-    "ExportName": "3d5zemsh3rg7hjsazykqv6g37q:GetAtt:TopicTable:Name"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicTopicDataSource609F6FB1Name",
+    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicTopicDataSourceB589116BName",
     "OutputValue": "TopicTable"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicTopicTable6CE3EC67TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-x6yep2wyvjefhbpic6h5h4vdji-x/stream/2026-04-17T02:45:16.990"
+    "OutputKey": "GetAttTopicTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-kvgq5sominembcf7pb3nqurkby-x/stream/2026-04-21T22:50:27.786",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "bwws6527mfbflgntwwz2xouc2m:GetAtt:TopicTable:StreamArn"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox70eded89e6dataamplifyDataTopicTopicTable6CE3EC67TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-x6yep2wyvjefhbpic6h5h4vdji-x"
+    "OutputKey": "GetAttTopicTableName",
+    "OutputValue": "Topic-kvgq5sominembcf7pb3nqurkby-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "bwws6527mfbflgntwwz2xouc2m:GetAtt:TopicTable:Name"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicTopicTableCE750319TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-kvgq5sominembcf7pb3nqurkby-x/stream/2026-04-21T22:50:27.786"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataTopicTopicTableCE750319TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-kvgq5sominembcf7pb3nqurkby-x"
   }
 ]

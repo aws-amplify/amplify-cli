@@ -118,12 +118,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "discussionsLambdaRole16a766d9",
+            "discussionsLambdaRole62a425ae",
             {
               "Fn::Join": [
                 "",
                 [
-                  "discussionsLambdaRole16a766d9",
+                  "discussionsLambdaRole62a425ae",
                   "-",
                   {
                     "Ref": "env"

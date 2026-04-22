@@ -111,7 +111,7 @@
               {
                 "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:dfc06164-89d4-4174-9154-5c70c7e48cd7\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -200,7 +200,7 @@
               {
                 "Ref": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:dfc06164-89d4-4174-9154-5c70c7e48cd7\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -289,7 +289,7 @@
               {
                 "Ref": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:dfc06164-89d4-4174-9154-5c70c7e48cd7\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -378,7 +378,7 @@
               {
                 "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:82ebb7ba-6878-449f-829f-a5a28677b421\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:dfc06164-89d4-4174-9154-5c70c7e48cd7\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-x\"]))\n$util.toJson({})"
             ]
           ]
         },

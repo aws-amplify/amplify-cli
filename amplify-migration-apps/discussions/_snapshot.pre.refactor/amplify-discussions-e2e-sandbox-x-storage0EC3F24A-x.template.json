@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "discusavatarsxgen2xBucketDA2D0D6B": {
+    "discusavatarsxgen2xBucket35BD681A": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -65,11 +65,11 @@
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/discus-avatarsx-gen2-x/Bucket/Resource"
       }
     },
-    "discusavatarsxgen2xBucketPolicyC5B9951C": {
+    "discusavatarsxgen2xBucketPolicy187AA92C": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "discusavatarsxgen2xBucketDA2D0D6B"
+          "Ref": "discusavatarsxgen2xBucket35BD681A"
         },
         "PolicyDocument": {
           "Statement": [
@@ -87,7 +87,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "discusavatarsxgen2xBucketDA2D0D6B",
+                    "discusavatarsxgen2xBucket35BD681A",
                     "Arn"
                   ]
                 },
@@ -97,7 +97,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -126,7 +126,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "discusavatarsxgen2xBucketDA2D0D6B",
+                    "discusavatarsxgen2xBucket35BD681A",
                     "Arn"
                   ]
                 },
@@ -136,7 +136,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -156,7 +156,7 @@
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/discus-avatarsx-gen2-x/Bucket/Policy/Resource"
       }
     },
-    "discusavatarsxgen2xBucketAutoDeleteObjectsCustomResourceC2A17BC1": {
+    "discusavatarsxgen2xBucketAutoDeleteObjectsCustomResource599F5995": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": {
@@ -166,11 +166,11 @@
           ]
         },
         "BucketName": {
-          "Ref": "discusavatarsxgen2xBucketDA2D0D6B"
+          "Ref": "discusavatarsxgen2xBucket35BD681A"
         }
       },
       "DependsOn": [
-        "discusavatarsxgen2xBucketPolicyC5B9951C"
+        "discusavatarsxgen2xBucketPolicy187AA92C"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -230,7 +230,7 @@
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "discusavatarsxgen2xBucketDA2D0D6B"
+                "Ref": "discusavatarsxgen2xBucket35BD681A"
               },
               " S3 bucket."
             ]
@@ -248,26 +248,26 @@
         "aws:asset:property": "Code"
       }
     },
-    "DISCUSAVATARS662E2GEN2UIAKFNYSJGBUCKETNAMEParameterE24FA793": {
+    "DISCUSAVATARSAD03FGEN2QZQBKFHRQQBUCKETNAMEParameterDB4A6516": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/discussions/e2e-sandbox-x/DISCUS_AVATARS_662_E_2_GEN_2_UIAKFNYSJG_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/discussions/e2e-sandbox-x/DISCUS_AVATARSAD_03_F_GEN_2_QZQBKFHRQQ_BUCKET_NAME",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": {
-          "Ref": "discusavatarsxgen2xBucketDA2D0D6B"
+          "Ref": "discusavatarsxgen2xBucket35BD681A"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/DISCUS_AVATARS_662_E_2_GEN_2_UIAKFNYSJG_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storage/DISCUS_AVATARSAD_03_F_GEN_2_QZQBKFHRQQ_BUCKET_NAMEParameter/Resource"
       }
     },
-    "amplifydiscussionse2esandbox70eded89e6storageAccess3C36812C3": {
+    "amplifydiscussionse2esandbox1aa0693a85storageAccess3CB9C650B": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -282,7 +282,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -296,7 +296,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -310,7 +310,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -330,7 +330,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -344,7 +344,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -358,7 +358,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -385,7 +385,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "discusavatarsxgen2xBucketDA2D0D6B",
+                  "discusavatarsxgen2xBucket35BD681A",
                   "Arn"
                 ]
               }
@@ -400,7 +400,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -414,7 +414,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -428,7 +428,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "discusavatarsxgen2xBucketDA2D0D6B",
+                          "discusavatarsxgen2xBucket35BD681A",
                           "Arn"
                         ]
                       },
@@ -441,10 +441,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifydiscussionse2esandbox70eded89e6storageAccess3C36812C3",
+        "PolicyName": "amplifydiscussionse2esandbox1aa0693a85storageAccess3CB9C650B",
         "Roles": [
           {
-            "Ref": "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref"
+            "Ref": "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthauthenticatedUserRoleD73407FARef"
           }
         ]
       },
@@ -732,14 +732,14 @@
     }
   },
   "Parameters": {
-    "referencetoamplifydiscussionse2esandbox70eded89e6authNestedStackauthNestedStackResource430C5F25Outputsamplifydiscussionse2esandbox70eded89e6authamplifyAuthauthenticatedUserRole29023FD2Ref": {
+    "referencetoamplifydiscussionse2esandbox1aa0693a85authNestedStackauthNestedStackResource6005ED37Outputsamplifydiscussionse2esandbox1aa0693a85authamplifyAuthauthenticatedUserRoleD73407FARef": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox70eded89e6storagediscusavatarsxgen2xBucketA56A2F77Ref": {
+    "amplifydiscussionse2esandbox1aa0693a85storagediscusavatarsxgen2xBucketFD3B91FDRef": {
       "Value": {
-        "Ref": "discusavatarsxgen2xBucketDA2D0D6B"
+        "Ref": "discusavatarsxgen2xBucket35BD681A"
       }
     }
   }
