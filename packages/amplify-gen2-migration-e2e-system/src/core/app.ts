@@ -10,6 +10,7 @@ import { sanitize } from './sanitize';
 import { normalize } from './normalize';
 import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { fromIni } from '@aws-sdk/credential-providers';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -474,11 +475,12 @@ export class App {
   }
 
   /**
-   * Build an AWS SDK client config that points at the active profile.
-   * Clients resolve credentials via the shared AWS config.
+   * Build an AWS SDK client config that explicitly resolves credentials from
+   * the active profile via `fromIni`. This bypasses the SDK default provider
+   * chain, which may prefer container/IMDS credentials in CI environments.
    */
-  public getClientConfig(): { profile: string } {
-    return { profile: this.credentials.profile };
+  public getClientConfig(): { credentials: ReturnType<typeof fromIni> } {
+    return { credentials: fromIni({ profile: this.credentials.profile }) };
   }
 
   // ============================================================

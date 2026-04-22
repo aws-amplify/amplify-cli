@@ -1244,6 +1244,7 @@ __metadata:
     "@aws-sdk/client-cloudformation": ^3.919.0
     "@aws-sdk/client-s3": ^3.919.0
     "@aws-sdk/client-sts": ^3.919.0
+    "@aws-sdk/credential-providers": 3.721.0
     "@cdklabs/cdk-atmosphere-client": latest
     "@paralleldrive/cuid2": ^3.0.6
     "@types/fs-extra": ^11.0.4
