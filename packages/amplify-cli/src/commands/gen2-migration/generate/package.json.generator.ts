@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { coerce, gt } from 'semver';
 import { Planner } from '../_infra/planner';
 import { AmplifyMigrationOperation } from '../_infra/operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
@@ -34,11 +35,29 @@ function sortKeys(obj: Record<string, string>): Record<string, string> {
 }
 
 /**
+ * Returns the higher of two semver version strings. Falls back to
+ * `incoming` when either value cannot be coerced to a valid semver
+ * (e.g. `*`, `latest`, git URLs).
+ */
+function maxVersion(existing: string | undefined, incoming: string): string {
+  if (!existing) {
+    return incoming;
+  }
+  const coercedExisting = coerce(existing);
+  const coercedIncoming = coerce(incoming);
+  if (coercedExisting && coercedIncoming) {
+    return gt(coercedIncoming, coercedExisting) ? incoming : existing;
+  }
+  return incoming;
+}
+
+/**
  * Accumulates dependencies from category generators and writes the
  * root package.json with Gen2 TypeScript dependencies.
  *
  * Category generators call `addDependency()` and `addDevDependency()`
- * during their `plan()` phase.
+ * during their `plan()` phase. When the same package is added more
+ * than once, the higher semver version is retained.
  */
 export class RootPackageJsonGenerator implements Planner {
   private readonly dependencies: Record<string, string> = {};
@@ -49,18 +68,14 @@ export class RootPackageJsonGenerator implements Planner {
     this.outputDir = outputDir;
   }
 
-  /**
-   * Adds a runtime dependency.
-   */
+  /** Adds a runtime dependency, keeping the higher version on conflict. */
   public addDependency(name: string, version: string): void {
-    this.dependencies[name] = version;
+    this.dependencies[name] = maxVersion(this.dependencies[name], version);
   }
 
-  /**
-   * Adds a dev dependency.
-   */
+  /** Adds a dev dependency, keeping the higher version on conflict. */
   public addDevDependency(name: string, version: string): void {
-    this.devDependencies[name] = version;
+    this.devDependencies[name] = maxVersion(this.devDependencies[name], version);
   }
 
   /**
