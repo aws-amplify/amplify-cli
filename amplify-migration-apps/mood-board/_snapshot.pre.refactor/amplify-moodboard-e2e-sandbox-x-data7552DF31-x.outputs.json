@@ -1,18 +1,18 @@
 [
   {
-    "OutputKey": "amplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPIDefaultApiKey06DEB334ApiKey",
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565dataamplifyDataGraphQLAPIAA6EB5D1ApiId",
+    "OutputValue": "p7wg7nhku5eq5bx6kble2s2x7q"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565dataamplifyDataGraphQLAPIDefaultApiKey26B68483ApiKey",
     "OutputValue": "da2-fakeapikey00000000000000"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox6bf2e5f791dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB7E52464BDestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-moodboard26042213-amplifydataamplifycodege-w2rwqzlhp2yu"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565dataamplifyDataGraphQLAPIAA6EB5D1GraphQLUrl",
+    "OutputValue": "https://nbzf77kjhrhd7filvpc2wcgi3a.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId",
-    "OutputValue": "5h3zmmmytzgavjtaxhlxpkblve"
-  },
-  {
-    "OutputKey": "amplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17GraphQLUrl",
-    "OutputValue": "https://ogepmnedpjeiplcpkiyuzrtwfi.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB6C2E9844DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-moodboard26042215-amplifydataamplifycodege-1xk29fatbprq"
   }
 ]

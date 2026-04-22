@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "apimoodboardGraphQLAPIIdOutput",
-    "ParameterValue": "b3t3v6vbgjhs5iogt6g4tvqnee"
+    "ParameterValue": "xn3j437hmbcnfl2xxwcnmqujpy"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -29,6 +29,6 @@
   },
   {
     "ParameterKey": "apimoodboardGraphQLAPIEndpointOutput",
-    "ParameterValue": "https://7zdx56dzmzdrzfhiv3jftxfkma.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterValue": "https://c2wqjlgc55b7rht2i2ism5l2dq.appsync-api.us-east-1.amazonaws.com/graphql"
   }
 ]

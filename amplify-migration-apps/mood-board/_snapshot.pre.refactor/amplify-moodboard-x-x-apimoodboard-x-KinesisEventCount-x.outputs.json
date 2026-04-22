@@ -1,20 +1,20 @@
 [
   {
     "OutputKey": "GetAttKinesisEventCountTableName",
-    "OutputValue": "KinesisEventCount-b3t3v6vbgjhs5iogt6g4tvqnee-x",
+    "OutputValue": "KinesisEventCount-xn3j437hmbcnfl2xxwcnmqujpy-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "b3t3v6vbgjhs5iogt6g4tvqnee:GetAtt:KinesisEventCountTable:Name"
+    "ExportName": "xn3j437hmbcnfl2xxwcnmqujpy:GetAtt:KinesisEventCountTable:Name"
   },
   {
     "OutputKey": "GetAttKinesisEventCountTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/KinesisEventCount-b3t3v6vbgjhs5iogt6g4tvqnee-x/stream/2026-04-22T17:22:07.577",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/KinesisEventCount-xn3j437hmbcnfl2xxwcnmqujpy-x/stream/2026-04-22T20:02:22.180",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "b3t3v6vbgjhs5iogt6g4tvqnee:GetAtt:KinesisEventCountTable:StreamArn"
+    "ExportName": "xn3j437hmbcnfl2xxwcnmqujpy:GetAtt:KinesisEventCountTable:StreamArn"
   },
   {
     "OutputKey": "GetAttKinesisEventCountDataSourceName",
     "OutputValue": "KinesisEventCountTable",
     "Description": "Your model DataSource name.",
-    "ExportName": "b3t3v6vbgjhs5iogt6g4tvqnee:GetAtt:KinesisEventCountDataSource:Name"
+    "ExportName": "xn3j437hmbcnfl2xxwcnmqujpy:GetAtt:KinesisEventCountDataSource:Name"
   }
 ]

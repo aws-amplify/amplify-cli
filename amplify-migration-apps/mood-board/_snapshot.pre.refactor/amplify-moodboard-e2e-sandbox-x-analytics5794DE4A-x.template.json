@@ -47,7 +47,7 @@
         "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthauthenticatedUserRoleADB79311Ref"
+            "Ref": "referencetoamplifymoodboarde2esandbox4f6bc84565authNestedStackauthNestedStackResource564C9872Outputsamplifymoodboarde2esandbox4f6bc84565authamplifyAuthauthenticatedUserRole9FBEFADDRef"
           }
         ]
       },
@@ -81,7 +81,7 @@
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthunauthenticatedUserRole3AD88229Ref"
+            "Ref": "referencetoamplifymoodboarde2esandbox4f6bc84565authNestedStackauthNestedStackResource564C9872Outputsamplifymoodboarde2esandbox4f6bc84565authamplifyAuthunauthenticatedUserRole2ADAA45CRef"
           }
         ]
       },
@@ -119,7 +119,7 @@
     "kinesisStreamShardCount": {
       "Value": "1"
     },
-    "amplifymoodboarde2esandbox6bf2e5f791analyticsmoodboardKinesisKinesisStreamFD0ACD32Arn": {
+    "amplifymoodboarde2esandbox4f6bc84565analyticsmoodboardKinesisKinesisStreamE12E9220Arn": {
       "Value": {
         "Fn::GetAtt": [
           "moodboardKinesisKinesisStreamD5E97047",
@@ -395,10 +395,10 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthauthenticatedUserRoleADB79311Ref": {
+    "referencetoamplifymoodboarde2esandbox4f6bc84565authNestedStackauthNestedStackResource564C9872Outputsamplifymoodboarde2esandbox4f6bc84565authamplifyAuthauthenticatedUserRole9FBEFADDRef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox6bf2e5f791authNestedStackauthNestedStackResource4E83D585Outputsamplifymoodboarde2esandbox6bf2e5f791authamplifyAuthunauthenticatedUserRole3AD88229Ref": {
+    "referencetoamplifymoodboarde2esandbox4f6bc84565authNestedStackauthNestedStackResource564C9872Outputsamplifymoodboarde2esandbox4f6bc84565authamplifyAuthunauthenticatedUserRole2ADAA45CRef": {
       "Type": "String"
     }
   }

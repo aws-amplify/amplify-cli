@@ -124,7 +124,7 @@ const mutationCreateBoardPipelineFunctions =
     mutationCreateBoardResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
   ).functions || [];
 mutationCreateBoardPipelineFunctions.splice(
-  0,
+  1,
   0,
   MutationcreateBoardinit2.functionId
 );

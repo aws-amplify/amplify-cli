@@ -1,18 +1,18 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataNestedStackdataNestedStackResourceBF06AAB8Outputsamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPIDefaultApiKey06DEB334ApiKey",
-    "ParameterValue": "da2-fakeapikey00000000000000"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox4f6bc84565dataNestedStackdataNestedStackResource55AEE991Outputsamplifymoodboarde2esandbox4f6bc84565dataamplifyDataGraphQLAPIAA6EB5D1GraphQLUrl",
+    "ParameterValue": "https://nbzf77kjhrhd7filvpc2wcgi3a.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791analyticsNestedStackanalyticsNestedStackResource1A9121E8Outputsamplifymoodboarde2esandbox6bf2e5f791analyticsmoodboardKinesisKinesisStreamFD0ACD32Arn",
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox4f6bc84565analyticsNestedStackanalyticsNestedStackResource039716A4Outputsamplifymoodboarde2esandbox4f6bc84565analyticsmoodboardKinesisKinesisStreamE12E9220Arn",
     "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataNestedStackdataNestedStackResourceBF06AAB8Outputsamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17ApiId",
-    "ParameterValue": "5h3zmmmytzgavjtaxhlxpkblve"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox4f6bc84565dataNestedStackdataNestedStackResource55AEE991Outputsamplifymoodboarde2esandbox4f6bc84565dataamplifyDataGraphQLAPIAA6EB5D1ApiId",
+    "ParameterValue": "p7wg7nhku5eq5bx6kble2s2x7q"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox6bf2e5f791dataNestedStackdataNestedStackResourceBF06AAB8Outputsamplifymoodboarde2esandbox6bf2e5f791dataamplifyDataGraphQLAPI557CEB17GraphQLUrl",
-    "ParameterValue": "https://ogepmnedpjeiplcpkiyuzrtwfi.appsync-api.us-east-1.amazonaws.com/graphql"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox4f6bc84565dataNestedStackdataNestedStackResource55AEE991Outputsamplifymoodboarde2esandbox4f6bc84565dataamplifyDataGraphQLAPIDefaultApiKey26B68483ApiKey",
+    "ParameterValue": "da2-fakeapikey00000000000000"
   }
 ]

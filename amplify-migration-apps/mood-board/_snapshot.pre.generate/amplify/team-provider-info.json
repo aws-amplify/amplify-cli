@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-moodboard-x-x-deployment",
       "UnauthRoleName": "amplify-moodboard-x-x-unauthRole",
       "StackName": "amplify-moodboard-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/426519d0-3e6f-11f1-b84f-0affc1d133ad",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/9f24d640-3e85-11f1-962e-0affccb07fed",
       "AmplifyAppId": "moodboard"
     },
     "categories": {
