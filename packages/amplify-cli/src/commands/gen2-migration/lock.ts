@@ -2,12 +2,24 @@ import { AmplifyMigrationStep } from './_infra/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
 import { Plan } from './_infra/plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import {
+  SetStackPolicyCommand,
+  GetStackPolicyCommand,
+  DescribeStackResourcesCommand,
+  DescribeStacksCommand,
+  GetTemplateCommand,
+  UpdateStackCommand,
+  waitUntilStackUpdateComplete,
+} from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { paginateListGraphqlApis } from '@aws-sdk/client-appsync';
+import { CFNTemplate } from './_infra/cfn-template';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
+
+const HOSTED_UI_CUSTOM_RESOURCES = ['HostedUICustomResourceInputs', 'HostedUIProvidersCustomResourceInputs'];
+const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
 
 const LOCK_STATEMENT = {
   Effect: 'Deny',
@@ -67,6 +79,11 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           this.logger.info(`Enabled deletion protection for table '${tableName}'`);
         },
       });
+    }
+
+    const hostedUiRetainOp = await this.buildHostedUiRetainOperation();
+    if (hostedUiRetainOp) {
+      operations.push(hostedUiRetainOp);
     }
 
     operations.push({
@@ -226,6 +243,55 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
     }
     return this._dynamoTableNames;
+  }
+
+  private async buildHostedUiRetainOperation(): Promise<AmplifyMigrationOperation | undefined> {
+    const authResource = this.gen1App.discover().find((r) => r.category === 'auth' && r.service === 'Cognito');
+    if (!authResource) return undefined;
+
+    const nestedStackPrefix = `auth${authResource.resourceName}`;
+    const rootResources = await this.gen1App.clients.cloudFormation.send(
+      new DescribeStackResourcesCommand({ StackName: this.gen1App.rootStackName }),
+    );
+    const authStack = (rootResources.StackResources ?? []).find(
+      (r) => r.ResourceType === 'AWS::CloudFormation::Stack' && r.LogicalResourceId?.startsWith(nestedStackPrefix),
+    );
+    if (!authStack?.PhysicalResourceId) return undefined;
+
+    const authStackId = authStack.PhysicalResourceId;
+    const templateResponse = await this.gen1App.clients.cloudFormation.send(
+      new GetTemplateCommand({ StackName: authStackId, TemplateStage: 'Original' }),
+    );
+    if (!templateResponse.TemplateBody) return undefined;
+
+    const template = JSON.parse(templateResponse.TemplateBody) as CFNTemplate;
+    const resourcesToRetain = HOSTED_UI_CUSTOM_RESOURCES.filter((id) => id in template.Resources);
+    if (resourcesToRetain.length === 0) return undefined;
+
+    return {
+      validate: () => undefined,
+      describe: async () => [`Set DeletionPolicy: Retain on social auth custom resources: ${resourcesToRetain.join(', ')}`],
+      execute: async () => {
+        for (const logicalId of resourcesToRetain) {
+          template.Resources[logicalId].DeletionPolicy = 'Retain';
+        }
+        const { Stacks } = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: authStackId }));
+        const parameters = (Stacks?.[0]?.Parameters ?? []).map((p) => ({
+          ParameterKey: p.ParameterKey,
+          UsePreviousValue: true,
+        }));
+        await this.gen1App.clients.cloudFormation.send(
+          new UpdateStackCommand({
+            StackName: authStackId,
+            TemplateBody: JSON.stringify(template),
+            Parameters: parameters,
+            Capabilities: [CFN_IAM_CAPABILITY],
+          }),
+        );
+        await waitUntilStackUpdateComplete({ client: this.gen1App.clients.cloudFormation, maxWaitTime: 900 }, { StackName: authStackId });
+        this.logger.info(`Set DeletionPolicy: Retain on ${resourcesToRetain.join(', ')}`);
+      },
+    };
   }
 
   private async getExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {

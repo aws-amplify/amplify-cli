@@ -36,6 +36,7 @@ export interface CFNResource {
   readonly Condition?: string;
   // DependsOn is mutable: resolvers and buildBlueprint remap dependencies on cloned templates.
   DependsOn?: string | string[];
+  DeletionPolicy?: string;
 }
 
 export interface CFNParameter {
