@@ -28,17 +28,17 @@ export const VALID_SLOTS = [
 /** A named position within a pipeline resolver. */
 export type Slot = (typeof VALID_SLOTS)[number];
 
-/** Base insertion index for each slot relative to the default pipeline [auth0(0), postAuth0(1), DataResolverFn(2)]. */
+/** Base insertion index for each slot relative to the default pipeline [init0(0), auth0(1), postAuth0(2), DataResolverFn(3)]. */
 export const SLOT_BASE_INDEX: Record<Slot, number> = {
   init: 0,
-  preAuth: 0,
-  auth: 1,
-  postAuth: 2,
-  preDataLoad: 2,
-  postDataLoad: 3,
-  preUpdate: 3,
-  postUpdate: 3,
-  finish: 3,
+  preAuth: 1,
+  auth: 2,
+  postAuth: 3,
+  preDataLoad: 3,
+  postDataLoad: 4,
+  preUpdate: 4,
+  postUpdate: 4,
+  finish: 4,
 };
 
 /** Parsed components of an extended resolver VTL filename. */

@@ -129,7 +129,7 @@ mutationCreateBoardPipelineFunctions.splice(
   MutationcreateBoardinit2.functionId
 );
 mutationCreateBoardPipelineFunctions.splice(
-  4,
+  5,
   0,
   MutationcreateBoardfinish1.functionId
 );
