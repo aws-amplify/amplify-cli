@@ -3,6 +3,7 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { fetchuseractivity } from './storage/fetchuseractivity/resource';
 import { recorduseractivity } from './storage/recorduseractivity/resource';
+import { activityTrigger } from './storage/activityTrigger/resource';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import {
@@ -20,6 +21,7 @@ const backend = defineBackend({
   storage,
   fetchuseractivity,
   recorduseractivity,
+  activityTrigger,
 });
 const storageActivityStack = backend.createStack('storageactivity');
 const activity = new Table(storageActivityStack, 'activity', {
@@ -143,6 +145,43 @@ for (const model of ['Topic', 'Post', 'Comment']) {
     backend.recorduseractivity.resources.lambda.role!
   );
 }
+backend.activityTrigger.resources.cfnResources.cfnFunction.functionName = `activityTrigger-${branchName}`;
+backend.activityTrigger.addEnvironment(
+  'STORAGE_ACTIVITY_STREAMARN',
+  activity.tableStreamArn!
+);
+backend.activityTrigger.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
+);
+backend.activityTrigger.addEnvironment(
+  'STORAGE_ACTIVITY_NAME',
+  activity.tableName
+);
+activity.grant(
+  backend.activityTrigger.resources.lambda,
+  'dynamodb:Put*',
+  'dynamodb:Create*',
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PartiQLInsert',
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect',
+  'dynamodb:Update*',
+  'dynamodb:RestoreTable*',
+  'dynamodb:PartiQLUpdate',
+  'dynamodb:Delete*',
+  'dynamodb:PartiQLDelete'
+);
+backend.activityTrigger.resources.lambda.addEventSource(
+  new DynamoEventSource(activity, { startingPosition: StartingPosition.LATEST })
+);
+activity.grantStreamRead(backend.activityTrigger.resources.lambda.role!);
+activity.grantTableListStreams(backend.activityTrigger.resources.lambda.role!);
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'discus-avatarsx-x';
