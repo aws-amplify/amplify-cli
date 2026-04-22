@@ -8,7 +8,7 @@ import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
 import { normalize } from './normalize';
-import { AwsCredentials, CredentialManager } from './credentials';
+import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
@@ -68,9 +68,6 @@ export class App {
   public readonly targetAppPath: string;
 
   readonly git: Git;
-
-  /** Latest assumed-role credentials, or undefined in profile mode. */
-  private credentialEnv: AwsCredentials | undefined;
 
   constructor(public readonly appName: string, profile: string | undefined, verbose = false) {
     this.sourceAppPath = path.join(MIGRATION_APPS_DIR, appName);
@@ -460,39 +457,27 @@ export class App {
   // ============================================================
 
   /**
-   * Refresh credentials and store the result. Call before any AWS operation.
+   * Refresh credentials. Call before any AWS operation in role mode so the
+   * underlying profile doesn't expire mid-step. No-op in profile mode.
    */
-  async refreshCredentials(): Promise<void> {
-    this.credentialEnv = await this.credentials.refresh();
+  public async refreshCredentials(): Promise<void> {
+    await this.credentials.refresh();
   }
 
   /**
-   * Build an env object for subprocess execution, merging `process.env`
-   * with the active profile/credentials and optional extras.
-   *
-   * `AWS_PROFILE` is always set so subprocesses know which profile to use.
-   * In role mode the explicit `AWS_*` credential vars override it in the
-   * SDK's default provider chain.
+   * Build an env object for sub-process execution, merging `process.env`
+   * with `AWS_PROFILE` and optional extras. The profile is the only
+   * credential signal — sub-processes resolve it via the shared AWS config.
    */
-  getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, AWS_PROFILE: this.credentials.profile, ...this.credentialEnv, ...extra };
+  public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
+    return { ...process.env, AWS_PROFILE: this.credentials.profile, ...extra };
   }
 
   /**
-   * Build an AWS SDK client config. In role mode returns explicit
-   * credentials; in profile mode returns the profile name so the SDK
-   * reads `~/.aws/credentials` directly.
+   * Build an AWS SDK client config that points at the active profile.
+   * Clients resolve credentials via the shared AWS config.
    */
-  getClientConfig(): { credentials?: { accessKeyId: string; secretAccessKey: string; sessionToken: string }; profile?: string } {
-    if (this.credentialEnv) {
-      return {
-        credentials: {
-          accessKeyId: this.credentialEnv.AWS_ACCESS_KEY_ID,
-          secretAccessKey: this.credentialEnv.AWS_SECRET_ACCESS_KEY,
-          sessionToken: this.credentialEnv.AWS_SESSION_TOKEN,
-        },
-      };
-    }
+  public getClientConfig(): { profile: string } {
     return { profile: this.credentials.profile };
   }
 

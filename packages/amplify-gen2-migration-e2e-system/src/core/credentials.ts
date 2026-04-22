@@ -5,16 +5,6 @@ import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { Logger } from './logger';
 
 /**
- * AWS credential key-value pairs suitable for passing to subprocess `env`
- * options or constructing SDK clients.
- */
-export interface AwsCredentials {
-  readonly AWS_ACCESS_KEY_ID: string;
-  readonly AWS_SECRET_ACCESS_KEY: string;
-  readonly AWS_SESSION_TOKEN: string;
-}
-
-/**
  * Duration for assumed-role sessions. One hour strikes a balance between
  * STS call cost and headroom for any single step (all steps are well under
  * an hour individually).
@@ -24,21 +14,20 @@ const SESSION_DURATION_SECONDS = 3600;
 /**
  * Owns the AWS credential lifecycle for a single migration run.
  *
+ * Always exposes a named profile (`this.profile`) that callers wire into
+ * subprocess `AWS_PROFILE` and SDK client configs. Credentials are never
+ * returned — the profile is the single source of truth.
+ *
  * ## Profile mode (`callerProfile` is set)
  *
  * The caller-supplied profile is already present in `~/.aws/credentials`.
- * `refresh()` returns `undefined` — no env override needed.
+ * `refresh()` is a no-op.
  *
  * ## Role mode (`callerProfile` is undefined, `TEST_ACCOUNT_ROLE` is set)
  *
- * `refresh()` assumes the role from `TEST_ACCOUNT_ROLE` via STS and returns
- * fresh credentials as an `AwsCredentials` object. The caller is responsible
- * for passing these to subprocesses (via `env`) and SDK clients. This class
- * does not modify `process.env`.
- *
- * Additionally, the credentials are written to `~/.aws/credentials` under a
- * generated profile name because `amplify init` reads the shared INI file
- * directly. `this.profile` exposes that name for `init()` to pass.
+ * `refresh()` assumes the role from `TEST_ACCOUNT_ROLE` via STS and writes
+ * the returned credentials to `~/.aws/credentials` (and region to
+ * `~/.aws/config`) under a generated profile name.
  *
  * `refresh()` must be called before each long-running step so session tokens
  * don't expire mid-operation.
@@ -73,13 +62,13 @@ export class CredentialManager {
   }
 
   /**
-   * Refresh credentials if in role mode. Returns fresh credentials to be
-   * passed to sub-processes and SDK clients. In profile mode returns
-   * `undefined` — the caller's long-lived profile handles auth.
+   * Refresh credentials if in role mode by assuming the role and rewriting
+   * the shared credentials file. No-op in profile mode — the caller's
+   * long-lived profile handles auth.
    */
-  public async refresh(): Promise<AwsCredentials | undefined> {
+  public async refresh(): Promise<void> {
     if (!this.isRoleMode) {
-      return undefined;
+      return;
     }
     this.logger.info('Refreshing credentials...');
     const sts = new STSClient({});
@@ -95,17 +84,9 @@ export class CredentialManager {
       throw new Error('STS AssumeRole returned incomplete credentials');
     }
 
-    const result: AwsCredentials = {
-      AWS_ACCESS_KEY_ID: creds.AccessKeyId,
-      AWS_SECRET_ACCESS_KEY: creds.SecretAccessKey,
-      AWS_SESSION_TOKEN: creds.SessionToken,
-    };
-
-    // Write credentials file for `amplify init --profile`.
     this.writeCredentialsFile(creds.AccessKeyId, creds.SecretAccessKey, creds.SessionToken);
 
     this.logger.info('Credentials refreshed');
-    return result;
   }
 
   private writeCredentialsFile(accessKeyId: string, secretAccessKey: string, sessionToken: string): void {
