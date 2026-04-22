@@ -248,6 +248,8 @@ document.getElementById('backToDiscussionsFromActivity').addEventListener('click
 async function loadActivity() {
   const list = document.getElementById('activityList');
 
+  loadActivityCounter();
+
   // Show loading state
   list.innerHTML = `
     <div class="empty">
@@ -341,7 +343,19 @@ function loadDiscussions() {
   });
 }
 
-// Topics
+async function loadActivityCounter() {
+  const el = document.getElementById('activityCounter');
+  try {
+    const result = await client.graphql({ query: queries.getActivityStats });
+    const count = result.data.getActivityStats?.activityCount ?? 0;
+    el.textContent = `📈 ${count} activities tracked`;
+  } catch (error) {
+    console.error('Error loading activity stats:', error);
+    el.textContent = '';
+  }
+}
+
+// Navigation
 async function loadTopics(discussionId) {
   try {
     const result = await client.graphql({ query: queries.listTopics });

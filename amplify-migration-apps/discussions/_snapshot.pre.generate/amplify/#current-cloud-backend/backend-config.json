@@ -47,6 +47,22 @@
     }
   },
   "function": {
+    "activityTrigger": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "activity"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "fetchuseractivity": {
       "build": true,
       "dependsOn": [
@@ -89,6 +105,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_activityTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "activityTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_activityTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "activityTrigger"
+        }
+      ]
+    },
     "AMPLIFY_function_fetchuseractivity_deploymentBucketName": {
       "usedBy": [
         {

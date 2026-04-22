@@ -30,12 +30,17 @@ type Comment {
 
 type Query {
   fetchUserActivity(userId: ID!): [Activity]
+  getActivityStats: ActivityStats
   getTopic(id: ID!): Topic
   listTopics(filter: ModelTopicFilterInput, limit: Int, nextToken: String): ModelTopicConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getComment(id: ID!): Comment
   listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection
+}
+
+type ActivityStats {
+  activityCount: Int!
 }
 
 type Activity {

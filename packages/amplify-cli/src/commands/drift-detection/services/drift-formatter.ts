@@ -125,12 +125,12 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
         if (change.ResourceType === 'AWS::CloudFormation::Stack' && change.nestedChanges && change.nestedChanges.length > 0) {
           flattenChanges(
             change.nestedChanges,
-            extractCategory(change.LogicalResourceId),
+            extractCategory(change.LogicalResourceId!),
             change.ChangeSetId || fallbackChangeSetId,
             change.PhysicalResourceId || parentStackArn,
           );
         } else {
-          const resourceCategory = extractCategory(change.LogicalResourceId);
+          const resourceCategory = extractCategory(change.LogicalResourceId!);
           blocks.push({
             categoryName: resourceCategory !== 'Other' ? resourceCategory : fallbackCategory,
             logicalId: change.LogicalResourceId || 'Unknown',

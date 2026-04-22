@@ -111,7 +111,7 @@ function hasRealDrift(changes: ResourceChangeWithNested[]): boolean {
 }
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
-  private _dynamoTableNames: string[];
+  private _dynamoTableNames: string[] | undefined;
 
   public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
@@ -151,7 +151,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.gen1App.envName})`],
       execute: async () => {
         const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
-        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
+        const environmentVariables = { ...(app.app!.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
         await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.gen1App.envName})`);
       },
@@ -232,7 +232,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`],
       execute: async () => {
         const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
-        const environmentVariables = app.app.environmentVariables ?? {};
+        const environmentVariables = app.app!.environmentVariables ?? {};
         delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
         await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Removed ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable`);
@@ -342,7 +342,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   }
 
   private async fetchGraphQLModelTables(graphQLApiId: string): Promise<string[]> {
-    const tables = [];
+    const tables: string[] = [];
     for await (const page of paginateListTables({ client: this.gen1App.clients.dynamoDB }, {})) {
       for (const tableName of page.TableNames ?? []) {
         if (tableName.includes(`-${graphQLApiId}-${this.gen1App.envName}`)) {

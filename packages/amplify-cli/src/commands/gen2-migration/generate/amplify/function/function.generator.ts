@@ -118,6 +118,7 @@ export class FunctionGenerator implements Planner {
     const func = await this.resolve();
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
+    const storageTriggerTables = this.detectStorageDynamoTriggers(func);
     const hasKinesisTrigger = this.detectKinesisTrigger(func);
     this.contributeAuthAccess(func);
     this.contributeAuthTrigger();
@@ -136,6 +137,9 @@ export class FunctionGenerator implements Planner {
           this.contributeAuthEscapeHatch(func);
           if (triggerModels.length > 0) {
             this.contributeDynamoTrigger(func.resourceName, triggerModels);
+          }
+          if (storageTriggerTables.length > 0) {
+            this.contributeStorageDynamoTrigger(func.resourceName, storageTriggerTables);
           }
           if (hasKinesisTrigger) {
             this.contributeKinesisTrigger(func.resourceName);
@@ -890,6 +894,117 @@ export class FunctionGenerator implements Planner {
       ),
     );
     this.backendGenerator.addStatement(forStatement);
+  }
+
+  /**
+   * Generates DynamoDB stream event source wiring for storage table triggers.
+   * For each DynamoDBGenerator whose `triggerFunctions` includes this function,
+   * emits addEventSource, grantStreamRead, and grantTableListStreams calls.
+   */
+  /**
+   * Detects storage DynamoDB table triggers by parsing this function's
+   * CloudFormation template for EventSourceMapping resources that reference
+   * storage table stream ARNs via `Ref: storage<tableName>StreamArn`.
+   */
+  private detectStorageDynamoTriggers(func: ResolvedFunction): string[] {
+    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = this.gen1App.json(templatePath);
+    const tables: string[] = [];
+
+    for (const resource of Object.values(template.Resources)) {
+      const res = resource as Record<string, unknown>;
+      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
+
+      const props = res.Properties as Record<string, unknown>;
+      const eventSourceArn = props.EventSourceArn as Record<string, string>;
+      if (!('Ref' in eventSourceArn)) continue;
+
+      const match = eventSourceArn.Ref.match(/^storage(\w+)StreamArn$/);
+      if (match) {
+        tables.push(match[1]);
+      }
+    }
+
+    return tables;
+  }
+
+  /**
+   * Generates DynamoDB stream event source wiring for storage table triggers.
+   * Emits addEventSource, grantStreamRead, and grantTableListStreams calls
+   * for each detected storage table.
+   */
+  private contributeStorageDynamoTrigger(functionName: string, tableNames: string[]): void {
+    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['DynamoEventSource']);
+    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
+
+    for (const tableVar of tableNames) {
+      // backend.functionName.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }))
+      this.backendGenerator.addStatement(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources`),
+                factory.createIdentifier('lambda'),
+              ),
+              factory.createIdentifier('addEventSource'),
+            ),
+            undefined,
+            [
+              factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
+                factory.createIdentifier(tableVar),
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment(
+                    'startingPosition',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('StartingPosition'),
+                      factory.createIdentifier('LATEST'),
+                    ),
+                  ),
+                ]),
+              ]),
+            ],
+          ),
+        ),
+      );
+
+      // table.grantStreamRead(backend.functionName.resources.lambda.role!)
+      this.backendGenerator.addStatement(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantStreamRead')),
+            undefined,
+            [
+              factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                  factory.createIdentifier('role'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      // table.grantTableListStreams(backend.functionName.resources.lambda.role!)
+      this.backendGenerator.addStatement(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantTableListStreams')),
+            undefined,
+            [
+              factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                  factory.createIdentifier('role'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   /**
