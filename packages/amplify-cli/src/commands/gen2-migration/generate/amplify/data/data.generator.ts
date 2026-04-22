@@ -28,9 +28,9 @@ export const VALID_SLOTS = [
 /** A named position within a pipeline resolver. */
 export type Slot = (typeof VALID_SLOTS)[number];
 
-/** Base insertion index for each slot relative to the default pipeline [init0(0), auth0(1), postAuth0(2), DataResolverFn(3)]. */
+/** Base insertion index for each slot relative to the default pipeline [init0(0), auth0(1), postAuth0(2), DataResolverFn(3)]. Custom functions are placed after the default functions for their slot. */
 export const SLOT_BASE_INDEX: Record<Slot, number> = {
-  init: 0,
+  init: 1,
   preAuth: 1,
   auth: 2,
   postAuth: 3,
