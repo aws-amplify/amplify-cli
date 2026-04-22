@@ -39,8 +39,8 @@ describe('AuthUserPoolGroupsForwardRefactorer.buildResourceMappings — GroupNam
       new Map([['amplifyAuthAdminGroup1234', r('AWS::Cognito::UserPoolGroup', { GroupName: 'Admin' })]]),
     );
     expect(mappings).toHaveLength(1);
-    expect(mappings[0].Source.LogicalResourceId).toBe('AdminGroup');
-    expect(mappings[0].Destination.LogicalResourceId).toBe('amplifyAuthAdminGroup1234');
+    expect(mappings[0].Source!.LogicalResourceId).toBe('AdminGroup');
+    expect(mappings[0].Destination!.LogicalResourceId).toBe('amplifyAuthAdminGroup1234');
   });
 
   it('does not match groups with different GroupName', async () => {

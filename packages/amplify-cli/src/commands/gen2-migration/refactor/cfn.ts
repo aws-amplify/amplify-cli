@@ -99,7 +99,7 @@ export class Cfn {
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
       };
-      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody, parameters });
+      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
@@ -117,8 +117,8 @@ export class Cfn {
    * Throws on failure.
    */
   public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
-    const sourceStackId = resourceMappings[0].Source.StackName;
-    const targetStackId = resourceMappings[0].Destination.StackName;
+    const sourceStackId = resourceMappings[0].Source!.StackName!;
+    const targetStackId = resourceMappings[0].Destination!.StackName!;
 
     const sourceStackName = extractStackNameFromId(sourceStackId);
     const targetStackName = extractStackNameFromId(targetStackId);
@@ -144,14 +144,16 @@ export class Cfn {
     const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
 
     for (const mapping of resourceMappings) {
-      if (mapping.Destination.LogicalResourceId in targetTemplate.Resources) {
+      if (mapping.Destination!.LogicalResourceId! in targetTemplate.Resources) {
         // our refactoring is expected to move resources into vacancies, not override
         throw new AmplifyError('MigrationError', {
-          message: `Unable to create stack refactor. Resource ${mapping.Destination.LogicalResourceId} already exists in stack ${targetStackName}`,
+          message: `Unable to create stack refactor. Resource ${
+            mapping.Destination!.LogicalResourceId
+          } already exists in stack ${targetStackName}`,
         });
       }
-      targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
-      delete sourceTemplate.Resources[mapping.Source.LogicalResourceId];
+      targetTemplate.Resources[mapping.Destination!.LogicalResourceId!] = sourceTemplate.Resources[mapping.Source!.LogicalResourceId!];
+      delete sourceTemplate.Resources[mapping.Source!.LogicalResourceId!];
     }
 
     if (Object.keys(sourceTemplate.Resources).length === 0) {
@@ -264,10 +266,10 @@ export class Cfn {
     readonly resource?: DiscoveredResource;
   }): Promise<void> {
     const { changeSet, templateBody, resource } = params;
-    const displayName = extractStackNameFromId(changeSet.StackName);
+    const displayName = extractStackNameFromId(changeSet.StackName!);
 
     writeUpdateSnapshot({
-      stackName: changeSet.StackName,
+      stackName: changeSet.StackName!,
       templateBody: JSON.stringify(templateBody),
       parameters: changeSet.Parameters ?? [],
     });
@@ -383,7 +385,7 @@ export class Cfn {
       const propDetails = details.filter((d) => d.Target?.Attribute === 'Properties' && d.Target?.Name);
 
       for (const detail of propDetails) {
-        const target = detail.Target;
+        const target = detail.Target!;
         const propertyPath = target.Path;
         const before = target.BeforeValue;
         const after = target.AfterValue;
@@ -415,9 +417,9 @@ export class Cfn {
 }
 
 function buildRefactorDescription(input: CreateStackRefactorCommandInput): string {
-  const logicalIds = input.ResourceMappings.map((m) => m.Source?.LogicalResourceId).join(', ');
-  const source = extractStackNameFromId(input.StackDefinitions[0].StackName);
-  const dest = extractStackNameFromId(input.StackDefinitions[1].StackName);
+  const logicalIds = input.ResourceMappings!.map((m) => m.Source?.LogicalResourceId).join(', ');
+  const source = extractStackNameFromId(input.StackDefinitions![0].StackName!);
+  const dest = extractStackNameFromId(input.StackDefinitions![1].StackName!);
   return `Move [${logicalIds}] from ${source} to ${dest}`;
 }
 
@@ -438,14 +440,14 @@ function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
 }
 
 function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
-  const source = input.StackDefinitions[0];
-  const target = input.StackDefinitions[1];
-  const sourceStackName = extractStackNameFromId(source.StackName);
-  const targetStackName = extractStackNameFromId(target.StackName);
+  const source = input.StackDefinitions![0];
+  const target = input.StackDefinitions![1];
+  const sourceStackName = extractStackNameFromId(source.StackName!);
+  const targetStackName = extractStackNameFromId(target.StackName!);
   const description = `refactor.__from__.${sourceStackName}.__to__.${targetStackName}`;
   const basePath = path.join(OUTPUT_DIRECTORY, description);
-  fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody));
-  fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody));
+  fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
+  fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
   fs.writeFileSync(
     path.join(OUTPUT_DIRECTORY, `${description}.mappings.json`),
     JSON.stringify(input.ResourceMappings ?? [], null, 2) + '\n',

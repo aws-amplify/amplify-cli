@@ -128,7 +128,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       { StackName: this.gen1App.rootStackName, ChangeSetName: changeSetName },
     );
 
-    const allChanges = [];
+    const allChanges: NonNullable<DescribeChangeSetOutput['Changes']> = [];
     let nextToken: string | undefined;
     let changeSet!: DescribeChangeSetOutput;
     do {
