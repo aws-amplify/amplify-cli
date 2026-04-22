@@ -203,10 +203,43 @@ You can access the following resource attributes as environment variables from y
 ? Do you want to edit the local lambda function now? No
 ```
 
-The CLI only handles basic resource access permissions. The custom IAM policies and environment variables are already included in the repo and will be copied into the function directory by `npm run configure`. However, the dependency configuration needs to be added manually. The CLI does not provide a way to specify which custom resource output attributes (`BudgetAlertTopicArn`, `MonthlyReportTopicArn`) the function depends on — this must be configured by editing the file directly.
+The CLI only handles basic resource access permissions. The custom IAM policies are already included in the repo and will be copied into the function directory by `npm run configure`. However, the dependency configuration and environment variables need to be added manually.
 
+**Edit `./amplify/backend/function/<functionName>/<functionName>-cloudformation-template.json`:**
 
-**Add to `./amplify/backend/backend-config.json`** under the function's `dependsOn` array:
+Add the following to the `Parameters` section:
+
+```json
+"customcustomfinanceBudgetAlertTopicArn": {
+  "Type": "String"
+},
+"customcustomfinanceMonthlyReportTopicArn": {
+  "Type": "String"
+},
+"dependsOn": {
+  "Type": "String",
+  "Default": ""
+},
+"lambdaLayers": {
+  "Type": "String",
+  "Default": ""
+}
+```
+
+Add the following to `Resources` → `LambdaFunction` → `Properties` → `Environment` → `Variables`:
+
+```json
+"BUDGET_ALERT_TOPIC_ARN": {
+  "Ref": "customcustomfinanceBudgetAlertTopicArn"
+},
+"MONTHLY_REPORT_TOPIC_ARN": {
+  "Ref": "customcustomfinanceMonthlyReportTopicArn"
+}
+```
+
+**Edit `./amplify/backend/backend-config.json`:**
+
+Add the following to the function's `dependsOn` array:
 
 ```json
 {
@@ -328,9 +361,28 @@ npx amplify gen2-migration generate
 
 After running `gen2-migration generate`, the following manual changes are needed to get the Gen2 branch to deploy successfully.
 
-#### 1. Lambda Handler: Convert to ESM
+#### 1. Update Branch Name in Data Resource
 
-In `amplify/function/financetrackerc3d67c94/index.js`, convert CommonJS to ESM syntax:
+In `amplify/data/resource.ts`, update the `branchName` to match your Gen2 deployment branch.
+The table mapping uses this branch name to resolve the correct Gen1 DynamoDB table names,
+so it must match the branch you deploy to in order to reuse the existing Gen1 tables.
+
+```diff
+ export const data = defineData({
+   migratedAmplifyGen1DynamoDbTableMappings: [{
+-    branchName: 'main',
++    branchName: 'gen2-main',
+     modelNameToTableNameMapping: {
+       Transaction: 'Transaction-...-main',
+       Budget: 'Budget-...-main',
+       FinancialSummary: 'FinancialSummary-...-main',
+     },
+   }],
+```
+
+#### 2. Lambda Handler: Convert to ESM
+
+In `amplify/function/<functionName>/index.js`, convert CommonJS to ESM syntax:
 
 - Change `require()` calls to `import` statements:
 
@@ -350,7 +402,7 @@ In `amplify/function/financetrackerc3d67c94/index.js`, convert CommonJS to ESM s
 +export const handler = async (event) => {
 ```
 
-#### 2. Update Frontend Config Import
+#### 3. Update Frontend Config Import
 
 In `src/main.tsx`, update the Amplify config import to use the Gen2 outputs file:
 
@@ -359,13 +411,11 @@ In `src/main.tsx`, update the Amplify config import to use the Gen2 outputs file
 +import amplifyconfig from '../amplify_outputs.json';
 ```
 
-#### 3. Root `package.json`: Install AWS SDK and Upgrade TypeScript
+#### 4. Root `package.json`: Install AWS SDK and Upgrade TypeScript
 
 Amplify Gen 2 uses esbuild to bundle Lambda functions. esbuild couldn't resolve
 `@aws-sdk/client-dynamodb`, `@aws-sdk/lib-dynamodb`, and `@aws-sdk/client-sns` because
-they weren't installed. The Gen 2 `defineFunction()` API's `FunctionBundlingOptions` only
-supports `minify` — there is no `externalPackages` or `nodeModules` option to mark them
-as external.
+they weren't installed.
 
 Install the SDK packages as dependencies so esbuild can resolve and bundle them:
 
@@ -373,16 +423,10 @@ Install the SDK packages as dependencies so esbuild can resolve and bundle them:
 npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb @aws-sdk/client-sns
 ```
 
-Also upgrade TypeScript. The tsconfig uses `erasableSyntaxOnly` which requires TS 5.8+:
-
-```diff
--  "typescript": "^4.9.5",
-+  "typescript": "~5.8.0",
-```
 
 Then run `npm install` to update `package-lock.json`.
 
-#### 4. Grant Lambda SNS Publish Permission
+#### 5. Grant Lambda SNS Publish Permission
 
 In `amplify/backend.ts`, the Gen 2 Lambda doesn't have IAM permission to publish to SNS
 topics. In Gen 1 this was handled by `custom-policies.json`, which doesn't apply in Gen 2.
@@ -392,7 +436,7 @@ Add the SNS publish policy to the Lambda role:
 ```ts
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
-backend.financetrackere30b1453.resources.lambda.addToRolePolicy(
+backend.financetracker30b1453.resources.lambda.addToRolePolicy(
   new PolicyStatement({
     actions: ['sns:Publish'],
     resources: ['*'],
@@ -400,7 +444,7 @@ backend.financetrackere30b1453.resources.lambda.addToRolePolicy(
 );
 ```
 
-#### 5. Wire SNS Topic ARNs to Lambda Environment Variables
+#### 6. Wire SNS Topic ARNs to Lambda Environment Variables
 
 In `amplify/backend.ts`, the custom resource instance needs to be captured so its topic
 ARNs can be passed as environment variables to the Lambda function. In Gen 1 this was
@@ -408,18 +452,36 @@ handled by `function-parameters.json` and CloudFormation parameter resolution.
 
 ```diff
 -new financereport_cdkStack(
-+const financereport = new financereport_cdkStack(
-   backend.createStack('financereport'),
-   'financereport'
++const customfinance = new customfinance_cdkStack(
+   backend.createStack('customfinance'),
+   'customfinance'
  );
-+backend.financetrackerfinal82393814.addEnvironment(
++backend.financetracker30b1453.addEnvironment(
 +  'BUDGET_ALERT_TOPIC_ARN',
-+  financereport.budgetAlertTopic.topicArn
++  customfinance.budgetAlertTopic.topicArn
 +);
-+backend.financetrackerfinal82393814.addEnvironment(
++backend.financetracker30b1453.addEnvironment(
 +  'MONTHLY_REPORT_TOPIC_ARN',
-+  financereport.monthlyReportTopic.topicArn
++  customfinance.monthlyReportTopic.topicArn
 +);
+```
+
+
+#### 7. Fix Custom Resolver Table Name Reference
+
+In `amplify/custom/customresolver/resource.ts`, the generated code constructs the
+DynamoDB table name using `Fn.sub` with the branch name, which resolves to the wrong
+table name. Replace it with a direct reference to the Gen1 data resource table, which
+resolves to the actual table name at deploy time.
+
+```diff
+   dynamoDbConfig: {
+-    tableName: cdk.Fn.sub('Transaction-${apiId}-${branchName}', {
+-      apiId: apiId,
+-      env: branchName,
+-    }),
++    tableName: backend.data.resources.tables['Transaction'].tableName,
+   },
 ```
 
 ---

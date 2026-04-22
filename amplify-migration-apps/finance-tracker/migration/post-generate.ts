@@ -8,6 +8,7 @@
  * 3. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 4. Add SNS publish IAM policy to backend.ts for the Lambda function
  * 5. Wire SNS topic ARNs as Lambda environment variables in backend.ts
+ * 6. Fix custom resolver table name reference
  */
 
 import { execSync } from 'child_process';
@@ -172,12 +173,39 @@ backend.${fnDir}.addEnvironment(
   await fs.writeFile(backendPath, content, 'utf-8');
 }
 
+/**
+ * Replace the Fn.sub table name construction in the custom resolver
+ * with a direct reference to the Gen2 data resource table.
+ */
+async function fixCustomResolverTableName(appPath: string): Promise<void> {
+  const customDir = path.join(appPath, 'amplify', 'custom');
+  if (!fsSync.existsSync(customDir)) return;
+
+  const entries = fsSync.readdirSync(customDir);
+  const resolverDir = entries.find((e) => e.includes('resolver'));
+  if (!resolverDir) return;
+
+  const resourcePath = path.join(customDir, resolverDir, 'resource.ts');
+  if (!fsSync.existsSync(resourcePath)) return;
+
+  let content = await fs.readFile(resourcePath, 'utf-8');
+
+  // Replace Fn.sub table name pattern with backend.data.resources.tables reference
+  content = content.replace(
+    /tableName:\s*cdk\.Fn\.sub\(\s*['"]Transaction-\$\{apiId\}-\$\{(?:env|branchName)\}['"]\s*,\s*\{[^}]+\}\s*\)/g,
+    "tableName: backend.data.resources.tables['Transaction'].tableName",
+  );
+
+  await fs.writeFile(resourcePath, content, 'utf-8');
+}
+
 export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertLambdaToESM(appPath);
   await updateFrontendConfig(appPath);
   await addSnsPublishPolicy(appPath);
   await wireSnsTopicEnvVars(appPath);
+  await fixCustomResolverTableName(appPath);
 }
 
 async function main(): Promise<void> {

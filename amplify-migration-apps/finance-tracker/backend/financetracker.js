@@ -1,10 +1,12 @@
 /* Amplify Params - DO NOT EDIT
-	API_FINANCETRACKER2_GRAPHQLAPIIDOUTPUT
-	API_FINANCETRACKER2_TRANSACTIONTABLE_ARN
-	API_FINANCETRACKER2_TRANSACTIONTABLE_NAME
+	API_FINANCETRACKER_GRAPHQLAPIIDOUTPUT
+	API_FINANCETRACKER_TRANSACTIONTABLE_ARN
+	API_FINANCETRACKER_TRANSACTIONTABLE_NAME
+	BUDGET_ALERT_TOPIC_ARN
+	MONTHLY_REPORT_TOPIC_ARN
 	ENV
 	REGION
-Amplify Params - DO NOT EDIT */ const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
+Amplify Params - DO NOT EDIT */ const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 
@@ -13,28 +15,56 @@ const dynamodb = DynamoDBDocumentClient.from(dynamoClient);
 const sns = new SNSClient({});
 
 /**
+ * Calculates totals from an array of transactions.
+ * Returns { totalIncome, totalExpenses, balance, savingsRate }.
+ */
+function calculateTotals(transactions) {
+  const { totalIncome, totalExpenses } = transactions.reduce(
+    (acc, transaction) => {
+      if (transaction.type === 'INCOME') {
+        acc.totalIncome += transaction.amount;
+      } else if (transaction.type === 'EXPENSE') {
+        acc.totalExpenses += transaction.amount;
+      }
+      return acc;
+    },
+    { totalIncome: 0, totalExpenses: 0 },
+  );
+
+  const balance = totalIncome - totalExpenses;
+  const savingsRate = totalIncome > 0 ? parseFloat(((balance / totalIncome) * 100).toFixed(2)) : 0;
+
+  return { totalIncome, totalExpenses, balance, savingsRate };
+}
+
+/**
+ * Returns the Transaction table name from the environment variable.
+ * Throws if not configured.
+ */
+function getTableName() {
+  const tableName = process.env.API_FINANCETRACKER_TRANSACTIONTABLE_NAME;
+  if (!tableName || tableName.includes('NONE')) {
+    throw new Error('Transaction table name is not configured. Check the API_FINANCETRACKER_TRANSACTIONTABLE_NAME environment variable.');
+  }
+  return tableName;
+}
+
+/**
  * AppSync GraphQL resolver for calculating financial summary and sending notifications
  * @type {import('@types/aws-lambda').AppSyncResolverHandler}
  */
 exports.handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event, null, 2)}`);
 
-  // AppSync passes fieldName in event.info.fieldName
   const fieldName = event.info?.fieldName || event.fieldName;
-
-  // Get arguments - AppSync can pass them in different ways
   const args = event.arguments || event.args || {};
 
   console.log('Field Name:', fieldName);
-  console.log('Arguments:', JSON.stringify(args, null, 2));
 
   try {
-    // Handle different GraphQL operations
     switch (fieldName) {
       case 'calculateFinancialSummary':
-        const summary = await calculateSummaryFromDB();
-        console.log('Handler returning summary:', summary);
-        return summary;
+        return await calculateSummaryFromDB();
 
       case 'sendMonthlyReport':
         return await sendMonthlyReport(args);
@@ -43,170 +73,51 @@ exports.handler = async (event) => {
         return await sendBudgetAlert(args);
 
       default:
-        console.error('Unknown operation. Event structure:', JSON.stringify(event, null, 2));
-        throw new Error(`Unknown field: ${fieldName}. Full event logged to CloudWatch.`);
+        throw new Error(`Unknown field: ${fieldName}`);
     }
   } catch (error) {
     console.error('Handler Error:', error);
-    console.error('Error stack:', error.stack);
-    console.error('Error name:', error.name);
-    console.error('Error message:', error.message);
 
     // For calculateFinancialSummary, return zeros instead of null to avoid GraphQL errors
     if (fieldName === 'calculateFinancialSummary') {
-      console.log('Returning default summary due to error');
-      return {
-        totalIncome: 0,
-        totalExpenses: 0,
-        balance: 0,
-        savingsRate: 0,
-      };
+      return { totalIncome: 0, totalExpenses: 0, balance: 0, savingsRate: 0 };
     }
 
-    // For mutations, return error response
-    return {
-      success: false,
-      message: `Error: ${error.message}`,
-    };
+    return { success: false, message: `Error: ${error.message}` };
   }
 };
 
 async function calculateSummaryFromDB() {
-  console.log('=== calculateSummaryFromDB START ===');
-  console.log('calculateSummaryFromDB called');
+  const tableName = getTableName();
 
-  // Try to get table name from environment variable
-  let tableName = process.env.API_FINANCETRACKER2_TRANSACTIONTABLE_NAME;
-  console.log('Table name from env:', tableName);
+  const result = await dynamodb.send(new ScanCommand({ TableName: tableName }));
+  const transactions = result.Items || [];
+  console.log('Found transactions:', transactions.length);
 
-  // If table name has NONE, we need to find the actual API ID
-  if (!tableName || tableName.includes('NONE')) {
-    console.log('Table name has NONE, need to find actual table');
-    // The GraphQL API ID should be in the request headers or we can query DynamoDB to list tables
-    // For now, let's try to list all tables and find the Transaction table
-
-    try {
-      const listResult = await dynamoClient.send(new ListTablesCommand({}));
-      console.log('Available tables:', JSON.stringify(listResult.TableNames, null, 2));
-
-      // Find the Transaction table
-      const transactionTable = listResult.TableNames.find((name) => name.startsWith('Transaction-') && name.endsWith('-main'));
-      if (transactionTable) {
-        tableName = transactionTable;
-        console.log('Found Transaction table:', tableName);
-      } else {
-        throw new Error('Could not find Transaction table in DynamoDB');
-      }
-    } catch (listError) {
-      console.error('Error listing tables:', listError);
-      throw new Error(`Could not list DynamoDB tables: ${listError.message}`);
-    }
-  }
-
-  console.log('Final table name:', tableName);
-
-  try {
-    // Scan all transactions from DynamoDB
-    console.log('About to scan DynamoDB table:', tableName);
-    const result = await dynamodb.send(
-      new ScanCommand({
-        TableName: tableName,
-      }),
-    );
-
-    const transactions = result.Items || [];
-    console.log('Found transactions:', transactions.length);
-    console.log('Transactions:', JSON.stringify(transactions, null, 2));
-
-    // Calculate financial summary
-    const summary = transactions.reduce(
-      (acc, transaction) => {
-        if (transaction.type === 'INCOME') {
-          acc.totalIncome += transaction.amount;
-        } else if (transaction.type === 'EXPENSE') {
-          acc.totalExpenses += transaction.amount;
-        }
-        return acc;
-      },
-      { totalIncome: 0, totalExpenses: 0 },
-    );
-
-    summary.balance = summary.totalIncome - summary.totalExpenses;
-    summary.savingsRate = summary.totalIncome > 0 ? parseFloat(((summary.balance / summary.totalIncome) * 100).toFixed(2)) : 0;
-
-    console.log('Calculated summary:', summary);
-    console.log('=== calculateSummaryFromDB END ===');
-    return summary;
-  } catch (error) {
-    console.error('=== calculateSummaryFromDB ERROR ===');
-    console.error('Error reading from DynamoDB:', error);
-    console.error('Error name:', error.name);
-    console.error('Error code:', error.code);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
-    // Throw the error so we can see it in the frontend
-    throw new Error(`DynamoDB error: ${error.message}`);
-  }
+  const summary = calculateTotals(transactions);
+  console.log('Calculated summary:', summary);
+  return summary;
 }
 
 async function sendMonthlyReport(args) {
-  console.log('=== sendMonthlyReport START ===');
-  console.log('sendMonthlyReport called with args:', JSON.stringify(args, null, 2));
-
   const email = args.email;
-  console.log('Email:', email);
-
   if (!email) {
-    console.error('No email provided in arguments');
-    return {
-      success: false,
-      message: 'Email is required',
-    };
+    return { success: false, message: 'Email is required' };
   }
 
   try {
-    // Use the SNS topic created by the custom resource (subscription managed by CDK)
     const topicArn = process.env.MONTHLY_REPORT_TOPIC_ARN;
-    console.log('Using topic ARN from environment:', topicArn);
-
     if (!topicArn || topicArn === 'NONE') {
       throw new Error('Monthly report topic ARN not configured');
     }
 
-    const tableName = process.env.API_FINANCETRACKER2_TRANSACTIONTABLE_NAME;
-    console.log('Table name:', tableName);
+    const tableName = getTableName();
 
-    // Get financial summary from DynamoDB
-    console.log('About to scan DynamoDB...');
-    const result = await dynamodb.send(
-      new ScanCommand({
-        TableName: tableName,
-      }),
-    );
-
+    const result = await dynamodb.send(new ScanCommand({ TableName: tableName }));
     const transactions = result.Items || [];
-    console.log('Found transactions:', transactions.length);
+    const summary = calculateTotals(transactions);
 
-    const summary = transactions.reduce(
-      (acc, transaction) => {
-        if (transaction.type === 'INCOME') {
-          acc.totalIncome += transaction.amount;
-        } else if (transaction.type === 'EXPENSE') {
-          acc.totalExpenses += transaction.amount;
-        }
-        return acc;
-      },
-      { totalIncome: 0, totalExpenses: 0 },
-    );
-
-    summary.balance = summary.totalIncome - summary.totalExpenses;
-    summary.savingsRate = summary.totalIncome > 0 ? ((summary.balance / summary.totalIncome) * 100).toFixed(2) : 0;
-
-    console.log('Calculated summary:', summary);
-
-    // Send SNS notification with actual data
-    console.log('About to publish to SNS...');
-    const snsResult = await sns.send(
+    await sns.send(
       new PublishCommand({
         TopicArn: topicArn,
         Subject: '📊 Your Monthly Financial Report',
@@ -214,9 +125,9 @@ async function sendMonthlyReport(args) {
 
 Here is your monthly financial report:
 
-💰 Total Income: $${summary.totalIncome.toFixed(2)}
-💸 Total Expenses: $${summary.totalExpenses.toFixed(2)}
-💵 Balance: $${summary.balance.toFixed(2)}
+💰 Total Income: ${summary.totalIncome.toFixed(2)}
+💸 Total Expenses: ${summary.totalExpenses.toFixed(2)}
+💵 Balance: ${summary.balance.toFixed(2)}
 📈 Savings Rate: ${summary.savingsRate}%
 
 Total Transactions: ${transactions.length}
@@ -226,69 +137,38 @@ This report was generated on ${new Date().toLocaleDateString()}.
 Best regards,
 Finance Tracker Team`,
         MessageAttributes: {
-          email: {
-            DataType: 'String',
-            StringValue: email,
-          },
+          email: { DataType: 'String', StringValue: email },
         },
       }),
     );
 
-    console.log('SNS publish result:', JSON.stringify(snsResult, null, 2));
-    console.log('Message ID:', snsResult.MessageId);
-
-    const response = {
+    return {
       success: true,
       message: `Monthly report sent! Check ${email} for a confirmation email from AWS SNS, then click the button again.`,
     };
-
-    console.log('About to return response:', response);
-    console.log('=== sendMonthlyReport END ===');
-    return response;
   } catch (error) {
-    console.error('=== sendMonthlyReport ERROR ===');
     console.error('Error sending monthly report:', error);
-    console.error('Error stack:', error.stack);
-    console.error('Error name:', error.name);
-    console.error('Error code:', error.code);
-    const errorResponse = {
-      success: false,
-      message: `Failed to send report: ${error.message}`,
-    };
-    console.log('Returning error response:', errorResponse);
-    console.log('=== sendMonthlyReport ERROR END ===');
-    return errorResponse;
+    return { success: false, message: `Failed to send report: ${error.message}` };
   }
 }
 
 async function sendBudgetAlert(args) {
-  console.log('sendBudgetAlert called with args:', JSON.stringify(args, null, 2));
-
   const { email, category, exceeded } = args;
 
   try {
-    // Use the SNS topic created by the custom resource (subscription managed by CDK)
     const topicArn = process.env.BUDGET_ALERT_TOPIC_ARN;
-    console.log('Using topic ARN from environment:', topicArn);
-
     if (!topicArn || topicArn === 'NONE') {
       throw new Error('Budget alert topic ARN not configured');
     }
 
-    const tableName = process.env.API_FINANCETRACKER2_TRANSACTIONTABLE_NAME;
+    const tableName = getTableName();
 
-    // Get category spending from DynamoDB
     const result = await dynamodb.send(
       new ScanCommand({
         TableName: tableName,
         FilterExpression: 'category = :category AND #type = :type',
-        ExpressionAttributeNames: {
-          '#type': 'type',
-        },
-        ExpressionAttributeValues: {
-          ':category': category,
-          ':type': 'EXPENSE',
-        },
+        ExpressionAttributeNames: { '#type': 'type' },
+        ExpressionAttributeValues: { ':category': category, ':type': 'EXPENSE' },
       }),
     );
 
@@ -303,10 +183,10 @@ async function sendBudgetAlert(args) {
 
 ⚠️ BUDGET ALERT ⚠️
 
-You have exceeded your budget for ${category} by $${exceeded.toFixed(2)}.
+You have exceeded your budget for ${category} by ${exceeded.toFixed(2)}.
 
 Category: ${category}
-Total Spent: $${totalSpent.toFixed(2)}
+Total Spent: ${totalSpent.toFixed(2)}
 Number of Transactions: ${categoryTransactions.length}
 
 Consider reviewing your spending in this category.
@@ -314,34 +194,16 @@ Consider reviewing your spending in this category.
 Best regards,
 Finance Tracker Team`,
         MessageAttributes: {
-          email: {
-            DataType: 'String',
-            StringValue: email,
-          },
-          category: {
-            DataType: 'String',
-            StringValue: category,
-          },
-          exceeded: {
-            DataType: 'Number',
-            StringValue: exceeded.toString(),
-          },
+          email: { DataType: 'String', StringValue: email },
+          category: { DataType: 'String', StringValue: category },
+          exceeded: { DataType: 'Number', StringValue: exceeded.toString() },
         },
       }),
     );
 
-    return {
-      success: true,
-      message: 'Budget alert sent successfully!',
-    };
+    return { success: true, message: 'Budget alert sent successfully!' };
   } catch (error) {
     console.error('Error sending budget alert:', error);
-    return {
-      success: false,
-      message: `Failed to send alert: ${error.message}`,
-    };
+    return { success: false, message: `Failed to send alert: ${error.message}` };
   }
 }
-
-// Email subscriptions are now managed by the CDK custom resource (customfinance)
-// The Lambda only publishes messages to the pre-configured SNS topics

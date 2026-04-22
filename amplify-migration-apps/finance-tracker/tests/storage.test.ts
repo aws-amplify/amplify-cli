@@ -17,7 +17,7 @@ describe('S3 storage', () => {
     const testImageBase64 =
       'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
     const imageBuffer = Buffer.from(testImageBase64, 'base64');
-    const filePath = `uploads/${Date.now()}-receipt.png`;
+    const filePath = `public/uploads/${Date.now()}-receipt.png`;
 
     const result = await uploadData({
       path: filePath,
@@ -32,7 +32,7 @@ describe('S3 storage', () => {
     const testImageBase64 =
       'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
     const imageBuffer = Buffer.from(testImageBase64, 'base64');
-    const filePath = `uploads/${Date.now()}-receipt-url.png`;
+    const filePath = `public/uploads/${Date.now()}-receipt-url.png`;
 
     await uploadData({
       path: filePath,

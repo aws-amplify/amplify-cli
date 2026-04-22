@@ -13,9 +13,6 @@ cp -f backend/financetracker.js ./amplify/backend/function/${function_name}/src/
 # Copy custom policies for the Lambda function
 cp -f backend/custom-policies.json ./amplify/backend/function/${function_name}/custom-policies.json
 
-# Copy CloudFormation template with custom environment variables
-cp -f backend/financetrackere30b1453-cloudformation-template.json ./amplify/backend/function/${function_name}/${function_name}-cloudformation-template.json
-
 # Copy CDK stack for customfinance (SNS topics)
 cp -f backend/customfinance.ts ./amplify/backend/custom/customfinance/cdk-stack.ts
 

@@ -43,6 +43,10 @@ type NotificationResult {
   message: String! @auth(rules: [{ allow: public }])
 }
 
+type TransactionConnection {
+  items: [Transaction]
+  nextToken: String
+}
 
 type Query {
   calculateFinancialSummary: CalculatedSummary @function(name: "financetracker-${env}") @auth(rules: [{ allow: public }])

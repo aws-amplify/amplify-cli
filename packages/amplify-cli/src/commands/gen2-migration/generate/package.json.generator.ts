@@ -105,18 +105,24 @@ export class RootPackageJsonGenerator implements Planner {
             }
           }
 
-          const mergedDevDependencies = {
+          const mergedDevDependencies: Record<string, string> = {
             ...(packageJson.devDependencies ?? {}),
-            ...this.devDependencies,
-            ...GEN2_DEV_DEPENDENCIES,
           };
+          for (const [name, version] of Object.entries(this.devDependencies)) {
+            mergedDevDependencies[name] = maxVersion(mergedDevDependencies[name], version);
+          }
+          for (const [name, version] of Object.entries(GEN2_DEV_DEPENDENCIES)) {
+            mergedDevDependencies[name] = maxVersion(mergedDevDependencies[name], version);
+          }
 
           // Remove from dependencies any package that will be in devDependencies.
           // Prevents duplicates when custom resource deps overlap with Gen2 dev deps.
-          const mergedDependencies = {
+          const mergedDependencies: Record<string, string> = {
             ...(packageJson.dependencies ?? {}),
-            ...this.dependencies,
           };
+          for (const [name, version] of Object.entries(this.dependencies)) {
+            mergedDependencies[name] = maxVersion(mergedDependencies[name], version);
+          }
           for (const name of Object.keys(mergedDevDependencies)) {
             delete mergedDependencies[name];
           }

@@ -15,7 +15,9 @@ import {
 } from '../src/graphql/mutations';
 import { TransactionType } from '../src/API';
 
-const client = () => generateClient({ authMode: 'apiKey' });
+// Mutations require owner auth; reads work with API key
+const authClient = () => generateClient({ authMode: 'userPool' });
+const publicClient = () => generateClient({ authMode: 'apiKey' });
 
 beforeAll(async () => {
   const creds = await signUp(config);
@@ -38,7 +40,7 @@ describe('Transaction', () => {
       date: new Date().toISOString(),
     };
 
-    const result = await client().graphql({ query: createTransaction, variables: { input } });
+    const result = await authClient().graphql({ query: createTransaction, variables: { input } });
     const txn = (result as any).data.createTransaction;
     transactionId = txn.id;
 
@@ -53,7 +55,7 @@ describe('Transaction', () => {
   });
 
   it('reads a transaction by id', async () => {
-    const result = await client().graphql({ query: getTransaction, variables: { id: transactionId } });
+    const result = await publicClient().graphql({ query: getTransaction, variables: { id: transactionId } });
     const txn = (result as any).data.getTransaction;
 
     expect(txn).not.toBeNull();
@@ -63,12 +65,12 @@ describe('Transaction', () => {
 
   it('updates a transaction and persists changes', async () => {
     const updatedDesc = `Updated grocery - ${Date.now()}`;
-    await client().graphql({
+    await authClient().graphql({
       query: updateTransaction,
       variables: { input: { id: transactionId, description: updatedDesc, amount: 92.00 } },
     });
 
-    const result = await client().graphql({ query: getTransaction, variables: { id: transactionId } });
+    const result = await publicClient().graphql({ query: getTransaction, variables: { id: transactionId } });
     const txn = (result as any).data.getTransaction;
 
     expect(txn.description).toBe(updatedDesc);
@@ -76,7 +78,7 @@ describe('Transaction', () => {
   });
 
   it('lists transactions', async () => {
-    const result = await client().graphql({ query: listTransactions });
+    const result = await publicClient().graphql({ query: listTransactions });
     const items = (result as any).data.listTransactions.items;
 
     expect(Array.isArray(items)).toBe(true);
@@ -84,9 +86,9 @@ describe('Transaction', () => {
   });
 
   it('deletes a transaction', async () => {
-    await client().graphql({ query: deleteTransaction, variables: { input: { id: transactionId } } });
+    await authClient().graphql({ query: deleteTransaction, variables: { input: { id: transactionId } } });
 
-    const result = await client().graphql({ query: getTransaction, variables: { id: transactionId } });
+    const result = await publicClient().graphql({ query: getTransaction, variables: { id: transactionId } });
     expect((result as any).data.getTransaction).toBeNull();
   });
 });
@@ -102,7 +104,7 @@ describe('FinancialSummary', () => {
       month: '2026-04',
     };
 
-    const result = await client().graphql({ query: createFinancialSummary, variables: { input } });
+    const result = await authClient().graphql({ query: createFinancialSummary, variables: { input } });
     const summary = (result as any).data.createFinancialSummary;
     summaryId = summary.id;
 
@@ -115,7 +117,7 @@ describe('FinancialSummary', () => {
   });
 
   it('reads a financial summary by id', async () => {
-    const result = await client().graphql({ query: getFinancialSummary, variables: { id: summaryId } });
+    const result = await publicClient().graphql({ query: getFinancialSummary, variables: { id: summaryId } });
     const summary = (result as any).data.getFinancialSummary;
 
     expect(summary).not.toBeNull();
@@ -124,7 +126,7 @@ describe('FinancialSummary', () => {
   });
 
   it('lists financial summaries', async () => {
-    const result = await client().graphql({ query: listFinancialSummaries });
+    const result = await publicClient().graphql({ query: listFinancialSummaries });
     const items = (result as any).data.listFinancialSummaries.items;
 
     expect(Array.isArray(items)).toBe(true);
@@ -132,17 +134,16 @@ describe('FinancialSummary', () => {
   });
 
   it('deletes a financial summary', async () => {
-    await client().graphql({ query: deleteFinancialSummary, variables: { input: { id: summaryId } } });
+    await authClient().graphql({ query: deleteFinancialSummary, variables: { input: { id: summaryId } } });
 
-    const result = await client().graphql({ query: getFinancialSummary, variables: { id: summaryId } });
+    const result = await publicClient().graphql({ query: getFinancialSummary, variables: { id: summaryId } });
     expect((result as any).data.getFinancialSummary).toBeNull();
   });
 });
 
 describe('Lambda-backed operations', () => {
   it('calculateFinancialSummary returns numeric fields', async () => {
-    // Create a transaction so the summary has data to work with
-    await client().graphql({
+    await authClient().graphql({
       query: createTransaction,
       variables: {
         input: {
@@ -155,7 +156,7 @@ describe('Lambda-backed operations', () => {
       },
     });
 
-    const result = await client().graphql({ query: calculateFinancialSummary });
+    const result = await publicClient().graphql({ query: calculateFinancialSummary });
     const summary = (result as any).data.calculateFinancialSummary;
 
     expect(summary).not.toBeNull();
@@ -167,7 +168,7 @@ describe('Lambda-backed operations', () => {
   });
 
   it('sendMonthlyReport returns success response', async () => {
-    const result = await client().graphql({
+    const result = await publicClient().graphql({
       query: sendMonthlyReport,
       variables: { email: 'test@example.com' },
     });
@@ -180,7 +181,7 @@ describe('Lambda-backed operations', () => {
   });
 
   it('sendBudgetAlert returns success response', async () => {
-    const result = await client().graphql({
+    const result = await publicClient().graphql({
       query: sendBudgetAlert,
       variables: { email: 'test@example.com', category: 'Food', exceeded: 50.00 },
     });
@@ -197,8 +198,7 @@ describe('Custom VTL resolver', () => {
   it('getTransactionsByCategory returns filtered transactions', async () => {
     const category = `TestCategory-${Date.now()}`;
 
-    // Create a transaction with a unique category
-    await client().graphql({
+    await authClient().graphql({
       query: createTransaction,
       variables: {
         input: {
@@ -211,7 +211,7 @@ describe('Custom VTL resolver', () => {
       },
     });
 
-    const result = await client().graphql({
+    const result = await publicClient().graphql({
       query: getTransactionsByCategory,
       variables: { category, limit: 10 },
     });
@@ -220,7 +220,6 @@ describe('Custom VTL resolver', () => {
     expect(connection).not.toBeNull();
     expect(Array.isArray(connection.items)).toBe(true);
     expect(connection.items.length).toBeGreaterThan(0);
-    // All returned items should match the requested category
     for (const item of connection.items) {
       expect(item.category).toBe(category);
     }

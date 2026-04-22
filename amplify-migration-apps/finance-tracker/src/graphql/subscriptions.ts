@@ -10,8 +10,9 @@ type GeneratedSubscription<InputType, OutputType> = string & {
 
 export const onCreateTransaction = /* GraphQL */ `subscription OnCreateTransaction(
   $filter: ModelSubscriptionTransactionFilterInput
+  $owner: String
 ) {
-  onCreateTransaction(filter: $filter) {
+  onCreateTransaction(filter: $filter, owner: $owner) {
     id
     description
     amount
@@ -31,8 +32,9 @@ export const onCreateTransaction = /* GraphQL */ `subscription OnCreateTransacti
 >;
 export const onUpdateTransaction = /* GraphQL */ `subscription OnUpdateTransaction(
   $filter: ModelSubscriptionTransactionFilterInput
+  $owner: String
 ) {
-  onUpdateTransaction(filter: $filter) {
+  onUpdateTransaction(filter: $filter, owner: $owner) {
     id
     description
     amount
@@ -52,8 +54,9 @@ export const onUpdateTransaction = /* GraphQL */ `subscription OnUpdateTransacti
 >;
 export const onDeleteTransaction = /* GraphQL */ `subscription OnDeleteTransaction(
   $filter: ModelSubscriptionTransactionFilterInput
+  $owner: String
 ) {
-  onDeleteTransaction(filter: $filter) {
+  onDeleteTransaction(filter: $filter, owner: $owner) {
     id
     description
     amount
@@ -71,8 +74,11 @@ export const onDeleteTransaction = /* GraphQL */ `subscription OnDeleteTransacti
   APITypes.OnDeleteTransactionSubscriptionVariables,
   APITypes.OnDeleteTransactionSubscription
 >;
-export const onCreateBudget = /* GraphQL */ `subscription OnCreateBudget($filter: ModelSubscriptionBudgetFilterInput) {
-  onCreateBudget(filter: $filter) {
+export const onCreateBudget = /* GraphQL */ `subscription OnCreateBudget(
+  $filter: ModelSubscriptionBudgetFilterInput
+  $owner: String
+) {
+  onCreateBudget(filter: $filter, owner: $owner) {
     id
     category
     limit
@@ -87,8 +93,11 @@ export const onCreateBudget = /* GraphQL */ `subscription OnCreateBudget($filter
   APITypes.OnCreateBudgetSubscriptionVariables,
   APITypes.OnCreateBudgetSubscription
 >;
-export const onUpdateBudget = /* GraphQL */ `subscription OnUpdateBudget($filter: ModelSubscriptionBudgetFilterInput) {
-  onUpdateBudget(filter: $filter) {
+export const onUpdateBudget = /* GraphQL */ `subscription OnUpdateBudget(
+  $filter: ModelSubscriptionBudgetFilterInput
+  $owner: String
+) {
+  onUpdateBudget(filter: $filter, owner: $owner) {
     id
     category
     limit
@@ -103,8 +112,11 @@ export const onUpdateBudget = /* GraphQL */ `subscription OnUpdateBudget($filter
   APITypes.OnUpdateBudgetSubscriptionVariables,
   APITypes.OnUpdateBudgetSubscription
 >;
-export const onDeleteBudget = /* GraphQL */ `subscription OnDeleteBudget($filter: ModelSubscriptionBudgetFilterInput) {
-  onDeleteBudget(filter: $filter) {
+export const onDeleteBudget = /* GraphQL */ `subscription OnDeleteBudget(
+  $filter: ModelSubscriptionBudgetFilterInput
+  $owner: String
+) {
+  onDeleteBudget(filter: $filter, owner: $owner) {
     id
     category
     limit
@@ -121,8 +133,9 @@ export const onDeleteBudget = /* GraphQL */ `subscription OnDeleteBudget($filter
 >;
 export const onCreateFinancialSummary = /* GraphQL */ `subscription OnCreateFinancialSummary(
   $filter: ModelSubscriptionFinancialSummaryFilterInput
+  $owner: String
 ) {
-  onCreateFinancialSummary(filter: $filter) {
+  onCreateFinancialSummary(filter: $filter, owner: $owner) {
     id
     totalIncome
     totalExpenses
@@ -140,8 +153,9 @@ export const onCreateFinancialSummary = /* GraphQL */ `subscription OnCreateFina
 >;
 export const onUpdateFinancialSummary = /* GraphQL */ `subscription OnUpdateFinancialSummary(
   $filter: ModelSubscriptionFinancialSummaryFilterInput
+  $owner: String
 ) {
-  onUpdateFinancialSummary(filter: $filter) {
+  onUpdateFinancialSummary(filter: $filter, owner: $owner) {
     id
     totalIncome
     totalExpenses
@@ -159,8 +173,9 @@ export const onUpdateFinancialSummary = /* GraphQL */ `subscription OnUpdateFina
 >;
 export const onDeleteFinancialSummary = /* GraphQL */ `subscription OnDeleteFinancialSummary(
   $filter: ModelSubscriptionFinancialSummaryFilterInput
+  $owner: String
 ) {
-  onDeleteFinancialSummary(filter: $filter) {
+  onDeleteFinancialSummary(filter: $filter, owner: $owner) {
     id
     totalIncome
     totalExpenses

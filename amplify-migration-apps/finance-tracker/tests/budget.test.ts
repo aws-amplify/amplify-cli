@@ -5,7 +5,9 @@ import { signUp, config } from './signup';
 import { getBudget, listBudgets } from '../src/graphql/queries';
 import { createBudget, updateBudget, deleteBudget } from '../src/graphql/mutations';
 
-const client = () => generateClient({ authMode: 'apiKey' });
+// Mutations require owner auth; reads work with API key
+const authClient = () => generateClient({ authMode: 'userPool' });
+const publicClient = () => generateClient({ authMode: 'apiKey' });
 
 beforeAll(async () => {
   const creds = await signUp(config);
@@ -26,7 +28,7 @@ describe('Budget', () => {
       month: '2026-04',
     };
 
-    const result = await client().graphql({ query: createBudget, variables: { input } });
+    const result = await authClient().graphql({ query: createBudget, variables: { input } });
     const budget = (result as any).data.createBudget;
     budgetId = budget.id;
 
@@ -38,7 +40,7 @@ describe('Budget', () => {
   });
 
   it('reads a budget by id', async () => {
-    const result = await client().graphql({ query: getBudget, variables: { id: budgetId } });
+    const result = await publicClient().graphql({ query: getBudget, variables: { id: budgetId } });
     const budget = (result as any).data.getBudget;
 
     expect(budget).not.toBeNull();
@@ -47,19 +49,19 @@ describe('Budget', () => {
   });
 
   it('updates a budget limit', async () => {
-    await client().graphql({
+    await authClient().graphql({
       query: updateBudget,
       variables: { input: { id: budgetId, limit: 300.00 } },
     });
 
-    const result = await client().graphql({ query: getBudget, variables: { id: budgetId } });
+    const result = await publicClient().graphql({ query: getBudget, variables: { id: budgetId } });
     const budget = (result as any).data.getBudget;
 
     expect(budget.limit).toBe(300.00);
   });
 
   it('lists budgets', async () => {
-    const result = await client().graphql({ query: listBudgets });
+    const result = await publicClient().graphql({ query: listBudgets });
     const items = (result as any).data.listBudgets.items;
 
     expect(Array.isArray(items)).toBe(true);
@@ -67,9 +69,9 @@ describe('Budget', () => {
   });
 
   it('deletes a budget', async () => {
-    await client().graphql({ query: deleteBudget, variables: { input: { id: budgetId } } });
+    await authClient().graphql({ query: deleteBudget, variables: { input: { id: budgetId } } });
 
-    const result = await client().graphql({ query: getBudget, variables: { id: budgetId } });
+    const result = await publicClient().graphql({ query: getBudget, variables: { id: budgetId } });
     expect((result as any).data.getBudget).toBeNull();
   });
 });

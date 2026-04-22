@@ -106,7 +106,7 @@ function App() {
       setLoading(true);
       let receiptUrl = '';
       if (receiptFile) {
-        const fileName = `receipts/${Date.now()}-${receiptFile.name}`;
+        const fileName = `public/receipts/${Date.now()}-${receiptFile.name}`;
         await uploadData({ path: fileName, data: receiptFile }).result;
         const urlResult = await getUrl({ path: fileName });
         receiptUrl = urlResult.url.toString();
