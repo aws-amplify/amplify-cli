@@ -467,25 +467,33 @@ export class App {
   }
 
   /**
-   * Build an env object for subprocess execution, merging `process.env` with
-   * the latest assumed-role credentials (if any) and optional extras.
+   * Build an env object for subprocess execution, merging `process.env`
+   * with the active profile/credentials and optional extras.
+   *
+   * `AWS_PROFILE` is always set so subprocesses know which profile to use.
+   * In role mode the explicit `AWS_*` credential vars override it in the
+   * SDK's default provider chain.
    */
   getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, ...this.credentialEnv, ...extra };
+    return { ...process.env, AWS_PROFILE: this.credentials.profile, ...this.credentialEnv, ...extra };
   }
 
   /**
-   * Build an AWS SDK client config with explicit credentials when in role mode.
+   * Build an AWS SDK client config. In role mode returns explicit
+   * credentials; in profile mode returns the profile name so the SDK
+   * reads `~/.aws/credentials` directly.
    */
-  getClientConfig(): { credentials?: { accessKeyId: string; secretAccessKey: string; sessionToken: string } } {
-    if (!this.credentialEnv) return {};
-    return {
-      credentials: {
-        accessKeyId: this.credentialEnv.AWS_ACCESS_KEY_ID,
-        secretAccessKey: this.credentialEnv.AWS_SECRET_ACCESS_KEY,
-        sessionToken: this.credentialEnv.AWS_SESSION_TOKEN,
-      },
-    };
+  getClientConfig(): { credentials?: { accessKeyId: string; secretAccessKey: string; sessionToken: string }; profile?: string } {
+    if (this.credentialEnv) {
+      return {
+        credentials: {
+          accessKeyId: this.credentialEnv.AWS_ACCESS_KEY_ID,
+          secretAccessKey: this.credentialEnv.AWS_SECRET_ACCESS_KEY,
+          sessionToken: this.credentialEnv.AWS_SESSION_TOKEN,
+        },
+      };
+    }
+    return { profile: this.credentials.profile };
   }
 
   // ============================================================
