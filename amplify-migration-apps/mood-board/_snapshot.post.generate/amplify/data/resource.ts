@@ -35,8 +35,7 @@ export const data = defineData({
       modelNameToTableNameMapping: {
         MoodItem: 'MoodItem-b3t3v6vbgjhs5iogt6g4tvqnee-x',
         Board: 'Board-b3t3v6vbgjhs5iogt6g4tvqnee-x',
-        KinesisEventCount:
-          'KinesisEventCount-b3t3v6vbgjhs5iogt6g4tvqnee-x',
+        KinesisEventCount: 'KinesisEventCount-b3t3v6vbgjhs5iogt6g4tvqnee-x',
       },
     },
   ],
