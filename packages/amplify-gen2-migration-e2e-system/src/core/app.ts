@@ -257,7 +257,7 @@ export class App {
 
     this.logger.info(`Capturing pre.refactor snapshot`);
     console.log('');
-    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
+    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath, this.getClientConfig());
     console.log('');
 
     if (this.skipRefactor) {
