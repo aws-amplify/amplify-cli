@@ -43,17 +43,30 @@ describe('auth', () => {
   }, 30_000);
 
   it('increments activity counter via storage DynamoDB trigger', async () => {
-    // The topic created in the previous test should have triggered:
-    // model stream → recorduseractivity → activity table insert → activityTrigger → counter increment
-    // Poll until the counter is > 0
-    let count = 0;
+    // Record the current counter value
+    const before = await client().graphql({ query: getActivityStats });
+    const initialCount = (before as any).data.getActivityStats?.activityCount ?? 0;
+
+    const currentUser = await getCurrentUser();
+
+    // Create multiple topics to trigger the chain multiple times
+    const topicCount = 3;
+    for (let i = 0; i < topicCount; i++) {
+      await client().graphql({
+        query: createTopic,
+        variables: { input: { content: `tech:Counter Test ${Date.now()}-${i}`, createdByUserId: currentUser.userId } },
+      });
+    }
+
+    // Poll until the counter increases by at least topicCount
+    let count = initialCount;
     for (let attempt = 0; attempt < 15; attempt++) {
       const result = await client().graphql({ query: getActivityStats });
       count = (result as any).data.getActivityStats?.activityCount ?? 0;
-      if (count > 0) break;
+      if (count >= initialCount + topicCount) break;
       await new Promise((r) => setTimeout(r, 2000));
     }
 
-    expect(count).toBeGreaterThan(0);
+    expect(count).toBeGreaterThanOrEqual(initialCount + topicCount);
   }, 45_000);
 });
