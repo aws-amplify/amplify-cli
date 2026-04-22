@@ -115,16 +115,17 @@ export class RootPackageJsonGenerator implements Planner {
             mergedDevDependencies[name] = maxVersion(mergedDevDependencies[name], version);
           }
 
-          // Remove from dependencies any package that will be in devDependencies.
-          // Prevents duplicates when custom resource deps overlap with Gen2 dev deps.
+          // Remove from devDependencies any package that is also in
+          // dependencies. Runtime deps take precedence — npm/yarn makes
+          // them available in both contexts.
           const mergedDependencies: Record<string, string> = {
             ...(packageJson.dependencies ?? {}),
           };
           for (const [name, version] of Object.entries(this.dependencies)) {
             mergedDependencies[name] = maxVersion(mergedDependencies[name], version);
           }
-          for (const name of Object.keys(mergedDevDependencies)) {
-            delete mergedDependencies[name];
+          for (const name of Object.keys(mergedDependencies)) {
+            delete mergedDevDependencies[name];
           }
           // Remove CDK v1 scoped packages and Gen1-only helpers that are
           // never valid in Gen2 (may be left over from a previous run).
