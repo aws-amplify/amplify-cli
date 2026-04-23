@@ -1,0 +1,128 @@
+# Gen2 Migration PR Workflow
+#
+# This workflow executes the full migration E2E test for apps in amplify-migration-apps.
+#
+# Each migration test takes approximately 30 minutes and runs in parallel.
+# The workflow first builds the CLI binaries, then runs migration tests concurrently.
+#
+# To trigger this workflow, configure a CodeBuild project with:
+#   - Buildspec: codebuild_specs/gen2_migration_e2e_pr_workflow.yml
+#   - Environment variables: TEST_ACCOUNT_ROLE (IAM role ARN for test account)
+#
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-east-1
+    CDK_DEFAULT_REGION: us-east-1
+    CLI_REGION: us-east-1
+    AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
+    AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
+
+batch:
+  fast-fail: false
+  build-graph:
+    # Build phase - required for all migration tests
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+
+    - identifier: build_pkg_binaries_linux
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      depend-on:
+        - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+
+    - identifier: upb
+      buildspec: codebuild_specs/upload_pkg_binaries_linux_only.yml
+      depend-on:
+        - build_pkg_binaries_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+
+    # Migration E2E tests - run in parallel after binaries are ready
+    # Each test takes ~30 minutes and deploys real AWS resources
+    - identifier: migrate_backend_only
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: backend-only
+      depend-on:
+        - upb
+
+    - identifier: migrate_discussions
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: discussions
+      depend-on:
+        - upb
+
+    - identifier: migrate_fitness_tracker
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: fitness-tracker
+      depend-on:
+        - upb
+
+    # TODO: migrate_imported_resources is excluded - not ready for CI yet
+
+    - identifier: migrate_media_vault
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: media-vault
+      depend-on:
+        - upb
+
+    - identifier: migrate_mood_board
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: mood-board
+      depend-on:
+        - upb
+
+    - identifier: migrate_product_catalog
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: product-catalog
+      depend-on:
+        - upb
+
+    - identifier: migrate_project_boards
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: project-boards
+      depend-on:
+        - upb
+
+    - identifier: migrate_store_locator
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: store-locator
+      depend-on:
+        - upb

@@ -8,7 +8,7 @@ Automation system for end-to-end testing of the Amplify Gen1-to-Gen2 migration w
 # Set AMPLIFY_PATH to your development Amplify CLI (optional - falls back to monorepo build, then global install)
 export AMPLIFY_PATH=$(pwd)/.bin/amplify-dev
 
-# Migrate an app using a named AWS profile
+# Local dev: migrate an app using a named AWS profile
 npx tsx src/cli.ts --app project-boards --profile default
 
 # Verbose logging
@@ -17,11 +17,16 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 
 ### CLI Options
 
-| Option      | Alias | Description                                                                        |
-| ----------- | ----- | ---------------------------------------------------------------------------------- |
-| `--app`     | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`. |
-| `--profile` |       | AWS profile to use (required).                                                     |
-| `--verbose` | `-v`  | Enable debug-level logging.                                                        |
+| Option       | Alias | Description                                                                                                                                                          |
+| ------------ | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--app`      | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`.                                                                                   |
+| `--verbose`  | `-v`  | Enable debug-level logging.                                                                                                                                          |
+| `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to `migrate`.                                                                                              |
+| `--teardown` |       | Delete all deployed resources after execution.                                                                                                                       |
+
+### Credential Refresh
+
+Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `TEST_ACCOUNT_ROLE` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
 
 ## Migration Workflow
 
