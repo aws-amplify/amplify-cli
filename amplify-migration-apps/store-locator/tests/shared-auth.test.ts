@@ -2,7 +2,7 @@
  * Validates that the Cognito user pool is shared between gen1 and gen2 configurations.
  * Tests both directions: gen1→gen2 and gen2→gen1.
  *
- * Note: Geo resources (search, geocode) are stateless and geofences are not supported
+ * Note: Geo resources (search, map) are stateless and geofences are not supported
  * post-refactor, so only auth sharing is validated here.
  */
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
