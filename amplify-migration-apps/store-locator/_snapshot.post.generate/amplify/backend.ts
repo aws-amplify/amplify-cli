@@ -33,7 +33,6 @@ userPool.addClient('NativeAppClient', {
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${branchName}`;
-
 backend.storelocator41a9495f41a9495fPostConfirmation.resources.lambda.addToRolePolicy(
   new aws_iam.PolicyStatement({
     actions: ['cognito-idp:GetGroup', 'cognito-idp:CreateGroup'],

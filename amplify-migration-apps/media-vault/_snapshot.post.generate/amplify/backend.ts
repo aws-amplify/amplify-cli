@@ -175,7 +175,6 @@ backend.removeuserfromgroup.addEnvironment(
   'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
-
 backend.removeuserfromgroup.resources.lambda.addToRolePolicy(
   new aws_iam.PolicyStatement({
     actions: [
