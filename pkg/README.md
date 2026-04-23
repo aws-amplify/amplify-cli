@@ -1,6 +1,7 @@
 # pkg
 
 ## Description
+
 This package takes compiled JS and creates a binary that bundles in Node.js. It copies `yarn.lock` from the monorepo root and uses it to install packages.
 
 ## Need to know
@@ -18,6 +19,7 @@ Due to a bug in `@yao-pkg/pkg`, `pkg` errantly uses the `module-sync` key, causi
 If we ever need to upgrade `get-instrinsic`, the following code may be necessary to patch it:
 
 In `generatePkgCli`, after [package installation](https://github.com/aws-amplify/amplify-cli/blob/e366e6f68ca9be0a83f44236fc8e54bcc632805b/.circleci/local_publish_helpers_codebuild.sh#L65), insert the following code:
+
 ```shell
   # Workaround for yao-pkg/pkg#195: pkg's snapshot filesystem can't resolve
   # ESM imports from .mjs files referenced by the "module-sync" export condition.
