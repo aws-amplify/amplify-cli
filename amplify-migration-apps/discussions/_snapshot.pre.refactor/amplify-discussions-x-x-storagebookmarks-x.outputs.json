@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "StreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-15T03:52:11.077"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-21T22:50:17.491"
   },
   {
     "OutputKey": "PartitionKeyType",

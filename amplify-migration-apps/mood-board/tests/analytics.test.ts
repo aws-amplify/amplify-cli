@@ -4,11 +4,12 @@ import { signIn, signOut } from 'aws-amplify/auth';
 import { record, flushEvents } from 'aws-amplify/analytics/kinesis';
 import { getKinesisEvents } from '../src/graphql/queries';
 import { KINESIS_STREAM_NAME } from '../src/constants';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 const auth = () => generateClient({ authMode: 'userPool' });
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);

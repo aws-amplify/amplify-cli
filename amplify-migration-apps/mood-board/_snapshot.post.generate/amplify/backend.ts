@@ -10,6 +10,7 @@ import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
 import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -151,3 +152,6 @@ for (const cfnResource of analytics.node
   (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
   (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

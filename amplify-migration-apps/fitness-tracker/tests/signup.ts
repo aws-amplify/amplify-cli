@@ -7,20 +7,39 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import * as fs from 'fs';
 import { randomBytes } from 'crypto';
-import { configureAmplify } from '../src/api-config';
+import * as apiconfig from '../src/api-config';
 
 import { webcrypto } from 'crypto';
+import { Amplify } from 'aws-amplify';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 if (typeof globalThis.crypto === 'undefined') {
   (globalThis as any).crypto = webcrypto;
 }
 
-const CONFIG_PATH = process.env.APP_CONFIG_PATH;
-if (!CONFIG_PATH) {
-  throw new Error('APP_CONFIG_PATH environment variable is required');
+/** Configures the Amplify library. Falls back to APP_CONFIG_PATH when no config is passed. */
+export function configureAmplify(cfg?: any): any {
+  if (!cfg) {
+    const configPath = process.env.APP_CONFIG_PATH;
+    if (!configPath) {
+      throw new Error('APP_CONFIG_PATH environment variable is required');
+    }
+    cfg = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
+  }
+  apiconfig.configureAmplify(cfg);
+  return cfg;
 }
 
-export const config = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
-configureAmplify(config);
+export function configureAmplifyGen1(cfg: any) {
+  Amplify.configure(cfg);
+}
+
+export function configureAmplifyGen2(cfg: any) {
+  const amplifyConfig = parseAmplifyConfig(cfg);
+  Amplify.configure({
+    ...amplifyConfig,
+    API: { ...amplifyConfig.API, REST: cfg.custom?.API },
+  });  
+}
 
 export async function signUp(cfg: any): Promise<{ username: string; password: string }> {
   const gen2Auth = (cfg as any)?.auth;

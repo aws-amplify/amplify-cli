@@ -269,7 +269,9 @@ export class BackendGenerator implements Planner {
           const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
           let content = TS.printNodes(nodeArray);
 
-          // Add blank line between the last import and the first non-import statement
+          // Add blank line between the last import and the first non-import statement,
+          // and insert the commented-out Tags import right after the last real import.
+          // The post-refactor script uncomments both this and the Tags.of() call below.
           const lines = content.split('\n');
           let lastImportIndex = -1;
           let inImport = false;
@@ -283,13 +285,22 @@ export class BackendGenerator implements Planner {
               inImport = false;
             }
           }
-          if (lastImportIndex >= 0 && lastImportIndex < lines.length - 1 && lines[lastImportIndex + 1] !== '') {
-            lines.splice(lastImportIndex + 1, 0, '');
+          if (lastImportIndex >= 0 && lastImportIndex < lines.length - 1) {
+            // Insert commented import right after the last real import, then a blank line
+            lines.splice(lastImportIndex + 1, 0, "// import { Tags } from 'aws-cdk-lib';");
+            if (lines[lastImportIndex + 2] !== '') {
+              lines.splice(lastImportIndex + 2, 0, '');
+            }
             content = lines.join('\n');
           }
 
           await fs.mkdir(path.dirname(backendTsPath), { recursive: true });
-          await fs.writeFile(backendTsPath, content, 'utf-8');
+          await fs.writeFile(
+            backendTsPath,
+            content +
+              "\n// Uncomment post refactor to force a redeployment\n// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');\n",
+            'utf-8',
+          );
         },
       },
     ];

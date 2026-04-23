@@ -15,6 +15,7 @@ import { extractStackNameFromId } from './refactor/utils';
 import { Cfn } from './refactor/cfn';
 import { REFACTORED_RESOURCES } from './_infra/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift-detection/detect-template-drift';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -42,8 +43,69 @@ const ALLOW_ALL_POLICY = {
   ],
 };
 
+/**
+ * Identifies changeset changes that are expected DeletionPolicy drift from the lock step.
+ *
+ * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as:
+ * 1. Direct DeletionPolicy changes — Modify with Scope exactly `['DeletionPolicy']`
+ * 2. Cascading IAM Policy changes — CFN flags IAM policies that reference the modified
+ *    table's attributes (e.g., `TodoTable.Arn` in PolicyDocument) as Dynamic re-evaluations.
+ *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`,
+ *    `RequiresRecreation: Never`, and `CausingEntity` matching `*Table.Arn` or
+ *    `*Table.StreamArn` — they are harmless re-evaluations, not actual changes.
+ *
+ * For lock rollback to determine whether the environment is safe to revert, these expected
+ * changes must be filtered out so only real drift blocks the rollback.
+ */
+const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
+  if (change.Action !== 'Modify') return false;
+
+  // Direct DeletionPolicy change on a resource
+  if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
+
+  // Cascading IAM Policy change caused by DeletionPolicy modification on a referenced resource.
+  // Must be: Properties-only scope, all Details are Dynamic ResourceAttribute re-evaluations
+  // with CausingEntity referencing a table attribute (e.g., TodoTable.Arn, TodoTable.StreamArn).
+  if (
+    change.ResourceType === 'AWS::IAM::Policy' &&
+    change.Scope?.length === 1 &&
+    change.Scope[0] === 'Properties' &&
+    change.Details?.length
+  ) {
+    return change.Details.every(
+      (d) =>
+        d.ChangeSource === 'ResourceAttribute' &&
+        d.Evaluation === 'Dynamic' &&
+        d.Target?.RequiresRecreation === 'Never' &&
+        /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? ''),
+    );
+  }
+
+  return false;
+};
+
+/**
+ * Recursively walks the change tree to find any leaf resource changes that are
+ * not expected lock drift. AWS::CloudFormation::Stack entries are structural
+ * wrappers — their nestedChanges contain the actual resource-level changes.
+ */
+function hasRealDrift(changes: ResourceChangeWithNested[]): boolean {
+  for (const change of changes) {
+    if (change.nestedChanges?.length) {
+      if (hasRealDrift(change.nestedChanges)) return true;
+    } else if (change.ResourceType !== 'AWS::CloudFormation::Stack') {
+      if (!isExpectedLockDrift(change)) return true;
+    } else if (change.Action !== 'Modify') {
+      // Add/Remove on a CloudFormation::Stack without nestedChanges is real drift —
+      // an entire nested stack was added or deleted outside Amplify.
+      return true;
+    }
+  }
+  return false;
+}
+
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
-  private _dynamoTableNames: string[];
+  private _dynamoTableNames: string[] | undefined;
 
   public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
@@ -75,7 +137,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.gen1App.envName})`],
       execute: async () => {
         const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
-        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
+        const environmentVariables = { ...(app.app!.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
         await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.gen1App.envName})`);
       },
@@ -165,6 +227,13 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async rollback(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
+    operations.push({
+      describe: async () => [],
+      validate: () => ({ description: 'Drift', run: () => this.validateLockRollbackDrift() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
+
     // ============================================================
     // Project Level Operations
     // ============================================================
@@ -174,7 +243,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`],
       execute: async () => {
         const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
-        const environmentVariables = app.app.environmentVariables ?? {};
+        const environmentVariables = app.app!.environmentVariables ?? {};
         delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
         await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Removed ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable`);
@@ -236,6 +305,44 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
   }
 
+  /**
+   * Validates that the environment is safe for lock rollback by running template drift
+   * detection and filtering out expected DeletionPolicy changes from the lock step.
+   *
+   * If only DeletionPolicy drift remains (from the lock step adding Retain), rollback
+   * is safe. If any real drift exists, rollback must be blocked — the environment is
+   * in an inconsistent state.
+   */
+  private async validateLockRollbackDrift(): Promise<ValidationResult> {
+    try {
+      const driftResults = await detectTemplateDrift(this.gen1App.rootStackName, this.logger, this.gen1App.clients.cloudFormation);
+
+      if (driftResults.skipped) {
+        return { valid: false, report: `Template drift detection was skipped: ${driftResults.skipReason}` };
+      }
+
+      if (driftResults.incompleteStacks?.length) {
+        return {
+          valid: false,
+          report: `Could not verify all stacks for drift: ${driftResults.incompleteStacks.join(', ')}`,
+        };
+      }
+
+      // Check incompleteStacks before hasRealDrift — incomplete stacks mean we can't
+      // trust that the absence of real drift is accurate.
+      if (hasRealDrift(driftResults.changes)) {
+        return {
+          valid: false,
+          report: 'Template drift detected beyond expected DeletionPolicy changes',
+        };
+      }
+
+      return { valid: true };
+    } catch (e: any) {
+      return { valid: false, report: e?.message ?? String(e) };
+    }
+  }
+
   private async findGraphQLApiId(): Promise<string | undefined> {
     const graphQL = this.gen1App.discover().find((r) => r.category === 'api' && r.service === 'AppSync');
     if (!graphQL) {
@@ -246,7 +353,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   }
 
   private async fetchGraphQLModelTables(graphQLApiId: string): Promise<string[]> {
-    const tables = [];
+    const tables: string[] = [];
     for await (const page of paginateListTables({ client: this.gen1App.clients.dynamoDB }, {})) {
       for (const tableName of page.TableNames ?? []) {
         if (tableName.includes(`-${graphQLApiId}-${this.gen1App.envName}`)) {

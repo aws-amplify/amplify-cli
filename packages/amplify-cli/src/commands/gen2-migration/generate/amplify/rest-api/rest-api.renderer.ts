@@ -585,6 +585,11 @@ export class RestApiRenderer {
     ts.addSyntheticLeadingComment(comment, ts.SyntaxKind.SingleLineCommentTrivia, ` ${apiPath.path} - ${groupName} group only`, true);
 
     const policyName = `${apiPath.path.replace(/[^a-zA-Z0-9]/g, '')}${groupName}Policy`;
+    const pathPart = apiPath.path.replace(/[^a-zA-Z0-9]/g, '');
+    const capitalizedPathPart = pathPart.charAt(0).toUpperCase() + pathPart.slice(1);
+    const gen1PolicyName = `gen1${capitalizedPathPart}${groupName}Policy`;
+    const sanitizedApiName = apiVarName.replace(/Api$/, '');
+    const gen1ApiVarName = `gen1${sanitizedApiName}Api`;
 
     const attachCall = factory.createExpressionStatement(
       factory.createCallExpression(
@@ -655,7 +660,89 @@ export class RestApiRenderer {
       ),
     );
 
-    return [comment as unknown as ts.Statement, attachCall];
+    return [
+      comment as unknown as ts.Statement,
+      attachCall,
+      this.renderGen1GroupPathPolicy(apiPath, gen1ApiVarName, stackVarName, groupName, gen1PolicyName),
+    ];
+  }
+
+  /** Renders a policy attaching gen1 API path permissions to a Cognito group role. */
+  private renderGen1GroupPathPolicy(
+    apiPath: RestApiPath,
+    gen1ApiVarName: string,
+    stackVarName: string,
+    groupName: string,
+    policyName: string,
+  ): ts.Statement {
+    return factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createPropertyAccessExpression(
+            factory.createElementAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('backend.auth.resources'),
+                factory.createIdentifier('groups'),
+              ),
+              factory.createStringLiteral(groupName),
+            ),
+            factory.createIdentifier('role'),
+          ),
+          factory.createIdentifier('attachInlinePolicy'),
+        ),
+        undefined,
+        [
+          factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+            factory.createIdentifier(stackVarName),
+            factory.createStringLiteral(policyName),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  'statements',
+                  factory.createArrayLiteralExpression([
+                    factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            'actions',
+                            factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                          ),
+                          factory.createPropertyAssignment(
+                            'resources',
+                            factory.createArrayLiteralExpression([
+                              ...apiPath.methods.flatMap((method) => [
+                                factory.createCallExpression(
+                                  factory.createPropertyAccessExpression(
+                                    factory.createIdentifier(gen1ApiVarName),
+                                    factory.createIdentifier('arnForExecuteApi'),
+                                  ),
+                                  undefined,
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(apiPath.path)],
+                                ),
+                                factory.createCallExpression(
+                                  factory.createPropertyAccessExpression(
+                                    factory.createIdentifier(gen1ApiVarName),
+                                    factory.createIdentifier('arnForExecuteApi'),
+                                  ),
+                                  undefined,
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(`${apiPath.path}/*`)],
+                                ),
+                              ]),
+                            ]),
+                          ),
+                        ],
+                        true,
+                      ),
+                    ]),
+                  ]),
+                ),
+              ],
+              true,
+            ),
+          ]),
+        ],
+      ),
+    );
   }
 
   private renderOutput(apiVarName: string): ts.Statement {

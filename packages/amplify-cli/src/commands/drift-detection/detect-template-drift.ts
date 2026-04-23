@@ -14,15 +14,18 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import type { SpinningLogger } from '../gen2-migration/_infra/spinning-logger';
 
+/** A CloudFormation resource change that may contain recursive nested stack changes. */
 export interface ResourceChangeWithNested extends ResourceChange {
   nestedChanges?: ResourceChangeWithNested[];
 }
 
+/** Results from template drift detection via CloudFormation change sets. */
 export interface TemplateDriftResults {
-  changes: ResourceChangeWithNested[];
-  skipped: boolean;
-  skipReason?: string;
-  changeSetId?: string;
+  readonly changes: ResourceChangeWithNested[];
+  readonly skipped: boolean;
+  readonly skipReason?: string;
+  readonly changeSetId?: string;
+  readonly incompleteStacks?: string[];
 }
 
 /**
@@ -45,6 +48,29 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
   // ChangeSet ARN resource format: "changeSet/changeSetName/id"
   const resource = parseArn(changeSetArn).resource;
   return resource.split('/')[1];
+}
+
+function isRecoverableFailure(reason?: string): boolean {
+  if (!reason) return false;
+  // EarlyValidation failures (e.g., ResourceExistenceCheck) — Changes are populated
+  if (reason.includes('EarlyValidation')) return true;
+  // Template format errors (e.g., duplicate Export names from Fn::Join in nested stacks) —
+  // Changes are partially populated. CFN validates exports after building the change list,
+  // so some changes are available even though the changeset ultimately failed.
+  if (reason.includes('Template format error')) return true;
+  return false;
+}
+
+/**
+ * Check whether a root changeset failed because of a nested changeset failure.
+ * Uses structural inspection: the Changes array contains at least one CloudFormation::Stack
+ * entry with a ChangeSetId, indicating nested changesets exist to recurse into.
+ */
+function hasNestedChangeSetFailure(changeSet: DescribeChangeSetCommandOutput): boolean {
+  return (
+    changeSet.Changes?.some((c) => c.ResourceChange?.ResourceType === 'AWS::CloudFormation::Stack' && c.ResourceChange?.ChangeSetId) ??
+    false
+  );
 }
 
 const CHANGESET_PREFIX = 'amplify-drift-detection-';
@@ -187,20 +213,13 @@ export async function detectTemplateDrift(
       };
     }
 
-    // Handle other failure cases
+    // Handle other FAILED cases — nested stacks may still have usable data.
+    // The root changeset's StatusReason references the first failing nested changeset
+    // (e.g., "Nested change set <ARN> was not successfully created: Currently in FAILED.")
+    // but does NOT contain "EarlyValidation". Classification happens per-nested-stack
+    // in analyzeChangeSet, so we fall through here.
     if (changeSet.Status === 'FAILED') {
-      print.debug(`Changeset failed with status: ${changeSet.Status}`);
-      print.debug(`Reason: ${changeSet.StatusReason}`);
-      await cfn
-        .send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }))
-        .catch((e: any) => print.debug(`Failed to delete changeset: ${e.message}`));
-      const errorMsg = `Changeset creation failed with status ${changeSet.Status}`;
-      const reasonMsg = changeSet.StatusReason ? `: ${changeSet.StatusReason}` : '';
-      return {
-        changes: [],
-        skipped: true,
-        skipReason: `${errorMsg}${reasonMsg}`,
-      };
+      print.warn(`Root changeset FAILED: ${changeSet.StatusReason}`);
     }
 
     print.debug(`CloudFormation ChangeSet: ${stackName}`);
@@ -222,9 +241,8 @@ export async function detectTemplateDrift(
     }
 
     // Changeset is kept for user inspection via console URL — cleaned up on next run
-    const result = await analyzeChangeSet(cfn, changeSet, print);
-    result.changeSetId = changeSet.ChangeSetId;
-    return result;
+    const result = await analyzeChangeSet(cfn, changeSet, print, true);
+    return { ...result, changeSetId: changeSet.ChangeSetId };
   } catch (error: any) {
     return {
       changes: [],
@@ -238,16 +256,28 @@ async function analyzeChangeSet(
   cfn: CloudFormationClient,
   changeSet: DescribeChangeSetCommandOutput,
   print: SpinningLogger,
+  isRoot = false,
 ): Promise<TemplateDriftResults> {
   const result: TemplateDriftResults = {
     changes: [],
     skipped: false,
   };
 
-  // Track if any nested stack analysis was skipped
-  let hasNestedSkipped = false;
+  // Track which nested stacks could not be fully analyzed
+  const skippedStacks: string[] = [];
 
-  // Handle FAILED status - distinguish between "no changes" vs actual errors
+  // Reject non-terminal statuses immediately (e.g. CREATE_IN_PROGRESS after waiter timeout)
+  const terminalStatuses = ['CREATE_COMPLETE', 'FAILED'];
+  if (!terminalStatuses.includes(changeSet.Status ?? '')) {
+    print.warn(`Changeset in non-terminal status: ${changeSet.Status}`);
+    return {
+      changes: [],
+      skipped: true,
+      skipReason: `Changeset in non-terminal status: ${changeSet.Status}`,
+    };
+  }
+
+  // Handle FAILED status — classify by failure type
   if (changeSet.Status === 'FAILED') {
     // "No changes" is success for drift detection
     if (changeSet.StatusReason?.includes("didn't contain changes") || changeSet.StatusReason?.includes('No updates')) {
@@ -255,16 +285,42 @@ async function analyzeChangeSet(
       return result;
     }
 
-    // Other FAILED reasons are actual errors - mark as skipped
-    print.warn(`ChangeSet failed with unexpected reason: ${changeSet.StatusReason || 'No reason provided'}`);
-    return {
-      changes: [],
-      skipped: true,
-      skipReason: `Changeset failed: ${changeSet.StatusReason || 'Unknown reason'}`,
-    };
+    // Recoverable failures (EarlyValidation, Template format errors) still have Changes populated.
+    // However, if Changes is empty despite the recoverable classification, treat as incomplete.
+    if (isRecoverableFailure(changeSet.StatusReason)) {
+      if (!changeSet.Changes || changeSet.Changes.length === 0) {
+        print.warn(`Recoverable failure but no Changes populated: ${changeSet.StatusReason}`);
+        return {
+          changes: [],
+          skipped: true,
+          skipReason: `Changeset failed with no usable changes: ${changeSet.StatusReason}`,
+        };
+      }
+      print.warn(`Nested changeset FAILED (recoverable): ${changeSet.StatusReason}`);
+    } else if (isRoot && hasNestedChangeSetFailure(changeSet)) {
+      // Root changeset FAILED because a nested changeset failed. Classification must happen
+      // per-nested-stack, so fall through to process Changes.
+      if (!changeSet.Changes || changeSet.Changes.length === 0) {
+        print.warn(`Root changeset FAILED with nested failure but no Changes to analyze: ${changeSet.StatusReason}`);
+        return {
+          changes: [],
+          skipped: true,
+          skipReason: `Changeset failed with no usable changes: ${changeSet.StatusReason || 'Unknown reason'}`,
+        };
+      }
+      print.debug(`Root changeset FAILED due to nested failure — falling through to analyze nested changesets`);
+    } else {
+      // Unknown failure — treat as genuine error, skip this changeset
+      print.warn(`ChangeSet failed with unexpected reason: ${changeSet.StatusReason || 'No reason provided'}`);
+      return {
+        changes: [],
+        skipped: true,
+        skipReason: `Changeset failed: ${changeSet.StatusReason || 'Unknown reason'}`,
+      };
+    }
   }
 
-  // Check if there are no changes
+  // Check if there are no changes (CREATE_COMPLETE with no drift)
   if (!changeSet.Changes || changeSet.Changes.length === 0) {
     print.debug('ChangeSet has no changes');
     return result;
@@ -291,13 +347,26 @@ async function analyzeChangeSet(
         print.debug(`Fetching nested changeset: ${stackName}`);
         print.debug(`ChangeSet: ${changeSetName}`);
 
-        // Describe the nested changeset
+        // Wait for nested changeset to reach terminal status.
+        // The root changeset fails as soon as any nested changeset fails,
+        // but other nested changesets may still be CREATE_IN_PROGRESS.
+        try {
+          await waitUntilChangeSetCreateComplete({ client: cfn, maxWaitTime: 120 }, { StackName: stackName, ChangeSetName: changeSetName });
+        } catch (waitError: any) {
+          print.debug(`Nested changeset waiter for ${stackName} finished with: ${waitError.message}`);
+        }
         const nestedChangeSet = await cfn.send(
           new DescribeChangeSetCommand({
             StackName: stackName,
             ChangeSetName: changeSetName,
           }),
         );
+        if (!terminalStatuses.includes(nestedChangeSet.Status ?? '')) {
+          print.warn(`Nested changeset ${stackName} did not reach terminal status (${nestedChangeSet.Status})`);
+          skippedStacks.push(stackName);
+          result.changes.push(changeInfo);
+          continue;
+        }
 
         // Print nested changeset details
         if (nestedChangeSet.Changes && nestedChangeSet.Changes.length > 0) {
@@ -317,10 +386,15 @@ async function analyzeChangeSet(
         // Recursively analyze nested changeset
         const nestedResult = await analyzeChangeSet(cfn, nestedChangeSet, print);
 
-        // Check if nested analysis was skipped
+        // Track if nested analysis was skipped
         if (nestedResult.skipped) {
           print.warn(`⚠ Nested stack ${stackName} analysis was skipped: ${nestedResult.skipReason}`);
-          hasNestedSkipped = true;
+          skippedStacks.push(stackName);
+        }
+
+        // Propagate incomplete stacks from deeper nesting levels
+        if (nestedResult.incompleteStacks) {
+          skippedStacks.push(...nestedResult.incompleteStacks);
         }
 
         // Add nested changes to the current change
@@ -329,24 +403,25 @@ async function analyzeChangeSet(
           print.debug(`Processed ${nestedResult.changes.length} nested changes`);
         }
       } catch (error: any) {
-        // Log error and mark as skipped
+        // Log error and track as incomplete. Use LogicalResourceId as fallback
+        // since extractStackNameFromArn could throw on malformed ARNs.
         print.warn(`⚠ Could not fetch nested changeset for ${rc.LogicalResourceId}: ${error.message}`);
         print.debug(`Stack ARN: ${rc.PhysicalResourceId}`);
         print.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
-        hasNestedSkipped = true;
+        try {
+          skippedStacks.push(extractStackNameFromArn(rc.PhysicalResourceId));
+        } catch {
+          // extractStackNameFromArn failed on a malformed ARN — fall back to logical ID
+          skippedStacks.push(rc.LogicalResourceId || 'unknown');
+        }
       }
     }
 
     result.changes.push(changeInfo);
   }
 
-  // If any nested stack analysis was skipped, mark entire result as skipped
-  if (hasNestedSkipped) {
-    return {
-      changes: [],
-      skipped: true,
-      skipReason: 'One or more nested stacks could not be analyzed',
-    };
+  if (skippedStacks.length > 0) {
+    return { ...result, incompleteStacks: skippedStacks };
   }
 
   return result;

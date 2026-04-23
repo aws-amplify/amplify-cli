@@ -12,12 +12,13 @@ import {
   createMoodItem, updateMoodItem, deleteMoodItem,
   createBoard, updateBoard, deleteBoard,
 } from '../src/graphql/mutations';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 const guest = () => generateClient({ authMode: 'apiKey' });
 const auth = () => generateClient({ authMode: 'userPool' });
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);

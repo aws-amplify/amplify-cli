@@ -5,6 +5,7 @@ import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
 import { lowstockproducts } from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -130,3 +131,6 @@ for (const cfnResource of backend.storage.stack.node
   (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
   (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

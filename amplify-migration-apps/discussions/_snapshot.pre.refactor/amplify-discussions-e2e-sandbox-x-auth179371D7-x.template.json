@@ -333,7 +333,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVVIUZY2ldV3q6QjpgFHQnMbZTZoyXZMOdSQKkc8ThGIJX9Y1/fja1J2RZVn+yd8hC8p7Py9wEjzsRYx89smRFpoc0wWk4ac5ZcXAIbVy9tIb1FqqijUTl8GShHqH56gf10GUazgAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BP0B68iLS4llisuq26Qaa1SIh/y5Fqj3NzJsZDXpXQVWYKZbW9aWnK6QjRkHXirG9MlO8JBvuTBIgnSOOpxC8qm/884upPSHLuvqTg0MWkvdyXucmeNyLGPsYkCUrMgOkGc7DWXPOioND6OLmpTXoLVRFF4nK8clCA0Lz1Q/RUZAezgAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -608,27 +608,27 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPool78F21D47Ref": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthUserPoolF0A8042DRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthUserPoolAppClientC0A8CDEFRef": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthUserPoolAppClient1C0852F1Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthIdentityPool950F0C9ERef": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthIdentityPool756EF28ARef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthauthenticatedUserRole30DF3406Ref": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthauthenticatedUserRoleD73407FARef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifydiscussionse2esandbox11f7701e3cauthamplifyAuthunauthenticatedUserRole937C879FRef": {
+    "amplifydiscussionse2esandbox1aa0693a85authamplifyAuthunauthenticatedUserRole7FBD9846Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

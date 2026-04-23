@@ -4,10 +4,11 @@ import {
   AdminCreateUserCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { randomBytes } from 'crypto';
-import { config } from './signup';
+import { configureAmplify } from './signup';
 
 describe('PreSignUp trigger', () => {
   it('allows user creation with an amazon.com email', async () => {
+    const config = configureAmplify();
     const gen2Auth = (config as any)?.auth;
     const userPoolId = config.aws_user_pools_id ?? gen2Auth?.user_pool_id;
     const region = config.aws_cognito_region ?? gen2Auth?.aws_region;
@@ -27,6 +28,7 @@ describe('PreSignUp trigger', () => {
   });
 
   it('rejects user creation with a non-amazon.com email', async () => {
+    const config = configureAmplify();
     const gen2Auth = (config as any)?.auth;
     const userPoolId = config.aws_user_pools_id ?? gen2Auth?.user_pool_id;
     const region = config.aws_cognito_region ?? gen2Auth?.aws_region;

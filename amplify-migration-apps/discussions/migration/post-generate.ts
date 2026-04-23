@@ -71,6 +71,7 @@ export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertFunctionToESM(appPath, 'fetchuseractivity');
   await convertFunctionToESM(appPath, 'recorduseractivity');
+  await convertFunctionToESM(appPath, 'activityTrigger');
   await updateFrontendConfig(appPath);
 }
 

@@ -17,19 +17,19 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "togpa5colne67hczqmubjjmzwa"
+    "ParameterValue": "elicmdfqbrhdzhj5vaymxv72ze"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
-    "ParameterValue": "43q6copg6jek7cvcc3aefd77gq"
+    "ParameterValue": "kyjfzxdugvfhnnxzchcy4mphze"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
-    "ParameterValue": "eqj24fsjunafddq7xjdyqyi5cq"
+    "ParameterValue": "qax74v35ajgbxdoa6ewmavzaaa"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
-    "ParameterValue": "ojuywc4yhnbkvav3ja64dhyiw4"
+    "ParameterValue": "axg3eo6aszaf3lxxjlgkr44igm"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -53,6 +53,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
-    "ParameterValue": "h67z3e2whnguvkzk3togp4htvm"
+    "ParameterValue": "27omu74t55addo7s4vwmkjiflq"
   }
 ]

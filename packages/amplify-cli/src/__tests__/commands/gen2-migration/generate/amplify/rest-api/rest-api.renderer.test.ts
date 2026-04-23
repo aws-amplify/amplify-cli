@@ -468,6 +468,12 @@ describe('RestApiRenderer', () => {
                   resources: [myApiApi.arnForExecuteApi("GET", "/admin"), myApiApi.arnForExecuteApi("GET", "/admin/*")]
               })]
       }));
+      backend.auth.resources.groups["admins"].role.attachInlinePolicy(new Policy(myApiStack, "gen1AdminadminsPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [gen1myApiApi.arnForExecuteApi("GET", "/admin"), gen1myApiApi.arnForExecuteApi("GET", "/admin/*")]
+              })]
+      }));
       backend.addOutput({
           custom: {
               API: {

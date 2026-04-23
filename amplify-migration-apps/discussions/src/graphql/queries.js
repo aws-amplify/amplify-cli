@@ -12,6 +12,14 @@ export const fetchUserActivity = /* GraphQL */ `
     }
   }
 `;
+export const getActivityStats = /* GraphQL */ `
+  query GetActivityStats {
+    getActivityStats {
+      activityCount
+      __typename
+    }
+  }
+`;
 export const getTopic = /* GraphQL */ `
   query GetTopic($id: ID!) {
     getTopic(id: $id) {
@@ -29,7 +37,11 @@ export const getTopic = /* GraphQL */ `
   }
 `;
 export const listTopics = /* GraphQL */ `
-  query ListTopics($filter: ModelTopicFilterInput, $limit: Int, $nextToken: String) {
+  query ListTopics(
+    $filter: ModelTopicFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
     listTopics(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
@@ -70,7 +82,11 @@ export const getPost = /* GraphQL */ `
   }
 `;
 export const listPosts = /* GraphQL */ `
-  query ListPosts($filter: ModelPostFilterInput, $limit: Int, $nextToken: String) {
+  query ListPosts(
+    $filter: ModelPostFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
     listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
@@ -109,7 +125,11 @@ export const getComment = /* GraphQL */ `
   }
 `;
 export const listComments = /* GraphQL */ `
-  query ListComments($filter: ModelCommentFilterInput, $limit: Int, $nextToken: String) {
+  query ListComments(
+    $filter: ModelCommentFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
     listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id

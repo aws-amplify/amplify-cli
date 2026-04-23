@@ -8,7 +8,7 @@ import {
   createTodo, updateTodo, deleteTodo,
 } from '../src/graphql/mutations';
 import { ProjectStatus } from '../src/API';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 const getRandomQuote = /* GraphQL */ `
   query GetRandomQuote {
@@ -26,6 +26,7 @@ const guest = () => generateClient({ authMode: 'apiKey' });
 const auth = () => generateClient({ authMode: 'userPool' });
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);

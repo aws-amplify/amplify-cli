@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "userpoolId",
-    "ParameterValue": "us-east-1_PMTKHb3hY"
+    "ParameterValue": "us-east-1_VKtSrP6gt"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationLambdaExecutionRole",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "userpoolArn",
-    "ParameterValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_PMTKHb3hY"
+    "ParameterValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_VKtSrP6gt"
   },
   {
     "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",

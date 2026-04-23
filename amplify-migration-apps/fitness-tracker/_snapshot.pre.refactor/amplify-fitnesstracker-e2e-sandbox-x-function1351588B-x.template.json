@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRoleE80CA9E5": {
+    "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole2D75C9D5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -51,7 +51,7 @@
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/function/fitnesstracker33f5545533f55455PreSignup-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "fitnesstracker33f5545533f55455PreSignupgen2xlambda97A58158": {
+    "fitnesstracker33f5545533f55455PreSignupgen2xlambda643F1544": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -81,7 +81,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRoleE80CA9E5",
+            "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole2D75C9D5",
             "Arn"
           ]
         },
@@ -103,7 +103,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRoleE80CA9E5"
+        "fitnesstracker33f5545533f55455PreSignupgen2xlambdaServiceRole2D75C9D5"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -392,17 +392,17 @@
     }
   },
   "Outputs": {
-    "amplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Arn": {
+    "amplifyfitnesstrackere2esandbox803499bc27functionfitnesstracker33f5545533f55455PreSignupgen2xlambda983C2B9AArn": {
       "Value": {
         "Fn::GetAtt": [
-          "fitnesstracker33f5545533f55455PreSignupgen2xlambda97A58158",
+          "fitnesstracker33f5545533f55455PreSignupgen2xlambda643F1544",
           "Arn"
         ]
       }
     },
-    "amplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Ref": {
+    "amplifyfitnesstrackere2esandbox803499bc27functionfitnesstracker33f5545533f55455PreSignupgen2xlambda983C2B9ARef": {
       "Value": {
-        "Ref": "fitnesstracker33f5545533f55455PreSignupgen2xlambda97A58158"
+        "Ref": "fitnesstracker33f5545533f55455PreSignupgen2xlambda643F1544"
       }
     }
   }

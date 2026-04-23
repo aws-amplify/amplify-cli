@@ -208,7 +208,7 @@
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
           "DynamoDBEnableServerSideEncryption": false,
           "S3DeploymentBucket": "amplify-discussions-x-x-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d",
+          "S3DeploymentRootKey": "amplify-appsync-files/a7cf20f814c34d5b15d3f5872b92bc7611086a72",
           "env": "x"
         }
       }
@@ -278,7 +278,7 @@
         "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-discussions-x-x-deployment",
-          "s3Key": "amplify-builds/fetchuseractivity-574d43794579796f5042-build.zip",
+          "s3Key": "amplify-builds/fetchuseractivity-73456b7375664f416269-build.zip",
           "storageactivityName": {
             "Fn::GetAtt": [
               "storageactivity",
@@ -320,6 +320,35 @@
               "Outputs.GraphQLAPIEndpointOutput"
             ]
           },
+          "storageactivityName": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.Name"
+            ]
+          },
+          "storageactivityArn": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.Arn"
+            ]
+          },
+          "storageactivityStreamArn": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.StreamArn"
+            ]
+          },
+          "env": "x"
+        }
+      }
+    },
+    "functionactivityTrigger": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/activityTrigger-cloudformation-template.json",
+        "Parameters": {
+          "deploymentBucketName": "amplify-discussions-x-x-deployment",
+          "s3Key": "amplify-builds/activityTrigger-4c2b61507333584d5642-build.zip",
           "storageactivityName": {
             "Fn::GetAtt": [
               "storageactivity",

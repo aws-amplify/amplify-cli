@@ -294,6 +294,7 @@ describe('AuthGenerator backend.ts output', () => {
       "import { auth } from './auth/resource';
       import { defineBackend } from '@aws-amplify/backend';
       import { CfnResource } from 'aws-cdk-lib';
+      // import { Tags } from 'aws-cdk-lib';
 
       const backend = defineBackend({
         auth,
@@ -323,6 +324,9 @@ describe('AuthGenerator backend.ts output', () => {
         (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
         (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
       }
+
+      // Uncomment post refactor to force a redeployment
+      // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
       "
     `);
   });
