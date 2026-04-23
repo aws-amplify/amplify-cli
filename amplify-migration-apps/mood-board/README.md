@@ -300,10 +300,10 @@ Wait for the deployment to finish successfully.
 
 ## Migrating to Gen2
 
-First install the experimental amplify CLI package that provides the migration commands.
+First install the amplify CLI package:
 
 ```console
-npm install @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install @aws-amplify/cli
 ```
 
 Now run them:

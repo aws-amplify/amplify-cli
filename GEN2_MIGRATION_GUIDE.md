@@ -226,15 +226,11 @@ able to adapt them to fit your setup.
 > - [Prerequisites](#prerequisites)
 > - [Modernization](#modernization)
 
-First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
+First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the Amplify CLI package:
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli
 ```
-
-> [!NOTE]  
-> Migration is still in early development stages and is therefore versioned with a `0.x` and is not yet
-> integrated into the standard Gen1 CLI.
 
 ### 1. Assess
 
@@ -652,7 +648,7 @@ we first need to find the name of the Gen2 root CloudFormation stack:
 Then, re-install the CLI package:
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli-internal
 ```
 
 > This is needed because the previous installation currently gets lost after `generate`.
