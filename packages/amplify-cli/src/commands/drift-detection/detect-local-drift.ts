@@ -79,8 +79,8 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
 
     // resourcesToBeCreated/Updated/Deleted track managed (CloudFormation-backed)
     // resources with pending deployment changes. resourcesToBeSynced is excluded —
-    // it contains only imported-resource lifecycle metadata, not pending
-    // infrastructure changes.
+    // it tracks imported-resource lifecycle (import/unlink/refresh) which does not
+    // involve CloudFormation stack operations.
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted } = statusResults;
     for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted]) {
       arr.forEach(assertValidResourceInfo);
