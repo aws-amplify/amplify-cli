@@ -9,17 +9,17 @@ import fs from 'fs-extra';
 /**
  * Local drift detection results (Phase 3)
  *
- * ADR-006: resourcesToBeSynced is intentionally excluded. It contains only
- * imported-resource lifecycle metadata (refresh/import/unlink) that `amplify status`
- * renders as "No Change". Including it in drift detection causes false positives
- * for apps with imported auth (issue #14702).
+ * resourcesToBeSynced is intentionally excluded. It contains only imported-resource
+ * lifecycle metadata (refresh/import/unlink) that `amplify status` renders as
+ * "No Change". Including it in drift detection causes false positives for apps
+ * with imported auth (issue #14702).
  */
 export interface LocalDriftResults {
-  resourcesToBeCreated?: Array<ResourceInfo>;
-  resourcesToBeUpdated?: Array<ResourceInfo>;
-  resourcesToBeDeleted?: Array<ResourceInfo>;
-  skipped: boolean;
-  skipReason?: string;
+  readonly resourcesToBeCreated?: Array<ResourceInfo>;
+  readonly resourcesToBeUpdated?: Array<ResourceInfo>;
+  readonly resourcesToBeDeleted?: Array<ResourceInfo>;
+  readonly skipped: boolean;
+  readonly skipReason?: string;
 }
 
 /**
@@ -82,9 +82,10 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
     const statusResults = await getResourceStatus();
 
-    // ADR-006: resourcesToBeSynced is intentionally excluded from drift results.
-    // It contains only imported-resource lifecycle metadata (refresh/import/unlink)
-    // that `amplify status` renders as "No Change" — not user-initiated changes.
+    // resourcesToBeSynced is excluded because it only contains imported-resource
+    // lifecycle metadata (refresh/import/unlink) that `amplify status` renders as
+    // "No Change" — not user-initiated changes. Including it causes false positives
+    // for apps with imported auth (#14702).
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted } = statusResults;
     for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted]) {
       arr.forEach(assertValidResourceInfo);
