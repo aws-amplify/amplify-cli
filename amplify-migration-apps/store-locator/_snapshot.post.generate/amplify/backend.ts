@@ -3,6 +3,7 @@ import { storelocator41a9495f41a9495fPostConfirmation } from './auth/storelocato
 import { defineGeo } from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration, aws_iam } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -38,3 +39,6 @@ backend.storelocator41a9495f41a9495fPostConfirmation.resources.lambda.addToRoleP
     resources: [backend.auth.resources.userPool.userPoolArn],
   })
 );
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

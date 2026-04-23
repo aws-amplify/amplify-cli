@@ -4,9 +4,10 @@ import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
 import { uploadData, getUrl } from 'aws-amplify/storage';
 import { getProduct } from '../src/graphql/queries';
 import { createProduct } from '../src/graphql/mutations';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);

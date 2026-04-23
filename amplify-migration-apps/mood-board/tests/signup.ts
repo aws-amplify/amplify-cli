@@ -14,20 +14,25 @@ if (typeof globalThis.crypto === 'undefined') {
   (globalThis as any).crypto = webcrypto;
 }
 
-const CONFIG_PATH = process.env.APP_CONFIG_PATH;
-if (!CONFIG_PATH) {
-  throw new Error('APP_CONFIG_PATH environment variable is required');
-}
-
-export const config = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
-Amplify.configure({
-  ...parseAmplifyConfig(config),
-  Analytics: {
-    Kinesis: {
-      region: config.aws_project_region ?? config.auth?.aws_region ?? 'us-east-1',
+/** Configures the Amplify library with Analytics/Kinesis. Falls back to APP_CONFIG_PATH when no config is passed. */
+export function configureAmplify(cfg?: any): any {
+  if (!cfg) {
+    const configPath = process.env.APP_CONFIG_PATH;
+    if (!configPath) {
+      throw new Error('APP_CONFIG_PATH environment variable is required');
+    }
+    cfg = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
+  }
+  Amplify.configure({
+    ...parseAmplifyConfig(cfg),
+    Analytics: {
+      Kinesis: {
+        region: cfg.aws_project_region ?? cfg.auth?.aws_region ?? 'us-east-1',
+      },
     },
-  },
-});
+  });
+  return cfg;
+}
 
 export async function signUp(cfg: any): Promise<{ username: string; password: string }> {
   const gen2Auth = (cfg as any)?.auth;

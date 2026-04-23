@@ -10,19 +10,15 @@ This is a TypeScript monorepo (Yarn 3 + Lerna) for AWS Amplify CLI Gen1.
 
 ### 1. Research Stage
 
-Start by delegating a context-gatherer sub agent to identify the relevant files to this issue. The sub agent must report both the
-files relevant to the issue, and the docs files relevant to the issue, as well as any additional context necessary to the issue.
-When in doubt, ask the user clarifying questions. When you think you have enough context to implement the task, summarize it to the
-user and ask for confirmation before continuing.
+Start by delegating a context-gatherer sub agent to identify the relevant files to this issue. The sub agent must report both the files relevant to the issue, and the docs files relevant to the issue, as well as any additional context necessary to the issue.
+When in doubt, ask the user clarifying questions. When you think you have enough context to implement the task, summarize it to the user and ask for confirmation before continuing.
 
 **Before changing code you MUST first reference the relevant docs/ files**. Documentation is organized under `docs/` in the same path as the code it references. For example
-
 - `packages/amplify-cli/src/commands/drift.ts`: `docs/packages/amplify-cli/src/commands/drift.md`
 
 ### 2. Implementation Stage
 
-For non-trivial features, exhaust the design discussion before writing code. If the user says "don't implement yet" or
-"let's brainstorm," take that seriously — iterating on a design in conversation is far cheaper than iterating in code.
+For non-trivial features, exhaust the design discussion before writing code. If the user says "don't implement yet" or "let's brainstorm," take that seriously — iterating on a design in conversation is far cheaper than iterating in code.
 Only start implementing when the approach is settled and confirmed.
 
 Make the necessary code changes and follow the guidelines in [CODING_GUIDELINES](./CODING_GUIDELINES.md).
@@ -49,7 +45,6 @@ Verify your changes by following these guidelines:
   Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with
   ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>" -m "docs: update configuration guide"`.
   To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` **at the repository root** and use `-F` with the path relative to your cwd:
-
   ```bash
   NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F <repo-root>/.commit-message.ai-generated.txt
   ```
@@ -100,12 +95,14 @@ Before creating the PR body, do a final pass over every file you touched:
 When asked to create a PR, generate a body into `.pr-body.ai-generated.md` **at the repository root** (not inside a package directory) and follow these guidelines:
 
 - Use the PR template in `.github/PULL_REQUEST_TEMPLATE.md` as the structure.
+- **CRITICAL: The PR body describes the diff between the current branch and the base branch — NOT individual commits or incremental changes made within this branch.** A reviewer sees the total diff, not the commit history. Never mention "we added X in one commit then changed it in another" — only describe the final state of what changed.
 - Focus on **why** the change is being made and **what** it accomplishes, not the implementation details that are obvious from the diff.
 - Do a 30 second summary of the important design information.
 - Do not go overboard on technical details. A reviewer can read the code.
 - Keep it concise and scannable.
 - Don't enumerate files changed. Instead, categorize changes into logical groups. Give each
   group an h4 title on its own line, followed by a blank line, then the explanation.
+- Before writing the body, inspect `git diff origin/<base-branch>..HEAD` to understand the total diff, not individual commits.
 
 ## Delegating to Sub-Agents
 
@@ -131,5 +128,18 @@ You are a peer, not an order-taker. When the user proposes a design, naming choi
 - **Don't just accept everything at face value.** If something seems off — an assumption that might not hold, a requirement that conflicts with existing patterns, a name that doesn't fit — flag it. The user expects you to catch things they might miss.
 
 This doesn't mean argue about everything. Straightforward tasks, clear instructions, and well-reasoned requests should be executed efficiently. Use judgment: the more consequential the decision, the more discussion it deserves.
+
+## Avoiding Stale File Overwrites
+
+The user and the AI often edit files in parallel. If the AI writes to a file using cached content from earlier in the conversation, it can silently overwrite changes the user made in the meantime.
+
+To prevent this:
+
+- **Always re-read a file immediately before editing it** if any of the following are true:
+  - The file is currently open in the user's editor.
+  - The user has mentioned editing or changing it.
+  - Significant time or turns have passed since you last read it.
+- **Never use `strReplace` or `fsWrite` based on content you read more than a few turns ago** without re-reading first.
+- If the user says "I changed X" or "re-read before editing", treat that as a hard requirement to read the file fresh before touching it.
 
 # **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**

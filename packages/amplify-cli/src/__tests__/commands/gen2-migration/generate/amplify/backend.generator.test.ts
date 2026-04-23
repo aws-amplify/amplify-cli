@@ -163,7 +163,10 @@ describe('BackendGenerator', () => {
         const lines = content.split('\n');
         const lastImportLine = lines.findIndex((l) => l.includes("from '@aws-amplify/backend'"));
         expect(lastImportLine).toBeGreaterThan(-1);
-        expect(lines[lastImportLine + 1]).toBe('');
+        // The commented Tags import immediately follows the last real import
+        expect(lines[lastImportLine + 1]).toBe("// import { Tags } from 'aws-cdk-lib';");
+        // Then a blank line separates imports from defineBackend
+        expect(lines[lastImportLine + 2]).toBe('');
       });
     });
   });

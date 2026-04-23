@@ -57,14 +57,14 @@ non-failing nested stacks.
 The lock step modifies templates to add `DeletionPolicy: Retain` to
 stateful resources. When Phase 2 compares these modified templates
 against the deployed stack, the DeletionPolicy additions appear as
-template drift. This is *expected* — the lock step intentionally made
+template drift. This is _expected_ — the lock step intentionally made
 these changes. The drift detection must distinguish lock's DeletionPolicy
 changes from real drift (someone changed something outside of amplify).
 
 This is distinct from the FAILED changeset problem but compounds it:
 even when we successfully read changes from a FAILED changeset, we
 need to filter out the DeletionPolicy noise to determine if there is
-*real* drift that would make lock rollback unsafe.
+_real_ drift that would make lock rollback unsafe.
 
 ### Failure type distinction
 
@@ -97,7 +97,7 @@ Testing against the live discussions app (amplify-discussions-main-c39a5,
 5 nested stacks, 3 of which fail EarlyValidation) revealed:
 
 1. **FAILED changesets contain usable Changes data.** CloudFormation
-   populates `Changes` on nested changesets *before* validation fails.
+   populates `Changes` on nested changesets _before_ validation fails.
    `DescribeChangeSet` on a FAILED nested changeset returns the full
    changes array. Confirmed: storageactivity (2 changes),
    storageavatars (6 changes), storagebookmarks (2 changes) — all
@@ -105,22 +105,22 @@ Testing against the live discussions app (amplify-discussions-main-c39a5,
 
 2. **CFN does not exit early on one nested failure.** When
    `IncludeNestedStacks: true` is set, CloudFormation creates changesets
-   for *all* nested stacks regardless of whether some fail validation.
+   for _all_ nested stacks regardless of whether some fail validation.
    The root changeset fails, but all 5 nested changesets are created
    and describable.
 
    Exact root StatusReason: `Nested change set <ARN> was not
-   successfully created: Currently in FAILED.` — references only the
+successfully created: Currently in FAILED.` — references only the
    first failing nested changeset. Does NOT contain "EarlyValidation".
 
    Exact nested EarlyValidation StatusReason: `The following
-   hook(s)/validation failed: [AWS::EarlyValidation::
-   ResourceExistenceCheck]. To troubleshoot Early Validation errors,
-   use the DescribeEvents API for detailed failure information.`
+hook(s)/validation failed: [AWS::EarlyValidation::
+ResourceExistenceCheck]. To troubleshoot Early Validation errors,
+use the DescribeEvents API for detailed failure information.`
 
 3. **Per-nested-stack approach produces false positives.** Creating an
    independent changeset on a nested stack (e.g., apidiscussions)
-   *without* `IncludeNestedStacks` reports 6 phantom `Modify` changes
+   _without_ `IncludeNestedStacks` reports 6 phantom `Modify` changes
    on `AWS::CloudFormation::Stack` resources. These changes do not exist
    when using `IncludeNestedStacks: true` from the root. The root
    approach correctly suppresses parameter-propagation noise that the
@@ -136,7 +136,7 @@ Testing against the live discussions app (amplify-discussions-main-c39a5,
    shows 0.
 
 6. **Nested changeset race condition.** The root changeset fails as
-   soon as *any* nested changeset fails, but other nested changesets
+   soon as _any_ nested changeset fails, but other nested changesets
    may still be `CREATE_IN_PROGRESS`. Integration testing confirmed:
    apidiscussions was still in-progress when the root returned FAILED.
    Code must poll each nested changeset to terminal status before
@@ -147,7 +147,7 @@ Testing against the live discussions app (amplify-discussions-main-c39a5,
    parameter references. With `IncludeNestedStacks: true`, CFN cannot
    resolve intrinsic functions at validation time — all exports appear as
    `{{IntrinsicFunction://Fn::Join}}`, triggering `"Template format
-   error: duplicate Export names"`. Despite the failure, CFN populates
+error: duplicate Export names"`. Despite the failure, CFN populates
    Changes before the export validation step. The function was broadened
    from `isEarlyValidationFailure` to `isRecoverableFailure` to handle
    both EarlyValidation and Template format error failures. When a
@@ -166,15 +166,15 @@ Testing against the live discussions app (amplify-discussions-main-c39a5,
 
 ### Comparison
 
-| Dimension                | IncludeNestedStacks: true | Per-nested (Method B) |
-|--------------------------|---------------------------|-----------------------|
-| False positives          | None observed             | 6 phantom changes     |
-| Code complexity          | ~30 lines changed         | ~400 lines new        |
-| CFN API calls            | 1 CreateChangeSet         | N+1 CreateChangeSet   |
-| Rate limiting needed     | No                        | Yes (Bottleneck)      |
-| New dependencies         | None                      | bottleneck, S3 client |
-| FAILED stack handling    | Read Changes anyway       | Same, plus false pos  |
-| Sub-nested recursion     | Built-in (ChangeSetId)    | Must re-implement     |
+| Dimension             | IncludeNestedStacks: true | Per-nested (Method B) |
+| --------------------- | ------------------------- | --------------------- |
+| False positives       | None observed             | 6 phantom changes     |
+| Code complexity       | ~30 lines changed         | ~400 lines new        |
+| CFN API calls         | 1 CreateChangeSet         | N+1 CreateChangeSet   |
+| Rate limiting needed  | No                        | Yes (Bottleneck)      |
+| New dependencies      | None                      | bottleneck, S3 client |
+| FAILED stack handling | Read Changes anyway       | Same, plus false pos  |
+| Sub-nested recursion  | Built-in (ChangeSetId)    | Must re-implement     |
 
 ## Decision
 
@@ -261,7 +261,7 @@ if (changeSet.Status === 'FAILED') {
 
 ### Change 3: Partial results instead of all-or-nothing
 
-The current code discards all results if *any* nested stack analysis
+The current code discards all results if _any_ nested stack analysis
 is skipped (lines 343-349). Instead, return available results and track
 which stacks were incomplete:
 
@@ -308,14 +308,18 @@ function isExpectedLockDrift(change: ResourceChangeWithNested): boolean {
   if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
 
   // Cascading IAM Policy change from DeletionPolicy on a DDB table
-  if (change.ResourceType === 'AWS::IAM::Policy'
-      && change.Scope?.length === 1 && change.Scope[0] === 'Properties'
-      && change.Details?.length) {
-    return change.Details.every(d =>
-      d.ChangeSource === 'ResourceAttribute'
-      && d.Evaluation === 'Dynamic'
-      && d.Target?.RequiresRecreation === 'Never'
-      && /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? '')
+  if (
+    change.ResourceType === 'AWS::IAM::Policy' &&
+    change.Scope?.length === 1 &&
+    change.Scope[0] === 'Properties' &&
+    change.Details?.length
+  ) {
+    return change.Details.every(
+      (d) =>
+        d.ChangeSource === 'ResourceAttribute' &&
+        d.Evaluation === 'Dynamic' &&
+        d.Target?.RequiresRecreation === 'Never' &&
+        /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? ''),
     );
   }
 
@@ -357,16 +361,16 @@ explicitly documented by CloudFormation. Confirmed empirically on the
 discussions app (3 FAILED stacks, all with accessible Changes), but
 could change without notice.
 
-*Mitigation*: Add an integration test against a known FAILED stack to
+_Mitigation_: Add an integration test against a known FAILED stack to
 verify Changes are populated. If CFN changes this behavior, the test
 catches it before it silently regresses in production.
 
 ### R2 — Changes on EarlyValidation-failed changesets may be incomplete
 
-CFN may populate *some* changes before the validation failure but not
+CFN may populate _some_ changes before the validation failure but not
 all. We could miss real drift on a FAILED stack.
 
-*Mitigation*: This is inherent to the EarlyValidation failure, not our
+_Mitigation_: This is inherent to the EarlyValidation failure, not our
 approach. Per-nested-stack with `UsePreviousTemplate: true` hits the
 same EarlyValidation failure on the same stacks. The real fix is to
 update the Gen1 templates to reflect the post-migration state
@@ -384,7 +388,7 @@ incorrectly treat genuine failures as recoverable (reading incomplete
 Changes — unsafe direction). The latter risk is mitigated: recoverable
 failures with 0 Changes are treated as incomplete, not clean.
 
-*Mitigation*: Log all failure reasons. Expand the pattern match as
+_Mitigation_: Log all failure reasons. Expand the pattern match as
 new failure types are observed. Empty-Changes guard ensures
 false-recoverable classification fails closed.
 
@@ -406,7 +410,7 @@ a resource whose logical ID ends in "Table". In practice this is
 extremely unlikely — the pattern only matches during lock rollback when
 DeletionPolicy is the only template modification.
 
-*Mitigation*: The `CausingEntity` regex anchors to `Table.Arn` or
+_Mitigation_: The `CausingEntity` regex anchors to `Table.Arn` or
 `Table.StreamArn`. Scope is required to be exactly `['Properties']`.
 All Details must be Dynamic/ResourceAttribute/Never — any static or
 direct modification fails the filter. 28 unit tests cover positive

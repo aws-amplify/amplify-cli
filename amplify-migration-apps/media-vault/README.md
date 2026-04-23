@@ -377,10 +377,10 @@ Grab the App ID from the Amplify Console and the Cognito domain prefix from the 
 > Migration is not fully supported for this app yet due to a bug in refactoring the social provider
 > configuration. This guide ends at the `generate` step.
 
-First and install the experimental CLI package the provides the new commands:
+First install the amplify CLI package:
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli
 ```
 
 Now run them:

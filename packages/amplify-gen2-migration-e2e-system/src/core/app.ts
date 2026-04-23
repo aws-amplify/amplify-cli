@@ -7,8 +7,10 @@ import { Logger, LogLevel } from './logger';
 import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
-import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 import { normalize } from './normalize';
+import { CredentialManager } from './credentials';
+import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { fromIni } from '@aws-sdk/credential-providers';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -45,8 +47,8 @@ interface RefactorConfig {
  * Exposes all lifecycle operations as public methods.
  */
 export class App {
-  private readonly deploymentName: string;
-  private readonly gen2BranchName: string;
+  readonly deploymentName: string;
+  readonly gen2BranchName: string;
   private readonly gen1BranchName = 'main';
 
   private readonly sourceAppPath: string;
@@ -61,13 +63,14 @@ export class App {
     return this.migrationConfig.refactor?.skip === true;
   }
   private readonly amplifyPath: string;
+  private readonly credentials: CredentialManager;
 
   public readonly logger: Logger;
   public readonly targetAppPath: string;
 
-  private readonly git: Git;
+  readonly git: Git;
 
-  constructor(public readonly appName: string, private readonly profile: string, verbose = false) {
+  constructor(public readonly appName: string, profile: string | undefined, verbose = false) {
     this.sourceAppPath = path.join(MIGRATION_APPS_DIR, appName);
     if (!fs.existsSync(this.sourceAppPath)) {
       throw new Error(`App not found: ${this.sourceAppPath}`);
@@ -79,6 +82,10 @@ export class App {
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
     this.amplifyPath = getCLIPath(true);
+
+    const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
+    const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
+    this.credentials = new CredentialManager(profile, region, generatedProfile, this.logger);
 
     // temporary directory to store snapshot of each step
     // callers can then call .updateSnapshot to copy over the snapshots
@@ -116,6 +123,7 @@ export class App {
    * Run `amplify init` to initialize the Gen1 project.
    */
   public async init(): Promise<void> {
+    await this.refreshCredentials();
     this.logger.info('amplify init');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
@@ -130,7 +138,7 @@ export class App {
       buildCmd: 'npm run build',
       startCmd: 'npm run start',
       disableAmplifyAppCreation: false,
-      profileName: this.profile,
+      profileName: this.credentials.profile,
     });
     this.logger.info('amplify init completed');
   }
@@ -185,6 +193,7 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
+    await this.refreshCredentials();
     this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
     this.logger.info('amplify push completed');
@@ -246,7 +255,7 @@ export class App {
 
     this.logger.info(`Capturing pre.refactor snapshot`);
     console.log('');
-    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
+    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath, this.getClientConfig());
     console.log('');
 
     if (this.skipRefactor) {
@@ -275,13 +284,14 @@ export class App {
     await this.testGen1();
     await this.testGen2();
 
-    await this.testSharedData();
+    await this.testShared();
   }
 
   /**
    * Run `amplify gen2-migration assess`.
    */
   public async assess(): Promise<void> {
+    await this.refreshCredentials();
     await this.runMigrationStep('assess');
   }
 
@@ -289,6 +299,7 @@ export class App {
    * Run `amplify gen2-migration lock`.
    */
   public async lock(): Promise<void> {
+    await this.refreshCredentials();
     const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
     await this.runMigrationStep('lock', extraArgs);
   }
@@ -297,6 +308,7 @@ export class App {
    * Run `amplify gen2-migration generate`.
    */
   public async generate(): Promise<void> {
+    await this.refreshCredentials();
     await this.runMigrationStep('generate');
     this.removeGitignoreLine('amplify_outputs*');
   }
@@ -305,6 +317,7 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
+    await this.refreshCredentials();
     const extraArgs = ['--to', gen2StackName];
     if (this.migrationConfig.refactor?.skipValidations) {
       extraArgs.push('--skip-validations');
@@ -317,6 +330,7 @@ export class App {
    * Returns the Gen2 root stack name.
    */
   public async deployGen2Sandbox(): Promise<string> {
+    await this.refreshCredentials();
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
@@ -324,7 +338,7 @@ export class App {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
-      env: { ...process.env, AWS_BRANCH: this.gen2BranchName },
+      env: this.getEnv({ AWS_BRANCH: this.gen2BranchName }),
     });
 
     if (result.exitCode !== 0) {
@@ -364,12 +378,12 @@ export class App {
   /**
    * Run the Jest tests that validate stateful resources are shared.
    */
-  public async testSharedData(): Promise<void> {
-    await this.git.checkout(this.gen2BranchName, false);
+  public async testShared(): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
 
-    // these tests require both config files, so pull the gen1 config into the gen2 branch
-    await this.git.run('checkout', this.gen1BranchName, '--', 'src/amplifyconfiguration.json');
-    await this.runNpmScript('test:shared-data');
+    // these tests require both config files, so pull the gen2 config into the gen1 branch
+    await this.git.run('checkout', this.gen2BranchName, '--', 'amplify_outputs.json');
+    await this.runNpmScript('test:shared');
   }
 
   // ============================================================
@@ -440,6 +454,36 @@ export class App {
   }
 
   // ============================================================
+  // Credential Helpers
+  // ============================================================
+
+  /**
+   * Refresh credentials. Call before any AWS operation in role mode so the
+   * underlying profile doesn't expire mid-step. No-op in profile mode.
+   */
+  public async refreshCredentials(): Promise<void> {
+    await this.credentials.refresh();
+  }
+
+  /**
+   * Build an env object for sub-process execution, merging `process.env`
+   * with `AWS_PROFILE` and optional extras. The profile is the only
+   * credential signal — sub-processes resolve it via the shared AWS config.
+   */
+  public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
+    return { ...process.env, AWS_PROFILE: this.credentials.profile, ...extra };
+  }
+
+  /**
+   * Build an AWS SDK client config that explicitly resolves credentials from
+   * the active profile via `fromIni`. This bypasses the SDK default provider
+   * chain, which may prefer container/IMDS credentials in CI environments.
+   */
+  public getClientConfig(): { credentials: ReturnType<typeof fromIni> } {
+    return { credentials: fromIni({ profile: this.credentials.profile }) };
+  }
+
+  // ============================================================
   // Private Helpers
   // ============================================================
 
@@ -467,6 +511,7 @@ export class App {
       const result = await execa(this.amplifyPath, args, {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
+        env: this.getEnv(),
       });
       if (result.exitCode !== 0) {
         throw new Error(`amplify ${args[0]} failed with exit code ${result.exitCode}`);
@@ -485,6 +530,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
+      env: this.getEnv(),
     });
 
     if (result.exitCode !== 0) {
@@ -503,7 +549,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
+      env: this.getEnv({ GEN1_ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv }),
     });
 
     if (result.exitCode !== 0) {
@@ -513,7 +559,7 @@ export class App {
 
   private async findGen1RootStack(): Promise<string> {
     const rootPattern = new RegExp(`^amplify-${this.deploymentName}-${this.envName}-[0-9a-f]{5}$`);
-    return findStackByPattern(rootPattern);
+    return findStackByPattern(rootPattern, this.getClientConfig());
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
@@ -530,7 +576,7 @@ export class App {
         '--output',
         'text',
       ],
-      { reject: false },
+      { reject: false, env: this.getEnv() },
     );
 
     if (result.exitCode !== 0) {
@@ -579,8 +625,11 @@ function generateRandomEnvName(): string {
   return Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
 }
 
-async function findStackByPattern(pattern: RegExp): Promise<string> {
-  const cfnClient = new CloudFormationClient({});
+async function findStackByPattern(
+  pattern: RegExp,
+  clientConfig: ConstructorParameters<typeof CloudFormationClient>[0] = {},
+): Promise<string> {
+  const cfnClient = new CloudFormationClient(clientConfig);
   for await (const page of paginateListStacks(
     { client: cfnClient },
     { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE] },

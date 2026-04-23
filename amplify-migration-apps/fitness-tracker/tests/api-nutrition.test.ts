@@ -2,9 +2,10 @@
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
 import { post } from 'aws-amplify/api';
 import { NUTRITION_API_NAME } from '../src/api-config';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);

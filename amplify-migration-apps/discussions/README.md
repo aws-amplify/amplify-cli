@@ -413,10 +413,10 @@ this process for any number of users.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-First install the experimental amplify CLI package that provides the migration commands.
+First install the amplify CLI package:
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli
 ```
 
 Now run them:
@@ -456,7 +456,7 @@ Wait for the deployment to finish successfully. Next, locate the root stack of t
 ![](./images/find-gen2-stack.png)
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli-internal
 ```
 
 ```console

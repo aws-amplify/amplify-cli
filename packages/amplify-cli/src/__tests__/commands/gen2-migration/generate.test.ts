@@ -81,7 +81,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       await plan.execute();
 
       const report = await app.snapshots.generate.compare(process.cwd());
-      const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
+      const isUpdatingSnapshots = process.env.UPDATE_SNAPSHOTS === '1' || expect.getState().snapshotState._updateSnapshot === 'all';
 
       if (report.hasChanges) {
         report.print();
