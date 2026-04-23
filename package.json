@@ -201,6 +201,7 @@
     "rollup": "2.80.0",
     "immutable": "^4.3.8",
     "svgo": "^3.3.3",
-    "serialize-javascript": "^7.0.3"
+    "serialize-javascript": "^7.0.3",
+    "@smithy/types": "^4.14.1"
   }
 }
