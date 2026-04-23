@@ -8,11 +8,6 @@ import fs from 'fs-extra';
 
 /**
  * Local drift detection results (Phase 3)
- *
- * resourcesToBeSynced is intentionally excluded. It contains only imported-resource
- * lifecycle metadata (refresh/import/unlink) that `amplify status` renders as
- * "No Change". Including it in drift detection causes false positives for apps
- * with imported auth (issue #14702).
  */
 export interface LocalDriftResults {
   readonly resourcesToBeCreated?: Array<ResourceInfo>;
@@ -82,10 +77,10 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
     const statusResults = await getResourceStatus();
 
-    // resourcesToBeSynced is excluded because it only contains imported-resource
-    // lifecycle metadata (refresh/import/unlink) that `amplify status` renders as
-    // "No Change" — not user-initiated changes. Including it causes false positives
-    // for apps with imported auth (#14702).
+    // resourcesToBeCreated/Updated/Deleted track managed (CloudFormation-backed)
+    // resources with pending deployment changes. resourcesToBeSynced is excluded —
+    // it contains only imported-resource lifecycle metadata, not pending
+    // infrastructure changes.
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted } = statusResults;
     for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted]) {
       arr.forEach(assertValidResourceInfo);
