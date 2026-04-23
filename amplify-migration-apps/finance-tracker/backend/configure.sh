@@ -1,17 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
-# Get the function directory name (in case the hash suffix changes after re-init)
-function_name=$(ls amplify/backend/function | grep -v financetracker48ceb8c2 | head -1)
-
 # Copy GraphQL schema
 cp -f backend/schema.graphql ./amplify/backend/api/financetracker/schema.graphql
 
 # Copy Lambda function source
-cp -f backend/financetracker.js ./amplify/backend/function/${function_name}/src/index.js
+cp -f backend/financetracker.js ./amplify/backend/function/financetracker/src/index.js
 
 # Copy custom policies for the Lambda function
-cp -f backend/custom-policies.json ./amplify/backend/function/${function_name}/custom-policies.json
+cp -f backend/custom-policies.json ./amplify/backend/function/financetracker/custom-policies.json
 
 # Copy CDK stack for customfinance (SNS topics)
 cp -f backend/customfinance.ts ./amplify/backend/custom/customfinance/cdk-stack.ts

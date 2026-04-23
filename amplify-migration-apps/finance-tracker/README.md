@@ -484,6 +484,23 @@ resolves to the actual table name at deploy time.
    },
 ```
 
+#### 8. Add API Key Auth to Custom VTL Resolver
+
+In `amplify/data/resource.ts`, the `getTransactionsByCategory` query field and
+`TransactionConnection` type have no auth directive. In Gen1 the custom VTL resolver
+bypassed schema-level auth, but Gen2 enforces it. Add `@aws_api_key` so API key
+requests are authorized:
+
+```diff
+-  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
++  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection @aws_api_key
+```
+
+```diff
+-type TransactionConnection {
++type TransactionConnection @aws_api_key {
+```
+
 ---
 
 Commit and push the changes:

@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId",
+    "OutputValue": "iltux4eqlfcblbluzjzhytjruu"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860GraphQLUrl",
+    "OutputValue": "https://fssl5qlw4vhrjopsneyjxxv7ey.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBB20EBAE4DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-financetra2604231-amplifydataamplifycodege-ywo1kf4bexqa"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPIDefaultApiKey9BC4ED8AApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionTransactionTable42B70DA2TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Transaction-adetddan7nd55gwre37yyck3vu-x"
+  }
+]

@@ -199,13 +199,77 @@ async function fixCustomResolverTableName(appPath: string): Promise<void> {
   await fs.writeFile(resourcePath, content, 'utf-8');
 }
 
+/**
+ * Scan the Lambda function source for @aws-sdk/* imports/requires and
+ * add them to the root package.json so esbuild can resolve them.
+ */
+async function addMissingSdkDeps(appPath: string): Promise<void> {
+  const fnDir = resolveFunctionDir(appPath);
+  const handlerPath = path.join(appPath, 'amplify', 'function', fnDir, 'index.js');
+  const source = await fs.readFile(handlerPath, 'utf-8');
+
+  const sdkPackages = new Set<string>();
+  const patterns = [
+    /require\(\s*['"](@aws-sdk\/[^'"]+)['"]\s*\)/g,
+    /from\s+['"](@aws-sdk\/[^'"]+)['"]/g,
+  ];
+  for (const pattern of patterns) {
+    for (const [, pkg] of source.matchAll(pattern)) {
+      sdkPackages.add(pkg);
+    }
+  }
+
+  if (sdkPackages.size === 0) return;
+
+  const pkgPath = path.join(appPath, 'package.json');
+  const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf-8'));
+  const deps: Record<string, string> = pkg.dependencies ?? {};
+
+  for (const name of sdkPackages) {
+    if (!deps[name]) {
+      deps[name] = '*';
+    }
+  }
+
+  pkg.dependencies = deps;
+  await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+  execSync('npm install', { cwd: appPath, stdio: 'inherit' });
+}
+
+/**
+ * Add @aws_api_key to the getTransactionsByCategory field and
+ * TransactionConnection type so API key requests are authorized.
+ * In Gen1 the custom VTL resolver bypassed schema-level auth;
+ * Gen2 enforces it.
+ */
+async function addApiKeyAuthToCustomResolver(appPath: string): Promise<void> {
+  const resourcePath = path.join(appPath, 'amplify', 'data', 'resource.ts');
+  let content = await fs.readFile(resourcePath, 'utf-8');
+
+  if (content.includes('@aws_api_key')) return;
+
+  content = content.replace(
+    'getTransactionsByCategory(category: String!, limit: Int): TransactionConnection',
+    'getTransactionsByCategory(category: String!, limit: Int): TransactionConnection @aws_api_key',
+  );
+
+  content = content.replace(
+    'type TransactionConnection {',
+    'type TransactionConnection @aws_api_key {',
+  );
+
+  await fs.writeFile(resourcePath, content, 'utf-8');
+}
+
 export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertLambdaToESM(appPath);
+  await addMissingSdkDeps(appPath);
   await updateFrontendConfig(appPath);
   await addSnsPublishPolicy(appPath);
   await wireSnsTopicEnvVars(appPath);
   await fixCustomResolverTableName(appPath);
+  await addApiKeyAuthToCustomResolver(appPath);
 }
 
 async function main(): Promise<void> {
