@@ -2,9 +2,7 @@
   "mcpServers": {
     "aws-infrastructure-as-code": {
       "command": "uvx",
-      "args": [
-        "awslabs.aws-iac-mcp-server@latest"
-      ],
+      "args": ["awslabs.aws-iac-mcp-server@latest"],
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR"
       },
@@ -21,18 +19,9 @@
       "command": "uvx",
       "timeout": 100000,
       "transport": "stdio",
-      "args": [
-        "mcp-proxy-for-aws@latest",
-        "https://aws-mcp.us-east-1.api.aws/mcp",
-        "--metadata"
-      ],
+      "args": ["mcp-proxy-for-aws@latest", "https://aws-mcp.us-east-1.api.aws/mcp", "--metadata"],
       "disabled": false,
-      "autoApprove": [
-        "search_documentation",
-        "list_regions",
-        "get_regional_availability",
-        "aws___search_documentation"
-      ]
+      "autoApprove": ["search_documentation", "list_regions", "get_regional_availability", "aws___search_documentation"]
     }
   }
 }
