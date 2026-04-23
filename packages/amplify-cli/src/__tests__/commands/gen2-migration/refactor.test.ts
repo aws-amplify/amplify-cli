@@ -99,7 +99,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       const plan = await refactorStep.forward();
       await plan.execute();
 
-      const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
+      const isUpdatingSnapshots = process.env.UPDATE_SNAPSHOTS === '1' || expect.getState().snapshotState._updateSnapshot === 'all';
       const actualPath = path.join(process.cwd(), OUTPUT_DIRECTORY);
       const report = await app.snapshots.refactor.compare(actualPath);
 

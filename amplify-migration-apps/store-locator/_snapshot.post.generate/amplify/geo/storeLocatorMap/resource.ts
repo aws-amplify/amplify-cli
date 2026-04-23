@@ -1,5 +1,6 @@
 import { geostoreLocatorMap } from './storeLocatorMap-construct';
 import { Backend } from '@aws-amplify/backend';
+import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -22,5 +23,28 @@ export const defineStoreLocatorMap = (backend: Backend<any>) => {
       isDefault: 'true',
     }
   );
+
+  const policy = new Policy(storeLocatorMap, 'gen1AuthPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: [
+          'geo:GetMapStyleDescriptor',
+          'geo:GetMapGlyphs',
+          'geo:GetMapSprites',
+          'geo:GetMapTile',
+        ],
+        resources: [
+          `arn:aws:geo:${storeLocatorMapStack.region}:${storeLocatorMapStack.account}:map/storeLocatorMap-x`,
+        ],
+      }),
+    ],
+  });
+
+  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
+  backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
+  backend.auth.resources.groups['storeLocatorAdmin'].role.attachInlinePolicy(
+    policy
+  );
+
   return storeLocatorMap;
 };

@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPIDefaultApiKey33F1E284ApiKey",
-    "OutputValue": "da2-fakeapikey00000000000000"
+    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId",
+    "OutputValue": "jezyel522nguhhkcnj7iohpuxe"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68datalognutritiongen2xlambda08A084BFRef",
+    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27datalognutritiongen2xlambdaAFD1D125Ref",
     "OutputValue": "lognutrition-gen2-x"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68datalognutritiongen2xlambda08A084BFArn",
+    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIDefaultApiKey1322C838ApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC980626FDestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604180-amplifydataamplifycodege-nfpkevli0ci6"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DGraphQLUrl",
+    "OutputValue": "https://blqgasnqajgd7mt6amxuo72owa.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27datalognutritiongen2xlambdaAFD1D125Arn",
     "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-x"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6GraphQLUrl",
-    "OutputValue": "https://xoe4q5pubzaepcrxki2bcrsfsm.appsync-api.us-east-1.amazonaws.com/graphql"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB65AC19BCDestinationBucketArn",
-    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604152-amplifydataamplifycodege-eup4ftgnxi8x"
-  },
-  {
-    "OutputKey": "amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId",
-    "OutputValue": "vdnmpzcv4vh3detiq2kaaxzx54"
   }
 ]

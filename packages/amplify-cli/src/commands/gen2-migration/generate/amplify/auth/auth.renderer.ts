@@ -528,7 +528,11 @@ export class AuthRenderer {
     }
 
     for (const func of functionsWithAuthAccess) {
-      namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+      // Skip adding import if the function is already imported (e.g., by addLambdaTriggers for auth triggers).
+      const alreadyImported = Object.values(namedImports).some((names) => names.has(func.resourceName));
+      if (!alreadyImported) {
+        namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+      }
     }
 
     const accessRules: ts.Expression[] = [];
@@ -798,7 +802,7 @@ export class AuthRenderer {
       | undefined,
   ): PropertyAssignment {
     const userAttributeIdentifier = factory.createIdentifier('userAttributes');
-    const userAttributeProperties = [];
+    const userAttributeProperties: PropertyAssignment[] = [];
 
     if (standardAttributes !== undefined) {
       const standardAttributeProperties = Object.entries(standardAttributes).map(([key, value]) => {

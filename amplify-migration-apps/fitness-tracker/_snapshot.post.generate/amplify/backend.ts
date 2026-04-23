@@ -12,7 +12,8 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration, aws_iam, Stack } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -83,6 +84,23 @@ backend.admin.addEnvironment(
   'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
+backend.admin.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: [
+      'cognito-idp:Describe*',
+      'cognito-identity:Describe*',
+      'cognito-identity:Get*',
+      'cognito-identity:List*',
+      'cognito-sync:Describe*',
+      'cognito-sync:Get*',
+      'cognito-sync:List*',
+      'iam:ListOpenIdConnectProviders',
+      'iam:ListRoles',
+      'sns:ListPlatformApplications',
+    ],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  })
+);
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
   {
@@ -120,8 +138,8 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   nutritionapiStack,
   'Gen1nutritionapiApi',
   {
-    restApiId: 'ma6towcpja',
-    rootResourceId: 'ma6towcpja-root',
+    restApiId: 'isyal6t4pg',
+    rootResourceId: 'isyal6t4pg-root',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -209,6 +227,25 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     ],
   })
 );
+backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
+  new Policy(nutritionapiStack, 'gen1NutritionlogAdminPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [
+          gen1nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('POST', '/nutrition/log/*'),
+          gen1nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('GET', '/nutrition/log/*'),
+          gen1nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('PUT', '/nutrition/log/*'),
+          gen1nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log'),
+          gen1nutritionapiApi.arnForExecuteApi('DELETE', '/nutrition/log/*'),
+        ],
+      }),
+    ],
+  })
+);
 backend.addOutput({
   custom: {
     API: {
@@ -249,8 +286,8 @@ const gen1adminapiApi = RestApi.fromRestApiAttributes(
   adminapiStack,
   'Gen1adminapiApi',
   {
-    restApiId: 'nv2lhk3kt8',
-    rootResourceId: 'nv2lhk3kt8-root',
+    restApiId: 'rnrkwt1ywc',
+    rootResourceId: 'rnrkwt1ywc-root',
   }
 );
 const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
@@ -301,6 +338,19 @@ backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     ],
   })
 );
+backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
+  new Policy(adminapiStack, 'gen1AdminAdminPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [
+          gen1adminapiApi.arnForExecuteApi('GET', '/admin'),
+          gen1adminapiApi.arnForExecuteApi('GET', '/admin/*'),
+        ],
+      }),
+    ],
+  })
+);
 backend.addOutput({
   custom: {
     API: {
@@ -312,3 +362,6 @@ backend.addOutput({
     },
   },
 });
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

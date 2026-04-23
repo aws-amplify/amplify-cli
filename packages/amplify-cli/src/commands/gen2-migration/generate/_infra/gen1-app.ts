@@ -84,8 +84,8 @@ export class Gen1App {
   private readonly _meta: $TSMeta;
 
   private constructor(props: Gen1AppProps) {
-    this.appId = props.app.appId;
-    this.appName = props.app.name;
+    this.appId = props.app.appId!;
+    this.appName = props.app.name!;
     this.envName = props.envName;
     this.clients = props.clients;
     this.ccbDir = props.ccbDir;
@@ -111,7 +111,7 @@ export class Gen1App {
     const appId = (Object.values(tpi)[0] as $TSAny).awscloudformation.AmplifyAppId;
     const app = await clients.amplify.send(new GetAppCommand({ appId }));
 
-    const envName = await Gen1App.currentEnvName(app.app);
+    const envName = await Gen1App.currentEnvName(app.app!);
     const envInfo = tpi[envName];
     if (!envInfo) {
       throw new AmplifyError('MigrationError', {
@@ -128,7 +128,7 @@ export class Gen1App {
     }
 
     const ccbDir = await Gen1App.downloadCloudBackend(clients.s3, cfnProvider.DeploymentBucketName);
-    return new Gen1App({ ccbDir, clients, envName, app: app.app });
+    return new Gen1App({ ccbDir, clients, envName, app: app.app! });
   }
 
   /**

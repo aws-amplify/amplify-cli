@@ -10,6 +10,7 @@ import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
 import { Duration, aws_iam } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -115,3 +116,6 @@ backend.moodboardKinesisTrigger.resources.lambda.addEventSource(
     startingPosition: StartingPosition.LATEST,
   })
 );
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

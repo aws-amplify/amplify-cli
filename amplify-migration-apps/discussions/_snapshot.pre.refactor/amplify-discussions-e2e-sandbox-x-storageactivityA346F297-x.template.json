@@ -77,7 +77,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ2M2oBewt3C3l0lmhPhJwImKiHcX1uo9C7YyYAo8RHua9BwcXC1LZvpm9JPCQ3o6Iy6JHFw/dDOrZoj/3KpjSdvq+VYxEcMo5W4tfGowxSgh6HWLOSwM3esDKnhKBG4AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGSwqDMBAA0LO4T6bpQE/gvgvbfZlkRoifBJxEEfHugl29h4AvB66hTW3g0U7Rw/EWLcKfQmE0tOmP90RzZg/Hl/wkpu3TndN0orkuQU6TMgsM+lgRAZ/gmkFjtEtNJc4C3d8LDvm/AG4AAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storageactivity/CDKMetadata/Default"
@@ -352,7 +352,7 @@
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACArn": {
+    "amplifydiscussionse2esandbox1aa0693a85storageactivity086E97B7Arn": {
       "Value": {
         "Fn::GetAtt": [
           "activity1E902D9C",
@@ -360,7 +360,7 @@
         ]
       }
     },
-    "amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACStreamArn": {
+    "amplifydiscussionse2esandbox1aa0693a85storageactivity086E97B7StreamArn": {
       "Value": {
         "Fn::GetAtt": [
           "activity1E902D9C",
@@ -368,7 +368,7 @@
         ]
       }
     },
-    "amplifydiscussionse2esandbox11f7701e3cstorageactivity2CAC8EACRef": {
+    "amplifydiscussionse2esandbox1aa0693a85storageactivity086E97B7Ref": {
       "Value": {
         "Ref": "activity1E902D9C"
       }

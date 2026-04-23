@@ -27,10 +27,10 @@ export async function postPush(appPath: string, envName: string): Promise<void> 
 
 async function main(): Promise<void> {
   const [appPath = process.cwd()] = process.argv.slice(2);
-  if (!process.env.ENV_NAME) {
-    throw new Error(`Missing ENV_NAME env variable`);
+  if (!process.env.GEN1_ENV_NAME) {
+    throw new Error(`Missing GEN1_ENV_NAME env variable`);
   }
-  await postPush(appPath, process.env.ENV_NAME);
+  await postPush(appPath, process.env.GEN1_ENV_NAME);
 }
 
 main().catch((error) => {

@@ -86,7 +86,7 @@ export class CloudFormationService {
 
       try {
         // Download the latest backend state from S3
-        currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
+        currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, context.amplify.getEnvInfo().envName);
       } catch (err: any) {
         if (err?.name === 'NoSuchBucket') {
           // Environment not deployed yet, nothing to sync

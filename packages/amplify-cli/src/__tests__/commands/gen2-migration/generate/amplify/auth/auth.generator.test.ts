@@ -293,6 +293,7 @@ describe('AuthGenerator backend.ts output', () => {
     expect(backendContent).toMatchInlineSnapshot(`
       "import { auth } from './auth/resource';
       import { defineBackend } from '@aws-amplify/backend';
+      // import { Tags } from 'aws-cdk-lib';
 
       const backend = defineBackend({
         auth,
@@ -305,6 +306,9 @@ describe('AuthGenerator backend.ts output', () => {
           minimumLength: 8,
         },
       };
+
+      // Uncomment post refactor to force a redeployment
+      // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
       "
     `);
   });

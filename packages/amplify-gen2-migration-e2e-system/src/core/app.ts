@@ -284,7 +284,7 @@ export class App {
     await this.testGen1();
     await this.testGen2();
 
-    await this.testSharedData();
+    await this.testShared();
   }
 
   /**
@@ -378,12 +378,12 @@ export class App {
   /**
    * Run the Jest tests that validate stateful resources are shared.
    */
-  public async testSharedData(): Promise<void> {
-    await this.git.checkout(this.gen2BranchName, false);
+  public async testShared(): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
 
-    // these tests require both config files, so pull the gen1 config into the gen2 branch
-    await this.git.run('checkout', this.gen1BranchName, '--', 'src/amplifyconfiguration.json');
-    await this.runNpmScript('test:shared-data');
+    // these tests require both config files, so pull the gen2 config into the gen1 branch
+    await this.git.run('checkout', this.gen2BranchName, '--', 'amplify_outputs.json');
+    await this.runNpmScript('test:shared');
   }
 
   // ============================================================
@@ -549,7 +549,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: this.getEnv({ ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv }),
+      env: this.getEnv({ GEN1_ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv }),
     });
 
     if (result.exitCode !== 0) {

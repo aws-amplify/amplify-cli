@@ -25,6 +25,8 @@ interface GeoCodegenResultBase {
   readonly constructClassName: string;
   readonly constructFileName: string;
   readonly resourceName: string;
+  readonly gen1ResourceName: string;
+  readonly gen1Actions: readonly string[];
   readonly userPoolIdParamName: string;
   readonly groupRoles: ReadonlyArray<{ readonly paramName: string; readonly groupName: string }>;
   readonly isDefault: string;
@@ -86,6 +88,7 @@ export class GeoCfnConverter {
     resourceName: string,
     service: GeoServiceName,
     providerMetadata: GeoProviderMetadata,
+    gen1EnvName: string,
   ): Promise<GeoCodegenResult> {
     const constructFileName = `${resourceName}-construct`;
     const filePath = path.join(this.dir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
@@ -137,6 +140,8 @@ export class GeoCfnConverter {
       constructClassName,
       constructFileName,
       resourceName,
+      gen1ResourceName: `${resourceName}-${gen1EnvName}`,
+      gen1Actions: extractGen1Actions(template),
       userPoolIdParamName,
       groupRoles,
       isDefault: paramMap.get('isDefault') ?? 'false',
@@ -313,4 +318,43 @@ async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<
     throw new Error(`Failed to retrieve S3 object: ${s3Url}`);
   }
   return JSON.parse(await response.Body.transformToString());
+}
+
+/**
+ * Extracts the user-facing geo IAM actions from a Gen1 CloudFormation template.
+ *
+ * Finds the IAM policy resource whose Statement grants access to the geo
+ * resource itself (not the Lambda execution role policy). The distinguishing
+ * characteristic is that the Roles array references auth/unauth/group roles
+ * (i.e., the Roles contain Ref values that are not the Lambda execution role).
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractGen1Actions(template: any): readonly string[] {
+  const resources = template?.Resources ?? {};
+
+  for (const resource of Object.values(resources)) {
+    const r = resource as Record<string, unknown>;
+    if (r.Type !== 'AWS::IAM::Policy') continue;
+
+    const props = r.Properties as Record<string, unknown> | undefined;
+    if (!props) continue;
+
+    const statements = (props.PolicyDocument as Record<string, unknown>)?.Statement;
+    if (!Array.isArray(statements) || statements.length === 0) continue;
+
+    const actions = statements[0].Action;
+    if (!Array.isArray(actions)) continue;
+
+    // The user-facing policy has geo:Get*, geo:Search*, geo:Put*, geo:List*, geo:Batch* actions
+    // but NOT lifecycle actions like geo:Create*, geo:Update*, geo:Delete*
+    const isUserFacing = (actions as string[]).every(
+      (a: string) => a.startsWith('geo:') && !a.startsWith('geo:Create') && !a.startsWith('geo:Update') && !a.startsWith('geo:Delete'),
+    );
+
+    if (isUserFacing) {
+      return actions as string[];
+    }
+  }
+
+  return [];
 }

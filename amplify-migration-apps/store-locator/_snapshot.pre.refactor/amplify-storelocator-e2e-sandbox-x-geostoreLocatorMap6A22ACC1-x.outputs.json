@@ -1,9 +1,5 @@
 [
   {
-    "OutputKey": "amplifystorelocatore2esandboxdd610709c4geostoreLocatorMapCustomMap89330140MapName",
-    "OutputValue": "storeLocatorMap-gen2-x"
-  },
-  {
     "OutputKey": "Style",
     "OutputValue": "VectorEsriStreets"
   },
@@ -14,6 +10,10 @@
   {
     "OutputKey": "Arn",
     "OutputValue": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-gen2-x"
+  },
+  {
+    "OutputKey": "amplifystorelocatore2esandboxe0ed5f31d0geostoreLocatorMapCustomMap5B81FCD3MapName",
+    "OutputValue": "storeLocatorMap-gen2-x"
   },
   {
     "OutputKey": "Name",
