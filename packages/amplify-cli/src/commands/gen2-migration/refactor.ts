@@ -54,12 +54,18 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
             new AuthUserPoolGroupsForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
-        case 'storage:S3':
+        case 'storage:S3': {
+          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
+          if (meta?.serviceType === 'imported') break;
           refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
-        case 'storage:DynamoDB':
+        }
+        case 'storage:DynamoDB': {
+          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
+          if (meta?.serviceType === 'imported') break;
           refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
+        }
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
@@ -135,12 +141,18 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
             new AuthUserPoolGroupsRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
-        case 'storage:S3':
+        case 'storage:S3': {
+          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
+          if (meta?.serviceType === 'imported') break;
           refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
-        case 'storage:DynamoDB':
+        }
+        case 'storage:DynamoDB': {
+          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
+          if (meta?.serviceType === 'imported') break;
           refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
+        }
         case 'analytics:Kinesis':
           refactorers.push(
             new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),

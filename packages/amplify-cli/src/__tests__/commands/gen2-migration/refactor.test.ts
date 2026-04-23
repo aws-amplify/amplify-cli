@@ -207,6 +207,27 @@ describe('AmplifyMigrationRefactorStep', () => {
       const plan = await step.forward();
       await plan.describe();
     });
+
+    it('skips imported storage resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      const gen1 = mockGen1App({
+        discover: () => [
+          { category: 'storage', resourceName: 'myImportedBucket', service: 'S3', key: 'storage:S3' },
+          { category: 'storage', resourceName: 'myImportedTable', service: 'DynamoDB', key: 'storage:DynamoDB' },
+        ],
+        meta: (category: string) =>
+          category === 'storage'
+            ? {
+                myImportedBucket: { service: 'S3', serviceType: 'imported' },
+                myImportedTable: { service: 'DynamoDB', serviceType: 'imported' },
+              }
+            : undefined,
+      });
+
+      const step = createStep(gen1);
+      const plan = await step.forward();
+      await plan.describe();
+    });
   });
 
   describe('rollback()', () => {
@@ -242,6 +263,27 @@ describe('AmplifyMigrationRefactorStep', () => {
       const gen1 = mockGen1App({
         discover: () => [{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }],
         meta: (category: string) => (category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined),
+      });
+
+      const step = createStep(gen1);
+      const plan = await step.rollback();
+      await plan.describe();
+    });
+
+    it('skips imported storage resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      const gen1 = mockGen1App({
+        discover: () => [
+          { category: 'storage', resourceName: 'myImportedBucket', service: 'S3', key: 'storage:S3' },
+          { category: 'storage', resourceName: 'myImportedTable', service: 'DynamoDB', key: 'storage:DynamoDB' },
+        ],
+        meta: (category: string) =>
+          category === 'storage'
+            ? {
+                myImportedBucket: { service: 'S3', serviceType: 'imported' },
+                myImportedTable: { service: 'DynamoDB', serviceType: 'imported' },
+              }
+            : undefined,
       });
 
       const step = createStep(gen1);
