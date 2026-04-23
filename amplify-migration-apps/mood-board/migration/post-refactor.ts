@@ -45,32 +45,31 @@ async function uncommentS3BucketName(appPath: string): Promise<void> {
   await fs.writeFile(backendPath, updated, 'utf-8');
 }
 
-async function updateSurpriseMeStreamName(appPath: string, envName: string): Promise<void> {
-  const constantsPath = path.join(appPath, 'src', 'constants.ts');
+async function uncommentPostRefactorTag(appPath: string): Promise<void> {
+  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
+  let content = await fs.readFile(backendPath, 'utf-8');
 
-  const content = await fs.readFile(constantsPath, 'utf-8');
-
-  const originalStreamName = `moodboardKinesis-${envName}`;
-  const updated = content.replace(
-    /export const KINESIS_STREAM_NAME\s*=\s*['"][^'"]+['"]/,
-    `export const KINESIS_STREAM_NAME = '${originalStreamName}'`,
+  content = content.replace(/\/\/\s*(import \{ Tags \} from 'aws-cdk-lib';)/, '$1');
+  content = content.replace(
+    /\/\/\s*(Tags\.of\(backend\.stack\)\.add\(['"]gen2-migration\/post-refactor['"],\s*['"]true['"]\);?)/,
+    '$1',
   );
 
-  await fs.writeFile(constantsPath, updated, 'utf-8');
+  await fs.writeFile(backendPath, content, 'utf-8');
 }
 
 export async function postRefactor(appPath: string, envName: string): Promise<void> {
   await uncommentKinesisStreamName(appPath, envName);
   await uncommentS3BucketName(appPath);
-  await updateSurpriseMeStreamName(appPath, envName);
+  await uncommentPostRefactorTag(appPath);
 }
 
 async function main(): Promise<void> {
   const [appPath = process.cwd()] = process.argv.slice(2);
-  if (!process.env.ENV_NAME) {
-    throw new Error(`Missing ENV_NAME env variable`);
+  if (!process.env.GEN1_ENV_NAME) {
+    throw new Error(`Missing GEN1_ENV_NAME env variable`);
   }
-  await postRefactor(appPath, process.env.ENV_NAME);
+  await postRefactor(appPath, process.env.GEN1_ENV_NAME);
 }
 
 main().catch((error) => {

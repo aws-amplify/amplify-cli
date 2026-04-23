@@ -278,7 +278,7 @@
         "PolicyName": "storeLocatorAdminstoreLocatorGeofence-gen2-xPolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthstoreLocatorAdminGroupRoleC0E3E7C0Ref"
+            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthstoreLocatorAdminGroupRoleD95D53BFRef"
           }
         ]
       },
@@ -288,10 +288,57 @@
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/storeLocatorAdminGeofenceCollectionPolicy"
       }
     },
+    "storeLocatorGeofencegen1AuthPolicyD0EAFABD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:GetGeofence",
+                "geo:PutGeofence",
+                "geo:BatchPutGeofence",
+                "geo:BatchDeleteGeofence",
+                "geo:ListGeofences"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:geo:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":geofence-collection/storeLocatorGeofence-x"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "storeLocatorGeofencegen1AuthPolicyD0EAFABD",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthstoreLocatorAdminGroupRoleD95D53BFRef"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/gen1AuthPolicy/Resource"
+      }
+    },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQ6CMBBA4bOwLyM20Qs0cedP8ABmaIsZaKeETiWGcHejrt7iy9OgDw00FS65tm6sA3WwXnwW7+6CdlSm5zNOE/FT4ZIfK2GE1fTcpuC/eEuB7HtTAWPnEEzPp8JWKPH2ZVOypNj6nMpsf8O1yFRkU5ychyHvXlrD/ghNNWSiei4sFD20/34Au+f/SJ8AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWLSw6DIBQAz+IeXy1JewGS7voJPUCDgM1TeBgf1DTGuzfW1SxmRoI8NdBUZubauqEO2MJy85y9e2ZjB6E6uppxRHoLM/NrQRNhUR3pFPwmHymg/Yodqwgmts6A6uhSyGZMtG6VKpxT1J5Tmez/u5c8lrwKSs5Dz4ePlHA8Q1P1jFhPhTJGD3rnD6MRsB+mAAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/CDKMetadata/Default"
@@ -349,7 +396,7 @@
         ]
       }
     },
-    "amplifystorelocatore2esandboxdd610709c4geostoreLocatorGeofenceCustomGeofenceCollection14074ED5CollectionName": {
+    "amplifystorelocatore2esandboxe0ed5f31d0geostoreLocatorGeofenceCustomGeofenceCollection129103D6CollectionName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
@@ -625,7 +672,7 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocatore2esandboxdd610709c4authNestedStackauthNestedStackResource7AD4F428Outputsamplifystorelocatore2esandboxdd610709c4authamplifyAuthstoreLocatorAdminGroupRoleC0E3E7C0Ref": {
+    "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthstoreLocatorAdminGroupRoleD95D53BFRef": {
       "Type": "String"
     }
   }

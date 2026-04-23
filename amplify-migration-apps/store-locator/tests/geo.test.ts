@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Geo } from '@aws-amplify/geo';
 import { signIn, signOut } from 'aws-amplify/auth';
-import { signUp, addToAdminGroup, config } from './signup';
+import { signUp, addToAdminGroup, configureAmplify } from './signup';
 
 const MIDTOWN_COORDINATES: [number, number] = [-73.9857, 40.7484];
 const TEST_GEOFENCE_POLYGON: [number, number][] = [
@@ -16,6 +16,7 @@ let username: string;
 let password: string;
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   username = creds.username;
   password = creds.password;
@@ -73,6 +74,11 @@ describe('guest', () => {
 
 describe('auth', () => {
   const geofenceId = `test-geofence-${Date.now()}`;
+
+  beforeAll(async () => {
+    await signOut();
+    await signIn({ username, password });
+  }, 30_000);
 
   it('searches by text', async () => {
     const results = await Geo.searchByText('New York', { maxResults: 5 });

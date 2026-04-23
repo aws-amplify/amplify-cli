@@ -14,13 +14,14 @@ import {
   createComment, updateComment, deleteComment,
 } from '../src/graphql/mutations';
 import { UserRole } from '../src/API';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 const guest = () => generateClient({ authMode: 'apiKey' });
 const iam = () => generateClient();
 const userPool = () => generateClient({ authMode: 'userPool' });
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);

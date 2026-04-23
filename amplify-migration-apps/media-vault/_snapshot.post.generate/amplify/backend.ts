@@ -10,6 +10,7 @@ import {
   OAuthScope,
   UserPoolClientIdentityProvider,
 } from 'aws-cdk-lib/aws-cognito';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -234,3 +235,6 @@ backend.removeuserfromgroup.resources.lambda.addToRolePolicy(
     resources: [backend.auth.resources.userPool.userPoolArn],
   })
 );
+
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

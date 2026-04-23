@@ -46,18 +46,32 @@ async function uncommentS3BucketName(appPath: string): Promise<void> {
   await fs.writeFile(backendPath, updated, 'utf-8');
 }
 
+async function uncommentPostRefactorTag(appPath: string): Promise<void> {
+  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
+  let content = await fs.readFile(backendPath, 'utf-8');
+
+  content = content.replace(/\/\/\s*(import \{ Tags \} from 'aws-cdk-lib';)/, '$1');
+  content = content.replace(
+    /\/\/\s*(Tags\.of\(backend\.stack\)\.add\(['"]gen2-migration\/post-refactor['"],\s*['"]true['"]\);?)/,
+    '$1',
+  );
+
+  await fs.writeFile(backendPath, content, 'utf-8');
+}
+
 export async function postRefactor(appPath: string, envName: string): Promise<void> {
   await addTableNameToTable(appPath, 'storageActivityStack', 'activity', envName);
   await addTableNameToTable(appPath, 'storageBookmarksStack', 'bookmarks', envName);
   await uncommentS3BucketName(appPath);
+  await uncommentPostRefactorTag(appPath);
 }
 
 async function main(): Promise<void> {
   const [appPath = process.cwd()] = process.argv.slice(2);
-  if (!process.env.ENV_NAME) {
-    throw new Error(`Missing ENV_NAME env variable`);
+  if (!process.env.GEN1_ENV_NAME) {
+    throw new Error(`Missing GEN1_ENV_NAME env variable`);
   }
-  await postRefactor(appPath, process.env.ENV_NAME);
+  await postRefactor(appPath, process.env.GEN1_ENV_NAME);
 }
 
 main().catch((error) => {

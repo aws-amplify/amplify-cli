@@ -72,7 +72,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolFCF1A003Ref"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthUserPool695EC9F8Ref"
         ]
       }
     },
@@ -80,7 +80,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolAppClient98C89471Ref"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthUserPoolAppClient6CA21E8CRef"
         ]
       }
     },
@@ -88,7 +88,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthIdentityPool527DB351Ref"
         ]
       }
     },
@@ -146,7 +146,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolAppClient98C89471Ref"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthUserPoolAppClient6CA21E8CRef"
         ]
       }
     },
@@ -162,21 +162,21 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Ref"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27functionfitnesstracker33f5545533f55455PreSignupgen2xlambda983C2B9ARef"
               ]
             },
             "\",\"",
             {
               "Fn::GetAtt": [
                 "auth179371D7",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBRef"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27authadmingen2xlambda73341809Ref"
               ]
             },
             "\",\"",
             {
               "Fn::GetAtt": [
                 "data7552DF31",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68datalognutritiongen2xlambda08A084BFRef"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27datalognutritiongen2xlambdaAFD1D125Ref"
               ]
             },
             "\"]"
@@ -188,7 +188,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId"
         ]
       }
     },
@@ -196,7 +196,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6GraphQLUrl"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DGraphQLUrl"
         ]
       }
     },
@@ -229,7 +229,7 @@
                             {
                               "Fn::GetAtt": [
                                 "data7552DF31",
-                                "Outputs.amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB65AC19BCDestinationBucketArn"
+                                "Outputs.amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBC980626FDestinationBucketArn"
                               ]
                             }
                           ]
@@ -249,7 +249,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPIDefaultApiKey33F1E284ApiKey"
+          "Outputs.amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIDefaultApiKey1322C838ApiKey"
         ]
       }
     },
@@ -265,7 +265,7 @@
             {
               "Fn::GetAtt": [
                 "restapistacknutritionapi72914ECD",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68restapistacknutritionapiRestApi28E9B2D1Ref"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27restapistacknutritionapiRestApi363D6B41Ref"
               ]
             },
             ".execute-api.",
@@ -280,7 +280,7 @@
             {
               "Fn::GetAtt": [
                 "restapistacknutritionapi72914ECD",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68restapistacknutritionapiRestApiDeploymentStageprod2F3F557DRef"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27restapistacknutritionapiRestApiDeploymentStageprod3751E605Ref"
               ]
             },
             "\",\"region\":\"",
@@ -291,7 +291,7 @@
             {
               "Fn::GetAtt": [
                 "restapistackadminapi43EA27F6",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68restapistackadminapiRestApi83642A51Ref"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27restapistackadminapiRestApi0DFCB2F6Ref"
               ]
             },
             ".execute-api.",
@@ -306,7 +306,7 @@
             {
               "Fn::GetAtt": [
                 "restapistackadminapi43EA27F6",
-                "Outputs.amplifyfitnesstrackere2esandboxd06966be68restapistackadminapiRestApiDeploymentStageprodF0C83279Ref"
+                "Outputs.amplifyfitnesstrackere2esandbox803499bc27restapistackadminapiRestApiDeploymentStageprodA2873DB8Ref"
               ]
             },
             "\",\"region\":\"",
@@ -324,10 +324,10 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68functionNestedStackfunctionNestedStackResource60E00F36Outputsamplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Arn": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27functionNestedStackfunctionNestedStackResource14041EA1Outputsamplifyfitnesstrackere2esandbox803499bc27functionfitnesstracker33f5545533f55455PreSignupgen2xlambda983C2B9AArn": {
             "Fn::GetAtt": [
               "function1351588B",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68functionfitnesstracker33f5545533f55455PreSignupgen2xlambdaBB861381Arn"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27functionfitnesstracker33f5545533f55455PreSignupgen2xlambda983C2B9AArn"
             ]
           }
         },
@@ -357,7 +357,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/9dbda000e4b5c12f09164dd88408d515f5059524f13909b9d112c86a6cfc7d27.json"
+              "/c5e8fe8c9c663c12537b3d9b6b44fa24679497c0f321193f7949a0cb5dd2688c.json"
             ]
           ]
         }
@@ -366,7 +366,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackere2esandboxd06966be68auth9F7546DA.nested.template.json",
+        "aws:asset:path": "amplifyfitnesstrackere2esandbox803499bc27authF90613C8.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -399,7 +399,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/7fdf1ee6ff0b4f888aeb7e27be225173e46b1c18ed2bef8924381f412a6955e2.json"
+              "/8c8d1ce71098ca9dc5b4ec84f1a181956f76c9b73ee820475f428d2fae892968.json"
             ]
           ]
         }
@@ -408,7 +408,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/function.NestedStack/function.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackere2esandboxd06966be68function9FEDDCA1.nested.template.json",
+        "aws:asset:path": "amplifyfitnesstrackere2esandbox803499bc27functionDED23E6F.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -416,28 +416,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolFCF1A003Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthUserPool695EC9F8Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthUserPoolFCF1A003Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthUserPool695EC9F8Ref"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthunauthenticatedUserRoleCE83E48FRef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthunauthenticatedUserRoleCE83E48FRef"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthIdentityPool527DB351Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthIdentityPool527DB351Ref"
             ]
           }
         },
@@ -467,7 +467,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/dc33211f4e250c8a66fad5f73451973094e8a979435e303c66ff4e0caac60744.json"
+              "/5bd07f0408b9963e2237261bfd740831f90673ddcd72943c36b0a4a428686a9d.json"
             ]
           ]
         }
@@ -476,7 +476,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data.NestedStack/data.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackere2esandboxd06966be68data2DF4166B.nested.template.json",
+        "aws:asset:path": "amplifyfitnesstrackere2esandbox803499bc27data98F164B1.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -484,22 +484,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68dataNestedStackdataNestedStackResourceEB7C6BBEOutputsamplifyfitnesstrackere2esandboxd06966be68datalognutritiongen2xlambda08A084BFArn": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27dataNestedStackdataNestedStackResource4F55039BOutputsamplifyfitnesstrackere2esandbox803499bc27datalognutritiongen2xlambdaAFD1D125Arn": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68datalognutritiongen2xlambda08A084BFArn"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27datalognutritiongen2xlambdaAFD1D125Arn"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthAdminGroupRole27697EE4Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthAdminGroupRole27697EE4Ref"
             ]
           }
         },
@@ -529,7 +529,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/0f3fd808641aef6386eae19166811c160fc8efacd199f060f98528669c064a2a.json"
+              "/cfbd2771bd3e32e97a45ba74f3fc33a06a1d797086ee3ba1890db4f98ff85298.json"
             ]
           ]
         }
@@ -538,7 +538,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi.NestedStack/rest-api-stack-nutritionapi.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackere2esandboxd06966be68restapistacknutritionapi592846E9.nested.template.json",
+        "aws:asset:path": "amplifyfitnesstrackere2esandbox803499bc27restapistacknutritionapiD672ACCB.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -546,22 +546,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBArn": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authadmingen2xlambda73341809Arn": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authadmingen2xlambdaDF3566EBArn"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authadmingen2xlambda73341809Arn"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref"
             ]
           },
-          "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref": {
+          "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthAdminGroupRole27697EE4Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfitnesstrackere2esandboxd06966be68authamplifyAuthAdminGroupRole5B23B767Ref"
+              "Outputs.amplifyfitnesstrackere2esandbox803499bc27authamplifyAuthAdminGroupRole27697EE4Ref"
             ]
           }
         },
@@ -591,7 +591,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/d4b48bdd223189046d6fbc4a2352102674daf8cbd016a433ff6b9b8f487873f1.json"
+              "/32bf6200a0ac89a1ee4577743ac28d6f7752ca38ce59f18f1d9f6169a00f0e69.json"
             ]
           ]
         }
@@ -600,7 +600,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-adminapi.NestedStack/rest-api-stack-adminapi.NestedStackResource",
-        "aws:asset:path": "amplifyfitnesstrackere2esandboxd06966be68restapistackadminapi51DAEC60.nested.template.json",
+        "aws:asset:path": "amplifyfitnesstrackere2esandbox803499bc27restapistackadminapiA2B1A4E1.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },

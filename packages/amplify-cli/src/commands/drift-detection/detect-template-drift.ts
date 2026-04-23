@@ -67,9 +67,10 @@ function isRecoverableFailure(reason?: string): boolean {
  * entry with a ChangeSetId, indicating nested changesets exist to recurse into.
  */
 function hasNestedChangeSetFailure(changeSet: DescribeChangeSetCommandOutput): boolean {
-  return changeSet.Changes?.some(
-    (c) => c.ResourceChange?.ResourceType === 'AWS::CloudFormation::Stack' && c.ResourceChange?.ChangeSetId,
-  ) ?? false;
+  return (
+    changeSet.Changes?.some((c) => c.ResourceChange?.ResourceType === 'AWS::CloudFormation::Stack' && c.ResourceChange?.ChangeSetId) ??
+    false
+  );
 }
 
 const CHANGESET_PREFIX = 'amplify-drift-detection-';
@@ -350,10 +351,7 @@ async function analyzeChangeSet(
         // The root changeset fails as soon as any nested changeset fails,
         // but other nested changesets may still be CREATE_IN_PROGRESS.
         try {
-          await waitUntilChangeSetCreateComplete(
-            { client: cfn, maxWaitTime: 120 },
-            { StackName: stackName, ChangeSetName: changeSetName },
-          );
+          await waitUntilChangeSetCreateComplete({ client: cfn, maxWaitTime: 120 }, { StackName: stackName, ChangeSetName: changeSetName });
         } catch (waitError: any) {
           print.debug(`Nested changeset waiter for ${stackName} finished with: ${waitError.message}`);
         }
