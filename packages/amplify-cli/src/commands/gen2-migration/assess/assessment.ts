@@ -162,12 +162,26 @@ export class Assessment {
       lines.push('');
     }
 
+    if (this.hasUnsupported()) {
+      lines.push(
+        chalk.yellow('During migration, unsupported resources/features can be skipped by passing --skip-validations to the command.'),
+      );
+      lines.push('');
+    }
+
     lines.push(chalk.yellow('⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.'));
     lines.push('');
     lines.push(chalk.yellow(GUIDE_LINK));
     lines.push('');
 
     return lines.join('\n');
+  }
+
+  private hasUnsupported(): boolean {
+    return (
+      this._resources.some((ra) => ra.generate.level === 'unsupported' || ra.refactor.level === 'unsupported') ||
+      this._features.some((fr) => fr.generate.level === 'unsupported' || fr.refactor.level === 'unsupported')
+    );
   }
 
   private renderResourceTable(): string {
