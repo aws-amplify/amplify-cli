@@ -36,6 +36,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = this.gen1App.discover();
 
     for (const resource of discovered) {
+      // skip resources the assessment did not mark as supported.
+      // these will show up as validation errors the user has to acknowledge.
+      if (assessment.of(resource, 'refactor').level !== 'supported') {
+        continue;
+      }
+
       switch (resource.key) {
         case 'auth:Cognito': {
           const isReferenceAuth = discovered
@@ -54,18 +60,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
             new AuthUserPoolGroupsForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
-        case 'storage:S3': {
-          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
-          if (meta?.serviceType === 'imported') break;
+        case 'storage:S3':
           refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
-        }
-        case 'storage:DynamoDB': {
-          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
-          if (meta?.serviceType === 'imported') break;
+        case 'storage:DynamoDB':
           refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
-        }
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
@@ -122,6 +122,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = this.gen1App.discover();
 
     for (const resource of discovered) {
+      // skip resources the assessment did not mark as supported.
+      // these will show up as validation errors the user has to acknowledge.
+      if (assessment.of(resource, 'refactor').level !== 'supported') {
+        continue;
+      }
+
       switch (resource.key) {
         case 'auth:Cognito': {
           // Imported auth resources have no CloudFormation stack to move — skip.
@@ -141,18 +147,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
             new AuthUserPoolGroupsRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
-        case 'storage:S3': {
-          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
-          if (meta?.serviceType === 'imported') break;
+        case 'storage:S3':
           refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
-        }
-        case 'storage:DynamoDB': {
-          const meta = (this.gen1App.meta('storage') ?? {})[resource.resourceName] as Record<string, unknown> | undefined;
-          if (meta?.serviceType === 'imported') break;
+        case 'storage:DynamoDB':
           refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
-        }
         case 'analytics:Kinesis':
           refactorers.push(
             new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
