@@ -12,6 +12,16 @@ export class DynamoDBAssessor implements Assessor {
    * Records resource-level support for this DynamoDB resource.
    */
   public record(assessment: Assessment): void {
+    const meta = (this.gen1App.meta('storage') ?? {})[this.resource.resourceName] as Record<string, unknown> | undefined;
+    if (meta?.serviceType === 'imported') {
+      assessment.recordResource({
+        resource: this.resource,
+        generate: unsupported('(imported)'),
+        refactor: unsupported('(imported)'),
+      });
+      return;
+    }
+
     this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
     assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
 
