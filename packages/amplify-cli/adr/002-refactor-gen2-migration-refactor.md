@@ -270,6 +270,7 @@ refactor/
 ```
 
 **Deviations from original plan:**
+
 - `gen1-env.ts` / `gen2-branch.ts` → unified into `stack-facade.ts` (two instances, one class)
 - `auth-user-pool-group-forward/rollback.ts` → folded into `auth-forward.ts` / `auth-rollback.ts`
 - `s3-forward/rollback.ts` + `dynamodb-forward/rollback.ts` → consolidated into `storage-forward/rollback.ts` (S3 and DynamoDB share the same workflow)

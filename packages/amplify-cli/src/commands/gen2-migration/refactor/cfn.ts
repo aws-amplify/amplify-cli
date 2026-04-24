@@ -272,7 +272,7 @@ export class Cfn {
 
     if (params.captureSnapshot ?? true) {
       writeUpdateSnapshot({
-        stackName: changeSet.StackName,
+        stackName: changeSet.StackName!,
         templateBody: JSON.stringify(templateBody),
         parameters: changeSet.Parameters ?? [],
       });

@@ -378,7 +378,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   }
 
   private async retainResource(appResource: DiscoveredResource, stackId: string): Promise<AmplifyMigrationOperation[]> {
-    const operations = [];
+    const operations: AmplifyMigrationOperation[] = [];
 
     const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
 
