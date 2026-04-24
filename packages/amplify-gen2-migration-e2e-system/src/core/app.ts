@@ -81,6 +81,7 @@ export class App {
 
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.amplifyPath = getCLIPath(true);
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
@@ -128,6 +129,7 @@ export class App {
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await initJSProjectWithProfile(this.targetAppPath, {
       name: this.deploymentName,
       envName: this.envName,

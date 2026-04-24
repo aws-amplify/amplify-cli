@@ -1,4 +1,3 @@
-import execa from 'execa';
 import {
   CloudFormationClient,
   DeleteStackCommand,
@@ -109,21 +108,22 @@ export class Teardown {
 
   private async deleteGen2Sandbox(): Promise<void> {
     try {
-      this.app.logger.info('Deleting Gen2 sandbox...');
-      await this.app.git.checkout(this.app.gen2BranchName, false);
-      const result = await execa('npx', ['ampx', 'sandbox', 'delete', '--yes'], {
-        cwd: this.app.targetAppPath,
-        reject: false,
-        stdio: 'inherit',
-        env: this.app.getEnv({ AWS_BRANCH: this.app.gen2BranchName }),
-      });
-      if (result.exitCode !== 0) {
-        this.recordError('Gen2 sandbox delete', new Error(`exited with code ${result.exitCode}`));
-      } else {
-        this.app.logger.info('Gen2 sandbox deleted');
-      }
+      this.app.logger.info('Deleting Gen2 CloudFormation stacks...');
+      const cfnClient = new CloudFormationClient(this.app.getClientConfig());
+      const stackPrefix = `amplify-${this.app.deploymentName}-`;
+      await this.deleteStacksWithRetry(
+        cfnClient,
+        [
+          StackStatus.CREATE_COMPLETE,
+          StackStatus.UPDATE_COMPLETE,
+          StackStatus.UPDATE_ROLLBACK_COMPLETE,
+          StackStatus.ROLLBACK_COMPLETE,
+          StackStatus.DELETE_FAILED,
+        ],
+        (name) => name.startsWith(stackPrefix) && name.includes('e2e-sandbox'),
+      );
     } catch (e) {
-      this.recordError('Gen2 sandbox delete', e);
+      this.recordError('Gen2 stack cleanup', e);
     }
   }
 
@@ -159,6 +159,10 @@ export class Teardown {
     const stacks: string[] = [];
     for await (const page of paginateListStacks({ client: cfnClient }, { StackStatusFilter: statusFilter })) {
       for (const stack of page.StackSummaries ?? []) {
+        if (stack.ParentId) {
+          // nested stacks are skipped because the parent will deleted them.
+          continue;
+        }
         if (stack.StackName && predicate(stack.StackName)) {
           stacks.push(stack.StackName);
         }
