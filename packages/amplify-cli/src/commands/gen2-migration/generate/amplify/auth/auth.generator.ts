@@ -131,6 +131,25 @@ export class AuthGenerator implements Planner {
       'AWS::Cognito::UserPoolGroup',
     ]);
 
+    // (backend.auth.resources.userPool.node.defaultChild as CfnUserPool).deletionProtection = 'ACTIVE'
+    this.backendGenerator.addImport('aws-cdk-lib/aws-cognito', ['CfnUserPool']);
+    this.backendGenerator.addStatement(
+      factory.createExpressionStatement(
+        factory.createAssignment(
+          factory.createPropertyAccessExpression(
+            factory.createParenthesizedExpression(
+              factory.createAsExpression(
+                TS.propAccess('backend', 'auth', 'resources', 'userPool', 'node', 'defaultChild'),
+                factory.createTypeReferenceNode('CfnUserPool'),
+              ),
+            ),
+            'deletionProtection',
+          ),
+          factory.createStringLiteral('ACTIVE'),
+        ),
+      ),
+    );
+
     // Password policy and username attributes overrides
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
     if (Object.keys(userPoolOverrides).length > 0) {

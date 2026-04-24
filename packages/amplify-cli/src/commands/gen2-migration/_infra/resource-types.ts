@@ -33,6 +33,7 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::SDB::Domain',
   'AWS::SQS::Queue',
   'AWS::SecretsManager::Secret',
+  'AWS::Kinesis::Stream',
 ]);
 
 export const REFACTORED_RESOURCES = [
