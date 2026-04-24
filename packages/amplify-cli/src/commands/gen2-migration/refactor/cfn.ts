@@ -368,9 +368,9 @@ export class Cfn {
   /**
    * Renders a human-readable report of property changes from a described change set.
    */
-  public renderChangeSet(changeSet: DescribeChangeSetOutput): string | undefined {
+  public renderChangeSet(changeSet: DescribeChangeSetOutput): string {
     const changes = changeSet.Changes ?? [];
-    if (changes.length === 0) return undefined;
+    if (changes.length === 0) return 'No changes';
 
     const truncate = (value: string | undefined): string => {
       if (!value) return '';

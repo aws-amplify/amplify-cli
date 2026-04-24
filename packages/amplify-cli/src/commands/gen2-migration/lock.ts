@@ -2,6 +2,7 @@ import { AmplifyMigrationStep } from './_infra/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
 import { Plan } from './_infra/plan';
 import {
+  DescribeChangeSetOutput,
   DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetStackPolicyCommand,
@@ -418,12 +419,16 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       return [];
     }
 
-    const changeSetReport = cfn.renderChangeSet(changeSet);
+    const report = cfn.renderChangeSet(changeSet);
+    const valid = this.validateRetainChangeset(changeSet);
 
     operations.push({
       resource: appResource,
-      describe: async () => [`Apply the following ChangeSet to stack ${stackName}\n\n${changeSetReport}\n`],
-      validate: () => undefined,
+      describe: async () => [`Apply the following ChangeSet to stack ${stackName}\n\n${report}\n`],
+      validate: () => ({
+        description: `Ensure no unexpected changes to ${stackName}`,
+        run: async () => ({ valid, report }),
+      }),
       execute: async () => {
         await cfn.executeChangeSet({
           changeSet: changeSet,
@@ -435,6 +440,44 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     return operations;
+  }
+
+  private validateRetainChangeset(changeSet: DescribeChangeSetOutput): boolean {
+    const changes = changeSet.Changes ?? [];
+    if (changes.length === 0) return false;
+
+    for (const change of changes) {
+      const rc = change.ResourceChange;
+      if (!rc || rc.Action !== 'Modify') return false;
+
+      const details = rc.Details ?? [];
+      if (details.length === 0) return false;
+
+      for (const detail of details) {
+        const attr = detail.Target?.Attribute;
+        const name = detail.Target?.Name;
+        const after = detail.Target?.AfterValue;
+
+        // DeletionPolicy or UpdateReplacePolicy set to Retain
+        if ((attr === 'DeletionPolicy' || attr === 'UpdateReplacePolicy') && after === 'Retain') {
+          continue;
+        }
+
+        // DynamoDB DeletionProtectionEnabled set to true
+        if (attr === 'Properties' && name === 'DeletionProtectionEnabled' && after === 'true') {
+          continue;
+        }
+
+        // Cognito UserPool DeletionProtection set to ACTIVE
+        if (attr === 'Properties' && name === 'DeletionProtection' && after === 'ACTIVE') {
+          continue;
+        }
+
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private async fetchExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
