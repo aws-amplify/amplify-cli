@@ -24,9 +24,9 @@ export interface Support {
 export const supported = (): Support => ({ level: 'supported' });
 
 /**
- * Shorthand for an unsupported entry, optionally with an explanatory note.
+ * Shorthand for an unsupported entry with a note.
  */
-export const unsupported = (note?: string): Support => (note !== undefined ? { level: 'unsupported', note } : { level: 'unsupported' });
+export const unsupported = (note: string): Support => ({ level: 'unsupported', note });
 
 /**
  * Shorthand for a not-applicable entry.

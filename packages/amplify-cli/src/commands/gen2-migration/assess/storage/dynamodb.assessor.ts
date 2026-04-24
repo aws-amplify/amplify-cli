@@ -16,8 +16,8 @@ export class DynamoDBAssessor implements Assessor {
     if (meta?.serviceType === 'imported') {
       assessment.recordResource({
         resource: this.resource,
-        generate: unsupported(),
-        refactor: unsupported(),
+        generate: unsupported('(imported)'),
+        refactor: unsupported('(imported)'),
       });
       return;
     }
