@@ -294,11 +294,15 @@ describe('AuthGenerator backend.ts output', () => {
       "import { auth } from './auth/resource';
       import { defineBackend } from '@aws-amplify/backend';
       import { CfnResource } from 'aws-cdk-lib';
+      import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
       // import { Tags } from 'aws-cdk-lib';
 
       const backend = defineBackend({
         auth,
       });
+      (
+        backend.auth.resources.userPool.node.defaultChild as CfnUserPool
+      ).deletionProtection = 'ACTIVE';
       const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
       cfnUserPool.usernameAttributes = undefined;
       cfnUserPool.aliasAttributes = ['email', 'preferred_username'];

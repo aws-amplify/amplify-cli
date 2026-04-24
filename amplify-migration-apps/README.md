@@ -435,3 +435,21 @@ npm run test:e2e
 The system automatically runs npm scripts from the app's `package.json` at the right
 points in the workflow. See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
 more details.
+
+## Teardown
+
+If an E2E run fails or you need to manually clean up deployed resources, use the
+[`teardown.ts`](./teardown.ts) script. It discovers all CloudFormation stacks matching
+the deployment name, reverses deletion protection (DeletionPolicy, DynamoDB
+DeletionProtectionEnabled, Cognito DeletionProtection), and deletes all stacks, S3
+bucket contents, and the Amplify console app.
+
+```console
+cd amplify-migration-apps
+npx tsx teardown.ts <deploymentName> <profile>
+```
+
+The `deploymentName` is the time-based name assigned during the E2E run (look for
+`Deployment name:` in the E2E output). The `profile` is the AWS CLI profile with
+credentials for the account where the app was deployed.
+

@@ -204,7 +204,7 @@ export class Teardown {
         UsePreviousValue: true,
       }));
 
-      this.logger.info(`Updating DeletionPolicy of stateful resource in stack ${stackName} to 'Delete'`);
+      this.logger.info(`Updating DeletionPolicy of stateful resources in stack ${stackName} to 'Delete'`);
       await cfnClient.send(
         new UpdateStackCommand({
           StackName: stackName,
@@ -225,6 +225,7 @@ export class Teardown {
 
   /** Wait for a stack update to complete. */
   private async waitForUpdate(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
+    this.logger.info(`Waiting for stack update: ${stackName}`);
     const deadline = Date.now() + DELETE_WAIT_SECONDS * 1000;
     while (Date.now() < deadline) {
       const { Stacks } = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
@@ -422,6 +423,7 @@ export class Teardown {
    * false on timeout or DELETE_FAILED.
    */
   private async waitForDelete(cfnClient: CloudFormationClient, stackName: string): Promise<boolean> {
+    this.logger.info(`Waiting for stack deletion: ${stackName}`);
     const deadline = Date.now() + DELETE_WAIT_SECONDS * 1000;
     while (Date.now() < deadline) {
       try {

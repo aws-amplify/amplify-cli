@@ -13,6 +13,9 @@ const backend = defineBackend({
   storage,
   quotegeneratorbe,
 });
+(
+  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
+).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {
@@ -59,7 +62,6 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.quotegeneratorbe.resources.cfnResources.cfnFunction.functionName = `quotegeneratorbe-${branchName}`;
-(backend.auth.resources.userPool.node.defaultChild as CfnUserPool).deletionProtection = 'ACTIVE'
 for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter(

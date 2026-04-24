@@ -5,7 +5,6 @@
 
 export const STATEFUL_RESOURCES = new Set([
   'AWS::Backup::BackupVault',
-  // 'AWS::CloudFormation::Stack',
   'AWS::Cognito::UserPool',
   'AWS::DocDB::DBCluster',
   'AWS::DocDB::DBInstance',
@@ -34,6 +33,8 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::SQS::Queue',
   'AWS::SecretsManager::Secret',
   'AWS::Kinesis::Stream',
+  'AWS::Cognito::UserPoolGroup',
+  'AWS::Cognito::IdentityPool',
 ]);
 
 export const REFACTORED_RESOURCES = [

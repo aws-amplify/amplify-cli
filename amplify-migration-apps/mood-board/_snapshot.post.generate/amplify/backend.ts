@@ -10,6 +10,7 @@ import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
 import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
+import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -21,6 +22,9 @@ const backend = defineBackend({
   moodboardKinesisTrigger,
 });
 const analytics = defineAnalytics(backend);
+(
+  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
+).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {

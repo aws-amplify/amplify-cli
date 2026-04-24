@@ -3,6 +3,7 @@ import { storelocator41a9495f41a9495fPostConfirmation } from './auth/storelocato
 import { defineGeo } from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
+import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -10,6 +11,9 @@ const backend = defineBackend({
   storelocator41a9495f41a9495fPostConfirmation,
 });
 const geo = defineGeo(backend);
+(
+  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
+).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {
@@ -33,6 +37,12 @@ userPool.addClient('NativeAppClient', {
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${branchName}`;
+backend.storelocator41a9495f41a9495fPostConfirmation.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: ['cognito-idp:GetGroup', 'cognito-idp:CreateGroup'],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  })
+);
 for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter(
@@ -50,12 +60,6 @@ for (const cfnResource of backend.auth.stack.node
   (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
   (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }
-backend.storelocator41a9495f41a9495fPostConfirmation.resources.lambda.addToRolePolicy(
-  new aws_iam.PolicyStatement({
-    actions: ['cognito-idp:GetGroup', 'cognito-idp:CreateGroup'],
-    resources: [backend.auth.resources.userPool.userPoolArn],
-  })
-);
 
 // Uncomment post refactor to force a redeployment
 // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
