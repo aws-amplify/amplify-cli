@@ -6,7 +6,7 @@ import {
   groupExtendedResolvers,
   computeSpliceIndexes,
   VALID_SLOTS,
-  SLOT_BASE_INDEX,
+  getSlotBaseIndex,
 } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
@@ -563,20 +563,33 @@ describe('parseExtendedResolverFilename', () => {
   });
 
   it('parses a valid extended resolver filename with res template', () => {
-    const result = parseExtendedResolverFilename('Mutation.createProduct.postDataLoad.1.res.vtl');
+    const result = parseExtendedResolverFilename('Mutation.createProduct.preUpdate.1.res.vtl');
     expect(result).toEqual({
       typeName: 'Mutation',
       fieldName: 'createProduct',
-      slot: 'postDataLoad',
+      slot: 'preUpdate',
       order: 1,
       templateType: 'res',
-      filename: 'Mutation.createProduct.postDataLoad.1.res.vtl',
+      filename: 'Mutation.createProduct.preUpdate.1.res.vtl',
     });
   });
 
-  it('parses all valid slots', () => {
+  it('parses all valid slots for their respective operation types', () => {
+    const slotTypeMap: Record<string, string> = {
+      init: 'Query',
+      preAuth: 'Query',
+      auth: 'Query',
+      postAuth: 'Query',
+      preDataLoad: 'Query',
+      postDataLoad: 'Query',
+      preUpdate: 'Mutation',
+      postUpdate: 'Mutation',
+      preSubscribe: 'Subscription',
+      finish: 'Query',
+    };
     for (const slot of VALID_SLOTS) {
-      const filename = `Query.listProducts.${slot}.1.req.vtl`;
+      const typeName = slotTypeMap[slot];
+      const filename = `${typeName}.someField.${slot}.1.req.vtl`;
       const result = parseExtendedResolverFilename(filename);
       expect(result.slot).toBe(slot);
     }
@@ -684,6 +697,8 @@ describe('groupExtendedResolvers', () => {
 });
 
 describe('computeSpliceIndexes', () => {
+  const queryBaseIndex = getSlotBaseIndex('Query', 'listProducts');
+
   it('computes base index for a single function', () => {
     const group = {
       typeName: 'Query',
@@ -701,7 +716,7 @@ describe('computeSpliceIndexes', () => {
     };
     const result = computeSpliceIndexes(group);
     expect(result).toHaveLength(1);
-    expect(result[0].spliceIndex).toBe(SLOT_BASE_INDEX['postAuth']);
+    expect(result[0].spliceIndex).toBe(queryBaseIndex['postAuth']);
   });
 
   it('increments offset for multiple functions', () => {
@@ -729,8 +744,8 @@ describe('computeSpliceIndexes', () => {
     };
     const result = computeSpliceIndexes(group);
     expect(result).toHaveLength(2);
-    expect(result[0].spliceIndex).toBe(SLOT_BASE_INDEX['postAuth']);
-    expect(result[1].spliceIndex).toBe(SLOT_BASE_INDEX['postDataLoad'] + 1);
+    expect(result[0].spliceIndex).toBe(queryBaseIndex['postAuth']);
+    expect(result[1].spliceIndex).toBe(queryBaseIndex['postDataLoad'] + 1);
   });
 
   it('handles multiple functions at the same slot', () => {
@@ -758,8 +773,8 @@ describe('computeSpliceIndexes', () => {
     };
     const result = computeSpliceIndexes(group);
     expect(result).toHaveLength(2);
-    expect(result[0].spliceIndex).toBe(SLOT_BASE_INDEX['postAuth']);
-    expect(result[1].spliceIndex).toBe(SLOT_BASE_INDEX['postAuth'] + 1);
+    expect(result[0].spliceIndex).toBe(queryBaseIndex['postAuth']);
+    expect(result[1].spliceIndex).toBe(queryBaseIndex['postAuth'] + 1);
   });
 
   it('returns empty array for group with no functions', () => {

@@ -12,7 +12,16 @@ import { DataRenderer, DataTableMapping, ExtendedResolverFunctionEntry } from '.
 
 const factory = ts.factory;
 
-/** Valid pipeline resolver slots in execution order. */
+/** Query-specific valid slots in pipeline execution order. */
+const QUERY_VALID_SLOTS = ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad', 'postDataLoad', 'finish'] as const;
+
+/** Mutation-specific valid slots in pipeline execution order. */
+const MUTATION_VALID_SLOTS = ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate', 'postUpdate', 'finish'] as const;
+
+/** Subscription-specific valid slots in pipeline execution order. */
+const SUBSCRIPTION_VALID_SLOTS = ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'] as const;
+
+/** Valid pipeline resolver slots — union of all operation types for backward compatibility. */
 export const VALID_SLOTS = [
   'init',
   'preAuth',
@@ -22,24 +31,65 @@ export const VALID_SLOTS = [
   'postDataLoad',
   'preUpdate',
   'postUpdate',
+  'preSubscribe',
   'finish',
 ] as const;
 
 /** A named position within a pipeline resolver. */
 export type Slot = (typeof VALID_SLOTS)[number];
 
-/** Base insertion index for each slot relative to the default pipeline [init0(0), auth0(1), postAuth0(2), DataResolverFn(3)]. Custom functions are placed after the default functions for their slot. */
-export const SLOT_BASE_INDEX: Record<Slot, number> = {
+/** Base indexes for pipelines WITHOUT init0: Query, Delete Mutation, Subscription [auth0(0), postAuth0(1), DataResolverFn(2)]. */
+const THREE_FN_BASE_INDEX: Record<string, number> = {
+  init: 0,
+  preAuth: 0,
+  auth: 1,
+  postAuth: 2,
+  preDataLoad: 2,
+  postDataLoad: 3,
+  preUpdate: 2,
+  postUpdate: 3,
+  preSubscribe: 2,
+  finish: 3,
+};
+
+/** Base indexes for pipelines WITH init0: Create/Update Mutation [init0(0), auth0(1), postAuth0(2), DataResolverFn(3)]. */
+const FOUR_FN_BASE_INDEX: Record<string, number> = {
   init: 1,
   preAuth: 1,
   auth: 2,
   postAuth: 3,
-  preDataLoad: 3,
-  postDataLoad: 4,
-  preUpdate: 4,
+  preUpdate: 3,
   postUpdate: 4,
   finish: 4,
 };
+
+/** Returns the valid slot array for the given operation type. */
+export function getValidSlots(typeName: string): readonly string[] {
+  switch (typeName) {
+    case 'Query':
+      return QUERY_VALID_SLOTS;
+    case 'Mutation':
+      return MUTATION_VALID_SLOTS;
+    case 'Subscription':
+      return SUBSCRIPTION_VALID_SLOTS;
+    default:
+      return VALID_SLOTS;
+  }
+}
+
+/** Returns the base index record for the given operation type and field name. */
+export function getSlotBaseIndex(typeName: string, fieldName: string): Record<string, number> {
+  switch (typeName) {
+    case 'Query':
+    case 'Subscription':
+      return THREE_FN_BASE_INDEX;
+    case 'Mutation':
+      if (fieldName.startsWith('delete')) return THREE_FN_BASE_INDEX;
+      return FOUR_FN_BASE_INDEX;
+    default:
+      return FOUR_FN_BASE_INDEX;
+  }
+}
 
 /** Parsed components of an extended resolver VTL filename. */
 export interface ExtendedResolverDescriptor {
@@ -760,8 +810,10 @@ export function parseExtendedResolverFilename(filename: string): ExtendedResolve
   const orderStr = segments[3];
   const templateType = segments[4] as 'req' | 'res';
 
-  if (!VALID_SLOTS.includes(slot as Slot)) {
-    throw new Error(`Invalid slot '${slot}' in resolver file '${filename}'. Valid slots: ${VALID_SLOTS.join(', ')}`);
+  if (!(getValidSlots(typeName) as readonly string[]).includes(slot)) {
+    throw new Error(
+      `Invalid slot '${slot}' in resolver file '${filename}'. Valid slots for ${typeName}: ${getValidSlots(typeName).join(', ')}`,
+    );
   }
 
   const order = Number(orderStr);
@@ -825,7 +877,8 @@ export function groupExtendedResolvers(descriptors: readonly ExtendedResolverDes
 
   for (const [, groupDescriptors] of groups) {
     const sorted = [...groupDescriptors].sort((a, b) => {
-      const slotDiff = VALID_SLOTS.indexOf(a.slot) - VALID_SLOTS.indexOf(b.slot);
+      const validSlots = getValidSlots(a.typeName);
+      const slotDiff = validSlots.indexOf(a.slot) - validSlots.indexOf(b.slot);
       if (slotDiff !== 0) return slotDiff;
       return a.order - b.order;
     });
@@ -875,11 +928,12 @@ export function groupExtendedResolvers(descriptors: readonly ExtendedResolverDes
 export function computeSpliceIndexes(
   group: PipelineResolverGroup,
 ): readonly { readonly fn: ExtendedResolverFunction; readonly spliceIndex: number }[] {
+  const slotBaseIndex = getSlotBaseIndex(group.typeName, group.fieldName);
   const result: { readonly fn: ExtendedResolverFunction; readonly spliceIndex: number }[] = [];
   let offset = 0;
 
   for (const fn of group.functions) {
-    const baseIndex = SLOT_BASE_INDEX[fn.slot];
+    const baseIndex = slotBaseIndex[fn.slot];
     const spliceIndex = baseIndex + offset;
     result.push({ fn, spliceIndex });
     offset++;
