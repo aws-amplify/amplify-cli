@@ -3,6 +3,7 @@
 yarn.lock
 packages/*/build
 packages/*/lib
+packages/*/dist
 coverage
 node_modules
 API.md
