@@ -4,6 +4,7 @@ import { storage } from './storage/resource';
 import { quotegeneratorbe } from './function/quotegeneratorbe/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration } from 'aws-cdk-lib';
+import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -58,6 +59,7 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.quotegeneratorbe.resources.cfnResources.cfnFunction.functionName = `quotegeneratorbe-${branchName}`;
+(backend.auth.resources.userPool.node.defaultChild as CfnUserPool).deletionProtection = 'ACTIVE'
 for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter(

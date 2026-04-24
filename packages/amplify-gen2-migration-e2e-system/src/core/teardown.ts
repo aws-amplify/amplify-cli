@@ -13,7 +13,8 @@ import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/clien
 import { CognitoIdentityProviderClient, DescribeUserPoolCommand, UpdateUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 import { S3Client, paginateListObjectsV2, DeleteObjectsCommand } from '@aws-sdk/client-s3';
-import { App } from './app';
+import { fromIni } from '@aws-sdk/credential-providers';
+import { Logger } from './logger';
 
 /** Maximum number of discover-and-delete passes for stuck stacks. */
 const MAX_DELETE_PASSES = 5;
@@ -24,6 +25,19 @@ const DELETE_WAIT_SECONDS = 300;
 /** Seconds between polls when waiting for stack deletion. */
 const DELETE_POLL_INTERVAL_SECONDS = 10;
 
+// these will have removal policy of retain because the migration tool
+// sets it.
+export const REFACTORED_RESOURCES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolGroup',
+  'AWS::DynamoDB::Table',
+  'AWS::S3::Bucket',
+  'AWS::Kinesis::Stream',
+];
+
 /**
  * Deletes all AWS resources deployed by an `App` instance.
  *
@@ -31,11 +45,15 @@ const DELETE_POLL_INTERVAL_SECONDS = 10;
  * Errors are collected and reported as a single aggregate error at the end.
  */
 export class Teardown {
-  private readonly app: App;
+  private readonly deploymentName: string;
+  private readonly logger: Logger;
+  private readonly clientConfig: { credentials: ReturnType<typeof fromIni> };
   private readonly errors: string[] = [];
 
-  constructor(app: App) {
-    this.app = app;
+  constructor(deploymentName: string, profile: string) {
+    this.deploymentName = deploymentName;
+    this.logger = new Logger(`teardown-${deploymentName}`);
+    this.clientConfig = { credentials: fromIni({ profile }) };
   }
 
   /**
@@ -43,12 +61,10 @@ export class Teardown {
    * @throws Error if any cleanup phase encountered failures.
    */
   async clean(): Promise<void> {
-    this.app.logger.info('Starting teardown...');
+    this.logger.info('Starting teardown...');
 
-    await this.app.refreshCredentials();
-
-    const cfnClient = new CloudFormationClient(this.app.getClientConfig());
-    const stackPrefix = `amplify-${this.app.deploymentName}-`;
+    const cfnClient = new CloudFormationClient(this.clientConfig);
+    const stackPrefix = `amplify-${this.deploymentName}-`;
     const allStatuses = [
       StackStatus.CREATE_COMPLETE,
       StackStatus.UPDATE_COMPLETE,
@@ -59,7 +75,11 @@ export class Teardown {
     ];
 
     const stacks = await this.discoverStacks(cfnClient, allStatuses, (name) => name.startsWith(stackPrefix));
-    this.app.logger.info(`Discovered ${stacks.length} stack(s) matching prefix '${stackPrefix}'`);
+    if (stacks.length === 0) {
+      this.logger.info('No stacks found. Nothing to tear down.');
+      return;
+    }
+    this.logger.info(`Discovered ${stacks.length} stack(s) matching prefix '${stackPrefix}'`);
 
     await this.setDeletionPolicies(cfnClient, stacks);
     await this.disableDeletionProtection(cfnClient, stacks);
@@ -74,7 +94,7 @@ export class Teardown {
       throw new Error(`Teardown completed with ${this.errors.length} error(s):\n${summary}`);
     }
 
-    this.app.logger.info('Teardown complete');
+    this.logger.info('Teardown complete');
   }
 
   // ============================================================
@@ -85,7 +105,6 @@ export class Teardown {
     try {
       const gen1Stacks = stacks.filter((name) => !name.includes('e2e-sandbox') && !name.endsWith('-holding'));
       if (gen1Stacks.length === 0) return;
-      this.app.logger.info(`Deleting ${gen1Stacks.length} Gen1 stack(s)...`);
       await this.deleteStacksWithRetry(cfnClient, (name) => gen1Stacks.includes(name));
     } catch (e) {
       this.recordError('Gen1 stack cleanup', e);
@@ -94,15 +113,12 @@ export class Teardown {
 
   private async deleteAmplifyApp(): Promise<void> {
     try {
-      this.app.logger.info('Deleting Amplify console app...');
-      const amplifyClient = new AmplifyClient(this.app.getClientConfig());
+      const amplifyClient = new AmplifyClient(this.clientConfig);
       const apps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 }));
-      const match = apps.apps?.find((a) => a.name === this.app.deploymentName);
+      const match = apps.apps?.find((a) => a.name === this.deploymentName);
       if (match?.appId) {
+        this.logger.info(`Deleting Amplify app: ${this.deploymentName} (${match.appId})`);
         await amplifyClient.send(new DeleteAppCommand({ appId: match.appId }));
-        this.app.logger.info(`Deleted Amplify app: ${this.app.deploymentName} (${match.appId})`);
-      } else {
-        this.app.logger.info(`Amplify app ${this.app.deploymentName} not found (may already be deleted)`);
       }
     } catch (e) {
       this.recordError('Amplify app cleanup', e);
@@ -113,7 +129,6 @@ export class Teardown {
     try {
       const sandboxStacks = stacks.filter((name) => name.includes('e2e-sandbox'));
       if (sandboxStacks.length === 0) return;
-      this.app.logger.info(`Deleting ${sandboxStacks.length} Gen2 sandbox stack(s)...`);
       await this.deleteStacksWithRetry(cfnClient, (name) => sandboxStacks.includes(name));
     } catch (e) {
       this.recordError('Gen2 stack cleanup', e);
@@ -124,7 +139,6 @@ export class Teardown {
     try {
       const holdingStacks = stacks.filter((name) => name.endsWith('-holding'));
       if (holdingStacks.length === 0) return;
-      this.app.logger.info(`Deleting ${holdingStacks.length} holding stack(s)...`);
       await this.deleteStacksWithRetry(cfnClient, (name) => holdingStacks.includes(name));
     } catch (e) {
       this.recordError('Holding stack cleanup', e);
@@ -135,15 +149,25 @@ export class Teardown {
   // Deletion policy toggle
   // ============================================================
 
-  /** Set DeletionPolicy to Delete on every resource in the given stacks. */
+  /** Set DeletionPolicy to Delete on every resource in the given stacks (recursively). */
   private async setDeletionPolicies(cfnClient: CloudFormationClient, stacks: readonly string[]): Promise<void> {
     try {
-      this.app.logger.info('Setting DeletionPolicy=Delete on all stacks...');
       for (const stackName of stacks) {
-        await this.toggleDeletionPolicy(cfnClient, stackName);
+        await this.setDeletionPolicyForStack(cfnClient, stackName);
       }
     } catch (e) {
       this.recordError('Set deletion policies', e);
+    }
+  }
+
+  private async setDeletionPolicyForStack(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
+    await this.toggleDeletionPolicy(cfnClient, stackName);
+
+    const resources = await cfnClient.send(new ListStackResourcesCommand({ StackName: stackName }));
+    for (const r of resources.StackResourceSummaries ?? []) {
+      if (r.ResourceType === 'AWS::CloudFormation::Stack' && r.PhysicalResourceId) {
+        await this.setDeletionPolicyForStack(cfnClient, r.PhysicalResourceId);
+      }
     }
   }
 
@@ -159,23 +183,19 @@ export class Teardown {
       if (!resources) return;
 
       let modified = false;
-      for (const resource of Object.values(resources)) {
+      for (const [logicalId, resource] of Object.entries(resources)) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+        if (!REFACTORED_RESOURCES.includes((resource as any).Type)) {
+          continue;
+        }
         if (resource.DeletionPolicy && resource.DeletionPolicy !== 'Delete') {
+          this.logger.info(`Updating ${logicalId}.DeletionPolicy: ${resource.DeletionPolicy} -> Delete`);
           resource.DeletionPolicy = 'Delete';
           modified = true;
         }
-        if (resource.UpdateReplacePolicy && resource.UpdateReplacePolicy !== 'Delete') {
-          resource.UpdateReplacePolicy = 'Delete';
-          modified = true;
-        }
       }
 
-      if (!modified) {
-        this.app.logger.info(`No DeletionPolicy changes needed for ${stackName}`);
-        return;
-      }
-
-      this.app.logger.info(`Updating DeletionPolicy=Delete on ${stackName}`);
+      if (!modified) return;
 
       // Preserve existing parameters as-is.
       const { Stacks } = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
@@ -184,6 +204,7 @@ export class Teardown {
         UsePreviousValue: true,
       }));
 
+      this.logger.info(`Updating DeletionPolicy of stateful resource in stack ${stackName} to 'Delete'`);
       await cfnClient.send(
         new UpdateStackCommand({
           StackName: stackName,
@@ -194,17 +215,8 @@ export class Teardown {
       );
 
       await this.waitForUpdate(cfnClient, stackName);
-
-      const nestedStacks = await cfnClient.send(new ListStackResourcesCommand({ StackName: stackName }));
-      for (const r of nestedStacks.StackResourceSummaries ?? []) {
-        if (r.ResourceType === 'AWS::CloudFormation::Stack' && r.PhysicalResourceId) {
-          await this.toggleDeletionPolicy(cfnClient, r.PhysicalResourceId);
-        }
-      }
     } catch (e) {
-      // "No updates are to be performed" is fine — means nothing changed.
       if ((e as Error).message?.includes('No updates are to be performed')) {
-        this.app.logger.info(`No DeletionPolicy changes needed for ${stackName}`);
         return;
       }
       this.recordError(`Toggle DeletionPolicy (${stackName})`, e);
@@ -230,7 +242,6 @@ export class Teardown {
   /** Disable deletion protection on DynamoDB tables and Cognito User Pools in the given stacks. */
   private async disableDeletionProtection(cfnClient: CloudFormationClient, stacks: readonly string[]): Promise<void> {
     try {
-      this.app.logger.info('Disabling deletion protection on DynamoDB tables and User Pools...');
       for (const stackName of stacks) {
         await this.disableProtectionForStack(cfnClient, stackName);
       }
@@ -258,8 +269,8 @@ export class Teardown {
   /** Disable DeletionProtectionEnabled on a DynamoDB table. */
   private async disableDynamoDbDeletionProtection(tableName: string): Promise<void> {
     try {
-      const ddb = new DynamoDBClient(this.app.getClientConfig());
-      this.app.logger.info(`Disabling deletion protection on DynamoDB table: ${tableName}`);
+      const ddb = new DynamoDBClient(this.clientConfig);
+      this.logger.info(`Disabling deletion protection on DynamoDB table: ${tableName}`);
       await ddb.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }));
     } catch (e) {
       this.recordError(`Disable DynamoDB deletion protection (${tableName})`, e);
@@ -269,8 +280,8 @@ export class Teardown {
   /** Disable DeletionProtection on a Cognito User Pool. Requires a full describe first since UpdateUserPool doesn't support partial updates. */
   private async disableUserPoolDeletionProtection(userPoolId: string): Promise<void> {
     try {
-      const cognito = new CognitoIdentityProviderClient(this.app.getClientConfig());
-      this.app.logger.info(`Disabling deletion protection on User Pool: ${userPoolId}`);
+      const cognito = new CognitoIdentityProviderClient(this.clientConfig);
+      this.logger.info(`Disabling deletion protection on User Pool: ${userPoolId}`);
 
       const { UserPool } = await cognito.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
       if (!UserPool) return;
@@ -363,7 +374,7 @@ export class Teardown {
       if (stacks.length === 0) return;
 
       if (pass > 0) {
-        this.app.logger.info(`Delete pass ${pass + 1} for ${stacks.length} remaining stack(s)`);
+        this.logger.info(`Delete pass ${pass + 1} for ${stacks.length} remaining stack(s)`);
       }
 
       for (const stackName of stacks) {
@@ -371,7 +382,7 @@ export class Teardown {
       }
 
       for (const stackName of stacks) {
-        this.app.logger.info(`Deleting stack: ${stackName}`);
+        this.logger.info(`Deleting stack: ${stackName}`);
         try {
           await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
         } catch (e) {
@@ -384,7 +395,7 @@ export class Teardown {
 
         const failedResources = await this.listFailedResources(cfnClient, stackName);
         if (failedResources.length > 0) {
-          this.app.logger.info(`Retrying ${stackName} with retained resources: ${failedResources.join(', ')}`);
+          this.logger.info(`Retrying ${stackName} with retained resources: ${failedResources.join(', ')}`);
           try {
             await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: failedResources }));
           } catch (e) {
@@ -453,10 +464,10 @@ export class Teardown {
       .map((r) => r.PhysicalResourceId!);
     if (buckets.length === 0) return;
 
-    const s3 = new S3Client(this.app.getClientConfig());
+    const s3 = new S3Client(this.clientConfig);
     for (const bucket of buckets) {
       try {
-        this.app.logger.info(`Emptying bucket: ${bucket}`);
+        this.logger.info(`Emptying bucket: ${bucket}`);
         for await (const page of paginateListObjectsV2({ client: s3 }, { Bucket: bucket })) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const objects = (page.Contents ?? []).filter((o) => o.Key).map((o) => ({ Key: o.Key! }));
@@ -472,7 +483,7 @@ export class Teardown {
 
   private recordError(phase: string, error: unknown): void {
     const message = `${phase}: ${(error as Error).message}`;
-    this.app.logger.info(`${message} (continuing teardown)`);
+    this.logger.info(`${message} (continuing teardown)`);
     this.errors.push(message);
   }
 }

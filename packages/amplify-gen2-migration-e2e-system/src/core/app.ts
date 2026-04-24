@@ -65,6 +65,10 @@ export class App {
   private readonly amplifyPath: string;
   private readonly credentials: CredentialManager;
 
+  public get profile(): string {
+    return this.credentials.profile;
+  }
+
   public readonly logger: Logger;
   public readonly targetAppPath: string;
 
@@ -140,7 +144,7 @@ export class App {
       buildCmd: 'npm run build',
       startCmd: 'npm run start',
       disableAmplifyAppCreation: false,
-      profileName: this.credentials.profile,
+      profileName: this.profile,
     });
     this.logger.info('amplify init completed');
   }
@@ -473,7 +477,7 @@ export class App {
    * credential signal — sub-processes resolve it via the shared AWS config.
    */
   public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, AWS_PROFILE: this.credentials.profile, ...extra };
+    return { ...process.env, AWS_PROFILE: this.profile, ...extra };
   }
 
   /**
@@ -482,7 +486,7 @@ export class App {
    * chain, which may prefer container/IMDS credentials in CI environments.
    */
   public getClientConfig(): { credentials: ReturnType<typeof fromIni> } {
-    return { credentials: fromIni({ profile: this.credentials.profile }) };
+    return { credentials: fromIni({ profile: this.profile }) };
   }
 
   // ============================================================
