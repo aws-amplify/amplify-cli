@@ -4,7 +4,6 @@ import { storage } from './storage/resource';
 import { quotegenerator } from './function/quotegenerator/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration } from 'aws-cdk-lib';
-import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -13,9 +12,6 @@ const backend = defineBackend({
   storage,
   quotegenerator,
 });
-(
-  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
-).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {
@@ -72,7 +68,6 @@ for (const cfnResource of backend.auth.stack.node
         'AWS::Cognito::IdentityPool',
         'AWS::Cognito::UserPoolClient',
         'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolDomain',
         'AWS::Cognito::UserPoolGroup',
       ].includes(c.cfnResourceType)
   )) {

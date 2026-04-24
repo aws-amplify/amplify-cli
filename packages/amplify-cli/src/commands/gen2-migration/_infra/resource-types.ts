@@ -37,18 +37,22 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::Cognito::IdentityPool',
 ]);
 
-export const REFACTORED_RESOURCES = [
-  // Auth
+export const AUTH_REFACTORED_RESOURCES = [
   'AWS::Cognito::UserPool',
   'AWS::Cognito::IdentityPool',
   'AWS::Cognito::UserPoolClient',
   'AWS::Cognito::IdentityPoolRoleAttachment',
   'AWS::Cognito::UserPoolGroup',
+];
 
-  // Storage + Api
-  'AWS::DynamoDB::Table',
-  'AWS::S3::Bucket',
+export const STORAGE_S3_REFACTORED_RESOURCES = ['AWS::S3::Bucket'];
+export const STORAGE_DYNAMO_REFACTORED_RESOURCES = ['AWS::DynamoDB::Table'];
 
-  // Analytics (Kinesis)
-  'AWS::Kinesis::Stream',
+export const ANALYTICS_REFACTORED_RESOURCES = ['AWS::Kinesis::Stream'];
+
+export const REFACTORED_RESOURCES = [
+  ...AUTH_REFACTORED_RESOURCES,
+  ...STORAGE_S3_REFACTORED_RESOURCES,
+  ...STORAGE_DYNAMO_REFACTORED_RESOURCES,
+  ...ANALYTICS_REFACTORED_RESOURCES,
 ];

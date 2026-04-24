@@ -3,7 +3,7 @@ import { generateClient } from 'aws-amplify/api';
 import { signIn, signOut } from 'aws-amplify/auth';
 import { record, flushEvents } from 'aws-amplify/analytics/kinesis';
 import { KINESIS_STREAM_NAME } from '../src/constants';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 const listKinesisEventCounts = /* GraphQL */ `query ListKinesisEventCounts($filter: ModelKinesisEventCountFilterInput, $limit: Int) {
   listKinesisEventCounts(filter: $filter, limit: $limit) {
@@ -17,6 +17,7 @@ const listKinesisEventCounts = /* GraphQL */ `query ListKinesisEventCounts($filt
 const pub = () => generateClient({ authMode: 'apiKey' });
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);
@@ -38,7 +39,7 @@ describe('kinesis trigger', () => {
     const initialCount = (beforeResult as any).data.listKinesisEventCounts.items.length;
 
     // Record events to the Kinesis stream
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 100; i++) {
       record({
         data: { event: 'triggerTest', timestamp: Date.now(), index: i },
         partitionKey: 'trigger-test',

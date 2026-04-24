@@ -14,7 +14,6 @@ import {
 } from 'aws-cdk-lib/aws-dynamodb';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration } from 'aws-cdk-lib';
-import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -58,9 +57,6 @@ bookmarks.addGlobalSecondaryIndex({
   readCapacity: 5,
   writeCapacity: 5,
 });
-(
-  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
-).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['phone_number'];
 cfnUserPool.policies = {
@@ -210,7 +206,6 @@ for (const cfnResource of backend.auth.stack.node
         'AWS::Cognito::IdentityPool',
         'AWS::Cognito::UserPoolClient',
         'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolDomain',
         'AWS::Cognito::UserPoolGroup',
       ].includes(c.cfnResourceType)
   )) {

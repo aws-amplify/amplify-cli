@@ -8,6 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AuthRenderOptions, AuthRenderer, AuthTrigger, FunctionAccess } from './auth.renderer';
+import { AUTH_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 const factory = ts.factory;
 
@@ -122,33 +123,7 @@ export class AuthGenerator implements Planner {
     this.backendGenerator.addImport('./auth/resource', ['auth']);
     this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(authIdentifier));
 
-    this.backendGenerator.addBackendStackRetentionLoop('auth', [
-      'AWS::Cognito::UserPool',
-      'AWS::Cognito::IdentityPool',
-      'AWS::Cognito::UserPoolClient',
-      'AWS::Cognito::IdentityPoolRoleAttachment',
-      'AWS::Cognito::UserPoolDomain',
-      'AWS::Cognito::UserPoolGroup',
-    ]);
-
-    // (backend.auth.resources.userPool.node.defaultChild as CfnUserPool).deletionProtection = 'ACTIVE'
-    this.backendGenerator.addImport('aws-cdk-lib/aws-cognito', ['CfnUserPool']);
-    this.backendGenerator.addStatement(
-      factory.createExpressionStatement(
-        factory.createAssignment(
-          factory.createPropertyAccessExpression(
-            factory.createParenthesizedExpression(
-              factory.createAsExpression(
-                TS.propAccess('backend', 'auth', 'resources', 'userPool', 'node', 'defaultChild'),
-                factory.createTypeReferenceNode('CfnUserPool'),
-              ),
-            ),
-            'deletionProtection',
-          ),
-          factory.createStringLiteral('ACTIVE'),
-        ),
-      ),
-    );
+    this.backendGenerator.addBackendStackRetentionLoop('auth', AUTH_REFACTORED_RESOURCES);
 
     // Password policy and username attributes overrides
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);

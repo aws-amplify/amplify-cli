@@ -20,6 +20,9 @@ import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift-det
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
+const DYNAMO_DELETION_PROTECTION_PROPERTY = 'DeletionProtectionEnabled';
+const DYNAMO_RESOURCE_TYPE = 'AWS::DynamoDB::Table';
+
 const LOCK_STATEMENT = {
   Effect: 'Deny',
   Action: 'Update:*',
@@ -138,7 +141,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.gen1App.envName})`],
       execute: async () => {
         const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
-        const environmentVariables = { ...(app.app!.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
+        const environmentVariables = { ...(app.app?.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
         await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.gen1App.envName})`);
       },
@@ -244,7 +247,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`],
       execute: async () => {
         const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
-        const environmentVariables = app.app!.environmentVariables ?? {};
+        const environmentVariables = app.app?.environmentVariables ?? {};
         delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
         await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Removed ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable`);
@@ -339,6 +342,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
 
       return { valid: true };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       return { valid: false, report: e?.message ?? String(e) };
     }
@@ -391,13 +395,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
-      if (resource.Type === 'AWS::DynamoDB::Table') {
+      if (resource.Type === DYNAMO_RESOURCE_TYPE) {
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
-        resource.Properties['DeletionProtectionEnabled'] = true;
-      }
-      if (resource.Type === 'AWS::Cognito::UserPool') {
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cognito-userpool.html#cfn-cognito-userpool-deletionprotection
-        resource.Properties['DeletionProtection'] = 'ACTIVE';
+        resource.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] = true;
       }
     }
 
@@ -458,18 +458,16 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         const name = detail.Target?.Name;
         const after = detail.Target?.AfterValue;
 
-        // DeletionPolicy or UpdateReplacePolicy set to Retain
         if ((attr === 'DeletionPolicy' || attr === 'UpdateReplacePolicy') && after === 'Retain') {
           continue;
         }
 
-        // DynamoDB DeletionProtectionEnabled set to true
-        if (attr === 'Properties' && name === 'DeletionProtectionEnabled' && after === 'true') {
-          continue;
-        }
-
-        // Cognito UserPool DeletionProtection set to ACTIVE
-        if (attr === 'Properties' && name === 'DeletionProtection' && after === 'ACTIVE') {
+        if (
+          change.ResourceChange?.ResourceType === DYNAMO_RESOURCE_TYPE &&
+          attr === 'Properties' &&
+          name === DYNAMO_DELETION_PROTECTION_PROPERTY &&
+          after === 'true'
+        ) {
           continue;
         }
 

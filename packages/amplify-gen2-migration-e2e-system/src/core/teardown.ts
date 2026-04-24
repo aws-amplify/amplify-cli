@@ -10,7 +10,6 @@ import {
   UpdateStackCommand,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
-import { CognitoIdentityProviderClient, DescribeUserPoolCommand, UpdateUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 import { S3Client, paginateListObjectsV2, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import { fromIni } from '@aws-sdk/credential-providers';
@@ -259,8 +258,6 @@ export class Teardown {
 
       if (r.ResourceType === 'AWS::DynamoDB::Table') {
         await this.disableDynamoDbDeletionProtection(r.PhysicalResourceId);
-      } else if (r.ResourceType === 'AWS::Cognito::UserPool') {
-        await this.disableUserPoolDeletionProtection(r.PhysicalResourceId);
       } else if (r.ResourceType === 'AWS::CloudFormation::Stack') {
         await this.disableProtectionForStack(cfnClient, r.PhysicalResourceId);
       }
@@ -275,40 +272,6 @@ export class Teardown {
       await ddb.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }));
     } catch (e) {
       this.recordError(`Disable DynamoDB deletion protection (${tableName})`, e);
-    }
-  }
-
-  /** Disable DeletionProtection on a Cognito User Pool. Requires a full describe first since UpdateUserPool doesn't support partial updates. */
-  private async disableUserPoolDeletionProtection(userPoolId: string): Promise<void> {
-    try {
-      const cognito = new CognitoIdentityProviderClient(this.clientConfig);
-      this.logger.info(`Disabling deletion protection on User Pool: ${userPoolId}`);
-
-      const { UserPool } = await cognito.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
-      if (!UserPool) return;
-
-      await cognito.send(
-        new UpdateUserPoolCommand({
-          UserPoolId: userPoolId,
-          Policies: UserPool.Policies,
-          AutoVerifiedAttributes: UserPool.AutoVerifiedAttributes,
-          SmsVerificationMessage: UserPool.SmsVerificationMessage,
-          EmailVerificationMessage: UserPool.EmailVerificationMessage,
-          EmailVerificationSubject: UserPool.EmailVerificationSubject,
-          SmsAuthenticationMessage: UserPool.SmsAuthenticationMessage,
-          MfaConfiguration: UserPool.MfaConfiguration,
-          DeviceConfiguration: UserPool.DeviceConfiguration,
-          EmailConfiguration: UserPool.EmailConfiguration,
-          SmsConfiguration: UserPool.SmsConfiguration,
-          UserPoolTags: UserPool.UserPoolTags,
-          AdminCreateUserConfig: UserPool.AdminCreateUserConfig,
-          UserPoolAddOns: UserPool.UserPoolAddOns,
-          AccountRecoverySetting: UserPool.AccountRecoverySetting,
-          DeletionProtection: 'INACTIVE',
-        }),
-      );
-    } catch (e) {
-      this.recordError(`Disable User Pool deletion protection (${userPoolId})`, e);
     }
   }
 

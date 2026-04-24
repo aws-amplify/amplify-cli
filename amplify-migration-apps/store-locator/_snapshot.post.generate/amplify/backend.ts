@@ -3,7 +3,6 @@ import { storelocator41a9495f41a9495fPostConfirmation } from './auth/storelocato
 import { defineGeo } from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
-import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -11,9 +10,6 @@ const backend = defineBackend({
   storelocator41a9495f41a9495fPostConfirmation,
 });
 const geo = defineGeo(backend);
-(
-  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
-).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {
@@ -53,7 +49,6 @@ for (const cfnResource of backend.auth.stack.node
         'AWS::Cognito::IdentityPool',
         'AWS::Cognito::UserPoolClient',
         'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolDomain',
         'AWS::Cognito::UserPoolGroup',
       ].includes(c.cfnResourceType)
   )) {

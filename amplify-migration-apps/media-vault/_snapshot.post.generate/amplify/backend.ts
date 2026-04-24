@@ -7,7 +7,6 @@ import { removeuserfromgroup } from './function/removeuserfromgroup/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
 import {
-  CfnUserPool,
   OAuthScope,
   UserPoolClientIdentityProvider,
 } from 'aws-cdk-lib/aws-cognito';
@@ -21,9 +20,6 @@ const backend = defineBackend({
   addusertogroup,
   removeuserfromgroup,
 });
-(
-  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
-).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email', 'phone_number'];
 cfnUserPool.policies = {
@@ -249,7 +245,6 @@ for (const cfnResource of backend.auth.stack.node
         'AWS::Cognito::IdentityPool',
         'AWS::Cognito::UserPoolClient',
         'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolDomain',
         'AWS::Cognito::UserPoolGroup',
       ].includes(c.cfnResourceType)
   )) {

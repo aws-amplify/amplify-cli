@@ -8,6 +8,7 @@ import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
 import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
+import { ANALYTICS_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 const factory = ts.factory;
 
@@ -106,7 +107,7 @@ export class AnalyticsKinesisGenerator implements Planner {
             ),
           );
 
-          this.backendGenerator.addVariableRetentionLoop('analytics', ['AWS::Kinesis::Stream']);
+          this.backendGenerator.addVariableRetentionLoop('analytics', ANALYTICS_REFACTORED_RESOURCES);
         },
       },
     ];

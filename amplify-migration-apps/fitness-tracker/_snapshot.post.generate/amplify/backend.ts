@@ -13,7 +13,6 @@ import {
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
 import { CfnResource, Duration, aws_iam, Stack } from 'aws-cdk-lib';
-import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -23,9 +22,6 @@ const backend = defineBackend({
   lognutrition,
   admin,
 });
-(
-  backend.auth.resources.userPool.node.defaultChild as CfnUserPool
-).deletionProtection = 'ACTIVE';
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = undefined;
 cfnUserPool.policies = {
@@ -376,7 +372,6 @@ for (const cfnResource of backend.auth.stack.node
         'AWS::Cognito::IdentityPool',
         'AWS::Cognito::UserPoolClient',
         'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolDomain',
         'AWS::Cognito::UserPoolGroup',
       ].includes(c.cfnResourceType)
   )) {

@@ -236,6 +236,9 @@ export class App {
     await this.deploy();
     await this.assess();
     await this.lock();
+
+    await this.testGen1();
+
     await this.git.checkout(this.gen2BranchName, true);
     await this.generate();
 
