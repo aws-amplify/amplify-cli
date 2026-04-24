@@ -151,7 +151,6 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
     ...(phase3.resourcesToBeCreated || []),
     ...(phase3.resourcesToBeUpdated || []),
     ...(phase3.resourcesToBeDeleted || []),
-    ...(phase3.resourcesToBeSynced || []),
   ];
   if (!phase3.skipped && localResources.length > 0) {
     const seenCategories = new Set<string>();
