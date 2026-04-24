@@ -32,11 +32,11 @@ function getProfileIndex(profileName: string): number {
     });
     const index = profiles.indexOf(profileName);
     if (index === -1) {
-      throw Error(`Profile: ${profileName} not found.`);
+      return 0;
     }
     return index;
   } catch (error) {
-    throw Error(`Failed to read config file when getting AWS profile: ${(error as Error).message}`);
+    return 0;
   }
 }
 
