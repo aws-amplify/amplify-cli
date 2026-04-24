@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPool390B0381Ref",
-    "OutputValue": "us-east-1_5iU0nP22B"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthUserPool88309446Ref",
+    "OutputValue": "us-east-1_S5zs48BQ8"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref",
-    "OutputValue": "amplify-moodboard26041519-amplifyAuthauthenticatedU-hG08sRlsZcsb"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthauthenticatedUserRole9FBEFADDRef",
+    "OutputValue": "amplify-moodboard26042215-amplifyAuthauthenticatedU-kysyAl3WUL5W"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref",
-    "OutputValue": "us-east-1:3a5eeecb-0ea0-4cbe-93f4-2094213caf65"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthUserPoolAppClient9141812BRef",
+    "OutputValue": "q6pv2fdcs4s7to7ocp8th73n4"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPoolAppClient54FF5C73Ref",
-    "OutputValue": "6dkse6kuhg779dhl6glmefrmrq"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthunauthenticatedUserRole2ADAA45CRef",
+    "OutputValue": "amplify-moodboard26042215-amplifyAuthunauthenticate-6uKlXRpRthU1"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref",
-    "OutputValue": "amplify-moodboard26041519-amplifyAuthunauthenticate-Six3YvIOxgGy"
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthIdentityPoolB9F41888Ref",
+    "OutputValue": "us-east-1:fd95d154-e9d4-426b-b587-e4c8b3c72426"
   }
 ]

@@ -4,12 +4,17 @@ import { storage } from './storage/resource';
 import { moodboardGetRandomEmoji } from './function/moodboardGetRandomEmoji/resource';
 import { moodboardKinesisReader } from './function/moodboardKinesisReader/resource';
 import { moodboardKinesisTrigger } from './function/moodboardKinesisTrigger/resource';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { readdirSync } from 'fs';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
-import { Duration, aws_iam } from 'aws-cdk-lib';
+import { Duration, aws_appsync, aws_iam } from 'aws-cdk-lib';
+import * as assets from 'aws-cdk-lib/aws-s3-assets';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -52,6 +57,86 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     },
   },
 ];
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const resolversDir = join(__dirname, 'data/resolvers');
+const resolverFiles = readdirSync(resolversDir).filter(
+  (f) =>
+    (f.endsWith('.req.vtl') || f.endsWith('.res.vtl')) &&
+    f.split('.').length === 4
+);
+for (const file of resolverFiles) {
+  const parts = file.replace('.req.vtl', '').replace('.res.vtl', '').split('.');
+  const [typeName, fieldName] = parts;
+  const isRequest = file.endsWith('.req.vtl');
+  const functionId = `${typeName}${
+    fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+  }DataResolverFn`;
+  const pipelineFunction =
+    backend.data.resources.cfnResources.cfnFunctionConfigurations[functionId];
+  if (pipelineFunction) {
+    const templatePath = join(resolversDir, file);
+    const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, {
+      path: templatePath,
+    });
+    if (isRequest) {
+      pipelineFunction.requestMappingTemplateS3Location =
+        vtlTemplate.s3ObjectUrl;
+    } else {
+      pipelineFunction.responseMappingTemplateS3Location =
+        vtlTemplate.s3ObjectUrl;
+    }
+  }
+}
+const noneDataSource =
+  backend.data.resources.graphqlApi.addNoneDataSource('none');
+const MutationcreateBoardinit2 = new aws_appsync.AppsyncFunction(
+  backend.data.stack,
+  'MutationcreateBoardinit2',
+  {
+    name: 'MutationcreateBoardinit2',
+    api: backend.data.resources.graphqlApi,
+    dataSource: noneDataSource,
+    requestMappingTemplate: aws_appsync.MappingTemplate.fromFile(
+      join(resolversDir, 'Mutation.createBoard.init.2.req.vtl')
+    ),
+    responseMappingTemplate: aws_appsync.MappingTemplate.fromString(
+      '$util.toJson($ctx.prev.result)'
+    ),
+  }
+);
+const MutationcreateBoardfinish1 = new aws_appsync.AppsyncFunction(
+  backend.data.stack,
+  'MutationcreateBoardfinish1',
+  {
+    name: 'MutationcreateBoardfinish1',
+    api: backend.data.resources.graphqlApi,
+    dataSource: noneDataSource,
+    requestMappingTemplate:
+      aws_appsync.MappingTemplate.fromString('$util.toJson({})'),
+    responseMappingTemplate: aws_appsync.MappingTemplate.fromFile(
+      join(resolversDir, 'Mutation.createBoard.finish.1.res.vtl')
+    ),
+  }
+);
+const mutationCreateBoardResolver = backend.data.resources.cfnResources
+  .cfnResolvers['Mutation.createBoard'] as CfnResolver;
+const mutationCreateBoardPipelineFunctions =
+  (
+    mutationCreateBoardResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
+  ).functions || [];
+mutationCreateBoardPipelineFunctions.splice(
+  1,
+  0,
+  MutationcreateBoardinit2.functionId
+);
+mutationCreateBoardPipelineFunctions.splice(
+  5,
+  0,
+  MutationcreateBoardfinish1.functionId
+);
+mutationCreateBoardResolver.pipelineConfig = {
+  functions: mutationCreateBoardPipelineFunctions,
+};
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c4x-x';

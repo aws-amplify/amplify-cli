@@ -20,6 +20,26 @@ export interface RenderDefineDataOptions {
   readonly logging?: any;
 }
 
+/** Describes a single extended resolver function with its computed splice index. */
+export interface ExtendedResolverFunctionEntry {
+  readonly typeName: string;
+  readonly fieldName: string;
+  readonly slot: string;
+  readonly order: number;
+  readonly requestFile: string | undefined;
+  readonly responseFile: string | undefined;
+  readonly spliceIndex: number;
+}
+
+/** Options for rendering extended resolver statements in backend.ts. */
+export interface RenderExtendedResolverOptions {
+  readonly groups: readonly {
+    readonly typeName: string;
+    readonly fieldName: string;
+    readonly functions: readonly ExtendedResolverFunctionEntry[];
+  }[];
+}
+
 const MIGRATED_TABLE_MAPPINGS_KEY = 'migratedAmplifyGen1DynamoDbTableMappings';
 
 const AUTH_MODE_MAP: Record<string, string> = {
@@ -71,6 +91,120 @@ export class DataRenderer {
       postImportStatements: schemaStatements,
       additionalImportedBackendIdentifiers: namedImports,
     });
+  }
+
+  /** Renders a NoneDataSource declaration statement. */
+  public renderNoneDataSource(): ts.Statement {
+    const graphqlApi = TS.propAccess('backend', 'data', 'resources', 'graphqlApi');
+    const addNoneCall = factory.createCallExpression(factory.createPropertyAccessExpression(graphqlApi, 'addNoneDataSource'), undefined, [
+      factory.createStringLiteral('none'),
+    ]);
+    return TS.constDecl('noneDataSource', addNoneCall);
+  }
+
+  /** Renders an AppsyncFunction declaration for an extended resolver. */
+  public renderAppsyncFunction(fn: ExtendedResolverFunctionEntry): ts.Statement {
+    const constructName = `${fn.typeName}${fn.fieldName}${fn.slot}${fn.order}`;
+
+    const graphqlApi = TS.propAccess('backend', 'data', 'resources', 'graphqlApi');
+    const awsAppsync = factory.createIdentifier('aws_appsync');
+
+    const requestMapping =
+      fn.requestFile !== undefined
+        ? factory.createCallExpression(TS.propAccess(awsAppsync, 'MappingTemplate', 'fromFile'), undefined, [
+            factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+              factory.createIdentifier('resolversDir'),
+              factory.createStringLiteral(fn.requestFile),
+            ]),
+          ])
+        : factory.createCallExpression(TS.propAccess(awsAppsync, 'MappingTemplate', 'fromString'), undefined, [
+            factory.createStringLiteral('$util.toJson({})'),
+          ]);
+
+    const responseMapping =
+      fn.responseFile !== undefined
+        ? factory.createCallExpression(TS.propAccess(awsAppsync, 'MappingTemplate', 'fromFile'), undefined, [
+            factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+              factory.createIdentifier('resolversDir'),
+              factory.createStringLiteral(fn.responseFile),
+            ]),
+          ])
+        : factory.createCallExpression(TS.propAccess(awsAppsync, 'MappingTemplate', 'fromString'), undefined, [
+            factory.createStringLiteral('$util.toJson($ctx.prev.result)'),
+          ]);
+
+    const properties: ts.ObjectLiteralElementLike[] = [
+      factory.createPropertyAssignment('name', factory.createStringLiteral(constructName)),
+      factory.createPropertyAssignment('api', graphqlApi),
+      factory.createPropertyAssignment('dataSource', factory.createIdentifier('noneDataSource')),
+      factory.createPropertyAssignment('requestMappingTemplate', requestMapping),
+      factory.createPropertyAssignment('responseMappingTemplate', responseMapping),
+    ];
+
+    const newExpr = factory.createNewExpression(TS.propAccess(awsAppsync, 'AppsyncFunction'), undefined, [
+      TS.propAccess('backend', 'data', 'stack'),
+      factory.createStringLiteral(constructName),
+      factory.createObjectLiteralExpression(properties, true),
+    ]);
+
+    return TS.constDecl(constructName, newExpr);
+  }
+
+  /** Renders statements to splice extended resolver functions into a pipeline resolver. */
+  public renderSpliceStatements(
+    typeName: string,
+    fieldName: string,
+    functions: readonly { readonly constructName: string; readonly spliceIndex: number }[],
+  ): ts.Statement[] {
+    const resolverVarName = `${typeName.toLowerCase()}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Resolver`;
+    const pipelineFunctionsVarName = `${resolverVarName.replace('Resolver', '')}PipelineFunctions`;
+
+    // const queryListProductsResolver = backend.data.resources.cfnResources.cfnResolvers['Query.listProducts'] as CfnResolver;
+    const resolverAccess = factory.createElementAccessExpression(
+      TS.propAccess('backend', 'data', 'resources', 'cfnResources', 'cfnResolvers'),
+      factory.createStringLiteral(`${typeName}.${fieldName}`),
+    );
+    const resolverAsExpr = factory.createAsExpression(resolverAccess, factory.createTypeReferenceNode('CfnResolver'));
+    const resolverDecl = TS.constDecl(resolverVarName, resolverAsExpr);
+
+    // const queryListProductsPipelineFunctions = (queryListProductsResolver.pipelineConfig as CfnResolver.PipelineConfigProperty).functions || [];
+    const pipelineConfigAccess = factory.createPropertyAccessExpression(factory.createIdentifier(resolverVarName), 'pipelineConfig');
+    const pipelineConfigCast = factory.createAsExpression(
+      pipelineConfigAccess,
+      factory.createTypeReferenceNode(factory.createQualifiedName(factory.createIdentifier('CfnResolver'), 'PipelineConfigProperty')),
+    );
+    const functionsAccess = factory.createPropertyAccessExpression(factory.createParenthesizedExpression(pipelineConfigCast), 'functions');
+    const functionsOrEmpty = factory.createBinaryExpression(
+      functionsAccess,
+      ts.SyntaxKind.BarBarToken,
+      factory.createArrayLiteralExpression([]),
+    );
+    const pipelineFunctionsDecl = TS.constDecl(pipelineFunctionsVarName, functionsOrEmpty);
+
+    const statements: ts.Statement[] = [resolverDecl, pipelineFunctionsDecl];
+
+    // Generate splice calls for each function
+    for (const fn of functions) {
+      const spliceCall = factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier(pipelineFunctionsVarName), 'splice'),
+        undefined,
+        [factory.createNumericLiteral(fn.spliceIndex), factory.createNumericLiteral(0), TS.propAccess(fn.constructName, 'functionId')],
+      );
+      statements.push(factory.createExpressionStatement(spliceCall));
+    }
+
+    // queryListProductsResolver.pipelineConfig = { functions: queryListProductsPipelineFunctions };
+    const reassignment = factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(factory.createIdentifier(resolverVarName), 'pipelineConfig'),
+        factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment('functions', factory.createIdentifier(pipelineFunctionsVarName)),
+        ]),
+      ),
+    );
+    statements.push(reassignment);
+
+    return statements;
   }
 
   private prepareSchema(raw: string): { schema: string; preSchemaStatements: ts.Node[] } {

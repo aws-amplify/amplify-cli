@@ -18,6 +18,7 @@ const factory = ts.factory;
  */
 export class BackendGenerator implements Planner {
   private readonly imports: Array<{ readonly source: string; readonly identifiers: string[] }> = [];
+  private readonly namespaceImports: Array<{ readonly source: string; readonly alias: string }> = [];
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly earlyStatements: ts.Statement[] = [];
@@ -43,6 +44,15 @@ export class BackendGenerator implements Planner {
       }
     } else {
       this.imports.push({ source, identifiers: [...identifiers] });
+    }
+  }
+
+  /**
+   * Adds a namespace import (`import * as alias from 'source'`) to backend.ts.
+   */
+  public addNamespaceImport(source: string, alias: string): void {
+    if (!this.namespaceImports.some((i) => i.source === source)) {
+      this.namespaceImports.push({ source, alias });
     }
   }
 
@@ -122,6 +132,12 @@ export class BackendGenerator implements Planner {
             nodes.push(createImportDeclaration(imp.source, imp.identifiers));
           }
 
+          // Namespace imports (import * as X from 'source'), sorted by importOrder
+          const sortedNamespaceImports = [...this.namespaceImports].sort((a, b) => importOrder(a.source) - importOrder(b.source));
+          for (const ns of sortedNamespaceImports) {
+            nodes.push(createNamespaceImportDeclaration(ns.source, ns.alias));
+          }
+
           // Sort defineBackend properties: auth first, then data, storage, then functions
           const sortedProperties = [...this.defineBackendProperties].sort((a, b) => {
             const getName = (prop: ts.ObjectLiteralElementLike): string => {
@@ -193,6 +209,14 @@ function createImportDeclaration(source: string, identifiers: string[]): ts.Impo
   return factory.createImportDeclaration(
     undefined,
     factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+    factory.createStringLiteral(source),
+  );
+}
+
+function createNamespaceImportDeclaration(source: string, alias: string): ts.ImportDeclaration {
+  return factory.createImportDeclaration(
+    undefined,
+    factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier(alias))),
     factory.createStringLiteral(source),
   );
 }

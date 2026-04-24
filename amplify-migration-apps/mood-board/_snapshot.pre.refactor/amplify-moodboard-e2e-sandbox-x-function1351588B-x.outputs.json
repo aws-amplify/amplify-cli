@@ -1,14 +1,14 @@
 [
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14functionmoodboardKinesisTriggergen2xlambda7EBA9517Ref",
-    "OutputValue": "moodboardKinesisTrigger-gen2-x"
-  },
-  {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14functionmoodboardKinesisReadergen2xlambda2566B4CDRef",
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565functionmoodboardKinesisReadergen2xlambdaF592F734Ref",
     "OutputValue": "moodboardKinesisReader-gen2-x"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14functionmoodboardGetRandomEmojigen2xlambda9EA3D3D3Ref",
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565functionmoodboardKinesisTriggergen2xlambda99911AACRef",
+    "OutputValue": "moodboardKinesisTrigger-gen2-x"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox4f6bc84565functionmoodboardGetRandomEmojigen2xlambdaDCDC903DRef",
     "OutputValue": "moodboardGetRandomEmoji-gen2-x"
   }
 ]

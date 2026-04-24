@@ -300,4 +300,99 @@ describe('DataRenderer', () => {
       "
     `);
   });
+
+  describe('extended resolver rendering', () => {
+    it('renderNoneDataSource produces correct output', () => {
+      const node = renderer.renderNoneDataSource();
+      const output = TS.printNode(node);
+      expect(output).toMatchInlineSnapshot(`"const noneDataSource = backend.data.resources.graphqlApi.addNoneDataSource("none");"`);
+    });
+
+    it('renderAppsyncFunction with both templates', () => {
+      const node = renderer.renderAppsyncFunction({
+        typeName: 'Query',
+        fieldName: 'listProducts',
+        slot: 'postAuth',
+        order: 2,
+        requestFile: 'Query.listProducts.postAuth.2.req.vtl',
+        responseFile: 'Query.listProducts.postAuth.2.res.vtl',
+        spliceIndex: 2,
+      });
+      const output = TS.printNode(node);
+      expect(output).toMatchInlineSnapshot(`
+        "const QuerylistProductspostAuth2 = new aws_appsync.AppsyncFunction(backend.data.stack, "QuerylistProductspostAuth2", {
+            name: "QuerylistProductspostAuth2",
+            api: backend.data.resources.graphqlApi,
+            dataSource: noneDataSource,
+            requestMappingTemplate: aws_appsync.MappingTemplate.fromFile(join(resolversDir, "Query.listProducts.postAuth.2.req.vtl")),
+            responseMappingTemplate: aws_appsync.MappingTemplate.fromFile(join(resolversDir, "Query.listProducts.postAuth.2.res.vtl"))
+        });"
+      `);
+    });
+
+    it('renderAppsyncFunction with only request template', () => {
+      const node = renderer.renderAppsyncFunction({
+        typeName: 'Query',
+        fieldName: 'listProducts',
+        slot: 'postAuth',
+        order: 1,
+        requestFile: 'Query.listProducts.postAuth.1.req.vtl',
+        responseFile: undefined,
+        spliceIndex: 2,
+      });
+      const output = TS.printNode(node);
+      expect(output).toContain('MappingTemplate.fromFile(join(resolversDir, "Query.listProducts.postAuth.1.req.vtl"))');
+      expect(output).toContain('MappingTemplate.fromString("$util.toJson($ctx.prev.result)")');
+    });
+
+    it('renderAppsyncFunction with only response template', () => {
+      const node = renderer.renderAppsyncFunction({
+        typeName: 'Query',
+        fieldName: 'listProducts',
+        slot: 'postAuth',
+        order: 1,
+        requestFile: undefined,
+        responseFile: 'Query.listProducts.postAuth.1.res.vtl',
+        spliceIndex: 2,
+      });
+      const output = TS.printNode(node);
+      expect(output).toContain('MappingTemplate.fromString("$util.toJson({})")');
+      expect(output).toContain('MappingTemplate.fromFile(join(resolversDir, "Query.listProducts.postAuth.1.res.vtl"))');
+    });
+
+    it('renderSpliceStatements for single function', () => {
+      const statements = renderer.renderSpliceStatements('Query', 'listProducts', [
+        { constructName: 'QuerylistProductspostAuth2', spliceIndex: 2 },
+      ]);
+      const output = statements.map((s) => TS.printNode(s));
+
+      // Resolver access
+      expect(output[0]).toMatchInlineSnapshot(
+        `"const queryListProductsResolver = backend.data.resources.cfnResources.cfnResolvers["Query.listProducts"] as CfnResolver;"`,
+      );
+      // Pipeline functions extraction
+      expect(output[1]).toMatchInlineSnapshot(
+        `"const queryListProductsPipelineFunctions = (queryListProductsResolver.pipelineConfig as CfnResolver.PipelineConfigProperty).functions || [];"`,
+      );
+      // Splice call
+      expect(output[2]).toMatchInlineSnapshot(`"queryListProductsPipelineFunctions.splice(2, 0, QuerylistProductspostAuth2.functionId);"`);
+      // Pipeline config reassignment
+      expect(output[3]).toMatchInlineSnapshot(
+        `"queryListProductsResolver.pipelineConfig = { functions: queryListProductsPipelineFunctions };"`,
+      );
+    });
+
+    it('renderSpliceStatements for multiple functions', () => {
+      const statements = renderer.renderSpliceStatements('Query', 'listProducts', [
+        { constructName: 'QuerylistProductspostAuth1', spliceIndex: 2 },
+        { constructName: 'QuerylistProductspostDataLoad1', spliceIndex: 4 },
+      ]);
+      const output = statements.map((s) => TS.printNode(s));
+
+      // 2 (resolver + pipeline) + 2 (splice calls) + 1 (reassignment) = 5
+      expect(output).toHaveLength(5);
+      expect(output[2]).toContain('splice(2, 0, QuerylistProductspostAuth1.functionId)');
+      expect(output[3]).toContain('splice(4, 0, QuerylistProductspostDataLoad1.functionId)');
+    });
+  });
 });

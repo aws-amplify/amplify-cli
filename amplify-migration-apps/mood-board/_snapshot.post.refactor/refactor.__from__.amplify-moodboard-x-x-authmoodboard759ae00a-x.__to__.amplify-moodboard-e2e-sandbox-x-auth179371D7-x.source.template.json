@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843"
+      "Value": "us-east-1:15aa1df2-4f28-4773-85b9-90f17f809a12"
     },
     "IdentityPoolName": {
       "Value": "moodboard759ae00a_identitypool_759ae00a__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_uFCFZxzU8"
+      "Value": "us-east-1_s6JCk9b66"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_uFCFZxzU8"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_s6JCk9b66"
     },
     "UserPoolName": {
       "Value": "moodboard759ae00a_userpool_759ae00a"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "74tvl72po139f1o6bp04rcs7s"
+      "Value": "7d0ivgc5sn4orr5fq46rfep64t"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "4jbh65m4dc0ipi3j8918a7d372"
+      "Value": "137ba15dh8fv20rcesjb7ocvhq"
     }
   }
 }

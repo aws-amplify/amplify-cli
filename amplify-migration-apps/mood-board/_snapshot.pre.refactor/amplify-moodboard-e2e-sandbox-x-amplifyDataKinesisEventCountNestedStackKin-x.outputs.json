@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAttKinesisEventCountTableName",
-    "OutputValue": "KinesisEventCount-g26hrobfy5b5pniveska5ylg4u-x",
+    "OutputValue": "KinesisEventCount-xn3j437hmbcnfl2xxwcnmqujpy-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "lni7x3hwoncrhp3t6pnlk4wxtm:GetAtt:KinesisEventCountTable:Name"
+    "ExportName": "p7wg7nhku5eq5bx6kble2s2x7q:GetAtt:KinesisEventCountTable:Name"
   },
   {
     "OutputKey": "GetAttKinesisEventCountTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/KinesisEventCount-g26hrobfy5b5pniveska5ylg4u-x/stream/2026-04-15T23:58:24.751",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/KinesisEventCount-xn3j437hmbcnfl2xxwcnmqujpy-x/stream/2026-04-22T20:02:22.180",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "lni7x3hwoncrhp3t6pnlk4wxtm:GetAtt:KinesisEventCountTable:StreamArn"
+    "ExportName": "p7wg7nhku5eq5bx6kble2s2x7q:GetAtt:KinesisEventCountTable:StreamArn"
   }
 ]

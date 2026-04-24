@@ -328,7 +328,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BP0B68iLS4llisuq26Qaa1SIh/y5Fqj3NzJsZDXpXQVWYKZbW9aWnK6QjRkHXirG9MlO8JBvuTBIgnSOOpxC8qm/884upPSHLuvqTg0MWkvdyXucmeNyLGPsYkCUrMgOkGc7DWXPOioND6OLmpTXoLVRFF4nK8clCA0Lz1Q/RUZAezgAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQ6CMBBEv4V7WZHIBxhOXoyBeDa1XXWhbBO6SkzTfzfEoJxm5s1MCWVVQJHpKeTG9rmjK8QjBkHbija90lO4ROPvTOIhngOOJ++dqm/884upHSHLuvqTg0UWkvdyXufGO9yLaPMYkCUp0gPEGc7DWVNKir1F6MLmVe5gW0GRdYEoH58sNCA0X/0AGiQi/s4AAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -603,27 +603,27 @@
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPool390B0381Ref": {
+    "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthUserPool88309446Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPoolAppClient54FF5C73Ref": {
+    "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthUserPoolAppClient9141812BRef": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
+    "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthIdentityPoolB9F41888Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
+    "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthauthenticatedUserRole9FBEFADDRef": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
+    "amplifymoodboarde2esandbox4f6bc84565authamplifyAuthunauthenticatedUserRole2ADAA45CRef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
