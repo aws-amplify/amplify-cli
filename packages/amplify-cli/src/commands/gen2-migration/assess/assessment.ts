@@ -210,7 +210,7 @@ export class Assessment {
       case 'unsupported':
         return support.note ? `✘ ${support.note}` : '✘';
       case 'not-applicable':
-        return '—';
+        return '— (not needed)';
     }
   }
 }
