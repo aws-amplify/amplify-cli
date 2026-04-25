@@ -41,7 +41,7 @@ export async function createGen1App(meta: Record<string, unknown>): Promise<Gen1
   // Replace the real AwsFetcher with a blank mock object.
   // Callers configure individual methods: (app.aws.fetchUserPool as jest.Mock).mockResolvedValue(...)
   (app as any).aws = {
-    fetchUserPool: jest.fn(),
+    fetchUserPool: jest.fn().mockResolvedValue({ SchemaAttributes: [] }),
     fetchMfaConfig: jest.fn(),
     fetchUserPoolClient: jest.fn(),
     fetchIdentityProviders: jest.fn(),

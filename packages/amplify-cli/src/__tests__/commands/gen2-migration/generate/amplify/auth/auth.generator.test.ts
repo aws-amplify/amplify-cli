@@ -1,6 +1,6 @@
 import { AuthGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/auth/auth.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { Gen1App, DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { AuthRenderer } from '../../../../../../commands/gen2-migration/generate/amplify/auth/auth.renderer';
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 import { createGen1App } from '../../_helpers/create-gen1-app';
@@ -21,64 +21,11 @@ const authResource: DiscoveredResource = {
   key: 'auth:Cognito',
 };
 
-/** Minimal amplify-meta.json for an auth resource with only a user pool. */
-function minimalAuthMeta(overrides?: { output?: Record<string, string> }): Record<string, unknown> {
-  return {
-    providers: {
-      awscloudformation: {
-        StackName: 'amplify-test-main-123456',
-        Region: 'us-east-1',
-      },
-    },
-    auth: {
-      testAuth: {
-        service: 'Cognito',
-        output: {
-          UserPoolId: 'us-east-1_abc123',
-          AppClientIDWeb: 'webclient123',
-          AppClientID: 'client123',
-          IdentityPoolId: 'us-east-1:idpool',
-          ...overrides?.output,
-        },
-      },
-    },
-  };
-}
-
 /** Extracts the written file content for a path suffix from mockWriteFile calls. */
 function writtenFile(suffix: string): string {
   const call = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith(suffix));
   if (!call) throw new Error(`No writeFile call ending with '${suffix}'`);
   return call[1] as string;
-}
-
-/**
- * Configures AWS fetcher mocks with minimal auth defaults.
- */
-function setupMinimalAuth(gen1App: Gen1App): void {
-  (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({ SchemaAttributes: [] });
-  (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({ MfaConfiguration: 'OFF' });
-  (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue(undefined);
-  (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([]);
-  (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
-  (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue(undefined);
-}
-
-/** Runs the auth generator and optionally the backend generator. */
-async function runAuthGenerator(
-  gen1App: Gen1App,
-  backendGenerator: BackendGenerator,
-  outputDir: string,
-  options?: { includeBackend?: boolean },
-): Promise<void> {
-  const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-  const ops = await generator.plan();
-  await ops[0].execute();
-
-  if (options?.includeBackend) {
-    const backendOps = await backendGenerator.plan();
-    await backendOps[0].execute();
-  }
 }
 
 describe('AuthGenerator', () => {
@@ -90,34 +37,58 @@ describe('AuthGenerator', () => {
     backendGenerator = new BackendGenerator(outputDir);
   });
 
-  describe('error handling', () => {
-    it('throws when auth category is missing', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'test-stack', Region: 'us-east-1' } },
-        /* no auth category */
-      });
-
-      const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-      await expect(generator.plan()).rejects.toThrow("Category 'auth' not found");
+  it('throws when auth category is missing', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'test-stack', Region: 'us-east-1' } },
+      /* no auth category */
     });
 
-    it('throws when user pool is not found', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      (gen1App.aws.fetchUserPool as jest.Mock).mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
-
-      const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-      await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
-    });
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    await expect(generator.plan()).rejects.toThrow("Category 'auth' not found");
   });
 
-  describe('standard auth', () => {
-    it('generates minimal auth with email login', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
+  it('throws when user pool is not found', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir, { includeBackend: true });
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
+  });
 
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+  it('generates minimal auth with email login', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -156,7 +127,9 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-      expect(writtenFile('backend.ts')).toMatchInlineSnapshot(`
+    const backendOps = await backendGenerator.plan();
+    await backendOps[0].execute();
+    expect(writtenFile('backend.ts')).toMatchInlineSnapshot(`
         "import * as auth from './auth/resource';
         import { defineBackend } from '@aws-amplify/backend';
         import { Tags } from 'aws-cdk-lib';
@@ -177,18 +150,32 @@ describe('AuthGenerator', () => {
         // postRefactor();
         "
       `);
+  });
+
+  it('generates phone login', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+      UsernameAttributes: ['phone_number'],
+      SchemaAttributes: [],
     });
 
-    it('generates phone login', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
-        UsernameAttributes: ['phone_number'],
-        SchemaAttributes: [],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -227,19 +214,33 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates email with verification options', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+      EmailVerificationSubject: 'Verify your account',
+      EmailVerificationMessage: 'Your code is {####}',
+      SchemaAttributes: [],
     });
 
-    it('generates email with verification options', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
-        EmailVerificationSubject: 'Verify your account',
-        EmailVerificationMessage: 'Your code is {####}',
-        SchemaAttributes: [],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -281,19 +282,33 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates user groups', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
     });
+    (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([
+      { GroupName: 'admin', Precedence: 1 },
+      { GroupName: 'editors', Precedence: 2 },
+      { GroupName: 'viewers', Precedence: 3 },
+    ]);
 
-    it('generates user groups', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([
-        { GroupName: 'admin', Precedence: 1 },
-        { GroupName: 'editors', Precedence: 2 },
-        { GroupName: 'viewers', Precedence: 3 },
-      ]);
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -333,20 +348,34 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates standard user attributes', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', Required: true, Mutable: true },
+        { Name: 'given_name', Required: true, Mutable: false },
+      ],
     });
 
-    it('generates standard user attributes', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
-        SchemaAttributes: [
-          { Name: 'email', Required: true, Mutable: true },
-          { Name: 'given_name', Required: true, Mutable: false },
-        ],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -395,24 +424,38 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates custom user attributes', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+      SchemaAttributes: [
+        {
+          Name: 'custom:department',
+          AttributeDataType: 'String',
+          Mutable: true,
+          StringAttributeConstraints: { MinLength: '1', MaxLength: '50' },
+        },
+      ],
     });
 
-    it('generates custom user attributes', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
-        SchemaAttributes: [
-          {
-            Name: 'custom:department',
-            AttributeDataType: 'String',
-            Mutable: true,
-            StringAttributeConstraints: { MinLength: '1', MaxLength: '50' },
-          },
-        ],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -459,70 +502,32 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates MFA with REQUIRED mode', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
+      MfaConfiguration: 'ON',
+      SoftwareTokenMfaConfiguration: { Enabled: true },
     });
 
-    it('generates MFA with OPTIONAL mode (TOTP and SMS)', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
-        MfaConfiguration: 'OPTIONAL',
-        SoftwareTokenMfaConfiguration: { Enabled: true },
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'OPTIONAL',
-            totp: true,
-            sms: true,
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-    });
-
-    it('generates MFA with REQUIRED mode', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
-        MfaConfiguration: 'ON',
-        SoftwareTokenMfaConfiguration: { Enabled: true },
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -563,20 +568,32 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates lambda triggers with function imports', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
     });
 
-    it('generates lambda triggers with function imports', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    generator.addTrigger({ event: 'preSignUp', resourceName: 'preSignUpFn' });
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'postConfirmFn' });
 
-      const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-      generator.addTrigger({ event: 'preSignUp', resourceName: 'preSignUpFn' });
-      generator.addTrigger({ event: 'postConfirmation', resourceName: 'postConfirmFn' });
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { preSignUpFn } from '../function/preSignUpFn/resource';
         import { postConfirmFn } from '../function/postConfirmFn/resource';
@@ -621,23 +638,35 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
   });
 
-  describe('external providers', () => {
-    it('generates Google login with secrets', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: ['https://example.com/callback'],
-        LogoutURLs: ['https://example.com/logout'],
-      });
+  it('generates Google login with secrets', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+      { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
+    ]);
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+      CallbackURLs: ['https://example.com/callback'],
+      LogoutURLs: ['https://example.com/logout'],
+    });
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -693,229 +722,40 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
+  });
 
-    it('generates Apple login with secrets', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: ['https://example.com/callback'],
-        LogoutURLs: ['https://example.com/logout'],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              signInWithApple: {
-                clientId: secret('SIWA_CLIENT_ID'),
-                keyId: secret('SIWA_KEY_ID'),
-                privateKey: secret('SIWA_PRIVATE_KEY'),
-                teamId: secret('SIWA_TEAM_ID'),
-              },
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
+  it('generates Google login with scopes and attribute mapping', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
           },
-          multifactor: {
-            mode: 'OFF',
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            oAuth: {
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-    });
-
-    it('generates Amazon login with secrets', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        { ProviderType: IdentityProviderTypeType.LoginWithAmazon, ProviderName: 'LoginWithAmazon' },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: [],
-        LogoutURLs: [],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              loginWithAmazon: {
-                clientId: secret('LOGINWITHAMAZON_CLIENT_ID'),
-                clientSecret: secret('LOGINWITHAMAZON_CLIENT_SECRET'),
-              },
-              callbackUrls: [],
-              logoutUrls: [],
-            },
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-    });
-
-    it('generates Facebook login with secrets', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: [],
-        LogoutURLs: [],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              facebook: {
-                clientId: secret('FACEBOOK_CLIENT_ID'),
-                clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
-              },
-              callbackUrls: [],
-              logoutUrls: [],
-            },
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-    });
-
-    it('generates Google login with scopes', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        {
-          ProviderType: IdentityProviderTypeType.Google,
-          ProviderName: 'Google',
-          ProviderDetails: { authorized_scopes: 'profile email' },
         },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: [],
-        LogoutURLs: [],
-      });
+      },
+    });
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+      {
+        ProviderType: IdentityProviderTypeType.Google,
+        ProviderName: 'Google',
+        ProviderDetails: { authorized_scopes: 'profile email' },
+        AttributeMapping: { email: 'email', given_name: 'given_name' },
+      },
+    ]);
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+      CallbackURLs: [],
+      LogoutURLs: [],
+    });
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -928,76 +768,6 @@ describe('AuthGenerator', () => {
                 clientId: secret('GOOGLE_CLIENT_ID'),
                 clientSecret: secret('GOOGLE_CLIENT_SECRET'),
                 scopes: ['profile', 'email'],
-              },
-              callbackUrls: [],
-              logoutUrls: [],
-            },
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-    });
-
-    it('generates Google login with attribute mapping', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        {
-          ProviderType: IdentityProviderTypeType.Google,
-          ProviderName: 'Google',
-          AttributeMapping: { email: 'email', given_name: 'given_name' },
-        },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: [],
-        LogoutURLs: [],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              google: {
-                clientId: secret('GOOGLE_CLIENT_ID'),
-                clientSecret: secret('GOOGLE_CLIENT_SECRET'),
                 attributeMapping: {
                   email: 'email',
                   givenName: 'given_name',
@@ -1042,31 +812,45 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
+  });
 
-    it('generates OIDC provider', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        {
-          ProviderType: IdentityProviderTypeType.OIDC,
-          ProviderName: 'MyOIDC',
-          ProviderDetails: {
-            oidc_issuer: 'https://accounts.google.com',
-            authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth',
-            token_url: 'https://oauth2.googleapis.com/token',
-            attributes_url: 'https://openidconnect.googleapis.com/v1/userinfo',
-            jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
+  it('generates OIDC provider', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
           },
         },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: ['https://example.com/callback'],
-        LogoutURLs: ['https://example.com/logout'],
-      });
+      },
+    });
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+      {
+        ProviderType: IdentityProviderTypeType.OIDC,
+        ProviderName: 'MyOIDC',
+        ProviderDetails: {
+          oidc_issuer: 'https://accounts.google.com',
+          authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth',
+          token_url: 'https://oauth2.googleapis.com/token',
+          attributes_url: 'https://openidconnect.googleapis.com/v1/userinfo',
+          jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
+        },
+      },
+    ]);
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+      CallbackURLs: ['https://example.com/callback'],
+      LogoutURLs: ['https://example.com/logout'],
+    });
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -1132,27 +916,41 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
+  });
 
-    it('generates SAML provider', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        {
-          ProviderType: IdentityProviderTypeType.SAML,
-          ProviderName: 'MySAML',
-          ProviderDetails: {
-            metadataURL: 'https://idp.example.com/metadata',
+  it('generates SAML provider', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
           },
         },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: ['https://example.com/callback'],
-        LogoutURLs: ['https://example.com/logout'],
-      });
+      },
+    });
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+      {
+        ProviderType: IdentityProviderTypeType.SAML,
+        ProviderName: 'MySAML',
+        ProviderDetails: {
+          metadataURL: 'https://idp.example.com/metadata',
+        },
+      },
+    ]);
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+      CallbackURLs: ['https://example.com/callback'],
+      LogoutURLs: ['https://example.com/logout'],
+    });
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -1211,23 +1009,37 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates multiple providers together', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+      { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
+      { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
+      { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
+    ]);
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+      CallbackURLs: ['https://example.com/callback'],
+      LogoutURLs: ['https://example.com/logout'],
     });
 
-    it('generates multiple providers together', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
-        { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
-        { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        CallbackURLs: ['https://example.com/callback'],
-        LogoutURLs: ['https://example.com/logout'],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -1293,24 +1105,34 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
   });
 
-  describe('function access', () => {
-    it('generates function auth access rules', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
+  it('generates function auth access rules', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
 
-      const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-      generator.addFunctionAuthAccess({
-        resourceName: 'adminFunc',
-        permissions: { manageUsers: true, listUsers: true },
-      });
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    generator.addFunctionAuthAccess({
+      resourceName: 'adminFunc',
+      permissions: { manageUsers: true, listUsers: true },
+    });
 
-      const ops = await generator.plan();
-      await ops[0].execute();
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { adminFunc } from '../function/adminFunc/resource';
         import { CfnResource } from 'aws-cdk-lib';
@@ -1354,20 +1176,32 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('generates multiple functions with auth access', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
     });
 
-    it('generates multiple functions with auth access', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    generator.addFunctionAuthAccess({ resourceName: 'func1', permissions: { createUser: true } });
+    generator.addFunctionAuthAccess({ resourceName: 'func2', permissions: { deleteUser: true, getUser: true } });
 
-      const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-      generator.addFunctionAuthAccess({ resourceName: 'func1', permissions: { createUser: true } });
-      generator.addFunctionAuthAccess({ resourceName: 'func2', permissions: { deleteUser: true, getUser: true } });
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { func1 } from '../function/func1/resource';
         import { func2 } from '../function/func2/resource';
@@ -1413,35 +1247,59 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
-
-    it('skips functions with empty auth access', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-
-      const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-      generator.addFunctionAuthAccess({ resourceName: 'noAccessFunc', permissions: {} });
-
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      const resourceTs = writtenFile('auth/resource.ts');
-      expect(resourceTs).not.toContain('access');
-      expect(resourceTs).not.toContain('noAccessFunc');
-    });
   });
 
-  describe('escape hatch paths', () => {
-    it('emits cfnIdentityPool.allowUnauthenticatedIdentities = false', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue({
-        IdentityPoolId: 'us-east-1:identity-pool-id',
-        AllowUnauthenticatedIdentities: false,
-      });
+  it('skips functions with empty auth access', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    generator.addFunctionAuthAccess({ resourceName: 'noAccessFunc', permissions: {} });
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('auth/resource.ts');
+    expect(resourceTs).not.toContain('access');
+    expect(resourceTs).not.toContain('noAccessFunc');
+  });
+
+  it('emits cfnIdentityPool.allowUnauthenticatedIdentities = false', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue({
+      IdentityPoolId: 'us-east-1:identity-pool-id',
+      AllowUnauthenticatedIdentities: false,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -1482,19 +1340,33 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('emits cfnUserPoolClient.allowedOAuthFlows when webClient has AllowedOAuthFlows', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+      AllowedOAuthFlows: ['code', 'implicit'],
+      CallbackURLs: ['https://example.com/callback'],
+      LogoutURLs: ['https://example.com/logout'],
     });
 
-    it('emits cfnUserPoolClient.allowedOAuthFlows when webClient has AllowedOAuthFlows', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
-        AllowedOAuthFlows: ['code', 'implicit'],
-        CallbackURLs: ['https://example.com/callback'],
-        LogoutURLs: ['https://example.com/logout'],
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -1551,35 +1423,49 @@ describe('AuthGenerator', () => {
         }
         "
       `);
+  });
+
+  it('emits provider setup statements when userPoolClient has SupportedIdentityProviders', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+      { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
+    ]);
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockImplementation((_poolId: string, clientId: string) => {
+      if (clientId === 'webclient123') {
+        return Promise.resolve({
+          CallbackURLs: ['https://example.com/callback'],
+          LogoutURLs: ['https://example.com/logout'],
+        });
+      }
+      // native client
+      return Promise.resolve({
+        SupportedIdentityProviders: ['COGNITO', 'Google'],
+        RefreshTokenValidity: 30,
+        EnableTokenRevocation: true,
+        AllowedOAuthFlows: ['code'],
+        AllowedOAuthScopes: ['openid', 'email'],
+        CallbackURLs: ['myapp://callback'],
+        LogoutURLs: ['myapp://logout'],
+      });
     });
 
-    it('emits provider setup statements when userPoolClient has SupportedIdentityProviders', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-        { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
-      ]);
-      (gen1App.aws.fetchUserPoolClient as jest.Mock).mockImplementation((_poolId: string, clientId: string) => {
-        if (clientId === 'webclient123') {
-          return Promise.resolve({
-            CallbackURLs: ['https://example.com/callback'],
-            LogoutURLs: ['https://example.com/logout'],
-          });
-        }
-        // native client
-        return Promise.resolve({
-          SupportedIdentityProviders: ['COGNITO', 'Google'],
-          RefreshTokenValidity: 30,
-          EnableTokenRevocation: true,
-          AllowedOAuthFlows: ['code'],
-          AllowedOAuthScopes: ['openid', 'email'],
-          CallbackURLs: ['myapp://callback'],
-          LogoutURLs: ['myapp://logout'],
-        });
-      });
-
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
         import { CfnResource, Duration } from 'aws-cdk-lib';
         import {
@@ -1667,26 +1553,40 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
+  });
 
-    it('emits password policy overrides in escape hatch', async () => {
-      const gen1App = await createGen1App(minimalAuthMeta());
-      setupMinimalAuth(gen1App);
-      (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
-        SchemaAttributes: [],
-        Policies: {
-          PasswordPolicy: {
-            MinimumLength: 12,
-            RequireUppercase: true,
-            RequireLowercase: true,
-            RequireNumbers: false,
-            RequireSymbols: false,
+  it('emits password policy overrides in escape hatch', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
           },
         },
-      });
+      },
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+      SchemaAttributes: [],
+      Policies: {
+        PasswordPolicy: {
+          MinimumLength: 12,
+          RequireUppercase: true,
+          RequireLowercase: true,
+          RequireNumbers: false,
+          RequireSymbols: false,
+        },
+      },
+    });
 
-      await runAuthGenerator(gen1App, backendGenerator, outputDir);
-      expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
         import { CfnResource } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
@@ -1731,45 +1631,42 @@ describe('AuthGenerator', () => {
         }
         "
       `);
-    });
   });
 
-  describe('deriveUserPoolOverrides', () => {
-    it('includes aliasAttributes when present', () => {
-      const overrides = AuthRenderer.deriveUserPoolOverrides({
-        AliasAttributes: ['email', 'preferred_username'],
-      });
-      expect(overrides.aliasAttributes).toEqual(['email', 'preferred_username']);
+  it('includes aliasAttributes when present', () => {
+    const overrides = AuthRenderer.deriveUserPoolOverrides({
+      AliasAttributes: ['email', 'preferred_username'],
     });
+    expect(overrides.aliasAttributes).toEqual(['email', 'preferred_username']);
+  });
 
-    it('omits aliasAttributes when undefined', () => {
-      const overrides = AuthRenderer.deriveUserPoolOverrides({});
-      expect(overrides).not.toHaveProperty('aliasAttributes');
-    });
+  it('omits aliasAttributes when undefined', () => {
+    const overrides = AuthRenderer.deriveUserPoolOverrides({});
+    expect(overrides).not.toHaveProperty('aliasAttributes');
+  });
 
-    it('omits aliasAttributes when empty array', () => {
-      const overrides = AuthRenderer.deriveUserPoolOverrides({ AliasAttributes: [] });
-      expect(overrides).not.toHaveProperty('aliasAttributes');
-    });
+  it('omits aliasAttributes when empty array', () => {
+    const overrides = AuthRenderer.deriveUserPoolOverrides({ AliasAttributes: [] });
+    expect(overrides).not.toHaveProperty('aliasAttributes');
+  });
 
-    it('includes usernameAttributes when present', () => {
-      const overrides = AuthRenderer.deriveUserPoolOverrides({
-        UsernameAttributes: ['email'],
-      });
-      expect(overrides.usernameAttributes).toEqual(['email']);
+  it('includes usernameAttributes when present', () => {
+    const overrides = AuthRenderer.deriveUserPoolOverrides({
+      UsernameAttributes: ['email'],
     });
+    expect(overrides.usernameAttributes).toEqual(['email']);
+  });
 
-    it('sets usernameAttributes to undefined when absent', () => {
-      const overrides = AuthRenderer.deriveUserPoolOverrides({});
-      expect(overrides.usernameAttributes).toBeUndefined();
-    });
+  it('sets usernameAttributes to undefined when absent', () => {
+    const overrides = AuthRenderer.deriveUserPoolOverrides({});
+    expect(overrides.usernameAttributes).toBeUndefined();
+  });
 
-    it('includes password policy overrides', () => {
-      const overrides = AuthRenderer.deriveUserPoolOverrides({
-        Policies: { PasswordPolicy: { MinimumLength: 12, RequireUppercase: true } },
-      });
-      expect(overrides['Policies.PasswordPolicy.MinimumLength']).toBe(12);
-      expect(overrides['Policies.PasswordPolicy.RequireUppercase']).toBe(true);
+  it('includes password policy overrides', () => {
+    const overrides = AuthRenderer.deriveUserPoolOverrides({
+      Policies: { PasswordPolicy: { MinimumLength: 12, RequireUppercase: true } },
     });
+    expect(overrides['Policies.PasswordPolicy.MinimumLength']).toBe(12);
+    expect(overrides['Policies.PasswordPolicy.RequireUppercase']).toBe(true);
   });
 });
