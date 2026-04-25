@@ -133,4 +133,76 @@ describe('AnalyticsKinesisGenerator', () => {
       expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`"/* formatted construct */"`);
     });
   });
+
+  describe('construct file generation (ops[0])', () => {
+    it('writes the construct file via cdk-from-cfn and prettier', async () => {
+      const gen1App = createMockGen1App();
+      setupKinesisMocks(gen1App, {
+        resourceName: 'todoKinesis',
+        shardCount: 1,
+        streamName: 'todoKinesis-stream-abc123',
+      });
+
+      const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'analytics',
+        resourceName: 'todoKinesis',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('todokinesis-construct.ts')).toBe('/* formatted construct */');
+    });
+  });
+
+  describe('preTransmute', () => {
+    it('renames env parameter to branchName in CFN template', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMeta as jest.Mock).mockReturnValue({
+        providerMetadata: { logicalId: 'analyticsLogicalId' },
+      });
+      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: unknown, key: string) => {
+        if (key === 'kinesisStreamShardCount') return '1';
+        if (key === 'kinesisStreamId') return 'stream-abc';
+        return undefined;
+      });
+      (gen1App.json as jest.Mock).mockReturnValue({
+        Parameters: { env: { Type: 'String' } },
+        Resources: {
+          MyStream: {
+            Type: 'AWS::Kinesis::Stream',
+            Properties: { Name: { 'Fn::Sub': '${env}-stream' }, ShardCount: 1 },
+          },
+        },
+        Conditions: {},
+      });
+      (gen1App.clients.cloudFormation.send as jest.Mock).mockImplementation((cmd: { constructor: { name: string } }) => {
+        if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
+          return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
+        }
+        if (cmd.constructor.name === 'DescribeStacksCommand') {
+          return { Stacks: [{ Parameters: [] }] };
+        }
+        return {};
+      });
+
+      const { transmute } = require('cdk-from-cfn');
+
+      const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'analytics',
+        resourceName: 'todoKinesis',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      // Verify transmute was called with branchName instead of env
+      const transmuteCall = transmute.mock.calls[0][0];
+      const parsed = JSON.parse(transmuteCall);
+      expect(parsed.Parameters).not.toHaveProperty('env');
+      expect(parsed.Parameters).toHaveProperty('branchName');
+    });
+  });
 });

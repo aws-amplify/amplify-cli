@@ -475,5 +475,374 @@ describe('FunctionGenerator', () => {
         "
       `);
     });
+
+    it('renders DynamoDB actions in escape hatches', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
+      (gen1App.json as jest.Mock).mockReturnValue({
+        Resources: {
+          AmplifyResourcesPolicy: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+                    Resource: [{ 'Fn::Sub': 'arn:aws:dynamodb:*:*:table/Todo-${api}' }],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+      (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+        FunctionName: 'myFunc-main-abc',
+        Handler: 'index.handler',
+        Timeout: 3,
+        MemorySize: 128,
+        Runtime: 'nodejs18.x',
+        Environment: {
+          Variables: {
+            API_MYAPI_TODOTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/Todo',
+            API_MYAPI_TODOTABLE_NAME: 'Todo-abc',
+          },
+        },
+      });
+
+      const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import { defineFunction } from '@aws-amplify/backend';
+        import type { Backend } from '../../backend';
+
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+        export const myFunc = defineFunction({
+          entry: './index.js',
+          name: \`myFunc-\${branchName}\`,
+          timeoutSeconds: 3,
+          memoryMB: 128,
+          runtime: 18,
+        });
+
+        export function applyEscapeHatches(backend: Backend) {
+          backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+          backend.myFunc.addEnvironment(
+            'API_MYAPI_TODOTABLE_ARN',
+            backend.data.resources.tables['Todo'].tableArn
+          );
+          backend.myFunc.addEnvironment(
+            'API_MYAPI_TODOTABLE_NAME',
+            backend.data.resources.tables['Todo'].tableName
+          );
+          backend.data.resources.tables['Todo'].grant(
+            backend.myFunc.resources.lambda,
+            'dynamodb:GetItem',
+            'dynamodb:PutItem'
+          );
+        }
+        "
+      `);
+    });
+
+    it('renders Kinesis actions in escape hatches', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
+      (gen1App.json as jest.Mock).mockReturnValue({
+        Resources: {
+          AmplifyResourcesPolicy: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+                    Resource: [{ Ref: 'analyticsMyStreamkinesisStreamArn' }],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+      (gen1App.categoryMeta as jest.Mock).mockImplementation((cat: string) => {
+        if (cat === 'analytics') return { myStream: { service: 'Kinesis' } };
+        return undefined;
+      });
+
+      const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import { defineFunction } from '@aws-amplify/backend';
+        import { aws_iam } from 'aws-cdk-lib';
+        import type { Backend } from '../../backend';
+        import type { MyStream } from '../../analytics/mystream-construct';
+
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+        export const myFunc = defineFunction({
+          entry: './index.js',
+          name: \`myFunc-\${branchName}\`,
+          timeoutSeconds: 3,
+          memoryMB: 128,
+          runtime: 18,
+        });
+
+        export function applyEscapeHatches(backend: Backend, analytics: MyStream) {
+          backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+          backend.myFunc.resources.lambda.addToRolePolicy(
+            new aws_iam.PolicyStatement({
+              actions: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+              resources: [analytics.kinesisStreamArn],
+            })
+          );
+        }
+        "
+      `);
+    });
+
+    it('renders GraphQL API permissions in escape hatches', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
+      (gen1App.json as jest.Mock).mockReturnValue({
+        Resources: {
+          AmplifyResourcesPolicy: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['appsync:GraphQL'],
+                    Resource: [
+                      { 'Fn::Sub': 'arn:aws:appsync:*:*:apis/*/types/Mutation/*' },
+                      { 'Fn::Sub': 'arn:aws:appsync:*:*:apis/*/types/Query/*' },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+
+      const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import { defineFunction } from '@aws-amplify/backend';
+        import type { Backend } from '../../backend';
+
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+        export const myFunc = defineFunction({
+          entry: './index.js',
+          name: \`myFunc-\${branchName}\`,
+          timeoutSeconds: 3,
+          memoryMB: 128,
+          runtime: 18,
+        });
+
+        export function applyEscapeHatches(backend: Backend) {
+          backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+          backend.data.resources.graphqlApi.grantMutation(
+            backend.myFunc.resources.lambda
+          );
+          backend.data.resources.graphqlApi.grantQuery(backend.myFunc.resources.lambda);
+        }
+        "
+      `);
+    });
+
+    it('renders DynamoDB trigger models', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
+      (gen1App.json as jest.Mock).mockReturnValue({
+        Resources: {
+          EventSourceMapping: {
+            Type: 'AWS::Lambda::EventSourceMapping',
+            Properties: {
+              EventSourceArn: {
+                'Fn::ImportValue': {
+                  'Fn::Sub': '${api}:GetAtt:TodoTable:StreamArn',
+                },
+              },
+              FunctionName: { Ref: 'LambdaFunction' },
+            },
+          },
+        },
+      });
+
+      const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import { defineFunction } from '@aws-amplify/backend';
+        import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+        import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+        import type { Backend } from '../../backend';
+
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+        export const myFunc = defineFunction({
+          entry: './index.js',
+          name: \`myFunc-\${branchName}\`,
+          timeoutSeconds: 3,
+          memoryMB: 128,
+          runtime: 18,
+        });
+
+        export function applyEscapeHatches(backend: Backend) {
+          backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+          for (const model of ['Todo']) {
+            const table = backend.data.resources.tables[model];
+            backend.myFunc.resources.lambda.addEventSource(
+              new DynamoEventSource(table, {
+                startingPosition: StartingPosition.LATEST,
+              })
+            );
+            table.grantStreamRead(backend.myFunc.resources.lambda.role!);
+            table.grantTableListStreams(backend.myFunc.resources.lambda.role!);
+          }
+        }
+        "
+      `);
+    });
+  });
+
+  describe('cross-category wiring', () => {
+    it('contributes auth trigger when category is auth', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { resourceName: 'testAuthPreSignup', deployedName: 'testAuthPreSignup-main-abc' });
+      (gen1App.singleResourceName as jest.Mock).mockReturnValue('testAuth');
+      (gen1App.fileExists as jest.Mock).mockReturnValue(false);
+
+      const mockAuthGenerator = {
+        addTrigger: jest.fn(),
+        addFunctionAuthAccess: jest.fn(),
+      };
+
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'testAuthPreSignup',
+        category: 'auth',
+      });
+      generator.setAuthGenerator(mockAuthGenerator as any);
+
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(mockAuthGenerator.addTrigger).toHaveBeenCalledWith({
+        event: 'preSignUp',
+        resourceName: 'testAuthPreSignup',
+      });
+    });
+
+    it('contributes storage trigger when category is storage and S3 trigger exists', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { resourceName: 'myStorageFunc', deployedName: 'myStorageFunc-main-abc' });
+      (gen1App.categoryMeta as jest.Mock).mockImplementation((cat: string) => {
+        if (cat === 'storage') return { myBucket: { service: 'S3' } };
+        return undefined;
+      });
+      // The storage template with S3 trigger
+      (gen1App.json as jest.Mock).mockImplementation((templatePath: string) => {
+        if (templatePath.includes('storage/')) {
+          return {
+            Resources: {
+              S3Bucket: {
+                Properties: {
+                  NotificationConfiguration: {
+                    LambdaConfigurations: [
+                      {
+                        Function: { Ref: 'functionmyStorageFuncLambdaRef' },
+                        Event: 's3:ObjectCreated:*',
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          };
+        }
+        return { Resources: {} };
+      });
+
+      const mockS3Generator = {
+        addTrigger: jest.fn(),
+        addFunctionAccess: jest.fn(),
+      };
+
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'myStorageFunc',
+        category: 'storage',
+      });
+      generator.setS3Generator(mockS3Generator as any);
+
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(mockS3Generator.addTrigger).toHaveBeenCalledWith('onUpload', 'myStorageFunc');
+    });
+
+    it('detects Kinesis trigger from event source mapping', async () => {
+      const gen1App = createMockGen1App();
+      setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
+      (gen1App.json as jest.Mock).mockReturnValue({
+        Resources: {
+          KinesisEventSourceMapping: {
+            Type: 'AWS::Lambda::EventSourceMapping',
+            Properties: {
+              EventSourceArn: { Ref: 'analyticsMyStreamkinesisStreamArn' },
+              FunctionName: { Ref: 'LambdaFunction' },
+            },
+          },
+        },
+      });
+      (gen1App.categoryMeta as jest.Mock).mockImplementation((cat: string) => {
+        if (cat === 'analytics') return { myStream: { service: 'Kinesis' } };
+        return undefined;
+      });
+
+      const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      const output = writtenFile('resource.ts');
+      expect(output).toContain('KinesisEventSource');
+    });
+
+    it('throws for non-nodejs runtime', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myFunc-main-abc');
+      (gen1App.categoryMeta as jest.Mock).mockReturnValue(undefined);
+      (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+        FunctionName: 'myFunc-main-abc',
+        Handler: 'handler.handler',
+        Timeout: 3,
+        MemorySize: 128,
+        Runtime: 'python3.9',
+        Environment: { Variables: {} },
+      });
+
+      const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+      await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");
+    });
   });
 });
