@@ -11,10 +11,17 @@ jest.mock('node:fs/promises', () => ({
   writeFile: (...args: unknown[]) => mockWriteFile(...args),
 }));
 
+function writtenFile(suffix: string): string {
+  const call = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith(suffix));
+  if (!call) throw new Error(`No writeFile call ending with '${suffix}'`);
+  return call[1] as string;
+}
+
 function createMockGen1App(overrides?: Partial<Gen1App>): Gen1App {
   return {
     meta: jest.fn(),
     metaOutput: jest.fn(),
+    resourceMetaOutput: jest.fn(),
     aws: {
       fetchTableDescription: jest.fn(),
     },
@@ -24,141 +31,490 @@ function createMockGen1App(overrides?: Partial<Gen1App>): Gen1App {
 
 describe('DynamoDBGenerator', () => {
   let backendGenerator: BackendGenerator;
+  const outputDir = '/tmp/test-output';
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator('/tmp/test-output');
+    backendGenerator = new BackendGenerator(outputDir);
   });
 
-  it('throws when table is not found in AWS', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.metaOutput as jest.Mock).mockReturnValue('myTable-abc123');
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue(undefined);
+  describe('error handling', () => {
+    it('throws when table is not found in AWS', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myTable-abc123');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue(undefined);
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, '/tmp/test-output', {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+
+      await expect(generator.plan()).rejects.toThrow("DynamoDB table 'myTable-abc123' not found");
     });
-
-    await expect(generator.plan()).rejects.toThrow("DynamoDB table 'myTable-abc123' not found");
   });
 
-  it('returns one operation when resource exists', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.metaOutput as jest.Mock).mockReturnValue('myTable-abc123');
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
-      BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
-      ProvisionedThroughput: {},
+  describe('orchestration', () => {
+    it('returns one operation when resource exists', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myTable-abc123');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+      });
+
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+
+      expect(ops).toHaveLength(1);
+      const descriptions = await ops[0].describe();
+      expect(descriptions[0]).toContain('myTable');
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, '/tmp/test-output', {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
-    const ops = await generator.plan();
+    it('contributes namespace import and post-define call to backend generator on execute', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myTable-abc123');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+      });
 
-    expect(ops).toHaveLength(1);
-    const descriptions = await ops[0].describe();
-    expect(descriptions[0]).toContain('myTable');
+      const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+      const addPostDefineCallSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendCall');
+      const addPostRefactorCallSpy = jest.spyOn(backendGenerator, 'addPostRefactorCall');
+
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(addNamespaceImportSpy).toHaveBeenCalledWith('storageMyTable', './storage/myTable/resource');
+      expect(addPostDefineCallSpy).toHaveBeenCalledWith('myTable', expect.stringContaining('storageMyTable.defineStorageMyTable(backend)'));
+      expect(addPostRefactorCallSpy).toHaveBeenCalledWith(expect.stringContaining('storageMyTable.postRefactor'));
+    });
+
+    it('creates separate resources for two DDB tables', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation(() => `table-abc123`);
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+      });
+
+      const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+
+      const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'activity',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'bookmarks',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+
+      const ops1 = await gen1.plan();
+      await ops1[0].execute();
+      const ops2 = await gen2.plan();
+      await ops2[0].execute();
+
+      expect(addNamespaceImportSpy).toHaveBeenCalledWith('storageActivity', './storage/activity/resource');
+      expect(addNamespaceImportSpy).toHaveBeenCalledWith('storageBookmarks', './storage/bookmarks/resource');
+    });
   });
 
-  it('contributes namespace import and post-define call to backend generator on execute', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.metaOutput as jest.Mock).mockReturnValue('myTable-abc123');
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
-      BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
-      ProvisionedThroughput: {},
+  describe('resource.ts generation (renderer tests)', () => {
+    it('renders a basic table with partition key', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('MyTable-abc123');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+      });
+
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import type { Backend } from '../../backend';
+        import {
+          Table,
+          AttributeType,
+          BillingMode,
+          StreamViewType,
+          CfnTable,
+        } from 'aws-cdk-lib/aws-dynamodb';
+        import { CfnResource } from 'aws-cdk-lib';
+
+        export function defineStorageMyTable(backend: Backend) {
+          const storageMyTableStack = backend.createStack('storagemyTable');
+          new Table(storageMyTableStack, 'MyTable', {
+            partitionKey: { name: 'id', type: AttributeType.STRING },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+          });
+          for (const cfnResource of storageMyTableStack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::DynamoDB::Table'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+        }
+
+        export function postRefactor(MyTable: Table) {
+          (MyTable.node.defaultChild as CfnTable).tableName = 'MyTable-abc123';
+        }
+        "
+      `);
     });
 
-    const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
-    const addPostDefineCallSpy = jest.spyOn(backendGenerator, 'addPostDefineCall');
-    const addPostRefactorCallSpy = jest.spyOn(backendGenerator, 'addPostRefactorCall');
+    it('renders a table with sort key and provisioned billing', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('MyTable-abc123');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [
+          { AttributeName: 'pk', KeyType: 'HASH' },
+          { AttributeName: 'sk', KeyType: 'RANGE' },
+        ],
+        AttributeDefinitions: [
+          { AttributeName: 'pk', AttributeType: 'S' },
+          { AttributeName: 'sk', AttributeType: 'N' },
+        ],
+        BillingModeSummary: { BillingMode: 'PROVISIONED' },
+        ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 5 },
+      });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, '/tmp/test-output', {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
-    const ops = await generator.plan();
-    await ops[0].execute();
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
 
-    expect(addNamespaceImportSpy).toHaveBeenCalledWith('storageMyTable', './storage/myTable/resource');
-    expect(addPostDefineCallSpy).toHaveBeenCalledWith('myTable', expect.stringContaining('storageMyTable.defineStorageMyTable(backend)'));
-    expect(addPostRefactorCallSpy).toHaveBeenCalledWith(expect.stringContaining('storageMyTable.postRefactor'));
-  });
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import type { Backend } from '../../backend';
+        import {
+          Table,
+          AttributeType,
+          BillingMode,
+          StreamViewType,
+          CfnTable,
+        } from 'aws-cdk-lib/aws-dynamodb';
+        import { CfnResource } from 'aws-cdk-lib';
 
-  it('handles table with GSIs', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.metaOutput as jest.Mock).mockReturnValue('myTable-abc123');
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [
-        { AttributeName: 'id', AttributeType: 'S' },
-        { AttributeName: 'status', AttributeType: 'S' },
-      ],
-      BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
-      ProvisionedThroughput: {},
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'byStatus',
-          KeySchema: [{ AttributeName: 'status', KeyType: 'HASH' }],
-        },
-      ],
-    });
+        export function defineStorageMyTable(backend: Backend) {
+          const storageMyTableStack = backend.createStack('storagemyTable');
+          new Table(storageMyTableStack, 'MyTable', {
+            partitionKey: { name: 'pk', type: AttributeType.STRING },
+            billingMode: BillingMode.PROVISIONED,
+            readCapacity: 10,
+            writeCapacity: 5,
+            sortKey: { name: 'sk', type: AttributeType.NUMBER },
+          });
+          for (const cfnResource of storageMyTableStack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::DynamoDB::Table'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+        }
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, '/tmp/test-output', {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
-    const ops = await generator.plan();
-    await ops[0].execute();
-
-    // Should write a resource.ts file
-    expect(mockWriteFile).toHaveBeenCalledWith(expect.stringContaining('resource.ts'), expect.any(String), 'utf-8');
-  });
-
-  it('creates separate resources for two DDB tables', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.metaOutput as jest.Mock).mockImplementation((_cat: string, resourceName: string) => `${resourceName}-abc123`);
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
-      BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
-      ProvisionedThroughput: {},
-    });
-
-    const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
-
-    const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, '/tmp/test-output', {
-      category: 'storage',
-      resourceName: 'activity',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
-    const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, '/tmp/test-output', {
-      category: 'storage',
-      resourceName: 'bookmarks',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
+        export function postRefactor(MyTable: Table) {
+          (MyTable.node.defaultChild as CfnTable).tableName = 'MyTable-abc123';
+        }
+        "
+      `);
     });
 
-    const ops1 = await gen1.plan();
-    await ops1[0].execute();
-    const ops2 = await gen2.plan();
-    await ops2[0].execute();
+    it('renders stream configuration', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('StreamTable-abc');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+        StreamSpecification: { StreamEnabled: true, StreamViewType: 'NEW_AND_OLD_IMAGES' },
+      });
 
-    expect(addNamespaceImportSpy).toHaveBeenCalledWith('storageActivity', './storage/activity/resource');
-    expect(addNamespaceImportSpy).toHaveBeenCalledWith('storageBookmarks', './storage/bookmarks/resource');
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'streamTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import type { Backend } from '../../backend';
+        import {
+          Table,
+          AttributeType,
+          BillingMode,
+          StreamViewType,
+          CfnTable,
+        } from 'aws-cdk-lib/aws-dynamodb';
+        import { CfnResource } from 'aws-cdk-lib';
+
+        export function defineStorageStreamTable(backend: Backend) {
+          const storageStreamTableStack = backend.createStack('storagestreamTable');
+          new Table(storageStreamTableStack, 'StreamTable', {
+            partitionKey: { name: 'id', type: AttributeType.STRING },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+            stream: StreamViewType.NEW_AND_OLD_IMAGES,
+          });
+          for (const cfnResource of storageStreamTableStack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::DynamoDB::Table'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+        }
+
+        export function postRefactor(StreamTable: Table) {
+          (StreamTable.node.defaultChild as CfnTable).tableName = 'StreamTable-abc';
+        }
+        "
+      `);
+    });
+
+    it('does not render stream when disabled', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('NoStream-abc');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+        StreamSpecification: { StreamEnabled: false },
+      });
+
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'noStream',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import type { Backend } from '../../backend';
+        import {
+          Table,
+          AttributeType,
+          BillingMode,
+          StreamViewType,
+          CfnTable,
+        } from 'aws-cdk-lib/aws-dynamodb';
+        import { CfnResource } from 'aws-cdk-lib';
+
+        export function defineStorageNoStream(backend: Backend) {
+          const storageNoStreamStack = backend.createStack('storagenoStream');
+          new Table(storageNoStreamStack, 'NoStream', {
+            partitionKey: { name: 'id', type: AttributeType.STRING },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+          });
+          for (const cfnResource of storageNoStreamStack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::DynamoDB::Table'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+        }
+
+        export function postRefactor(NoStream: Table) {
+          (NoStream.node.defaultChild as CfnTable).tableName = 'NoStream-abc';
+        }
+        "
+      `);
+    });
+
+    it('renders GSIs with addGlobalSecondaryIndex calls', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('GsiTable-abc');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+        AttributeDefinitions: [
+          { AttributeName: 'id', AttributeType: 'S' },
+          { AttributeName: 'status', AttributeType: 'S' },
+          { AttributeName: 'date', AttributeType: 'S' },
+          { AttributeName: 'createdAt', AttributeType: 'N' },
+        ],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: 'byStatus',
+            KeySchema: [{ AttributeName: 'status', KeyType: 'HASH' }],
+          },
+          {
+            IndexName: 'byDate',
+            KeySchema: [
+              { AttributeName: 'date', KeyType: 'HASH' },
+              { AttributeName: 'createdAt', KeyType: 'RANGE' },
+            ],
+          },
+        ],
+      });
+
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'gsiTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import type { Backend } from '../../backend';
+        import {
+          Table,
+          AttributeType,
+          BillingMode,
+          StreamViewType,
+          CfnTable,
+        } from 'aws-cdk-lib/aws-dynamodb';
+        import { CfnResource } from 'aws-cdk-lib';
+
+        export function defineStorageGsiTable(backend: Backend) {
+          const storageGsiTableStack = backend.createStack('storagegsiTable');
+          const GsiTable = new Table(storageGsiTableStack, 'GsiTable', {
+            partitionKey: { name: 'id', type: AttributeType.STRING },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+          });
+          GsiTable.addGlobalSecondaryIndex({
+            indexName: 'byStatus',
+            partitionKey: { name: 'status', type: AttributeType.STRING },
+            readCapacity: 5,
+            writeCapacity: 5,
+          });
+          GsiTable.addGlobalSecondaryIndex({
+            indexName: 'byDate',
+            partitionKey: { name: 'date', type: AttributeType.STRING },
+            sortKey: { name: 'createdAt', type: AttributeType.NUMBER },
+            readCapacity: 5,
+            writeCapacity: 5,
+          });
+          for (const cfnResource of storageGsiTableStack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::DynamoDB::Table'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+          return GsiTable;
+        }
+
+        export function postRefactor(GsiTable: Table) {
+          (GsiTable.node.defaultChild as CfnTable).tableName = 'GsiTable-abc';
+        }
+        "
+      `);
+    });
+
+    it('handles BINARY attribute type', async () => {
+      const gen1App = createMockGen1App();
+      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('BinaryTable-abc');
+      (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+        KeySchema: [{ AttributeName: 'data', KeyType: 'HASH' }],
+        AttributeDefinitions: [{ AttributeName: 'data', AttributeType: 'B' }],
+        BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+        ProvisionedThroughput: {},
+      });
+
+      const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'storage',
+        resourceName: 'binaryTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import type { Backend } from '../../backend';
+        import {
+          Table,
+          AttributeType,
+          BillingMode,
+          StreamViewType,
+          CfnTable,
+        } from 'aws-cdk-lib/aws-dynamodb';
+        import { CfnResource } from 'aws-cdk-lib';
+
+        export function defineStorageBinaryTable(backend: Backend) {
+          const storageBinaryTableStack = backend.createStack('storagebinaryTable');
+          new Table(storageBinaryTableStack, 'BinaryTable', {
+            partitionKey: { name: 'data', type: AttributeType.BINARY },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+          });
+          for (const cfnResource of storageBinaryTableStack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::DynamoDB::Table'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+        }
+
+        export function postRefactor(BinaryTable: Table) {
+          (BinaryTable.node.defaultChild as CfnTable).tableName = 'BinaryTable-abc';
+        }
+        "
+      `);
+    });
   });
 });
