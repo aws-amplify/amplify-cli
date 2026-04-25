@@ -64,7 +64,7 @@ describe('DataGenerator', () => {
       },
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue(undefined);
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
     await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
@@ -85,7 +85,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -114,7 +114,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -147,7 +147,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS', userPoolConfig: { userPoolId: 'pool-1' } }],
@@ -177,7 +177,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS' }],
@@ -208,7 +208,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -238,7 +238,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'abc123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'abc123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -284,7 +284,7 @@ describe('DataGenerator', () => {
       if (key === 'authConfig') return { defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' } } as any;
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
     const ops = await generator.plan();
@@ -335,7 +335,7 @@ describe('DataGenerator', () => {
         } as any;
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -399,7 +399,7 @@ describe('DataGenerator', () => {
         } as any;
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -462,7 +462,7 @@ describe('DataGenerator', () => {
         } as any;
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -510,7 +510,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       logConfig: { fieldLogLevel: 'ERROR', excludeVerboseContent: true },
       additionalAuthenticationProviders: [],
     } as unknown as GraphqlApi);
@@ -555,7 +555,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -603,7 +603,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
       apiId: 'api-123',
       name: 'testApi',
       additionalAuthenticationProviders: [],
@@ -631,7 +631,7 @@ describe('DataGenerator', () => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
       return undefined as any;
     });
-    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
     const ops = await generator.plan();

@@ -36,7 +36,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue(undefined);
 
     const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -58,7 +58,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
@@ -88,7 +88,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
@@ -121,7 +121,7 @@ describe('DynamoDBGenerator', () => {
         bookmarks: { service: 'DynamoDB', output: { Name: 'table-abc123' } },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
@@ -162,7 +162,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
@@ -224,7 +224,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [
         { AttributeName: 'pk', KeyType: 'HASH' },
         { AttributeName: 'sk', KeyType: 'RANGE' },
@@ -295,7 +295,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
@@ -359,7 +359,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
@@ -422,7 +422,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
@@ -516,7 +516,7 @@ describe('DynamoDBGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue({
       KeySchema: [{ AttributeName: 'data', KeyType: 'HASH' }],
       AttributeDefinitions: [{ AttributeName: 'data', AttributeType: 'B' }],
       BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },

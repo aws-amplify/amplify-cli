@@ -10,9 +10,9 @@ import * as fsExtra from 'fs-extra';
  * dependencies (AWS clients, stateManager, S3 download). The amplify-meta.json
  * is written to a real temp directory so the constructor reads it normally.
  *
- * After construction, replaces `app.aws` with jest mocks for the fetcher methods
- * that the caller specifies via `awsMocks`. Any fetcher method not provided
- * defaults to a jest.fn() that throws "not mocked".
+ * The returned app has a real AwsFetcher backed by fake AwsClients. Tests must
+ * use `jest.spyOn(app.aws, 'methodName').mockResolvedValue(...)` for every
+ * fetcher method their code path calls.
  */
 export async function createGen1App(meta: Record<string, unknown>): Promise<Gen1App> {
   const envName = 'main';
@@ -36,30 +36,5 @@ export async function createGen1App(meta: Record<string, unknown>): Promise<Gen1
   } as unknown as AwsClients);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- no real $TSContext needed
-  const app = await Gen1App.create({} as any);
-
-  // Replace the real AwsFetcher with a blank mock object.
-  // Callers configure individual methods: (app.aws.fetchUserPool as jest.Mock).mockResolvedValue(...)
-  (app as any).aws = {
-    fetchUserPool: jest.fn().mockResolvedValue({ SchemaAttributes: [] }),
-    fetchMfaConfig: jest.fn(),
-    fetchUserPoolClient: jest.fn(),
-    fetchIdentityProviders: jest.fn(),
-    fetchIdentityGroups: jest.fn(),
-    fetchIdentityPool: jest.fn(),
-    fetchIdentityPoolRoles: jest.fn(),
-    fetchGroupsByUserPoolId: jest.fn(),
-    fetchFunctionConfig: jest.fn(),
-    fetchFunctionSchedule: jest.fn().mockResolvedValue(undefined),
-    fetchGraphqlApi: jest.fn(),
-    fetchTableDescription: jest.fn(),
-    fetchBucketAccelerate: jest.fn().mockResolvedValue(undefined),
-    fetchBucketVersioning: jest.fn().mockResolvedValue(undefined),
-    fetchBucketEncryption: jest.fn().mockResolvedValue(undefined),
-    fetchBucketNotifications: jest.fn(),
-    fetchRestApiRootResourceId: jest.fn().mockResolvedValue('root-resource-id'),
-    fetchAppBuildSpec: jest.fn(),
-  };
-
-  return app;
+  return Gen1App.create({} as any);
 }

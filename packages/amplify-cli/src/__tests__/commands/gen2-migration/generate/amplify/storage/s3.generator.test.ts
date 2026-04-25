@@ -32,6 +32,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -52,6 +55,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
@@ -75,6 +81,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -127,6 +136,9 @@ describe('S3Generator', () => {
       authAccess: ['READ', 'CREATE_AND_UPDATE'],
       guestAccess: [],
     });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -180,6 +192,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: ['READ'] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -234,6 +249,9 @@ describe('S3Generator', () => {
       authAccess: ['READ', 'CREATE_AND_UPDATE', 'DELETE'],
       guestAccess: ['READ'],
     });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -298,6 +316,9 @@ describe('S3Generator', () => {
       guestAccess: [],
       groupAccess: { admin: ['READ', 'CREATE_AND_UPDATE', 'DELETE'] },
     });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -362,6 +383,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -422,6 +446,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -480,6 +507,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',
@@ -537,6 +567,9 @@ describe('S3Generator', () => {
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
     });
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
     const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
       category: 'storage',

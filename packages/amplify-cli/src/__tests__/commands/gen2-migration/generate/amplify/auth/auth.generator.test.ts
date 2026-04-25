@@ -62,7 +62,7 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPool as jest.Mock).mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
     await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
@@ -82,6 +82,16 @@ describe('AuthGenerator', () => {
           },
         },
       },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -167,9 +177,18 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
       UsernameAttributes: ['phone_number'],
       SchemaAttributes: [],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -231,10 +250,19 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
       EmailVerificationSubject: 'Verify your account',
       EmailVerificationMessage: 'Your code is {####}',
       SchemaAttributes: [],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -299,11 +327,20 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([
       { GroupName: 'admin', Precedence: 1 },
       { GroupName: 'editors', Precedence: 2 },
       { GroupName: 'viewers', Precedence: 3 },
     ]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
     const ops = await generator.plan();
@@ -365,11 +402,20 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
       SchemaAttributes: [
         { Name: 'email', Required: true, Mutable: true },
         { Name: 'given_name', Required: true, Mutable: false },
       ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -441,7 +487,7 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
       SchemaAttributes: [
         {
           Name: 'custom:department',
@@ -450,6 +496,15 @@ describe('AuthGenerator', () => {
           StringAttributeConstraints: { MinLength: '1', MaxLength: '50' },
         },
       ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -519,9 +574,18 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({
       MfaConfiguration: 'ON',
       SoftwareTokenMfaConfiguration: { Enabled: true },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -585,9 +649,18 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({
       MfaConfiguration: 'OPTIONAL',
       SoftwareTokenMfaConfiguration: { Enabled: true },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -651,6 +724,16 @@ describe('AuthGenerator', () => {
           },
         },
       },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -722,10 +805,18 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-      { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
-    ]);
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest
+      .spyOn(gen1App.aws, 'fetchIdentityProviders')
+      .mockResolvedValue([{ ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' }]);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       CallbackURLs: ['https://example.com/callback'],
       LogoutURLs: ['https://example.com/logout'],
     });
@@ -806,7 +897,15 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
       {
         ProviderType: IdentityProviderTypeType.Google,
         ProviderName: 'Google',
@@ -814,7 +913,7 @@ describe('AuthGenerator', () => {
         AttributeMapping: { email: 'email', given_name: 'given_name' },
       },
     ]);
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       CallbackURLs: [],
       LogoutURLs: [],
     });
@@ -896,7 +995,15 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
       {
         ProviderType: IdentityProviderTypeType.OIDC,
         ProviderName: 'MyOIDC',
@@ -909,7 +1016,7 @@ describe('AuthGenerator', () => {
         },
       },
     ]);
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       CallbackURLs: ['https://example.com/callback'],
       LogoutURLs: ['https://example.com/logout'],
     });
@@ -1000,7 +1107,15 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
       {
         ProviderType: IdentityProviderTypeType.SAML,
         ProviderName: 'MySAML',
@@ -1009,7 +1124,7 @@ describe('AuthGenerator', () => {
         },
       },
     ]);
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       CallbackURLs: ['https://example.com/callback'],
       LogoutURLs: ['https://example.com/logout'],
     });
@@ -1093,12 +1208,20 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
       { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
       { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
       { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
     ]);
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       CallbackURLs: ['https://example.com/callback'],
       LogoutURLs: ['https://example.com/logout'],
     });
@@ -1189,6 +1312,16 @@ describe('AuthGenerator', () => {
         },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
     generator.addFunctionAuthAccess({
@@ -1259,6 +1392,16 @@ describe('AuthGenerator', () => {
           },
         },
       },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -1331,6 +1474,16 @@ describe('AuthGenerator', () => {
         },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
     generator.addFunctionAuthAccess({ resourceName: 'noAccessFunc', permissions: {} });
@@ -1358,8 +1511,14 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
       IdentityPoolId: 'us-east-1:identity-pool-id',
+      IdentityPoolName: 'test-identity-pool',
       AllowUnauthenticatedIdentities: false,
     });
 
@@ -1424,7 +1583,16 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       AllowedOAuthFlows: ['code', 'implicit'],
       CallbackURLs: ['https://example.com/callback'],
       LogoutURLs: ['https://example.com/logout'],
@@ -1507,10 +1675,18 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
-      { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
-    ]);
-    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockImplementation((_poolId: string, clientId: string) => {
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    jest
+      .spyOn(gen1App.aws, 'fetchIdentityProviders')
+      .mockResolvedValue([{ ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' }]);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockImplementation((_poolId: string, clientId: string) => {
       if (clientId === 'webclient123') {
         return Promise.resolve({
           CallbackURLs: ['https://example.com/callback'],
@@ -1637,7 +1813,7 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
       SchemaAttributes: [],
       Policies: {
         PasswordPolicy: {
@@ -1648,6 +1824,15 @@ describe('AuthGenerator', () => {
           RequireSymbols: false,
         },
       },
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);

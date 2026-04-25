@@ -40,6 +40,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } } },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -68,6 +69,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } } },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addPostDefineStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
@@ -99,7 +101,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } } },
     });
-    (gen1App.aws.fetchRestApiRootResourceId as jest.Mock).mockResolvedValue('root456');
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root456');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -219,6 +221,7 @@ describe('RestApiGenerator', () => {
         '/other': { lambdaFunction: 'otherFunc', permissions: { setting: 'open' } },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -362,6 +365,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'private' } } },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -484,6 +488,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'private' } } },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -518,6 +523,7 @@ describe('RestApiGenerator', () => {
         },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -665,6 +671,7 @@ describe('RestApiGenerator', () => {
         },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -811,6 +818,7 @@ describe('RestApiGenerator', () => {
         '/users': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -950,6 +958,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/auth-test': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } } },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',
@@ -979,6 +988,7 @@ describe('RestApiGenerator', () => {
     jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
       paths: { '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } } },
     });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
       category: 'api',

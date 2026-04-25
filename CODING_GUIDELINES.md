@@ -807,7 +807,7 @@ Mock external dependencies (AWS SDK, file system, network). Don't mock internal 
 
 ### Use real constructors
 
-Instantiate production classes via their real constructor or factory method (e.g. `Gen1App.create()`). Mock only what's needed to make the constructor work (stateManager, AwsClients, S3 download). Replace external fetchers after construction: `(app as any).aws = { ... }`.
+Instantiate production classes via their real constructor or factory method (e.g. `Gen1App.create()`). Mock only what's needed to make the constructor work (stateManager, AwsClients, S3 download). Use `jest.spyOn` on the real instance's methods in each test to control external calls.
 
 ### Provide data, not answers
 
@@ -815,7 +815,11 @@ Don't mock methods that derive values from data (e.g. `resourceMetaOutput`, `cat
 
 ### Self-contained tests
 
-Each test case should be readable in isolation. Inline the setup — meta objects, mock configurations, generator construction, plan/execute calls. Don't use shared setup functions or global constants for test data. Shared utilities for extracting results (e.g. `writtenFile()`) are fine.
+Each test case should be readable in isolation. Inline the setup — mock configurations, object construction, action calls. Don't use shared setup functions or global constants for test data. Shared utilities for extracting results (e.g. `writtenFile()`) are fine.
+
+Every test must explicitly mock every external call its code path makes. Don't rely on shared helpers, `beforeEach`, or other tests to set up mocks on your behalf. If the production code calls `fetchUserPool`, `fetchMfaConfig`, and `fetchIdentityProviders`, the test must have three visible `jest.spyOn` calls — even if most of them return empty/default values.
+
+This leads to repetition across tests, which is an acceptable trade-off. With AI-assisted development, the cost of producing boilerplate is negligible — the cost that matters is the time a human reviewer spends understanding a test. When every external call is visible in the test body, the reviewer sees the complete set of I/O the code path requires, can question whether each call is necessary, and can spot missing mocks without cross-referencing shared setup.
 
 ### Flat test structure
 
@@ -825,6 +829,22 @@ Use a single `describe` block per test file. Don't nest `describe` blocks for ca
 
 If code branches on a property with a finite set of values (e.g. MfaConfiguration: OFF | OPTIONAL | ON), write a test for each value. If the property is free-form (a string or number), one test for a non-null value and one for null/undefined is sufficient.
 
-### Only mock what the test needs
+### Use `jest.spyOn` instead of `as jest.Mock` casts
 
-Each test should only configure the mocks it specifically requires. If a fetcher returns `undefined` by default and the code handles that gracefully, don't mock it. If a mock is needed to prevent a crash in production code (not a test concern), add the default to the shared helper instead.
+When configuring mock return values on object methods, use `jest.spyOn(obj, 'method')` to preserve the original method's type signature. Casting with `as jest.Mock` erases the return type, so `mockResolvedValue()` accepts `unknown` and the IDE can't provide intellisense on the mock data.
+
+```typescript
+// Bad — loses type information, no intellisense on the mock value
+(gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+  UsernameAttributes: ['phone_number'],
+  SchemaAttributes: [],
+});
+
+// Good — preserves the return type (UserPoolType), full intellisense
+jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+  UsernameAttributes: ['phone_number'],
+  SchemaAttributes: [],
+});
+```
+
+This also catches real type errors at compile time — e.g. missing required fields in the mock data — instead of letting them slip through as `unknown`.

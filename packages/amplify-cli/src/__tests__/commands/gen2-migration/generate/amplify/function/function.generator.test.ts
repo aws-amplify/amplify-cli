@@ -108,7 +108,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -116,6 +116,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -140,7 +141,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -148,6 +149,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
@@ -174,7 +176,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -182,6 +184,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -208,7 +211,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -216,6 +219,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -256,7 +260,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 30,
@@ -264,6 +268,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -304,7 +309,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -312,6 +317,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: { DB_HOST: 'localhost', DB_PORT: '5432' } },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -353,7 +359,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -361,6 +367,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: { ENV: 'main' } },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -402,7 +409,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -410,6 +417,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: { API_KEY: '/amplify/d1abc2def3/main/some-secret' } },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
     (gen1App as any)._appId = 'd1abc2def3';
     Object.defineProperty(gen1App, 'appId', { get: () => 'd1abc2def3' });
 
@@ -453,7 +461,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -461,6 +469,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: { DB_HOST: 'localhost', DB_PORT: '5432' } },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -502,7 +511,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -510,7 +519,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
-    (gen1App.aws.fetchFunctionSchedule as jest.Mock).mockResolvedValue('rate(5 minutes)');
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue('rate(5 minutes)');
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -552,7 +561,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -560,7 +569,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
-    (gen1App.aws.fetchFunctionSchedule as jest.Mock).mockResolvedValue('cron(0 12 * * ? *)');
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue('cron(0 12 * * ? *)');
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -602,7 +611,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -610,7 +619,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
-    (gen1App.aws.fetchFunctionSchedule as jest.Mock).mockResolvedValue('rate(1 hour)');
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue('rate(1 hour)');
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -652,7 +661,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -660,7 +669,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
-    (gen1App.aws.fetchFunctionSchedule as jest.Mock).mockResolvedValue('rate(7 days)');
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue('rate(7 days)');
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -719,7 +728,7 @@ describe('FunctionGenerator', () => {
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -732,6 +741,7 @@ describe('FunctionGenerator', () => {
         },
       },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -800,7 +810,7 @@ describe('FunctionGenerator', () => {
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -808,6 +818,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -876,7 +887,7 @@ describe('FunctionGenerator', () => {
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -884,6 +895,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -942,7 +954,7 @@ describe('FunctionGenerator', () => {
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -950,6 +962,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -1003,7 +1016,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'testAuthPreSignup-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -1011,6 +1024,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const mockAuthGenerator = {
       addTrigger: jest.fn(),
@@ -1050,7 +1064,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myStorageFunc-main-abc');
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myStorageFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -1058,6 +1072,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
     jest.spyOn(gen1App, 'json').mockImplementation((templatePath: string) => {
       if (templatePath.includes('storage/')) {
         return {
@@ -1123,7 +1138,7 @@ describe('FunctionGenerator', () => {
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'index.handler',
       Timeout: 3,
@@ -1131,6 +1146,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'nodejs18.x',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     const ops = await generator.plan();
@@ -1154,7 +1170,7 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
     jest.spyOn(gen1App, 'file').mockReturnValue('{}');
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-    (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'handler.handler',
       Timeout: 3,
@@ -1162,6 +1178,7 @@ describe('FunctionGenerator', () => {
       Runtime: 'python3.9',
       Environment: { Variables: {} },
     });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");

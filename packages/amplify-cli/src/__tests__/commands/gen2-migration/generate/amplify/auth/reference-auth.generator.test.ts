@@ -50,11 +50,11 @@ describe('ReferenceAuthGenerator', () => {
         },
       },
     });
-    (gen1App.aws.fetchIdentityPoolRoles as jest.Mock).mockResolvedValue({
+    jest.spyOn(gen1App.aws, 'fetchIdentityPoolRoles').mockResolvedValue({
       authenticated: 'arn:aws:iam::123:role/authRole',
       unauthenticated: 'arn:aws:iam::123:role/unauthRole',
     });
-    (gen1App.aws.fetchGroupsByUserPoolId as jest.Mock).mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchGroupsByUserPoolId').mockResolvedValue(undefined);
 
     const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, authResource);
     const ops = await generator.plan();
