@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-discussions-x-x-deployment",
       "UnauthRoleName": "amplify-discussions-x-x-unauthRole",
       "StackName": "amplify-discussions-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/573e2000-387e-11f1-8fe1-0e59b95a9da1",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/442df660-3dd4-11f1-b092-12277e1e1399",
       "AmplifyAppId": "discussions"
     },
     "categories": {
@@ -16,9 +16,13 @@
         "discussionsc578c16ec578c16e": {}
       },
       "function": {
+        "activityTrigger": {
+          "deploymentBucketName": "amplify-discussions-x-x-deployment",
+          "s3Key": "amplify-builds/activityTrigger-4c2b61507333584d5642-build.zip"
+        },
         "fetchuseractivity": {
           "deploymentBucketName": "amplify-discussions-x-x-deployment",
-          "s3Key": "amplify-builds/fetchuseractivity-574d43794579796f5042-build.zip"
+          "s3Key": "amplify-builds/fetchuseractivity-73456b7375664f416269-build.zip"
         },
         "recorduseractivity": {
           "deploymentBucketName": "amplify-discussions-x-x-deployment",

@@ -1,35 +1,246 @@
-import * as auth from './auth/resource';
-import * as data from './data/resource';
-import * as storage from './storage/resource';
-import * as storageActivity from './storage/activity/resource';
-import * as storageBookmarks from './storage/bookmarks/resource';
-import * as fetchuseractivity from './function/fetchuseractivity/resource';
-import * as recorduseractivity from './function/recorduseractivity/resource';
+import { auth } from './auth/resource';
+import { data } from './data/resource';
+import { storage } from './storage/resource';
+import { fetchuseractivity } from './storage/fetchuseractivity/resource';
+import { recorduseractivity } from './storage/recorduseractivity/resource';
+import { activityTrigger } from './storage/activityTrigger/resource';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import {
+  Table,
+  AttributeType,
+  BillingMode,
+  StreamViewType,
+} from 'aws-cdk-lib/aws-dynamodb';
 import { defineBackend } from '@aws-amplify/backend';
+import { CfnResource, Duration } from 'aws-cdk-lib';
+// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
-  auth: auth.auth,
-  data: data.data,
-  storage: storage.storage,
-  fetchuseractivity: fetchuseractivity.fetchuseractivity,
-  recorduseractivity: recorduseractivity.recorduseractivity,
+  auth,
+  data,
+  storage,
+  fetchuseractivity,
+  recorduseractivity,
+  activityTrigger,
 });
-
-export type Backend = typeof backend;
-
-const activity = storageActivity.defineStorageActivity(backend);
-const bookmarks = storageBookmarks.defineStorageBookmarks(backend);
-
-export function postRefactor() {
-  storage.postRefactor(backend);
-  storageActivity.postRefactor(activity);
-  storageBookmarks.postRefactor(bookmarks);
+const storageActivityStack = backend.createStack('storageactivity');
+const activity = new Table(storageActivityStack, 'activity', {
+  partitionKey: { name: 'id', type: AttributeType.STRING },
+  billingMode: BillingMode.PROVISIONED,
+  readCapacity: 5,
+  writeCapacity: 5,
+  stream: StreamViewType.NEW_IMAGE,
+  sortKey: { name: 'userId', type: AttributeType.STRING },
+});
+// Add this property to the Table above post refactor: tableName: 'activity-x'
+activity.addGlobalSecondaryIndex({
+  indexName: 'byUserId',
+  partitionKey: { name: 'userId', type: AttributeType.STRING },
+  sortKey: { name: 'timestamp', type: AttributeType.STRING },
+  readCapacity: 5,
+  writeCapacity: 5,
+});
+const storageBookmarksStack = backend.createStack('storagebookmarks');
+const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
+  partitionKey: { name: 'userId', type: AttributeType.STRING },
+  billingMode: BillingMode.PROVISIONED,
+  readCapacity: 5,
+  writeCapacity: 5,
+  stream: StreamViewType.NEW_IMAGE,
+  sortKey: { name: 'postId', type: AttributeType.STRING },
+});
+// Add this property to the Table above post refactor: tableName: 'bookmarks-x'
+bookmarks.addGlobalSecondaryIndex({
+  indexName: 'byPost',
+  partitionKey: { name: 'postId', type: AttributeType.STRING },
+  readCapacity: 5,
+  writeCapacity: 5,
+});
+const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+cfnUserPool.usernameAttributes = ['phone_number'];
+cfnUserPool.policies = {
+  passwordPolicy: {
+    minimumLength: 8,
+    requireUppercase: false,
+    requireLowercase: false,
+    requireNumbers: false,
+    requireSymbols: false,
+    temporaryPasswordValidityDays: 7,
+  },
+};
+const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+cfnIdentityPool.allowUnauthenticatedIdentities = false;
+const userPool = backend.auth.resources.userPool;
+userPool.addClient('NativeAppClient', {
+  refreshTokenValidity: Duration.days(120),
+  enableTokenRevocation: true,
+  enablePropagateAdditionalUserContextData: false,
+  authSessionValidity: Duration.minutes(3),
+  disableOAuth: true,
+  generateSecret: false,
+});
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
+backend.fetchuseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_STREAMARN',
+  activity.tableStreamArn!
+);
+backend.fetchuseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
+);
+backend.fetchuseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_NAME',
+  activity.tableName
+);
+activity.grant(
+  backend.fetchuseractivity.resources.lambda,
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect'
+);
+backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_STREAMARN',
+  activity.tableStreamArn!
+);
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
+);
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_NAME',
+  activity.tableName
+);
+activity.grant(
+  backend.recorduseractivity.resources.lambda,
+  'dynamodb:Put*',
+  'dynamodb:Create*',
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PartiQLInsert',
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect',
+  'dynamodb:Update*',
+  'dynamodb:RestoreTable*',
+  'dynamodb:PartiQLUpdate',
+  'dynamodb:Delete*',
+  'dynamodb:PartiQLDelete'
+);
+for (const model of ['Topic', 'Post', 'Comment']) {
+  const table = backend.data.resources.tables[model];
+  backend.recorduseractivity.resources.lambda.addEventSource(
+    new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST })
+  );
+  table.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
+  table.grantTableListStreams(
+    backend.recorduseractivity.resources.lambda.role!
+  );
+}
+backend.activityTrigger.resources.cfnResources.cfnFunction.functionName = `activityTrigger-${branchName}`;
+backend.activityTrigger.addEnvironment(
+  'STORAGE_ACTIVITY_STREAMARN',
+  activity.tableStreamArn!
+);
+backend.activityTrigger.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
+);
+backend.activityTrigger.addEnvironment(
+  'STORAGE_ACTIVITY_NAME',
+  activity.tableName
+);
+activity.grant(
+  backend.activityTrigger.resources.lambda,
+  'dynamodb:Put*',
+  'dynamodb:Create*',
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PartiQLInsert',
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect',
+  'dynamodb:Update*',
+  'dynamodb:RestoreTable*',
+  'dynamodb:PartiQLUpdate',
+  'dynamodb:Delete*',
+  'dynamodb:PartiQLDelete'
+);
+backend.activityTrigger.resources.lambda.addEventSource(
+  new DynamoEventSource(activity, { startingPosition: StartingPosition.LATEST })
+);
+activity.grantStreamRead(backend.activityTrigger.resources.lambda.role!);
+activity.grantTableListStreams(backend.activityTrigger.resources.lambda.role!);
+const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+// Use this bucket name post refactor
+// s3Bucket.bucketName = 'discus-avatarsx-x';
+s3Bucket.bucketEncryption = {
+  serverSideEncryptionConfiguration: [
+    {
+      serverSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  ],
+};
+for (const cfnResource of backend.auth.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      [
+        'AWS::Cognito::UserPool',
+        'AWS::Cognito::IdentityPool',
+        'AWS::Cognito::UserPoolClient',
+        'AWS::Cognito::IdentityPoolRoleAttachment',
+        'AWS::Cognito::UserPoolGroup',
+      ].includes(c.cfnResourceType)
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+for (const cfnResource of storageActivityStack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      c.cfnResourceType === 'AWS::DynamoDB::Table'
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+for (const cfnResource of backend.storage.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+for (const cfnResource of storageBookmarksStack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      c.cfnResourceType === 'AWS::DynamoDB::Table'
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
 }
 
-auth.applyEscapeHatches(backend);
-storage.applyEscapeHatches(backend);
-fetchuseractivity.applyEscapeHatches(backend);
-recorduseractivity.applyEscapeHatches(backend);
-
-// Uncomment after refactor
-// postRefactor();
+// Uncomment post refactor to force a redeployment
+// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

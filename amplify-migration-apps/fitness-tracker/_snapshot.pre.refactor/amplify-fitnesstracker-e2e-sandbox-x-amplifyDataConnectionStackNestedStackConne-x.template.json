@@ -4,10 +4,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPINONEDS33EFA529Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPINONEDS39C13547Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramexercisesauth0Function",
@@ -26,10 +26,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseNestedStackExerciseNestedStackResource3E78568AOutputsamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseExerciseDataSource581A77D6Name"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseNestedStackExerciseNestedStackResource60D8B68DOutputsamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseExerciseDataSourceFD4EA547Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "WorkoutProgramExercisesDataResolverFn",
@@ -50,7 +50,7 @@
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
+          "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId"
         },
         "FieldName": "exercises",
         "Kind": "PIPELINE",
@@ -76,7 +76,7 @@
             [
               "$util.qr($ctx.stash.put(\"typeName\", \"WorkoutProgram\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"exercises\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -92,7 +92,7 @@
                             "Fn::Split": [
                               ":",
                               {
-                                "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseNestedStackExerciseNestedStackResource3E78568AOutputsamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseExerciseTable9813D946TableArn"
+                                "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseNestedStackExerciseNestedStackResource60D8B68DOutputsamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseExerciseTable0CEB1D6ETableArn"
                               }
                             ]
                           }
@@ -112,7 +112,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -124,11 +124,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthunauthenticatedUserRoleCE83E48FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref"
+                "Ref": "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthIdentityPool527DB351Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -421,25 +421,25 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPI6681CDE6ApiId": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPIBDAC183DApiId": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataGraphQLAPINONEDS33EFA529Name": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataGraphQLAPINONEDS39C13547Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseNestedStackExerciseNestedStackResource3E78568AOutputsamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseExerciseDataSource581A77D6Name": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseNestedStackExerciseNestedStackResource60D8B68DOutputsamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseExerciseDataSourceFD4EA547Name": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseNestedStackExerciseNestedStackResource3E78568AOutputsamplifyfitnesstrackere2esandboxd06966be68dataamplifyDataExerciseExerciseTable9813D946TableArn": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseNestedStackExerciseNestedStackResource60D8B68DOutputsamplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseExerciseTable0CEB1D6ETableArn": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthauthenticatedUserRoleB46B5F85Ref": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthauthenticatedUserRole42859ED3Ref": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthunauthenticatedUserRoleF86FB235Ref": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthunauthenticatedUserRoleCE83E48FRef": {
       "Type": "String"
     },
-    "referencetoamplifyfitnesstrackere2esandboxd06966be68authNestedStackauthNestedStackResourceAD3565F2Outputsamplifyfitnesstrackere2esandboxd06966be68authamplifyAuthIdentityPool12882BF3Ref": {
+    "referencetoamplifyfitnesstrackere2esandbox803499bc27authNestedStackauthNestedStackResource6BDB810FOutputsamplifyfitnesstrackere2esandbox803499bc27authamplifyAuthIdentityPool527DB351Ref": {
       "Type": "String"
     }
   }

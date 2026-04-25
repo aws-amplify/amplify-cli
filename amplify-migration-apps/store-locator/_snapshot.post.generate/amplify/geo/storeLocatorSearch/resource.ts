@@ -1,9 +1,10 @@
 import { geostoreLocatorSearch } from './storeLocatorSearch-construct';
-import type { Backend } from '../../backend';
+import { Backend } from '@aws-amplify/backend';
+import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export function defineStoreLocatorSearch(backend: Backend) {
+export const defineStoreLocatorSearch = (backend: Backend<any>) => {
   const storeLocatorSearchStack = backend.createStack('geostoreLocatorSearch');
   const storeLocatorSearch = new geostoreLocatorSearch(
     storeLocatorSearchStack,
@@ -23,5 +24,28 @@ export function defineStoreLocatorSearch(backend: Backend) {
       isDefault: 'true',
     }
   );
+
+  const policy = new Policy(storeLocatorSearch, 'gen1AuthPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: [
+          'geo:SearchPlaceIndexForPosition',
+          'geo:SearchPlaceIndexForText',
+          'geo:SearchPlaceIndexForSuggestions',
+          'geo:GetPlace',
+        ],
+        resources: [
+          `arn:aws:geo:${storeLocatorSearchStack.region}:${storeLocatorSearchStack.account}:place-index/storeLocatorSearch-x`,
+        ],
+      }),
+    ],
+  });
+
+  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
+  backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
+  backend.auth.resources.groups['storeLocatorAdmin'].role.attachInlinePolicy(
+    policy
+  );
+
   return storeLocatorSearch;
-}
+};

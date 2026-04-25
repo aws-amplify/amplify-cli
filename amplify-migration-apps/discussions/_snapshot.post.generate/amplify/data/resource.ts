@@ -1,5 +1,4 @@
 import { defineData } from '@aws-amplify/backend';
-import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Topic @model @auth(rules: [{ allow: public }]){
@@ -26,6 +25,11 @@ type Comment @model @auth(rules: [{ allow: public }]){
 
 type Query {
   fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
+  getActivityStats: ActivityStats @function(name: "fetchuseractivity-${branchName}") @auth(rules: [{ allow: public }])
+}
+
+type ActivityStats {
+  activityCount: Int! @auth(rules: [{ allow: public }])
 }
 
 type Activity {
@@ -42,9 +46,9 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
-        Topic: 'Topic-xw3yrfq7mngltcua43nucy7fg4-x',
-        Post: 'Post-xw3yrfq7mngltcua43nucy7fg4-x',
-        Comment: 'Comment-xw3yrfq7mngltcua43nucy7fg4-x',
+        Topic: 'Topic-kvgq5sominembcf7pb3nqurkby-x',
+        Post: 'Post-kvgq5sominembcf7pb3nqurkby-x',
+        Comment: 'Comment-kvgq5sominembcf7pb3nqurkby-x',
       },
     },
   ],
