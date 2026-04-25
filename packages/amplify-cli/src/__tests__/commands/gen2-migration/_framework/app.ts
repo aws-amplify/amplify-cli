@@ -304,11 +304,16 @@ export class MigrationApp {
       aws: new AwsFetcher(clients),
       ccbDir: this.ccbPath,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
-      meta: Gen1App.prototype.meta.bind({ _meta: this.meta } as any),
+      categoryMeta: Gen1App.prototype.categoryMeta.bind({ _meta: this.meta } as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
+      resourceMeta: Gen1App.prototype.resourceMeta.bind({
+        _meta: this.meta,
+        categoryMeta: Gen1App.prototype.categoryMeta.bind({ _meta: this.meta }),
+      } as any),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
       discover: Gen1App.prototype.discover.bind({ _meta: this.meta } as any),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
-      metaOutput: Gen1App.prototype.metaOutput.bind({ _meta: this.meta } as any),
+      resourceMetaOutput: Gen1App.prototype.resourceMetaOutput.bind({ _meta: this.meta } as any),
       json: Gen1App.prototype.json.bind({ ccbDir: this.ccbPath }),
       file: Gen1App.prototype.file.bind({ ccbDir: this.ccbPath }),
       fileExists: Gen1App.prototype.fileExists.bind({ ccbDir: this.ccbPath }),

@@ -11,6 +11,7 @@ import {
 import { IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
 import { newLineIdentifier, TS } from '../../_infra/ts';
+import { AUTH_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 /**
  * A registered auth trigger — contributed by the function generator.
@@ -582,7 +583,11 @@ export class AuthRenderer {
     }
 
     for (const func of functionsWithAuthAccess) {
-      namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+      // Skip adding import if the function is already imported (e.g., by addLambdaTriggers for auth triggers).
+      const alreadyImported = Object.values(namedImports).some((names) => names.has(func.resourceName));
+      if (!alreadyImported) {
+        namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+      }
     }
 
     const accessRules: ts.Expression[] = [];
@@ -852,7 +857,7 @@ export class AuthRenderer {
       | undefined,
   ): PropertyAssignment {
     const userAttributeIdentifier = factory.createIdentifier('userAttributes');
-    const userAttributeProperties = [];
+    const userAttributeProperties: PropertyAssignment[] = [];
 
     if (standardAttributes !== undefined) {
       const standardAttributeProperties = Object.entries(standardAttributes).map(([key, value]) => {
@@ -995,6 +1000,8 @@ export class AuthRenderer {
       statements.push(...this.buildProviderSetupStatements());
     }
 
+    statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_REFACTORED_RESOURCES));
+
     return statements;
   }
 
@@ -1002,8 +1009,10 @@ export class AuthRenderer {
   private buildAdditionalImports(options: AuthRenderOptions, hasIdentityProviders: boolean): Record<string, Set<string>> {
     const imports: Record<string, Set<string>> = {};
 
+    if (!imports['aws-cdk-lib']) imports['aws-cdk-lib'] = new Set();
+    imports['aws-cdk-lib'].add('CfnResource');
+
     if (options.userPoolClient) {
-      if (!imports['aws-cdk-lib']) imports['aws-cdk-lib'] = new Set();
       imports['aws-cdk-lib'].add('Duration');
     }
 

@@ -49,6 +49,8 @@ export interface RenderApplyEscapeHatchesOptions {
   readonly hasKinesisTrigger: boolean;
   readonly hasAnalytics: boolean;
   readonly analyticsConstructType?: string;
+  readonly unmappedAuthActions: readonly string[];
+  readonly storageTriggerTables: readonly string[];
 }
 
 /**
@@ -234,6 +236,19 @@ export class FunctionRenderer {
       statements.push(createDynamoTrigger(opts.resourceName, opts.triggerModels));
     }
 
+    // Storage DynamoDB triggers (standalone tables, not AppSync-managed)
+    if (opts.storageTriggerTables.length > 0) {
+      if (!additionalImports['aws-cdk-lib/aws-lambda-event-sources']) {
+        additionalImports['aws-cdk-lib/aws-lambda-event-sources'] = new Set();
+      }
+      additionalImports['aws-cdk-lib/aws-lambda-event-sources'].add('DynamoEventSource');
+      if (!additionalImports['aws-cdk-lib/aws-lambda']) {
+        additionalImports['aws-cdk-lib/aws-lambda'] = new Set();
+      }
+      additionalImports['aws-cdk-lib/aws-lambda'].add('StartingPosition');
+      statements.push(...createStorageDynamoTrigger(opts.resourceName, opts.storageTriggerTables));
+    }
+
     // Kinesis triggers
     if (opts.hasKinesisTrigger) {
       if (!additionalImports['aws-cdk-lib/aws-lambda-event-sources']) {
@@ -246,6 +261,15 @@ export class FunctionRenderer {
       additionalImports['aws-cdk-lib/aws-lambda'].add('StartingPosition');
       additionalImports['aws-cdk-lib/aws-kinesis'] = new Set(['Stream']);
       statements.push(...createKinesisTrigger(opts.resourceName));
+    }
+
+    // Unmapped auth actions (addToRolePolicy for cognito-idp actions without Gen2 mapping)
+    if (opts.unmappedAuthActions.length > 0) {
+      if (!additionalImports['aws-cdk-lib']) {
+        additionalImports['aws-cdk-lib'] = new Set();
+      }
+      additionalImports['aws-cdk-lib'].add('aws_iam');
+      statements.push(createUnmappedAuthGrant(opts.resourceName, opts.unmappedAuthActions));
     }
 
     // Build the extra parameters (beyond backend: Backend)
@@ -615,6 +639,47 @@ function createKinesisGrant(funcName: string, actions: readonly string[]): ts.Ex
   );
 }
 
+/** Creates an addToRolePolicy statement for unmapped cognito-idp actions. */
+function createUnmappedAuthGrant(funcName: string, actions: readonly string[]): ts.ExpressionStatement {
+  const lambdaRef = factory.createPropertyAccessExpression(
+    factory.createPropertyAccessExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(funcName)),
+      factory.createIdentifier('resources'),
+    ),
+    factory.createIdentifier('lambda'),
+  );
+
+  const policyStatement = factory.createNewExpression(
+    factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+    undefined,
+    [
+      factory.createObjectLiteralExpression(
+        [
+          factory.createPropertyAssignment(
+            'actions',
+            factory.createArrayLiteralExpression(actions.map((action) => factory.createStringLiteral(action))),
+          ),
+          factory.createPropertyAssignment(
+            'resources',
+            factory.createArrayLiteralExpression([
+              TS.propAccess('backend', 'auth', 'resources', 'userPool', 'userPoolArn') as ts.Expression,
+            ]),
+          ),
+        ],
+        true,
+      ),
+    ],
+  );
+
+  return factory.createExpressionStatement(
+    factory.createCallExpression(
+      factory.createPropertyAccessExpression(lambdaRef, factory.createIdentifier('addToRolePolicy')),
+      undefined,
+      [policyStatement],
+    ),
+  );
+}
+
 /** Creates a DynamoDB stream trigger for-of loop. */
 function createDynamoTrigger(functionName: string, models: readonly string[]): ts.ForOfStatement {
   return factory.createForOfStatement(
@@ -696,6 +761,69 @@ function createDynamoTrigger(functionName: string, models: readonly string[]): t
       true,
     ),
   );
+}
+
+/** Creates storage DynamoDB stream triggers for standalone tables. */
+function createStorageDynamoTrigger(functionName: string, tableNames: readonly string[]): ts.Statement[] {
+  const statements: ts.Statement[] = [];
+  for (const tableName of tableNames) {
+    // backend.funcName.resources.lambda.addEventSource(new DynamoEventSource(tableName, { startingPosition: StartingPosition.LATEST }))
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier(`backend.${functionName}.resources`),
+              factory.createIdentifier('lambda'),
+            ),
+            factory.createIdentifier('addEventSource'),
+          ),
+          undefined,
+          [
+            factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
+              factory.createIdentifier(tableName),
+              factory.createObjectLiteralExpression([TS.enumProp('startingPosition', 'StartingPosition', 'LATEST')]),
+            ]),
+          ],
+        ),
+      ),
+    );
+    // tableName.grantStreamRead(backend.funcName.resources.lambda.role!)
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grantStreamRead')),
+          undefined,
+          [
+            factory.createNonNullExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                factory.createIdentifier('role'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    // tableName.grantTableListStreams(backend.funcName.resources.lambda.role!)
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grantTableListStreams')),
+          undefined,
+          [
+            factory.createNonNullExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                factory.createIdentifier('role'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  return statements;
 }
 
 /** Creates a Kinesis stream trigger. */

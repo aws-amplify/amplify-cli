@@ -201,10 +201,11 @@ Wait for the deployment to finish successfully.
 > Migration is not fully supported for this app because the geo category doesn't support refactoring yet.
 > This guide ends at the `generate` step.
 
-First install the experimental amplify CLI package that provides the migration commands.
+First install the amplify CLI package:
+
 
 ```console
-npm install @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install @aws-amplify/cli
 ```
 
 Now run them:

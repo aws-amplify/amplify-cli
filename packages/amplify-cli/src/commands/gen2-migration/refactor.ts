@@ -36,6 +36,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = this.gen1App.discover();
 
     for (const resource of discovered) {
+      // skip resources the assessment did not mark as supported.
+      // these will show up as validation errors the user has to acknowledge.
+      if (assessment.of(resource, 'refactor').level !== 'supported') {
+        continue;
+      }
+
       switch (resource.key) {
         case 'auth:Cognito': {
           const isReferenceAuth = discovered
@@ -116,6 +122,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = this.gen1App.discover();
 
     for (const resource of discovered) {
+      // skip resources the assessment did not mark as supported.
+      // these will show up as validation errors the user has to acknowledge.
+      if (assessment.of(resource, 'refactor').level !== 'supported') {
+        continue;
+      }
+
       switch (resource.key) {
         case 'auth:Cognito': {
           // Imported auth resources have no CloudFormation stack to move — skip.

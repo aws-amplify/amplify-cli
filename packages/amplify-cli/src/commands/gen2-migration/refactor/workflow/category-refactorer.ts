@@ -1,4 +1,4 @@
-import { DescribeChangeSetOutput, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
 import { Planner } from '../../_infra/planner';
@@ -84,6 +84,9 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
+    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, sourceResources);
+    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, targetResources);
+
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
     const blueprint: RefactorBlueprint = { sourceStackId, targetStackId: destStackId, mappings };
@@ -97,6 +100,8 @@ export abstract class CategoryRefactorer implements Planner {
     const operations = [
       sourceStatusOp,
       destStatusOp,
+      sourceDeletionPolicyOps,
+      targetDeletionPolicyOps,
       ...updateSourceOps,
       ...updateTargetOps,
       ...beforeMoveOps,
@@ -153,22 +158,38 @@ export abstract class CategoryRefactorer implements Planner {
     this.cfn.claimUpdate(source.stackId);
 
     const sourceStackName = extractStackNameFromId(source.stackId);
-    const change = await this.createChangeSetReport(source);
+
+    this.logger.push(sourceStackName);
+    const changeSet = await this.cfn.createChangeSet({
+      stackName: source.stackId,
+      parameters: source.parameters,
+      templateBody: source.resolvedTemplate,
+    });
+    this.logger.pop();
+
+    if (!changeSet) {
+      return [];
+    }
+
+    const report = this.cfn.renderChangeSet(changeSet);
+
+    // resolving references to their concrete value should
+    // not result in any actual change.
+    const valid = (changeSet.Changes ?? []).length === 0;
+
     return [
       {
         resource: this.resource,
         validate: () => ({
           description: `Ensure no unexpected changes to ${sourceStackName}`,
-          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
+          run: async () => ({ valid, report }),
         }),
         describe: async () => {
-          if (!change) return [];
           const header = `Update source stack '${sourceStackName}' with resolved references`;
-          return [change.report ? `${header}\n\n${change.report.trimStart()}` : `${header} (empty change-set)`];
+          return [valid ? header : `${header}\n\n${report.trimStart()}`];
         },
         execute: async () => {
-          if (!change) return;
-          await this.cfn.executeChangeSet({ changeSet: change.changeSet, templateBody: source.resolvedTemplate, resource: this.resource });
+          await this.cfn.executeChangeSet({ changeSet, templateBody: source.resolvedTemplate, resource: this.resource });
         },
       },
     ];
@@ -183,47 +204,41 @@ export abstract class CategoryRefactorer implements Planner {
     this.cfn.claimUpdate(target.stackId);
 
     const targetStackName = extractStackNameFromId(target.stackId);
-    const change = await this.createChangeSetReport(target);
+
+    this.logger.push(targetStackName);
+    const changeSet = await this.cfn.createChangeSet({
+      stackName: target.stackId,
+      parameters: target.parameters,
+      templateBody: target.resolvedTemplate,
+    });
+    this.logger.pop();
+
+    if (!changeSet) {
+      return [];
+    }
+
+    const report = this.cfn.renderChangeSet(changeSet);
+
+    // resolving references to their concrete value should
+    // not result in any actual change.
+    const valid = (changeSet.Changes ?? []).length === 0;
+
     return [
       {
         resource: this.resource,
         validate: () => ({
           description: `Ensure no unexpected changes to ${targetStackName}`,
-          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
+          run: async () => ({ valid, report }),
         }),
         describe: async () => {
-          if (!change) return [];
           const header = `Update target stack '${targetStackName}' with resolved references`;
-          return [change.report ? `${header}\n\n${change.report.trimStart()}` : `${header} (empty change-set)`];
+          return [valid ? header : `${header}\n\n${report.trimStart()}`];
         },
         execute: async () => {
-          if (!change) return;
-          await this.cfn.executeChangeSet({ changeSet: change.changeSet, templateBody: target.resolvedTemplate, resource: this.resource });
+          await this.cfn.executeChangeSet({ changeSet, templateBody: target.resolvedTemplate, resource: this.resource });
         },
       },
     ];
-  }
-
-  /**
-   * Creates a change set for the given stack and returns the described change set with a formatted report.
-   */
-  protected async createChangeSetReport(
-    stack: ResolvedStack,
-  ): Promise<{ readonly report: string | undefined; readonly changeSet: DescribeChangeSetOutput } | undefined> {
-    const stackName = extractStackNameFromId(stack.stackId);
-    this.logger.push(stackName);
-    try {
-      const changeSet = await this.cfn.createChangeSet({
-        stackName: stack.stackId,
-        parameters: stack.parameters,
-        templateBody: stack.resolvedTemplate,
-      });
-      if (!changeSet) return undefined;
-      const report = this.cfn.renderChangeSet(changeSet);
-      return { report, changeSet };
-    } finally {
-      this.logger.pop();
-    }
   }
 
   /**
@@ -291,7 +306,7 @@ export abstract class CategoryRefactorer implements Planner {
       style: { head: [] },
     });
     for (const m of mappings) {
-      table.push([m.Source.LogicalResourceId, m.Destination.LogicalResourceId]);
+      table.push([m.Source!.LogicalResourceId, m.Destination!.LogicalResourceId]);
     }
     return `${table.toString()}`;
   }
@@ -302,6 +317,34 @@ export abstract class CategoryRefactorer implements Planner {
 
   protected debug(message: string) {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
+  }
+
+  private buildRemovalPolicyValidation(stackId: string, resources: Map<string, CFNResource>): AmplifyMigrationOperation {
+    const stackName = extractStackNameFromId(stackId);
+    let valid = true;
+    const table = new CLITable({
+      head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
+      style: { head: [] },
+    });
+    for (const [logicalId, resource] of resources.entries()) {
+      valid = valid && resource.DeletionPolicy === 'Retain' && resource.UpdateReplacePolicy === 'Retain';
+      table.push([logicalId, resource.Type, resource.DeletionPolicy ?? '- (not set)', resource.UpdateReplacePolicy ?? '— (not set)']);
+    }
+    return {
+      resource: this.resource,
+      describe: async () => [],
+      validate: () => ({
+        description: `Deletion Protection: ${stackName}`,
+        run: async (): Promise<ValidationResult> => {
+          return {
+            valid,
+            report: `Following resources are not set to Retain: \n\n${table.toString()}`,
+          };
+        },
+      }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
   }
 
   /**

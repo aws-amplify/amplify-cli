@@ -101,7 +101,12 @@ export class BackendGenerator implements Planner {
           const content = TS.printNodes(nodes, 120);
 
           await fs.mkdir(path.dirname(backendTsPath), { recursive: true });
-          await fs.writeFile(backendTsPath, content, 'utf-8');
+          await fs.writeFile(
+            backendTsPath,
+            content +
+              "\n// Uncomment post refactor to force a redeployment\n// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');\n",
+            'utf-8',
+          );
         },
       },
     ];

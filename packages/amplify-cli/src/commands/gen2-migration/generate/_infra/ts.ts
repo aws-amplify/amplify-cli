@@ -208,6 +208,89 @@ export class TS {
   }
 
   /**
+   * Creates a for-of loop that applies DeletionPolicy/UpdateReplacePolicy Retain overrides to matching CfnResources.
+   */
+  public static retentionLoop(stackNodeExpr: ts.Expression, types: readonly string[]): ts.ForOfStatement {
+    const cfnResourceId = factory.createIdentifier('cfnResource');
+    const isCfnResourceCall = factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), factory.createIdentifier('isCfnResource')),
+      undefined,
+      [factory.createIdentifier('c')],
+    );
+
+    let filterCondition: ts.Expression;
+    if (types.length === 1) {
+      filterCondition = factory.createBinaryExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('c'), factory.createIdentifier('cfnResourceType')),
+        ts.SyntaxKind.EqualsEqualsEqualsToken,
+        factory.createStringLiteral(types[0]),
+      );
+    } else {
+      filterCondition = factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createArrayLiteralExpression(types.map((t) => factory.createStringLiteral(t))),
+          factory.createIdentifier('includes'),
+        ),
+        undefined,
+        [factory.createPropertyAccessExpression(factory.createIdentifier('c'), factory.createIdentifier('cfnResourceType'))],
+      );
+    }
+
+    const combinedCondition = factory.createBinaryExpression(isCfnResourceCall, ts.SyntaxKind.AmpersandAmpersandToken, filterCondition);
+
+    const filterCallback = factory.createArrowFunction(
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'c')],
+      undefined,
+      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      combinedCondition,
+    );
+
+    const iterableExpr = factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(stackNodeExpr, factory.createIdentifier('findAll')),
+          undefined,
+          [],
+        ),
+        factory.createIdentifier('filter'),
+      ),
+      undefined,
+      [filterCallback],
+    );
+
+    const updateOverride = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(factory.createAsExpression(cfnResourceId, factory.createTypeReferenceNode('CfnResource'))),
+          factory.createIdentifier('addOverride'),
+        ),
+        undefined,
+        [factory.createStringLiteral('UpdateReplacePolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
+
+    const deletionOverride = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(factory.createAsExpression(cfnResourceId, factory.createTypeReferenceNode('CfnResource'))),
+          factory.createIdentifier('addOverride'),
+        ),
+        undefined,
+        [factory.createStringLiteral('DeletionPolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
+
+    return factory.createForOfStatement(
+      undefined,
+      factory.createVariableDeclarationList([factory.createVariableDeclaration(cfnResourceId)], ts.NodeFlags.Const),
+      iterableExpr,
+      factory.createBlock([updateOverride, deletionOverride], true),
+    );
+  }
+
+  /**
    * Extracts the file path from an AWS Lambda handler string.
    * 'index.handler' → './index.js', 'src/handler.myFunction' → './src/handler.js'
    */

@@ -1,4 +1,5 @@
 import { defineData } from '@aws-amplify/backend';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Topic @model @auth(rules: [{ allow: public }]){
@@ -43,7 +44,7 @@ type Activity {
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+      //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
         Topic: 'Topic-kvgq5sominembcf7pb3nqurkby-x',

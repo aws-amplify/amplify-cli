@@ -14,6 +14,7 @@ export class GeoGeofenceCollectionGenerator extends GeoResourceGenerator {
     const props: GeoResourceProps = {
       ...base,
       needsAuthAndUnauthRoles: false,
+      serviceName: 'GeofenceCollection',
       serviceSpecificProps: [{ key: 'collectionName', value: parameters.get('collectionName') ?? this.resource.resourceName }],
     };
     this.geoGenerator.addGeofenceCollection(props);

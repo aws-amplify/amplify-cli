@@ -1,265 +1,35 @@
-import { auth } from './auth/resource';
-import { data } from './data/resource';
-import { storage } from './storage/resource';
-import { thumbnailgen } from './storage/thumbnailgen/resource';
-import { addusertogroup } from './function/addusertogroup/resource';
-import { removeuserfromgroup } from './function/removeuserfromgroup/resource';
+import * as auth from './auth/resource';
+import * as data from './data/resource';
+import * as storage from './storage/resource';
+import * as thumbnailgen from './function/thumbnailgen/resource';
+import * as addusertogroup from './function/addusertogroup/resource';
+import * as removeuserfromgroup from './function/removeuserfromgroup/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
-import {
-  OAuthScope,
-  UserPoolClientIdentityProvider,
-} from 'aws-cdk-lib/aws-cognito';
-// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
-  auth,
-  data,
-  storage,
-  thumbnailgen,
-  addusertogroup,
-  removeuserfromgroup,
+  auth: auth.auth,
+  data: data.data,
+  storage: storage.storage,
+  thumbnailgen: thumbnailgen.thumbnailgen,
+  addusertogroup: addusertogroup.addusertogroup,
+  removeuserfromgroup: removeuserfromgroup.removeuserfromgroup,
 });
-const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-cfnUserPool.usernameAttributes = ['email', 'phone_number'];
-cfnUserPool.policies = {
-  passwordPolicy: {
-    minimumLength: 8,
-    requireUppercase: false,
-    requireLowercase: false,
-    requireNumbers: false,
-    requireSymbols: false,
-    temporaryPasswordValidityDays: 7,
-  },
-};
-const cfnUserPoolClient = backend.auth.resources.cfnResources.cfnUserPoolClient;
-cfnUserPoolClient.allowedOAuthFlows = ['code'];
-const userPool = backend.auth.resources.userPool;
-const userPoolClient = userPool.addClient('NativeAppClient', {
-  refreshTokenValidity: Duration.days(30),
-  enableTokenRevocation: true,
-  enablePropagateAdditionalUserContextData: false,
-  authSessionValidity: Duration.minutes(3),
-  supportedIdentityProviders: [
-    UserPoolClientIdentityProvider.FACEBOOK,
-    UserPoolClientIdentityProvider.GOOGLE,
-    UserPoolClientIdentityProvider.COGNITO,
-  ],
-  oAuth: {
-    callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
-    logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
-    flows: {
-      authorizationCodeGrant: true,
-      implicitCodeGrant: false,
-      clientCredentials: false,
-    },
-    scopes: [
-      OAuthScope.PHONE,
-      OAuthScope.EMAIL,
-      OAuthScope.OPENID,
-      OAuthScope.PROFILE,
-      OAuthScope.COGNITO_ADMIN,
-    ],
-  },
-  // flows: ['code'],
-  disableOAuth: false,
-  generateSecret: false,
-});
-const providerSetupResult = (
-  backend.auth.stack.node.children.find(
-    (child) => child.node.id === 'amplifyAuth'
-  ) as any
-).providerSetupResult;
-Object.keys(providerSetupResult).forEach((provider) => {
-  const providerSetupPropertyValue = providerSetupResult[provider];
-  if (
-    providerSetupPropertyValue.node &&
-    providerSetupPropertyValue.node.id.toLowerCase().endsWith('idp')
-  ) {
-    userPoolClient.node.addDependency(providerSetupPropertyValue);
-  }
-});
-// backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'API_KEY',
-  },
-];
-const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-// Use this bucket name post refactor
-// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bedx-x';
-s3Bucket.bucketEncryption = {
-  serverSideEncryptionConfiguration: [
-    {
-      serverSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  ],
-};
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.thumbnailgen.resources.cfnResources.cfnFunction.functionName = `thumbnailgen-${branchName}`;
-backend.thumbnailgen.addEnvironment(
-  'STORAGE_MEDIAVAULT_BUCKETNAME',
-  backend.storage.resources.bucket.bucketName
-);
-backend.addusertogroup.resources.cfnResources.cfnFunction.functionName = `addusertogroup-${branchName}`;
-backend.addusertogroup.addEnvironment(
-  'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
-  backend.auth.resources.userPool.userPoolId
-);
-backend.addusertogroup.resources.lambda.addToRolePolicy(
-  new aws_iam.PolicyStatement({
-    actions: [
-      'cognito-idp:ConfirmSignUp',
-      'cognito-idp:CreateUserImportJob',
-      'cognito-idp:AdminLinkProviderForUser',
-      'cognito-idp:CreateIdentityProvider',
-      'cognito-idp:SetUICustomization',
-      'cognito-idp:SignUp',
-      'cognito-idp:SetRiskConfiguration',
-      'cognito-idp:StartUserImportJob',
-      'cognito-idp:AssociateSoftwareToken',
-      'cognito-idp:CreateResourceServer',
-      'cognito-idp:RespondToAuthChallenge',
-      'cognito-idp:CreateUserPoolClient',
-      'cognito-idp:GlobalSignOut',
-      'cognito-idp:AddCustomAttributes',
-      'cognito-idp:CreateGroup',
-      'cognito-idp:CreateUserPool',
-      'cognito-idp:CreateUserPoolDomain',
-      'cognito-idp:StopUserImportJob',
-      'cognito-idp:InitiateAuth',
-      'cognito-idp:ConfirmForgotPassword',
-      'cognito-idp:VerifySoftwareToken',
-      'cognito-idp:AdminDisableProviderForUser',
-      'cognito-idp:SetUserPoolMfaConfig',
-      'cognito-idp:ChangePassword',
-      'cognito-idp:ConfirmDevice',
-      'cognito-idp:ResendConfirmationCode',
-      'cognito-idp:Describe*',
-      'cognito-idp:ForgotPassword',
-      'cognito-idp:UpdateAuthEventFeedback',
-      'cognito-idp:UpdateResourceServer',
-      'cognito-idp:UpdateUserPoolClient',
-      'cognito-idp:UpdateUserPoolDomain',
-      'cognito-idp:UpdateIdentityProvider',
-      'cognito-idp:UpdateGroup',
-      'cognito-idp:UpdateDeviceStatus',
-      'cognito-idp:UpdateUserPool',
-      'cognito-idp:DeleteUserPoolDomain',
-      'cognito-idp:DeleteResourceServer',
-      'cognito-idp:DeleteGroup',
-      'cognito-idp:DeleteUserPoolClient',
-      'cognito-idp:DeleteUserAttributes',
-      'cognito-idp:DeleteUserPool',
-      'cognito-idp:DeleteIdentityProvider',
-      'cognito-idp:DeleteUser',
-      'cognito-identity:Describe*',
-      'cognito-identity:Get*',
-      'cognito-identity:List*',
-      'cognito-sync:Describe*',
-      'cognito-sync:Get*',
-      'cognito-sync:List*',
-      'iam:ListOpenIdConnectProviders',
-      'iam:ListRoles',
-      'sns:ListPlatformApplications',
-    ],
-    resources: [backend.auth.resources.userPool.userPoolArn],
-  })
-);
-backend.removeuserfromgroup.resources.cfnResources.cfnFunction.functionName = `removeuserfromgroup-${branchName}`;
-backend.removeuserfromgroup.addEnvironment(
-  'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
-  backend.auth.resources.userPool.userPoolId
-);
-backend.removeuserfromgroup.resources.lambda.addToRolePolicy(
-  new aws_iam.PolicyStatement({
-    actions: [
-      'cognito-idp:ConfirmSignUp',
-      'cognito-idp:CreateUserImportJob',
-      'cognito-idp:AdminLinkProviderForUser',
-      'cognito-idp:CreateIdentityProvider',
-      'cognito-idp:SetUICustomization',
-      'cognito-idp:SignUp',
-      'cognito-idp:SetRiskConfiguration',
-      'cognito-idp:StartUserImportJob',
-      'cognito-idp:AssociateSoftwareToken',
-      'cognito-idp:CreateResourceServer',
-      'cognito-idp:RespondToAuthChallenge',
-      'cognito-idp:CreateUserPoolClient',
-      'cognito-idp:GlobalSignOut',
-      'cognito-idp:AddCustomAttributes',
-      'cognito-idp:CreateGroup',
-      'cognito-idp:CreateUserPool',
-      'cognito-idp:CreateUserPoolDomain',
-      'cognito-idp:StopUserImportJob',
-      'cognito-idp:InitiateAuth',
-      'cognito-idp:ConfirmForgotPassword',
-      'cognito-idp:VerifySoftwareToken',
-      'cognito-idp:AdminDisableProviderForUser',
-      'cognito-idp:SetUserPoolMfaConfig',
-      'cognito-idp:ChangePassword',
-      'cognito-idp:ConfirmDevice',
-      'cognito-idp:ResendConfirmationCode',
-      'cognito-idp:Describe*',
-      'cognito-idp:ForgotPassword',
-      'cognito-idp:UpdateAuthEventFeedback',
-      'cognito-idp:UpdateResourceServer',
-      'cognito-idp:UpdateUserPoolClient',
-      'cognito-idp:UpdateUserPoolDomain',
-      'cognito-idp:UpdateIdentityProvider',
-      'cognito-idp:UpdateGroup',
-      'cognito-idp:UpdateDeviceStatus',
-      'cognito-idp:UpdateUserPool',
-      'cognito-idp:DeleteUserPoolDomain',
-      'cognito-idp:DeleteResourceServer',
-      'cognito-idp:DeleteGroup',
-      'cognito-idp:DeleteUserPoolClient',
-      'cognito-idp:DeleteUserAttributes',
-      'cognito-idp:DeleteUserPool',
-      'cognito-idp:DeleteIdentityProvider',
-      'cognito-idp:DeleteUser',
-      'cognito-identity:Describe*',
-      'cognito-identity:Get*',
-      'cognito-identity:List*',
-      'cognito-sync:Describe*',
-      'cognito-sync:Get*',
-      'cognito-sync:List*',
-      'iam:ListOpenIdConnectProviders',
-      'iam:ListRoles',
-      'sns:ListPlatformApplications',
-    ],
-    resources: [backend.auth.resources.userPool.userPoolArn],
-  })
-);
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter(
-    (c) =>
-      CfnResource.isCfnResource(c) &&
-      [
-        'AWS::Cognito::UserPool',
-        'AWS::Cognito::IdentityPool',
-        'AWS::Cognito::UserPoolClient',
-        'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolGroup',
-      ].includes(c.cfnResourceType)
-  )) {
-  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+
+export type Backend = typeof backend;
+
+export function postRefactor() {
+  storage.postRefactor(backend);
 }
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter(
-    (c) =>
-      CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
-  )) {
-  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-}
+
+auth.applyEscapeHatches(backend);
+data.applyEscapeHatches(backend);
+storage.applyEscapeHatches(backend);
+thumbnailgen.applyEscapeHatches(backend);
+addusertogroup.applyEscapeHatches(backend);
+removeuserfromgroup.applyEscapeHatches(backend);
+
+// Uncomment after refactor
+// postRefactor();
 
 // Uncomment post refactor to force a redeployment
 // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

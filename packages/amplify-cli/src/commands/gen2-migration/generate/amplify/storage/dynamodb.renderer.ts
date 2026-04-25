@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
+import { STORAGE_DYNAMO_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 const factory = ts.factory;
 
@@ -58,6 +59,7 @@ export class DynamoDBRenderer {
     return factory.createNodeArray([
       this.renderBackendTypeImport(),
       this.renderCdkImports(),
+      this.renderCfnResourceImport(),
       newLineIdentifier,
       this.renderDefineStorage(table),
       newLineIdentifier,
@@ -71,6 +73,10 @@ export class DynamoDBRenderer {
 
   private renderCdkImports(): ts.ImportDeclaration {
     return TS.namedImport('aws-cdk-lib/aws-dynamodb', 'Table', 'AttributeType', 'BillingMode', 'StreamViewType', 'CfnTable');
+  }
+
+  private renderCfnResourceImport(): ts.ImportDeclaration {
+    return TS.namedImport('aws-cdk-lib', 'CfnResource');
   }
 
   private renderDefineStorage(table: DynamoDBTableDefinition): ts.FunctionDeclaration {
@@ -90,6 +96,8 @@ export class DynamoDBRenderer {
     );
 
     bodyStatements.push(...this.buildTableStatements(table, scopeVarName));
+
+    bodyStatements.push(TS.retentionLoop(TS.propAccess(scopeVarName, 'node'), STORAGE_DYNAMO_REFACTORED_RESOURCES));
 
     if (hasGSIs) {
       bodyStatements.push(factory.createReturnStatement(factory.createIdentifier(sanitizedName)));

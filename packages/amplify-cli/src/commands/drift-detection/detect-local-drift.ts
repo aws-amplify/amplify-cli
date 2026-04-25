@@ -10,23 +10,22 @@ import fs from 'fs-extra';
  * Local drift detection results (Phase 3)
  */
 export interface LocalDriftResults {
-  resourcesToBeCreated?: Array<ResourceInfo>;
-  resourcesToBeUpdated?: Array<ResourceInfo>;
-  resourcesToBeDeleted?: Array<ResourceInfo>;
-  resourcesToBeSynced?: Array<ResourceInfo>;
-  skipped: boolean;
-  skipReason?: string;
+  readonly resourcesToBeCreated?: Array<ResourceInfo>;
+  readonly resourcesToBeUpdated?: Array<ResourceInfo>;
+  readonly resourcesToBeDeleted?: Array<ResourceInfo>;
+  readonly skipped: boolean;
+  readonly skipReason?: string;
 }
 
 /**
  * Resource information for Phase 3
  */
 export interface ResourceInfo {
-  category: string;
-  resourceName: string;
-  service: string;
-  providerPlugin?: string;
-  dependsOn?: Array<any>;
+  readonly category: string;
+  readonly resourceName: string;
+  readonly service: string;
+  readonly providerPlugin?: string;
+  readonly dependsOn?: Array<any>;
 }
 
 function assertValidResourceInfo(resource: any): asserts resource is ResourceInfo {
@@ -78,8 +77,12 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
     const statusResults = await getResourceStatus();
 
-    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;
-    for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced]) {
+    // resourcesToBeCreated/Updated/Deleted track managed (CloudFormation-backed)
+    // resources with pending deployment changes. resourcesToBeSynced is excluded —
+    // it tracks imported-resource lifecycle (import/unlink/refresh) which does not
+    // involve CloudFormation stack operations.
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted } = statusResults;
+    for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted]) {
       arr.forEach(assertValidResourceInfo);
     }
 
@@ -87,7 +90,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
       resourcesToBeCreated,
       resourcesToBeUpdated,
       resourcesToBeDeleted,
-      resourcesToBeSynced,
       skipped: false,
     };
   } catch (error: any) {

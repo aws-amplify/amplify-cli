@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signIn, signOut } from 'aws-amplify/auth';
 import { uploadData, getUrl, downloadData, remove } from 'aws-amplify/storage';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 
 const testImageBase64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);
@@ -34,6 +35,7 @@ describe('guest', () => {
 
     expect(buffer.length).toBeGreaterThan(0);
 
+    const config = configureAmplify();
     const creds = await signUp(config);
     await signIn({ username: creds.username, password: creds.password });
   });
@@ -48,6 +50,7 @@ describe('guest', () => {
       uploadData({ key: fileName, data: imageBuffer, options: { contentType: 'image/png' } }).result,
     ).rejects.toBeDefined();
 
+    const config = configureAmplify();
     const creds = await signUp(config);
     await signIn({ username: creds.username, password: creds.password });
   });

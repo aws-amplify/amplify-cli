@@ -1,10 +1,10 @@
 import { geostoreLocatorGeofence } from './storeLocatorGeofence-construct';
-import { Backend } from '@aws-amplify/backend';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
+export function defineStoreLocatorGeofence(backend: Backend) {
   const storeLocatorGeofenceStack = backend.createStack(
     'geostoreLocatorGeofence'
   );
@@ -21,7 +21,6 @@ export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
       isDefault: 'true',
     }
   );
-
   const policy = new Policy(storeLocatorGeofence, 'gen1AuthPolicy', {
     statements: [
       new PolicyStatement({
@@ -38,10 +37,8 @@ export const defineStoreLocatorGeofence = (backend: Backend<any>) => {
       }),
     ],
   });
-
   backend.auth.resources.groups['storeLocatorAdmin'].role.attachInlinePolicy(
     policy
   );
-
   return storeLocatorGeofence;
-};
+}

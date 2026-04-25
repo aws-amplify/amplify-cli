@@ -118,6 +118,9 @@ export abstract class GeoResourceGenerator implements Planner {
       }
     }
 
+    const gen1ResourceName = `${this.resource.resourceName}-${this.gen1App.envName}`;
+    const gen1Actions = extractGen1Actions(template);
+
     const base: GeoResourceProps = {
       constructClassName,
       constructFileName,
@@ -127,6 +130,9 @@ export abstract class GeoResourceGenerator implements Planner {
       isDefault: paramMap.get('isDefault') ?? 'false',
       needsAuthAndUnauthRoles: false,
       serviceSpecificProps: [],
+      gen1ResourceName,
+      gen1Actions,
+      serviceName: 'Map',
     };
 
     return { props: base, parameters: paramMap };
@@ -221,7 +227,6 @@ export abstract class GeoResourceGenerator implements Planner {
       const resolved = resolveConditions(result, parameters) as any;
       delete resolved.Conditions;
       return resolved;
-      return resolved;
     }
 
     return result;
@@ -254,4 +259,46 @@ export abstract class GeoResourceGenerator implements Planner {
 
     return result;
   }
+}
+
+/** Lifecycle actions used by the Custom::LambdaCallout — not user-facing. */
+const GEO_LIFECYCLE_ACTIONS = new Set([
+  'geo:CreateMap',
+  'geo:UpdateMap',
+  'geo:DeleteMap',
+  'geo:CreatePlaceIndex',
+  'geo:UpdatePlaceIndex',
+  'geo:DeletePlaceIndex',
+  'geo:CreateGeofenceCollection',
+  'geo:UpdateGeofenceCollection',
+  'geo:DeleteGeofenceCollection',
+]);
+
+/**
+ * Extracts user-facing IAM actions from a Gen1 geo CFN template.
+ *
+ * The template contains two kinds of IAM policies:
+ * 1. Lambda service role policies with lifecycle actions (Create/Update/Delete)
+ * 2. User-facing policies with actions like GetMapTile, SearchPlaceIndex, etc.
+ *
+ * This function finds the policy whose actions are not lifecycle actions
+ * and returns those actions.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+function extractGen1Actions(template: any): string[] {
+  const resources = template.Resources ?? {};
+  for (const resource of Object.values(resources)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation resource
+    const res = resource as any;
+    if (res.Type !== 'AWS::IAM::Policy') continue;
+    const statements = res.Properties?.PolicyDocument?.Statement ?? [];
+    for (const stmt of statements) {
+      const actions: string[] = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+      const userFacing = actions.filter((a: string) => typeof a === 'string' && !GEO_LIFECYCLE_ACTIONS.has(a));
+      if (userFacing.length > 0 && userFacing.length === actions.length) {
+        return userFacing;
+      }
+    }
+  }
+  return [];
 }

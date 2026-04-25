@@ -1,10 +1,10 @@
 import { geostoreLocatorMap } from './storeLocatorMap-construct';
-import { Backend } from '@aws-amplify/backend';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-export const defineStoreLocatorMap = (backend: Backend<any>) => {
+export function defineStoreLocatorMap(backend: Backend) {
   const storeLocatorMapStack = backend.createStack('geostoreLocatorMap');
   const storeLocatorMap = new geostoreLocatorMap(
     storeLocatorMapStack,
@@ -23,7 +23,6 @@ export const defineStoreLocatorMap = (backend: Backend<any>) => {
       isDefault: 'true',
     }
   );
-
   const policy = new Policy(storeLocatorMap, 'gen1AuthPolicy', {
     statements: [
       new PolicyStatement({
@@ -39,12 +38,10 @@ export const defineStoreLocatorMap = (backend: Backend<any>) => {
       }),
     ],
   });
-
   backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
   backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
   backend.auth.resources.groups['storeLocatorAdmin'].role.attachInlinePolicy(
     policy
   );
-
   return storeLocatorMap;
-};
+}

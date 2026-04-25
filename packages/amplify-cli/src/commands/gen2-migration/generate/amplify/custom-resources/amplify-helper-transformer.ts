@@ -51,7 +51,7 @@ export class AmplifyHelperTransformer {
 
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
-        function visit(node: ts.Node): ts.Node {
+        function visit(node: ts.Node): ts.Node | undefined {
           // Remove import statements for amplify-dependent-resources-ref and cli-extensibility-helper
           if (ts.isImportDeclaration(node)) {
             const moduleSpecifier = node.moduleSpecifier;
@@ -340,7 +340,7 @@ export class AmplifyHelperTransformer {
 
           return visitedNode;
         }
-        return ts.visitNode(node, visit);
+        return ts.visitNode(node, visit) as T;
       };
     };
 
@@ -408,11 +408,11 @@ export class AmplifyHelperTransformer {
         )
       : undefined;
 
-    const newStatements = [];
-    newStatements.push(...sourceFile.statements.filter((stmt) => ts.isImportDeclaration(stmt)));
+    const newStatements: ts.Statement[] = [];
+    newStatements.push(...sourceFile.statements.filter((statement) => ts.isImportDeclaration(statement)));
     if (!hasBranchName) newStatements.push(branchNameDeclaration);
     if (!hasProjectName && projectNameDeclaration) newStatements.push(projectNameDeclaration);
-    newStatements.push(...sourceFile.statements.filter((stmt) => !ts.isImportDeclaration(stmt)));
+    newStatements.push(...sourceFile.statements.filter((statement) => !ts.isImportDeclaration(statement)));
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);
   }

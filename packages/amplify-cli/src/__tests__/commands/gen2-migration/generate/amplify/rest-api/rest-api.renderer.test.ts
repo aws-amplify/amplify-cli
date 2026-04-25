@@ -1,35 +1,36 @@
 import ts from 'typescript';
-import { RestApiRenderer, RestApiDefinition } from '../../../../../../commands/gen2-migration/generate/amplify/rest-api/rest-api.renderer';
+import {
+  RestApiRenderer,
+  RestApiRenderOptions,
+} from '../../../../../../commands/gen2-migration/generate/amplify/rest-api/rest-api.renderer';
 
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const sourceFile = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
-function createBasicRestApi(overrides?: Partial<RestApiDefinition>): RestApiDefinition {
+function createBasicRestApi(overrides?: Partial<RestApiRenderOptions>): RestApiRenderOptions {
   return {
     apiName: 'myApi',
-    functionName: 'myFunc',
-    paths: [
-      {
-        path: '/items',
-        methods: ['GET', 'POST'],
+    exportedFunctionName: 'defineMyApi',
+    paths: {
+      '/items': {
         lambdaFunction: 'myFunc',
+        permissions: { setting: 'open' },
       },
-    ],
+    },
     gen1ApiId: 'abc123',
     gen1RootResourceId: 'root456',
-    uniqueFunctions: ['myFunc'],
     ...overrides,
   };
 }
 
-function renderApi(renderer: RestApiRenderer, restApi: RestApiDefinition): string {
+function renderApi(renderer: RestApiRenderer, restApi: RestApiRenderOptions): string {
   const nodes = renderer.render(restApi);
   return nodes.map((n) => printer.printNode(ts.EmitHint.Unspecified, n as ts.Node, sourceFile)).join('\n');
 }
 
 describe('RestApiRenderer', () => {
   it('renders a basic REST API', () => {
-    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
+    const renderer = new RestApiRenderer(false);
     const restApi = createBasicRestApi();
     const output = renderApi(renderer, restApi);
 
@@ -46,8 +47,13 @@ describe('RestApiRenderer', () => {
   });
 
   it('renders Lambda integrations for unique functions', () => {
-    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
-    const restApi = createBasicRestApi({ uniqueFunctions: ['myFunc', 'otherFunc'] });
+    const renderer = new RestApiRenderer(false);
+    const restApi = createBasicRestApi({
+      paths: {
+        '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
+        '/other': { lambdaFunction: 'otherFunc', permissions: { setting: 'open' } },
+      },
+    });
     const output = renderApi(renderer, restApi);
 
     expect(output).toContain('myFuncIntegration');
@@ -56,72 +62,72 @@ describe('RestApiRenderer', () => {
     expect(output).toContain('new LambdaIntegration(backend.otherFunc.resources.lambda)');
   });
 
-  it('renders policy attachment when auth exists and authType is set', () => {
-    const renderer = new RestApiRenderer(true, new Set());
-    const restApi = createBasicRestApi({ authType: 'private' });
+  it('renders policy attachment when auth exists and path is private', () => {
+    const renderer = new RestApiRenderer(true);
+    const restApi = createBasicRestApi({
+      paths: {
+        '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'private' } },
+      },
+    });
     const output = renderApi(renderer, restApi);
 
-    expect(output).toContain('backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1myApiPolicy)');
+    expect(output).toContain('authenticatedUserIamRole.attachInlinePolicy(gen1myApiPolicy)');
   });
 
   it('does not render policy attachment when no auth', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi({ authType: 'private' });
+    const renderer = new RestApiRenderer(false);
+    const restApi = createBasicRestApi({
+      paths: {
+        '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'private' } },
+      },
+    });
     const output = renderApi(renderer, restApi);
 
     expect(output).not.toContain('attachInlinePolicy(gen1myApiPolicy)');
   });
 
   it('renders IAM auth type on resource', () => {
-    const renderer = new RestApiRenderer(true, new Set(['myFunc']));
+    const renderer = new RestApiRenderer(true);
     const restApi = createBasicRestApi({
-      paths: [
-        {
-          path: '/items',
-          methods: ['GET'],
-          authType: 'private',
+      paths: {
+        '/items': {
           lambdaFunction: 'myFunc',
+          permissions: { setting: 'private' },
         },
-      ],
+      },
     });
     const output = renderApi(renderer, restApi);
 
     expect(output).toContain('AuthorizationType.IAM');
   });
 
-  it('renders auth path policies when permissions.hasAuth is true', () => {
-    const renderer = new RestApiRenderer(true, new Set(['myFunc']));
+  it('renders auth path policies when permissions.auth is set', () => {
+    const renderer = new RestApiRenderer(true);
     const restApi = createBasicRestApi({
-      paths: [
-        {
-          path: '/items',
-          methods: ['GET', 'POST'],
+      paths: {
+        '/items': {
           lambdaFunction: 'myFunc',
-          permissions: { hasAuth: true },
+          permissions: { setting: 'private', auth: ['read', 'create'] },
         },
-      ],
+      },
     });
     const output = renderApi(renderer, restApi);
 
     expect(output).toContain('authenticatedUserIamRole.attachInlinePolicy');
     expect(output).toContain('itemsAuthPolicy');
-    expect(output).toContain('arnForExecuteApi("GET", "/items")');
-    expect(output).toContain('arnForExecuteApi("POST", "/items")');
   });
 
   it('renders group path policies', () => {
-    const renderer = new RestApiRenderer(true, new Set(['myFunc']));
+    const renderer = new RestApiRenderer(true);
     const restApi = createBasicRestApi({
-      paths: [
-        {
-          path: '/admin',
-          methods: ['GET'],
+      paths: {
+        '/admin': {
           lambdaFunction: 'myFunc',
           permissions: {
-            groups: { admins: ['GET'] },
+            groups: { admins: ['read'] },
           },
         },
-      ],
+      },
     });
     const output = renderApi(renderer, restApi);
 
@@ -130,21 +136,13 @@ describe('RestApiRenderer', () => {
     expect(output).toContain('arnForExecuteApi("GET", "/admin")');
   });
 
-  it('appends Resource suffix when resource name collides with function name', () => {
-    const renderer = new RestApiRenderer(false, new Set(['items']));
-    const restApi = createBasicRestApi();
-    const output = renderApi(renderer, restApi);
-
-    expect(output).toContain('itemsResource');
-  });
-
   it('handles multiple paths', () => {
-    const renderer = new RestApiRenderer(false, new Set());
+    const renderer = new RestApiRenderer(false);
     const restApi = createBasicRestApi({
-      paths: [
-        { path: '/items', methods: ['GET'], lambdaFunction: 'myFunc' },
-        { path: '/users', methods: ['POST'], lambdaFunction: 'myFunc' },
-      ],
+      paths: {
+        '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
+        '/users': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
+      },
     });
     const output = renderApi(renderer, restApi);
 
@@ -153,9 +151,11 @@ describe('RestApiRenderer', () => {
   });
 
   it('sanitizes hyphenated path names into valid variable names', () => {
-    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
+    const renderer = new RestApiRenderer(false);
     const restApi = createBasicRestApi({
-      paths: [{ path: '/auth-test', methods: ['GET'], lambdaFunction: 'myFunc' }],
+      paths: {
+        '/auth-test': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
+      },
     });
     const output = renderApi(renderer, restApi);
 
@@ -164,20 +164,11 @@ describe('RestApiRenderer', () => {
   });
 
   it('sanitizes hyphenated api names into valid variable names', () => {
-    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
+    const renderer = new RestApiRenderer(false);
     const restApi = createBasicRestApi({ apiName: 'my-api' });
     const output = renderApi(renderer, restApi);
 
-    expect(output).toContain('myapiStack');
     expect(output).toContain('myapiApi');
     expect(output).not.toContain('const my-api');
-  });
-
-  it('handles no uniqueFunctions gracefully', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi({ uniqueFunctions: undefined });
-    const output = renderApi(renderer, restApi);
-
-    expect(output).not.toContain('new LambdaIntegration');
   });
 });

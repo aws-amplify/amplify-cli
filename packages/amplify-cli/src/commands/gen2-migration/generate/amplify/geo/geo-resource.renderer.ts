@@ -4,6 +4,12 @@ import { GeoResourceProps } from './geo.generator';
 
 const factory = ts.factory;
 
+const GEO_ARN_RESOURCE_TYPE: Record<string, string> = {
+  Map: 'map',
+  PlaceIndex: 'place-index',
+  GeofenceCollection: 'geofence-collection',
+};
+
 /**
  * Renders a per-resource geo/{resourceName}/resource.ts file.
  * Pure AST construction — no AWS calls, no side effects.
@@ -11,8 +17,10 @@ const factory = ts.factory;
  */
 export class GeoResourceRenderer {
   public render(params: GeoResourceProps): ts.NodeArray<ts.Node> {
+    const needsIamImport = params.gen1Actions.length > 0;
     return factory.createNodeArray([
       this.renderConstructImport(params),
+      ...(needsIamImport ? [TS.namedImport('aws-cdk-lib/aws-iam', 'Policy', 'PolicyStatement')] : []),
       this.renderBackendTypeImport(),
       newLineIdentifier,
       TS.createBranchNameDeclaration(),
@@ -51,9 +59,86 @@ export class GeoResourceRenderer {
       ]),
     );
 
-    const returnStatement = factory.createReturnStatement(factory.createIdentifier(resourceName));
+    const body: ts.Statement[] = [createStackCall, constructInstantiation];
 
-    return TS.exportedFunction(functionName, [createStackCall, constructInstantiation, returnStatement]);
+    if (params.gen1Actions.length > 0) {
+      body.push(...this.renderIamPolicy(params));
+    }
+
+    body.push(factory.createReturnStatement(factory.createIdentifier(resourceName)));
+
+    return TS.exportedFunction(functionName, body);
+  }
+
+  /** Renders the IAM Policy + attachInlinePolicy calls for a geo resource. */
+  private renderIamPolicy(params: GeoResourceProps): ts.Statement[] {
+    const { resourceName, gen1Actions, gen1ResourceName, serviceName, groupRoles, needsAuthAndUnauthRoles } = params;
+    const arnResourceType = GEO_ARN_RESOURCE_TYPE[serviceName];
+    const stackVar = `${resourceName}Stack`;
+
+    // Build the ARN template literal: `arn:aws:geo:${stack.region}:${stack.account}:map/resourceName-env`
+    const arnExpr = factory.createTemplateExpression(factory.createTemplateHead('arn:aws:geo:'), [
+      factory.createTemplateSpan(TS.propAccess(stackVar, 'region') as ts.Expression, factory.createTemplateMiddle(':')),
+      factory.createTemplateSpan(
+        TS.propAccess(stackVar, 'account') as ts.Expression,
+        factory.createTemplateTail(`:${arnResourceType}/${gen1ResourceName}`),
+      ),
+    ]);
+
+    // new Policy(resource, 'gen1AuthPolicy', { statements: [...] })
+    const policyDecl = TS.declareConst(
+      'policy',
+      factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+        factory.createIdentifier(resourceName),
+        factory.createStringLiteral('gen1AuthPolicy'),
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'statements',
+              factory.createArrayLiteralExpression([
+                factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'actions',
+                        factory.createArrayLiteralExpression(gen1Actions.map((a) => factory.createStringLiteral(a))),
+                      ),
+                      factory.createPropertyAssignment('resources', factory.createArrayLiteralExpression([arnExpr])),
+                    ],
+                    true,
+                  ),
+                ]),
+              ]),
+            ),
+          ],
+          true,
+        ),
+      ]),
+    );
+
+    const statements: ts.Statement[] = [policyDecl];
+
+    // Map/PlaceIndex: attach to auth + unauth roles
+    if (needsAuthAndUnauthRoles) {
+      statements.push(createAttachInlinePolicy(TS.propAccess('backend', 'auth', 'resources', 'authenticatedUserIamRole') as ts.Expression));
+      statements.push(
+        createAttachInlinePolicy(TS.propAccess('backend', 'auth', 'resources', 'unauthenticatedUserIamRole') as ts.Expression),
+      );
+    }
+
+    // Attach to all group roles
+    for (const groupRole of groupRoles) {
+      const groupAccess = factory.createPropertyAccessExpression(
+        factory.createElementAccessExpression(
+          TS.propAccess('backend', 'auth', 'resources', 'groups') as ts.PropertyAccessExpression,
+          factory.createStringLiteral(groupRole.groupName),
+        ),
+        factory.createIdentifier('role'),
+      );
+      statements.push(createAttachInlinePolicy(groupAccess));
+    }
+
+    return statements;
   }
 
   private buildConstructProps(params: GeoResourceProps): ts.ObjectLiteralElementLike[] {
@@ -107,5 +192,16 @@ function createGroupRoleAccess(groupName: string): ts.PropertyAccessExpression {
       factory.createIdentifier('role'),
     ),
     factory.createIdentifier('roleName'),
+  );
+}
+
+/** Creates `roleExpr.attachInlinePolicy(policy)`. */
+function createAttachInlinePolicy(roleExpr: ts.Expression): ts.ExpressionStatement {
+  return factory.createExpressionStatement(
+    factory.createCallExpression(
+      factory.createPropertyAccessExpression(roleExpr, factory.createIdentifier('attachInlinePolicy')),
+      undefined,
+      [factory.createIdentifier('policy')],
+    ),
   );
 }

@@ -1,21 +1,30 @@
 import {
   AnalyticsRenderer,
-  RenderDefineAnalyticsOptions,
+  AnalyticsRenderOptions,
 } from '../../../../../../commands/gen2-migration/generate/amplify/analytics/kinesis.renderer';
+import { DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { TS } from '../../../../../../commands/gen2-migration/generate/_infra/ts';
 
 describe('AnalyticsRenderer', () => {
-  const renderer = new AnalyticsRenderer();
+  function createRenderer(resourceName: string): AnalyticsRenderer {
+    const mockResource: DiscoveredResource = {
+      category: 'analytics',
+      resourceName,
+      service: 'Kinesis',
+      key: `analytics:Kinesis`,
+    };
+    return new AnalyticsRenderer(mockResource);
+  }
 
-  function render(opts: RenderDefineAnalyticsOptions): string {
+  function render(renderer: AnalyticsRenderer, opts: AnalyticsRenderOptions): string {
     return TS.printNodes(renderer.render(opts));
   }
 
   it('renders a basic analytics resource with construct and export', () => {
-    const output = render({
+    const renderer = createRenderer('todoKinesis');
+    const output = render(renderer, {
       constructClassName: 'analyticsTodoKinesis',
       constructFileName: 'todoKinesis-construct',
-      constructId: 'todoKinesis',
       shardCount: 1,
       streamName: 'todoKinesis-stream-abc123',
     });
@@ -28,8 +37,8 @@ describe('AnalyticsRenderer', () => {
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
       export function defineAnalytics(backend: Backend) {
-        const analyticsStack = backend.createStack('analytics');
-        const analytics = new analyticsTodoKinesis(analyticsStack, 'todoKinesis', {
+        const stack = backend.createStack('analytics');
+        const analytics = new analyticsTodoKinesis(stack, 'TodoKinesis', {
           kinesisStreamName: 'todoKinesis',
           kinesisStreamShardCount: 1,
           authPolicyName: \`todoKinesis-auth-policy-\${branchName}\`,
@@ -50,10 +59,10 @@ describe('AnalyticsRenderer', () => {
   });
 
   it('renders construct instantiation with higher shard count', () => {
-    const output = render({
+    const renderer = createRenderer('myStream');
+    const output = render(renderer, {
       constructClassName: 'analyticsMyStream',
       constructFileName: 'myStream-construct',
-      constructId: 'myStream',
       shardCount: 3,
       streamName: 'myStream-abc',
     });
@@ -66,8 +75,8 @@ describe('AnalyticsRenderer', () => {
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
       export function defineAnalytics(backend: Backend) {
-        const analyticsStack = backend.createStack('analytics');
-        const analytics = new analyticsMyStream(analyticsStack, 'myStream', {
+        const stack = backend.createStack('analytics');
+        const analytics = new analyticsMyStream(stack, 'MyStream', {
           kinesisStreamName: 'myStream',
           kinesisStreamShardCount: 3,
           authPolicyName: \`myStream-auth-policy-\${branchName}\`,

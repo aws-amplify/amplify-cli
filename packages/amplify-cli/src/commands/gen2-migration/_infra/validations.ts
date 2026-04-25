@@ -7,7 +7,7 @@ import {
   GetStackPolicyCommand,
   GetTemplateCommand,
 } from '@aws-sdk/client-cloudformation';
-import { STATEFUL_RESOURCES } from './stateful-resources';
+import { STATEFUL_RESOURCES } from './resource-types';
 import CLITable from 'cli-table3';
 import Bottleneck from 'bottleneck';
 import execa from 'execa';
@@ -29,7 +29,7 @@ export class AmplifyGen2MigrationValidations {
     const result = await new AmplifyDriftDetector(this.context, this.logger).detect();
     if (result.code !== 0) {
       throw new AmplifyError('MigrationError', {
-        message: result.report.trim() ?? 'Drift detected',
+        message: result.report?.trim() ?? 'Drift detected',
         resolution: 'Inspect the drift report above and resolve the drift',
       });
     }
@@ -63,7 +63,7 @@ export class AmplifyGen2MigrationValidations {
     // added in the edge case of resuming migration from a failed state
     const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
-    if (!validStatuses.includes(stackStatus)) {
+    if (!validStatuses.includes(stackStatus!)) {
       throw new AmplifyError('StackStateError', {
         message: `Root stack status is ${stackStatus}, expected UPDATE_COMPLETE or CREATE_COMPLETE`,
         resolution: 'Complete the deployment before proceeding.',
@@ -200,8 +200,8 @@ export class AmplifyGen2MigrationValidations {
         } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
           if (resource.ResourceType === 'AWS::DynamoDB::Table') {
             const templateResponse = await this.gen1App.clients.cloudFormation.send(new GetTemplateCommand({ StackName: stackName }));
-            const template = JSON.parse(templateResponse.TemplateBody);
-            if (template.Resources[resource.LogicalResourceId].DeletionPolicy === 'Retain') {
+            const template = JSON.parse(templateResponse.TemplateBody!);
+            if (template.Resources[resource.LogicalResourceId!].DeletionPolicy === 'Retain') {
               continue;
             }
           }

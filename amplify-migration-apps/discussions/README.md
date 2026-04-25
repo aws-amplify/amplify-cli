@@ -167,7 +167,30 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Core
 ✔ Do you want to add a sort key to your global secondary index? (Y/n) · yes
 ✔ Choose sort key for the GSI · timestamp
 ✔ Do you want to add more global secondary indexes to your table? (Y/n) · no
-✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no
+✔ Do you want to add a Lambda Trigger for your Table? (y/N) · yes
+✔ Select from the following options · Create a new function
+
+✔ Do you want to edit the local activityTriggerXXXXXX lambda function now? (y/N) · no
+```
+
+Then grant the trigger function write access to the activity table:
+
+```console
+amplify update function
+```
+
+```console
+? Select the Lambda function you want to update activityTriggerXXXXXX
+? Which setting do you want to update? Resource access permissions
+? Select the categories you want this function to have access to. storage
+? Storage has 6 resources in this project. Select the one you would like your Lambda to access activity
+? Select the operations you want to permit on activity create, read, update, delete
+
+You can access the following resource attributes as environment variables from your Lambda function
+        STORAGE_ACTIVITY_ARN
+        STORAGE_ACTIVITY_NAME
+        STORAGE_ACTIVITY_STREAMARN
+? Do you want to edit the local lambda function now? No
 ```
 
 #### Bookmarks Table
@@ -390,10 +413,10 @@ this process for any number of users.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-First install the experimental amplify CLI package that provides the migration commands.
+First install the amplify CLI package:
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli
 ```
 
 Now run them:
@@ -433,7 +456,7 @@ Wait for the deployment to finish successfully. Next, locate the root stack of t
 ![](./images/find-gen2-stack.png)
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install --no-save @aws-amplify/cli-internal
 ```
 
 ```console

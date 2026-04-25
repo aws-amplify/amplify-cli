@@ -1,15 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "strict": false,
+    "strict": true,
     "noImplicitAny": false,
     "rootDir": "src",
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "references": [
     {
       "path": "../amplify-category-function"

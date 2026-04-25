@@ -1,4 +1,5 @@
 import { defineFunction } from '@aws-amplify/backend';
+import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -16,3 +17,7 @@ export const fitnesstracker33f5545533f55455PreSignup = defineFunction({
   },
   runtime: 22,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${branchName}`;
+}

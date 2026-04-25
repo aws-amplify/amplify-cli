@@ -1,5 +1,5 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, QueryCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, QueryCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
 
 const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const TABLE_NAME = process.env.STORAGE_ACTIVITY_NAME;
@@ -7,9 +7,14 @@ const TABLE_NAME = process.env.STORAGE_ACTIVITY_NAME;
 exports.handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
 
+  const fieldName = event.info?.fieldName || event.fieldName;
+
+  if (fieldName === 'getActivityStats') {
+    return await fetchActivityStats();
+  }
+
   const { userId } = event.arguments;
   return await fetchUserActivity(userId);
-
 };
 
 async function fetchUserActivity(userId) {
@@ -25,4 +30,13 @@ async function fetchUserActivity(userId) {
 
   return result.Items;
 
+}
+
+async function fetchActivityStats() {
+  const result = await dynamoDB.send(new GetCommand({
+    TableName: TABLE_NAME,
+    Key: { id: 'STATS#global', userId: 'COUNTER' },
+  }));
+
+  return { activityCount: result.Item?.activityCount ?? 0 };
 }

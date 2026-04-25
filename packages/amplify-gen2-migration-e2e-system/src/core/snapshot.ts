@@ -58,14 +58,13 @@ function copyOptional(srcBasePath: string, destBasePath: string, toCopy: readonl
 // CloudFormation helpers (refactor.input only)
 // ---------------------------------------------------------------------------
 
-const cfnClient = new CloudFormationClient({});
-
-async function fetchTemplate(stackName: string): Promise<string> {
+async function fetchTemplate(cfnClient: CloudFormationClient, stackName: string): Promise<string> {
   const response = await cfnClient.send(new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }));
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return response.TemplateBody!;
 }
 
-async function fetchNestedStacks(stackName: string): Promise<readonly string[]> {
+async function fetchNestedStacks(cfnClient: CloudFormationClient, stackName: string): Promise<readonly string[]> {
   const ids: string[] = [];
   for await (const page of paginateListStackResources({ client: cfnClient }, { StackName: stackName })) {
     for (const r of page.StackResourceSummaries ?? []) {
@@ -85,13 +84,14 @@ function stackNameFromArn(arnOrName: string): string {
   return arnOrName;
 }
 
-async function downloadRecursive(stackNameOrArn: string, targetDir: string): Promise<void> {
+async function downloadRecursive(cfnClient: CloudFormationClient, stackNameOrArn: string, targetDir: string): Promise<void> {
   const stackName = stackNameFromArn(stackNameOrArn);
 
-  const template = await fetchTemplate(stackName);
+  const template = await fetchTemplate(cfnClient, stackName);
   writeFileSync(path.join(targetDir, `${stackName}.template.json`), JSON.stringify(JSON.parse(template), null, 2));
 
   const stackResponse = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const stack = stackResponse.Stacks![0];
 
   const outputs = stack.Outputs ?? [];
@@ -103,9 +103,9 @@ async function downloadRecursive(stackNameOrArn: string, targetDir: string): Pro
   const description = stack.Description ?? '';
   writeFileSync(path.join(targetDir, `${stackName}.description.txt`), description);
 
-  const nestedIds = await fetchNestedStacks(stackName);
+  const nestedIds = await fetchNestedStacks(cfnClient, stackName);
   for (const nestedId of nestedIds) {
-    await downloadRecursive(nestedId, targetDir);
+    await downloadRecursive(cfnClient, nestedId, targetDir);
   }
 }
 
@@ -116,12 +116,18 @@ async function downloadRecursive(stackNameOrArn: string, targetDir: string): Pro
 /**
  * Downloads Gen1 and Gen2 CloudFormation templates into `_snapshot.pre.refactor/`.
  */
-export async function capturePreRefactor(gen1RootStackName: string, gen2RootStackName: string, targetDir: string): Promise<void> {
+export async function capturePreRefactor(
+  gen1RootStackName: string,
+  gen2RootStackName: string,
+  targetDir: string,
+  clientConfig: ConstructorParameters<typeof CloudFormationClient>[0] = {},
+): Promise<void> {
   const destPath = path.join(targetDir, '_snapshot.pre.refactor');
   resetDir(destPath);
 
-  await downloadRecursive(gen2RootStackName, destPath);
-  await downloadRecursive(gen1RootStackName, destPath);
+  const cfnClient = new CloudFormationClient(clientConfig);
+  await downloadRecursive(cfnClient, gen2RootStackName, destPath);
+  await downloadRecursive(cfnClient, gen1RootStackName, destPath);
 }
 
 /**

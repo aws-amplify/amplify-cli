@@ -3,7 +3,7 @@ import { AppSyncClient } from '@aws-sdk/client-appsync';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
@@ -16,7 +16,7 @@ import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
 import { ProxyAgent } from 'proxy-agent';
 
 export const proxyAgent = () => {
-  let httpAgent = undefined;
+  let httpAgent;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   if (httpProxy) {
     httpAgent = new ProxyAgent();
@@ -52,7 +52,7 @@ export class AwsClients {
     this.cloudFormation = new CloudFormationClient(config);
     this.cognitoIdentityProvider = new CognitoIdentityProviderClient(config);
     this.cognitoIdentity = new CognitoIdentityClient(config);
-    this.s3 = new S3Client(config);
+    this.s3 = new S3Client(config as S3ClientConfig);
     this.lambda = new LambdaClient(config);
     this.cloudWatchEvents = new CloudWatchEventsClient(config);
     this.dynamoDB = new DynamoDBClient(config);

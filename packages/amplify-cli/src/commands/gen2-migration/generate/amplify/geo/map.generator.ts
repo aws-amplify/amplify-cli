@@ -15,6 +15,7 @@ export class GeoMapGenerator extends GeoResourceGenerator {
     const props: GeoResourceProps = {
       ...base,
       needsAuthAndUnauthRoles: true,
+      serviceName: 'Map',
       serviceSpecificProps: [
         { key: 'mapName', value: parameters.get('mapName') ?? this.resource.resourceName },
         { key: 'mapStyle', value: parameters.get('mapStyle') ?? '' },

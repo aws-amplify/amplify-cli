@@ -28,6 +28,7 @@ import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../_infra/cfn-template';
 import { extractStackNameFromId } from './utils';
 import { SpinningLogger } from '../_infra/spinning-logger';
+import { cfnChangesetConsoleUrl } from '../../drift-detection/services/drift-formatter';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -99,7 +100,7 @@ export class Cfn {
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
       };
-      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody, parameters });
+      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
@@ -117,8 +118,8 @@ export class Cfn {
    * Throws on failure.
    */
   public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
-    const sourceStackId = resourceMappings[0].Source.StackName;
-    const targetStackId = resourceMappings[0].Destination.StackName;
+    const sourceStackId = resourceMappings[0].Source!.StackName!;
+    const targetStackId = resourceMappings[0].Destination!.StackName!;
 
     const sourceStackName = extractStackNameFromId(sourceStackId);
     const targetStackName = extractStackNameFromId(targetStackId);
@@ -144,14 +145,16 @@ export class Cfn {
     const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
 
     for (const mapping of resourceMappings) {
-      if (mapping.Destination.LogicalResourceId in targetTemplate.Resources) {
+      if (mapping.Destination!.LogicalResourceId! in targetTemplate.Resources) {
         // our refactoring is expected to move resources into vacancies, not override
         throw new AmplifyError('MigrationError', {
-          message: `Unable to create stack refactor. Resource ${mapping.Destination.LogicalResourceId} already exists in stack ${targetStackName}`,
+          message: `Unable to create stack refactor. Resource ${
+            mapping.Destination!.LogicalResourceId
+          } already exists in stack ${targetStackName}`,
         });
       }
-      targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
-      delete sourceTemplate.Resources[mapping.Source.LogicalResourceId];
+      targetTemplate.Resources[mapping.Destination!.LogicalResourceId!] = sourceTemplate.Resources[mapping.Source!.LogicalResourceId!];
+      delete sourceTemplate.Resources[mapping.Source!.LogicalResourceId!];
     }
 
     if (Object.keys(sourceTemplate.Resources).length === 0) {
@@ -262,15 +265,18 @@ export class Cfn {
     readonly changeSet: DescribeChangeSetOutput;
     readonly templateBody: CFNTemplate;
     readonly resource?: DiscoveredResource;
+    readonly captureSnapshot?: boolean;
   }): Promise<void> {
     const { changeSet, templateBody, resource } = params;
-    const displayName = extractStackNameFromId(changeSet.StackName);
+    const displayName = extractStackNameFromId(changeSet.StackName!);
 
-    writeUpdateSnapshot({
-      stackName: changeSet.StackName,
-      templateBody: JSON.stringify(templateBody),
-      parameters: changeSet.Parameters ?? [],
-    });
+    if (params.captureSnapshot ?? true) {
+      writeUpdateSnapshot({
+        stackName: changeSet.StackName!,
+        templateBody: JSON.stringify(templateBody),
+        parameters: changeSet.Parameters ?? [],
+      });
+    }
 
     this.info(`Executing change set for stack: ${displayName}`, resource);
     await this.client.send(new ExecuteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }));
@@ -362,11 +368,32 @@ export class Cfn {
   /**
    * Renders a human-readable report of property changes from a described change set.
    */
-  public renderChangeSet(changeSet: DescribeChangeSetOutput): string | undefined {
+  public renderChangeSet(changeSet: DescribeChangeSetOutput): string {
     const changes = changeSet.Changes ?? [];
-    if (changes.length === 0) return undefined;
+    if (changes.length === 0) return 'No changes';
+
+    const truncate = (value: string | undefined): string => {
+      if (!value) return '';
+      const max = 60;
+      return value.length > max ? `${value.slice(0, max - 1)}…` : value;
+    };
+
+    const colorAction = (action: string): string => {
+      if (action === 'Add') return chalk.green(action);
+      if (action === 'Remove') return chalk.red(action);
+      return chalk.yellow(action);
+    };
 
     const lines: string[] = [];
+
+    // Link to the changeset in the AWS console so the user can inspect the full diff.
+    // Only included when we have a changeset ARN (always present for a described changeset).
+    if (changeSet.ChangeSetId) {
+      const consoleUrl = cfnChangesetConsoleUrl(changeSet.ChangeSetId, changeSet.StackId);
+      if (consoleUrl) {
+        lines.push(chalk.dim(consoleUrl));
+      }
+    }
 
     for (const change of changes) {
       const rc = change.ResourceChange;
@@ -375,37 +402,62 @@ export class Cfn {
       const action = rc.Action ?? 'Unknown';
       const logicalId = rc.LogicalResourceId ?? 'Unknown';
       const resourceType = rc.ResourceType ?? 'Unknown';
+      const replacement = rc.Replacement;
+
+      // Promote "Modify" to "Replace" (or "Replace (conditional)" for Conditional) when CFN says
+      // the resource will be recreated. The rolled-up Replacement on the resource is enough
+      // signal; we don't annotate individual details.
+      const displayAction =
+        action === 'Modify' && replacement === 'True'
+          ? 'Replace'
+          : action === 'Modify' && replacement === 'Conditional'
+          ? 'Replace (conditional)'
+          : action;
+
+      const isReplace = displayAction === 'Replace' || displayAction === 'Replace (conditional)';
+      const header = isReplace
+        ? chalk.bold.red(`${logicalId} (${resourceType}) ${displayAction}`)
+        : [chalk.bold(logicalId), chalk.dim(`(${resourceType})`), colorAction(displayAction)].join(' ');
 
       lines.push('');
-      lines.push(`${chalk.bold(logicalId)} (${resourceType}) — ${chalk.yellow(action)}`);
+      lines.push(header);
 
-      const details = rc.Details ?? [];
-      const propDetails = details.filter((d) => d.Target?.Attribute === 'Properties' && d.Target?.Name);
+      const details = (rc.Details ?? []).filter(
+        (d): d is { Target: { Attribute: string } & NonNullable<typeof d.Target> } => !!d.Target?.Attribute,
+      );
 
-      for (const detail of propDetails) {
-        const target = detail.Target;
-        const propertyPath = target.Path;
-        const before = target.BeforeValue;
-        const after = target.AfterValue;
+      // Align the "before → after" arrow by padding paths to the longest one in this resource.
+      // CFN's Target.Path is already a rooted JSON pointer like "/Properties/BucketName". Only
+      // fall back to "/Properties/<Name>" when Path is missing. For non-Properties attributes
+      // (DeletionPolicy, UpdatePolicy, Metadata, Tags), Path/Name are usually absent so we use
+      // the attribute name itself.
+      const paths = details.map((d) => {
+        const { Attribute: attribute, Path: targetPath, Name: targetName } = d.Target;
+        if (targetPath) return targetPath;
+        if (attribute === 'Properties') return targetName ? `/Properties/${targetName}` : '/Properties';
+        return `/${attribute}`;
+      });
+      const pathWidth = Math.max(0, ...paths.map((p) => p.length));
 
-        lines.push('');
+      details.forEach((detail, i) => {
+        const path = paths[i];
+        const before = truncate(detail.Target.BeforeValue);
+        const after = truncate(detail.Target.AfterValue);
+        const paddedPath = path.padEnd(pathWidth);
+
         if (before && after) {
-          lines.push(`  ${propertyPath}:`);
-          lines.push(`    ${chalk.red(`- ${before}`)}`);
-          lines.push(`    ${chalk.green(`+ ${after}`)}`);
+          lines.push(`  ${paddedPath}  ${chalk.red(`(-) ${before}`)} ${chalk.dim('→')} ${chalk.green(`(+) ${after}`)}`);
         } else if (after) {
-          lines.push(`  ${propertyPath}:`);
-          lines.push(`    ${chalk.green(`+ ${after}`)}`);
+          lines.push(`  ${paddedPath}  ${chalk.green(`(+) ${after}`)}`);
         } else if (before) {
-          lines.push(`  ${propertyPath}:`);
-          lines.push(`    ${chalk.red(`- ${before}`)}`);
+          lines.push(`  ${paddedPath}  ${chalk.red(`(-) ${before}`)}`);
         } else {
-          lines.push(`  ${propertyPath}: (changed)`);
+          lines.push(`  ${paddedPath}  ${chalk.dim('(changed)')}`);
         }
-      }
+      });
     }
 
-    return lines.join('\n');
+    return lines.join('\n').trimStart();
   }
 
   private info(message: string, resource?: DiscoveredResource) {
@@ -415,9 +467,9 @@ export class Cfn {
 }
 
 function buildRefactorDescription(input: CreateStackRefactorCommandInput): string {
-  const logicalIds = input.ResourceMappings.map((m) => m.Source?.LogicalResourceId).join(', ');
-  const source = extractStackNameFromId(input.StackDefinitions[0].StackName);
-  const dest = extractStackNameFromId(input.StackDefinitions[1].StackName);
+  const logicalIds = input.ResourceMappings!.map((m) => m.Source?.LogicalResourceId).join(', ');
+  const source = extractStackNameFromId(input.StackDefinitions![0].StackName!);
+  const dest = extractStackNameFromId(input.StackDefinitions![1].StackName!);
   return `Move [${logicalIds}] from ${source} to ${dest}`;
 }
 
@@ -438,14 +490,14 @@ function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
 }
 
 function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
-  const source = input.StackDefinitions[0];
-  const target = input.StackDefinitions[1];
-  const sourceStackName = extractStackNameFromId(source.StackName);
-  const targetStackName = extractStackNameFromId(target.StackName);
+  const source = input.StackDefinitions![0];
+  const target = input.StackDefinitions![1];
+  const sourceStackName = extractStackNameFromId(source.StackName!);
+  const targetStackName = extractStackNameFromId(target.StackName!);
   const description = `refactor.__from__.${sourceStackName}.__to__.${targetStackName}`;
   const basePath = path.join(OUTPUT_DIRECTORY, description);
-  fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody));
-  fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody));
+  fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
+  fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
   fs.writeFileSync(
     path.join(OUTPUT_DIRECTORY, `${description}.mappings.json`),
     JSON.stringify(input.ResourceMappings ?? [], null, 2) + '\n',

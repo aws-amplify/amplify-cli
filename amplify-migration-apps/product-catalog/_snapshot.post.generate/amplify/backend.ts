@@ -1,135 +1,32 @@
-import { auth } from './auth/resource';
-import { data } from './data/resource';
-import { storage } from './storage/resource';
-import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
-import { lowstockproducts } from './function/lowstockproducts/resource';
+import * as auth from './auth/resource';
+import * as data from './data/resource';
+import * as S3Trigger1ef46783 from './function/S3Trigger1ef46783/resource';
+import * as lowstockproducts from './function/lowstockproducts/resource';
+import * as storage from './storage/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
-// import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
-  auth,
-  data,
-  storage,
-  S3Trigger1ef46783,
-  lowstockproducts,
+  auth: auth.auth,
+  data: data.data,
+  S3Trigger1ef46783: S3Trigger1ef46783.S3Trigger1ef46783,
+  lowstockproducts: lowstockproducts.lowstockproducts,
+  storage: storage.storage,
 });
-const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-cfnUserPool.usernameAttributes = ['email'];
-cfnUserPool.policies = {
-  passwordPolicy: {
-    minimumLength: 8,
-    requireUppercase: false,
-    requireLowercase: false,
-    requireNumbers: false,
-    requireSymbols: false,
-    temporaryPasswordValidityDays: 7,
-  },
-};
-const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
-cfnIdentityPool.allowUnauthenticatedIdentities = false;
-const userPool = backend.auth.resources.userPool;
-userPool.addClient('NativeAppClient', {
-  refreshTokenValidity: Duration.days(30),
-  enableTokenRevocation: true,
-  enablePropagateAdditionalUserContextData: false,
-  authSessionValidity: Duration.minutes(3),
-  disableOAuth: true,
-  generateSecret: false,
-});
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'API_KEY',
-  },
-  {
-    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    userPoolConfig: {
-      userPoolId: backend.auth.resources.userPool.userPoolId,
-      awsRegion: backend.auth.stack.region,
-    },
-  },
-];
-backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
-  new aws_iam.PolicyStatement({
-    effect: aws_iam.Effect.ALLOW,
-    actions: ['appsync:GraphQL'],
-    resources: [
-      `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/hscmwhprkbaljmcpavj3dcztrq/*`,
-    ],
-  })
-);
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.S3Trigger1ef46783.resources.cfnResources.cfnFunction.functionName = `S3Trigger1ef46783-${branchName}`;
-backend.S3Trigger1ef46783.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
-  backend.data.apiKey!
-);
-backend.S3Trigger1ef46783.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT',
-  backend.data.graphqlUrl
-);
-backend.S3Trigger1ef46783.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
-  backend.data.apiId
-);
-backend.data.resources.graphqlApi.grantMutation(
-  backend.S3Trigger1ef46783.resources.lambda
-);
-backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${branchName}`;
-backend.lowstockproducts.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
-  backend.data.apiKey!
-);
-backend.lowstockproducts.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT',
-  backend.data.graphqlUrl
-);
-backend.lowstockproducts.addEnvironment(
-  'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
-  backend.data.apiId
-);
-backend.data.resources.graphqlApi.grantQuery(
-  backend.lowstockproducts.resources.lambda
-);
-const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-// Use this bucket name post refactor
-// s3Bucket.bucketName = 'productcatalogf95af07481f845caa6594c26ac9c8ed3x-x';
-s3Bucket.bucketEncryption = {
-  serverSideEncryptionConfiguration: [
-    {
-      serverSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  ],
-};
-for (const cfnResource of backend.auth.stack.node
-  .findAll()
-  .filter(
-    (c) =>
-      CfnResource.isCfnResource(c) &&
-      [
-        'AWS::Cognito::UserPool',
-        'AWS::Cognito::IdentityPool',
-        'AWS::Cognito::UserPoolClient',
-        'AWS::Cognito::IdentityPoolRoleAttachment',
-        'AWS::Cognito::UserPoolGroup',
-      ].includes(c.cfnResourceType)
-  )) {
-  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+
+export type Backend = typeof backend;
+
+export function postRefactor() {
+  storage.postRefactor(backend);
 }
-for (const cfnResource of backend.storage.stack.node
-  .findAll()
-  .filter(
-    (c) =>
-      CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
-  )) {
-  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-}
+
+auth.applyEscapeHatches(backend);
+data.applyEscapeHatches(backend);
+S3Trigger1ef46783.applyEscapeHatches(backend);
+lowstockproducts.applyEscapeHatches(backend);
+storage.applyEscapeHatches(backend);
+
+// Uncomment after refactor
+// postRefactor();
 
 // Uncomment post refactor to force a redeployment
 // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

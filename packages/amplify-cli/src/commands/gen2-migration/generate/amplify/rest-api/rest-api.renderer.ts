@@ -87,7 +87,7 @@ export class RestApiRenderer {
     }
 
     statements.push(...this.renderPaths(restApi, apiVarName, integrations.map));
-    statements.push(...this.renderPathPolicies(restApi, apiVarName, 'stack'));
+    statements.push(...this.renderPathPolicies(restApi, apiVarName, 'stack', gen1ApiVarName));
     statements.push(this.renderOutput(apiVarName));
 
     return statements;
@@ -495,7 +495,12 @@ export class RestApiRenderer {
     );
   }
 
-  private renderPathPolicies(restApi: RestApiRenderOptions, apiVarName: string, stackVarName: string): ts.Statement[] {
+  private renderPathPolicies(
+    restApi: RestApiRenderOptions,
+    apiVarName: string,
+    stackVarName: string,
+    gen1ApiVarName: string,
+  ): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
     for (const [pathName, pathConfig] of Object.entries(restApi.paths)) {
@@ -505,7 +510,7 @@ export class RestApiRenderer {
 
       if (pathConfig.permissions?.groups) {
         for (const groupName of Object.keys(pathConfig.permissions.groups)) {
-          statements.push(...this.renderGroupPathPolicy(pathName, pathConfig, apiVarName, stackVarName, groupName));
+          statements.push(...this.renderGroupPathPolicy(pathName, pathConfig, apiVarName, stackVarName, groupName, gen1ApiVarName));
         }
       }
     }
@@ -593,6 +598,7 @@ export class RestApiRenderer {
     apiVarName: string,
     stackVarName: string,
     groupName: string,
+    gen1ApiVarName: string,
   ): ts.Statement[] {
     /* eslint-enable @typescript-eslint/no-explicit-any */
     const comment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
@@ -669,7 +675,95 @@ export class RestApiRenderer {
       ),
     );
 
-    return [comment as unknown as ts.Statement, attachCall];
+    const pathPart = pathName.replace(/[^a-zA-Z0-9]/g, '');
+    const capitalizedPathPart = pathPart.charAt(0).toUpperCase() + pathPart.slice(1);
+    const gen1PolicyName = `gen1${capitalizedPathPart}${groupName}Policy`;
+
+    return [
+      comment as unknown as ts.Statement,
+      attachCall,
+      this.renderGen1GroupPathPolicy(pathName, pathConfig, gen1ApiVarName, stackVarName, groupName, gen1PolicyName),
+    ];
+  }
+
+  /** Renders a policy attaching gen1 API path permissions to a Cognito group role. */
+  private renderGen1GroupPathPolicy(
+    pathName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw cli-inputs path config
+    pathConfig: any,
+    gen1ApiVarName: string,
+    stackVarName: string,
+    groupName: string,
+    policyName: string,
+  ): ts.Statement {
+    return factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createPropertyAccessExpression(
+            factory.createElementAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('backend.auth.resources'),
+                factory.createIdentifier('groups'),
+              ),
+              factory.createStringLiteral(groupName),
+            ),
+            factory.createIdentifier('role'),
+          ),
+          factory.createIdentifier('attachInlinePolicy'),
+        ),
+        undefined,
+        [
+          factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+            factory.createIdentifier(stackVarName),
+            factory.createStringLiteral(policyName),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  'statements',
+                  factory.createArrayLiteralExpression([
+                    factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            'actions',
+                            factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                          ),
+                          factory.createPropertyAssignment(
+                            'resources',
+                            factory.createArrayLiteralExpression([
+                              ...this.extractMethods(pathConfig).flatMap((method) => [
+                                factory.createCallExpression(
+                                  factory.createPropertyAccessExpression(
+                                    factory.createIdentifier(gen1ApiVarName),
+                                    factory.createIdentifier('arnForExecuteApi'),
+                                  ),
+                                  undefined,
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(pathName)],
+                                ),
+                                factory.createCallExpression(
+                                  factory.createPropertyAccessExpression(
+                                    factory.createIdentifier(gen1ApiVarName),
+                                    factory.createIdentifier('arnForExecuteApi'),
+                                  ),
+                                  undefined,
+                                  [factory.createStringLiteral(method), factory.createStringLiteral(`${pathName}/*`)],
+                                ),
+                              ]),
+                            ]),
+                          ),
+                        ],
+                        true,
+                      ),
+                    ]),
+                  ]),
+                ),
+              ],
+              true,
+            ),
+          ]),
+        ],
+      ),
+    );
   }
 
   private renderOutput(apiVarName: string): ts.Statement {

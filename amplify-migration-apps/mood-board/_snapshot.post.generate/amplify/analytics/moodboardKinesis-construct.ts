@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import { Construct } from 'constructs';
 
-export interface analyticsmoodboardKinesisProps {
+export interface MoodboardKinesisProps {
   /**
    */
   readonly kinesisStreamName: string;
@@ -31,7 +31,7 @@ export interface analyticsmoodboardKinesisProps {
 /**
  * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"analytics-Kinesis","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
  */
-export class analyticsmoodboardKinesis extends Construct {
+export class MoodboardKinesis extends Construct {
   public readonly kinesisStreamArn;
   public readonly kinesisStreamId;
   public readonly kinesisStreamShardCount;
@@ -39,7 +39,7 @@ export class analyticsmoodboardKinesis extends Construct {
   public constructor(
     scope: Construct,
     id: string,
-    props: analyticsmoodboardKinesisProps
+    props: MoodboardKinesisProps
   ) {
     super(scope, id);
 

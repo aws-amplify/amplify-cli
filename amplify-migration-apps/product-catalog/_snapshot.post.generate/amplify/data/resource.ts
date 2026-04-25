@@ -1,4 +1,5 @@
 import { defineData } from '@aws-amplify/backend';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `enum UserRole {
@@ -72,7 +73,7 @@ type Query {
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+      //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
         User: 'User-hscmwhprkbaljmcpavj3dcztrq-x',
@@ -87,3 +88,19 @@ export const data = defineData({
   },
   schema,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+  cfnGraphqlApi.additionalAuthenticationProviders = [
+    {
+      authenticationType: 'API_KEY',
+    },
+    {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      userPoolConfig: {
+        userPoolId: backend.auth.resources.userPool.userPoolId,
+        awsRegion: backend.auth.stack.region,
+      },
+    },
+  ];
+}

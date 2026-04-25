@@ -14,6 +14,7 @@ export class GeoPlaceIndexGenerator extends GeoResourceGenerator {
     const props: GeoResourceProps = {
       ...base,
       needsAuthAndUnauthRoles: true,
+      serviceName: 'PlaceIndex',
       serviceSpecificProps: [
         { key: 'indexName', value: parameters.get('indexName') ?? this.resource.resourceName },
         { key: 'dataProvider', value: parameters.get('dataProvider') ?? '' },

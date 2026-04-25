@@ -1,6 +1,7 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
 import { DiscoveredResource } from '../../_infra/gen1-app';
+import { ANALYTICS_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 const factory = ts.factory;
 
@@ -41,6 +42,7 @@ export class AnalyticsRenderer {
 
   private renderImports(opts: AnalyticsRenderOptions): ts.ImportDeclaration[] {
     return [
+      TS.namedImport('aws-cdk-lib', 'CfnResource'),
       TS.namedImport('aws-cdk-lib/aws-kinesis', 'CfnStream'),
       TS.namedImport(`./${opts.constructFileName}`, opts.constructClassName),
       TS.typeImport('../backend', 'Backend'),
@@ -126,6 +128,7 @@ export class AnalyticsRenderer {
     return TS.exportedFunction('defineAnalytics', [
       stackCall,
       constructInstantiation,
+      TS.retentionLoop(TS.propAccess('stack', 'node'), ANALYTICS_REFACTORED_RESOURCES),
       factory.createReturnStatement(factory.createIdentifier('analytics')),
     ]);
   }

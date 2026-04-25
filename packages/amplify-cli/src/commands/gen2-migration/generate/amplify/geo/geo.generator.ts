@@ -22,6 +22,12 @@ export interface GeoResourceProps {
   readonly needsAuthAndUnauthRoles: boolean;
   /** Service-specific construct props (e.g. mapName, indexName). */
   readonly serviceSpecificProps: ReadonlyArray<{ readonly key: string; readonly value: string }>;
+  /** Gen1 resource name including env suffix (e.g. `storeLocatorMap-dev`). */
+  readonly gen1ResourceName: string;
+  /** IAM actions from the Gen1 CFN template for the user-facing policy. */
+  readonly gen1Actions: readonly string[];
+  /** Geo service type — determines ARN resource type and role attachment pattern. */
+  readonly serviceName: 'Map' | 'PlaceIndex' | 'GeofenceCollection';
 }
 
 /**

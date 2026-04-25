@@ -72,6 +72,7 @@ export class DataGenerator implements Planner {
       },
     ];
   }
+
   private createTableMappings(schema: string, apiId: string): Record<string, string> {
     const modelRegex = /type\s+(\w+)\s+@model/g;
     const mapping: Record<string, string> = {};

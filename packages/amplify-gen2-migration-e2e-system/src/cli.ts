@@ -4,6 +4,8 @@
 import * as yargs from 'yargs';
 import chalk from 'chalk';
 import { App } from './core/app';
+import { Teardown } from './core/teardown';
+import { resolveProfile } from './core/credentials';
 
 async function main(): Promise<void> {
   // eslint-disable-next-line spellcheck/spell-checker
@@ -33,11 +35,16 @@ async function main(): Promise<void> {
       choices: ['deploy', 'migrate'],
       string: true,
     })
+    .option('teardown', {
+      type: 'boolean',
+      description: 'Delete all deployed resources after execution',
+      default: false,
+    })
     .help()
     .alias('help', 'h')
     .version()
     .alias('version', 'V')
-    .example('$0 -a project-boards --profile default', 'Migrate specific app').argv;
+    .example('$0 -a project-boards --profile default', 'Migrate specific app using a local AWS profile').argv;
 
   printBanner();
 
@@ -45,13 +52,11 @@ async function main(): Promise<void> {
     console.error('Error: --app is required');
     process.exit(1);
   }
-  if (!argv.profile) {
-    throw new Error('--profile must be specified');
-  }
 
   const step = argv.step ?? 'migrate';
 
-  const app = new App(argv.app, argv.profile, argv.verbose);
+  const profile = resolveProfile(argv.profile);
+  const app = new App(argv.app, profile, argv.verbose);
   try {
     switch (step) {
       case 'deploy':
@@ -70,6 +75,11 @@ async function main(): Promise<void> {
   } catch (error) {
     (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
     throw error;
+  } finally {
+    if (argv.teardown) {
+      await app.refreshCredentials();
+      await new Teardown(app.deploymentName, app.profile).clean();
+    }
   }
 }
 

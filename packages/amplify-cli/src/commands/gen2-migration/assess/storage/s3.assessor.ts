@@ -13,6 +13,16 @@ export class S3Assessor implements Assessor {
    * Records resource-level and feature-level support for this S3 resource.
    */
   public record(assessment: Assessment): void {
+    const meta = (this.gen1App.categoryMeta('storage') ?? {})[this.resource.resourceName] as Record<string, unknown> | undefined;
+    if (meta?.serviceType === 'imported') {
+      assessment.recordResource({
+        resource: this.resource,
+        generate: unsupported('(imported)'),
+        refactor: unsupported('(imported)'),
+      });
+      return;
+    }
+
     this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
     assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
 
