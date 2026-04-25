@@ -5,11 +5,7 @@ import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_inf
 jest.unmock('fs-extra');
 
 jest.mock('cdk-from-cfn', () => ({
-  transmute: jest.fn().mockReturnValue('/* cdk-from-cfn output */'),
-}));
-
-jest.mock('prettier', () => ({
-  format: jest.fn().mockReturnValue('/* formatted construct */'),
+  transmute: jest.fn().mockReturnValue('export class TodoKinesis {}'),
 }));
 
 const mockMkdir = jest.fn().mockResolvedValue(undefined);
@@ -110,7 +106,44 @@ describe('AnalyticsKinesisGenerator', () => {
       // ops[0] is construct generation, ops[1] is resource.ts
       await ops[1].execute();
 
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`"/* formatted construct */"`);
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import { CfnResource } from 'aws-cdk-lib';
+        import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
+        import { TodoKinesis } from './todokinesis-construct';
+        import type { Backend } from '../backend';
+
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+        export function defineAnalytics(backend: Backend) {
+          const stack = backend.createStack('analytics');
+          const analytics = new TodoKinesis(stack, 'TodoKinesis', {
+            kinesisStreamName: 'todoKinesis',
+            kinesisStreamShardCount: 1,
+            authPolicyName: \`todoKinesis-auth-policy-\${branchName}\`,
+            unauthPolicyName: \`todoKinesis-unauth-policy-\${branchName}\`,
+            authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
+            unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
+            branchName,
+          });
+          for (const cfnResource of stack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::Kinesis::Stream'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+          return analytics;
+        }
+
+        export function postRefactor(analytics: TodoKinesis) {
+          (analytics.node.findChild('KinesisStream') as CfnStream).name =
+            'todoKinesis-stream-abc123';
+        }
+        "
+      `);
     });
 
     it('renders construct instantiation with higher shard count', async () => {
@@ -130,7 +163,44 @@ describe('AnalyticsKinesisGenerator', () => {
       const ops = await generator.plan();
       await ops[1].execute();
 
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`"/* formatted construct */"`);
+      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+        "import { CfnResource } from 'aws-cdk-lib';
+        import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
+        import { MyStream } from './mystream-construct';
+        import type { Backend } from '../backend';
+
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+        export function defineAnalytics(backend: Backend) {
+          const stack = backend.createStack('analytics');
+          const analytics = new MyStream(stack, 'MyStream', {
+            kinesisStreamName: 'myStream',
+            kinesisStreamShardCount: 3,
+            authPolicyName: \`myStream-auth-policy-\${branchName}\`,
+            unauthPolicyName: \`myStream-unauth-policy-\${branchName}\`,
+            authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
+            unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
+            branchName,
+          });
+          for (const cfnResource of stack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                c.cfnResourceType === 'AWS::Kinesis::Stream'
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+          return analytics;
+        }
+
+        export function postRefactor(analytics: MyStream) {
+          (analytics.node.findChild('KinesisStream') as CfnStream).name =
+            'myStream-abc';
+        }
+        "
+      `);
     });
   });
 
@@ -152,7 +222,10 @@ describe('AnalyticsKinesisGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      expect(writtenFile('todokinesis-construct.ts')).toBe('/* formatted construct */');
+      expect(writtenFile('todokinesis-construct.ts')).toMatchInlineSnapshot(`
+        "export class TodoKinesis {}
+        "
+      `);
     });
   });
 
@@ -198,7 +271,6 @@ describe('AnalyticsKinesisGenerator', () => {
       const ops = await generator.plan();
       await ops[0].execute();
 
-      // Verify transmute was called with branchName instead of env
       const transmuteCall = transmute.mock.calls[0][0];
       const parsed = JSON.parse(transmuteCall);
       expect(parsed.Parameters).not.toHaveProperty('env');

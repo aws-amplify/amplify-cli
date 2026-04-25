@@ -10,11 +10,7 @@ jest.unmock('fs-extra');
 jest.mock('cdk-from-cfn', () => ({
   transmute: jest
     .fn()
-    .mockReturnValue('export class TestConstruct extends cdk.Construct {\n  constructor(scope: any, id: string) { super(scope, id); }\n}'),
-}));
-
-jest.mock('prettier', () => ({
-  format: jest.fn().mockImplementation((code: string) => code),
+    .mockReturnValue('export class TestConstruct extends cdk.Stack {\n  constructor(scope: any, id: string) { super(scope, id); }\n}'),
 }));
 
 const mockMkdir = jest.fn().mockResolvedValue(undefined);
@@ -124,22 +120,22 @@ describe('GeoGenerator', () => {
       await geoOps[0].execute();
 
       expect(writtenFile('geo/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineStoreLocatorMap } from "./storeLocatorMap/resource";
-        import type { Backend } from "../backend";
+        "import { defineStoreLocatorMap } from './storeLocatorMap/resource';
+        import type { Backend } from '../backend';
 
         export function defineGeo(backend: Backend) {
-            const storeLocatorMap = defineStoreLocatorMap(backend);
-            backend.addOutput({
-                geo: {
-                    aws_region: storeLocatorMap.region,
-                    maps: {
-                        items: {
-                            [storeLocatorMap.name]: { style: storeLocatorMap.style }
-                        },
-                        default: storeLocatorMap.name
-                    }
-                }
-            });
+          const storeLocatorMap = defineStoreLocatorMap(backend);
+          backend.addOutput({
+            geo: {
+              aws_region: storeLocatorMap.region,
+              maps: {
+                items: {
+                  [storeLocatorMap.name]: { style: storeLocatorMap.style },
+                },
+                default: storeLocatorMap.name,
+              },
+            },
+          });
         }
         "
       `);
@@ -209,28 +205,28 @@ describe('GeoGenerator', () => {
       await geoOps[0].execute();
 
       expect(writtenFile('geo/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineStoreLocatorMap } from "./storeLocatorMap/resource";
-        import { defineStoreLocatorIndex } from "./storeLocatorIndex/resource";
-        import type { Backend } from "../backend";
+        "import { defineStoreLocatorMap } from './storeLocatorMap/resource';
+        import { defineStoreLocatorIndex } from './storeLocatorIndex/resource';
+        import type { Backend } from '../backend';
 
         export function defineGeo(backend: Backend) {
-            const storeLocatorMap = defineStoreLocatorMap(backend);
-            const storeLocatorIndex = defineStoreLocatorIndex(backend);
-            backend.addOutput({
-                geo: {
-                    aws_region: storeLocatorMap.region,
-                    maps: {
-                        items: {
-                            [storeLocatorMap.name]: { style: storeLocatorMap.style }
-                        },
-                        default: storeLocatorMap.name
-                    },
-                    search_indices: {
-                        items: [storeLocatorIndex.name],
-                        default: storeLocatorIndex.name
-                    }
-                }
-            });
+          const storeLocatorMap = defineStoreLocatorMap(backend);
+          const storeLocatorIndex = defineStoreLocatorIndex(backend);
+          backend.addOutput({
+            geo: {
+              aws_region: storeLocatorMap.region,
+              maps: {
+                items: {
+                  [storeLocatorMap.name]: { style: storeLocatorMap.style },
+                },
+                default: storeLocatorMap.name,
+              },
+              search_indices: {
+                items: [storeLocatorIndex.name],
+                default: storeLocatorIndex.name,
+              },
+            },
+          });
         }
         "
       `);
@@ -258,32 +254,41 @@ describe('GeoGenerator', () => {
       await ops[0].execute();
 
       expect(writtenFile('storeLocatorMap/resource.ts')).toMatchInlineSnapshot(`
-        "import { TestConstruct } from "./storeLocatorMap-construct";
-        import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
-        import type { Backend } from "../../backend";
+        "import { TestConstruct } from './storeLocatorMap-construct';
+        import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+        import type { Backend } from '../../backend';
 
-        const branchName = process.env.AWS_BRANCH ?? "sandbox";
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
         export function defineStoreLocatorMap(backend: Backend) {
-            const storeLocatorMapStack = backend.createStack("geostoreLocatorMap");
-            const storeLocatorMap = new TestConstruct(storeLocatorMapStack, "storeLocatorMap", {
-                authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
-                unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
-                authTestAuthUserPoolId: backend.auth.resources.userPool.userPoolId,
-                mapName: "storeLocatorMap",
-                mapStyle: "VectorEsriStreets",
-                branchName,
-                isDefault: "true"
-            });
-            const policy = new Policy(storeLocatorMap, "gen1AuthPolicy", {
-                statements: [new PolicyStatement({
-                        actions: ["geo:GetMapTile", "geo:GetMapStyleDescriptor"],
-                        resources: [\`arn:aws:geo:\${storeLocatorMapStack.region}:\${storeLocatorMapStack.account}:map/storeLocatorMap-dev\`]
-                    })]
-            });
-            backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
-            backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
-            return storeLocatorMap;
+          const storeLocatorMapStack = backend.createStack('geostoreLocatorMap');
+          const storeLocatorMap = new TestConstruct(
+            storeLocatorMapStack,
+            'storeLocatorMap',
+            {
+              authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
+              unauthRoleName:
+                backend.auth.resources.unauthenticatedUserIamRole.roleName,
+              authTestAuthUserPoolId: backend.auth.resources.userPool.userPoolId,
+              mapName: 'storeLocatorMap',
+              mapStyle: 'VectorEsriStreets',
+              branchName,
+              isDefault: 'true',
+            }
+          );
+          const policy = new Policy(storeLocatorMap, 'gen1AuthPolicy', {
+            statements: [
+              new PolicyStatement({
+                actions: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
+                resources: [
+                  \`arn:aws:geo:\${storeLocatorMapStack.region}:\${storeLocatorMapStack.account}:map/storeLocatorMap-dev\`,
+                ],
+              }),
+            ],
+          });
+          backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
+          backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
+          return storeLocatorMap;
         }
         "
       `);
@@ -331,33 +336,37 @@ describe('GeoGenerator', () => {
       await ops[0].execute();
 
       expect(writtenFile('myPlaceIndex/resource.ts')).toMatchInlineSnapshot(`
-        "import { TestConstruct } from "./myPlaceIndex-construct";
-        import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
-        import type { Backend } from "../../backend";
+        "import { TestConstruct } from './myPlaceIndex-construct';
+        import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+        import type { Backend } from '../../backend';
 
-        const branchName = process.env.AWS_BRANCH ?? "sandbox";
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
         export function defineMyPlaceIndex(backend: Backend) {
-            const myPlaceIndexStack = backend.createStack("geomyPlaceIndex");
-            const myPlaceIndex = new TestConstruct(myPlaceIndexStack, "myPlaceIndex", {
-                authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
-                unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
-                authTestAuthUserPoolId: backend.auth.resources.userPool.userPoolId,
-                indexName: "myPlaceIndex",
-                dataProvider: "Esri",
-                dataSourceIntendedUse: "SingleUse",
-                branchName,
-                isDefault: "false"
-            });
-            const policy = new Policy(myPlaceIndex, "gen1AuthPolicy", {
-                statements: [new PolicyStatement({
-                        actions: ["geo:GetMapTile", "geo:GetMapStyleDescriptor"],
-                        resources: [\`arn:aws:geo:\${myPlaceIndexStack.region}:\${myPlaceIndexStack.account}:place-index/myPlaceIndex-dev\`]
-                    })]
-            });
-            backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
-            backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
-            return myPlaceIndex;
+          const myPlaceIndexStack = backend.createStack('geomyPlaceIndex');
+          const myPlaceIndex = new TestConstruct(myPlaceIndexStack, 'myPlaceIndex', {
+            authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
+            unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
+            authTestAuthUserPoolId: backend.auth.resources.userPool.userPoolId,
+            indexName: 'myPlaceIndex',
+            dataProvider: 'Esri',
+            dataSourceIntendedUse: 'SingleUse',
+            branchName,
+            isDefault: 'false',
+          });
+          const policy = new Policy(myPlaceIndex, 'gen1AuthPolicy', {
+            statements: [
+              new PolicyStatement({
+                actions: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
+                resources: [
+                  \`arn:aws:geo:\${myPlaceIndexStack.region}:\${myPlaceIndexStack.account}:place-index/myPlaceIndex-dev\`,
+                ],
+              }),
+            ],
+          });
+          backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(policy);
+          backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(policy);
+          return myPlaceIndex;
         }
         "
       `);
@@ -410,20 +419,20 @@ describe('GeoGenerator', () => {
       await ops[0].execute();
 
       expect(writtenFile('myGeofences/resource.ts')).toMatchInlineSnapshot(`
-        "import { TestConstruct } from "./myGeofences-construct";
-        import type { Backend } from "../../backend";
+        "import { TestConstruct } from './myGeofences-construct';
+        import type { Backend } from '../../backend';
 
-        const branchName = process.env.AWS_BRANCH ?? "sandbox";
+        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
         export function defineMyGeofences(backend: Backend) {
-            const myGeofencesStack = backend.createStack("geomyGeofences");
-            const myGeofences = new TestConstruct(myGeofencesStack, "myGeofences", {
-                authTestAuthUserPoolId: backend.auth.resources.userPool.userPoolId,
-                collectionName: "myGeofences",
-                branchName,
-                isDefault: "true"
-            });
-            return myGeofences;
+          const myGeofencesStack = backend.createStack('geomyGeofences');
+          const myGeofences = new TestConstruct(myGeofencesStack, 'myGeofences', {
+            authTestAuthUserPoolId: backend.auth.resources.userPool.userPoolId,
+            collectionName: 'myGeofences',
+            branchName,
+            isDefault: 'true',
+          });
+          return myGeofences;
         }
         "
       `);
