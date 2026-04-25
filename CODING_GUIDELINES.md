@@ -790,3 +790,41 @@ src/
 ```
 
 The test: read just the directory names at one level. If you can't guess the organizing principle without opening them, the structure is misleading.
+
+## Testing
+
+### Test the public API, not implementation details
+
+Test through the public entry point (e.g. the generator), not internal helpers (e.g. the renderer). If a class is only used internally by another class, it's an implementation detail — test it through the owning class. Separate files for organizational purposes don't make separate test targets.
+
+### Full output snapshots over partial assertions
+
+Use `toMatchInlineSnapshot()` on the complete generated output. Avoid `toContain` / `not.toContain` for verifying generated code — partial assertions miss regressions in formatting, imports, and ordering. The exception is negative assertions where the point is to confirm absence.
+
+### Mock boundaries, not internals
+
+Mock external dependencies (AWS SDK, file system, network). Don't mock internal classes like renderers or utility functions — let them run for real. The mock boundary is the edge of the system: AWS calls, disk I/O, external binaries.
+
+### Use real constructors
+
+Instantiate production classes via their real constructor or factory method (e.g. `Gen1App.create()`). Mock only what's needed to make the constructor work (stateManager, AwsClients, S3 download). Replace external fetchers after construction: `(app as any).aws = { ... }`.
+
+### Provide data, not answers
+
+Don't mock methods that derive values from data (e.g. `resourceMetaOutput`, `categoryMeta`). Instead, provide the underlying data (e.g. `amplify-meta.json`) and let the real method derive the value. This catches bugs in the derivation logic.
+
+### Self-contained tests
+
+Each test case should be readable in isolation. Inline the setup — meta objects, mock configurations, generator construction, plan/execute calls. Don't use shared setup functions or global constants for test data. Shared utilities for extracting results (e.g. `writtenFile()`) are fine.
+
+### Flat test structure
+
+Use a single `describe` block per test file. Don't nest `describe` blocks for categories like "error handling", "orchestration", "rendering". The test name should be descriptive enough.
+
+### Enum coverage
+
+If code branches on a property with a finite set of values (e.g. MfaConfiguration: OFF | OPTIONAL | ON), write a test for each value. If the property is free-form (a string or number), one test for a non-null value and one for null/undefined is sufficient.
+
+### Only mock what the test needs
+
+Each test should only configure the mocks it specifically requires. If a fetcher returns `undefined` by default and the code handles that gracefully, don't mock it. If a mock is needed to prevent a crash in production code (not a test concern), add the default to the shared helper instead.

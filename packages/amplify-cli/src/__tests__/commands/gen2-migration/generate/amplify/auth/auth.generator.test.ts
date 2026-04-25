@@ -570,6 +570,73 @@ describe('AuthGenerator', () => {
       `);
   });
 
+  it('generates MFA with OPTIONAL mode', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
+      MfaConfiguration: 'OPTIONAL',
+      SoftwareTokenMfaConfiguration: { Enabled: true },
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
+
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OPTIONAL',
+          totp: true,
+          sms: true,
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
+  });
+
   it('generates lambda triggers with function imports', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
