@@ -2,6 +2,7 @@ import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { DataGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -25,22 +26,27 @@ const dataResource: DiscoveredResource = {
   key: 'api:AppSync',
 };
 
-function createMockGen1App(overrides?: Record<string, unknown>): Gen1App {
-  return {
-    envName: 'main',
-    ccbDir: '/tmp/ccb',
-    meta: jest.fn(),
-    metaOutput: jest.fn(),
-    singleResourceName: jest.fn().mockReturnValue('testApi'),
-    file: jest.fn(),
-    resourceMetaOutput: jest.fn(),
-    categoryMeta: jest.fn(),
-    aws: {
-      fetchGraphqlApi: jest.fn(),
+/** Minimal amplify-meta for an AppSync data resource. */
+function dataMeta(opts?: { apiId?: string; authConfig?: unknown; hasAuth?: boolean }): Record<string, unknown> {
+  const apiId = opts?.apiId ?? 'api-123';
+  const meta: Record<string, unknown> = {
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    api: {
+      testApi: {
+        service: 'AppSync',
+        output: {
+          GraphQLAPIIdOutput: apiId,
+          ...(opts?.authConfig ? { authConfig: opts.authConfig } : {}),
+        },
+      },
     },
-    ...overrides,
-  } as unknown as Gen1App;
+  };
+  if (opts?.hasAuth) {
+    (meta as any).auth = { myAuth: { service: 'Cognito' } };
+  }
+  return meta;
 }
+
 /** Sets up Gen1App mocks for a successful data plan(). */
 function setupDataMocks(
   gen1App: Gen1App,
@@ -49,19 +55,15 @@ function setupDataMocks(
     apiId?: string;
     authorizationModes?: unknown;
     graphqlApi?: GraphqlApi;
-    hasAuth?: boolean;
   },
 ): void {
   const apiId = opts.apiId ?? 'api-123';
-  (gen1App.file as jest.Mock).mockReturnValue(opts.schema);
-  (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
+  jest.spyOn(gen1App, 'file').mockReturnValue(opts.schema);
+  // Always spy on resourceMetaOutput — the real method throws for missing keys
+  jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
     if (key === 'GraphQLAPIIdOutput') return apiId;
-    if (key === 'authConfig') return opts.authorizationModes;
-    return undefined;
-  });
-  (gen1App.categoryMeta as jest.Mock).mockImplementation((category: string) => {
-    if (category === 'auth') return opts.hasAuth ? { myAuth: {} } : undefined;
-    return undefined;
+    if (key === 'authConfig') return opts.authorizationModes as string;
+    return undefined as any;
   });
   (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(
     opts.graphqlApi ?? { apiId, name: 'testApi', additionalAuthenticationProviders: [] },
@@ -79,20 +81,26 @@ describe('DataGenerator', () => {
 
   describe('error handling', () => {
     it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.file as jest.Mock).mockReturnValue('type Todo @model { id: ID! }');
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation(() => {
-        throw new Error('no GraphQLAPIIdOutput');
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        api: {
+          testApi: {
+            service: 'AppSync',
+            output: {
+              /* no GraphQLAPIIdOutput */
+            },
+          },
+        },
       });
+      jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      await expect(generator.plan()).rejects.toThrow('no GraphQLAPIIdOutput');
+      await expect(generator.plan()).rejects.toThrow('GraphQLAPIIdOutput');
     });
 
     it('throws when AppSync API is not found via SDK', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.file as jest.Mock).mockReturnValue('type Todo @model { id: ID! }');
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('api-123');
+      const gen1App = await createGen1App(dataMeta());
+      jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
       (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
@@ -102,7 +110,7 @@ describe('DataGenerator', () => {
 
   describe('orchestration', () => {
     it('returns one operation describing data/resource.ts', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
@@ -114,7 +122,7 @@ describe('DataGenerator', () => {
     });
 
     it('registers namespace import and defineBackend entry on backendGenerator', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
 
       const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
@@ -129,10 +137,9 @@ describe('DataGenerator', () => {
     });
 
     it('contributes applyEscapeHatches call when auth exists and additional providers present', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta({ hasAuth: true }));
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
-        hasAuth: true,
         graphqlApi: {
           apiId: 'api-123',
           name: 'testApi',
@@ -152,10 +159,9 @@ describe('DataGenerator', () => {
     });
 
     it('contributes applyEscapeHatches call when additional providers present even without auth category', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta({ hasAuth: false }));
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
-        hasAuth: false,
         graphqlApi: {
           apiId: 'api-123',
           name: 'testApi',
@@ -173,8 +179,8 @@ describe('DataGenerator', () => {
     });
 
     it('does not contribute applyEscapeHatches call when additional providers list is empty', async () => {
-      const gen1App = createMockGen1App();
-      setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }', hasAuth: true });
+      const gen1App = await createGen1App(dataMeta({ hasAuth: true }));
+      setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
 
       const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
@@ -188,7 +194,7 @@ describe('DataGenerator', () => {
 
   describe('resource.ts generation (renderer tests)', () => {
     it('renders a basic defineData resource with schema and table mappings', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta({ apiId: 'abc123' }));
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! title: String! }',
         apiId: 'abc123',
@@ -219,7 +225,7 @@ describe('DataGenerator', () => {
     });
 
     it('renders authorization modes with default auth type', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
         apiId: 'abc',
@@ -256,7 +262,7 @@ describe('DataGenerator', () => {
     });
 
     it('renders API key auth mode with expiration and description', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
         authorizationModes: {
@@ -296,7 +302,7 @@ describe('DataGenerator', () => {
     });
 
     it('renders OIDC auth mode', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
         authorizationModes: {
@@ -349,7 +355,7 @@ describe('DataGenerator', () => {
     });
 
     it('renders Lambda auth mode', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
         authorizationModes: {
@@ -390,7 +396,7 @@ describe('DataGenerator', () => {
     });
 
     it('renders logging config', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! }',
         graphqlApi: {
@@ -425,7 +431,7 @@ describe('DataGenerator', () => {
     });
 
     it('replaces ${env} with ${branchName} in schema and adds branchName declaration', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { env: String @default(value: "${env}") }',
       });
@@ -458,7 +464,7 @@ describe('DataGenerator', () => {
     });
 
     it('does not emit branchName when schema has no ${env}', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta());
       setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
 
       const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
@@ -469,7 +475,7 @@ describe('DataGenerator', () => {
     });
 
     it('renders multiple table mappings', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(dataMeta({ apiId: 'abc' }));
       setupDataMocks(gen1App, {
         schema: 'type Todo @model { id: ID! } type Post @model { id: ID! }',
         apiId: 'abc',

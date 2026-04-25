@@ -1,6 +1,7 @@
 import { ReferenceAuthGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/auth/reference-auth.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { Gen1App, DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -17,25 +18,6 @@ const authResource: DiscoveredResource = {
   service: 'Cognito',
   key: 'auth:Cognito',
 };
-
-function createMockGen1App(): Gen1App {
-  return {
-    singleResourceName: jest.fn().mockReturnValue('testAuth'),
-    resourceMetaOutput: jest.fn(),
-    categoryMeta: jest.fn(),
-    ccbDir: '/tmp/ccb',
-    aws: {
-      fetchUserPool: jest.fn(),
-      fetchMfaConfig: jest.fn(),
-      fetchUserPoolClient: jest.fn(),
-      fetchIdentityProviders: jest.fn(),
-      fetchIdentityGroups: jest.fn(),
-      fetchIdentityPool: jest.fn(),
-      fetchIdentityPoolRoles: jest.fn(),
-      fetchGroupsByUserPoolId: jest.fn(),
-    },
-  } as unknown as Gen1App;
-}
 
 /** Extracts the written file content for a path suffix from mockWriteFile calls. */
 function writtenFile(suffix: string): string {
@@ -54,15 +36,17 @@ describe('ReferenceAuthGenerator', () => {
   });
 
   it('generates reference auth resource.ts and backend.ts', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.categoryMeta as jest.Mock).mockReturnValue({
-      myAuth: {
-        service: 'Cognito',
-        serviceType: 'imported',
-        output: {
-          UserPoolId: 'us-east-1_abc123',
-          AppClientIDWeb: 'client123',
-          IdentityPoolId: 'us-east-1:pool-id',
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        myAuth: {
+          service: 'Cognito',
+          serviceType: 'imported',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'client123',
+            IdentityPoolId: 'us-east-1:pool-id',
+          },
         },
       },
     });

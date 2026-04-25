@@ -1,16 +1,28 @@
 import { CustomResourceGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/custom-resources/custom.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
-import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
-jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
-  JSONUtilities: {
-    readJson: jest.fn().mockReturnValue({ dependencies: { 'aws-cdk-lib': '^2.0.0' }, devDependencies: {} }),
-  },
-}));
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
+  return {
+    ...actual,
+    JSONUtilities: {
+      ...actual.JSONUtilities,
+      readJson: jest.fn().mockImplementation((filePath: string, opts?: unknown) => {
+        if (typeof filePath === 'string' && filePath.endsWith('package.json')) {
+          return { dependencies: { 'aws-cdk-lib': '^2.0.0' }, devDependencies: {} };
+        }
+        if (typeof filePath === 'string' && filePath.endsWith('project-config.json')) {
+          return { projectName: 'testProject' };
+        }
+        return actual.JSONUtilities.readJson(filePath, opts);
+      }),
+    },
+  };
+});
 
 const mockMkdir = jest.fn().mockResolvedValue(undefined);
 const mockWriteFile = jest.fn().mockResolvedValue(undefined);
@@ -28,15 +40,6 @@ jest.mock('node:fs/promises', () => ({
   readdir: (...args: unknown[]) => mockReaddir(...args),
   rename: (...args: unknown[]) => mockRename(...args),
 }));
-
-function createMockGen1App(): Gen1App {
-  return {
-    appId: 'd1abc2def3',
-    envName: 'main',
-    json: jest.fn().mockReturnValue({}),
-    fileExists: jest.fn().mockReturnValue(false),
-  } as unknown as Gen1App;
-}
 
 const CDK_STACK_CONTENT = `
 import * as cdk from 'aws-cdk-lib';
@@ -68,7 +71,12 @@ describe('CustomResourceGenerator', () => {
 
   describe('orchestration', () => {
     it('returns one operation describing the custom resource', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      });
+      jest.spyOn(gen1App, 'json').mockReturnValue({});
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
       const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
       const ops = await generator.plan();
 
@@ -80,7 +88,12 @@ describe('CustomResourceGenerator', () => {
 
   describe('execution', () => {
     it('copies resource directory and transforms cdk-stack.ts', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      });
+      jest.spyOn(gen1App, 'json').mockReturnValue({});
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
       const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
       const ops = await generator.plan();
       await ops[0].execute();
@@ -97,7 +110,12 @@ describe('CustomResourceGenerator', () => {
     });
 
     it('contributes namespace import and post-define call to backend', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      });
+      jest.spyOn(gen1App, 'json').mockReturnValue({});
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
       const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
       const addPostDefineBackendCallSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendCall');
 
@@ -110,7 +128,12 @@ describe('CustomResourceGenerator', () => {
     });
 
     it('removes build artifacts', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      });
+      jest.spyOn(gen1App, 'json').mockReturnValue({});
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
       const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
       const ops = await generator.plan();
       await ops[0].execute();
@@ -123,7 +146,12 @@ describe('CustomResourceGenerator', () => {
     });
 
     it('merges dependencies into root package.json', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      });
+      jest.spyOn(gen1App, 'json').mockReturnValue({});
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
       const addDependencySpy = jest.spyOn(packageJsonGenerator, 'addDependency');
 
       const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
@@ -136,7 +164,12 @@ describe('CustomResourceGenerator', () => {
 
   describe('error handling', () => {
     it('throws when cdk-stack.ts cannot be read', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      });
+      jest.spyOn(gen1App, 'json').mockReturnValue({});
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
       mockReadFile.mockRejectedValue(new Error('ENOENT: no such file'));
 
       const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');

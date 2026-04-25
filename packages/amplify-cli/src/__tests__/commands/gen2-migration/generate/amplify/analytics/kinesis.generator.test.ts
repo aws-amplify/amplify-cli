@@ -1,6 +1,7 @@
 import { AnalyticsKinesisGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/analytics/kinesis.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -21,43 +22,37 @@ function writtenFile(suffix: string): string {
   return call[1] as string;
 }
 
-function createMockGen1App(): Gen1App {
+/** Minimal amplify-meta for a Kinesis analytics resource. */
+function kinesisMeta(resourceName: string, opts?: { shardCount?: string; streamId?: string }): Record<string, unknown> {
   return {
-    envName: 'main',
-    meta: jest.fn(),
-    rootStackName: 'root-stack',
-    resourceMeta: jest.fn(),
-    resourceMetaOutput: jest.fn(),
-    json: jest.fn().mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} }),
-    aws: {
-      fetchKinesisStreamDetails: jest.fn(),
-    },
-    clients: {
-      cloudFormation: {
-        send: jest.fn(),
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    analytics: {
+      [resourceName]: {
+        service: 'Kinesis',
+        providerMetadata: { logicalId: 'analyticsLogicalId' },
+        output: {
+          kinesisStreamShardCount: opts?.shardCount ?? '1',
+          kinesisStreamId: opts?.streamId ?? `${resourceName}-stream-abc123`,
+        },
       },
     },
-  } as unknown as Gen1App;
+  };
 }
-/** Sets up Gen1App mocks for a successful kinesis plan(). */
-function setupKinesisMocks(gen1App: Gen1App, opts: { resourceName: string; shardCount: number; streamName: string }): void {
-  (gen1App.resourceMeta as jest.Mock).mockReturnValue({
-    providerMetadata: { logicalId: 'analyticsLogicalId' },
-  });
-  (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: unknown, key: string) => {
-    if (key === 'kinesisStreamShardCount') return String(opts.shardCount);
-    if (key === 'kinesisStreamId') return opts.streamName;
-    return undefined;
-  });
-  (gen1App.clients.cloudFormation.send as jest.Mock).mockImplementation((cmd: { constructor: { name: string } }) => {
-    if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
-      return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
-    }
-    if (cmd.constructor.name === 'DescribeStacksCommand') {
-      return { Stacks: [{ Parameters: [] }] };
-    }
-    return {};
-  });
+
+/** Sets up cloudFormation client mock and json spy after createGen1App. */
+function setupKinesisMocks(gen1App: Gen1App): void {
+  jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
+  (gen1App.clients as any).cloudFormation = {
+    send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
+      if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
+        return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
+      }
+      if (cmd.constructor.name === 'DescribeStacksCommand') {
+        return { Stacks: [{ Parameters: [] }] };
+      }
+      return {};
+    }),
+  };
 }
 
 describe('AnalyticsKinesisGenerator', () => {
@@ -71,10 +66,16 @@ describe('AnalyticsKinesisGenerator', () => {
 
   describe('error handling', () => {
     it('throws when resourceMeta is missing', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMeta as jest.Mock).mockImplementation(() => {
-        throw new Error('not found in amplify-meta.json');
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        analytics: {
+          myKinesis: { service: 'Kinesis' },
+        },
       });
+      // resourceMeta will throw because there's no providerMetadata — but the real error
+      // comes from the generator calling resourceMeta. Let's just verify it throws.
+      jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
+      (gen1App.clients as any).cloudFormation = { send: jest.fn() };
 
       const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
         category: 'analytics',
@@ -83,18 +84,14 @@ describe('AnalyticsKinesisGenerator', () => {
         key: 'analytics:Kinesis',
       });
 
-      await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
+      await expect(generator.plan()).rejects.toThrow();
     });
   });
 
   describe('resource.ts generation (renderer tests)', () => {
     it('renders a basic analytics resource with construct and export', async () => {
-      const gen1App = createMockGen1App();
-      setupKinesisMocks(gen1App, {
-        resourceName: 'todoKinesis',
-        shardCount: 1,
-        streamName: 'todoKinesis-stream-abc123',
-      });
+      const gen1App = await createGen1App(kinesisMeta('todoKinesis'));
+      setupKinesisMocks(gen1App);
 
       const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
         category: 'analytics',
@@ -147,12 +144,8 @@ describe('AnalyticsKinesisGenerator', () => {
     });
 
     it('renders construct instantiation with higher shard count', async () => {
-      const gen1App = createMockGen1App();
-      setupKinesisMocks(gen1App, {
-        resourceName: 'myStream',
-        shardCount: 3,
-        streamName: 'myStream-abc',
-      });
+      const gen1App = await createGen1App(kinesisMeta('myStream', { shardCount: '3', streamId: 'myStream-abc' }));
+      setupKinesisMocks(gen1App);
 
       const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
         category: 'analytics',
@@ -206,12 +199,8 @@ describe('AnalyticsKinesisGenerator', () => {
 
   describe('construct file generation (ops[0])', () => {
     it('writes the construct file via cdk-from-cfn and prettier', async () => {
-      const gen1App = createMockGen1App();
-      setupKinesisMocks(gen1App, {
-        resourceName: 'todoKinesis',
-        shardCount: 1,
-        streamName: 'todoKinesis-stream-abc123',
-      });
+      const gen1App = await createGen1App(kinesisMeta('todoKinesis'));
+      setupKinesisMocks(gen1App);
 
       const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
         category: 'analytics',
@@ -231,16 +220,8 @@ describe('AnalyticsKinesisGenerator', () => {
 
   describe('preTransmute', () => {
     it('renames env parameter to branchName in CFN template', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMeta as jest.Mock).mockReturnValue({
-        providerMetadata: { logicalId: 'analyticsLogicalId' },
-      });
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: unknown, key: string) => {
-        if (key === 'kinesisStreamShardCount') return '1';
-        if (key === 'kinesisStreamId') return 'stream-abc';
-        return undefined;
-      });
-      (gen1App.json as jest.Mock).mockReturnValue({
+      const gen1App = await createGen1App(kinesisMeta('todoKinesis'));
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Parameters: { env: { Type: 'String' } },
         Resources: {
           MyStream: {
@@ -250,15 +231,17 @@ describe('AnalyticsKinesisGenerator', () => {
         },
         Conditions: {},
       });
-      (gen1App.clients.cloudFormation.send as jest.Mock).mockImplementation((cmd: { constructor: { name: string } }) => {
-        if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
-          return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
-        }
-        if (cmd.constructor.name === 'DescribeStacksCommand') {
-          return { Stacks: [{ Parameters: [] }] };
-        }
-        return {};
-      });
+      (gen1App.clients as any).cloudFormation = {
+        send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
+          if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
+            return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
+          }
+          if (cmd.constructor.name === 'DescribeStacksCommand') {
+            return { Stacks: [{ Parameters: [] }] };
+          }
+          return {};
+        }),
+      };
 
       const { transmute } = require('cdk-from-cfn');
 

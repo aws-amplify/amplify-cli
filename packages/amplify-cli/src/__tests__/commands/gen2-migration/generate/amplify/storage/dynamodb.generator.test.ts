@@ -1,6 +1,6 @@
 import { DynamoDBGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/storage/dynamodb.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -17,16 +17,17 @@ function writtenFile(suffix: string): string {
   return call[1] as string;
 }
 
-function createMockGen1App(overrides?: Partial<Gen1App>): Gen1App {
+/** Minimal amplify-meta for a DynamoDB storage resource. */
+function storageMeta(resourceName: string, tableName: string): Record<string, unknown> {
   return {
-    meta: jest.fn(),
-    metaOutput: jest.fn(),
-    resourceMetaOutput: jest.fn(),
-    aws: {
-      fetchTableDescription: jest.fn(),
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    storage: {
+      [resourceName]: {
+        service: 'DynamoDB',
+        output: { Name: tableName },
+      },
     },
-    ...overrides,
-  } as unknown as Gen1App;
+  };
 }
 
 describe('DynamoDBGenerator', () => {
@@ -40,8 +41,7 @@ describe('DynamoDBGenerator', () => {
 
   describe('error handling', () => {
     it('throws when table is not found in AWS', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myTable-abc123');
+      const gen1App = await createGen1App(storageMeta('myTable', 'myTable-abc123'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue(undefined);
 
       const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
@@ -57,8 +57,7 @@ describe('DynamoDBGenerator', () => {
 
   describe('orchestration', () => {
     it('returns one operation when resource exists', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myTable-abc123');
+      const gen1App = await createGen1App(storageMeta('myTable', 'myTable-abc123'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
@@ -80,8 +79,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('contributes namespace import and post-define call to backend generator on execute', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myTable-abc123');
+      const gen1App = await createGen1App(storageMeta('myTable', 'myTable-abc123'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
@@ -108,8 +106,13 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('creates separate resources for two DDB tables', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation(() => `table-abc123`);
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        storage: {
+          activity: { service: 'DynamoDB', output: { Name: 'table-abc123' } },
+          bookmarks: { service: 'DynamoDB', output: { Name: 'table-abc123' } },
+        },
+      });
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
@@ -144,8 +147,7 @@ describe('DynamoDBGenerator', () => {
 
   describe('resource.ts generation (renderer tests)', () => {
     it('renders a basic table with partition key', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('MyTable-abc123');
+      const gen1App = await createGen1App(storageMeta('myTable', 'MyTable-abc123'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
@@ -199,8 +201,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('renders a table with sort key and provisioned billing', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('MyTable-abc123');
+      const gen1App = await createGen1App(storageMeta('myTable', 'MyTable-abc123'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [
           { AttributeName: 'pk', KeyType: 'HASH' },
@@ -263,8 +264,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('renders stream configuration', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('StreamTable-abc');
+      const gen1App = await createGen1App(storageMeta('streamTable', 'StreamTable-abc'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
@@ -320,8 +320,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('does not render stream when disabled', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('NoStream-abc');
+      const gen1App = await createGen1App(storageMeta('noStream', 'NoStream-abc'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
@@ -376,8 +375,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('renders GSIs with addGlobalSecondaryIndex calls', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('GsiTable-abc');
+      const gen1App = await createGen1App(storageMeta('gsiTable', 'GsiTable-abc'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
         AttributeDefinitions: [
@@ -463,8 +461,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     it('handles BINARY attribute type', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('BinaryTable-abc');
+      const gen1App = await createGen1App(storageMeta('binaryTable', 'BinaryTable-abc'));
       (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
         KeySchema: [{ AttributeName: 'data', KeyType: 'HASH' }],
         AttributeDefinitions: [{ AttributeName: 'data', AttributeType: 'B' }],

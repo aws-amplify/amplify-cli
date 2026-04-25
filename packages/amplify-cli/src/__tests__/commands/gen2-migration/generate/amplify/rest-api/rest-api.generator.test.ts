@@ -1,6 +1,7 @@
 import { RestApiGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/rest-api/rest-api.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -17,19 +18,24 @@ function writtenFile(suffix: string): string {
   return call[1] as string;
 }
 
-function createMockGen1App(): Gen1App {
-  return {
-    meta: jest.fn(),
-    metaOutput: jest.fn(),
-    ccbDir: '/tmp/ccb',
-    cliInputs: jest.fn(),
-    resourceMetaOutput: jest.fn(),
-    categoryMeta: jest.fn(),
-    aws: {
-      fetchRestApiRootResourceId: jest.fn().mockResolvedValue('root-resource-id'),
+/** Minimal amplify-meta for a REST API resource. */
+function restApiMeta(opts?: { apiId?: string; hasAuth?: boolean }): Record<string, unknown> {
+  const apiId = opts?.apiId ?? 'abc123';
+  const meta: Record<string, unknown> = {
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    api: {
+      myApi: {
+        service: 'API Gateway',
+        output: { RootUrl: `https://${apiId}.execute-api.us-east-1.amazonaws.com/main` },
+      },
     },
-  } as unknown as Gen1App;
+  };
+  if (opts?.hasAuth) {
+    (meta as any).auth = { myAuth: { service: 'Cognito' } };
+  }
+  return meta;
 }
+
 /** Sets up Gen1App mocks for a successful REST API plan(). */
 function setupRestApiMocks(
   gen1App: Gen1App,
@@ -41,15 +47,11 @@ function setupRestApiMocks(
   },
 ): void {
   const apiId = opts?.apiId ?? 'abc123';
-  (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue(apiId);
-  (gen1App.cliInputs as jest.Mock).mockReturnValue({
+  jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue(apiId);
+  jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
     paths: opts?.paths ?? {
       '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
     },
-  });
-  (gen1App.categoryMeta as jest.Mock).mockImplementation((category: string) => {
-    if (category === 'auth') return opts?.hasAuth ? { myAuth: {} } : undefined;
-    return undefined;
   });
   if (opts?.rootResourceId) {
     (gen1App.aws.fetchRestApiRootResourceId as jest.Mock).mockResolvedValue(opts.rootResourceId);
@@ -67,7 +69,7 @@ describe('RestApiGenerator', () => {
 
   describe('orchestration', () => {
     it('returns one operation with correct description', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App);
 
       const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
@@ -84,7 +86,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('contributes namespace import and post-define statement to backend generator on execute', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App);
 
       const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
@@ -106,7 +108,7 @@ describe('RestApiGenerator', () => {
 
   describe('resource.ts generation (renderer tests)', () => {
     it('renders a basic REST API', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App, {
         apiId: 'abc123',
         rootResourceId: 'root456',
@@ -217,7 +219,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('renders Lambda integrations for unique functions', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App, {
         paths: {
           '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
@@ -353,7 +355,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('renders policy attachment when auth exists and path is private', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta({ hasAuth: true }));
       setupRestApiMocks(gen1App, {
         hasAuth: true,
         paths: {
@@ -469,7 +471,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('does not render policy attachment when no auth', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta({ hasAuth: false }));
       setupRestApiMocks(gen1App, {
         hasAuth: false,
         paths: {
@@ -491,7 +493,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('renders auth path policies when permissions.auth is set', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta({ hasAuth: true }));
       setupRestApiMocks(gen1App, {
         hasAuth: true,
         paths: {
@@ -629,7 +631,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('renders group path policies', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta({ hasAuth: true }));
       setupRestApiMocks(gen1App, {
         hasAuth: true,
         paths: {
@@ -771,7 +773,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('handles multiple paths', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App, {
         paths: {
           '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
@@ -904,7 +906,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('sanitizes hyphenated path names into valid variable names', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App, {
         paths: {
           '/auth-test': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },
@@ -926,7 +928,7 @@ describe('RestApiGenerator', () => {
     });
 
     it('sanitizes hyphenated api names in output', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(restApiMeta());
       setupRestApiMocks(gen1App, {
         paths: {
           '/items': { lambdaFunction: 'myFunc', permissions: { setting: 'open' } },

@@ -1,6 +1,6 @@
 import { S3Generator } from '../../../../../../commands/gen2-migration/generate/amplify/storage/s3.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -17,23 +17,19 @@ function writtenFile(suffix: string): string {
   return call[1] as string;
 }
 
-function createMockGen1App(): Gen1App {
+/** Minimal amplify-meta for an S3 storage resource. */
+function s3Meta(resourceName: string, bucketName: string): Record<string, unknown> {
   return {
-    envName: 'main',
-    meta: jest.fn(),
-    metaOutput: jest.fn(),
-    resourceMetaOutput: jest.fn(),
-    cliInputs: jest.fn().mockReturnValue({
-      authAccess: [],
-      guestAccess: [],
-    }),
-    aws: {
-      fetchBucketAccelerate: jest.fn().mockResolvedValue(undefined),
-      fetchBucketVersioning: jest.fn().mockResolvedValue(undefined),
-      fetchBucketEncryption: jest.fn().mockResolvedValue(undefined),
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    storage: {
+      [resourceName]: {
+        service: 'S3',
+        output: { BucketName: bucketName },
+      },
     },
-  } as unknown as Gen1App;
+  };
 }
+
 describe('S3Generator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
@@ -45,8 +41,8 @@ describe('S3Generator', () => {
 
   describe('orchestration', () => {
     it('returns one operation describing storage/resource.ts', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
         category: 'storage',
@@ -62,8 +58,8 @@ describe('S3Generator', () => {
     });
 
     it('registers namespace import and defineBackend entry on backendGenerator', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
       const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
@@ -84,8 +80,8 @@ describe('S3Generator', () => {
 
   describe('resource.ts generation (renderer tests)', () => {
     it('renders a basic defineStorage with name', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
         category: 'storage',
@@ -130,9 +126,8 @@ describe('S3Generator', () => {
     });
 
     it('renders auth access patterns', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
-      (gen1App.cliInputs as jest.Mock).mockReturnValue({
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
         authAccess: ['READ', 'CREATE_AND_UPDATE'],
         guestAccess: [],
       });
@@ -184,9 +179,8 @@ describe('S3Generator', () => {
     });
 
     it('renders guest access patterns', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
-      (gen1App.cliInputs as jest.Mock).mockReturnValue({
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
         authAccess: [],
         guestAccess: ['READ'],
       });
@@ -236,9 +230,8 @@ describe('S3Generator', () => {
     });
 
     it('renders auth and guest access together', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
-      (gen1App.cliInputs as jest.Mock).mockReturnValue({
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
         authAccess: ['READ', 'CREATE_AND_UPDATE', 'DELETE'],
         guestAccess: ['READ'],
       });
@@ -297,9 +290,8 @@ describe('S3Generator', () => {
     });
 
     it('renders group access patterns with TODO comment', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
-      (gen1App.cliInputs as jest.Mock).mockReturnValue({
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
         authAccess: ['READ'],
         guestAccess: [],
         groupAccess: {
@@ -365,8 +357,8 @@ describe('S3Generator', () => {
     });
 
     it('renders function access patterns with imports', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
         category: 'storage',
@@ -422,8 +414,8 @@ describe('S3Generator', () => {
     });
 
     it('renders triggers with function imports', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
         category: 'storage',
@@ -477,8 +469,8 @@ describe('S3Generator', () => {
     });
 
     it('consolidates duplicate function permissions', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
         category: 'storage',
@@ -531,8 +523,8 @@ describe('S3Generator', () => {
     });
 
     it('renders empty access when no access patterns configured', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myBucket-main-abc123');
+      const gen1App = await createGen1App(s3Meta('myBucket', 'myBucket-main-abc123'));
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
 
       const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
         category: 'storage',

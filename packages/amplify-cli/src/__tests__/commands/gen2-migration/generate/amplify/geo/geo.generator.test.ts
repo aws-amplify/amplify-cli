@@ -4,6 +4,7 @@ import { GeoPlaceIndexGenerator } from '../../../../../../commands/gen2-migratio
 import { GeoGeofenceCollectionGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/geo/geofence-collection.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
@@ -32,59 +33,51 @@ function writtenFile(suffix: string): string {
   return call[1] as string;
 }
 
-function createMockGen1App(): Gen1App {
+/** Minimal amplify-meta for a geo resource. */
+function geoMeta(resourceName: string, service: string): Record<string, unknown> {
   return {
-    envName: 'dev',
-    rootStackName: 'root-stack',
-    resourceMeta: jest.fn().mockReturnValue({
-      providerMetadata: { logicalId: 'geoLogicalId' },
-    }),
-    resourceMetaOutput: jest.fn(),
-    json: jest.fn().mockReturnValue({
-      Parameters: {},
-      Resources: {
-        UserFacingPolicy: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Action: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
-                },
-              ],
-            },
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    geo: {
+      [resourceName]: {
+        service,
+        providerMetadata: { logicalId: 'geoLogicalId' },
+      },
+    },
+  };
+}
+
+/** Sets up the common geo mocks after createGen1App. */
+function setupGeoMocks(gen1App: Gen1App, cfnParams: Array<{ ParameterKey: string; ParameterValue: string }>): void {
+  jest.spyOn(gen1App, 'json').mockReturnValue({
+    Parameters: {},
+    Resources: {
+      UserFacingPolicy: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
+              },
+            ],
           },
         },
       },
-      Conditions: {},
-    }),
-    clients: {
-      cloudFormation: {
-        send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
-          if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
-            return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
-          }
-          if (cmd.constructor.name === 'DescribeStacksCommand') {
-            return {
-              Stacks: [
-                {
-                  Parameters: [
-                    { ParameterKey: 'mapName', ParameterValue: 'storeLocatorMap' },
-                    { ParameterKey: 'mapStyle', ParameterValue: 'VectorEsriStreets' },
-                    { ParameterKey: 'isDefault', ParameterValue: 'true' },
-                    { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
-                    { ParameterKey: 'env', ParameterValue: 'dev' },
-                  ],
-                },
-              ],
-            };
-          }
-          return {};
-        }),
-      },
     },
-  } as unknown as Gen1App;
+    Conditions: {},
+  });
+  (gen1App.clients as any).cloudFormation = {
+    send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
+      if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
+        return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
+      }
+      if (cmd.constructor.name === 'DescribeStacksCommand') {
+        return { Stacks: [{ Parameters: cfnParams }] };
+      }
+      return {};
+    }),
+  };
 }
 
 describe('GeoGenerator', () => {
@@ -98,7 +91,15 @@ describe('GeoGenerator', () => {
 
   describe('combined resource.ts generation', () => {
     it('renders geo/resource.ts with a single map', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(geoMeta('storeLocatorMap', 'Map'));
+      setupGeoMocks(gen1App, [
+        { ParameterKey: 'mapName', ParameterValue: 'storeLocatorMap' },
+        { ParameterKey: 'mapStyle', ParameterValue: 'VectorEsriStreets' },
+        { ParameterKey: 'isDefault', ParameterValue: 'true' },
+        { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
+        { ParameterKey: 'env', ParameterValue: 'dev' },
+      ]);
+
       const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
 
       const mapGenerator = new GeoMapGenerator(
@@ -142,32 +143,59 @@ describe('GeoGenerator', () => {
     });
 
     it('renders geo/resource.ts with map and place index', async () => {
-      const gen1App = createMockGen1App();
-      // Override for place index parameters
-      (gen1App.clients.cloudFormation.send as jest.Mock).mockImplementation((cmd: { constructor: { name: string }; input?: any }) => {
-        if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
-          return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
-        }
-        if (cmd.constructor.name === 'DescribeStacksCommand') {
-          return {
-            Stacks: [
-              {
-                Parameters: [
-                  { ParameterKey: 'mapName', ParameterValue: 'storeLocatorMap' },
-                  { ParameterKey: 'mapStyle', ParameterValue: 'VectorEsriStreets' },
-                  { ParameterKey: 'indexName', ParameterValue: 'storeLocatorIndex' },
-                  { ParameterKey: 'dataProvider', ParameterValue: 'Esri' },
-                  { ParameterKey: 'dataSourceIntendedUse', ParameterValue: 'SingleUse' },
-                  { ParameterKey: 'isDefault', ParameterValue: 'true' },
-                  { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
-                  { ParameterKey: 'env', ParameterValue: 'dev' },
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        geo: {
+          storeLocatorMap: { service: 'Map', providerMetadata: { logicalId: 'geoLogicalId' } },
+          storeLocatorIndex: { service: 'PlaceIndex', providerMetadata: { logicalId: 'geoLogicalId' } },
+        },
+      });
+      // Override for combined parameters
+      jest.spyOn(gen1App, 'json').mockReturnValue({
+        Parameters: {},
+        Resources: {
+          UserFacingPolicy: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
+                  },
                 ],
               },
-            ],
-          };
-        }
-        return {};
+            },
+          },
+        },
+        Conditions: {},
       });
+      (gen1App.clients as any).cloudFormation = {
+        send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
+          if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
+            return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
+          }
+          if (cmd.constructor.name === 'DescribeStacksCommand') {
+            return {
+              Stacks: [
+                {
+                  Parameters: [
+                    { ParameterKey: 'mapName', ParameterValue: 'storeLocatorMap' },
+                    { ParameterKey: 'mapStyle', ParameterValue: 'VectorEsriStreets' },
+                    { ParameterKey: 'indexName', ParameterValue: 'storeLocatorIndex' },
+                    { ParameterKey: 'dataProvider', ParameterValue: 'Esri' },
+                    { ParameterKey: 'dataSourceIntendedUse', ParameterValue: 'SingleUse' },
+                    { ParameterKey: 'isDefault', ParameterValue: 'true' },
+                    { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
+                    { ParameterKey: 'env', ParameterValue: 'dev' },
+                  ],
+                },
+              ],
+            };
+          }
+          return {};
+        }),
+      };
 
       const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
 
@@ -235,7 +263,15 @@ describe('GeoGenerator', () => {
 
   describe('sub-resource generators', () => {
     it('GeoMapGenerator writes per-resource resource.ts', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(geoMeta('storeLocatorMap', 'Map'));
+      setupGeoMocks(gen1App, [
+        { ParameterKey: 'mapName', ParameterValue: 'storeLocatorMap' },
+        { ParameterKey: 'mapStyle', ParameterValue: 'VectorEsriStreets' },
+        { ParameterKey: 'isDefault', ParameterValue: 'true' },
+        { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
+        { ParameterKey: 'env', ParameterValue: 'dev' },
+      ]);
+
       const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
 
       const mapGenerator = new GeoMapGenerator(
@@ -281,7 +317,7 @@ describe('GeoGenerator', () => {
               new PolicyStatement({
                 actions: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
                 resources: [
-                  \`arn:aws:geo:\${storeLocatorMapStack.region}:\${storeLocatorMapStack.account}:map/storeLocatorMap-dev\`,
+                  \`arn:aws:geo:\${storeLocatorMapStack.region}:\${storeLocatorMapStack.account}:map/storeLocatorMap-main\`,
                 ],
               }),
             ],
@@ -295,29 +331,15 @@ describe('GeoGenerator', () => {
     });
 
     it('GeoPlaceIndexGenerator writes per-resource resource.ts', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.clients.cloudFormation.send as jest.Mock).mockImplementation((cmd: { constructor: { name: string } }) => {
-        if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
-          return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
-        }
-        if (cmd.constructor.name === 'DescribeStacksCommand') {
-          return {
-            Stacks: [
-              {
-                Parameters: [
-                  { ParameterKey: 'indexName', ParameterValue: 'myPlaceIndex' },
-                  { ParameterKey: 'dataProvider', ParameterValue: 'Esri' },
-                  { ParameterKey: 'dataSourceIntendedUse', ParameterValue: 'SingleUse' },
-                  { ParameterKey: 'isDefault', ParameterValue: 'false' },
-                  { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
-                  { ParameterKey: 'env', ParameterValue: 'dev' },
-                ],
-              },
-            ],
-          };
-        }
-        return {};
-      });
+      const gen1App = await createGen1App(geoMeta('myPlaceIndex', 'PlaceIndex'));
+      setupGeoMocks(gen1App, [
+        { ParameterKey: 'indexName', ParameterValue: 'myPlaceIndex' },
+        { ParameterKey: 'dataProvider', ParameterValue: 'Esri' },
+        { ParameterKey: 'dataSourceIntendedUse', ParameterValue: 'SingleUse' },
+        { ParameterKey: 'isDefault', ParameterValue: 'false' },
+        { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
+        { ParameterKey: 'env', ParameterValue: 'dev' },
+      ]);
 
       const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
       const placeIndexGenerator = new GeoPlaceIndexGenerator(
@@ -359,7 +381,7 @@ describe('GeoGenerator', () => {
               new PolicyStatement({
                 actions: ['geo:GetMapTile', 'geo:GetMapStyleDescriptor'],
                 resources: [
-                  \`arn:aws:geo:\${myPlaceIndexStack.region}:\${myPlaceIndexStack.account}:place-index/myPlaceIndex-dev\`,
+                  \`arn:aws:geo:\${myPlaceIndexStack.region}:\${myPlaceIndexStack.account}:place-index/myPlaceIndex-main\`,
                 ],
               }),
             ],
@@ -373,34 +395,35 @@ describe('GeoGenerator', () => {
     });
 
     it('GeoGeofenceCollectionGenerator writes per-resource resource.ts', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.clients.cloudFormation.send as jest.Mock).mockImplementation((cmd: { constructor: { name: string } }) => {
-        if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
-          return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
-        }
-        if (cmd.constructor.name === 'DescribeStacksCommand') {
-          return {
-            Stacks: [
-              {
-                Parameters: [
-                  { ParameterKey: 'collectionName', ParameterValue: 'myGeofences' },
-                  { ParameterKey: 'isDefault', ParameterValue: 'true' },
-                  { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
-                  { ParameterKey: 'env', ParameterValue: 'dev' },
-                ],
-              },
-            ],
-          };
-        }
-        return {};
-      });
-
+      const gen1App = await createGen1App(geoMeta('myGeofences', 'GeofenceCollection'));
       // Geofence template has no user-facing IAM policy
-      (gen1App.json as jest.Mock).mockReturnValue({
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Parameters: {},
         Resources: {},
         Conditions: {},
       });
+      (gen1App.clients as any).cloudFormation = {
+        send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
+          if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
+            return { StackResources: [{ PhysicalResourceId: 'nested-stack-id' }] };
+          }
+          if (cmd.constructor.name === 'DescribeStacksCommand') {
+            return {
+              Stacks: [
+                {
+                  Parameters: [
+                    { ParameterKey: 'collectionName', ParameterValue: 'myGeofences' },
+                    { ParameterKey: 'isDefault', ParameterValue: 'true' },
+                    { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
+                    { ParameterKey: 'env', ParameterValue: 'dev' },
+                  ],
+                },
+              ],
+            };
+          }
+          return {};
+        }),
+      };
 
       const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
       const geofenceGenerator = new GeoGeofenceCollectionGenerator(
@@ -441,7 +464,15 @@ describe('GeoGenerator', () => {
 
   describe('backend.ts contribution', () => {
     it('adds namespace import and post-define statement', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(geoMeta('storeLocatorMap', 'Map'));
+      setupGeoMocks(gen1App, [
+        { ParameterKey: 'mapName', ParameterValue: 'storeLocatorMap' },
+        { ParameterKey: 'mapStyle', ParameterValue: 'VectorEsriStreets' },
+        { ParameterKey: 'isDefault', ParameterValue: 'true' },
+        { ParameterKey: 'authTestAuthUserPoolId', ParameterValue: 'us-east-1_abc' },
+        { ParameterKey: 'env', ParameterValue: 'dev' },
+      ]);
+
       const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
       const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
 

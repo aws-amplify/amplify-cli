@@ -2,15 +2,25 @@ import { FunctionGenerator } from '../../../../../../commands/gen2-migration/gen
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
 
-jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
-  JSONUtilities: {
-    readJson: jest.fn().mockReturnValue({ dependencies: {}, devDependencies: {} }),
-  },
-}));
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
+  return {
+    ...actual,
+    JSONUtilities: {
+      ...actual.JSONUtilities,
+      readJson: jest.fn().mockImplementation((filePath: string, opts?: unknown) => {
+        if (typeof filePath === 'string' && filePath.endsWith('package.json')) {
+          return { dependencies: {}, devDependencies: {} };
+        }
+        return actual.JSONUtilities.readJson(filePath, opts);
+      }),
+    },
+  };
+});
 
 const mockMkdir = jest.fn().mockResolvedValue(undefined);
 const mockWriteFile = jest.fn().mockResolvedValue(undefined);
@@ -27,25 +37,19 @@ function writtenFile(suffix: string): string {
   return call[1] as string;
 }
 
-function createMockGen1App(): Gen1App {
+/** Minimal amplify-meta for a function resource. */
+function functionMeta(resourceName: string, deployedName: string): Record<string, unknown> {
   return {
-    appId: 'd1abc2def3',
-    envName: 'main',
-    meta: jest.fn(),
-    metaOutput: jest.fn(),
-    categoryMeta: jest.fn(),
-    singleResourceName: jest.fn(),
-    resourceMetaOutput: jest.fn(),
-    json: jest.fn().mockReturnValue({ Resources: {} }),
-    file: jest.fn().mockReturnValue('{}'),
-    fileExists: jest.fn().mockReturnValue(false),
-    aws: {
-      fetchFunctionConfig: jest.fn(),
-      fetchFunctionSchedule: jest.fn().mockResolvedValue(undefined),
+    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    function: {
+      [resourceName]: {
+        service: 'Lambda',
+        output: { Name: deployedName, Arn: `arn:aws:lambda:us-east-1:123:function:${deployedName}` },
+      },
     },
-    clients: {},
-  } as unknown as Gen1App;
+  };
 }
+
 function createFunctionGenerator(overrides: {
   gen1App: Gen1App;
   backendGenerator: BackendGenerator;
@@ -83,11 +87,11 @@ function setupBasicFunctionMocks(
     schedule?: string;
   },
 ): void {
-  const resourceName = opts?.resourceName ?? 'myFunc';
-  const deployedName = opts?.deployedName ?? `${resourceName}-main-abc`;
-  (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue(deployedName);
-  (gen1App.categoryMeta as jest.Mock).mockReturnValue(undefined);
-  (gen1App.categoryMeta as jest.Mock).mockReturnValue(undefined);
+  const deployedName = opts?.deployedName ?? `${opts?.resourceName ?? 'myFunc'}-main-abc`;
+  jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue(deployedName);
+  jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+  jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+  jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
   (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
     FunctionName: deployedName,
     Handler: opts?.handler ?? 'index.handler',
@@ -114,10 +118,23 @@ describe('FunctionGenerator', () => {
 
   describe('error handling', () => {
     it('throws when function is not found', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation(() => {
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        function: {
+          myFunc: {
+            service: 'Lambda',
+            output: {
+              /* no Name */
+            },
+          },
+        },
+      });
+      jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation(() => {
         throw new Error("Function 'myFunc' not found in amplify-meta.json");
       });
+      jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+      jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
       await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
@@ -126,7 +143,7 @@ describe('FunctionGenerator', () => {
 
   describe('orchestration', () => {
     it('returns one operation describing the function resource', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App);
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -139,7 +156,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('registers namespace import and defineBackend entry on backendGenerator', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App);
 
       const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
@@ -154,7 +171,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('copies function source files', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App);
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -171,7 +188,7 @@ describe('FunctionGenerator', () => {
 
   describe('resource.ts generation (renderer tests)', () => {
     it('renders a basic defineFunction with entry point', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -200,7 +217,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders timeout and memory', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { timeout: 30, memorySize: 256, deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -229,7 +246,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders environment variables', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, {
         environment: { DB_HOST: 'localhost', DB_PORT: '5432' },
         deployedName: 'myFunc-main-abc',
@@ -262,7 +279,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders ENV variable as branch name template', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, {
         environment: { ENV: 'main' },
         deployedName: 'myFunc-main-abc',
@@ -295,11 +312,14 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders API_KEY as secret when it matches SSM pattern', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, {
         environment: { API_KEY: '/amplify/d1abc2def3/main/some-secret' },
         deployedName: 'myFunc-main-abc',
       });
+      // Override appId to match the SSM pattern
+      (gen1App as any)._appId = 'd1abc2def3';
+      Object.defineProperty(gen1App, 'appId', { get: () => 'd1abc2def3' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
       const ops = await generator.plan();
@@ -328,7 +348,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders nodejs runtime as a number', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { runtime: 'nodejs18.x', deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -357,7 +377,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders rate schedule expression', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { schedule: 'rate(5 minutes)', deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -387,7 +407,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders cron schedule expression', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { schedule: 'cron(0 12 * * ? *)', deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -417,7 +437,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders rate with hours unit', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { schedule: 'rate(1 hour)', deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -447,7 +467,7 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders rate with days unit', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { schedule: 'rate(7 days)', deployedName: 'myFunc-main-abc' });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -477,9 +497,9 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders DynamoDB actions in escape hatches', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
-      (gen1App.json as jest.Mock).mockReturnValue({
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Resources: {
           AmplifyResourcesPolicy: {
             Type: 'AWS::IAM::Policy',
@@ -550,9 +570,15 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders Kinesis actions in escape hatches', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        function: {
+          myFunc: { service: 'Lambda', output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' } },
+        },
+        analytics: { myStream: { service: 'Kinesis' } },
+      });
       setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
-      (gen1App.json as jest.Mock).mockReturnValue({
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Resources: {
           AmplifyResourcesPolicy: {
             Type: 'AWS::IAM::Policy',
@@ -569,10 +595,6 @@ describe('FunctionGenerator', () => {
             },
           },
         },
-      });
-      (gen1App.categoryMeta as jest.Mock).mockImplementation((cat: string) => {
-        if (cat === 'analytics') return { myStream: { service: 'Kinesis' } };
-        return undefined;
       });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -609,9 +631,9 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders GraphQL API permissions in escape hatches', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
-      (gen1App.json as jest.Mock).mockReturnValue({
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Resources: {
           AmplifyResourcesPolicy: {
             Type: 'AWS::IAM::Policy',
@@ -663,9 +685,9 @@ describe('FunctionGenerator', () => {
     });
 
     it('renders DynamoDB trigger models', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
       setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
-      (gen1App.json as jest.Mock).mockReturnValue({
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Resources: {
           EventSourceMapping: {
             Type: 'AWS::Lambda::EventSourceMapping',
@@ -721,10 +743,18 @@ describe('FunctionGenerator', () => {
 
   describe('cross-category wiring', () => {
     it('contributes auth trigger when category is auth', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        auth: { testAuth: { service: 'Cognito' } },
+        function: {
+          testAuthPreSignup: {
+            service: 'Lambda',
+            output: { Name: 'testAuthPreSignup-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:testAuthPreSignup-main-abc' },
+          },
+        },
+      });
       setupBasicFunctionMocks(gen1App, { resourceName: 'testAuthPreSignup', deployedName: 'testAuthPreSignup-main-abc' });
-      (gen1App.singleResourceName as jest.Mock).mockReturnValue('testAuth');
-      (gen1App.fileExists as jest.Mock).mockReturnValue(false);
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
 
       const mockAuthGenerator = {
         addTrigger: jest.fn(),
@@ -751,14 +781,19 @@ describe('FunctionGenerator', () => {
     });
 
     it('contributes storage trigger when category is storage and S3 trigger exists', async () => {
-      const gen1App = createMockGen1App();
-      setupBasicFunctionMocks(gen1App, { resourceName: 'myStorageFunc', deployedName: 'myStorageFunc-main-abc' });
-      (gen1App.categoryMeta as jest.Mock).mockImplementation((cat: string) => {
-        if (cat === 'storage') return { myBucket: { service: 'S3' } };
-        return undefined;
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        storage: { myBucket: { service: 'S3' } },
+        function: {
+          myStorageFunc: {
+            service: 'Lambda',
+            output: { Name: 'myStorageFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myStorageFunc-main-abc' },
+          },
+        },
       });
+      setupBasicFunctionMocks(gen1App, { resourceName: 'myStorageFunc', deployedName: 'myStorageFunc-main-abc' });
       // The storage template with S3 trigger
-      (gen1App.json as jest.Mock).mockImplementation((templatePath: string) => {
+      jest.spyOn(gen1App, 'json').mockImplementation((templatePath: string) => {
         if (templatePath.includes('storage/')) {
           return {
             Resources: {
@@ -802,9 +837,15 @@ describe('FunctionGenerator', () => {
     });
 
     it('detects Kinesis trigger from event source mapping', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        function: {
+          myFunc: { service: 'Lambda', output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' } },
+        },
+        analytics: { myStream: { service: 'Kinesis' } },
+      });
       setupBasicFunctionMocks(gen1App, { deployedName: 'myFunc-main-abc' });
-      (gen1App.json as jest.Mock).mockReturnValue({
+      jest.spyOn(gen1App, 'json').mockReturnValue({
         Resources: {
           KinesisEventSourceMapping: {
             Type: 'AWS::Lambda::EventSourceMapping',
@@ -814,10 +855,6 @@ describe('FunctionGenerator', () => {
             },
           },
         },
-      });
-      (gen1App.categoryMeta as jest.Mock).mockImplementation((cat: string) => {
-        if (cat === 'analytics') return { myStream: { service: 'Kinesis' } };
-        return undefined;
       });
 
       const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
@@ -829,9 +866,11 @@ describe('FunctionGenerator', () => {
     });
 
     it('throws for non-nodejs runtime', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockReturnValue('myFunc-main-abc');
-      (gen1App.categoryMeta as jest.Mock).mockReturnValue(undefined);
+      const gen1App = await createGen1App(functionMeta('myFunc', 'myFunc-main-abc'));
+      jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+      jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+      jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
       (gen1App.aws.fetchFunctionConfig as jest.Mock).mockResolvedValue({
         FunctionName: 'myFunc-main-abc',
         Handler: 'handler.handler',
