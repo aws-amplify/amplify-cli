@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { Planner } from '../../../_infra/planner';
 import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -43,8 +44,12 @@ export class DataGenerator implements Planner {
     }
 
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
-    const needsEscapeHatches =
+    const hasAdditionalAuthProviders =
       graphqlApi.additionalAuthenticationProviders !== undefined && graphqlApi.additionalAuthenticationProviders.length > 0;
+    const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
+    const authorizationModes = this.gen1App.resourceMetaOutput(this.resource, 'authConfig');
+    const hasIamAuth = this.detectIamAuth(authorizationModes, graphqlApi);
+    const needsEscapeHatches = hasAdditionalAuthProviders || (hasIamAuth && hasAuth);
 
     return [
       {
@@ -55,8 +60,10 @@ export class DataGenerator implements Planner {
           const nodes = this.renderer.render({
             schema,
             tableMappings,
-            authorizationModes: this.gen1App.resourceMetaOutput(this.resource, 'authConfig'),
+            authorizationModes,
             graphqlApi,
+            hasAuth,
+            apiId,
           });
 
           const content = TS.printNodes(nodes);
@@ -81,5 +88,12 @@ export class DataGenerator implements Planner {
       mapping[match[1]] = [match[1], apiId, this.gen1App.envName].join('-');
     }
     return mapping;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig from amplify-meta.json
+  private detectIamAuth(authorizationModes: any, graphqlApi: GraphqlApi): boolean {
+    const defaultAuthType = authorizationModes?.defaultAuthentication?.authenticationType;
+    if (defaultAuthType === 'AWS_IAM') return true;
+    return graphqlApi.additionalAuthenticationProviders?.some((p) => p.authenticationType === 'AWS_IAM') ?? false;
   }
 }

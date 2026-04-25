@@ -1,5 +1,6 @@
 import { defineData } from '@aws-amplify/backend';
 import type { Backend } from '../backend';
+import { aws_iam } from 'aws-cdk-lib';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `enum UserRole {
@@ -103,4 +104,13 @@ export function applyEscapeHatches(backend: Backend) {
       },
     },
   ];
+  backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
+    new aws_iam.PolicyStatement({
+      effect: aws_iam.Effect.ALLOW,
+      actions: ['appsync:GraphQL'],
+      resources: [
+        `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/hscmwhprkbaljmcpavj3dcztrq/*`,
+      ],
+    })
+  );
 }

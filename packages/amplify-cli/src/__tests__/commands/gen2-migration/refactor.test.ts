@@ -138,7 +138,7 @@ function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
     envName: 'dev',
     rootStackName: 'root-stack',
     discover: () => [],
-    meta: () => undefined,
+    categoryMeta: () => undefined,
     fileExists: () => false,
     ...overrides,
   } as unknown as Gen1App;
@@ -200,7 +200,8 @@ describe('AmplifyMigrationRefactorStep', () => {
       infraSpy = mockCreateInfrastructure();
       const gen1 = mockGen1App({
         discover: () => [{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }],
-        meta: (category: string) => (category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined),
+        categoryMeta: (category: string) =>
+          category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined,
       });
 
       const step = createStep(gen1);
@@ -215,7 +216,7 @@ describe('AmplifyMigrationRefactorStep', () => {
           { category: 'storage', resourceName: 'myImportedBucket', service: 'S3', key: 'storage:S3' },
           { category: 'storage', resourceName: 'myImportedTable', service: 'DynamoDB', key: 'storage:DynamoDB' },
         ],
-        meta: (category: string) =>
+        categoryMeta: (category: string) =>
           category === 'storage'
             ? {
                 myImportedBucket: { service: 'S3', serviceType: 'imported' },
@@ -262,7 +263,8 @@ describe('AmplifyMigrationRefactorStep', () => {
       infraSpy = mockCreateInfrastructure();
       const gen1 = mockGen1App({
         discover: () => [{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }],
-        meta: (category: string) => (category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined),
+        categoryMeta: (category: string) =>
+          category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined,
       });
 
       const step = createStep(gen1);
@@ -277,7 +279,7 @@ describe('AmplifyMigrationRefactorStep', () => {
           { category: 'storage', resourceName: 'myImportedBucket', service: 'S3', key: 'storage:S3' },
           { category: 'storage', resourceName: 'myImportedTable', service: 'DynamoDB', key: 'storage:DynamoDB' },
         ],
-        meta: (category: string) =>
+        categoryMeta: (category: string) =>
           category === 'storage'
             ? {
                 myImportedBucket: { service: 'S3', serviceType: 'imported' },

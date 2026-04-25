@@ -1127,7 +1127,7 @@ export class AuthRenderer {
         );
       });
       clientProps.push(
-        factory.createPropertyAssignment('supportedIdentityProviders', factory.createArrayLiteralExpression(providerElements, true)),
+        factory.createPropertyAssignment('supportedIdentityProviders', factory.createArrayLiteralExpression(providerElements)),
       );
     }
 
@@ -1196,17 +1196,19 @@ export class AuthRenderer {
       clientProps.push(factory.createPropertyAssignment('oAuth', factory.createObjectLiteralExpression(oAuthProps, true)));
     }
 
-    if (userPoolClient.AllowedOAuthFlows?.length) {
-      clientProps.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('// flows'),
-          factory.createArrayLiteralExpression(userPoolClient.AllowedOAuthFlows.map((flow) => factory.createStringLiteral(flow, true))),
-        ),
-      );
-    }
-
     const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;
-    clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
+    if (userPoolClient.AllowedOAuthFlows?.length) {
+      const commentedFlows = factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue());
+      ts.addSyntheticLeadingComment(
+        commentedFlows,
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` flows: ['${userPoolClient.AllowedOAuthFlows.join("', '")}'],`,
+        true,
+      );
+      clientProps.push(commentedFlows);
+    } else {
+      clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
+    }
     clientProps.push(
       factory.createPropertyAssignment('generateSecret', userPoolClient.ClientSecret ? factory.createTrue() : factory.createFalse()),
     );

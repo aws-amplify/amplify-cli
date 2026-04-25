@@ -13,6 +13,8 @@ export interface DataRenderOptions {
   readonly tableMappings: Record<string, string>;
   readonly authorizationModes?: any;
   readonly graphqlApi: GraphqlApi;
+  readonly hasAuth?: boolean;
+  readonly apiId?: string;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -43,19 +45,23 @@ export class DataRenderer {
   public render(opts: DataRenderOptions): ts.NodeArray<ts.Node> {
     const { schema, preSchemaStatements } = this.prepareSchema(opts.schema);
 
-    const nodes: ts.Node[] = [
-      this.renderNamedImport('defineData', '@aws-amplify/backend'),
-      this.renderBackendTypeImport(),
+    const nodes: ts.Node[] = [this.renderNamedImport('defineData', '@aws-amplify/backend'), this.renderBackendTypeImport()];
+
+    const escapeHatchResult = this.renderApplyEscapeHatches(opts);
+    for (const imp of escapeHatchResult.additionalImports) {
+      nodes.push(imp);
+    }
+
+    nodes.push(
       newLineIdentifier,
       ...preSchemaStatements,
       this.renderSchemaDeclaration(schema),
       newLineIdentifier,
       this.renderDefineDataExport(opts),
-    ];
+    );
 
-    const escapeHatchFunction = this.renderApplyEscapeHatches(opts);
-    if (escapeHatchFunction) {
-      nodes.push(newLineIdentifier, escapeHatchFunction);
+    if (escapeHatchResult.func) {
+      nodes.push(newLineIdentifier, escapeHatchResult.func);
     }
 
     return factory.createNodeArray(nodes);
@@ -104,12 +110,30 @@ export class DataRenderer {
     );
   }
 
-  private renderApplyEscapeHatches(opts: DataRenderOptions): ts.FunctionDeclaration | undefined {
+  private renderApplyEscapeHatches(opts: DataRenderOptions): {
+    func: ts.FunctionDeclaration | undefined;
+    additionalImports: ts.ImportDeclaration[];
+  } {
     const providers = this.extractAdditionalAuthProviders(opts.graphqlApi);
-    if (!providers || providers.length === 0) return undefined;
+    const escapeHatchStatements: ts.Statement[] = [];
+    const additionalImports: ts.ImportDeclaration[] = [];
 
-    const escapeHatchStatements = this.buildAdditionalAuthProviderStatements(providers);
-    return TS.exportedFunction('applyEscapeHatches', escapeHatchStatements);
+    if (providers && providers.length > 0) {
+      escapeHatchStatements.push(...this.buildAdditionalAuthProviderStatements(providers));
+    }
+
+    const iamGrantStatements = this.buildIamAuthGrantStatements(opts);
+    if (iamGrantStatements.length > 0) {
+      additionalImports.push(TS.namedImport('aws-cdk-lib', 'aws_iam'));
+      escapeHatchStatements.push(...iamGrantStatements);
+    }
+
+    if (escapeHatchStatements.length === 0) return { func: undefined, additionalImports: [] };
+
+    return {
+      func: TS.exportedFunction('applyEscapeHatches', escapeHatchStatements),
+      additionalImports,
+    };
   }
 
   private prepareSchema(raw: string): { schema: string; preSchemaStatements: ts.Node[] } {
@@ -351,5 +375,79 @@ export class DataRenderer {
     );
     statements.push(assignment);
     return statements;
+  }
+
+  /**
+   * Builds the IAM auth grant statement when the Gen1 API uses AWS_IAM auth.
+   *
+   * Post-refactor, the identity pool moves to the Gen2 stack with a new AuthRole.
+   * The new role needs an explicit policy to call appsync:GraphQL on the Gen1 API.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig from amplify-meta.json
+  private buildIamAuthGrantStatements(opts: DataRenderOptions): ts.Statement[] {
+    if (!opts.hasAuth || !opts.apiId) return [];
+
+    const authModes = opts.authorizationModes;
+    const defaultAuthType = authModes?.defaultAuthentication?.authenticationType;
+    const hasIamDefault = defaultAuthType === 'AWS_IAM';
+    const additionalProviders = opts.graphqlApi.additionalAuthenticationProviders ?? [];
+    const hasIamAdditional = additionalProviders.some((p) => p.authenticationType === 'AWS_IAM');
+
+    if (!hasIamDefault && !hasIamAdditional) return [];
+
+    // backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(
+    //   new aws_iam.PolicyStatement({
+    //     effect: aws_iam.Effect.ALLOW,
+    //     actions: ['appsync:GraphQL'],
+    //     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<apiId>/*`],
+    //   })
+    // )
+    const policyStatement = factory.createNewExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+      undefined,
+      [
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'effect',
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('Effect')),
+                factory.createIdentifier('ALLOW'),
+              ),
+            ),
+            factory.createPropertyAssignment(
+              'actions',
+              factory.createArrayLiteralExpression([factory.createStringLiteral('appsync:GraphQL')]),
+            ),
+            factory.createPropertyAssignment(
+              'resources',
+              factory.createArrayLiteralExpression([
+                factory.createTemplateExpression(factory.createTemplateHead('arn:aws:appsync:'), [
+                  factory.createTemplateSpan(
+                    TS.propAccess('backend', 'data', 'stack', 'region') as ts.Expression,
+                    factory.createTemplateMiddle(':'),
+                  ),
+                  factory.createTemplateSpan(
+                    TS.propAccess('backend', 'data', 'stack', 'account') as ts.Expression,
+                    factory.createTemplateTail(`:apis/${opts.apiId}/*`),
+                  ),
+                ]),
+              ]),
+            ),
+          ],
+          true,
+        ),
+      ],
+    );
+
+    return [
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          TS.propAccess('backend', 'auth', 'resources', 'authenticatedUserIamRole', 'addToPrincipalPolicy') as ts.PropertyAccessExpression,
+          undefined,
+          [policyStatement],
+        ),
+      ),
+    ];
   }
 }
