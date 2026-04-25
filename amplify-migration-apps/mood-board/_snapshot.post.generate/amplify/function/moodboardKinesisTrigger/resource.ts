@@ -3,7 +3,7 @@ import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import type { Backend } from '../../backend';
-import type { analyticsmoodboardKinesis } from '../../analytics/moodboardKinesis-construct';
+import type { MoodboardKinesis } from '../../analytics/moodboardkinesis-construct';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -18,7 +18,7 @@ export const moodboardKinesisTrigger = defineFunction({
 
 export function applyEscapeHatches(
   backend: Backend,
-  analytics: analyticsmoodboardKinesis
+  analytics: MoodboardKinesis
 ) {
   backend.moodboardKinesisTrigger.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisTrigger-${branchName}`;
   backend.moodboardKinesisTrigger.addEnvironment(

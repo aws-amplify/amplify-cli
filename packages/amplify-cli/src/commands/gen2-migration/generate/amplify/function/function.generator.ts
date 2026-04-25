@@ -187,18 +187,28 @@ export class FunctionGenerator implements Planner {
     const alias = func.resourceName;
     this.backendGenerator.addNamespaceImport(alias, `./function/${func.resourceName}/resource`);
     this.backendGenerator.addDefineBackendEntry(func.resourceName, alias, func.resourceName);
-    if (hasAnalytics && analyticsTypeImport) {
-      this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: ['analyticsResult'] });
-    } else {
-      this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: [] });
+
+    // Collect storage table names referenced in the function body (from env vars and triggers).
+    const storageTableArgs = new Set<string>();
+    for (const hatch of func.escapeHatches) {
+      if (!hatch.name.startsWith('STORAGE_') || hatch.name.endsWith('BUCKETNAME')) continue;
+      const match = hatch.name.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
+      if (match) storageTableArgs.add(match[1].toLowerCase());
     }
+    for (const t of storageTriggerTables) storageTableArgs.add(t);
+
+    const extraArgs: string[] = [...storageTableArgs];
+    if (hasAnalytics && analyticsTypeImport) {
+      extraArgs.push('analyticsResult');
+    }
+    this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs });
   }
 
   private findAnalyticsConstructType(): string | undefined {
     const cat = this.gen1App.categoryMeta('analytics');
     if (!cat) return undefined;
     for (const [name] of Object.entries(cat)) {
-      return `analytics${name}`;
+      return name.charAt(0).toUpperCase() + name.slice(1);
     }
     return undefined;
   }
@@ -207,7 +217,7 @@ export class FunctionGenerator implements Planner {
     const cat = this.gen1App.categoryMeta('analytics');
     if (!cat) return undefined;
     for (const [name] of Object.entries(cat)) {
-      return `../../analytics/${name}-construct`;
+      return `../../analytics/${name}-construct`.toLowerCase();
     }
     return undefined;
   }

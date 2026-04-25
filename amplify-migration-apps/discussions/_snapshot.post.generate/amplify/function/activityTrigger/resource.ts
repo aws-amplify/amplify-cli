@@ -1,6 +1,7 @@
 import { defineFunction } from '@aws-amplify/backend';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
@@ -14,7 +15,7 @@ export const activityTrigger = defineFunction({
   runtime: 22,
 });
 
-export function applyEscapeHatches(backend: Backend) {
+export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.activityTrigger.resources.cfnResources.cfnFunction.functionName = `activityTrigger-${branchName}`;
   backend.activityTrigger.addEnvironment(
     'STORAGE_ACTIVITY_STREAMARN',

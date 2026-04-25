@@ -29,9 +29,9 @@ export function postRefactor() {
 }
 
 auth.applyEscapeHatches(backend);
-fetchuseractivity.applyEscapeHatches(backend);
-recorduseractivity.applyEscapeHatches(backend);
-activityTrigger.applyEscapeHatches(backend);
+fetchuseractivity.applyEscapeHatches(backend, activity);
+recorduseractivity.applyEscapeHatches(backend, activity);
+activityTrigger.applyEscapeHatches(backend, activity);
 storage.applyEscapeHatches(backend);
 
 // Uncomment after refactor

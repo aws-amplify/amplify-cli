@@ -275,6 +275,22 @@ export class FunctionRenderer {
     // Build the extra parameters (beyond backend: Backend)
     const extraParams: ts.ParameterDeclaration[] = [];
 
+    // Add storage table parameters for standalone DynamoDB tables referenced in the body.
+    // Collect from both env-var escape hatches and storage triggers.
+    const allStorageTableParams = new Set<string>(storageTableNames);
+    for (const t of opts.storageTriggerTables) allStorageTableParams.add(t);
+    if (allStorageTableParams.size > 0) {
+      if (!additionalImports['aws-cdk-lib/aws-dynamodb']) {
+        additionalImports['aws-cdk-lib/aws-dynamodb'] = new Set();
+      }
+      additionalImports['aws-cdk-lib/aws-dynamodb'].add('Table');
+      for (const tableName of allStorageTableParams) {
+        extraParams.push(
+          factory.createParameterDeclaration(undefined, undefined, tableName, undefined, factory.createTypeReferenceNode('Table')),
+        );
+      }
+    }
+
     // Add analytics parameter if needed
     if (opts.hasAnalytics && opts.analyticsConstructType) {
       extraParams.push(

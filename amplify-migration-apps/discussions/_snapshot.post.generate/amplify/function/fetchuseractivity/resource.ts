@@ -1,4 +1,5 @@
 import { defineFunction } from '@aws-amplify/backend';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
@@ -12,7 +13,7 @@ export const fetchuseractivity = defineFunction({
   runtime: 22,
 });
 
-export function applyEscapeHatches(backend: Backend) {
+export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
   backend.fetchuseractivity.addEnvironment(
     'STORAGE_ACTIVITY_STREAMARN',

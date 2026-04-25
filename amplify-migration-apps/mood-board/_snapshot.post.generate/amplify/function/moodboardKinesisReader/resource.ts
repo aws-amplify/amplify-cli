@@ -1,7 +1,7 @@
 import { defineFunction } from '@aws-amplify/backend';
 import { aws_iam } from 'aws-cdk-lib';
 import type { Backend } from '../../backend';
-import type { analyticsmoodboardKinesis } from '../../analytics/moodboardKinesis-construct';
+import type { MoodboardKinesis } from '../../analytics/moodboardkinesis-construct';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -16,7 +16,7 @@ export const moodboardKinesisReader = defineFunction({
 
 export function applyEscapeHatches(
   backend: Backend,
-  analytics: analyticsmoodboardKinesis
+  analytics: MoodboardKinesis
 ) {
   backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${branchName}`;
   backend.moodboardKinesisReader.addEnvironment(

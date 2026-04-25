@@ -95,7 +95,7 @@ export function applyEscapeHatches(backend: Backend) {
       UserPoolClientIdentityProvider.FACEBOOK,
       UserPoolClientIdentityProvider.GOOGLE,
       UserPoolClientIdentityProvider.COGNITO,
-    ],,
+    ],
     oAuth: {
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
