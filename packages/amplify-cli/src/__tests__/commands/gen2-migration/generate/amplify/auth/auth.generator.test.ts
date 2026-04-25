@@ -1,8 +1,13 @@
 import { AuthGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/auth/auth.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { AwsClients } from '../../../../../../commands/gen2-migration/_infra/aws-clients';
 import { AuthRenderer } from '../../../../../../commands/gen2-migration/generate/amplify/auth/auth.renderer';
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
+import { JSONUtilities, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import * as path from 'path';
+import * as os from 'os';
+import * as fsExtra from 'fs-extra';
 
 jest.unmock('fs-extra');
 
@@ -20,23 +25,76 @@ const authResource: DiscoveredResource = {
   key: 'auth:Cognito',
 };
 
-function createMockGen1App(): Gen1App {
+/**
+ * Creates a real Gen1App via Gen1App.create(), mocking only the external
+ * dependencies (AWS clients, stateManager, S3 download). The amplify-meta.json
+ * is written to a real temp directory so the constructor reads it normally.
+ *
+ * After construction, replaces `app.aws` with jest mocks for the fetcher methods.
+ */
+async function createGen1App(meta: Record<string, unknown>): Promise<Gen1App> {
+  const envName = 'main';
+
+  // Write amplify-meta.json to a real temp ccbDir
+  const ccbDir = fsExtra.mkdtempSync(path.join(os.tmpdir(), 'gen1app-test-'));
+  JSONUtilities.writeJson(path.join(ccbDir, 'amplify-meta.json'), meta);
+
+  // Mock the S3 download to return our ccbDir
+  (Gen1App as any).downloadCloudBackend = jest.fn().mockResolvedValue(ccbDir);
+
+  // Mock stateManager to return test TPI
+  jest.spyOn(stateManager, 'teamProviderInfoExists').mockReturnValue(true);
+  jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+    [envName]: { awscloudformation: { AmplifyAppId: 'test-app-id', StackName: 'test-stack', DeploymentBucketName: 'test-bucket' } },
+  });
+  jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue(envName);
+  jest.spyOn(pathManager, 'getTeamProviderInfoFilePath').mockReturnValue('/tmp/team-provider-info.json');
+
+  // Mock AwsClients.create to return a minimal clients object
+  jest.spyOn(AwsClients, 'create').mockResolvedValue({
+    amplify: { send: jest.fn().mockResolvedValue({ app: { appId: 'test-app-id', name: 'test-app' } }) },
+    s3: {},
+  } as unknown as AwsClients);
+
+  const app = await Gen1App.create({} as any);
+
+  // Replace the real AwsFetcher with jest mocks
+  (app as any).aws = {
+    fetchUserPool: jest.fn(),
+    fetchMfaConfig: jest.fn(),
+    fetchUserPoolClient: jest.fn(),
+    fetchIdentityProviders: jest.fn(),
+    fetchIdentityGroups: jest.fn(),
+    fetchIdentityPool: jest.fn(),
+    fetchIdentityPoolRoles: jest.fn(),
+    fetchGroupsByUserPoolId: jest.fn(),
+  };
+
+  return app;
+}
+
+/** Minimal amplify-meta.json for an auth resource with only a user pool. */
+function minimalAuthMeta(overrides?: { output?: Record<string, string> }): Record<string, unknown> {
   return {
-    singleResourceName: jest.fn().mockReturnValue('testAuth'),
-    resourceMetaOutput: jest.fn(),
-    categoryMeta: jest.fn(),
-    ccbDir: '/tmp/ccb',
-    aws: {
-      fetchUserPool: jest.fn(),
-      fetchMfaConfig: jest.fn(),
-      fetchUserPoolClient: jest.fn(),
-      fetchIdentityProviders: jest.fn(),
-      fetchIdentityGroups: jest.fn(),
-      fetchIdentityPool: jest.fn(),
-      fetchIdentityPoolRoles: jest.fn(),
-      fetchGroupsByUserPoolId: jest.fn(),
+    providers: {
+      awscloudformation: {
+        StackName: 'amplify-test-main-123456',
+        Region: 'us-east-1',
+      },
     },
-  } as unknown as Gen1App;
+    auth: {
+      testAuth: {
+        service: 'Cognito',
+        output: {
+          UserPoolId: 'us-east-1_abc123',
+          AppClientIDWeb: 'webclient123',
+          AppClientID: 'client123',
+          IdentityPoolId: 'us-east-1:idpool',
+          ...overrides?.output,
+        },
+      },
+    },
+  };
 }
 
 /** Extracts the written file content for a path suffix from mockWriteFile calls. */
@@ -45,22 +103,20 @@ function writtenFile(suffix: string): string {
   if (!call) throw new Error(`No writeFile call ending with '${suffix}'`);
   return call[1] as string;
 }
+
 /**
- * Configures a mock Gen1App with minimal auth defaults.
- * Override individual mocks after calling this for specific test scenarios.
+ * Configures AWS fetcher mocks with minimal auth defaults.
  */
 function setupMinimalAuth(gen1App: Gen1App): void {
-  (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-    if (key === 'UserPoolId') return 'us-east-1_abc123';
-    return undefined;
-  });
   (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({ SchemaAttributes: [] });
   (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({ MfaConfiguration: 'OFF' });
+  (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue(undefined);
   (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([]);
   (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
+  (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue(undefined);
 }
 
-/** Runs the auth generator and optionally the backend generator, returning written files. */
+/** Runs the auth generator and optionally the backend generator. */
 async function runAuthGenerator(
   gen1App: Gen1App,
   backendGenerator: BackendGenerator,
@@ -88,9 +144,9 @@ describe('AuthGenerator', () => {
 
   describe('error handling', () => {
     it('throws when auth category is missing', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.singleResourceName as jest.Mock).mockImplementation(() => {
-        throw new Error("Category 'auth' not found in amplify-meta.json");
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'test-stack', Region: 'us-east-1' } },
+        /* no auth category */
       });
 
       const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -98,11 +154,7 @@ describe('AuthGenerator', () => {
     });
 
     it('throws when user pool is not found', async () => {
-      const gen1App = createMockGen1App();
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        return undefined;
-      });
+      const gen1App = await createGen1App(minimalAuthMeta());
       (gen1App.aws.fetchUserPool as jest.Mock).mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
       const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -112,7 +164,7 @@ describe('AuthGenerator', () => {
 
   describe('standard auth', () => {
     it('generates minimal auth with email login', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
 
       await runAuthGenerator(gen1App, backendGenerator, outputDir, { includeBackend: true });
@@ -180,7 +232,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates phone login', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
         UsernameAttributes: ['phone_number'],
@@ -230,7 +282,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates email with verification options', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
         EmailVerificationSubject: 'Verify your account',
@@ -284,7 +336,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates user groups', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([
         { GroupName: 'admin', Precedence: 1 },
@@ -336,7 +388,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates standard user attributes', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
         SchemaAttributes: [
@@ -398,7 +450,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates custom user attributes', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
         SchemaAttributes: [
@@ -462,7 +514,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates MFA with OPTIONAL mode (TOTP and SMS)', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
         MfaConfiguration: 'OPTIONAL',
@@ -514,7 +566,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates MFA with REQUIRED mode', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
         MfaConfiguration: 'ON',
@@ -566,7 +618,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates lambda triggers with function imports', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
 
       const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -626,16 +678,11 @@ describe('AuthGenerator', () => {
 
   describe('external providers', () => {
     it('generates Google login with secrets', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: ['https://example.com/callback'],
         LogoutURLs: ['https://example.com/logout'],
@@ -644,7 +691,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -670,6 +717,15 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            oAuth: {
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -692,16 +748,11 @@ describe('AuthGenerator', () => {
     });
 
     it('generates Apple login with secrets', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: ['https://example.com/callback'],
         LogoutURLs: ['https://example.com/logout'],
@@ -710,7 +761,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -738,6 +789,15 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            oAuth: {
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -760,16 +820,11 @@ describe('AuthGenerator', () => {
     });
 
     it('generates Amazon login with secrets', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         { ProviderType: IdentityProviderTypeType.LoginWithAmazon, ProviderName: 'LoginWithAmazon' },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: [],
         LogoutURLs: [],
@@ -778,7 +833,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -804,6 +859,11 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -826,16 +886,11 @@ describe('AuthGenerator', () => {
     });
 
     it('generates Facebook login with secrets', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: [],
         LogoutURLs: [],
@@ -844,7 +899,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -870,6 +925,11 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -892,7 +952,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates Google login with scopes', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         {
@@ -901,11 +961,6 @@ describe('AuthGenerator', () => {
           ProviderDetails: { authorized_scopes: 'profile email' },
         },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: [],
         LogoutURLs: [],
@@ -914,7 +969,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -941,6 +996,11 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -963,7 +1023,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates Google login with attribute mapping', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         {
@@ -972,11 +1032,6 @@ describe('AuthGenerator', () => {
           AttributeMapping: { email: 'email', given_name: 'given_name' },
         },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: [],
         LogoutURLs: [],
@@ -985,7 +1040,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -1015,6 +1070,11 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -1037,7 +1097,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates OIDC provider', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         {
@@ -1052,11 +1112,6 @@ describe('AuthGenerator', () => {
           },
         },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: ['https://example.com/callback'],
         LogoutURLs: ['https://example.com/logout'],
@@ -1065,7 +1120,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -1101,6 +1156,15 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            oAuth: {
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -1123,7 +1187,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates SAML provider', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         {
@@ -1134,11 +1198,6 @@ describe('AuthGenerator', () => {
           },
         },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: ['https://example.com/callback'],
         LogoutURLs: ['https://example.com/logout'],
@@ -1147,7 +1206,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -1176,6 +1235,15 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            oAuth: {
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -1198,18 +1266,13 @@ describe('AuthGenerator', () => {
     });
 
     it('generates multiple providers together', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
         { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
         { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         CallbackURLs: ['https://example.com/callback'],
         LogoutURLs: ['https://example.com/logout'],
@@ -1218,7 +1281,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -1254,6 +1317,15 @@ describe('AuthGenerator', () => {
           cfnUserPool.policies = {
             passwordPolicy: {},
           };
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            oAuth: {
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+            disableOAuth: true,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -1278,7 +1350,7 @@ describe('AuthGenerator', () => {
 
   describe('function access', () => {
     it('generates function auth access rules', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
 
       const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -1337,7 +1409,7 @@ describe('AuthGenerator', () => {
     });
 
     it('generates multiple functions with auth access', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
 
       const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -1396,7 +1468,7 @@ describe('AuthGenerator', () => {
     });
 
     it('skips functions with empty auth access', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
 
       const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
@@ -1413,13 +1485,8 @@ describe('AuthGenerator', () => {
 
   describe('escape hatch paths', () => {
     it('emits cfnIdentityPool.allowUnauthenticatedIdentities = false', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'IdentityPoolId') return 'us-east-1:identity-pool-id';
-        return undefined;
-      });
       (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue({
         IdentityPoolId: 'us-east-1:identity-pool-id',
         AllowUnauthenticatedIdentities: false,
@@ -1470,13 +1537,8 @@ describe('AuthGenerator', () => {
     });
 
     it('emits cfnUserPoolClient.allowedOAuthFlows when webClient has AllowedOAuthFlows', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue({
         AllowedOAuthFlows: ['code', 'implicit'],
         CallbackURLs: ['https://example.com/callback'],
@@ -1486,7 +1548,7 @@ describe('AuthGenerator', () => {
       await runAuthGenerator(gen1App, backendGenerator, outputDir);
       expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
         "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
+        import { CfnResource, Duration } from 'aws-cdk-lib';
         import type { Backend } from '../backend';
 
         export const auth = defineAuth({
@@ -1507,6 +1569,21 @@ describe('AuthGenerator', () => {
           const cfnUserPoolClient =
             backend.auth.resources.cfnResources.cfnUserPoolClient;
           cfnUserPoolClient.allowedOAuthFlows = ['code', 'implicit'];
+          const userPool = backend.auth.resources.userPool;
+          userPool.addClient('NativeAppClient', {
+            oAuth: {
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+              flows: {
+                authorizationCodeGrant: true,
+                implicitCodeGrant: true,
+                clientCredentials: false,
+              },
+            },
+            // flows: ['code', 'implicit'],
+            disableOAuth: false,
+            generateSecret: false,
+          });
           for (const cfnResource of backend.auth.stack.node
             .findAll()
             .filter(
@@ -1529,17 +1606,11 @@ describe('AuthGenerator', () => {
     });
 
     it('emits provider setup statements when userPoolClient has SupportedIdentityProviders', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([
         { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
       ]);
-      (gen1App.resourceMetaOutput as jest.Mock).mockImplementation((_resource: DiscoveredResource, key: string) => {
-        if (key === 'UserPoolId') return 'us-east-1_abc123';
-        if (key === 'AppClientIDWeb') return 'webclient123';
-        if (key === 'AppClientID') return 'nativeclient456';
-        return undefined;
-      });
       (gen1App.aws.fetchUserPoolClient as jest.Mock).mockImplementation((_poolId: string, clientId: string) => {
         if (clientId === 'webclient123') {
           return Promise.resolve({
@@ -1651,7 +1722,7 @@ describe('AuthGenerator', () => {
     });
 
     it('emits password policy overrides in escape hatch', async () => {
-      const gen1App = createMockGen1App();
+      const gen1App = await createGen1App(minimalAuthMeta());
       setupMinimalAuth(gen1App);
       (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
         SchemaAttributes: [],
