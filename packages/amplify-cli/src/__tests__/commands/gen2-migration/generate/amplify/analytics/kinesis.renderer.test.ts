@@ -24,6 +24,7 @@ describe('AnalyticsRenderer', () => {
       "import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
       import { analyticsTodoKinesis } from './todoKinesis-construct';
       import { Backend } from '@aws-amplify/backend';
+      import { CfnResource } from 'aws-cdk-lib';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -38,6 +39,14 @@ describe('AnalyticsRenderer', () => {
           unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
           branchName,
         });
+        for (const cfnResource of analyticsStack.node
+          .findAll()
+          .filter((n) => CfnResource.isCfnResource(n))) {
+          if (cfnResource.cfnResourceType === 'AWS::Kinesis::Stream') {
+            cfnResource.addOverride('DeletionPolicy', 'Retain');
+            cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
+          }
+        }
         //Use this kinesis stream name post-refactor
         //(analytics.node.findChild('KinesisStream') as CfnStream).name = "todoKinesis-stream-abc123"
         return analytics;
@@ -59,6 +68,7 @@ describe('AnalyticsRenderer', () => {
       "import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
       import { analyticsMyStream } from './myStream-construct';
       import { Backend } from '@aws-amplify/backend';
+      import { CfnResource } from 'aws-cdk-lib';
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
@@ -73,6 +83,14 @@ describe('AnalyticsRenderer', () => {
           unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
           branchName,
         });
+        for (const cfnResource of analyticsStack.node
+          .findAll()
+          .filter((n) => CfnResource.isCfnResource(n))) {
+          if (cfnResource.cfnResourceType === 'AWS::Kinesis::Stream') {
+            cfnResource.addOverride('DeletionPolicy', 'Retain');
+            cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
+          }
+        }
         //Use this kinesis stream name post-refactor
         //(analytics.node.findChild('KinesisStream') as CfnStream).name = "myStream-abc"
         return analytics;

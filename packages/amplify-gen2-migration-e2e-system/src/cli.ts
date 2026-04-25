@@ -77,7 +77,8 @@ async function main(): Promise<void> {
     throw error;
   } finally {
     if (argv.teardown) {
-      await new Teardown(app).clean();
+      await app.refreshCredentials();
+      await new Teardown(app.deploymentName, app.profile).clean();
     }
   }
 }

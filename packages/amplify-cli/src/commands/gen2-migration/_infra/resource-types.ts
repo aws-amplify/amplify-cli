@@ -5,7 +5,6 @@
 
 export const STATEFUL_RESOURCES = new Set([
   'AWS::Backup::BackupVault',
-  // 'AWS::CloudFormation::Stack',
   'AWS::Cognito::UserPool',
   'AWS::DocDB::DBCluster',
   'AWS::DocDB::DBInstance',
@@ -33,4 +32,27 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::SDB::Domain',
   'AWS::SQS::Queue',
   'AWS::SecretsManager::Secret',
+  'AWS::Kinesis::Stream',
+  'AWS::Cognito::UserPoolGroup',
+  'AWS::Cognito::IdentityPool',
 ]);
+
+export const AUTH_REFACTORED_RESOURCES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolGroup',
+];
+
+export const STORAGE_S3_REFACTORED_RESOURCES = ['AWS::S3::Bucket'];
+export const STORAGE_DYNAMO_REFACTORED_RESOURCES = ['AWS::DynamoDB::Table'];
+
+export const ANALYTICS_REFACTORED_RESOURCES = ['AWS::Kinesis::Stream'];
+
+export const REFACTORED_RESOURCES = [
+  ...AUTH_REFACTORED_RESOURCES,
+  ...STORAGE_S3_REFACTORED_RESOURCES,
+  ...STORAGE_DYNAMO_REFACTORED_RESOURCES,
+  ...ANALYTICS_REFACTORED_RESOURCES,
+];

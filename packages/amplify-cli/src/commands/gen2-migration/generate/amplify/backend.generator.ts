@@ -21,6 +21,7 @@ export class BackendGenerator implements Planner {
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly earlyStatements: ts.Statement[] = [];
+  private readonly retentionStatements: ts.Statement[] = [];
   private readonly outputDir: string;
   private hasBranchName = false;
   private hasStorageStack = false;
@@ -100,6 +101,123 @@ export class BackendGenerator implements Planner {
   }
 
   /**
+   * Emits a for-of loop that applies `addOverride('UpdateReplacePolicy', 'Retain')`
+   * and `addOverride('DeletionPolicy', 'Retain')` to CfnResources matching the given
+   * types inside a construct tree rooted at `nodeExpression`.
+   *
+   * The loop is appended to the retention statements block, which is emitted at the
+   * end of backend.ts after all other statements.
+   */
+  public addRetentionLoop(nodeExpression: ts.Expression, types: readonly string[]): void {
+    this.addImport('aws-cdk-lib', ['CfnResource']);
+    this.retentionStatements.push(BackendGenerator.createRetentionLoop(nodeExpression, types));
+  }
+
+  /**
+   * Convenience method that emits a retention loop for `backend.<stackName>.stack.node`.
+   */
+  public addBackendStackRetentionLoop(stackName: string, types: readonly string[]): void {
+    const nodeExpr = factory.createPropertyAccessExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), stackName),
+        'stack',
+      ),
+      'node',
+    );
+    this.addRetentionLoop(nodeExpr, types);
+  }
+
+  /**
+   * Convenience method that emits a retention loop for a local variable's node tree
+   * (e.g. `activity.node` or `analytics.node`).
+   */
+  public addVariableRetentionLoop(varName: string, types: readonly string[]): void {
+    const nodeExpr = factory.createPropertyAccessExpression(factory.createIdentifier(varName), 'node');
+    this.addRetentionLoop(nodeExpr, types);
+  }
+
+  /**
+   * Creates a for-of loop AST node that applies retention overrides to
+   * CfnResources matching the given types inside a construct tree.
+   */
+  private static createRetentionLoop(nodeExpression: ts.Expression, types: readonly string[]): ts.ForOfStatement {
+    const filterCallback = factory.createArrowFunction(
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'c')],
+      undefined,
+      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      factory.createBinaryExpression(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), 'isCfnResource'),
+          undefined,
+          [factory.createIdentifier('c')],
+        ),
+        factory.createToken(ts.SyntaxKind.AmpersandAmpersandToken),
+        types.length === 1
+          ? factory.createBinaryExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('c'), 'cfnResourceType'),
+              factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+              factory.createStringLiteral(types[0]),
+            )
+          : factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createArrayLiteralExpression(
+                  types.map((t) => factory.createStringLiteral(t)),
+                  false,
+                ),
+                'includes',
+              ),
+              undefined,
+              [factory.createPropertyAccessExpression(factory.createIdentifier('c'), 'cfnResourceType')],
+            ),
+      ),
+    );
+
+    const iterableExpr = factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createCallExpression(factory.createPropertyAccessExpression(nodeExpression, 'findAll'), undefined, []),
+        'filter',
+      ),
+      undefined,
+      [filterCallback],
+    );
+
+    const addOverrideUpdate = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(
+            factory.createAsExpression(factory.createIdentifier('cfnResource'), factory.createTypeReferenceNode('CfnResource')),
+          ),
+          'addOverride',
+        ),
+        undefined,
+        [factory.createStringLiteral('UpdateReplacePolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
+
+    const addOverrideDeletion = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createParenthesizedExpression(
+            factory.createAsExpression(factory.createIdentifier('cfnResource'), factory.createTypeReferenceNode('CfnResource')),
+          ),
+          'addOverride',
+        ),
+        undefined,
+        [factory.createStringLiteral('DeletionPolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
+
+    return factory.createForOfStatement(
+      undefined,
+      factory.createVariableDeclarationList([factory.createVariableDeclaration('cfnResource')], ts.NodeFlags.Const),
+      iterableExpr,
+      factory.createBlock([addOverrideUpdate, addOverrideDeletion], true),
+    );
+  }
+
+  /**
    * Assembles all accumulated imports, properties, and statements into backend.ts.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -146,6 +264,7 @@ export class BackendGenerator implements Planner {
 
           nodes.push(...this.earlyStatements);
           nodes.push(...this.postDefineStatements);
+          nodes.push(...this.retentionStatements);
 
           const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
           let content = TS.printNodes(nodeArray);

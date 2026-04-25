@@ -80,7 +80,17 @@ export class AnalyticsRenderer {
       factory.createStringLiteral('@aws-amplify/backend'),
     );
 
-    return [cfnStreamImport, constructImport, backendImport];
+    const cdkImport = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(
+        false,
+        undefined,
+        factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('CfnResource'))]),
+      ),
+      factory.createStringLiteral('aws-cdk-lib'),
+    );
+
+    return [cfnStreamImport, constructImport, backendImport, cdkImport];
   }
 
   private createStackCall(): ts.VariableStatement {
@@ -212,7 +222,10 @@ export class AnalyticsRenderer {
       ],
       undefined,
       factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-      factory.createBlock([this.createStackCall(), this.createConstructInstantiation(opts), postRefactorCode], true),
+      factory.createBlock(
+        [this.createStackCall(), this.createConstructInstantiation(opts), this.createRetentionOverrideLoop(), postRefactorCode],
+        true,
+      ),
     );
 
     return factory.createVariableStatement(
@@ -221,6 +234,73 @@ export class AnalyticsRenderer {
         [factory.createVariableDeclaration(factory.createIdentifier('defineAnalytics'), undefined, undefined, arrowFunction)],
         ts.NodeFlags.Const,
       ),
+    );
+  }
+
+  /**
+   * Renders a for-of loop that applies addOverride('DeletionPolicy', 'Retain')
+   * and addOverride('UpdateReplacePolicy', 'Retain') to Kinesis stream resources
+   * inside the analytics stack.
+   */
+  private createRetentionOverrideLoop(): ts.ForOfStatement {
+    const filterCallback = factory.createArrowFunction(
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'n')],
+      undefined,
+      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), 'isCfnResource'),
+        undefined,
+        [factory.createIdentifier('n')],
+      ),
+    );
+
+    const iterableExpr = factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('analyticsStack'), 'node'),
+            'findAll',
+          ),
+          undefined,
+          [],
+        ),
+        'filter',
+      ),
+      undefined,
+      [filterCallback],
+    );
+
+    const condition = factory.createBinaryExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'cfnResourceType'),
+      factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+      factory.createStringLiteral('AWS::Kinesis::Stream'),
+    );
+
+    const addOverrideDeletion = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'addOverride'),
+        undefined,
+        [factory.createStringLiteral('DeletionPolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
+
+    const addOverrideUpdate = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'addOverride'),
+        undefined,
+        [factory.createStringLiteral('UpdateReplacePolicy'), factory.createStringLiteral('Retain')],
+      ),
+    );
+
+    const ifStatement = factory.createIfStatement(condition, factory.createBlock([addOverrideDeletion, addOverrideUpdate], true));
+
+    return factory.createForOfStatement(
+      undefined,
+      factory.createVariableDeclarationList([factory.createVariableDeclaration('cfnResource')], ts.NodeFlags.Const),
+      iterableExpr,
+      factory.createBlock([ifStatement], true),
     );
   }
 }

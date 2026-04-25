@@ -65,6 +65,10 @@ export class App {
   private readonly amplifyPath: string;
   private readonly credentials: CredentialManager;
 
+  public get profile(): string {
+    return this.credentials.profile;
+  }
+
   public readonly logger: Logger;
   public readonly targetAppPath: string;
 
@@ -81,6 +85,7 @@ export class App {
 
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.amplifyPath = getCLIPath(true);
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
@@ -128,6 +133,7 @@ export class App {
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await initJSProjectWithProfile(this.targetAppPath, {
       name: this.deploymentName,
       envName: this.envName,
@@ -138,7 +144,7 @@ export class App {
       buildCmd: 'npm run build',
       startCmd: 'npm run start',
       disableAmplifyAppCreation: false,
-      profileName: this.credentials.profile,
+      profileName: this.profile,
     });
     this.logger.info('amplify init completed');
   }
@@ -230,6 +236,9 @@ export class App {
     await this.deploy();
     await this.assess();
     await this.lock();
+
+    await this.testGen1();
+
     await this.git.checkout(this.gen2BranchName, true);
     await this.generate();
 
@@ -471,7 +480,7 @@ export class App {
    * credential signal — sub-processes resolve it via the shared AWS config.
    */
   public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, AWS_PROFILE: this.credentials.profile, ...extra };
+    return { ...process.env, AWS_PROFILE: this.profile, ...extra };
   }
 
   /**
@@ -480,7 +489,7 @@ export class App {
    * chain, which may prefer container/IMDS credentials in CI environments.
    */
   public getClientConfig(): { credentials: ReturnType<typeof fromIni> } {
-    return { credentials: fromIni({ profile: this.credentials.profile }) };
+    return { credentials: fromIni({ profile: this.profile }) };
   }
 
   // ============================================================

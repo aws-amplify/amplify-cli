@@ -23,7 +23,7 @@ describe('auth', () => {
     const marker = `test-${Date.now()}`;
 
     // Record several events so at least one survives the stream's retention window
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 100; i++) {
       record({
         data: { event: 'analyticsTest', marker, index: i },
         partitionKey: 'test',

@@ -17,6 +17,8 @@
     "@aws-amplify/amplify-e2e-core": "workspace:^",
     "@aws-sdk/client-amplify": "^3.919.0",
     "@aws-sdk/client-cloudformation": "^3.919.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.919.0",
+    "@aws-sdk/client-dynamodb": "^3.919.0",
     "@aws-sdk/client-s3": "^3.919.0",
     "@aws-sdk/client-sts": "^3.919.0",
     "@aws-sdk/credential-providers": "3.721.0",

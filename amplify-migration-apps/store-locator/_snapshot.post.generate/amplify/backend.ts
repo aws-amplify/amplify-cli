@@ -2,7 +2,7 @@ import { auth } from './auth/resource';
 import { storelocator41a9495f41a9495fPostConfirmation } from './auth/storelocator41a9495f41a9495fPostConfirmation/resource';
 import { defineGeo } from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, aws_iam } from 'aws-cdk-lib';
+import { CfnResource, Duration, aws_iam } from 'aws-cdk-lib';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -39,6 +39,22 @@ backend.storelocator41a9495f41a9495fPostConfirmation.resources.lambda.addToRoleP
     resources: [backend.auth.resources.userPool.userPoolArn],
   })
 );
+for (const cfnResource of backend.auth.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      [
+        'AWS::Cognito::UserPool',
+        'AWS::Cognito::IdentityPool',
+        'AWS::Cognito::UserPoolClient',
+        'AWS::Cognito::IdentityPoolRoleAttachment',
+        'AWS::Cognito::UserPoolGroup',
+      ].includes(c.cfnResourceType)
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
 
 // Uncomment post refactor to force a redeployment
 // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

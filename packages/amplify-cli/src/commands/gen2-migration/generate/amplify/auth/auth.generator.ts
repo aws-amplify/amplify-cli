@@ -8,6 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AuthRenderOptions, AuthRenderer, AuthTrigger, FunctionAccess } from './auth.renderer';
+import { AUTH_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 const factory = ts.factory;
 
@@ -121,6 +122,8 @@ export class AuthGenerator implements Planner {
     const authIdentifier = factory.createIdentifier('auth');
     this.backendGenerator.addImport('./auth/resource', ['auth']);
     this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(authIdentifier));
+
+    this.backendGenerator.addBackendStackRetentionLoop('auth', AUTH_REFACTORED_RESOURCES);
 
     // Password policy and username attributes overrides
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);

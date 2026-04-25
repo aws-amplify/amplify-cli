@@ -8,6 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { S3Renderer, AccessPatterns, StorageTriggerEvent, Permission } from './s3.renderer';
+import { STORAGE_S3_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 const factory = ts.factory;
 
@@ -132,6 +133,7 @@ export class S3Generator implements Planner {
         this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier('storage')));
 
         this.contributeOverrides(bucketName, accelerateStatus, versioningStatus, encryption);
+        this.backendGenerator.addBackendStackRetentionLoop('storage', STORAGE_S3_REFACTORED_RESOURCES);
       },
     };
   }

@@ -3,6 +3,7 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { importedresourcequotegenerator } from './function/importedresourcequotegenerator/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { CfnResource } from 'aws-cdk-lib';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -36,6 +37,15 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.importedresourcequotegenerator.resources.cfnResources.cfnFunction.functionName = `importedresourcequotegenerator-${branchName}`;
+for (const cfnResource of backend.storage.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
 
 // Uncomment post refactor to force a redeployment
 // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

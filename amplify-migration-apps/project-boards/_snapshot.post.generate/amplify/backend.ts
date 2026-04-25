@@ -3,7 +3,7 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { quotegenerator } from './function/quotegenerator/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { CfnResource, Duration } from 'aws-cdk-lib';
 // import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
@@ -58,6 +58,31 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.quotegenerator.resources.cfnResources.cfnFunction.functionName = `quotegenerator-${branchName}`;
+for (const cfnResource of backend.auth.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) &&
+      [
+        'AWS::Cognito::UserPool',
+        'AWS::Cognito::IdentityPool',
+        'AWS::Cognito::UserPoolClient',
+        'AWS::Cognito::IdentityPoolRoleAttachment',
+        'AWS::Cognito::UserPoolGroup',
+      ].includes(c.cfnResourceType)
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
+for (const cfnResource of backend.storage.stack.node
+  .findAll()
+  .filter(
+    (c) =>
+      CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
+  )) {
+  (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+  (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+}
 
 // Uncomment post refactor to force a redeployment
 // Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
