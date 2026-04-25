@@ -5,6 +5,7 @@ import * as thumbnailgen from './function/thumbnailgen/resource';
 import * as addusertogroup from './function/addusertogroup/resource';
 import * as removeuserfromgroup from './function/removeuserfromgroup/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
@@ -17,10 +18,6 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
-export function postRefactor() {
-  storage.postRefactor(backend);
-}
-
 auth.applyEscapeHatches(backend);
 data.applyEscapeHatches(backend);
 storage.applyEscapeHatches(backend);
@@ -28,8 +25,10 @@ thumbnailgen.applyEscapeHatches(backend);
 addusertogroup.applyEscapeHatches(backend);
 removeuserfromgroup.applyEscapeHatches(backend);
 
+export function postRefactor() {
+  storage.postRefactor(backend);
+  Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+}
+
 // Uncomment after refactor
 // postRefactor();
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

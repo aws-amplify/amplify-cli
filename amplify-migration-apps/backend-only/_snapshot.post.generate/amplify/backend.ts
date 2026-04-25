@@ -3,6 +3,7 @@ import * as data from './data/resource';
 import * as storage from './storage/resource';
 import * as quotegeneratorbe from './function/quotegeneratorbe/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
@@ -13,17 +14,15 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
-export function postRefactor() {
-  storage.postRefactor(backend);
-}
-
 auth.applyEscapeHatches(backend);
 data.applyEscapeHatches(backend);
 storage.applyEscapeHatches(backend);
 quotegeneratorbe.applyEscapeHatches(backend);
 
+export function postRefactor() {
+  storage.postRefactor(backend);
+  Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+}
+
 // Uncomment after refactor
 // postRefactor();
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

@@ -6,6 +6,7 @@ import * as moodboardKinesisReader from './function/moodboardKinesisReader/resou
 import * as moodboardKinesisTrigger from './function/moodboardKinesisTrigger/resource';
 import * as analytics from './analytics/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
@@ -20,11 +21,6 @@ export type Backend = typeof backend;
 
 const analyticsResult = analytics.defineAnalytics(backend);
 
-export function postRefactor() {
-  storage.postRefactor(backend);
-  analytics.postRefactor(analyticsResult);
-}
-
 auth.applyEscapeHatches(backend);
 data.applyEscapeHatches(backend);
 storage.applyEscapeHatches(backend);
@@ -32,8 +28,11 @@ moodboardGetRandomEmoji.applyEscapeHatches(backend);
 moodboardKinesisReader.applyEscapeHatches(backend, analyticsResult);
 moodboardKinesisTrigger.applyEscapeHatches(backend, analyticsResult);
 
+export function postRefactor() {
+  storage.postRefactor(backend);
+  analytics.postRefactor(analyticsResult);
+  Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+}
+
 // Uncomment after refactor
 // postRefactor();
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

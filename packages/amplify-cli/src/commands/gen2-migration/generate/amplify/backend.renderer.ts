@@ -64,6 +64,7 @@ export class BackendRenderer {
       nodes.push(this.renderNamespaceImport(imp.alias, imp.source));
     }
     nodes.push(this.renderDefineBackendImport());
+    nodes.push(TS.namedImport('aws-cdk-lib', 'Tags'));
     nodes.push(newLineIdentifier);
 
     // 2. defineBackend call
@@ -85,14 +86,14 @@ export class BackendRenderer {
       nodes.push(newLineIdentifier);
     }
 
-    // 5. postRefactor function
-    nodes.push(this.renderPostRefactorFunction(options.postRefactorCalls));
-    nodes.push(newLineIdentifier);
-
-    // 6. applyEscapeHatches calls
+    // 5. applyEscapeHatches calls
     for (const entry of options.escapeHatchCalls) {
       nodes.push(this.renderEscapeHatchCall(entry));
     }
+    nodes.push(newLineIdentifier);
+
+    // 6. postRefactor function (after escape hatches, just before the comment)
+    nodes.push(this.renderPostRefactorFunction(options.postRefactorCalls));
     nodes.push(newLineIdentifier);
 
     // 7. Commented postRefactor call
@@ -129,6 +130,23 @@ export class BackendRenderer {
 
   private renderPostRefactorFunction(calls: readonly string[]): ts.FunctionDeclaration {
     const statements = calls.map((statement) => factory.createExpressionStatement(factory.createIdentifier(statement)));
+    // Always add Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true') as the last statement
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('Tags'), factory.createIdentifier('of')),
+              undefined,
+              [factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('stack'))],
+            ),
+            factory.createIdentifier('add'),
+          ),
+          undefined,
+          [factory.createStringLiteral('gen2-migration/post-refactor'), factory.createStringLiteral('true')],
+        ),
+      ),
+    );
     return factory.createFunctionDeclaration(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       undefined,

@@ -7,6 +7,7 @@ import * as storageActivity from './storage/activity/resource';
 import * as storage from './storage/resource';
 import * as storageBookmarks from './storage/bookmarks/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   data: data.data,
@@ -22,20 +23,18 @@ export type Backend = typeof backend;
 const activity = storageActivity.defineStorageActivity(backend);
 const bookmarks = storageBookmarks.defineStorageBookmarks(backend);
 
-export function postRefactor() {
-  storageActivity.postRefactor(activity);
-  storage.postRefactor(backend);
-  storageBookmarks.postRefactor(bookmarks);
-}
-
 auth.applyEscapeHatches(backend);
 fetchuseractivity.applyEscapeHatches(backend, activity);
 recorduseractivity.applyEscapeHatches(backend, activity);
 activityTrigger.applyEscapeHatches(backend, activity);
 storage.applyEscapeHatches(backend);
 
+export function postRefactor() {
+  storageActivity.postRefactor(activity);
+  storage.postRefactor(backend);
+  storageBookmarks.postRefactor(bookmarks);
+  Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+}
+
 // Uncomment after refactor
 // postRefactor();
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

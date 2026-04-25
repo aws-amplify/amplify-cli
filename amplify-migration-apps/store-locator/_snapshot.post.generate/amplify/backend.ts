@@ -2,6 +2,7 @@ import * as auth from './auth/resource';
 import * as storelocator41a9495f41a9495fPostConfirmation from './function/storelocator41a9495f41a9495fPostConfirmation/resource';
 import * as geo from './geo/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
@@ -13,13 +14,12 @@ export type Backend = typeof backend;
 
 geo.defineGeo(backend);
 
-export function postRefactor() {}
-
 auth.applyEscapeHatches(backend);
 storelocator41a9495f41a9495fPostConfirmation.applyEscapeHatches(backend);
 
+export function postRefactor() {
+  Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+}
+
 // Uncomment after refactor
 // postRefactor();
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');

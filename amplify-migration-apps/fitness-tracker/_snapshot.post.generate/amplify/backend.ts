@@ -6,6 +6,7 @@ import * as data from './data/resource';
 import * as nutritionapi from './api/nutritionapi/resource';
 import * as adminapi from './api/adminapi/resource';
 import { defineBackend } from '@aws-amplify/backend';
+import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
@@ -21,16 +22,15 @@ export type Backend = typeof backend;
 nutritionapi.defineNutritionapiApi(backend);
 adminapi.defineAdminapiApi(backend);
 
-export function postRefactor() {}
-
 auth.applyEscapeHatches(backend);
 fitnesstracker33f5545533f55455PreSignup.applyEscapeHatches(backend);
 lognutrition.applyEscapeHatches(backend);
 admin.applyEscapeHatches(backend);
 data.applyEscapeHatches(backend);
 
+export function postRefactor() {
+  Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+}
+
 // Uncomment after refactor
 // postRefactor();
-
-// Uncomment post refactor to force a redeployment
-// Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
