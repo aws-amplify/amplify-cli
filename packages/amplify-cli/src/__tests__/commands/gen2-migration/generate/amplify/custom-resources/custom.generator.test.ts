@@ -64,117 +64,105 @@ describe('CustomResourceGenerator', () => {
     jest.clearAllMocks();
     backendGenerator = new BackendGenerator(outputDir);
     packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
-
-    // Default: readFile returns the cdk-stack content
     mockReadFile.mockResolvedValue(CDK_STACK_CONTENT);
   });
 
-  describe('orchestration', () => {
-    it('returns one operation describing the custom resource', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      });
-      jest.spyOn(gen1App, 'json').mockReturnValue({});
-      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-
-      const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
-      const ops = await generator.plan();
-
-      expect(ops).toHaveLength(1);
-      const descriptions = await ops[0].describe();
-      expect(descriptions[0]).toContain('myCustom');
+  it('returns one operation describing the custom resource', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
     });
+    jest.spyOn(gen1App, 'json').mockReturnValue({});
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const ops = await generator.plan();
+
+    expect(ops).toHaveLength(1);
+    const descriptions = await ops[0].describe();
+    expect(descriptions[0]).toContain('myCustom');
   });
 
-  describe('execution', () => {
-    it('copies resource directory and transforms cdk-stack.ts', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      });
-      jest.spyOn(gen1App, 'json').mockReturnValue({});
-      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-
-      const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      // Verify cp was called for the resource directory
-      expect(mockCp).toHaveBeenCalledWith(
-        expect.stringContaining('myCustom'),
-        expect.stringContaining('myCustom'),
-        expect.objectContaining({ recursive: true }),
-      );
-
-      // Verify rename was called (cdk-stack.ts -> resource.ts)
-      expect(mockRename).toHaveBeenCalledWith(expect.stringContaining('cdk-stack.ts'), expect.stringContaining('resource.ts'));
+  it('copies resource directory and transforms cdk-stack.ts', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
     });
+    jest.spyOn(gen1App, 'json').mockReturnValue({});
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
 
-    it('contributes namespace import and post-define call to backend', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      });
-      jest.spyOn(gen1App, 'json').mockReturnValue({});
-      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-      const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
-      const addPostDefineBackendCallSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendCall');
-
-      const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(addNamespaceImportSpy).toHaveBeenCalledWith('myCustom', './custom/myCustom/resource');
-      expect(addPostDefineBackendCallSpy).toHaveBeenCalledWith('_custom_myCustom', expect.stringContaining('cdkStack'));
-    });
-
-    it('removes build artifacts', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      });
-      jest.spyOn(gen1App, 'json').mockReturnValue({});
-      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-
-      const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      // rm should be called for build artifacts
-      expect(mockRm).toHaveBeenCalled();
-      const rmPaths = mockRm.mock.calls.map((c: unknown[]) => c[0] as string);
-      expect(rmPaths.some((p: string) => p.includes('build'))).toBe(true);
-      expect(rmPaths.some((p: string) => p.includes('node_modules'))).toBe(true);
-    });
-
-    it('merges dependencies into root package.json', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      });
-      jest.spyOn(gen1App, 'json').mockReturnValue({});
-      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-
-      const addDependencySpy = jest.spyOn(packageJsonGenerator, 'addDependency');
-
-      const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(addDependencySpy).toHaveBeenCalledWith('aws-cdk-lib', '^2.0.0');
-    });
+    expect(mockCp).toHaveBeenCalledWith(
+      expect.stringContaining('myCustom'),
+      expect.stringContaining('myCustom'),
+      expect.objectContaining({ recursive: true }),
+    );
+    expect(mockRename).toHaveBeenCalledWith(expect.stringContaining('cdk-stack.ts'), expect.stringContaining('resource.ts'));
   });
 
-  describe('error handling', () => {
-    it('throws when cdk-stack.ts cannot be read', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      });
-      jest.spyOn(gen1App, 'json').mockReturnValue({});
-      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
-
-      mockReadFile.mockRejectedValue(new Error('ENOENT: no such file'));
-
-      const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
-      const ops = await generator.plan();
-      await expect(ops[0].execute()).rejects.toThrow();
+  it('contributes namespace import and post-define call to backend', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
     });
+    jest.spyOn(gen1App, 'json').mockReturnValue({});
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
+    const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+    const addPostDefineBackendCallSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendCall');
+
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addNamespaceImportSpy).toHaveBeenCalledWith('myCustom', './custom/myCustom/resource');
+    expect(addPostDefineBackendCallSpy).toHaveBeenCalledWith('_custom_myCustom', expect.stringContaining('cdkStack'));
+  });
+
+  it('removes build artifacts', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    });
+    jest.spyOn(gen1App, 'json').mockReturnValue({});
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(mockRm).toHaveBeenCalled();
+    const rmPaths = mockRm.mock.calls.map((c: unknown[]) => c[0] as string);
+    expect(rmPaths.some((p: string) => p.includes('build'))).toBe(true);
+    expect(rmPaths.some((p: string) => p.includes('node_modules'))).toBe(true);
+  });
+
+  it('merges dependencies into root package.json', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    });
+    jest.spyOn(gen1App, 'json').mockReturnValue({});
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
+    const addDependencySpy = jest.spyOn(packageJsonGenerator, 'addDependency');
+
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addDependencySpy).toHaveBeenCalledWith('aws-cdk-lib', '^2.0.0');
+  });
+
+  it('throws when cdk-stack.ts cannot be read', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+    });
+    jest.spyOn(gen1App, 'json').mockReturnValue({});
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+
+    mockReadFile.mockRejectedValue(new Error('ENOENT: no such file'));
+
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const ops = await generator.plan();
+    await expect(ops[0].execute()).rejects.toThrow();
   });
 });

@@ -1,7 +1,7 @@
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { DataGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { Gen1App, DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');
@@ -26,50 +26,6 @@ const dataResource: DiscoveredResource = {
   key: 'api:AppSync',
 };
 
-/** Minimal amplify-meta for an AppSync data resource. */
-function dataMeta(opts?: { apiId?: string; authConfig?: unknown; hasAuth?: boolean }): Record<string, unknown> {
-  const apiId = opts?.apiId ?? 'api-123';
-  const meta: Record<string, unknown> = {
-    providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-    api: {
-      testApi: {
-        service: 'AppSync',
-        output: {
-          GraphQLAPIIdOutput: apiId,
-          ...(opts?.authConfig ? { authConfig: opts.authConfig } : {}),
-        },
-      },
-    },
-  };
-  if (opts?.hasAuth) {
-    (meta as any).auth = { myAuth: { service: 'Cognito' } };
-  }
-  return meta;
-}
-
-/** Sets up Gen1App mocks for a successful data plan(). */
-function setupDataMocks(
-  gen1App: Gen1App,
-  opts: {
-    schema: string;
-    apiId?: string;
-    authorizationModes?: unknown;
-    graphqlApi?: GraphqlApi;
-  },
-): void {
-  const apiId = opts.apiId ?? 'api-123';
-  jest.spyOn(gen1App, 'file').mockReturnValue(opts.schema);
-  // Always spy on resourceMetaOutput — the real method throws for missing keys
-  jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
-    if (key === 'GraphQLAPIIdOutput') return apiId;
-    if (key === 'authConfig') return opts.authorizationModes as string;
-    return undefined as any;
-  });
-  (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(
-    opts.graphqlApi ?? { apiId, name: 'testApi', additionalAuthenticationProviders: [] },
-  );
-}
-
 describe('DataGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
@@ -79,233 +35,355 @@ describe('DataGenerator', () => {
     backendGenerator = new BackendGenerator(outputDir);
   });
 
-  describe('error handling', () => {
-    it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
-      const gen1App = await createGen1App({
-        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-        api: {
-          testApi: {
-            service: 'AppSync',
-            output: {
-              /* no GraphQLAPIIdOutput */
-            },
+  it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: {
+            /* no GraphQLAPIIdOutput */
           },
         },
-      });
-      jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      await expect(generator.plan()).rejects.toThrow('GraphQLAPIIdOutput');
+      },
     });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
 
-    it('throws when AppSync API is not found via SDK', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
-      (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
-    });
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    await expect(generator.plan()).rejects.toThrow('GraphQLAPIIdOutput');
   });
 
-  describe('orchestration', () => {
-    it('returns one operation describing data/resource.ts', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-
-      expect(ops).toHaveLength(1);
-      const descriptions = await ops[0].describe();
-      expect(descriptions[0]).toContain('data/resource.ts');
-    });
-
-    it('registers namespace import and defineBackend entry on backendGenerator', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
-
-      const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
-      const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(addNamespaceImportSpy).toHaveBeenCalledWith('data', './data/resource');
-      expect(addDefineBackendEntrySpy).toHaveBeenCalledWith('data', 'data', 'data');
-    });
-
-    it('contributes applyEscapeHatches call when auth exists and additional providers present', async () => {
-      const gen1App = await createGen1App(dataMeta({ hasAuth: true }));
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
-        graphqlApi: {
-          apiId: 'api-123',
-          name: 'testApi',
-          additionalAuthenticationProviders: [
-            { authenticationType: 'AMAZON_COGNITO_USER_POOLS', userPoolConfig: { userPoolId: 'pool-1' } },
-          ],
-        } as GraphqlApi,
-      });
-
-      const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(addApplyEscapeHatchesCallSpy).toHaveBeenCalledWith(expect.objectContaining({ alias: 'data' }));
-    });
-
-    it('contributes applyEscapeHatches call when additional providers present even without auth category', async () => {
-      const gen1App = await createGen1App(dataMeta({ hasAuth: false }));
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
-        graphqlApi: {
-          apiId: 'api-123',
-          name: 'testApi',
-          additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS' }],
-        } as GraphqlApi,
-      });
-
-      const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(addApplyEscapeHatchesCallSpy).toHaveBeenCalledWith(expect.objectContaining({ alias: 'data' }));
-    });
-
-    it('does not contribute applyEscapeHatches call when additional providers list is empty', async () => {
-      const gen1App = await createGen1App(dataMeta({ hasAuth: true }));
-      setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
-
-      const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(addApplyEscapeHatchesCallSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('resource.ts generation (renderer tests)', () => {
-    it('renders a basic defineData resource with schema and table mappings', async () => {
-      const gen1App = await createGen1App(dataMeta({ apiId: 'abc123' }));
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! title: String! }',
-        apiId: 'abc123',
-      });
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const schema = \`type Todo @model { id: ID! title: String! }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-abc123-main' },
-            },
-          ],
-          schema,
-        });
-        "
-      `);
-    });
-
-    it('renders authorization modes with default auth type', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
-        apiId: 'abc',
-        authorizationModes: {
-          defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+  it('throws when AppSync API is not found via SDK', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
         },
-      });
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
+  });
 
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const schema = \`type Todo @model { id: ID! }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-abc-main' },
-            },
-          ],
-          authorizationModes: {
-            defaultAuthorizationMode: 'userPool',
-          },
-          schema,
-        });
-        "
-      `);
+  it('returns one operation describing data/resource.ts', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
     });
 
-    it('renders API key auth mode with expiration and description', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+
+    expect(ops).toHaveLength(1);
+    const descriptions = await ops[0].describe();
+    expect(descriptions[0]).toContain('data/resource.ts');
+  });
+
+  it('registers namespace import and defineBackend entry on backendGenerator', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
+    });
+
+    const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
+    const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addNamespaceImportSpy).toHaveBeenCalledWith('data', './data/resource');
+    expect(addDefineBackendEntrySpy).toHaveBeenCalledWith('data', 'data', 'data');
+  });
+
+  it('contributes applyEscapeHatches call when auth exists and additional providers present', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito' } },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS', userPoolConfig: { userPoolId: 'pool-1' } }],
+    } as GraphqlApi);
+
+    const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addApplyEscapeHatchesCallSpy).toHaveBeenCalledWith(expect.objectContaining({ alias: 'data' }));
+  });
+
+  it('contributes applyEscapeHatches call when additional providers present even without auth category', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [{ authenticationType: 'AMAZON_COGNITO_USER_POOLS' }],
+    } as GraphqlApi);
+
+    const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addApplyEscapeHatchesCallSpy).toHaveBeenCalledWith(expect.objectContaining({ alias: 'data' }));
+  });
+
+  it('does not contribute applyEscapeHatches call when additional providers list is empty', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito' } },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
+    });
+
+    const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addApplyEscapeHatchesCallSpy).not.toHaveBeenCalled();
+  });
+
+  it('renders a basic defineData resource with schema and table mappings', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'abc123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! title: String! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'abc123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'abc123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @model { id: ID! title: String! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-abc123-main' },
+          },
+        ],
+        schema,
+      });
+      "
+    `);
+  });
+
+  it('renders authorization modes with default auth type', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'abc';
+      if (key === 'authConfig') return { defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' } } as any;
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-abc-main' },
+          },
+        ],
         authorizationModes: {
+          defaultAuthorizationMode: 'userPool',
+        },
+        schema,
+      });
+      "
+    `);
+  });
+
+  it('renders API key auth mode with expiration and description', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      if (key === 'authConfig')
+        return {
           defaultAuthentication: {
             authenticationType: 'API_KEY',
             apiKeyConfig: { apiKeyExpirationDays: 30, description: 'My API Key' },
           },
-        },
-      });
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const schema = \`type Todo @model { id: ID! }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
-            },
-          ],
-          authorizationModes: {
-            defaultAuthorizationMode: 'apiKey',
-            apiKeyAuthorizationMode: { expiresInDays: 30, description: 'My API Key' },
-          },
-          schema,
-        });
-        "
-      `);
+        } as any;
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
     });
 
-    it('renders OIDC auth mode', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
+          },
+        ],
         authorizationModes: {
+          defaultAuthorizationMode: 'apiKey',
+          apiKeyAuthorizationMode: { expiresInDays: 30, description: 'My API Key' },
+        },
+        schema,
+      });
+      "
+    `);
+  });
+
+  it('renders OIDC auth mode', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      if (key === 'authConfig')
+        return {
           additionalAuthenticationProviders: [
             {
               authenticationType: 'OPENID_CONNECT',
@@ -318,194 +396,267 @@ describe('DataGenerator', () => {
               },
             },
           ],
-        },
-      });
-
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const schema = \`type Todo @model { id: ID! }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
-            },
-          ],
-          authorizationModes: {
-            oidcAuthorizationMode: {
-              oidcProviderName: 'MyOIDC',
-              oidcIssuerUrl: 'https://example.com',
-              clientId: 'client123',
-              tokenExpiryFromAuthInSeconds: 3600,
-              tokenExpireFromIssueInSeconds: 7200,
-            },
-          },
-          schema,
-        });
-        "
-      `);
+        } as any;
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
     });
 
-    it('renders Lambda auth mode', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
+          },
+        ],
         authorizationModes: {
+          oidcAuthorizationMode: {
+            oidcProviderName: 'MyOIDC',
+            oidcIssuerUrl: 'https://example.com',
+            clientId: 'client123',
+            tokenExpiryFromAuthInSeconds: 3600,
+            tokenExpireFromIssueInSeconds: 7200,
+          },
+        },
+        schema,
+      });
+      "
+    `);
+  });
+
+  it('renders Lambda auth mode', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      if (key === 'authConfig')
+        return {
           additionalAuthenticationProviders: [
             {
               authenticationType: 'AWS_LAMBDA',
               lambdaAuthorizerConfig: { lambdaFunction: 'myAuthFn', ttlSeconds: 300 },
             },
           ],
-        },
-      });
+        } as any;
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
+    });
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
-        const schema = \`type Todo @model { id: ID! }\`;
+      const schema = \`type Todo @model { id: ID! }\`;
 
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
-            },
-          ],
-          authorizationModes: {
-            lambdaAuthorizationMode: { function: myAuthFn, timeToLiveInSeconds: 300 },
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
           },
-          schema,
-        });
-        "
-      `);
-    });
-
-    it('renders logging config', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! }',
-        graphqlApi: {
-          logConfig: { fieldLogLevel: 'ERROR', excludeVerboseContent: true },
-          additionalAuthenticationProviders: [],
-        } as unknown as GraphqlApi,
+        ],
+        authorizationModes: {
+          lambdaAuthorizationMode: { function: myAuthFn, timeToLiveInSeconds: 300 },
+        },
+        schema,
       });
+      "
+    `);
+  });
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const schema = \`type Todo @model { id: ID! }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
-            },
-          ],
-          logging: { fieldLogLevel: 'error', excludeVerboseContent: true },
-          schema,
-        });
-        "
-      `);
+  it('renders logging config', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
     });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      logConfig: { fieldLogLevel: 'ERROR', excludeVerboseContent: true },
+      additionalAuthenticationProviders: [],
+    } as unknown as GraphqlApi);
 
-    it('replaces ${env} with ${branchName} in schema and adds branchName declaration', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { env: String @default(value: "${env}") }',
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
+          },
+        ],
+        logging: { fieldLogLevel: 'error', excludeVerboseContent: true },
+        schema,
       });
+      "
+    `);
+  });
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      const output = writtenFile('resource.ts');
-      expect(output).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-        const schema = \`type Todo @model { env: String @default(value: "\${branchName}") }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
-            },
-          ],
-          schema,
-        });
-        "
-      `);
-      expect(output).not.toContain('${env}');
+  it('replaces ${env} with ${branchName} in schema and adds branchName declaration', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { env: String @default(value: "${env}") }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
     });
 
-    it('does not emit branchName when schema has no ${env}', async () => {
-      const gen1App = await createGen1App(dataMeta());
-      setupDataMocks(gen1App, { schema: 'type Todo @model { id: ID! }' });
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
+    const output = writtenFile('resource.ts');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
 
-      expect(writtenFile('resource.ts')).not.toContain('const branchName');
-    });
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+      const schema = \`type Todo @model { env: String @default(value: "\${branchName}") }\`;
 
-    it('renders multiple table mappings', async () => {
-      const gen1App = await createGen1App(dataMeta({ apiId: 'abc' }));
-      setupDataMocks(gen1App, {
-        schema: 'type Todo @model { id: ID! } type Post @model { id: ID! }',
-        apiId: 'abc',
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-api-123-main' },
+          },
+        ],
+        schema,
       });
+      "
+    `);
+    expect(output).not.toContain('${env}');
+  });
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-        "import { defineData } from '@aws-amplify/backend';
-        import type { Backend } from '../backend';
-
-        const schema = \`type Todo @model { id: ID! } type Post @model { id: ID! }\`;
-
-        export const data = defineData({
-          migratedAmplifyGen1DynamoDbTableMappings: [
-            {
-              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
-              branchName: 'main',
-              modelNameToTableNameMapping: {
-                Todo: 'Todo-abc-main',
-                Post: 'Post-abc-main',
-              },
-            },
-          ],
-          schema,
-        });
-        "
-      `);
+  it('does not emit branchName when schema has no ${env}', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
     });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).not.toContain('const branchName');
+  });
+
+  it('renders multiple table mappings', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! } type Post @model { id: ID! }');
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'abc';
+      return undefined as any;
+    });
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @model { id: ID! } type Post @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {
+              Todo: 'Todo-abc-main',
+              Post: 'Post-abc-main',
+            },
+          },
+        ],
+        schema,
+      });
+      "
+    `);
   });
 });
