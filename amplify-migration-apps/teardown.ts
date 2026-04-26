@@ -1,4 +1,4 @@
-import { Teardown } from '../packages/amplify-gen2-migration-e2e-system/src/core/teardown';
+import { Teardown } from '../packages/amplify-e2e-gen2-migration/src/core/teardown';
 
 const deploymentName = process.argv[2];
 const profile = process.argv[3];

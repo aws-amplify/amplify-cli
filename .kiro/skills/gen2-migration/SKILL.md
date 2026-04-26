@@ -18,7 +18,7 @@ for architecture and design decisions:
 | Doc                                                                               | Covers                                                           |
 | --------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `docs/packages/amplify-cli/src/commands/gen2-migration.md`                        | Architecture, CLI interface, Plan lifecycle, subcommand design   |
-| `packages/amplify-gen2-migration-e2e-system/README.md`                            | E2E automation system, CLI options, migration workflow steps     |
+| `packages/amplify-e2e-gen2-migration/README.md`                                   | E2E automation system, CLI options, migration workflow steps     |
 | `packages/amplify-cli/src/__tests__/commands/gen2-migration/_framework/README.md` | Test framework, mock clients, snapshot comparison, customization |
 | https://docs.amplify.aws/gen1/react/tools/cli/                                    | Amplify Gen1 CLI documentation                                   |
 | https://docs.amplify.aws/react/build-a-backend/                                   | Amplify Gen2 backend documentation                               |
@@ -27,7 +27,7 @@ for architecture and design decisions:
 
 - `packages/amplify-cli/src/commands/gen2-migration/` — CLI commands and core logic
 - `packages/amplify-cli/src/__tests__/commands/gen2-migration/` — Snapshot and unit tests
-- `packages/amplify-gen2-migration-e2e-system/` — E2E testing automation
+- `packages/amplify-e2e-gen2-migration/` — E2E testing automation
 
 ### Apps
 

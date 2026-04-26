@@ -59,7 +59,7 @@ caller's working directory.
 
 ### `migration/config.json`
 
-Configuration file read by the [E2E system](../packages/amplify-gen2-migration-e2e-system/) at runtime.
+Configuration file read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime.
 Currently supports:
 
 ```json
@@ -224,7 +224,7 @@ Gen2 stack. The holding stack persists as the final destination for the Gen2 sta
 ## Normalization and Sanitization
 
 After snapshots are captured, they must be normalized and sanitized before committing.
-See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md#snapshot-post-processing)
+See the [E2E system README](../packages/amplify-e2e-gen2-migration/README.md#snapshot-post-processing)
 for details on what each step does.
 
 To run them manually on a single app:
@@ -416,7 +416,7 @@ Always review the diff after updating to make sure the changes are intentional.
 
 ## Integration Testing (E2E)
 
-The [E2E system](../packages/amplify-gen2-migration-e2e-system/) automates the full migration
+The [E2E system](../packages/amplify-e2e-gen2-migration/) automates the full migration
 workflow for a single app: Gen1 deploy, migration, Gen2 deploy, and validation at each stage.
 It deploys real AWS resources, so you need valid credentials.
 
@@ -433,7 +433,7 @@ npm run test:e2e
 ```
 
 The system automatically runs npm scripts from the app's `package.json` at the right
-points in the workflow. See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
+points in the workflow. See the [E2E system README](../packages/amplify-e2e-gen2-migration/README.md) for
 more details.
 
 ## Teardown

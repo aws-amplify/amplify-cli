@@ -2,8 +2,8 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as e2esnap from '../packages/amplify-gen2-migration-e2e-system/src/core/snapshot';
-import * as e2esani from '../packages/amplify-gen2-migration-e2e-system/src/core/sanitize';
+import * as e2esnap from '../packages/amplify-e2e-gen2-migration/src/core/snapshot';
+import * as e2esani from '../packages/amplify-e2e-gen2-migration/src/core/sanitize';
 
 const STEPS = ['pre.generate', 'post.generate', 'pre.refactor', 'post.refactor'] as const;
 type Step = (typeof STEPS)[number];

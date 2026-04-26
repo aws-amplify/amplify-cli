@@ -1,5 +1,5 @@
 import { type StackResourceDrift, type PropertyDifference } from '@aws-sdk/client-cloudformation';
-import { isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift } from '../../../commands/drift-detection/detect-stack-drift';
+import { isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift } from '../../../commands/drift/detect-stack-drift';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
 
 const mockPrinter = new SpinningLogger('test', { debug: true });

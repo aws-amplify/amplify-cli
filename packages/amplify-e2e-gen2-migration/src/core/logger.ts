@@ -7,7 +7,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import os from 'os';
 
-const LOG_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'logs');
+const LOG_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'logs');
 
 export enum LogLevel {
   DEBUG = 'debug',

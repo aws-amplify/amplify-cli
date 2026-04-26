@@ -1,9 +1,9 @@
 import { ChangeAction } from '@aws-sdk/client-cloudformation';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
-import type { StackDriftNode, CloudFormationDriftResults } from '../../../../commands/drift-detection/detect-stack-drift';
-import type { TemplateDriftResults } from '../../../../commands/drift-detection/detect-template-drift';
-import type { LocalDriftResults } from '../../../../commands/drift-detection/detect-local-drift';
-import { createUnifiedCategoryView } from '../../../../commands/drift-detection/services/drift-formatter';
+import type { StackDriftNode, CloudFormationDriftResults } from '../../../../commands/drift/detect-stack-drift';
+import type { TemplateDriftResults } from '../../../../commands/drift/detect-template-drift';
+import type { LocalDriftResults } from '../../../../commands/drift/detect-local-drift';
+import { createUnifiedCategoryView } from '../../../../commands/drift/services/drift-formatter';
 
 // Mock chalk to pass through strings without ANSI codes
 jest.mock('chalk', () => {

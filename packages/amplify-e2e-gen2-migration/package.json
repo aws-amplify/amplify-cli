@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-gen2-migration-e2e-system",
+  "name": "@aws-amplify/amplify-e2e-gen2-migration",
   "private": true,
   "version": "1.0.0",
   "description": "Migration automation system for AWS Amplify Gen1 to Gen2",

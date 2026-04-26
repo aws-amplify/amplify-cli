@@ -844,7 +844,7 @@ function _runGen2MigrationE2E {
 
     # Run the e2e migration test
     echo "Starting migration E2E test for $MIGRATION_APP"
-    cd $CODEBUILD_SRC_DIR/packages/amplify-gen2-migration-e2e-system
+    cd $CODEBUILD_SRC_DIR/packages/amplify-e2e-gen2-migration
     npx tsx src/cli.ts --app $MIGRATION_APP ${TEARDOWN:+--teardown}
 
     echo "Migration E2E test completed for $MIGRATION_APP"

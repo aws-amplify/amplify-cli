@@ -17,12 +17,12 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 
 ### CLI Options
 
-| Option       | Alias | Description                                                                                                                                                          |
-| ------------ | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--app`      | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`.                                                                                   |
-| `--verbose`  | `-v`  | Enable debug-level logging.                                                                                                                                          |
-| `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to `migrate`.                                                                                              |
-| `--teardown` |       | Delete all deployed resources after execution.                                                                                                                       |
+| Option       | Alias | Description                                                                        |
+| ------------ | ----- | ---------------------------------------------------------------------------------- |
+| `--app`      | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`. |
+| `--verbose`  | `-v`  | Enable debug-level logging.                                                        |
+| `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to `migrate`.            |
+| `--teardown` |       | Delete all deployed resources after execution.                                     |
 
 ### Credential Refresh
 
@@ -163,7 +163,7 @@ yarn install && yarn build
 
 ### Logging
 
-Logs are written to both console and file. File logs go to `$TMPDIR/amplify-gen2-migration-e2e-system/logs/<deployment-name>.log`.
+Logs are written to both console and file. File logs go to `$TMPDIR/amplify-e2e-gen2-migration/logs/<deployment-name>.log`.
 
 ## FAQ
 

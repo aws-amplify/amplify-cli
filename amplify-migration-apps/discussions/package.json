@@ -19,7 +19,7 @@
     "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose --testPathIgnorePatterns='shared'",
     "test:shared": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose tests/shared-data.test.ts tests/shared-auth.test.ts",
     "test:shared-data": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose tests/shared-data.test.ts",
-    "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app discussions --profile ${AWS_PROFILE:-default} ${TEARDOWN:+--teardown}",
+    "test:e2e": "cd ../../packages/amplify-e2e-gen2-migration && npx tsx src/cli.ts --app discussions --profile ${AWS_PROFILE:-default} ${TEARDOWN:+--teardown}",
     "test:shared-auth": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose tests/shared-auth.test.ts",
     "pre-push": "true",
     "post-generate": "npx tsx migration/post-generate.ts",

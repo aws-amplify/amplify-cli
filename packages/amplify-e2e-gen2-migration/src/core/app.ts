@@ -12,8 +12,8 @@ import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 import { fromIni } from '@aws-sdk/credential-providers';
 
-const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
-const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
+const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
+const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'snapshots');
 const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
 
 interface MigrationConfig {

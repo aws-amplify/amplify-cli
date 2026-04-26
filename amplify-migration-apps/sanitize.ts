@@ -1,7 +1,7 @@
 #!/usr/bin/env npx tsx
 
 import * as path from 'path';
-import { sanitize } from '../packages/amplify-gen2-migration-e2e-system/src/core/sanitize';
+import { sanitize } from '../packages/amplify-e2e-gen2-migration/src/core/sanitize';
 
 /**
  * Sanitizes sensitive values in Amplify migration app snapshot files for safe public commit.
