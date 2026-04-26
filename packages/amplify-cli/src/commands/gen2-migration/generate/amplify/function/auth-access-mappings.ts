@@ -13,6 +13,15 @@ export const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>>
   VerifyAuthChallengeResponse: 'verifyAuthChallengeResponse',
 };
 
+/**
+ * Maps Gen2 `AuthAction` group names to the IAM actions they expand to.
+ *
+ * When all actions in a group are present in a Gen1 function's IAM policy,
+ * we emit the group name (e.g. `manageUsers`) in the generated `access` block
+ * instead of listing individual permissions. This mirrors the `iamActionMap`
+ * in the Gen2 backend-auth package:
+ * https://github.com/aws-amplify/amplify-backend/blob/%40aws-amplify/backend-auth%401.9.3/packages/backend-auth/src/userpool_access_policy_factory.ts#L63
+ */
 export const GROUPED_AUTH_PERMISSIONS: Readonly<Record<string, readonly string[]>> = {
   manageUsers: [
     'cognito-idp:AdminConfirmSignUp',
@@ -46,7 +55,18 @@ export const GROUPED_AUTH_PERMISSIONS: Readonly<Record<string, readonly string[]
   managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
 };
 
-export const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
+/**
+ * Maps individual IAM actions to their Gen2 `AuthAction` name.
+ *
+ * Used as a fallback when a Gen1 function's IAM policy contains individual
+ * cognito-idp actions that don't form a complete group (see
+ * {@link GROUPED_AUTH_PERMISSIONS}). Each action maps to the singular
+ * permission name used in the Gen2 `access` block.
+ *
+ * Source: `iamActionMap` in the Gen2 backend-auth package:
+ * https://github.com/aws-amplify/amplify-backend/blob/%40aws-amplify/backend-auth%401.9.3/packages/backend-auth/src/userpool_access_policy_factory.ts#L63
+ */
+export const SINGULAR_AUTH_PERMISSIONS: Readonly<Record<string, keyof AuthPermissions>> = {
   'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
   'cognito-idp:AdminCreateUser': 'createUser',
   'cognito-idp:AdminDeleteUser': 'deleteUser',
@@ -68,6 +88,10 @@ export const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>
   'cognito-idp:ListUsers': 'listUsers',
   'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
   'cognito-idp:ListGroups': 'listGroups',
+  'cognito-idp:CreateGroup': 'createGroup',
+  'cognito-idp:DeleteGroup': 'deleteGroup',
+  'cognito-idp:GetGroup': 'getGroup',
+  'cognito-idp:UpdateGroup': 'updateGroup',
   'cognito-idp:AdminConfirmSignUp': 'manageUsers',
   'cognito-idp:AdminRespondToAuthChallenge': 'manageUsers',
   'cognito-idp:AdminUserGlobalSignOut': 'manageUsers',

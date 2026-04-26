@@ -13,7 +13,7 @@ import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
 import { DEFINE_ANALYTICS_VARIABLE_NAME } from '../analytics/kinesis.generator';
-import { AUTH_ACTION_MAPPING, GROUPED_AUTH_PERMISSIONS, TRIGGER_SUFFIX_TO_EVENT } from './auth-mappers';
+import { SINGULAR_AUTH_PERMISSIONS, GROUPED_AUTH_PERMISSIONS, TRIGGER_SUFFIX_TO_EVENT } from './auth-access-mappings';
 
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
@@ -424,8 +424,8 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
   }
   for (const action of cognitoActions) {
     if (covered.has(action)) continue;
-    if (AUTH_ACTION_MAPPING[action]) {
-      result[AUTH_ACTION_MAPPING[action]] = true;
+    if (SINGULAR_AUTH_PERMISSIONS[action]) {
+      result[SINGULAR_AUTH_PERMISSIONS[action]] = true;
       covered.add(action);
     }
   }

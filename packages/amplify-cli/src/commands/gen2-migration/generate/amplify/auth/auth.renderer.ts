@@ -64,6 +64,10 @@ export interface AuthPermissions {
   readonly listGroupsForUser?: boolean;
   readonly listUsersInGroup?: boolean;
   readonly listGroups?: boolean;
+  readonly createGroup?: boolean;
+  readonly deleteGroup?: boolean;
+  readonly getGroup?: boolean;
+  readonly updateGroup?: boolean;
   readonly removeUserFromGroup?: boolean;
   readonly resetUserPassword?: boolean;
   readonly setUserMfaPreference?: boolean;
