@@ -1,5 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { newLineIdentifier, TS } from '../../_infra/ts';
+import { AnalyticsKinesisGenerator } from '../analytics/kinesis.generator';
 
 const factory = ts.factory;
 
@@ -18,15 +19,17 @@ export interface FunctionRenderOptions {
   readonly environment?: Readonly<Record<string, string>>;
   readonly escapeHatches: readonly EnvVarEscapeHatch[];
   readonly dynamoActions: readonly string[];
-  readonly kinesisActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
-  readonly triggerModels: readonly string[];
-  readonly hasKinesisTrigger: boolean;
-  readonly hasAnalytics: boolean;
-  readonly analyticsConstructType?: string;
-  readonly analyticsConstructImportPath?: string;
+  readonly dataTriggerModels: readonly string[];
+  readonly kinesisConfig?: KinesisConfig;
   readonly unMappedAuthActions: readonly string[];
   readonly storageTriggerTables: readonly string[];
+}
+
+export interface KinesisConfig {
+  readonly resourceName: string;
+  readonly actions: readonly string[];
+  readonly isTrigger: boolean;
 }
 
 /**
@@ -140,8 +143,14 @@ export class FunctionRenderer {
   }
 
   private renderAnalyticsTypeImport(opts: FunctionRenderOptions): ts.ImportDeclaration | undefined {
-    if (!opts.analyticsConstructType) return undefined;
-    return TS.typeImport(opts.analyticsConstructImportPath!, opts.analyticsConstructType);
+    if (!opts.kinesisConfig) return undefined;
+
+    // this is how the kinesis generator names the class and the file.
+    const kinesisResourceName = opts.kinesisConfig.resourceName;
+    const className = AnalyticsKinesisGenerator.className(kinesisResourceName);
+    const importPath = `../../analytics/${AnalyticsKinesisGenerator.fileName(kinesisResourceName)}`;
+
+    return TS.typeImport(importPath, className);
   }
 
   private renderCdkImports(additionalImports: Record<string, Set<string>>): ts.ImportDeclaration[] {
@@ -208,16 +217,16 @@ export class FunctionRenderer {
     }
 
     // Kinesis grants (addToRolePolicy)
-    if (opts.kinesisActions.length > 0) {
+    if (opts.kinesisConfig && opts.kinesisConfig.actions.length > 0) {
       additionalImports['aws-cdk-lib'] = new Set(['aws_iam']);
-      statements.push(createKinesisGrant(opts.resourceName, opts.kinesisActions));
+      statements.push(createKinesisGrant(opts.resourceName, opts.kinesisConfig.actions));
     }
 
     // DynamoDB triggers
-    if (opts.triggerModels.length > 0) {
+    if (opts.dataTriggerModels.length > 0) {
       additionalImports['aws-cdk-lib/aws-lambda-event-sources'] = new Set(['DynamoEventSource']);
       additionalImports['aws-cdk-lib/aws-lambda'] = new Set(['StartingPosition']);
-      statements.push(createDynamoTrigger(opts.resourceName, opts.triggerModels));
+      statements.push(createDynamoTrigger(opts.resourceName, opts.dataTriggerModels));
     }
 
     // Storage DynamoDB triggers (standalone tables, not AppSync-managed)
@@ -234,7 +243,7 @@ export class FunctionRenderer {
     }
 
     // Kinesis triggers
-    if (opts.hasKinesisTrigger) {
+    if (opts.kinesisConfig?.isTrigger) {
       if (!additionalImports['aws-cdk-lib/aws-lambda-event-sources']) {
         additionalImports['aws-cdk-lib/aws-lambda-event-sources'] = new Set();
       }
@@ -275,14 +284,14 @@ export class FunctionRenderer {
     }
 
     // Add analytics parameter if needed
-    if (opts.hasAnalytics && opts.analyticsConstructType) {
+    if (opts.kinesisConfig) {
       extraParams.push(
         factory.createParameterDeclaration(
           undefined,
           undefined,
           'analytics',
           undefined,
-          factory.createTypeReferenceNode(opts.analyticsConstructType),
+          factory.createTypeReferenceNode(AnalyticsKinesisGenerator.className(opts.kinesisConfig.resourceName)),
         ),
       );
     }

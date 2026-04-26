@@ -12,6 +12,7 @@ import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
+import { DEFINE_ANALYTICS_VARIABLE_NAME } from '../analytics/kinesis.generator';
 
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
@@ -69,13 +70,11 @@ export class FunctionGenerator implements Planner {
     const graphqlApiPermissions = this.extractGraphqlPermissions();
     const { authAccess, unMappedAuthActions } = this.extractAuthPermissions();
 
-    const triggerModels = this.detectDataTriggerModels();
+    const dataTriggerModels = this.detectDataTriggerModels();
     const storageTriggerTables = this.detectDynamoTriggerTables();
-    const hasKinesisTrigger = this.hasKinesisTrigger();
+    const isKinesisTrigger = this.isKinesisTrigger();
 
-    const hasAnalytics = kinesisActions.length > 0 || hasKinesisTrigger;
-    const analyticsConstructType = hasAnalytics ? this.findAnalyticsConstructType() : undefined;
-    const analyticsConstructImportPath = hasAnalytics ? this.getAnalyticsConstructImportPath() : undefined;
+    const hasAnalytics = kinesisActions.length > 0 || isKinesisTrigger;
 
     const renderOpts: FunctionRenderOptions = {
       resourceName,
@@ -88,15 +87,17 @@ export class FunctionGenerator implements Planner {
       environment,
       escapeHatches,
       dynamoActions,
-      kinesisActions,
       graphqlApiPermissions,
-      triggerModels,
-      hasKinesisTrigger,
-      hasAnalytics: hasAnalytics && !!analyticsConstructType,
-      analyticsConstructType,
-      analyticsConstructImportPath,
-      unMappedAuthActions,
+      dataTriggerModels,
       storageTriggerTables,
+      unMappedAuthActions,
+      kinesisConfig: hasAnalytics
+        ? {
+            resourceName: this.gen1App.singleResourceName('analytics', 'Kinesis'),
+            actions: kinesisActions,
+            isTrigger: isKinesisTrigger,
+          }
+        : undefined,
     };
 
     this.contributeDependencies();
@@ -134,31 +135,13 @@ export class FunctionGenerator implements Planner {
           for (const t of storageTriggerTables) storageTableArgs.add(t);
 
           const extraArgs: string[] = [...storageTableArgs];
-          if (hasAnalytics && analyticsConstructType) {
-            extraArgs.push('analyticsResult');
+          if (hasAnalytics) {
+            extraArgs.push(DEFINE_ANALYTICS_VARIABLE_NAME);
           }
           this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs });
         },
       },
     ];
-  }
-
-  private findAnalyticsConstructType(): string | undefined {
-    const cat = this.gen1App.categoryMeta('analytics');
-    if (!cat) return undefined;
-    for (const [name] of Object.entries(cat)) {
-      return name.charAt(0).toUpperCase() + name.slice(1);
-    }
-    return undefined;
-  }
-
-  private getAnalyticsConstructImportPath(): string | undefined {
-    const cat = this.gen1App.categoryMeta('analytics');
-    if (!cat) return undefined;
-    for (const [name] of Object.entries(cat)) {
-      return `../../analytics/${name}-construct`.toLowerCase();
-    }
-    return undefined;
   }
 
   private contributeAuthAccess(authAccess: AuthPermissions): void {
@@ -305,7 +288,7 @@ export class FunctionGenerator implements Planner {
     return tables;
   }
 
-  private hasKinesisTrigger(): boolean {
+  private isKinesisTrigger(): boolean {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     const template = this.gen1App.json(templatePath);
     for (const resource of Object.values(template.Resources ?? {})) {

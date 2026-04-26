@@ -11,6 +11,11 @@ import { TS } from '../../_infra/ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
 import * as prettier from 'prettier';
 
+// e.g `const analyticsResult = definedAnalytics(...)`
+// an exported constant because the function generator needs this as well
+// to instruct backend.ts to pass this variable to the applyEscapeHatch call.
+export const DEFINE_ANALYTICS_VARIABLE_NAME = 'analyticsResult';
+
 /**
  * Generates a single Kinesis analytics resource and contributes to backend.ts.
  *
@@ -38,8 +43,8 @@ export class AnalyticsKinesisGenerator implements Planner {
     const logicalId = resourceMeta.providerMetadata.logicalId;
 
     const resourceName = this.resource.resourceName;
-    const constructFileName = `${resourceName}-construct`.toLowerCase();
-    const constructClassName = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
+    const constructFileName = AnalyticsKinesisGenerator.fileName(resourceName);
+    const constructClassName = AnalyticsKinesisGenerator.className(resourceName);
     const constructFilePath = path.join(this.outputDir, 'amplify', 'analytics', `${constructFileName}.ts`);
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
 
@@ -84,11 +89,19 @@ export class AnalyticsKinesisGenerator implements Planner {
           await fs.writeFile(path.join(analyticsDir, 'resource.ts'), content, 'utf-8');
 
           this.backendGenerator.addNamespaceImport('analytics', './analytics/resource');
-          this.backendGenerator.addPostDefineBackendCall('analyticsResult', `analytics.defineAnalytics(backend)`);
-          this.backendGenerator.addPostRefactorCall(`analytics.postRefactor(analyticsResult);`);
+          this.backendGenerator.addPostDefineBackendCall(DEFINE_ANALYTICS_VARIABLE_NAME, `analytics.defineAnalytics(backend)`);
+          this.backendGenerator.addPostRefactorCall(`analytics.postRefactor(${DEFINE_ANALYTICS_VARIABLE_NAME});`);
         },
       },
     ];
+  }
+
+  public static className(resourceName: string): string {
+    return resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
+  }
+
+  public static fileName(resourceName: string): string {
+    return `${resourceName}-construct`.toLowerCase();
   }
 
   private async fetchNestedStackParameters(logicalId: string): Promise<Parameter[]> {
