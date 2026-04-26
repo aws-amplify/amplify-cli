@@ -13,7 +13,7 @@ import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
 import { DEFINE_ANALYTICS_VARIABLE_NAME } from '../analytics/kinesis.generator';
-import { SINGULAR_AUTH_PERMISSIONS, GROUPED_AUTH_PERMISSIONS, TRIGGER_SUFFIX_TO_EVENT } from './auth-access-mappings';
+import { SINGULAR_AUTH_PERMISSIONS, GROUPED_AUTH_PERMISSIONS, AUTH_TRIGGER_SUFFIX_TO_EVENT } from './auth-mappings';
 
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
@@ -144,7 +144,7 @@ export class FunctionGenerator implements Planner {
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     if (!this.resource.resourceName.startsWith(authResourceName)) return;
     const suffix = this.resource.resourceName.slice(authResourceName.length);
-    const event = TRIGGER_SUFFIX_TO_EVENT[suffix];
+    const event = AUTH_TRIGGER_SUFFIX_TO_EVENT[suffix];
     if (event) this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
   }
 

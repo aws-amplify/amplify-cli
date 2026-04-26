@@ -8,7 +8,7 @@ import type { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
  * event key. Source: `triggerEvents` in the Gen2 auth-construct package:
  * https://github.com/aws-amplify/amplify-backend/blob/%40aws-amplify/auth-construct%401.11.2/packages/auth-construct/src/trigger_events.ts#L5
  */
-export const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {
+export const AUTH_TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {
   PreSignup: 'preSignUp',
   CustomMessage: 'customMessage',
   UserMigration: 'userMigration',
