@@ -11,7 +11,7 @@ import {
 import { IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
 import { newLineIdentifier, TS } from '../../ts';
-import { AUTH_REFACTORED_RESOURCES } from '../../../_common/resource-types';
+import { AUTH_RESOURCES_TO_RETAIN } from '../../../_common/resource-types';
 
 /**
  * A registered auth trigger — contributed by the function generator.
@@ -1004,7 +1004,7 @@ export class AuthRenderer {
       statements.push(...this.buildProviderSetupStatements());
     }
 
-    statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_REFACTORED_RESOURCES));
+    statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
 
     return statements;
   }

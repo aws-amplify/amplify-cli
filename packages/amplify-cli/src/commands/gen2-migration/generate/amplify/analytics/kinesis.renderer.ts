@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../ts';
 import { DiscoveredResource } from '../../../_common/gen1-app';
-import { ANALYTICS_REFACTORED_RESOURCES } from '../../../_common/resource-types';
+import { ANALYTICS_RESOURCES_TO_RETAIN } from '../../../_common/resource-types';
 
 const factory = ts.factory;
 
@@ -128,7 +128,7 @@ export class AnalyticsRenderer {
     return TS.exportedFunction('defineAnalytics', [
       stackCall,
       constructInstantiation,
-      TS.retentionLoop(TS.propAccess('stack', 'node'), ANALYTICS_REFACTORED_RESOURCES),
+      TS.retentionLoop(TS.propAccess('stack', 'node'), ANALYTICS_RESOURCES_TO_RETAIN),
       factory.createReturnStatement(factory.createIdentifier('analytics')),
     ]);
   }

@@ -37,7 +37,7 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::Cognito::IdentityPool',
 ]);
 
-export const AUTH_REFACTORED_RESOURCES = [
+export const AUTH_RESOURCES_TO_RETAIN = [
   'AWS::Cognito::UserPool',
   'AWS::Cognito::IdentityPool',
   'AWS::Cognito::UserPoolClient',
@@ -45,14 +45,23 @@ export const AUTH_REFACTORED_RESOURCES = [
   'AWS::Cognito::UserPoolGroup',
 ];
 
-export const STORAGE_S3_REFACTORED_RESOURCES = ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'];
-export const STORAGE_DYNAMO_REFACTORED_RESOURCES = ['AWS::DynamoDB::Table'];
+export const STORAGE_S3_RESOURCES_TO_RETAIN = [
+  'AWS::S3::Bucket',
 
-export const ANALYTICS_REFACTORED_RESOURCES = ['AWS::Kinesis::Stream'];
+  // CDK custom resource that only exists in the Gen2 stack. we need to explicitly retain
+  // this because after refactor, the bucket name this resource Refs to changes
+  // and CloudFormation triggers a Delete event - which will cause the data in the Gen2 (not the Gen1)
+  // bucket to be deleted. since we retain the bucket, lets make sure the data is retained as well.
+  // see https://github.com/aws/aws-cdk/blob/c983471c1b3576b6daa8a0809573c2d165aca870/packages/%40aws-cdk/custom-resource-handlers/lib/aws-s3/auto-delete-objects-handler/index.ts#L29-L35
+  'Custom::S3AutoDeleteObjects',
+];
+export const STORAGE_DYNAMO_RESOURCES_TO_RETAIN = ['AWS::DynamoDB::Table'];
 
-export const REFACTORED_RESOURCES = [
-  ...AUTH_REFACTORED_RESOURCES,
-  ...STORAGE_S3_REFACTORED_RESOURCES,
-  ...STORAGE_DYNAMO_REFACTORED_RESOURCES,
-  ...ANALYTICS_REFACTORED_RESOURCES,
+export const ANALYTICS_RESOURCES_TO_RETAIN = ['AWS::Kinesis::Stream'];
+
+export const RESOURCES_TO_RETAIN = [
+  ...AUTH_RESOURCES_TO_RETAIN,
+  ...STORAGE_S3_RESOURCES_TO_RETAIN,
+  ...STORAGE_DYNAMO_RESOURCES_TO_RETAIN,
+  ...ANALYTICS_RESOURCES_TO_RETAIN,
 ];

@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import { newLineIdentifier, TS } from '../../ts';
-import { STORAGE_DYNAMO_REFACTORED_RESOURCES } from '../../../_common/resource-types';
+import { STORAGE_DYNAMO_RESOURCES_TO_RETAIN } from '../../../_common/resource-types';
 
 const factory = ts.factory;
 
@@ -97,7 +97,7 @@ export class DynamoDBRenderer {
 
     bodyStatements.push(...this.buildTableStatements(table, scopeVarName));
 
-    bodyStatements.push(TS.retentionLoop(TS.propAccess(scopeVarName, 'node'), STORAGE_DYNAMO_REFACTORED_RESOURCES));
+    bodyStatements.push(TS.retentionLoop(TS.propAccess(scopeVarName, 'node'), STORAGE_DYNAMO_RESOURCES_TO_RETAIN));
 
     if (hasGSIs) {
       bodyStatements.push(factory.createReturnStatement(factory.createIdentifier(sanitizedName)));

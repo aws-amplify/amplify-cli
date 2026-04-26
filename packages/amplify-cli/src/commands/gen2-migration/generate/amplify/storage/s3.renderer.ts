@@ -1,7 +1,7 @@
 import ts, { CallExpression } from 'typescript';
 import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionConfiguration } from '@aws-sdk/client-s3';
 import { newLineIdentifier, TS } from '../../ts';
-import { STORAGE_S3_REFACTORED_RESOURCES } from '../../../_common/resource-types';
+import { STORAGE_S3_RESOURCES_TO_RETAIN } from '../../../_common/resource-types';
 
 const factory = ts.factory;
 
@@ -163,7 +163,7 @@ export class S3Renderer {
       statements.push(this.renderEncryption(opts.encryption.Rules[0]));
     }
 
-    statements.push(TS.retentionLoop(TS.propAccess('backend', 'storage', 'stack', 'node'), STORAGE_S3_REFACTORED_RESOURCES));
+    statements.push(TS.retentionLoop(TS.propAccess('backend', 'storage', 'stack', 'node'), STORAGE_S3_RESOURCES_TO_RETAIN));
 
     return TS.exportedFunction('applyEscapeHatches', statements);
   }

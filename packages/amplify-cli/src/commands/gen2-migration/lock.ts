@@ -14,7 +14,7 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
-import { REFACTORED_RESOURCES } from './_common/resource-types';
+import { RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
 
@@ -391,7 +391,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const template = await cfn.fetchTemplate(stackId);
 
     for (const resource of Object.values(template.Resources)) {
-      if (REFACTORED_RESOURCES.includes(resource.Type)) {
+      if (RESOURCES_TO_RETAIN.includes(resource.Type)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
