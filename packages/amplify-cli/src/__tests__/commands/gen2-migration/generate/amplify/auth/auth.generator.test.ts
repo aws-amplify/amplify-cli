@@ -979,220 +979,7 @@ describe('AuthGenerator', () => {
       `);
   });
 
-  it('generates OIDC provider', async () => {
-    const gen1App = await createGen1App({
-      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      auth: {
-        testAuth: {
-          service: 'Cognito',
-          output: {
-            UserPoolId: 'us-east-1_abc123',
-            AppClientIDWeb: 'webclient123',
-            AppClientID: 'client123',
-            IdentityPoolId: 'us-east-1:idpool',
-          },
-        },
-      },
-    });
-    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
-    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
-    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
-      IdentityPoolId: 'us-east-1:idpool',
-      IdentityPoolName: 'test-pool',
-      AllowUnauthenticatedIdentities: true,
-    });
-    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
-      {
-        ProviderType: IdentityProviderTypeType.OIDC,
-        ProviderName: 'MyOIDC',
-        ProviderDetails: {
-          oidc_issuer: 'https://accounts.google.com',
-          authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth',
-          token_url: 'https://oauth2.googleapis.com/token',
-          attributes_url: 'https://openidconnect.googleapis.com/v1/userinfo',
-          jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
-        },
-      },
-    ]);
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
-      CallbackURLs: ['https://example.com/callback'],
-      LogoutURLs: ['https://example.com/logout'],
-    });
-
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-    const ops = await generator.plan();
-    await ops[0].execute();
-    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              oidc: [
-                {
-                  clientId: secret('OIDC_CLIENT_ID_1'),
-                  clientSecret: secret('OIDC_CLIENT_SECRET_1'),
-                  issuerUrl: 'https://accounts.google.com',
-                  name: 'MyOIDC',
-                  endpoints: {
-                    authorization: 'https://accounts.google.com/o/oauth2/v2/auth',
-                    token: 'https://oauth2.googleapis.com/token',
-                    userInfo: 'https://openidconnect.googleapis.com/v1/userinfo',
-                    jwksUri: 'https://www.googleapis.com/oauth2/v3/certs',
-                  },
-                },
-              ],
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            oAuth: {
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-  });
-
-  it('generates SAML provider', async () => {
-    const gen1App = await createGen1App({
-      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
-      auth: {
-        testAuth: {
-          service: 'Cognito',
-          output: {
-            UserPoolId: 'us-east-1_abc123',
-            AppClientIDWeb: 'webclient123',
-            AppClientID: 'client123',
-            IdentityPoolId: 'us-east-1:idpool',
-          },
-        },
-      },
-    });
-    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
-    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
-    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
-      IdentityPoolId: 'us-east-1:idpool',
-      IdentityPoolName: 'test-pool',
-      AllowUnauthenticatedIdentities: true,
-    });
-    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
-      {
-        ProviderType: IdentityProviderTypeType.SAML,
-        ProviderName: 'MySAML',
-        ProviderDetails: {
-          metadataURL: 'https://idp.example.com/metadata',
-        },
-      },
-    ]);
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
-      CallbackURLs: ['https://example.com/callback'],
-      LogoutURLs: ['https://example.com/logout'],
-    });
-
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-    const ops = await generator.plan();
-    await ops[0].execute();
-    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
-
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              saml: {
-                metadata: {
-                  metadataContent: 'https://idp.example.com/metadata',
-                  metadataType: 'URL',
-                },
-                name: 'MySAML',
-              },
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-        });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            oAuth: {
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
-        }
-        "
-      `);
-  });
-
-  it('generates multiple providers together', async () => {
+  it('generates external providers', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       auth: {
@@ -1218,7 +1005,24 @@ describe('AuthGenerator', () => {
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
       { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
       { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
+      { ProviderType: IdentityProviderTypeType.LoginWithAmazon, ProviderName: 'LoginWithAmazon' },
       { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
+      {
+        ProviderType: IdentityProviderTypeType.OIDC,
+        ProviderName: 'MyOIDC',
+        ProviderDetails: {
+          oidc_issuer: 'https://accounts.google.com',
+          authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth',
+          token_url: 'https://oauth2.googleapis.com/token',
+          attributes_url: 'https://openidconnect.googleapis.com/v1/userinfo',
+          jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
+        },
+      },
+      {
+        ProviderType: IdentityProviderTypeType.SAML,
+        ProviderName: 'MySAML',
+        ProviderDetails: { metadataURL: 'https://idp.example.com/metadata' },
+      },
     ]);
     jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
       CallbackURLs: ['https://example.com/callback'],
@@ -1229,71 +1033,96 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth, secret } from '@aws-amplify/backend';
-        import { CfnResource, Duration } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth, secret } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-            externalProviders: {
-              google: {
-                clientId: secret('GOOGLE_CLIENT_ID'),
-                clientSecret: secret('GOOGLE_CLIENT_SECRET'),
-              },
-              signInWithApple: {
-                clientId: secret('SIWA_CLIENT_ID'),
-                keyId: secret('SIWA_KEY_ID'),
-                privateKey: secret('SIWA_PRIVATE_KEY'),
-                teamId: secret('SIWA_TEAM_ID'),
-              },
-              facebook: {
-                clientId: secret('FACEBOOK_CLIENT_ID'),
-                clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
-              },
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+          externalProviders: {
+            google: {
+              clientId: secret('GOOGLE_CLIENT_ID'),
+              clientSecret: secret('GOOGLE_CLIENT_SECRET'),
             },
+            signInWithApple: {
+              clientId: secret('SIWA_CLIENT_ID'),
+              keyId: secret('SIWA_KEY_ID'),
+              privateKey: secret('SIWA_PRIVATE_KEY'),
+              teamId: secret('SIWA_TEAM_ID'),
+            },
+            loginWithAmazon: {
+              clientId: secret('LOGINWITHAMAZON_CLIENT_ID'),
+              clientSecret: secret('LOGINWITHAMAZON_CLIENT_SECRET'),
+            },
+            facebook: {
+              clientId: secret('FACEBOOK_CLIENT_ID'),
+              clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
+            },
+            saml: {
+              metadata: {
+                metadataContent: 'https://idp.example.com/metadata',
+                metadataType: 'URL',
+              },
+              name: 'MySAML',
+            },
+            oidc: [
+              {
+                clientId: secret('OIDC_CLIENT_ID_1'),
+                clientSecret: secret('OIDC_CLIENT_SECRET_1'),
+                issuerUrl: 'https://accounts.google.com',
+                name: 'MyOIDC',
+                endpoints: {
+                  authorization: 'https://accounts.google.com/o/oauth2/v2/auth',
+                  token: 'https://oauth2.googleapis.com/token',
+                  userInfo: 'https://openidconnect.googleapis.com/v1/userinfo',
+                  jwksUri: 'https://www.googleapis.com/oauth2/v3/certs',
+                },
+              },
+            ],
+            callbackUrls: ['https://example.com/callback'],
+            logoutUrls: ['https://example.com/logout'],
           },
-          multifactor: {
-            mode: 'OFF',
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        userPool.addClient('NativeAppClient', {
+          oAuth: {
+            callbackUrls: ['https://example.com/callback'],
+            logoutUrls: ['https://example.com/logout'],
           },
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const userPool = backend.auth.resources.userPool;
-          userPool.addClient('NativeAppClient', {
-            oAuth: {
-              callbackUrls: ['https://example.com/callback'],
-              logoutUrls: ['https://example.com/logout'],
-            },
-            disableOAuth: true,
-            generateSecret: false,
-          });
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
         }
-        "
-      `);
+      }
+      "
+    `);
   });
 
   it('generates function auth access rules', async () => {
