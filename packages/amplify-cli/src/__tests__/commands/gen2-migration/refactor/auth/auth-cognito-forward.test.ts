@@ -1,7 +1,7 @@
 import { AuthCognitoForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
-import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
-import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_common/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -19,7 +19,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';
-import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
+import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;

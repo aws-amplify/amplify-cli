@@ -1,13 +1,13 @@
 import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
-import { Planner } from '../../_infra/planner';
-import { AmplifyMigrationOperation, ValidationResult } from '../../_infra/operation';
+import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
+import { Planner } from '../../_common/planner';
+import { AmplifyMigrationOperation, ValidationResult } from '../../_common/operation';
 import { StackFacade } from '../stack-facade';
-import { Cfn, HOLDING_STACK_NAME_SUFFIX } from '../cfn';
-import { SpinningLogger } from '../../_infra/spinning-logger';
-import { extractStackNameFromId } from '../utils';
-import { DiscoveredResource, Gen1App } from '../../generate/_infra/gen1-app';
+import { Cfn, HOLDING_STACK_NAME_SUFFIX } from '../../_common/cfn';
+import { SpinningLogger } from '../../_common/spinning-logger';
+import { extractStackNameFromId } from '../../_common/utils';
+import { DiscoveredResource, Gen1App } from '../../_common/gen1-app';
 import CLITable from 'cli-table3';
 
 const MAX_STACK_NAME_LENGTH = 128;

@@ -15,7 +15,7 @@ import { SpinningLogger } from './spinning-logger';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { extractCategory } from './categories';
-import { Gen1App } from '../generate/_infra/gen1-app';
+import { Gen1App } from './gen1-app';
 
 export class AmplifyGen2MigrationValidations {
   private readonly limiter = new Bottleneck({

@@ -14,9 +14,9 @@ import {
   type DescribeStackDriftDetectionStatusCommandOutput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { extractCategory } from '../gen2-migration/_infra/categories';
-import type { SpinningLogger } from '../gen2-migration/_infra/spinning-logger';
-import { extractStackNameFromId } from '../gen2-migration/refactor/utils';
+import { extractCategory } from '../gen2-migration/_common/categories';
+import type { SpinningLogger } from '../gen2-migration/_common/spinning-logger';
+import { extractStackNameFromId } from '../gen2-migration/_common/utils';
 
 /**
  * Known false-positive filters applied to Phase 1 drift results.

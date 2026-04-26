@@ -1,13 +1,13 @@
 import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource } from '../../_infra/cfn-template';
-import { AmplifyMigrationOperation } from '../../_infra/operation';
+import { CFNResource } from '../../_common/cfn-template';
+import { AmplifyMigrationOperation } from '../../_common/operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
-import { extractStackNameFromId } from '../utils';
+import { extractStackNameFromId } from '../../_common/utils';
 import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
-import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../../_common/cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).

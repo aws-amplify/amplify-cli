@@ -1,5 +1,5 @@
 import ts, { PropertyAssignment } from 'typescript';
-import { TS } from '../../_infra/ts';
+import { TS } from '../../ts';
 
 const factory = ts.factory;
 

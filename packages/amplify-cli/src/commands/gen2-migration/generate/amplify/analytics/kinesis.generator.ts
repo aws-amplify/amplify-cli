@@ -3,11 +3,11 @@ import fs from 'node:fs/promises';
 import * as cdkFromCfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
-import { Planner } from '../../../_infra/planner';
-import { AmplifyMigrationOperation } from '../../../_infra/operation';
+import { Planner } from '../../../_common/planner';
+import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
+import { TS } from '../../ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
 import * as prettier from 'prettier';
 

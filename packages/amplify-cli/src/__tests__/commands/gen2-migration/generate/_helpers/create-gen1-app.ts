@@ -1,5 +1,5 @@
-import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
+import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
 import { JSONUtilities, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as os from 'os';

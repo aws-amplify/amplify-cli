@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { TS } from '../../../../../commands/gen2-migration/generate/_infra/ts';
+import { TS } from '../../../../../commands/gen2-migration/generate/ts';
 
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const sourceFile = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);

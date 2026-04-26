@@ -1,10 +1,9 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import * as yaml from 'yaml';
-import { Planner } from '../_infra/planner';
-import { AmplifyMigrationOperation } from '../_infra/operation';
-import { Gen1App } from './_infra/gen1-app';
-import { fileOrDirectoryExists } from './_infra/files';
+import { Planner } from '../_common/planner';
+import { AmplifyMigrationOperation } from '../_common/operation';
+import { Gen1App } from '../_common/gen1-app';
 
 const GEN1_COMMAND = '- amplifyPush\\b.*';
 const GEN2_INSTALL_COMMAND = '- npm ci --cache .npm --prefer-offline';
@@ -92,4 +91,14 @@ export class AmplifyYmlGenerator implements Planner {
       },
     ];
   }
+}
+
+/**
+ * Checks if a file or directory exists at the given path.
+ */
+export async function fileOrDirectoryExists(targetPath: string): Promise<boolean> {
+  return fs
+    .access(targetPath)
+    .then(() => true)
+    .catch(() => false);
 }

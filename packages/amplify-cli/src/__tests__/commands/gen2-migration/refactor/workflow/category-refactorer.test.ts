@@ -2,9 +2,9 @@ import { StorageS3ForwardRefactorer } from '../../../../../commands/gen2-migrati
 import { StorageS3RollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-rollback';
 import { AnalyticsKinesisForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
-import { CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
-import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/_common/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -19,7 +19,7 @@ import {
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
-import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
+import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -363,7 +363,7 @@ describe('Analytics wiring tests', () => {
   });
 });
 
-import { MIGRATION_PLACEHOLDER_LOGICAL_ID, MIGRATION_PLACEHOLDER_RESOURCE } from '../../../../../commands/gen2-migration/refactor/cfn';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID, MIGRATION_PLACEHOLDER_RESOURCE } from '../../../../../commands/gen2-migration/_common/cfn';
 
 describe('stack status validation', () => {
   let cfnMock: ReturnType<typeof mockClient>;

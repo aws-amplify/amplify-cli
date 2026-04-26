@@ -1,4 +1,4 @@
-import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
+import { DiscoveredResource, Gen1App } from '../../../_common/gen1-app';
 import type { GeoResourceProps } from './geo.generator';
 import { GeoResourceGenerator } from './geo-resource.generator';
 import { GeoGenerator } from './geo.generator';

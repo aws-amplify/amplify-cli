@@ -1,5 +1,5 @@
 import { AmplifyMigrationAssessor } from '../../../commands/gen2-migration/assess';
-import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/_common/gen1-app';
 
 function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = [], jsonFiles: Record<string, unknown> = {}): Gen1App {
   const fileSet = new Set(existingFiles);

@@ -1,5 +1,5 @@
 import { AmplifyYmlGenerator } from '../../../../commands/gen2-migration/generate/amplify.yml.generator';
-import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App } from '../../../../commands/gen2-migration/_common/gen1-app';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';

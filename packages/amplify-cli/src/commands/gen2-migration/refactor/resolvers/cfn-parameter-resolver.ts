@@ -1,6 +1,6 @@
 import { Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNTemplate, CFN_PSEUDO_PARAMETERS_REF } from '../../_infra/cfn-template';
+import { CFNTemplate, CFN_PSEUDO_PARAMETERS_REF } from '../../_common/cfn-template';
 import { walkCfnTree } from './cfn-tree-walker';
 
 /**

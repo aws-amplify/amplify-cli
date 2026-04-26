@@ -1,5 +1,5 @@
 import { Assessment, unsupported } from './assess/assessment';
-import { Gen1App } from './generate/_infra/gen1-app';
+import { Gen1App } from './_common/gen1-app';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { Assessor } from './assess/assessor';
 import { AuthCognitoAssessor } from './assess/auth/auth-cognito.assessor';

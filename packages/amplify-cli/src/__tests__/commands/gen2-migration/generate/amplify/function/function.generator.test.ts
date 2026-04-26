@@ -1,7 +1,7 @@
 import { FunctionGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/function/function.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
-import { Gen1App } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');

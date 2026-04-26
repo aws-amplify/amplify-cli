@@ -1,10 +1,10 @@
 import { AmplifyMigrationRefactorStep } from '../../../commands/gen2-migration/refactor';
-import { OUTPUT_DIRECTORY } from '../../../commands/gen2-migration/refactor/cfn';
+import { OUTPUT_DIRECTORY } from '../../../commands/gen2-migration/_common/cfn';
 import { MigrationApp, MigrationAppOptions } from './_framework/app';
-import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
+import { Gen1App } from '../../../commands/gen2-migration/_common/gen1-app';
+import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_common/validations';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

@@ -1,11 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { AmplifyMigrationOperation } from '../../../_infra/operation';
+import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { Planner } from '../../../_infra/planner';
+import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
+import { TS } from '../../ts';
 import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars, DynamicEnvVar } from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions } from '../auth/auth.renderer';

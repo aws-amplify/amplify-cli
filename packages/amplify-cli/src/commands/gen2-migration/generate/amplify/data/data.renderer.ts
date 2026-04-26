@@ -1,6 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
-import { newLineIdentifier, TS } from '../../_infra/ts';
+import { newLineIdentifier, TS } from '../../ts';
 
 const factory = ts.factory;
 

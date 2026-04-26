@@ -1,9 +1,9 @@
 import { RollbackCategoryRefactorer } from '../../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
-import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
-import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_common/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
-import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
+import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {

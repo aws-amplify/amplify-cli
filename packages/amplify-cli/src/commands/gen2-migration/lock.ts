@@ -1,6 +1,6 @@
-import { AmplifyMigrationStep } from './_infra/step';
-import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
-import { Plan } from './_infra/plan';
+import { AmplifyMigrationStep } from './_common/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_common/operation';
+import { Plan } from './_common/plan';
 import {
   DescribeChangeSetOutput,
   DescribeStackResourcesCommand,
@@ -11,12 +11,12 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { paginateListTables } from '@aws-sdk/client-dynamodb';
-import { DiscoveredResource } from './generate/_infra/gen1-app';
-import { extractStackNameFromId } from './refactor/utils';
-import { Cfn } from './refactor/cfn';
-import { REFACTORED_RESOURCES } from './_infra/resource-types';
+import { DiscoveredResource } from './_common/gen1-app';
+import { extractStackNameFromId } from './_common/utils';
+import { Cfn } from './_common/cfn';
+import { REFACTORED_RESOURCES } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift-detection/detect-template-drift';
+import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 

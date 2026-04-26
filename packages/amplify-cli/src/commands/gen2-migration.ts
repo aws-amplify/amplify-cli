@@ -1,16 +1,16 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AmplifyMigrationStep } from './gen2-migration/_infra/step';
+import { AmplifyMigrationStep } from './gen2-migration/_common/step';
 import { printer, prompter, isDebug } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
-import { SpinningLogger } from './gen2-migration/_infra/spinning-logger';
+import { SpinningLogger } from './gen2-migration/_common/spinning-logger';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
-import { Gen1App } from './gen2-migration/generate/_infra/gen1-app';
-import { Plan } from './gen2-migration/_infra/plan';
-import { AmplifyGen2MigrationValidations } from './gen2-migration/_infra/validations';
+import { Gen1App } from './gen2-migration/_common/gen1-app';
+import { Plan } from './gen2-migration/_common/plan';
+import { AmplifyGen2MigrationValidations } from './gen2-migration/_common/validations';
 
 const STEPS = {
   lock: {

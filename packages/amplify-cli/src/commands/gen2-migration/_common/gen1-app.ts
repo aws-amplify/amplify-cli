@@ -6,7 +6,7 @@ import { Stream } from 'node:stream';
 import unzipper from 'unzipper';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { $TSAny, $TSContext, $TSMeta, AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { AwsClients } from '../../_infra/aws-clients';
+import { AwsClients } from './aws-clients';
 import { AwsFetcher } from './aws-fetcher';
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { App, GetAppCommand } from '@aws-sdk/client-amplify';

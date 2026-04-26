@@ -1,6 +1,6 @@
 import { StorageDynamoRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-dynamo-rollback';
-import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
+import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
+import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 import { noOpLogger } from '../../_framework/logger';
 
 describe('StorageDynamoRollbackRefactorer.targetLogicalId', () => {

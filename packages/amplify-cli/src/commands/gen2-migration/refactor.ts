@@ -1,11 +1,11 @@
 /* eslint-disable spellcheck/spell-checker */
-import { AmplifyMigrationStep } from './_infra/step';
-import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
-import { Plan } from './_infra/plan';
+import { AmplifyMigrationStep } from './_common/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_common/operation';
+import { Plan } from './_common/plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { StackFacade } from './refactor/stack-facade';
-import { Planner } from './_infra/planner';
+import { Planner } from './_common/planner';
 import { AuthCognitoForwardRefactorer } from './refactor/auth/auth-cognito-forward';
 import { AuthCognitoRollbackRefactorer } from './refactor/auth/auth-cognito-rollback';
 import { StorageS3ForwardRefactorer } from './refactor/storage/storage-forward';
@@ -17,7 +17,7 @@ import { AnalyticsKinesisRollbackRefactorer } from './refactor/analytics/analyti
 import { Assessment } from './assess/assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './refactor/auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './refactor/auth/auth-user-pool-groups-rollback';
-import { Cfn } from './refactor/cfn';
+import { Cfn } from './_common/cfn';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './assess';

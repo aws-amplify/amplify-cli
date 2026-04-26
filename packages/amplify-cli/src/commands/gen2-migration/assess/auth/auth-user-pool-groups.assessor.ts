@@ -1,6 +1,6 @@
 import { Assessor } from '../assessor';
 import { Assessment, supported, unsupported, notApplicable } from '../assessment';
-import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../_common/gen1-app';
 
 /**
  * Assesses migration readiness for a Cognito User Pool Groups resource.

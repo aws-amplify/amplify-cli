@@ -1,4 +1,4 @@
-import { DiscoveredResource } from '../generate/_infra/gen1-app';
+import { DiscoveredResource } from './gen1-app';
 
 /**
  * Result of a validation check.

@@ -3,10 +3,10 @@ import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
-import { Planner } from '../../../_infra/planner';
-import { AmplifyMigrationOperation } from '../../../_infra/operation';
-import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { Planner } from '../../../_common/planner';
+import { AmplifyMigrationOperation } from '../../../_common/operation';
+import { DiscoveredResource, Gen1App } from '../../../_common/gen1-app';
+import { TS } from '../../ts';
 import { GeoResourceRenderer } from './geo-resource.renderer';
 import { GeoResourceProps, GeoGenerator } from './geo.generator';
 

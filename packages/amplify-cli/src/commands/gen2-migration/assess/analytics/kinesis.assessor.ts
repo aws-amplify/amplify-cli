@@ -1,6 +1,6 @@
 import { Assessor } from '../assessor';
 import { Assessment, supported } from '../assessment';
-import { Gen1App, DiscoveredResource } from '../../generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_common/gen1-app';
 
 /**
  * Assesses migration readiness for a Kinesis analytics resource.

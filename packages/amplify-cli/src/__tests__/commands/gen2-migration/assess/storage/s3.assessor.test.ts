@@ -1,6 +1,6 @@
 import { S3Assessor } from '../../../../../commands/gen2-migration/assess/storage/s3.assessor';
 import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
-import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/_common/gen1-app';
 
 function mockGen1App(existingFiles: string[] = [], meta: Gen1App['categoryMeta'] = () => undefined): Gen1App {
   const fileSet = new Set(existingFiles);

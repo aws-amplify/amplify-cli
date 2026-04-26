@@ -1,6 +1,6 @@
 import { Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNTemplate } from '../../_infra/cfn-template';
+import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNTemplate } from '../../_common/cfn-template';
 
 /**
  * Resolves conditions in a CloudFormation template.

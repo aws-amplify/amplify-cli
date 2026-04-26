@@ -1,7 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { SpinningLogger } from './spinning-logger';
 import { Plan } from './plan';
-import { Gen1App } from '../generate/_infra/gen1-app';
+import { Gen1App } from './gen1-app';
 import { AmplifyGen2MigrationValidations } from './validations';
 
 /**

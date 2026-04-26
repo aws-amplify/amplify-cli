@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { newLineIdentifier, TS } from '../../_infra/ts';
+import { newLineIdentifier, TS } from '../../ts';
 import type { GeoResourceProps } from './geo.generator';
 
 const factory = ts.factory;

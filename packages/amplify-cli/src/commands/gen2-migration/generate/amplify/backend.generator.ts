@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Planner } from '../../_infra/planner';
-import { AmplifyMigrationOperation } from '../../_infra/operation';
-import { TS } from '../_infra/ts';
+import { Planner } from '../../_common/planner';
+import { AmplifyMigrationOperation } from '../../_common/operation';
+import { TS } from '../ts';
 import {
   BackendRenderer,
   BackendRenderOptions,

@@ -1,6 +1,6 @@
-import { AmplifyMigrationStep } from './_infra/step';
-import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
-import { Plan } from './_infra/plan';
+import { AmplifyMigrationStep } from './_common/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_common/operation';
+import { Plan } from './_common/plan';
 import {
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
@@ -12,7 +12,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
-import { Cfn, HOLDING_STACK_NAME_SUFFIX } from './refactor/cfn';
+import { Cfn, HOLDING_STACK_NAME_SUFFIX } from './_common/cfn';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {

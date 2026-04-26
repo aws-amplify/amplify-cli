@@ -1,10 +1,10 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Planner } from '../../../_infra/planner';
-import { AmplifyMigrationOperation } from '../../../_infra/operation';
+import { Planner } from '../../../_common/planner';
+import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
-import { TS } from '../../_infra/ts';
+import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
+import { TS } from '../../ts';
 import { RestApiRenderOptions, RestApiRenderer } from './rest-api.renderer';
 
 /**

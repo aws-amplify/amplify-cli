@@ -1,11 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Planner } from '../../../_infra/planner';
-import { AmplifyMigrationOperation } from '../../../_infra/operation';
+import { Planner } from '../../../_common/planner';
+import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
-import { TS } from '../../_infra/ts';
+import { TS } from '../../ts';
 import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
 
 /**

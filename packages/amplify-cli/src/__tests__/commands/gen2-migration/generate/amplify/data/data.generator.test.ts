@@ -1,7 +1,7 @@
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { DataGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { DiscoveredResource } from '../../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 
 jest.unmock('fs-extra');

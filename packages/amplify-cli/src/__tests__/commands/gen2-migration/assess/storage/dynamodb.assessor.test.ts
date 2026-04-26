@@ -1,6 +1,6 @@
 import { DynamoDBAssessor } from '../../../../../commands/gen2-migration/assess/storage/dynamodb.assessor';
 import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
-import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/_common/gen1-app';
 
 function mockGen1App(meta: Gen1App['categoryMeta'] = () => undefined): Gen1App {
   return { fileExists: () => false, ensureCliInputs: () => undefined, categoryMeta: meta } as unknown as Gen1App;

@@ -1,10 +1,10 @@
 import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs/promises';
-import { AmplifyMigrationStep } from './_infra/step';
-import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
-import { Plan } from './_infra/plan';
-import { Planner } from './_infra/planner';
+import { AmplifyMigrationStep } from './_common/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_common/operation';
+import { Plan } from './_common/plan';
+import { Planner } from './_common/planner';
 import { AmplifyMigrationAssessor } from './assess';
 import { BackendGenerator } from './generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate/package.json.generator';

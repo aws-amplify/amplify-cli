@@ -1,6 +1,6 @@
 import { FunctionAssessor } from '../../../../../commands/gen2-migration/assess/function/function.assessor';
 import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
-import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/_common/gen1-app';
 
 function mockGen1App(existingFiles: string[] = [], jsonFiles: Record<string, unknown> = {}): Gen1App {
   const fileSet = new Set(existingFiles);

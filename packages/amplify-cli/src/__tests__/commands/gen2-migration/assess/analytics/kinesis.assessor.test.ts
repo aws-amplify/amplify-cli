@@ -1,6 +1,6 @@
 import { AnalyticsKinesisAssessor } from '../../../../../commands/gen2-migration/assess/analytics/kinesis.assessor';
 import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
-import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/_common/gen1-app';
 
 const RESOURCE: DiscoveredResource = { category: 'analytics', resourceName: 'myStream', service: 'Kinesis', key: 'analytics:Kinesis' };
 

@@ -25,14 +25,14 @@ import {
   waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../_infra/cfn-template';
+import { CFNResource, CFNTemplate } from './cfn-template';
 import { extractStackNameFromId } from './utils';
-import { SpinningLogger } from '../_infra/spinning-logger';
-import { cfnChangesetConsoleUrl } from '../../drift-detection/services/drift-formatter';
+import { SpinningLogger } from './spinning-logger';
+import { cfnChangesetConsoleUrl } from '../../drift/services/drift-formatter';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DiscoveredResource } from '../generate/_infra/gen1-app';
+import { DiscoveredResource } from './gen1-app';
 
 const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';

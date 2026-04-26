@@ -10,8 +10,8 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
-import { newLineIdentifier, TS } from '../../_infra/ts';
-import { AUTH_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
+import { newLineIdentifier, TS } from '../../ts';
+import { AUTH_REFACTORED_RESOURCES } from '../../../_common/resource-types';
 
 /**
  * A registered auth trigger — contributed by the function generator.

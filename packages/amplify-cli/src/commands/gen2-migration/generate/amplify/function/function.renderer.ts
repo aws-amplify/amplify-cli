@@ -1,5 +1,5 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
-import { newLineIdentifier, TS } from '../../_infra/ts';
+import { newLineIdentifier, TS } from '../../ts';
 import { AnalyticsKinesisGenerator } from '../analytics/kinesis.generator';
 
 const factory = ts.factory;

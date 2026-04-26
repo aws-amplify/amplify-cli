@@ -1,6 +1,6 @@
 import ts from 'typescript';
-import { newLineIdentifier, TS } from '../../_infra/ts';
-import { STORAGE_DYNAMO_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
+import { newLineIdentifier, TS } from '../../ts';
+import { STORAGE_DYNAMO_REFACTORED_RESOURCES } from '../../../_common/resource-types';
 
 const factory = ts.factory;
 

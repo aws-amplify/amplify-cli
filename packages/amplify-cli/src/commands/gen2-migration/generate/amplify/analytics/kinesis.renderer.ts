@@ -1,7 +1,7 @@
 import ts from 'typescript';
-import { newLineIdentifier, TS } from '../../_infra/ts';
-import { DiscoveredResource } from '../../_infra/gen1-app';
-import { ANALYTICS_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
+import { newLineIdentifier, TS } from '../../ts';
+import { DiscoveredResource } from '../../../_common/gen1-app';
+import { ANALYTICS_REFACTORED_RESOURCES } from '../../../_common/resource-types';
 
 const factory = ts.factory;
 

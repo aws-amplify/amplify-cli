@@ -1,7 +1,7 @@
 import ts, { CallExpression } from 'typescript';
 import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionConfiguration } from '@aws-sdk/client-s3';
-import { newLineIdentifier, TS } from '../../_infra/ts';
-import { STORAGE_S3_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
+import { newLineIdentifier, TS } from '../../ts';
+import { STORAGE_S3_REFACTORED_RESOURCES } from '../../../_common/resource-types';
 
 const factory = ts.factory;
 

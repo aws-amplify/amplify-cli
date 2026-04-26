@@ -2,7 +2,7 @@ import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { CFNResource } from '../../_infra/cfn-template';
+import { CFNResource } from '../../_common/cfn-template';
 
 const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';

@@ -1,4 +1,4 @@
-import { CFNResource } from '../../_infra/cfn-template';
+import { CFNResource } from '../../_common/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { DYNAMO_TABLE_TYPE } from './storage-dynamo-forward';
 

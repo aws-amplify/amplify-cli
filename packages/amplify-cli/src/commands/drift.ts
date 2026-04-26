@@ -5,11 +5,11 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
-import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift-detection';
-import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
-import { detectTemplateDrift, type TemplateDriftResults } from './drift-detection/detect-template-drift';
-import { CloudFormationService, AmplifyConfigService, createUnifiedCategoryView } from './drift-detection/services';
-import { SpinningLogger } from './gen2-migration/_infra/spinning-logger';
+import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift/detect-stack-drift';
+import { detectLocalDrift, type LocalDriftResults } from './drift/detect-local-drift';
+import { detectTemplateDrift, type TemplateDriftResults } from './drift/detect-template-drift';
+import { CloudFormationService, AmplifyConfigService, createUnifiedCategoryView } from './drift/services';
+import { SpinningLogger } from './gen2-migration/_common/spinning-logger';
 
 /**
  * Result of drift detection.

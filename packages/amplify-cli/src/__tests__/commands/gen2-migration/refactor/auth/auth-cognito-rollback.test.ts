@@ -1,7 +1,7 @@
 import { AuthCognitoRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-rollback';
-import { CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
-import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/_common/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -15,7 +15,7 @@ import {
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
-import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
+import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
