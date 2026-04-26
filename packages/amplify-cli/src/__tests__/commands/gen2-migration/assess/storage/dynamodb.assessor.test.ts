@@ -2,8 +2,8 @@ import { DynamoDBAssessor } from '../../../../../commands/gen2-migration/assess/
 import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
 import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 
-function mockGen1App(meta: Gen1App['meta'] = () => undefined): Gen1App {
-  return { fileExists: () => false, ensureCliInputs: () => undefined, meta } as unknown as Gen1App;
+function mockGen1App(meta: Gen1App['categoryMeta'] = () => undefined): Gen1App {
+  return { fileExists: () => false, ensureCliInputs: () => undefined, categoryMeta: meta } as unknown as Gen1App;
 }
 
 const RESOURCE: DiscoveredResource = { category: 'storage', resourceName: 'myTable', service: 'DynamoDB', key: 'storage:DynamoDB' };
@@ -28,7 +28,7 @@ describe('DynamoDBAssessor', () => {
   it('records imported resource as unsupported', () => {
     const assessment = new Assessment('app', 'dev');
     const meta = (category: string) => (category === 'storage' ? { myTable: { service: 'DynamoDB', serviceType: 'imported' } } : undefined);
-    new DynamoDBAssessor(mockGen1App(meta), RESOURCE).record(assessment);
+    new DynamoDBAssessor(mockGen1App(meta as Gen1App['categoryMeta']), RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate.level).toBe('unsupported');

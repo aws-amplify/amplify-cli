@@ -4,7 +4,11 @@ import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migrat
 
 function mockGen1App(existingFiles: string[] = []): Gen1App {
   const fileSet = new Set(existingFiles);
-  return { fileExists: (path: string) => fileSet.has(path), ensureCliInputs: () => undefined, meta: () => undefined } as unknown as Gen1App;
+  return {
+    fileExists: (path: string) => fileSet.has(path),
+    ensureCliInputs: () => undefined,
+    categoryMeta: () => undefined,
+  } as unknown as Gen1App;
 }
 
 const RESOURCE: DiscoveredResource = { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' };

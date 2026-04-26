@@ -7,7 +7,6 @@ import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
 import { TS } from '../../_infra/ts';
 import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
-import { STORAGE_DYNAMO_REFACTORED_RESOURCES } from '../../../_infra/resource-types';
 
 /**
  * Generates a single DynamoDB table construct and contributes it to backend.ts.

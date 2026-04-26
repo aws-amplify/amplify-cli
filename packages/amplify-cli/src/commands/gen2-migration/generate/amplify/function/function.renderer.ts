@@ -49,7 +49,7 @@ export interface RenderApplyEscapeHatchesOptions {
   readonly hasKinesisTrigger: boolean;
   readonly hasAnalytics: boolean;
   readonly analyticsConstructType?: string;
-  readonly unmappedAuthActions: readonly string[];
+  readonly unMappedAuthActions: readonly string[];
   readonly storageTriggerTables: readonly string[];
 }
 
@@ -119,9 +119,9 @@ export class FunctionRenderer {
     const baseNodes = this.renderDefineFunction(opts);
     const escapeHatchResult = this.renderApplyEscapeHatches(opts);
 
-    const additionalImportDecls = this.renderCdkImports(escapeHatchResult.additionalImports);
+    const additionalImportDeclarations = this.renderCdkImports(escapeHatchResult.additionalImports);
     const backendTypeImport = this.renderBackendTypeImport();
-    const analyticsTypeImportDecl = this.renderAnalyticsTypeImport(opts);
+    const analyticsTypeImportDeclarations = this.renderAnalyticsTypeImport(opts);
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -130,22 +130,22 @@ export class FunctionRenderer {
         allNodes.push(node);
       } else {
         if (!foundFirstNonImport) {
-          for (const decl of additionalImportDecls) allNodes.push(decl);
+          for (const declaration of additionalImportDeclarations) allNodes.push(declaration);
           allNodes.push(backendTypeImport);
-          if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
+          if (analyticsTypeImportDeclarations) allNodes.push(analyticsTypeImportDeclarations);
           foundFirstNonImport = true;
         }
         allNodes.push(node);
       }
     }
     if (!foundFirstNonImport) {
-      for (const decl of additionalImportDecls) allNodes.push(decl);
+      for (const declaration of additionalImportDeclarations) allNodes.push(declaration);
       allNodes.push(backendTypeImport);
-      if (analyticsTypeImportDecl) allNodes.push(analyticsTypeImportDecl);
+      if (analyticsTypeImportDeclarations) allNodes.push(analyticsTypeImportDeclarations);
     }
-    for (const stmt of escapeHatchResult.postExportStatements) {
+    for (const statement of escapeHatchResult.postExportStatements) {
       allNodes.push(newLineIdentifier);
-      allNodes.push(stmt);
+      allNodes.push(statement);
     }
 
     return factory.createNodeArray(allNodes as ts.Statement[]);
@@ -161,11 +161,11 @@ export class FunctionRenderer {
   }
 
   private renderCdkImports(additionalImports: Record<string, Set<string>>): ts.ImportDeclaration[] {
-    const decls: ts.ImportDeclaration[] = [];
+    const declarations: ts.ImportDeclaration[] = [];
     for (const [source, identifiers] of Object.entries(additionalImports)) {
-      decls.push(TS.namedImport(source, ...Array.from(identifiers)));
+      declarations.push(TS.namedImport(source, ...Array.from(identifiers)));
     }
-    return decls;
+    return declarations;
   }
 
   /**
@@ -263,13 +263,12 @@ export class FunctionRenderer {
       statements.push(...createKinesisTrigger(opts.resourceName));
     }
 
-    // Unmapped auth actions (addToRolePolicy for cognito-idp actions without Gen2 mapping)
-    if (opts.unmappedAuthActions.length > 0) {
+    if (opts.unMappedAuthActions.length > 0) {
       if (!additionalImports['aws-cdk-lib']) {
         additionalImports['aws-cdk-lib'] = new Set();
       }
       additionalImports['aws-cdk-lib'].add('aws_iam');
-      statements.push(createUnmappedAuthGrant(opts.resourceName, opts.unmappedAuthActions));
+      statements.push(createUnMappedAuthGrant(opts.resourceName, opts.unMappedAuthActions));
     }
 
     // Build the extra parameters (beyond backend: Backend)
@@ -304,9 +303,9 @@ export class FunctionRenderer {
       );
     }
 
-    const funcDecl = TS.exportedFunction('applyEscapeHatches', statements, extraParams.length > 0 ? extraParams : undefined);
+    const funcDeclaration = TS.exportedFunction('applyEscapeHatches', statements, extraParams.length > 0 ? extraParams : undefined);
 
-    return { postExportStatements: [funcDecl], additionalImports };
+    return { postExportStatements: [funcDeclaration], additionalImports };
   }
 
   private renderEnvironment(
@@ -655,8 +654,7 @@ function createKinesisGrant(funcName: string, actions: readonly string[]): ts.Ex
   );
 }
 
-/** Creates an addToRolePolicy statement for unmapped cognito-idp actions. */
-function createUnmappedAuthGrant(funcName: string, actions: readonly string[]): ts.ExpressionStatement {
+function createUnMappedAuthGrant(funcName: string, actions: readonly string[]): ts.ExpressionStatement {
   const lambdaRef = factory.createPropertyAccessExpression(
     factory.createPropertyAccessExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(funcName)),

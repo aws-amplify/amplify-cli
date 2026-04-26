@@ -28,7 +28,7 @@ interface ResolvedFunction {
   readonly kinesisActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
   readonly authAccess: AuthPermissions;
-  readonly unmappedAuthActions: readonly string[];
+  readonly unMappedAuthActions: readonly string[];
 }
 
 interface FunctionGeneratorOptions {
@@ -112,13 +112,13 @@ export class FunctionGenerator implements Planner {
       kinesisActions,
       graphqlApiPermissions,
       authAccess: cfnAuthAccess,
-      unmappedAuthActions: cfnUnmapped,
+      unMappedAuthActions: cfnUnMapped,
     } = this.extractCfnPermissions();
 
     // For auth trigger functions, also extract permissions from the auth-trigger CFN template.
-    const { permissions: triggerAuthAccess, unmapped: triggerUnmapped } = this.extractAuthTriggerCfnPermissions();
+    const { permissions: triggerAuthAccess, unMapped: triggerUnMapped } = this.extractAuthTriggerCfnPermissions();
     const authAccess = { ...cfnAuthAccess, ...triggerAuthAccess };
-    const unmappedAuthActions = [...new Set([...cfnUnmapped, ...triggerUnmapped])];
+    const unMappedAuthActions = [...new Set([...cfnUnMapped, ...triggerUnMapped])];
 
     return {
       resourceName: this.resource.resourceName,
@@ -135,7 +135,7 @@ export class FunctionGenerator implements Planner {
       kinesisActions,
       graphqlApiPermissions,
       authAccess,
-      unmappedAuthActions,
+      unMappedAuthActions: unMappedAuthActions,
     };
   }
 
@@ -173,7 +173,7 @@ export class FunctionGenerator implements Planner {
       hasAnalytics: hasAnalytics && !!analyticsTypeImport,
       analyticsConstructType: analyticsTypeImport,
       analyticsConstructImportPath,
-      unmappedAuthActions: func.unmappedAuthActions,
+      unMappedAuthActions: func.unMappedAuthActions,
       storageTriggerTables,
     };
 
@@ -252,9 +252,9 @@ export class FunctionGenerator implements Planner {
     if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
     const permissions = new Set<Permission>();
-    for (const stmt of Array.isArray(statements) ? statements : [statements]) {
-      if (stmt.Effect !== 'Allow') continue;
-      const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+    for (const statement of Array.isArray(statements) ? statements : [statements]) {
+      if (statement.Effect !== 'Allow') continue;
+      const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
       for (const action of actions) {
         if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) permissions.add(S3_ACTION_TO_PERMISSION[action]);
       }
@@ -385,7 +385,7 @@ export class FunctionGenerator implements Planner {
     kinesisActions: string[];
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
     authAccess: AuthPermissions;
-    unmappedAuthActions: string[];
+    unMappedAuthActions: string[];
   } {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     const template = this.gen1App.json(templatePath);
@@ -396,7 +396,7 @@ export class FunctionGenerator implements Planner {
         kinesisActions: [],
         graphqlApiPermissions: { hasMutation: false, hasQuery: false },
         authAccess: {},
-        unmappedAuthActions: [],
+        unMappedAuthActions: [],
       };
     }
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
@@ -406,12 +406,13 @@ export class FunctionGenerator implements Planner {
     const otherAuthActions: string[] = [];
     let hasMutation = false;
     let hasQuery = false;
-    for (const stmt of statements) {
-      const stmtActions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
-      const stmtResources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
-      const targetsUserPool = JSON.stringify(stmtResources).includes('userpool/') || JSON.stringify(stmtResources).includes('UserPool');
+    for (const statement of statements) {
+      const statementActions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+      const statementResources = Array.isArray(statement.Resource) ? statement.Resource : [statement.Resource];
+      const targetsUserPool =
+        JSON.stringify(statementResources).includes('userpool/') || JSON.stringify(statementResources).includes('UserPool');
 
-      for (const action of stmtActions) {
+      for (const action of statementActions) {
         if (typeof action !== 'string') continue;
         if (action.startsWith('dynamodb:')) dynamoActions.push(action);
         else if (action.startsWith('kinesis:') && !kinesisActions.includes(action)) kinesisActions.push(action);
@@ -431,7 +432,7 @@ export class FunctionGenerator implements Planner {
           otherAuthActions.push(action);
         }
       }
-      const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
+      const resources = Array.isArray(statement.Resource) ? statement.Resource : [statement.Resource];
       for (const resource of resources) {
         const resourceStr = JSON.stringify(resource);
         if (resourceStr.includes('/types/Mutation/')) hasMutation = true;
@@ -439,13 +440,13 @@ export class FunctionGenerator implements Planner {
       }
     }
 
-    const { permissions: authAccess, unmapped: unmappedAuthActions } = resolveAuthAccess(cognitoActions);
+    const { permissions: authAccess, unMapped: unMappedAuthActions } = resolveAuthAccess(cognitoActions);
     return {
       dynamoActions,
       kinesisActions,
       graphqlApiPermissions: { hasMutation, hasQuery },
       authAccess,
-      unmappedAuthActions: [...unmappedAuthActions, ...otherAuthActions],
+      unMappedAuthActions: [...unMappedAuthActions, ...otherAuthActions],
     };
   }
 
@@ -457,12 +458,12 @@ export class FunctionGenerator implements Planner {
    * This method reads that template and extracts cognito-idp actions from IAM policies
    * that reference this function.
    */
-  private extractAuthTriggerCfnPermissions(): { permissions: AuthPermissions; unmapped: string[] } {
-    if (this.category !== 'auth') return { permissions: {}, unmapped: [] };
+  private extractAuthTriggerCfnPermissions(): { permissions: AuthPermissions; unMapped: string[] } {
+    if (this.category !== 'auth') return { permissions: {}, unMapped: [] };
 
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
-    if (!this.gen1App.fileExists(templatePath)) return { permissions: {}, unmapped: [] };
+    if (!this.gen1App.fileExists(templatePath)) return { permissions: {}, unMapped: [] };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
@@ -477,8 +478,8 @@ export class FunctionGenerator implements Planner {
       if (!logicalId.includes(this.resource.resourceName)) continue;
 
       const statements = res.Properties?.PolicyDocument?.Statement ?? [];
-      for (const stmt of statements) {
-        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+      for (const statement of statements) {
+        const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
         for (const action of actions) {
           if (typeof action === 'string' && action.startsWith('cognito-idp:') && !cognitoActions.includes(action)) {
             cognitoActions.push(action);
@@ -558,8 +559,8 @@ const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
   'cognito-idp:SetUserSettings': 'setUserSettings',
 };
 
-function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermissions; unmapped: string[] } {
-  if (cognitoActions.length === 0) return { permissions: {}, unmapped: [] };
+function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermissions; unMapped: string[] } {
+  if (cognitoActions.length === 0) return { permissions: {}, unMapped: [] };
   const result: Record<string, boolean> = {};
   const covered = new Set<string>();
   for (const [group, required] of Object.entries(GROUPED_AUTH_PERMISSIONS)) {
@@ -576,8 +577,8 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
     }
   }
 
-  const unmapped = cognitoActions.filter((a) => !covered.has(a));
-  return { permissions: result as AuthPermissions, unmapped };
+  const unMapped = cognitoActions.filter((a) => !covered.has(a));
+  return { permissions: result as AuthPermissions, unMapped: unMapped };
 }
 
 const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {

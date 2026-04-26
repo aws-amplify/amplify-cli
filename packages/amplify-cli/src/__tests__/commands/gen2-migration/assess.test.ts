@@ -7,7 +7,7 @@ function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = 
     appName: 'test-app',
     envName: 'dev',
     discover: () => resources,
-    meta: () => undefined,
+    categoryMeta: () => undefined,
     fileExists: (path: string) => fileSet.has(path),
     json: (path: string) => jsonFiles[path],
     ensureCliInputs: () => undefined,
