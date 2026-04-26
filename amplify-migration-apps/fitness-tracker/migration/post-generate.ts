@@ -24,10 +24,10 @@ function resolveTargetBranch(): string {
 }
 
 async function findPreSignupDir(appPath: string): Promise<string> {
-  const authDir = path.join(appPath, 'amplify', 'auth');
+  const authDir = path.join(appPath, 'amplify', 'function');
   const entries = await fs.readdir(authDir);
   const match = entries.find((e) => e.startsWith('fitnesstracker') && e.includes('PreSignup'));
-  if (!match) throw new Error('PreSignup directory not found under amplify/auth/');
+  if (!match) throw new Error('PreSignup directory not found under amplify/function/');
   return path.join(authDir, match);
 }
 
