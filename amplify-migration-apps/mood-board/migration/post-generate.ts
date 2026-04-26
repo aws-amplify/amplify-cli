@@ -7,10 +7,8 @@
  *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert moodboardGetRandomEmoji function from CommonJS to ESM
  * 3. Convert moodboardKinesisReader function from CommonJS to ESM
- * 4. Remove hardcoded Kinesis ARN from moodboardKinesisReader environment
- * 5. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
- * 6. Update SurpriseMeButton stream name to use gen2 prefix
- * 7. Add Kinesis IAM policy and environment variable to backend.ts
+ * 4. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
+ * 5. Update SurpriseMeButton stream name to use gen2 prefix
  */
 
 import { execSync } from 'child_process';
@@ -57,19 +55,6 @@ async function convertFunctionToESM(appPath: string, functionName: string): Prom
   await fs.writeFile(handlerPath, updated, 'utf-8');
 }
 
-async function removeHardcodedKinesisArn(appPath: string): Promise<void> {
-  const resourcePath = path.join(appPath, 'amplify', 'function', 'moodboardKinesisReader', 'resource.ts');
-
-  const content = await fs.readFile(resourcePath, 'utf-8');
-
-  const updated = content.replace(
-    /,?\s*ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN:\s*["'][^"']+["']/g,
-    '',
-  );
-
-  await fs.writeFile(resourcePath, updated, 'utf-8');
-}
-
 async function updateFrontendConfig(appPath: string): Promise<void> {
   const mainPath = path.join(appPath, 'src', 'main.tsx');
 
@@ -97,63 +82,13 @@ async function updateSurpriseMeStreamName(appPath: string, envName: string): Pro
   await fs.writeFile(constantsPath, updated, 'utf-8');
 }
 
-async function addKinesisConfigToBackend(appPath: string): Promise<void> {
-  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
-
-  let content = await fs.readFile(backendPath, 'utf-8');
-
-  if (content.includes('kinesis:GetRecords')) return;
-
-  if (!content.includes('aws_iam')) {
-    content = content.replace(
-      /import\s*\{\s*Duration\s*\}\s*from\s*["']aws-cdk-lib["']/,
-      "import { Duration, aws_iam } from 'aws-cdk-lib'",
-    );
-  }
-
-  const kinesisConfig = `
-// Grant Kinesis read permissions to moodboardKinesisReader
-backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
-  new aws_iam.PolicyStatement({
-    actions: [
-      'kinesis:ListShards',
-      'kinesis:ListStreams',
-      'kinesis:ListStreamConsumers',
-      'kinesis:DescribeStream',
-      'kinesis:DescribeStreamSummary',
-      'kinesis:DescribeStreamConsumer',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:SubscribeToShard',
-      'kinesis:DescribeLimits',
-      'kinesis:ListTagsForStream',
-    ],
-    resources: [analytics.kinesisStreamArn],
-  }),
-);
-
-// Add Kinesis stream ARN environment variable
-backend.moodboardKinesisReader.addEnvironment('ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN', analytics.kinesisStreamArn);
-`;
-
-  if (content.includes('export {')) {
-    content = content.replace(/(\nexport\s*\{)/, `${kinesisConfig}\n$1`);
-  } else {
-    content = content.trimEnd() + '\n' + kinesisConfig;
-  }
-
-  await fs.writeFile(backendPath, content, 'utf-8');
-}
-
 export async function postGenerate(appPath: string, envName: string): Promise<void> {
   await updateBranchName(appPath);
   await convertFunctionToESM(appPath, 'moodboardGetRandomEmoji');
   await convertFunctionToESM(appPath, 'moodboardKinesisReader');
   await convertFunctionToESM(appPath, 'moodboardKinesisTrigger');
-  await removeHardcodedKinesisArn(appPath);
   await updateFrontendConfig(appPath);
   await updateSurpriseMeStreamName(appPath, envName);
-  await addKinesisConfigToBackend(appPath);
 }
 
 async function main(): Promise<void> {
