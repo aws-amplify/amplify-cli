@@ -1,5 +1,13 @@
 import type { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 
+/**
+ * Maps Gen1 auth trigger function name suffixes to Gen2 trigger event names.
+ *
+ * Gen1 names auth trigger functions as `<authResourceName><TriggerSuffix>`.
+ * This map converts the suffix to the corresponding Gen2 `defineAuth` trigger
+ * event key. Source: `triggerEvents` in the Gen2 auth-construct package:
+ * https://github.com/aws-amplify/amplify-backend/blob/%40aws-amplify/auth-construct%401.11.2/packages/auth-construct/src/trigger_events.ts#L5
+ */
 export const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {
   PreSignup: 'preSignUp',
   CustomMessage: 'customMessage',
