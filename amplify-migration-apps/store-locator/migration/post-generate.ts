@@ -14,11 +14,11 @@ import fsSync from 'fs';
 import path from 'path';
 
 function findPostConfirmationDir(appPath: string): string {
-  const authDir = path.join(appPath, 'amplify', 'auth');
-  const entries = fsSync.readdirSync(authDir);
+  const functionDir = path.join(appPath, 'amplify', 'function');
+  const entries = fsSync.readdirSync(functionDir);
   const match = entries.find((e) => e.includes('PostConfirmation'));
   if (!match) {
-    throw new Error('Could not find PostConfirmation directory under amplify/auth/');
+    throw new Error('Could not find PostConfirmation directory under amplify/function/');
   }
   return match;
 }
@@ -37,7 +37,7 @@ async function updateFrontendConfig(appPath: string): Promise<void> {
 }
 
 async function convertIndexToESM(appPath: string, dirName: string): Promise<void> {
-  const indexPath = path.join(appPath, 'amplify', 'auth', dirName, 'index.js');
+  const indexPath = path.join(appPath, 'amplify', 'function', dirName, 'index.js');
 
   const content = await fs.readFile(indexPath, 'utf-8');
 
@@ -57,7 +57,7 @@ async function convertIndexToESM(appPath: string, dirName: string): Promise<void
 }
 
 async function convertAddToGroupToESM(appPath: string, dirName: string): Promise<void> {
-  const filePath = path.join(appPath, 'amplify', 'auth', dirName, 'add-to-group.js');
+  const filePath = path.join(appPath, 'amplify', 'function', dirName, 'add-to-group.js');
 
   const content = await fs.readFile(filePath, 'utf-8');
 
@@ -77,7 +77,7 @@ async function convertAddToGroupToESM(appPath: string, dirName: string): Promise
 }
 
 async function updatePostConfirmationResource(appPath: string, dirName: string): Promise<void> {
-  const resourcePath = path.join(appPath, 'amplify', 'auth', dirName, 'resource.ts');
+  const resourcePath = path.join(appPath, 'amplify', 'function', dirName, 'resource.ts');
   let content = await fs.readFile(resourcePath, 'utf-8');
 
   // Update memoryMB from 128 to 512

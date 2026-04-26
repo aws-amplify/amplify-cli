@@ -140,9 +140,9 @@ export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertFunctionToESM(appPath, 'function', 'addusertogroup');
   await convertFunctionToESM(appPath, 'function', 'removeuserfromgroup');
-  await convertFunctionToESM(appPath, 'storage', 'thumbnailgen');
+  await convertFunctionToESM(appPath, 'function', 'thumbnailgen');
   await updateFrontendConfig(appPath);
-  await addResourceGroupName(appPath, 'storage/thumbnailgen', 'storage');
+  await addResourceGroupName(appPath, 'function/thumbnailgen', 'storage');
   await addResourceGroupName(appPath, 'function/addusertogroup', 'auth');
   await addResourceGroupName(appPath, 'function/removeuserfromgroup', 'auth');
   await monkeyPatchAuthSecret(appPath);

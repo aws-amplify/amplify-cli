@@ -81,12 +81,12 @@ async function updateLowstockproductsResource(appPath: string): Promise<void> {
 }
 
 async function convertS3TriggerToESM(appPath: string): Promise<void> {
-  const storageDir = path.join(appPath, 'amplify', 'storage');
-  const entries = fsSync.readdirSync(storageDir);
+  const functionDir = path.join(appPath, 'amplify', 'function');
+  const entries = fsSync.readdirSync(functionDir);
   const triggerDirs = entries.filter((e) => e.startsWith('S3Trigger'));
 
   for (const dir of triggerDirs) {
-    const handlerPath = path.join(storageDir, dir, 'index.js');
+    const handlerPath = path.join(functionDir, dir, 'index.js');
     if (!fsSync.existsSync(handlerPath)) continue;
 
     const content = await fs.readFile(handlerPath, 'utf-8');

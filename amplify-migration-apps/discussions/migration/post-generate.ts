@@ -37,7 +37,7 @@ async function updateBranchName(appPath: string): Promise<void> {
 }
 
 async function convertFunctionToESM(appPath: string, functionName: string): Promise<void> {
-  const handlerPath = path.join(appPath, 'amplify', 'storage', functionName, 'index.js');
+  const handlerPath = path.join(appPath, 'amplify', 'function', functionName, 'index.js');
 
   const content = await fs.readFile(handlerPath, 'utf-8');
 
