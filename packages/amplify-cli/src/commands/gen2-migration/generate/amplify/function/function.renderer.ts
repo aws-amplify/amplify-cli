@@ -4,9 +4,10 @@ import { newLineIdentifier, TS } from '../../_infra/ts';
 const factory = ts.factory;
 
 /**
- * Options for rendering a single defineFunction() resource file.
+ * Options for rendering a complete function resource.ts file,
+ * including defineFunction() and applyEscapeHatches().
  */
-export interface RenderDefineFunctionOptions {
+export interface FunctionRenderOptions {
   readonly resourceName: string;
   readonly entry: string;
   readonly name?: string;
@@ -15,32 +16,6 @@ export interface RenderDefineFunctionOptions {
   readonly runtime?: string;
   readonly schedule?: string;
   readonly environment?: Readonly<Record<string, string>>;
-}
-
-/**
- * Options for rendering the complete function resource.ts file,
- * including defineFunction() and applyEscapeHatches().
- */
-export interface RenderCompleteFunctionOptions extends RenderDefineFunctionOptions, RenderApplyEscapeHatchesOptions {
-  /** The analytics construct type name for the type import, if needed. */
-  readonly analyticsConstructType?: string;
-  /** The import path for the analytics construct. */
-  readonly analyticsConstructImportPath?: string;
-}
-
-/**
- * An environment variable that references a Gen2 backend resource.
- */
-export interface EnvVarEscapeHatch {
-  readonly name: string;
-  readonly expression: ts.Expression;
-}
-
-/**
- * Options for rendering the applyEscapeHatches function body.
- */
-export interface RenderApplyEscapeHatchesOptions {
-  readonly resourceName: string;
   readonly escapeHatches: readonly EnvVarEscapeHatch[];
   readonly dynamoActions: readonly string[];
   readonly kinesisActions: readonly string[];
@@ -49,8 +24,17 @@ export interface RenderApplyEscapeHatchesOptions {
   readonly hasKinesisTrigger: boolean;
   readonly hasAnalytics: boolean;
   readonly analyticsConstructType?: string;
+  readonly analyticsConstructImportPath?: string;
   readonly unMappedAuthActions: readonly string[];
   readonly storageTriggerTables: readonly string[];
+}
+
+/**
+ * An environment variable that references a Gen2 backend resource.
+ */
+export interface EnvVarEscapeHatch {
+  readonly name: string;
+  readonly expression: ts.Expression;
 }
 
 /**
@@ -69,7 +53,7 @@ export class FunctionRenderer {
   /**
    * Produces the TypeScript AST for the defineFunction() call.
    */
-  private renderDefineFunction(opts: RenderDefineFunctionOptions): ts.NodeArray<ts.Node> {
+  private renderDefineFunction(opts: FunctionRenderOptions): ts.NodeArray<ts.Node> {
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineFunction']) };
     const postImportStatements: ts.Node[] = [];
     const properties: ObjectLiteralElementLike[] = [];
@@ -115,7 +99,7 @@ export class FunctionRenderer {
    * Renders the complete resource.ts file including defineFunction(),
    * applyEscapeHatches(), all imports, and Backend/analytics type imports.
    */
-  public render(opts: RenderCompleteFunctionOptions): ts.NodeArray<ts.Node> {
+  public render(opts: FunctionRenderOptions): ts.NodeArray<ts.Node> {
     const baseNodes = this.renderDefineFunction(opts);
     const escapeHatchResult = this.renderApplyEscapeHatches(opts);
 
@@ -155,7 +139,7 @@ export class FunctionRenderer {
     return TS.typeImport('../../backend', 'Backend');
   }
 
-  private renderAnalyticsTypeImport(opts: RenderCompleteFunctionOptions): ts.ImportDeclaration | undefined {
+  private renderAnalyticsTypeImport(opts: FunctionRenderOptions): ts.ImportDeclaration | undefined {
     if (!opts.analyticsConstructType) return undefined;
     return TS.typeImport(opts.analyticsConstructImportPath!, opts.analyticsConstructType);
   }
@@ -173,7 +157,7 @@ export class FunctionRenderer {
    * additional imports needed for it. Returns AST nodes to append
    * as postExportStatements in the resource.ts file.
    */
-  private renderApplyEscapeHatches(opts: RenderApplyEscapeHatchesOptions): {
+  private renderApplyEscapeHatches(opts: FunctionRenderOptions): {
     readonly postExportStatements: ts.Node[];
     readonly additionalImports: Record<string, Set<string>>;
   } {
@@ -311,7 +295,7 @@ export class FunctionRenderer {
   private renderEnvironment(
     target: ObjectLiteralElementLike[],
     namedImports: Record<string, Set<string>>,
-    opts: RenderDefineFunctionOptions,
+    opts: FunctionRenderOptions,
   ): void {
     if (!opts.environment || Object.keys(opts.environment).length === 0) return;
 
