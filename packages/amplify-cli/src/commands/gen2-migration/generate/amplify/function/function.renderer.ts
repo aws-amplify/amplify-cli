@@ -678,11 +678,29 @@ function createUnMappedAuthGrant(funcName: string, actions: readonly string[]): 
     ],
   );
 
+  // Use `new aws_iam.Policy(scope, id, { statements, roles })` instead of
+  // `addToRolePolicy` to avoid a circular dependency between the function
+  // and the user pool when the function is also an auth trigger.
   return factory.createExpressionStatement(
-    factory.createCallExpression(
-      factory.createPropertyAccessExpression(lambdaRef, factory.createIdentifier('addToRolePolicy')),
+    factory.createNewExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('Policy')),
       undefined,
-      [policyStatement],
+      [
+        lambdaRef,
+        factory.createStringLiteral('UnmappedCognitoActionsPolicy'),
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment('statements', factory.createArrayLiteralExpression([policyStatement])),
+            factory.createPropertyAssignment(
+              'roles',
+              factory.createArrayLiteralExpression([
+                factory.createNonNullExpression(factory.createPropertyAccessExpression(lambdaRef, factory.createIdentifier('role'))),
+              ]),
+            ),
+          ],
+          true,
+        ),
+      ],
     ),
   );
 }

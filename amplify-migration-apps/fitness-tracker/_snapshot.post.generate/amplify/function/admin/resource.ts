@@ -19,21 +19,28 @@ export function applyEscapeHatches(backend: Backend) {
     'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
     backend.auth.resources.userPool.userPoolId
   );
-  backend.admin.resources.lambda.addToRolePolicy(
-    new aws_iam.PolicyStatement({
-      actions: [
-        'cognito-idp:Describe*',
-        'cognito-identity:Describe*',
-        'cognito-identity:Get*',
-        'cognito-identity:List*',
-        'cognito-sync:Describe*',
-        'cognito-sync:Get*',
-        'cognito-sync:List*',
-        'iam:ListOpenIdConnectProviders',
-        'iam:ListRoles',
-        'sns:ListPlatformApplications',
+  new aws_iam.Policy(
+    backend.admin.resources.lambda,
+    'UnmappedCognitoActionsPolicy',
+    {
+      statements: [
+        new aws_iam.PolicyStatement({
+          actions: [
+            'cognito-idp:Describe*',
+            'cognito-identity:Describe*',
+            'cognito-identity:Get*',
+            'cognito-identity:List*',
+            'cognito-sync:Describe*',
+            'cognito-sync:Get*',
+            'cognito-sync:List*',
+            'iam:ListOpenIdConnectProviders',
+            'iam:ListRoles',
+            'sns:ListPlatformApplications',
+          ],
+          resources: [backend.auth.resources.userPool.userPoolArn],
+        }),
       ],
-      resources: [backend.auth.resources.userPool.userPoolArn],
-    })
+      roles: [backend.admin.resources.lambda.role!],
+    }
   );
 }

@@ -987,11 +987,18 @@ describe('FunctionGenerator', () => {
 
       export function applyEscapeHatches(backend: Backend) {
         backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
-        backend.myFunc.resources.lambda.addToRolePolicy(
-          new aws_iam.PolicyStatement({
-            actions: ['cognito-idp:AdminLinkProviderForUser'],
-            resources: [backend.auth.resources.userPool.userPoolArn],
-          })
+        new aws_iam.Policy(
+          backend.myFunc.resources.lambda,
+          'UnmappedCognitoActionsPolicy',
+          {
+            statements: [
+              new aws_iam.PolicyStatement({
+                actions: ['cognito-idp:AdminLinkProviderForUser'],
+                resources: [backend.auth.resources.userPool.userPoolArn],
+              }),
+            ],
+            roles: [backend.myFunc.resources.lambda.role!],
+          }
         );
       }
       "
