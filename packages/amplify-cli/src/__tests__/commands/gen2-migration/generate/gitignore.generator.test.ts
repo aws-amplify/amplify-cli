@@ -20,56 +20,54 @@ describe('GitIgnoreGenerator', () => {
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
-  it('returns exactly one operation', async () => {
-    const gen = new GitIgnoreGenerator();
-    const ops = await gen.plan();
-    expect(ops).toHaveLength(1);
-  });
-
   it('creates .gitignore with Gen2 entries when file does not exist', async () => {
     const gen = new GitIgnoreGenerator();
     const ops = await gen.plan();
     await ops[0].execute();
 
     const content = await fs.readFile(path.join(tempDir, '.gitignore'), 'utf-8');
-    expect(content).toContain('.amplify');
-    expect(content).toContain('amplify_outputs*');
-    expect(content).toContain('amplifyconfiguration*');
-    expect(content).toContain('aws-exports*');
-    expect(content).toContain('node_modules');
+    expect(content).toMatchInlineSnapshot(`
+      "# amplify
+      .amplify
+      amplify_outputs*
+      amplifyconfiguration*
+      aws-exports*
+      node_modules
+      build
+      dist
+      "
+    `);
   });
 
-  it('removes Gen1 amplify-do-not-edit block', async () => {
-    const gen1Content = [
-      'node_modules',
-      '#amplify-do-not-edit-begin',
-      'amplify/\\#current-cloud-backend',
-      'amplify/.config/local-*',
-      '#amplify-do-not-edit-end',
-      'dist',
-    ].join('\n');
-    await fs.writeFile(path.join(tempDir, '.gitignore'), gen1Content);
+  it('removes Gen1 amplify-do-not-edit block and adds Gen2 entries', async () => {
+    await fs.writeFile(
+      path.join(tempDir, '.gitignore'),
+      [
+        'node_modules',
+        '#amplify-do-not-edit-begin',
+        'amplify/\\#current-cloud-backend',
+        'amplify/.config/local-*',
+        '#amplify-do-not-edit-end',
+        'dist',
+      ].join('\n'),
+    );
 
     const gen = new GitIgnoreGenerator();
     const ops = await gen.plan();
     await ops[0].execute();
 
     const content = await fs.readFile(path.join(tempDir, '.gitignore'), 'utf-8');
-    expect(content).not.toContain('#amplify-do-not-edit-begin');
-    expect(content).not.toContain('#amplify-do-not-edit-end');
-    expect(content).not.toContain('amplify/\\#current-cloud-backend');
-  });
-
-  it('preserves existing non-Gen1 entries', async () => {
-    await fs.writeFile(path.join(tempDir, '.gitignore'), 'dist\ncoverage\n');
-
-    const gen = new GitIgnoreGenerator();
-    const ops = await gen.plan();
-    await ops[0].execute();
-
-    const content = await fs.readFile(path.join(tempDir, '.gitignore'), 'utf-8');
-    expect(content).toContain('dist');
-    expect(content).toContain('coverage');
+    expect(content).toMatchInlineSnapshot(`
+      "node_modules
+      dist
+      # amplify
+      .amplify
+      amplify_outputs*
+      amplifyconfiguration*
+      aws-exports*
+      build
+      "
+    `);
   });
 
   it('does not duplicate entries that already exist', async () => {
@@ -80,7 +78,15 @@ describe('GitIgnoreGenerator', () => {
     await ops[0].execute();
 
     const content = await fs.readFile(path.join(tempDir, '.gitignore'), 'utf-8');
-    const amplifyMatches = content.match(/\.amplify/g) || [];
-    expect(amplifyMatches).toHaveLength(1);
+    expect(content).toMatchInlineSnapshot(`
+      "node_modules
+      .amplify
+      amplify_outputs*
+      amplifyconfiguration*
+      aws-exports*
+      build
+      dist
+      "
+    `);
   });
 });

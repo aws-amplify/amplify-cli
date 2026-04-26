@@ -20,48 +20,67 @@ describe('RootPackageJsonGenerator', () => {
     await fs.rm(outputDir, { recursive: true, force: true });
   });
 
-  it('returns exactly one operation', async () => {
-    const gen = new RootPackageJsonGenerator(outputDir);
-    const ops = await gen.plan();
-    expect(ops).toHaveLength(1);
-  });
-
-  it('writes a package.json with Gen2 dev dependencies', async () => {
+  it('writes package.json with Gen2 dev dependencies when no existing file', async () => {
     const gen = new RootPackageJsonGenerator(outputDir);
     const ops = await gen.plan();
     await ops[0].execute();
 
-    const content = JSON.parse(await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8'));
-    expect(content.devDependencies['@aws-amplify/backend']).toBeDefined();
-    expect(content.devDependencies['aws-cdk-lib']).toBeDefined();
-    expect(content.devDependencies['constructs']).toBeDefined();
+    const content = await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8');
+    expect(content).toMatchInlineSnapshot(`
+      "{
+        "name": "amplify-gen2",
+        "dependencies": {},
+        "devDependencies": {
+          "@aws-amplify/backend": "^1.18.0",
+          "@aws-amplify/backend-cli": "^1.8.0",
+          "@aws-amplify/backend-data": "^1.6.2",
+          "@types/node": "*",
+          "aws-cdk": "^2",
+          "aws-cdk-lib": "^2",
+          "ci-info": "^4.3.1",
+          "constructs": "^10.0.0",
+          "esbuild": "^0.27.0",
+          "tsx": "^4.20.6"
+        }
+      }
+      "
+    `);
   });
 
-  it('accumulates runtime dependencies from generators', async () => {
+  it('accumulates runtime and dev dependencies from generators', async () => {
     const gen = new RootPackageJsonGenerator(outputDir);
     gen.addDependency('some-lib', '^1.0.0');
-    gen.addDependency('another-lib', '^2.0.0');
-
-    const ops = await gen.plan();
-    await ops[0].execute();
-
-    const content = JSON.parse(await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8'));
-    expect(content.dependencies['some-lib']).toBe('^1.0.0');
-    expect(content.dependencies['another-lib']).toBe('^2.0.0');
-  });
-
-  it('accumulates dev dependencies from generators', async () => {
-    const gen = new RootPackageJsonGenerator(outputDir);
     gen.addDevDependency('test-lib', '^3.0.0');
 
     const ops = await gen.plan();
     await ops[0].execute();
 
-    const content = JSON.parse(await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8'));
-    expect(content.devDependencies['test-lib']).toBe('^3.0.0');
+    const content = await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8');
+    expect(content).toMatchInlineSnapshot(`
+      "{
+        "name": "amplify-gen2",
+        "dependencies": {
+          "some-lib": "^1.0.0"
+        },
+        "devDependencies": {
+          "@aws-amplify/backend": "^1.18.0",
+          "@aws-amplify/backend-cli": "^1.8.0",
+          "@aws-amplify/backend-data": "^1.6.2",
+          "@types/node": "*",
+          "aws-cdk": "^2",
+          "aws-cdk-lib": "^2",
+          "ci-info": "^4.3.1",
+          "constructs": "^10.0.0",
+          "esbuild": "^0.27.0",
+          "test-lib": "^3.0.0",
+          "tsx": "^4.20.6"
+        }
+      }
+      "
+    `);
   });
 
-  it('preserves existing package.json fields when file exists', async () => {
+  it('preserves existing package.json fields', async () => {
     await fs.writeFile(
       path.join(outputDir, 'package.json'),
       JSON.stringify({ name: 'my-app', scripts: { build: 'tsc' }, dependencies: { react: '^18' } }),
@@ -71,18 +90,30 @@ describe('RootPackageJsonGenerator', () => {
     const ops = await gen.plan();
     await ops[0].execute();
 
-    const content = JSON.parse(await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8'));
-    expect(content.name).toBe('my-app');
-    expect(content.scripts.build).toBe('tsc');
-    expect(content.dependencies['react']).toBe('^18');
-  });
-
-  it('uses default name when no existing package.json', async () => {
-    const gen = new RootPackageJsonGenerator(outputDir);
-    const ops = await gen.plan();
-    await ops[0].execute();
-
-    const content = JSON.parse(await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8'));
-    expect(content.name).toBe('amplify-gen2');
+    const content = await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8');
+    expect(content).toMatchInlineSnapshot(`
+      "{
+        "name": "my-app",
+        "scripts": {
+          "build": "tsc"
+        },
+        "dependencies": {
+          "react": "^18"
+        },
+        "devDependencies": {
+          "@aws-amplify/backend": "^1.18.0",
+          "@aws-amplify/backend-cli": "^1.8.0",
+          "@aws-amplify/backend-data": "^1.6.2",
+          "@types/node": "*",
+          "aws-cdk": "^2",
+          "aws-cdk-lib": "^2",
+          "ci-info": "^4.3.1",
+          "constructs": "^10.0.0",
+          "esbuild": "^0.27.0",
+          "tsx": "^4.20.6"
+        }
+      }
+      "
+    `);
   });
 });

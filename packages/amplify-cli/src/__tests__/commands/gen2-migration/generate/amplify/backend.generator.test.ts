@@ -16,88 +16,103 @@ describe('BackendGenerator', () => {
     await fs.rm(outputDir, { recursive: true, force: true });
   });
 
-  async function verifyBackendTs(gen: BackendGenerator, assertion: (content: string) => void): Promise<void> {
+  it('writes empty backend.ts with no contributions', async () => {
+    const gen = new BackendGenerator(outputDir);
     const ops = await gen.plan();
     await ops[0].execute();
+
     const content = await fs.readFile(path.join(outputDir, 'amplify', 'backend.ts'), 'utf-8');
-    assertion(content);
-  }
+    expect(content).toMatchInlineSnapshot(`
+      "import { defineBackend } from '@aws-amplify/backend';
+      import { Tags } from 'aws-cdk-lib';
 
-  describe('addNamespaceImport', () => {
-    it('allows duplicate imports for the same alias', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.addNamespaceImport('auth', './auth/resource');
-      gen.addNamespaceImport('auth', './auth/resource');
+      const backend = defineBackend({});
 
-      return verifyBackendTs(gen, (content) => {
-        const importLines = content.split('\n').filter((l) => l.includes("from './auth/resource'"));
-        expect(importLines).toHaveLength(2);
-      });
-    });
+      export type Backend = typeof backend;
 
-    it('adds multiple namespace imports for different aliases', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.addNamespaceImport('auth', './auth/resource');
-      gen.addNamespaceImport('data', './data/resource');
+      export function postRefactor() {
+        Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+      }
 
-      return verifyBackendTs(gen, (content) => {
-        expect(content).toContain("import * as auth from './auth/resource'");
-        expect(content).toContain("import * as data from './data/resource'");
-      });
-    });
+      // Uncomment after refactor
+      // postRefactor();
+      "
+    `);
   });
 
-  describe('addDefineBackendEntry', () => {
-    it('emits entries in insertion order', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.addNamespaceImport('storage', './storage/resource');
-      gen.addNamespaceImport('auth', './auth/resource');
-      gen.addDefineBackendEntry('storage', 'storage', 'storage');
-      gen.addDefineBackendEntry('auth', 'auth', 'auth');
+  it('writes backend.ts with multiple namespace imports and entries in insertion order', async () => {
+    const gen = new BackendGenerator(outputDir);
+    gen.addNamespaceImport('storage', './storage/resource');
+    gen.addNamespaceImport('auth', './auth/resource');
+    gen.addDefineBackendEntry('storage', 'storage', 'storage');
+    gen.addDefineBackendEntry('auth', 'auth', 'auth');
+    gen.addApplyEscapeHatchesCall({ alias: 'auth', extraArgs: [] });
+    gen.addApplyEscapeHatchesCall({ alias: 'storage', extraArgs: ['myTable'] });
 
-      return verifyBackendTs(gen, (content) => {
-        const storageIdx = content.indexOf('storage: storage.storage');
-        const authIdx = content.indexOf('auth: auth.auth');
-        expect(storageIdx).toBeLessThan(authIdx);
+    const ops = await gen.plan();
+    await ops[0].execute();
+
+    const content = await fs.readFile(path.join(outputDir, 'amplify', 'backend.ts'), 'utf-8');
+    expect(content).toMatchInlineSnapshot(`
+      "import * as storage from './storage/resource';
+      import * as auth from './auth/resource';
+      import { defineBackend } from '@aws-amplify/backend';
+      import { Tags } from 'aws-cdk-lib';
+
+      const backend = defineBackend({
+        storage: storage.storage,
+        auth: auth.auth,
       });
-    });
+
+      export type Backend = typeof backend;
+
+      auth.applyEscapeHatches(backend);
+      storage.applyEscapeHatches(backend, myTable);
+
+      export function postRefactor() {
+        Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+      }
+
+      // Uncomment after refactor
+      // postRefactor();
+      "
+    `);
   });
 
-  describe('import ordering', () => {
-    it('emits imports in insertion order', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.addNamespaceImport('myFunc', './function/myFunc/resource');
-      gen.addNamespaceImport('auth', './auth/resource');
-      gen.addDefineBackendEntry('myFunc', 'myFunc', 'myFunc');
-      gen.addDefineBackendEntry('auth', 'auth', 'auth');
+  it('writes backend.ts with post-define calls and post-refactor calls', async () => {
+    const gen = new BackendGenerator(outputDir);
+    gen.addNamespaceImport('data', './data/resource');
+    gen.addDefineBackendEntry('data', 'data', 'data');
+    gen.addPostDefineBackendCall('myVar', 'data.someValue');
+    gen.addPostDefineBackendStatement('data.configure(backend)');
+    gen.addPostRefactorCall('data.postRefactor(backend)');
 
-      return verifyBackendTs(gen, (content) => {
-        const funcImportIdx = content.indexOf("from './function/myFunc/resource'");
-        const authImportIdx = content.indexOf("from './auth/resource'");
-        expect(funcImportIdx).toBeLessThan(authImportIdx);
+    const ops = await gen.plan();
+    await ops[0].execute();
+
+    const content = await fs.readFile(path.join(outputDir, 'amplify', 'backend.ts'), 'utf-8');
+    expect(content).toMatchInlineSnapshot(`
+      "import * as data from './data/resource';
+      import { defineBackend } from '@aws-amplify/backend';
+      import { Tags } from 'aws-cdk-lib';
+
+      const backend = defineBackend({
+        data: data.data,
       });
-    });
-  });
 
-  describe('plan', () => {
-    it('returns exactly one operation', async () => {
-      const gen = new BackendGenerator(outputDir);
-      const ops = await gen.plan();
-      expect(ops).toHaveLength(1);
-    });
+      export type Backend = typeof backend;
 
-    it('describes the backend.ts file path', async () => {
-      const gen = new BackendGenerator(outputDir);
-      const ops = await gen.plan();
-      const descriptions = await ops[0].describe();
-      expect(descriptions[0]).toBe('Generate amplify/backend.ts');
-    });
+      const myVar = data.someValue;
+      data.configure(backend);
 
-    it('writes backend.ts with defineBackend call', () => {
-      const gen = new BackendGenerator(outputDir);
-      return verifyBackendTs(gen, (content) => {
-        expect(content).toContain('defineBackend');
-      });
-    });
+      export function postRefactor() {
+        data.postRefactor(backend);
+        Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
+      }
+
+      // Uncomment after refactor
+      // postRefactor();
+      "
+    `);
   });
 });

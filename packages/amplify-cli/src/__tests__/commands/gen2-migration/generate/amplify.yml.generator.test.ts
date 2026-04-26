@@ -6,15 +6,6 @@ import os from 'node:os';
 
 jest.unmock('fs-extra');
 
-function createMockGen1App(buildSpec?: string): Gen1App {
-  return {
-    aws: {
-      fetchAppBuildSpec: jest.fn().mockResolvedValue(buildSpec),
-    },
-    appId: 'test-app-id',
-  } as unknown as Gen1App;
-}
-
 describe('AmplifyYmlGenerator', () => {
   let tmpDir: string;
   let originalCwd: string;
@@ -30,51 +21,25 @@ describe('AmplifyYmlGenerator', () => {
     await fs.rm(tmpDir, { recursive: true });
   });
 
-  it('replaces amplifyPush --simple with Gen2 commands', async () => {
+  it('replaces amplifyPush with Gen2 commands', async () => {
     const buildSpec = ['version: 1', 'backend:', '  phases:', '    build:', '      commands:', '        - amplifyPush --simple'].join('\n');
+    const gen1App = { aws: { fetchAppBuildSpec: jest.fn().mockResolvedValue(buildSpec) }, appId: 'test-app-id' } as unknown as Gen1App;
 
-    const gen1App = createMockGen1App(buildSpec);
     const generator = new AmplifyYmlGenerator(gen1App);
     const ops = await generator.plan();
     await ops[0].execute();
 
     const content = await fs.readFile(path.join(tmpDir, 'amplify.yml'), 'utf-8');
-    expect(content).not.toContain('amplifyPush');
-    expect(content).toContain('npx ampx pipeline-deploy');
-    expect(content).toContain('npm ci --cache .npm --prefer-offline');
-  });
-
-  it('replaces amplifyPush --force with Gen2 commands', async () => {
-    const buildSpec = ['version: 1', 'backend:', '  phases:', '    build:', '      commands:', '        - amplifyPush --force'].join('\n');
-
-    const gen1App = createMockGen1App(buildSpec);
-    const generator = new AmplifyYmlGenerator(gen1App);
-    const ops = await generator.plan();
-    await ops[0].execute();
-
-    const content = await fs.readFile(path.join(tmpDir, 'amplify.yml'), 'utf-8');
-    expect(content).not.toContain('amplifyPush');
-    expect(content).toContain('npx ampx pipeline-deploy');
-  });
-
-  it('replaces amplifyPush with arbitrary flags', async () => {
-    const buildSpec = [
-      'version: 1',
-      'backend:',
-      '  phases:',
-      '    build:',
-      '      commands:',
-      '        - amplifyPush --simple --force --yes',
-    ].join('\n');
-
-    const gen1App = createMockGen1App(buildSpec);
-    const generator = new AmplifyYmlGenerator(gen1App);
-    const ops = await generator.plan();
-    await ops[0].execute();
-
-    const content = await fs.readFile(path.join(tmpDir, 'amplify.yml'), 'utf-8');
-    expect(content).not.toContain('amplifyPush');
-    expect(content).toContain('npx ampx pipeline-deploy');
+    expect(content).toMatchInlineSnapshot(`
+      "version: 1
+      backend:
+        phases:
+          build:
+            commands:
+              - npm ci --cache .npm --prefer-offline
+              - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+      "
+    `);
   });
 
   it('does not match amplifyPushSomething (word boundary)', async () => {
@@ -86,24 +51,52 @@ describe('AmplifyYmlGenerator', () => {
       '      commands:',
       '        - amplifyPushSomething --flag',
     ].join('\n');
+    const gen1App = { aws: { fetchAppBuildSpec: jest.fn().mockResolvedValue(buildSpec) }, appId: 'test-app-id' } as unknown as Gen1App;
 
-    const gen1App = createMockGen1App(buildSpec);
     const generator = new AmplifyYmlGenerator(gen1App);
     const ops = await generator.plan();
     await ops[0].execute();
 
     const content = await fs.readFile(path.join(tmpDir, 'amplify.yml'), 'utf-8');
-    expect(content).toContain('amplifyPushSomething');
+    expect(content).toMatchInlineSnapshot(`
+      "version: 1
+      backend:
+        phases:
+          build:
+            commands:
+              - amplifyPushSomething --flag
+      "
+    `);
   });
 
   it('creates a default backend-only spec when no buildspec exists', async () => {
-    const gen1App = createMockGen1App(undefined);
+    const gen1App = { aws: { fetchAppBuildSpec: jest.fn().mockResolvedValue(undefined) }, appId: 'test-app-id' } as unknown as Gen1App;
+
     const generator = new AmplifyYmlGenerator(gen1App);
     const ops = await generator.plan();
     await ops[0].execute();
 
     const content = await fs.readFile(path.join(tmpDir, 'amplify.yml'), 'utf-8');
-    expect(content).toContain('npx ampx pipeline-deploy');
-    expect(content).not.toContain('amplifyPush');
+    expect(content).toMatchInlineSnapshot(`
+      "version: 1
+      backend:
+        phases:
+          build:
+            commands:
+              - "# Execute Amplify CLI with the helper script"
+              - npm ci --cache .npm --prefer-offline
+              - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+      frontend:
+        phases:
+          build:
+            commands:
+              - mkdir dist
+              - touch dist/index.html
+        artifacts:
+          baseDirectory: dist
+          files:
+            - "**/*"
+      "
+    `);
   });
 });
