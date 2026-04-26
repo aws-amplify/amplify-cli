@@ -51,7 +51,7 @@ export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
- * Centralized CloudFormation operations for the refactor workflow.
+ * Centralized CloudFormation operations for the Gen2 migration workflow.
  * Wraps update, refactor, and change set APIs behind a single client instance.
  */
 export class Cfn {

@@ -1,5 +1,5 @@
 /**
- * Extract Amplify category from a logical resource ID
+ * Extract Amplify category from a logical resource ID.
  */
 export function extractCategory(logicalId: string): string {
   const idLower = logicalId.toLowerCase();

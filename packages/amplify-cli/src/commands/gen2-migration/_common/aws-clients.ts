@@ -30,7 +30,6 @@ type ClientConfig = AmplifyClientConfig;
 
 /**
  * Single instantiation point for all AWS SDK clients used during Gen2 migration.
- * Shared by both the generate and refactor steps.
  */
 export class AwsClients {
   public readonly amplify: AmplifyClient;
