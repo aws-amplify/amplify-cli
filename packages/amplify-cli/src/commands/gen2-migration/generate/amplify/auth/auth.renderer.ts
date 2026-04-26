@@ -181,9 +181,9 @@ export class AuthRenderer {
     const hasIdentityProviders =
       options.userPoolClient?.SupportedIdentityProviders !== undefined && options.userPoolClient.SupportedIdentityProviders.length > 0;
 
-    const additionalImportDecls = this.renderCdkImports(options, hasIdentityProviders);
+    const additionalImportDeclarations = this.renderCdkImports(options, hasIdentityProviders);
     const backendTypeImport = this.renderBackendTypeImport();
-    const applyEscapeHatchesDecl = this.renderApplyEscapeHatches(options, hasIdentityProviders);
+    const applyEscapeHatchesDeclarations = this.renderApplyEscapeHatches(options, hasIdentityProviders);
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -192,8 +192,8 @@ export class AuthRenderer {
         allNodes.push(node);
       } else {
         if (!foundFirstNonImport) {
-          for (const decl of additionalImportDecls) {
-            allNodes.push(decl);
+          for (const declaration of additionalImportDeclarations) {
+            allNodes.push(declaration);
           }
           allNodes.push(backendTypeImport);
           foundFirstNonImport = true;
@@ -202,14 +202,14 @@ export class AuthRenderer {
       }
     }
     if (!foundFirstNonImport) {
-      for (const decl of additionalImportDecls) {
-        allNodes.push(decl);
+      for (const declaration of additionalImportDeclarations) {
+        allNodes.push(declaration);
       }
       allNodes.push(backendTypeImport);
     }
 
     allNodes.push(newLineIdentifier);
-    allNodes.push(applyEscapeHatchesDecl);
+    allNodes.push(applyEscapeHatchesDeclarations);
 
     return factory.createNodeArray(allNodes as ts.Statement[]);
   }
@@ -220,11 +220,11 @@ export class AuthRenderer {
 
   private renderCdkImports(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.ImportDeclaration[] {
     const additionalImports = this.buildAdditionalImports(options, hasIdentityProviders);
-    const decls: ts.ImportDeclaration[] = [];
+    const declarations: ts.ImportDeclaration[] = [];
     for (const [source, identifiers] of Object.entries(additionalImports)) {
-      decls.push(TS.namedImport(source, ...Array.from(identifiers)));
+      declarations.push(TS.namedImport(source, ...Array.from(identifiers)));
     }
-    return decls;
+    return declarations;
   }
 
   private renderApplyEscapeHatches(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.FunctionDeclaration {
@@ -476,7 +476,7 @@ export class AuthRenderer {
       .filter((name): name is string => name !== undefined);
   }
 
-  public static deriveUserPoolOverrides(userPool: UserPoolType): Record<string, string | boolean | number | string[] | undefined> {
+  private static deriveUserPoolOverrides(userPool: UserPoolType): Record<string, string | boolean | number | string[] | undefined> {
     const overrides: Record<string, string | boolean | number | string[] | undefined> = {};
     const passwordPolicy = userPool.Policies?.PasswordPolicy ?? {};
     for (const key of Object.keys(passwordPolicy)) {
@@ -1274,7 +1274,7 @@ export class AuthRenderer {
       ],
     );
 
-    const providerSetupDecl = factory.createVariableStatement(
+    const providerSetupDeclaration = factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
         [
@@ -1293,7 +1293,7 @@ export class AuthRenderer {
         ts.NodeFlags.Const,
       ),
     );
-    statements.push(providerSetupDecl);
+    statements.push(providerSetupDeclaration);
 
     const forEachStatement = factory.createExpressionStatement(
       factory.createCallExpression(
