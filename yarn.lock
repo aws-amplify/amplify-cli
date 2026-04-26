@@ -2106,6 +2106,7 @@ __metadata:
     "@types/promise-sequential": ^1.1.0
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
+    "@types/unzipper": ^0.10.11
     "@types/update-notifier": ^5.1.0
     amplify-codegen: ^4.10.3
     amplify-dotnet-function-runtime-provider: 2.1.7
@@ -23089,6 +23090,15 @@ __metadata:
   version: 2.0.7
   resolution: "@types/trusted-types@npm:2.0.7"
   checksum: 4c4855f10de7c6c135e0d32ce462419d8abbbc33713b31d294596c0cc34ae1fa6112a2f9da729c8f7a20707782b0d69da3b1f8df6645b0366d08825ca1522e0c
+  languageName: node
+  linkType: hard
+
+"@types/unzipper@npm:^0.10.11":
+  version: 0.10.11
+  resolution: "@types/unzipper@npm:0.10.11"
+  dependencies:
+    "@types/node": "*"
+  checksum: 2ed949c2e6f7b22b2a91bde8a127265d1e3201baf1e8603e22836db58295170bdd1e25f4a4487c2daedab4a0340458f6adc0fa27f95429211f4dee261383a3b0
   languageName: node
   linkType: hard
 
