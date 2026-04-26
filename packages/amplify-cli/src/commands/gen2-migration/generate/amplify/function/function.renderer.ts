@@ -16,8 +16,8 @@ export interface FunctionRenderOptions {
   readonly memoryMB?: number;
   readonly runtime?: string;
   readonly schedule?: string;
-  readonly environment?: Readonly<Record<string, string>>;
-  readonly escapeHatches: readonly EnvVarEscapeHatch[];
+  readonly literalEnvVars?: Readonly<Record<string, string>>;
+  readonly dynamicEnvVars: readonly DynamicEnvVar[];
   readonly dynamoActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
   readonly dataTriggerModels: readonly string[];
@@ -35,7 +35,7 @@ export interface KinesisConfig {
 /**
  * An environment variable that references a Gen2 backend resource.
  */
-export interface EnvVarEscapeHatch {
+export interface DynamicEnvVar {
   readonly name: string;
   readonly expression: ts.Expression;
 }
@@ -177,13 +177,13 @@ export class FunctionRenderer {
     statements.push(createFunctionNameOverride(opts.resourceName));
 
     // Env var escape hatches
-    for (const hatch of opts.escapeHatches) {
+    for (const hatch of opts.dynamicEnvVars) {
       statements.push(createAddEnvironmentCall(opts.resourceName, hatch));
     }
 
     // Table grants (AppSync-managed tables)
     const tableNames = new Set<string>();
-    for (const hatch of opts.escapeHatches) {
+    for (const hatch of opts.dynamicEnvVars) {
       if (hatch.name.startsWith('API_') && hatch.name.includes('TABLE_')) {
         const tableName = extractTableName(hatch.name);
         if (tableName) tableNames.add(tableName);
@@ -197,7 +197,7 @@ export class FunctionRenderer {
 
     // Storage table grants (standalone DynamoDB tables)
     const storageTableNames = new Set<string>();
-    for (const hatch of opts.escapeHatches) {
+    for (const hatch of opts.dynamicEnvVars) {
       if (!hatch.name.startsWith('STORAGE_') || hatch.name.endsWith('BUCKETNAME')) continue;
       const match = hatch.name.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
       if (match) storageTableNames.add(match[1].toLowerCase());
@@ -306,9 +306,9 @@ export class FunctionRenderer {
     namedImports: Record<string, Set<string>>,
     opts: FunctionRenderOptions,
   ): void {
-    if (!opts.environment || Object.keys(opts.environment).length === 0) return;
+    if (!opts.literalEnvVars || Object.keys(opts.literalEnvVars).length === 0) return;
 
-    const envProps = Object.entries(opts.environment).map(([key, value]) => {
+    const envProps = Object.entries(opts.literalEnvVars).map(([key, value]) => {
       if (key === 'API_KEY' && value.startsWith(`/amplify/${this.appId}/${this.backendEnvironmentName}`)) {
         namedImports['@aws-amplify/backend'].add('secret');
         return factory.createPropertyAssignment(
@@ -360,11 +360,11 @@ export class FunctionRenderer {
  * - escapeHatches: become addEnvironment() calls in applyEscapeHatches
  */
 export function classifyEnvVars(variables: Record<string, string>): {
-  readonly retained: Record<string, string>;
-  readonly escapeHatches: readonly EnvVarEscapeHatch[];
+  readonly literalEnvVars: Record<string, string>;
+  readonly dynamicEnvVars: readonly DynamicEnvVar[];
 } {
   const retained: Record<string, string> = {};
-  const escapeHatches: EnvVarEscapeHatch[] = [];
+  const escapeHatches: DynamicEnvVar[] = [];
 
   const suffixGroups: ReadonlyArray<{
     readonly prefix: string;
@@ -441,11 +441,11 @@ export function classifyEnvVars(variables: Record<string, string>): {
     }
   }
 
-  return { retained, escapeHatches };
+  return { literalEnvVars: retained, dynamicEnvVars: escapeHatches };
 }
 
 /** Creates `backend.functionName.addEnvironment(name, expression)`. */
-function createAddEnvironmentCall(functionName: string, hatch: EnvVarEscapeHatch): ts.ExpressionStatement {
+function createAddEnvironmentCall(functionName: string, hatch: DynamicEnvVar): ts.ExpressionStatement {
   return factory.createExpressionStatement(
     factory.createCallExpression(
       factory.createPropertyAccessExpression(

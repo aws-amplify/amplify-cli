@@ -6,7 +6,7 @@ import { Planner } from '../../../_infra/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
-import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars } from './function.renderer';
+import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars, DynamicEnvVar } from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
@@ -62,8 +62,7 @@ export class FunctionGenerator implements Planner {
 
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
     const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
-    const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
-    const environment = Object.keys(retained).length > 0 ? retained : undefined;
+    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {});
 
     const dynamoActions = this.extractDynamoActions();
     const kinesisActions = this.extractKinesisActions();
@@ -84,8 +83,8 @@ export class FunctionGenerator implements Planner {
       memoryMB: config.MemorySize,
       runtime,
       schedule,
-      environment,
-      escapeHatches,
+      literalEnvVars,
+      dynamicEnvVars,
       dynamoActions,
       graphqlApiPermissions,
       dataTriggerModels,
@@ -125,20 +124,8 @@ export class FunctionGenerator implements Planner {
           this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
           this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
 
-          // Collect storage table names referenced in the function body (from env vars and triggers).
-          const storageTableArgs = new Set<string>();
-          for (const hatch of escapeHatches) {
-            if (!hatch.name.startsWith('STORAGE_') || hatch.name.endsWith('BUCKETNAME')) continue;
-            const match = hatch.name.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
-            if (match) storageTableArgs.add(match[1].toLowerCase());
-          }
-          for (const t of storageTriggerTables) storageTableArgs.add(t);
-
-          const extraArgs: string[] = [...storageTableArgs];
-          if (hasAnalytics) {
-            extraArgs.push(DEFINE_ANALYTICS_VARIABLE_NAME);
-          }
-          this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs });
+          const escapeHatchArgs = this.deriveApplyEscapeHatchArguments(hasAnalytics, dynamicEnvVars);
+          this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: escapeHatchArgs });
         },
       },
     ];
@@ -240,6 +227,19 @@ export class FunctionGenerator implements Planner {
     } catch (e) {
       throw new Error(`Failed to read package.json for function '${this.resource.resourceName}': ${e}`);
     }
+  }
+
+  private deriveApplyEscapeHatchArguments(hasAnalytics: boolean, dynamicEnvVars: readonly DynamicEnvVar[]): string[] {
+    const args: string[] = [];
+    for (const dynamicEnvVar of dynamicEnvVars) {
+      if (!dynamicEnvVar.name.startsWith('STORAGE_') || dynamicEnvVar.name.endsWith('BUCKETNAME')) continue;
+      const match = dynamicEnvVar.name.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
+      if (match) args.push(match[1].toLowerCase());
+    }
+    if (hasAnalytics) {
+      args.push(DEFINE_ANALYTICS_VARIABLE_NAME);
+    }
+    return Array.from(new Set(args));
   }
 
   private detectDataTriggerModels(): string[] {
