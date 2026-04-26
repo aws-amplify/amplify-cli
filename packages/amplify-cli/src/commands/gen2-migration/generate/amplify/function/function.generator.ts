@@ -19,7 +19,6 @@ interface FunctionGeneratorOptions {
   readonly packageJsonGenerator: RootPackageJsonGenerator;
   readonly outputDir: string;
   readonly resource: DiscoveredResource;
-  readonly category: string;
 }
 
 export class FunctionGenerator implements Planner {
@@ -30,7 +29,6 @@ export class FunctionGenerator implements Planner {
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
-  private readonly category: string;
   private readonly renderer: FunctionRenderer;
 
   public constructor(options: FunctionGeneratorOptions) {
@@ -39,7 +37,6 @@ export class FunctionGenerator implements Planner {
     this.packageJsonGenerator = options.packageJsonGenerator;
     this.outputDir = options.outputDir;
     this.resource = options.resource;
-    this.category = options.category;
     this.renderer = new FunctionRenderer(options.gen1App.appId, options.gen1App.envName);
   }
 
@@ -112,7 +109,7 @@ export class FunctionGenerator implements Planner {
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Generate amplify/${this.category}/${resourceName}/resource.ts`],
+        describe: async () => [`Generate amplify/function/${resourceName}/resource.ts`],
         execute: async () => {
           const dirPath = path.join(this.outputDir, 'amplify', 'function', resourceName);
 
@@ -172,7 +169,7 @@ export class FunctionGenerator implements Planner {
   }
 
   private contributeAuthTrigger(): void {
-    if (!this.authGenerator || this.category !== 'auth') return;
+    if (!this.authGenerator) return;
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     if (!this.resource.resourceName.startsWith(authResourceName)) return;
     const suffix = this.resource.resourceName.slice(authResourceName.length);
@@ -205,7 +202,7 @@ export class FunctionGenerator implements Planner {
   }
 
   private contributeStorageTrigger(): void {
-    if (!this.s3Generator || this.category !== 'storage') return;
+    if (!this.s3Generator) return;
     const storageCategory = this.gen1App.categoryMeta('storage');
     if (!storageCategory) return;
     const s3Entry = Object.entries(storageCategory).find(([, v]) => (v as Record<string, unknown>).service === 'S3');
@@ -410,25 +407,23 @@ export class FunctionGenerator implements Planner {
     }
 
     // From the auth-trigger template (for auth trigger functions only)
-    if (this.category === 'auth') {
-      const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
-      const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
-      if (this.gen1App.fileExists(templatePath)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-        const template = this.gen1App.json(templatePath);
-        const resources = template.Resources ?? {};
-        for (const [logicalId, resource] of Object.entries(resources)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation resource
-          const res = resource as any;
-          if (res.Type !== 'AWS::IAM::Policy') continue;
-          if (!logicalId.includes(this.resource.resourceName)) continue;
-          const statements = res.Properties?.PolicyDocument?.Statement ?? [];
-          for (const statement of statements) {
-            const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
-            for (const action of actions) {
-              if (typeof action === 'string' && action.startsWith('cognito-idp:') && !cognitoActions.includes(action)) {
-                cognitoActions.push(action);
-              }
+    const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
+    const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
+    if (this.gen1App.fileExists(templatePath)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+      const template = this.gen1App.json(templatePath);
+      const resources = template.Resources ?? {};
+      for (const [logicalId, resource] of Object.entries(resources)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation resource
+        const res = resource as any;
+        if (res.Type !== 'AWS::IAM::Policy') continue;
+        if (!logicalId.includes(this.resource.resourceName)) continue;
+        const statements = res.Properties?.PolicyDocument?.Statement ?? [];
+        for (const statement of statements) {
+          const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+          for (const action of actions) {
+            if (typeof action === 'string' && action.startsWith('cognito-idp:') && !cognitoActions.includes(action)) {
+              cognitoActions.push(action);
             }
           }
         }

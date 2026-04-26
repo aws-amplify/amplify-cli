@@ -4,7 +4,6 @@ import fs from 'node:fs/promises';
 import { AmplifyMigrationStep } from './_infra/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
 import { Plan } from './_infra/plan';
-import { Gen1App } from './generate/_infra/gen1-app';
 import { Planner } from './_infra/planner';
 import { AmplifyMigrationAssessor } from './assess';
 import { BackendGenerator } from './generate/amplify/backend.generator';
@@ -139,14 +138,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         }
         case 'function:Lambda': {
-          const functionCategoryMap = computeFunctionCategories(this.gen1App);
           const funcGen = new FunctionGenerator({
             gen1App: this.gen1App,
             backendGenerator,
             packageJsonGenerator,
             outputDir,
             resource,
-            category: functionCategoryMap.get(resource.resourceName) ?? 'function',
           });
           generators.push(funcGen);
           functionGenerators.push(funcGen);
@@ -167,7 +164,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       if (s3Generator) funcGen.setS3Generator(s3Generator);
     }
 
-    // Geo aggregator runs after all per-resource geo generators.
+    // Geo runs after all per-resource geo generators.
     if (geoGenerator) {
       generators.push(geoGenerator);
     }
@@ -248,56 +245,4 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       return { valid: false, report: e.message };
     }
   }
-}
-
-/**
- * Derives a function-to-category map from dependsOn relationships
- * in amplify-meta.json. A function's category is determined by which
- * other category depends on it (auth → 'auth', storage → 'storage')
- * or which category it depends on (function → storage = 'storage').
- * Functions with no cross-category dependencies default to 'function'.
- */
-function computeFunctionCategories(gen1App: Gen1App): ReadonlyMap<string, string> {
-  const categoryMap = new Map<string, string>();
-  const auth = gen1App.categoryMeta('auth') as Record<string, Record<string, unknown>> | undefined;
-  const storage = gen1App.categoryMeta('storage') as Record<string, Record<string, unknown>> | undefined;
-  const functions = gen1App.categoryMeta('function') as Record<string, Record<string, unknown>> | undefined;
-
-  if (auth) {
-    for (const authResource of Object.values(auth)) {
-      if (authResource.dependsOn) {
-        for (const dep of authResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-          if (dep.category === 'function') {
-            categoryMap.set(dep.resourceName, 'auth');
-          }
-        }
-      }
-    }
-  }
-
-  if (storage) {
-    for (const storageResource of Object.values(storage)) {
-      if (storageResource.dependsOn) {
-        for (const dep of storageResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-          if (dep.category === 'function') {
-            categoryMap.set(dep.resourceName, 'storage');
-          }
-        }
-      }
-    }
-  }
-
-  if (functions) {
-    for (const [funcName, funcResource] of Object.entries(functions)) {
-      if (funcResource.dependsOn) {
-        for (const dep of funcResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-          if (dep.category === 'storage') {
-            categoryMap.set(funcName, 'storage');
-          }
-        }
-      }
-    }
-  }
-
-  return categoryMap;
 }
