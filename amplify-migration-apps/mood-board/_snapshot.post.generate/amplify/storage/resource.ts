@@ -41,7 +41,10 @@ export function applyEscapeHatches(backend: Backend) {
     .findAll()
     .filter(
       (c) =>
-        CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::S3::Bucket'
+        CfnResource.isCfnResource(c) &&
+        ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
+          c.cfnResourceType
+        )
     )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');

@@ -45,7 +45,7 @@ export const AUTH_REFACTORED_RESOURCES = [
   'AWS::Cognito::UserPoolGroup',
 ];
 
-export const STORAGE_S3_REFACTORED_RESOURCES = ['AWS::S3::Bucket'];
+export const STORAGE_S3_REFACTORED_RESOURCES = ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'];
 export const STORAGE_DYNAMO_REFACTORED_RESOURCES = ['AWS::DynamoDB::Table'];
 
 export const ANALYTICS_REFACTORED_RESOURCES = ['AWS::Kinesis::Stream'];
