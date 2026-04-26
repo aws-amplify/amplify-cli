@@ -43,7 +43,6 @@ function createFunctionGenerator(overrides: {
   packageJsonGenerator: RootPackageJsonGenerator;
   outputDir: string;
   resourceName?: string;
-  category?: string;
 }): FunctionGenerator {
   return new FunctionGenerator({
     gen1App: overrides.gen1App,
@@ -51,12 +50,11 @@ function createFunctionGenerator(overrides: {
     packageJsonGenerator: overrides.packageJsonGenerator,
     outputDir: overrides.outputDir,
     resource: {
-      category: overrides.category ?? 'function',
+      category: 'function',
       resourceName: overrides.resourceName ?? 'myFunc',
       service: 'Lambda',
       key: 'function:Lambda',
     },
-    category: overrides.category ?? 'function',
   });
 }
 
@@ -1037,7 +1035,6 @@ describe('FunctionGenerator', () => {
       packageJsonGenerator,
       outputDir,
       resourceName: 'testAuthPreSignup',
-      category: 'auth',
     });
     generator.setAuthGenerator(mockAuthGenerator as any);
 
@@ -1106,7 +1103,6 @@ describe('FunctionGenerator', () => {
       packageJsonGenerator,
       outputDir,
       resourceName: 'myStorageFunc',
-      category: 'storage',
     });
     generator.setS3Generator(mockS3Generator as any);
 

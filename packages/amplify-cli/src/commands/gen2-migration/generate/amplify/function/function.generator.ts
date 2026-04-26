@@ -381,23 +381,26 @@ export class FunctionGenerator implements Planner {
     }
 
     // From the auth-trigger template (for auth trigger functions only)
-    const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
-    const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
-    if (this.gen1App.fileExists(templatePath)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-      const template = this.gen1App.json(templatePath);
-      const resources = template.Resources ?? {};
-      for (const [logicalId, resource] of Object.entries(resources)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation resource
-        const res = resource as any;
-        if (res.Type !== 'AWS::IAM::Policy') continue;
-        if (!logicalId.includes(this.resource.resourceName)) continue;
-        const statements = res.Properties?.PolicyDocument?.Statement ?? [];
-        for (const statement of statements) {
-          const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
-          for (const action of actions) {
-            if (typeof action === 'string' && action.startsWith('cognito-idp:') && !cognitoActions.includes(action)) {
-              cognitoActions.push(action);
+    const authCategory = this.gen1App.categoryMeta('auth');
+    if (authCategory) {
+      const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
+      const templatePath = `auth/${authResourceName}/build/auth-trigger-cloudformation-template.json`;
+      if (this.gen1App.fileExists(templatePath)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+        const template = this.gen1App.json(templatePath);
+        const resources = template.Resources ?? {};
+        for (const [logicalId, resource] of Object.entries(resources)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation resource
+          const res = resource as any;
+          if (res.Type !== 'AWS::IAM::Policy') continue;
+          if (!logicalId.includes(this.resource.resourceName)) continue;
+          const statements = res.Properties?.PolicyDocument?.Statement ?? [];
+          for (const statement of statements) {
+            const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+            for (const action of actions) {
+              if (typeof action === 'string' && action.startsWith('cognito-idp:') && !cognitoActions.includes(action)) {
+                cognitoActions.push(action);
+              }
             }
           }
         }
