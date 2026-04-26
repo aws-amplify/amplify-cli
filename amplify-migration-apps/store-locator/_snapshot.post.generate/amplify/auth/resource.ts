@@ -27,6 +27,12 @@ export const auth = defineAuth({
     allow
       .resource(storelocator41a9495f41a9495fPostConfirmation)
       .to(['addUserToGroup']),
+    allow
+      .resource(storelocator41a9495f41a9495fPostConfirmation)
+      .to(['getGroup']),
+    allow
+      .resource(storelocator41a9495f41a9495fPostConfirmation)
+      .to(['createGroup']),
   ],
 });
 
