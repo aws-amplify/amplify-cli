@@ -1173,7 +1173,7 @@ describe('AuthGenerator', () => {
           multifactor: {
             mode: 'OFF',
           },
-          access: (allow: any) => [
+          access: (allow) => [
             allow.resource(adminFunc).to(['manageUsers']),
             allow.resource(adminFunc).to(['listUsers']),
           ],
@@ -1253,7 +1253,7 @@ describe('AuthGenerator', () => {
           multifactor: {
             mode: 'OFF',
           },
-          access: (allow: any) => [
+          access: (allow) => [
             allow.resource(func1).to(['createUser']),
             allow.resource(func2).to(['deleteUser']),
             allow.resource(func2).to(['getUser']),

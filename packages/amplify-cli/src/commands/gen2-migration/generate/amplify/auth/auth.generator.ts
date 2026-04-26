@@ -82,7 +82,7 @@ export class AuthGenerator implements Planner {
           const nodeArray = this.defineAuth.render(renderOptions);
           let content = TS.printNodes(nodeArray);
 
-          content = content.replace(/\(allow, _unused\)/g, '(allow: any)');
+          content = content.replace(/\(allow, _unused\)/g, '(allow)');
 
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');

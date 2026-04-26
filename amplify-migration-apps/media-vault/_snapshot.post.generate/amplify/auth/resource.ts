@@ -43,7 +43,7 @@ export const auth = defineAuth({
   multifactor: {
     mode: 'OFF',
   },
-  access: (allow: any) => [
+  access: (allow) => [
     allow.resource(addusertogroup).to(['manageUsers']),
     allow.resource(addusertogroup).to(['manageGroupMembership']),
     allow.resource(addusertogroup).to(['manageUserDevices']),

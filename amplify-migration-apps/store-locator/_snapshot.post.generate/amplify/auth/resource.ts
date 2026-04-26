@@ -23,7 +23,7 @@ export const auth = defineAuth({
   multifactor: {
     mode: 'OFF',
   },
-  access: (allow: any) => [
+  access: (allow) => [
     allow
       .resource(storelocator41a9495f41a9495fPostConfirmation)
       .to(['addUserToGroup']),

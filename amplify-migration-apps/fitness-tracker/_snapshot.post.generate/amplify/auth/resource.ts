@@ -24,7 +24,7 @@ export const auth = defineAuth({
   multifactor: {
     mode: 'OFF',
   },
-  access: (allow: any) => [
+  access: (allow) => [
     allow.resource(admin).to(['getDevice']),
     allow.resource(admin).to(['getUser']),
     allow.resource(admin).to(['listDevices']),
