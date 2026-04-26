@@ -8,11 +8,12 @@ import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars, DynamicEnvVar } from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
-import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
+import { AuthPermissions } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
 import { DEFINE_ANALYTICS_VARIABLE_NAME } from '../analytics/kinesis.generator';
+import { AUTH_ACTION_MAPPING, GROUPED_AUTH_PERMISSIONS, TRIGGER_SUFFIX_TO_EVENT } from './auth-mappers';
 
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
@@ -66,7 +67,7 @@ export class FunctionGenerator implements Planner {
 
     const dynamoActions = this.extractDynamoActions();
     const kinesisActions = this.extractKinesisActions();
-    const graphqlApiPermissions = this.extractGraphqlPermissions();
+    const appSyncPermissions = this.extractAppSyncPermissions();
     const { authAccess, unMappedAuthActions } = this.extractAuthPermissions();
 
     const dataTriggerModels = this.detectDataTriggerModels();
@@ -86,7 +87,7 @@ export class FunctionGenerator implements Planner {
       literalEnvVars,
       dynamicEnvVars,
       dynamoActions,
-      graphqlApiPermissions,
+      appSyncPermissions,
       dataTriggerModels,
       storageTriggerTables,
       unMappedAuthActions,
@@ -192,40 +193,30 @@ export class FunctionGenerator implements Planner {
 
   private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
     const srcDir = path.join('amplify', 'backend', 'function', resourceName, 'src');
-    try {
-      await fs.cp(srcDir, destDir, {
-        recursive: true,
-        filter: (src) => {
-          const b = path.basename(src);
-          return (
-            b !== 'node_modules' &&
-            b !== '.yarn' &&
-            b !== 'package.json' &&
-            b !== 'package-lock.json' &&
-            b !== 'yarn.lock' &&
-            b !== 'pnpm-lock.yaml'
-          );
-        },
-      });
-    } catch (e) {
-      throw new Error(`Failed to copy source files for function '${this.resource.resourceName}': ${e}`);
-    }
+    await fs.cp(srcDir, destDir, {
+      recursive: true,
+      filter: (src) => {
+        const b = path.basename(src);
+        return (
+          b !== 'node_modules' &&
+          b !== '.yarn' &&
+          b !== 'package.json' &&
+          b !== 'package-lock.json' &&
+          b !== 'yarn.lock' &&
+          b !== 'pnpm-lock.yaml'
+        );
+      },
+    });
   }
 
   private contributeDependencies(): void {
     const packageJsonPath = path.join('amplify', 'backend', 'function', this.resource.resourceName, 'src', 'package.json');
-    try {
-      const pkg = JSONUtilities.readJson<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }>(
-        packageJsonPath,
-      );
-      if (pkg?.dependencies) {
-        for (const [n, v] of Object.entries(pkg.dependencies)) this.packageJsonGenerator.addDependency(n, v);
-      }
-      if (pkg?.devDependencies) {
-        for (const [n, v] of Object.entries(pkg.devDependencies)) this.packageJsonGenerator.addDevDependency(n, v);
-      }
-    } catch (e) {
-      throw new Error(`Failed to read package.json for function '${this.resource.resourceName}': ${e}`);
+    const pkg = JSONUtilities.readJson<Record<string, string>>(packageJsonPath, { throwIfNotExist: false });
+    if (pkg?.dependencies) {
+      for (const [n, v] of Object.entries(pkg.dependencies)) this.packageJsonGenerator.addDependency(n, v);
+    }
+    if (pkg?.devDependencies) {
+      for (const [n, v] of Object.entries(pkg.devDependencies)) this.packageJsonGenerator.addDevDependency(n, v);
     }
   }
 
@@ -338,7 +329,7 @@ export class FunctionGenerator implements Planner {
   }
 
   /** Extracts GraphQL mutation/query permissions from the function's IAM policy resource ARNs. */
-  private extractGraphqlPermissions(): { hasMutation: boolean; hasQuery: boolean } {
+  private extractAppSyncPermissions(): { hasMutation: boolean; hasQuery: boolean } {
     let hasMutation = false;
     let hasQuery = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation policy statements
@@ -418,73 +409,6 @@ export class FunctionGenerator implements Planner {
   }
 }
 
-const GROUPED_AUTH_PERMISSIONS: Readonly<Record<string, readonly string[]>> = {
-  manageUsers: [
-    'cognito-idp:AdminConfirmSignUp',
-    'cognito-idp:AdminCreateUser',
-    'cognito-idp:AdminDeleteUser',
-    'cognito-idp:AdminDeleteUserAttributes',
-    'cognito-idp:AdminDisableUser',
-    'cognito-idp:AdminEnableUser',
-    'cognito-idp:AdminGetUser',
-    'cognito-idp:AdminListGroupsForUser',
-    'cognito-idp:AdminRespondToAuthChallenge',
-    'cognito-idp:AdminSetUserMFAPreference',
-    'cognito-idp:AdminSetUserSettings',
-    'cognito-idp:AdminUpdateUserAttributes',
-    'cognito-idp:AdminUserGlobalSignOut',
-  ],
-  manageGroupMembership: ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:AdminRemoveUserFromGroup'],
-  manageGroups: [
-    'cognito-idp:GetGroup',
-    'cognito-idp:ListGroups',
-    'cognito-idp:CreateGroup',
-    'cognito-idp:DeleteGroup',
-    'cognito-idp:UpdateGroup',
-  ],
-  manageUserDevices: [
-    'cognito-idp:AdminForgetDevice',
-    'cognito-idp:AdminGetDevice',
-    'cognito-idp:AdminListDevices',
-    'cognito-idp:AdminUpdateDeviceStatus',
-  ],
-  managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
-};
-
-const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
-  'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
-  'cognito-idp:AdminCreateUser': 'createUser',
-  'cognito-idp:AdminDeleteUser': 'deleteUser',
-  'cognito-idp:AdminDeleteUserAttributes': 'deleteUserAttributes',
-  'cognito-idp:AdminDisableUser': 'disableUser',
-  'cognito-idp:AdminEnableUser': 'enableUser',
-  'cognito-idp:AdminForgetDevice': 'forgetDevice',
-  'cognito-idp:AdminGetDevice': 'getDevice',
-  'cognito-idp:AdminGetUser': 'getUser',
-  'cognito-idp:AdminListDevices': 'listDevices',
-  'cognito-idp:AdminListGroupsForUser': 'listGroupsForUser',
-  'cognito-idp:AdminRemoveUserFromGroup': 'removeUserFromGroup',
-  'cognito-idp:AdminResetUserPassword': 'resetUserPassword',
-  'cognito-idp:AdminSetUserMFAPreference': 'setUserMfaPreference',
-  'cognito-idp:AdminSetUserPassword': 'setUserPassword',
-  'cognito-idp:AdminSetUserSettings': 'setUserSettings',
-  'cognito-idp:AdminUpdateDeviceStatus': 'updateDeviceStatus',
-  'cognito-idp:AdminUpdateUserAttributes': 'updateUserAttributes',
-  'cognito-idp:ListUsers': 'listUsers',
-  'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
-  'cognito-idp:ListGroups': 'listGroups',
-  'cognito-idp:AdminConfirmSignUp': 'manageUsers',
-  'cognito-idp:AdminRespondToAuthChallenge': 'manageUsers',
-  'cognito-idp:AdminUserGlobalSignOut': 'manageUsers',
-  'cognito-idp:AdminInitiateAuth': 'manageUsers',
-  'cognito-idp:AdminUpdateAuthEventFeedback': 'manageUsers',
-  'cognito-idp:ForgetDevice': 'forgetDevice',
-  'cognito-idp:VerifyUserAttribute': 'updateUserAttributes',
-  'cognito-idp:UpdateUserAttributes': 'updateUserAttributes',
-  'cognito-idp:SetUserMFAPreference': 'setUserMfaPreference',
-  'cognito-idp:SetUserSettings': 'setUserSettings',
-};
-
 function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermissions; unMapped: string[] } {
   if (cognitoActions.length === 0) return { permissions: {}, unMapped: [] };
   const result: Record<string, boolean> = {};
@@ -506,16 +430,3 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
   const unMapped = cognitoActions.filter((a) => !covered.has(a));
   return { permissions: result as AuthPermissions, unMapped: unMapped };
 }
-
-const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {
-  PreSignup: 'preSignUp',
-  CustomMessage: 'customMessage',
-  UserMigration: 'userMigration',
-  PostConfirmation: 'postConfirmation',
-  PreAuthentication: 'preAuthentication',
-  PostAuthentication: 'postAuthentication',
-  PreTokenGeneration: 'preTokenGeneration',
-  DefineAuthChallenge: 'defineAuthChallenge',
-  CreateAuthChallenge: 'createAuthChallenge',
-  VerifyAuthChallengeResponse: 'verifyAuthChallengeResponse',
-};

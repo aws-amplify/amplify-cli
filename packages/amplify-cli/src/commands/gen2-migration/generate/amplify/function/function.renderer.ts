@@ -19,7 +19,7 @@ export interface FunctionRenderOptions {
   readonly literalEnvVars?: Readonly<Record<string, string>>;
   readonly dynamicEnvVars: readonly DynamicEnvVar[];
   readonly dynamoActions: readonly string[];
-  readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
+  readonly appSyncPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
   readonly dataTriggerModels: readonly string[];
   readonly kinesisConfig?: KinesisConfig;
   readonly unMappedAuthActions: readonly string[];
@@ -209,10 +209,10 @@ export class FunctionRenderer {
     }
 
     // GraphQL API grants
-    if (opts.graphqlApiPermissions.hasMutation) {
+    if (opts.appSyncPermissions.hasMutation) {
       statements.push(createGraphqlGrant(opts.resourceName, 'grantMutation'));
     }
-    if (opts.graphqlApiPermissions.hasQuery) {
+    if (opts.appSyncPermissions.hasQuery) {
       statements.push(createGraphqlGrant(opts.resourceName, 'grantQuery'));
     }
 
