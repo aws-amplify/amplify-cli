@@ -667,7 +667,7 @@ describe('RestApiGenerator', () => {
       paths: {
         '/admin': {
           lambdaFunction: 'myFunc',
-          permissions: { groups: { admins: ['read'] } },
+          permissions: { setting: 'protected', groups: { admins: ['read'] } },
         },
       },
     });
@@ -738,6 +738,9 @@ describe('RestApiGenerator', () => {
             }),
           ],
         });
+        backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+          gen1myApiPolicy
+        );
         const admin = myApiApi.root.addResource('admin', {
           defaultCorsPreflightOptions: {
             allowOrigins: Cors.ALL_ORIGINS,

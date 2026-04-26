@@ -268,7 +268,7 @@ describe('DataGenerator', () => {
     `);
   });
 
-  it('renders authorization modes with default auth type', async () => {
+  it('renders AWS_IAM as default authorization mode', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       api: {
@@ -281,7 +281,7 @@ describe('DataGenerator', () => {
     jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
-      if (key === 'authConfig') return { defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' } } as any;
+      if (key === 'authConfig') return { defaultAuthentication: { authenticationType: 'AWS_IAM' } } as any;
       return undefined as any;
     });
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
@@ -305,7 +305,7 @@ describe('DataGenerator', () => {
           },
         ],
         authorizationModes: {
-          defaultAuthorizationMode: 'userPool',
+          defaultAuthorizationMode: 'iam',
         },
         schema,
       });
