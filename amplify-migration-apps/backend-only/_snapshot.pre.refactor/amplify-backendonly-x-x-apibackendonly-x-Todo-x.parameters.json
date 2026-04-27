@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/47418d5f9df78fb8fa9acaa5bd04a81ebc30971b"
+    "ParameterValue": "amplify-appsync-files/1bb98024bb45fe354a03a385c4e3bfd9504f2f39"
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
-    "ParameterValue": "xqcvnnskeba2xpei7cidkns5n4"
+    "ParameterValue": "yiszbt7r6bbz5dxeelwycfbxpi"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
@@ -21,19 +21,19 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "q2d7oghxlbgxxj3fr2t6f2bpm4"
+    "ParameterValue": "qjgez2h2dfenrkezjjoo3i4utu"
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",
-    "ParameterValue": "a6u3it7cszhhdeqbbpkuzhwoaq"
+    "ParameterValue": "fsr4ipba4veodgxr4gy7cupwfa"
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId",
-    "ParameterValue": "ckqnmwhbkba3rfktp37aw5ggva"
+    "ParameterValue": "ndl6ct6hfbgvzfnez454mkvhny"
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId",
-    "ParameterValue": "wnpd2js74baobgg5rnt3nmok6y"
+    "ParameterValue": "hctp7kn63zanhhhzznq5bg7inu"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -45,11 +45,11 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId",
-    "ParameterValue": "wzfkkgnxmnfpnnxnagw4hvqfbu"
+    "ParameterValue": "setkqxg5pjbjrjuzj52ih564n4"
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId",
-    "ParameterValue": "kurfovbhuvgtbp4yv54u6fgkra"
+    "ParameterValue": "eknwde3pkzantmr62s2nhtvevm"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -61,7 +61,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId",
-    "ParameterValue": "jnluzjwd4ncqnf3sfc2oidbymq"
+    "ParameterValue": "ijdzbe6lxnfofi6owl4ibjnroy"
   },
   {
     "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",

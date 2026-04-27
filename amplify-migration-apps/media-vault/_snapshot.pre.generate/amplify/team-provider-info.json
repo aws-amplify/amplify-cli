@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-mediavault-x-x-deployment",
       "UnauthRoleName": "amplify-mediavault-x-x-unauthRole",
       "StackName": "amplify-mediavault-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/108480f0-387e-11f1-8e28-0ea5af7cf5ad",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/4faee220-41c5-11f1-8008-0affd774d009",
       "AmplifyAppId": "mediavault"
     },
     "categories": {
@@ -19,11 +19,11 @@
       "function": {
         "addusertogroup": {
           "deploymentBucketName": "amplify-mediavault-x-x-deployment",
-          "s3Key": "amplify-builds/addusertogroup-374b6158625065387750-build.zip"
+          "s3Key": "amplify-builds/addusertogroup-4450364f57513932534d-build.zip"
         },
         "removeuserfromgroup": {
           "deploymentBucketName": "amplify-mediavault-x-x-deployment",
-          "s3Key": "amplify-builds/removeuserfromgroup-6d6f39557861676c6c56-build.zip"
+          "s3Key": "amplify-builds/removeuserfromgroup-4d374c646c33716f6471-build.zip"
         },
         "thumbnailgen": {
           "deploymentBucketName": "amplify-mediavault-x-x-deployment",

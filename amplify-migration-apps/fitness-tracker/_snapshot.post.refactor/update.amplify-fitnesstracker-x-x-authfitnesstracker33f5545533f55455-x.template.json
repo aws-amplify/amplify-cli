@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -189,7 +189,9 @@
         "UsernameConfiguration": {
           "CaseSensitive": false
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClientWeb": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -199,8 +201,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_yGeHz6G3D"
-      }
+        "UserPoolId": "us-east-1_meUfbq8Lb"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -211,8 +215,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_yGeHz6G3D"
-      }
+        "UserPoolId": "us-east-1_meUfbq8Lb"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClientRole": {
       "Type": "AWS::IAM::Role",
@@ -258,7 +264,7 @@
         "AllowUnauthenticatedIdentities": "false",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "4bqa09jfll3k8ouiflhbk991br",
+            "ClientId": "1i0f15mvl5o0lqddsbjf7d1nn4",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -266,13 +272,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_yGeHz6G3D"
+                  "client": "us-east-1_meUfbq8Lb"
                 }
               ]
             }
           },
           {
-            "ClientId": "4c75d20fqn4dr60ardcqbld32j",
+            "ClientId": "7757qf7k4fnkmni8spsllsf657",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -280,7 +286,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_yGeHz6G3D"
+                  "client": "us-east-1_meUfbq8Lb"
                 }
               ]
             }
@@ -295,12 +301,14 @@
             ]
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:47b5d736-61eb-49b8-ac45-b87c5a2d5bb8",
+        "IdentityPoolId": "us-east-1:219ac99d-0294-49a3-aad1-abd4063c42cf",
         "RoleMappings": {
           "UserPoolClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -311,8 +319,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "us-east-1_yGeHz6G3D",
-                  "client": "4bqa09jfll3k8ouiflhbk991br"
+                  "userPool": "us-east-1_meUfbq8Lb",
+                  "client": "1i0f15mvl5o0lqddsbjf7d1nn4"
                 }
               ]
             },
@@ -327,8 +335,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "us-east-1_yGeHz6G3D",
-                  "webClient": "4c75d20fqn4dr60ardcqbld32j"
+                  "userPool": "us-east-1_meUfbq8Lb",
+                  "webClient": "7757qf7k4fnkmni8spsllsf657"
                 }
               ]
             },
@@ -339,35 +347,37 @@
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-authRole"
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     }
   },
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:47b5d736-61eb-49b8-ac45-b87c5a2d5bb8"
+      "Value": "us-east-1:219ac99d-0294-49a3-aad1-abd4063c42cf"
     },
     "IdentityPoolName": {
       "Value": "fitnesstracker33f55455_identitypool_33f55455__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_yGeHz6G3D"
+      "Value": "us-east-1_meUfbq8Lb"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_yGeHz6G3D"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_meUfbq8Lb"
     },
     "UserPoolName": {
       "Value": "fitnesstracker33f55455_userpool_33f55455"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "4c75d20fqn4dr60ardcqbld32j"
+      "Value": "7757qf7k4fnkmni8spsllsf657"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "4bqa09jfll3k8ouiflhbk991br"
+      "Value": "1i0f15mvl5o0lqddsbjf7d1nn4"
     }
   }
 }

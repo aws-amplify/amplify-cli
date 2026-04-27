@@ -77,9 +77,9 @@ export const data = defineData({
       //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
-        User: 'User-hscmwhprkbaljmcpavj3dcztrq-x',
-        Product: 'Product-hscmwhprkbaljmcpavj3dcztrq-x',
-        Comment: 'Comment-hscmwhprkbaljmcpavj3dcztrq-x',
+        User: 'User-ygivvj3x3fgkjcyo2xd4oyyhuu-x',
+        Product: 'Product-ygivvj3x3fgkjcyo2xd4oyyhuu-x',
+        Comment: 'Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x',
       },
     },
   ],
@@ -109,7 +109,7 @@ export function applyEscapeHatches(backend: Backend) {
       effect: aws_iam.Effect.ALLOW,
       actions: ['appsync:GraphQL'],
       resources: [
-        `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/hscmwhprkbaljmcpavj3dcztrq/*`,
+        `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/ygivvj3x3fgkjcyo2xd4oyyhuu/*`,
       ],
     })
   );

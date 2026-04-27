@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -211,7 +211,9 @@
         "UsernameConfiguration": {
           "CaseSensitive": false
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClientWeb": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -229,7 +231,9 @@
       },
       "DependsOn": [
         "UserPool"
-      ]
+      ],
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -250,7 +254,9 @@
       },
       "DependsOn": [
         "UserPool"
-      ]
+      ],
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClientRole": {
       "Type": "AWS::IAM::Role",
@@ -363,7 +369,9 @@
             }
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
@@ -426,7 +434,9 @@
         "IdentityPool",
         "UserPoolClient",
         "UserPoolClientWeb"
-      ]
+      ],
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     }
   },
   "Outputs": {

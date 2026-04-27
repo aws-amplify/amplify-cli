@@ -1,26 +1,26 @@
 [
   {
-    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostTableC03ED863TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x/stream/2026-04-21T22:51:15.388"
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30dataamplifyDataPostPostTable946F10F3TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-ofxtncx3vjdyxe6g4bijjb7jie-x"
   },
   {
-    "OutputKey": "GetAttPostTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x/stream/2026-04-21T22:51:15.388",
-    "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "bwws6527mfbflgntwwz2xouc2m:GetAtt:PostTable:StreamArn"
-  },
-  {
-    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostDataSource11706137Name",
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30dataamplifyDataPostPostDataSource862886DBName",
     "OutputValue": "PostTable"
   },
   {
-    "OutputKey": "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataPostPostTableC03ED863TableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-kvgq5sominembcf7pb3nqurkby-x"
+    "OutputKey": "GetAttPostTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-ofxtncx3vjdyxe6g4bijjb7jie-x/stream/2026-04-26T23:14:41.232",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "wrh7t7sgazhldidomxxf4vzfii:GetAtt:PostTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30dataamplifyDataPostPostTable946F10F3TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-ofxtncx3vjdyxe6g4bijjb7jie-x/stream/2026-04-26T23:14:41.232"
   },
   {
     "OutputKey": "GetAttPostTableName",
-    "OutputValue": "Post-kvgq5sominembcf7pb3nqurkby-x",
+    "OutputValue": "Post-ofxtncx3vjdyxe6g4bijjb7jie-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "bwws6527mfbflgntwwz2xouc2m:GetAtt:PostTable:Name"
+    "ExportName": "wrh7t7sgazhldidomxxf4vzfii:GetAtt:PostTable:Name"
   }
 ]

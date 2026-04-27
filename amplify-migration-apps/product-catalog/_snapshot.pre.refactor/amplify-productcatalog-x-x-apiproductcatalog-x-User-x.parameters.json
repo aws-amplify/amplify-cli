@@ -9,10 +9,14 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-    "ParameterValue": "amplify-appsync-files/2904294ac328b706f016848ccf5fa0abe614014d"
+    "ParameterValue": "amplify-appsync-files/34ebbd5b242527810cb0da50500245c626061434"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
     "ParameterValue": "false"
   },
   {
@@ -20,16 +24,12 @@
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
-    "ParameterValue": "false"
-  },
-  {
     "ParameterKey": "DynamoDBBillingMode",
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "hscmwhprkbaljmcpavj3dcztrq"
+    "ParameterValue": "ygivvj3x3fgkjcyo2xd4oyyhuu"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",

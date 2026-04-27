@@ -9,7 +9,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/activityTrigger-4c2b61507333584d5642-build.zip"
+    "ParameterValue": "amplify-builds/activityTrigger-6237437664322f794638-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-21T22:50:17.740"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-26T23:13:33.099"
   },
   {
     "ParameterKey": "env",

@@ -1,22 +1,22 @@
 [
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseExerciseDataSourceFD4EA547Name",
-    "OutputValue": "ExerciseTable"
+    "OutputKey": "GetAttExerciseTableName",
+    "OutputValue": "Exercise-bdrql4nrffefnbpcrkkc27shn4-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "2jo7dgnljncqdcy2v3snkmtnbm:GetAtt:ExerciseTable:Name"
   },
   {
-    "OutputKey": "GetAttExerciseTableName",
-    "OutputValue": "Exercise-elicmdfqbrhdzhj5vaymxv72ze-x",
-    "Description": "Your DynamoDB table name.",
-    "ExportName": "jezyel522nguhhkcnj7iohpuxe:GetAtt:ExerciseTable:Name"
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataExerciseExerciseTable455F20C0TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-bdrql4nrffefnbpcrkkc27shn4-x"
   },
   {
     "OutputKey": "GetAttExerciseTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-elicmdfqbrhdzhj5vaymxv72ze-x/stream/2026-04-18T13:37:24.755",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-bdrql4nrffefnbpcrkkc27shn4-x/stream/2026-04-26T23:01:28.823",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "jezyel522nguhhkcnj7iohpuxe:GetAtt:ExerciseTable:StreamArn"
+    "ExportName": "2jo7dgnljncqdcy2v3snkmtnbm:GetAtt:ExerciseTable:StreamArn"
   },
   {
-    "OutputKey": "amplifyfitnesstrackere2esandbox803499bc27dataamplifyDataExerciseExerciseTable0CEB1D6ETableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-elicmdfqbrhdzhj5vaymxv72ze-x"
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataExerciseExerciseDataSourceAD619D1AName",
+    "OutputValue": "ExerciseTable"
   }
 ]

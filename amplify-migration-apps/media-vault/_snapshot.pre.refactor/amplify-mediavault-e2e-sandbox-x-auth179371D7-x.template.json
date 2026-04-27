@@ -63,8 +63,8 @@
           "SmsMessage": "The verification code to your new account is {####}"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
@@ -72,7 +72,7 @@
     "amplifyAuthUserPoolUserPoolDomain1F688B5B": {
       "Type": "AWS::Cognito::UserPoolDomain",
       "Properties": {
-        "Domain": "fec61c1d19f794c9931e",
+        "Domain": "06f0141b48a2dc6a8774",
         "UserPoolId": {
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
@@ -124,8 +124,8 @@
         "amplifyAuthFacebookIDP7CB5B5CC",
         "amplifyAuthGoogleIdPA9736819"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
@@ -215,8 +215,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
@@ -266,8 +266,8 @@
           "graph.facebook.com": "local-FACEBOOK_CLIENT_ID"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
@@ -414,8 +414,8 @@
         "amplifyAuthIdentityPool3FDE84CC",
         "amplifyAuthUserPoolAppClient2626C6F8"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
@@ -481,8 +481,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/AdminGroup"
       }
@@ -548,8 +548,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/BasicGroup"
       }
@@ -573,7 +573,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/AMPLIFY_AUTH_USERPOOL_IDParameter/Resource"
       }
     },
-    "addusertogroupgen2xlambdaServiceRole24DD047C": {
+    "addusertogroupgen2xlambdaServiceRole8EBB368B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -623,7 +623,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/addusertogroup-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "addusertogroupgen2xlambdaServiceRoleDefaultPolicyF6AD9718": {
+    "addusertogroupgen2xlambdaServiceRoleDefaultPolicyC3309AF8": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -655,10 +655,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "addusertogroupgen2xlambdaServiceRoleDefaultPolicyF6AD9718",
+        "PolicyName": "addusertogroupgen2xlambdaServiceRoleDefaultPolicyC3309AF8",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -666,7 +666,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/addusertogroup-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "addusertogroupgen2xlambda9842E1F9": {
+    "addusertogroupgen2xlambdaA6B93E60": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -676,7 +676,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "a5107918830e76efc284772bcf98dd4a9bfb2ad99293a543731512973a3c8d01.zip"
+          "S3Key": "6c54de76906da585af371ccbdfba3dadcec3f483116137997b8458a5e85a97e3.zip"
         },
         "Environment": {
           "Variables": {
@@ -697,7 +697,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "addusertogroupgen2xlambdaServiceRole24DD047C",
+            "addusertogroupgen2xlambdaServiceRole8EBB368B",
             "Arn"
           ]
         },
@@ -719,15 +719,97 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "addusertogroupgen2xlambdaServiceRole24DD047C"
+        "addusertogroupgen2xlambdaServiceRole8EBB368B"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/addusertogroup-gen2-x-lambda/Resource",
-        "aws:asset:path": "asset.a5107918830e76efc284772bcf98dd4a9bfb2ad99293a543731512973a3c8d01",
+        "aws:asset:path": "asset.6c54de76906da585af371ccbdfba3dadcec3f483116137997b8458a5e85a97e3",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
+      }
+    },
+    "addusertogroupgen2xlambdaUnmappedCognitoActionsPolicy68614010": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cognito-idp:ConfirmSignUp",
+                "cognito-idp:CreateUserImportJob",
+                "cognito-idp:AdminLinkProviderForUser",
+                "cognito-idp:CreateIdentityProvider",
+                "cognito-idp:SetUICustomization",
+                "cognito-idp:SignUp",
+                "cognito-idp:SetRiskConfiguration",
+                "cognito-idp:StartUserImportJob",
+                "cognito-idp:AssociateSoftwareToken",
+                "cognito-idp:CreateResourceServer",
+                "cognito-idp:RespondToAuthChallenge",
+                "cognito-idp:CreateUserPoolClient",
+                "cognito-idp:GlobalSignOut",
+                "cognito-idp:AddCustomAttributes",
+                "cognito-idp:CreateUserPool",
+                "cognito-idp:CreateUserPoolDomain",
+                "cognito-idp:StopUserImportJob",
+                "cognito-idp:InitiateAuth",
+                "cognito-idp:ConfirmForgotPassword",
+                "cognito-idp:VerifySoftwareToken",
+                "cognito-idp:AdminDisableProviderForUser",
+                "cognito-idp:SetUserPoolMfaConfig",
+                "cognito-idp:ChangePassword",
+                "cognito-idp:ConfirmDevice",
+                "cognito-idp:ResendConfirmationCode",
+                "cognito-idp:Describe*",
+                "cognito-idp:ForgotPassword",
+                "cognito-idp:UpdateAuthEventFeedback",
+                "cognito-idp:UpdateResourceServer",
+                "cognito-idp:UpdateUserPoolClient",
+                "cognito-idp:UpdateUserPoolDomain",
+                "cognito-idp:UpdateIdentityProvider",
+                "cognito-idp:UpdateDeviceStatus",
+                "cognito-idp:UpdateUserPool",
+                "cognito-idp:DeleteUserPoolDomain",
+                "cognito-idp:DeleteResourceServer",
+                "cognito-idp:DeleteUserPoolClient",
+                "cognito-idp:DeleteUserAttributes",
+                "cognito-idp:DeleteUserPool",
+                "cognito-idp:DeleteIdentityProvider",
+                "cognito-idp:DeleteUser",
+                "cognito-identity:Describe*",
+                "cognito-identity:Get*",
+                "cognito-identity:List*",
+                "cognito-sync:Describe*",
+                "cognito-sync:Get*",
+                "cognito-sync:List*",
+                "iam:ListOpenIdConnectProviders",
+                "iam:ListRoles",
+                "sns:ListPlatformApplications"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "addusertogroupgen2xlambdaUnmappedCognitoActionsPolicy68614010",
+        "Roles": [
+          {
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/addusertogroup-gen2-x-lambda/UnmappedCognitoActionsPolicy/Resource"
       }
     },
     "userpoolAccess13FEE5419": {
@@ -765,7 +847,7 @@
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -799,7 +881,7 @@
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -835,7 +917,7 @@
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -869,7 +951,7 @@
         "PolicyName": "userpoolAccess4A84025C3",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -900,7 +982,7 @@
         "PolicyName": "userpoolAccess585E2FB32",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -931,7 +1013,7 @@
         "PolicyName": "userpoolAccess600DA4CB0",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
@@ -942,6 +1024,37 @@
       }
     },
     "userpoolAccess76F9C91C1": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:CreateGroup",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess76F9C91C1",
+        "Roles": [
+          {
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess7/Resource"
+      }
+    },
+    "userpoolAccess85C1BE724": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -959,20 +1072,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess76F9C91C1",
+        "PolicyName": "userpoolAccess85C1BE724",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess7/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess8/Resource"
       }
     },
-    "userpoolAccess85C1BE724": {
+    "userpoolAccess919BF17A1": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -990,20 +1103,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess85C1BE724",
+        "PolicyName": "userpoolAccess919BF17A1",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess8/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess9/Resource"
       }
     },
-    "userpoolAccess919BF17A1": {
+    "userpoolAccess103DE3A3DA": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1021,20 +1134,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess919BF17A1",
+        "PolicyName": "userpoolAccess103DE3A3DA",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess9/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess10/Resource"
       }
     },
-    "userpoolAccess103DE3A3DA": {
+    "userpoolAccess114E9EE2D5": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1052,20 +1165,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess103DE3A3DA",
+        "PolicyName": "userpoolAccess114E9EE2D5",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess10/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess11/Resource"
       }
     },
-    "userpoolAccess114E9EE2D5": {
+    "userpoolAccess1268A998CE": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1083,20 +1196,82 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess114E9EE2D5",
+        "PolicyName": "userpoolAccess1268A998CE",
         "Roles": [
           {
-            "Ref": "addusertogroupgen2xlambdaServiceRole24DD047C"
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess11/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess12/Resource"
       }
     },
-    "removeuserfromgroupgen2xlambdaServiceRole672F6722": {
+    "userpoolAccess13BB9602E6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:UpdateGroup",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess13BB9602E6",
+        "Roles": [
+          {
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess13/Resource"
+      }
+    },
+    "userpoolAccess140CE1F2B0": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:DeleteGroup",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess140CE1F2B0",
+        "Roles": [
+          {
+            "Ref": "addusertogroupgen2xlambdaServiceRole8EBB368B"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess14/Resource"
+      }
+    },
+    "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1146,7 +1321,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/removeuserfromgroup-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicyF6192CB1": {
+    "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy51115182": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1178,10 +1353,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicyF6192CB1",
+        "PolicyName": "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy51115182",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
@@ -1189,7 +1364,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/removeuserfromgroup-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "removeuserfromgroupgen2xlambda099C180A": {
+    "removeuserfromgroupgen2xlambda54269F93": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -1199,7 +1374,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "23d12f18d4528f485b490136d4cb8c0e5b34cff43a92ce8fd96a357111320fff.zip"
+          "S3Key": "675142222217f757b1385ebbb34443831f5b5b3470ace5cefd445d7cb8cdb85e.zip"
         },
         "Environment": {
           "Variables": {
@@ -1220,7 +1395,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "removeuserfromgroupgen2xlambdaServiceRole672F6722",
+            "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED",
             "Arn"
           ]
         },
@@ -1242,18 +1417,100 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+        "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/removeuserfromgroup-gen2-x-lambda/Resource",
-        "aws:asset:path": "asset.23d12f18d4528f485b490136d4cb8c0e5b34cff43a92ce8fd96a357111320fff",
+        "aws:asset:path": "asset.675142222217f757b1385ebbb34443831f5b5b3470ace5cefd445d7cb8cdb85e",
         "aws:asset:is-bundled": true,
         "aws:asset:property": "Code"
       }
     },
-    "userpoolAccess1268A998CE": {
+    "removeuserfromgroupgen2xlambdaUnmappedCognitoActionsPolicy8B51E9AB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cognito-idp:ConfirmSignUp",
+                "cognito-idp:CreateUserImportJob",
+                "cognito-idp:AdminLinkProviderForUser",
+                "cognito-idp:CreateIdentityProvider",
+                "cognito-idp:SetUICustomization",
+                "cognito-idp:SignUp",
+                "cognito-idp:SetRiskConfiguration",
+                "cognito-idp:StartUserImportJob",
+                "cognito-idp:AssociateSoftwareToken",
+                "cognito-idp:CreateResourceServer",
+                "cognito-idp:RespondToAuthChallenge",
+                "cognito-idp:CreateUserPoolClient",
+                "cognito-idp:GlobalSignOut",
+                "cognito-idp:AddCustomAttributes",
+                "cognito-idp:CreateUserPool",
+                "cognito-idp:CreateUserPoolDomain",
+                "cognito-idp:StopUserImportJob",
+                "cognito-idp:InitiateAuth",
+                "cognito-idp:ConfirmForgotPassword",
+                "cognito-idp:VerifySoftwareToken",
+                "cognito-idp:AdminDisableProviderForUser",
+                "cognito-idp:SetUserPoolMfaConfig",
+                "cognito-idp:ChangePassword",
+                "cognito-idp:ConfirmDevice",
+                "cognito-idp:ResendConfirmationCode",
+                "cognito-idp:Describe*",
+                "cognito-idp:ForgotPassword",
+                "cognito-idp:UpdateAuthEventFeedback",
+                "cognito-idp:UpdateResourceServer",
+                "cognito-idp:UpdateUserPoolClient",
+                "cognito-idp:UpdateUserPoolDomain",
+                "cognito-idp:UpdateIdentityProvider",
+                "cognito-idp:UpdateDeviceStatus",
+                "cognito-idp:UpdateUserPool",
+                "cognito-idp:DeleteUserPoolDomain",
+                "cognito-idp:DeleteResourceServer",
+                "cognito-idp:DeleteUserPoolClient",
+                "cognito-idp:DeleteUserAttributes",
+                "cognito-idp:DeleteUserPool",
+                "cognito-idp:DeleteIdentityProvider",
+                "cognito-idp:DeleteUser",
+                "cognito-identity:Describe*",
+                "cognito-identity:Get*",
+                "cognito-identity:List*",
+                "cognito-sync:Describe*",
+                "cognito-sync:Get*",
+                "cognito-sync:List*",
+                "iam:ListOpenIdConnectProviders",
+                "iam:ListRoles",
+                "sns:ListPlatformApplications"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "removeuserfromgroupgen2xlambdaUnmappedCognitoActionsPolicy8B51E9AB",
+        "Roles": [
+          {
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/removeuserfromgroup-gen2-x-lambda/UnmappedCognitoActionsPolicy/Resource"
+      }
+    },
+    "userpoolAccess1530C05CCB": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1285,20 +1542,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess1268A998CE",
+        "PolicyName": "userpoolAccess1530C05CCB",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess12/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess15/Resource"
       }
     },
-    "userpoolAccess13BB9602E6": {
+    "userpoolAccess1676F22644": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1319,20 +1576,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess13BB9602E6",
+        "PolicyName": "userpoolAccess1676F22644",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess13/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess16/Resource"
       }
     },
-    "userpoolAccess140CE1F2B0": {
+    "userpoolAccess17CAC1A603": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1355,20 +1612,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess140CE1F2B0",
+        "PolicyName": "userpoolAccess17CAC1A603",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess14/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess17/Resource"
       }
     },
-    "userpoolAccess1530C05CCB": {
+    "userpoolAccess182B4CED9F": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1389,20 +1646,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess1530C05CCB",
+        "PolicyName": "userpoolAccess182B4CED9F",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess15/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess18/Resource"
       }
     },
-    "userpoolAccess1676F22644": {
+    "userpoolAccess1965647B18": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1420,20 +1677,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess1676F22644",
+        "PolicyName": "userpoolAccess1965647B18",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess16/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess19/Resource"
       }
     },
-    "userpoolAccess17CAC1A603": {
+    "userpoolAccess20B9A60CFD": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1451,20 +1708,51 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess17CAC1A603",
+        "PolicyName": "userpoolAccess20B9A60CFD",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess17/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess20/Resource"
       }
     },
-    "userpoolAccess182B4CED9F": {
+    "userpoolAccess2154951E65": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:CreateGroup",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess2154951E65",
+        "Roles": [
+          {
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess21/Resource"
+      }
+    },
+    "userpoolAccess226D8BB3D4": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1482,20 +1770,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess182B4CED9F",
+        "PolicyName": "userpoolAccess226D8BB3D4",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess18/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess22/Resource"
       }
     },
-    "userpoolAccess1965647B18": {
+    "userpoolAccess2366748829": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1513,20 +1801,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess1965647B18",
+        "PolicyName": "userpoolAccess2366748829",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess19/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess23/Resource"
       }
     },
-    "userpoolAccess20B9A60CFD": {
+    "userpoolAccess24A4C85FAA": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1544,20 +1832,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess20B9A60CFD",
+        "PolicyName": "userpoolAccess24A4C85FAA",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess20/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess24/Resource"
       }
     },
-    "userpoolAccess2154951E65": {
+    "userpoolAccess259B337A7D": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1575,20 +1863,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess2154951E65",
+        "PolicyName": "userpoolAccess259B337A7D",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess21/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess25/Resource"
       }
     },
-    "userpoolAccess226D8BB3D4": {
+    "userpoolAccess264D4C93F1": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1606,23 +1894,85 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "userpoolAccess226D8BB3D4",
+        "PolicyName": "userpoolAccess264D4C93F1",
         "Roles": [
           {
-            "Ref": "removeuserfromgroupgen2xlambdaServiceRole672F6722"
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess22/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess26/Resource"
+      }
+    },
+    "userpoolAccess277181B29F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:UpdateGroup",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess277181B29F",
+        "Roles": [
+          {
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess27/Resource"
+      }
+    },
+    "userpoolAccess2829A79171": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:DeleteGroup",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "amplifyAuthUserPool4BA7F805",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "userpoolAccess2829A79171",
+        "Roles": [
+          {
+            "Ref": "removeuserfromgroupgen2xlambdaServiceRoleA9C8BCED"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/userpoolAccess28/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VOzWrCQBB+Fu/r1kbau1qUXiQoPcu4GeOY7E7ZmSgS8u4lMZEg9PT9D5PY5GNmZxO4ydRlxbSko623KIrZXsEVBm5yqB3ngZRt/SMYU+bSrE7hyQfyxR4ojKPeGeSqJAw6LvTOIL8zDEp6TyNfKcO4Yc5LHA9eG/9O1+DwyFy042fWfz7WOy5xoQru7F9+20SufhtD4G3dttqsw5RLcvdWPlhjRLyt9xop5ClE8KgYu3wQjSnBHzM4BM7wInbbwboKTomDkfkBRFDFLlowMrfLyhWoSxDsp3Z1CsOgMV1vr5BTyBvTXrUXebsmiX3/tLPJRYimsQpKHu3ugX/puYyf6wEAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VOzWrCQBB+Fu/rViPtXS1KLxKUnmXcjOmYzU7ZmSgS8u4lMZEg9PT9D5PY5H1uZxO4ydRlxdTTydY7FMXsoOAKAzc51o7zQMq2/haMKbM363N48oF8cgkUxlHvDHLtCYOOC70zyK8Mg5Le08hXyjBumXOP48Fr49/pBhyemIt2/Mz6z8d6zx6XquB+ypfftpGr38YQlLZuW23WYcqe3L2VD9YYkdLWB40U8hQilKgYu3wQjfFQnjI4Bs7wInbXwaYKTomDkcURRFDFLlswsrCryhWoKxDsp3Z9DsOgMV3voJBTyBvTXrUXebsmiZ1/2NnkIkTTWAWlEu3+gX/1I6XL6wEAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -1897,52 +2247,52 @@
     }
   },
   "Outputs": {
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthUserPoolE48AF738Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPool9CA29B1CRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthUserPoolAppClient3FF96D05Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPoolAppClientB71E35F4Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthIdentityPool0BF026A3Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthUserPoolUserPoolDomain2807DB2ARef": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPoolUserPoolDomainAB8DA532Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolUserPoolDomain1F688B5B"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthaddusertogroupgen2xlambdaDF249790Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthaddusertogroupgen2xlambda60A31462Ref": {
       "Value": {
-        "Ref": "addusertogroupgen2xlambda9842E1F9"
+        "Ref": "addusertogroupgen2xlambdaA6B93E60"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthremoveuserfromgroupgen2xlambda43B78CC4Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthremoveuserfromgroupgen2xlambda6FBE6A59Ref": {
       "Value": {
-        "Ref": "removeuserfromgroupgen2xlambda099C180A"
+        "Ref": "removeuserfromgroupgen2xlambda54269F93"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthauthenticatedUserRoleE0CA9703Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthunauthenticatedUserRole88DA1FC1Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthAdminGroupRole56853334Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthAdminGroupRole6D09A9FERef": {
       "Value": {
         "Ref": "amplifyAuthAdminGroupRole766878DC"
       }
     },
-    "amplifymediavaulte2esandbox0a7f7fcf5aauthamplifyAuthBasicGroupRole5656CA64Ref": {
+    "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthBasicGroupRole8EA02FC2Ref": {
       "Value": {
         "Ref": "amplifyAuthBasicGroupRole77B9C0CB"
       }

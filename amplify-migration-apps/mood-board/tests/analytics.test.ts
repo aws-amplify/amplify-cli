@@ -7,6 +7,16 @@ import { KINESIS_STREAM_NAME } from '../src/constants';
 import { signUp, configureAmplify } from './signup';
 
 const auth = () => generateClient({ authMode: 'userPool' });
+const pub = () => generateClient({ authMode: 'apiKey' });
+
+const listKinesisEventCounts = /* GraphQL */ `query ListKinesisEventCounts($filter: ModelKinesisEventCountFilterInput, $limit: Int) {
+  listKinesisEventCounts(filter: $filter, limit: $limit) {
+    items {
+      id
+      processedAt
+    }
+  }
+}`;
 
 beforeAll(async () => {
   const config = configureAmplify();
@@ -18,12 +28,11 @@ afterAll(async () => {
   await signOut();
 });
 
-describe('auth', () => {
+describe('analytics', () => {
   it('records events to Kinesis and reads them back', async () => {
     const marker = `test-${Date.now()}`;
 
-    // Record several events so at least one survives the stream's retention window
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 5; i++) {
       record({
         data: { event: 'analyticsTest', marker, index: i },
         partitionKey: 'test',
@@ -48,5 +57,41 @@ describe('auth', () => {
     }
 
     expect(events.length).toBeGreaterThan(0);
+  }, 120_000);
+
+  it('trigger fires and logs events when records are put into the stream', async () => {
+    const beforeResult = await pub().graphql({
+      query: listKinesisEventCounts,
+      variables: {
+        filter: { processedAt: { attributeExists: true } },
+        limit: 10000,
+      },
+    });
+    const initialCount = (beforeResult as any).data.listKinesisEventCounts.items.length;
+
+    for (let i = 0; i < 5; i++) {
+      record({
+        data: { event: 'triggerTest', timestamp: Date.now(), index: i },
+        partitionKey: 'trigger-test',
+        streamName: KINESIS_STREAM_NAME,
+      });
+    }
+    flushEvents();
+
+    let currentCount = initialCount;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      await new Promise((r) => setTimeout(r, 3000));
+      const result = await pub().graphql({
+        query: listKinesisEventCounts,
+        variables: {
+          filter: { processedAt: { attributeExists: true } },
+          limit: 10000,
+        },
+      });
+      currentCount = (result as any).data.listKinesisEventCounts.items.length;
+      if (currentCount > initialCount) break;
+    }
+
+    expect(currentCount).toBeGreaterThan(initialCount);
   }, 120_000);
 });

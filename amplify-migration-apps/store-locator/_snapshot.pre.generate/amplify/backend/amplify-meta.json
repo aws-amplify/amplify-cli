@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-storelocator-x-x-deployment",
       "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
       "StackName": "amplify-storelocator-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/53312c00-3b2b-11f1-a398-0e6f651222db",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/79e70150-41be-11f1-8508-0affc9b95623",
       "AmplifyAppId": "storelocator",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     }
@@ -29,13 +29,13 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-18T13:40:04.688Z",
+      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "storeLocatorAdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_VKtSrP6gt-storeLocatorAdminGroupRole"
+        "storeLocatorAdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_e1bfGhJ7T-storeLocatorAdminGroupRole"
       },
       "lastPushDirHash": "aY2fv0JwB9V2Pnq+Iavglw2oGVE="
     },
@@ -78,13 +78,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
         "logicalId": "authstorelocator41a9495f41a9495f"
       },
-      "lastPushTimeStamp": "2026-04-18T13:40:04.688Z",
+      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
       "output": {
-        "UserPoolId": "us-east-1_VKtSrP6gt",
-        "AppClientIDWeb": "4ks6idlvvpagop3piq8bo7ak47",
-        "AppClientID": "2tl3m4mds7qhmff2po0b5kj0dq",
-        "IdentityPoolId": "us-east-1:0184377c-9d75-4624-9e32-e22ec2c123fd",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_VKtSrP6gt",
+        "UserPoolId": "us-east-1_e1bfGhJ7T",
+        "AppClientIDWeb": "2sdm7fhjfai09vgc47cl0b3hb2",
+        "AppClientID": "2g3n9rii1hrfa4r7cs5fu6bru6",
+        "IdentityPoolId": "us-east-1:fed60bb9-df36-471c-be9c-2abb1eec3666",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_e1bfGhJ7T",
         "IdentityPoolName": "storelocator41a9495f_identitypool_41a9495f__x",
         "UserPoolName": "storelocator41a9495f_userpool_41a9495f"
       },
@@ -96,9 +96,9 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-04-18T13:35:39.688Z",
+      "lastBuildTimeStamp": "2026-04-26T22:24:14.165Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-18T13:35:39.911Z",
+      "lastPackageTimeStamp": "2026-04-26T22:24:14.446Z",
       "distZipFilename": "storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-storelocator-x-x-deployment",
@@ -108,7 +108,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
         "logicalId": "functionstorelocator41a9495f41a9495fPostConfirmation"
       },
-      "lastPushTimeStamp": "2026-04-18T13:40:04.688Z",
+      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/storelocator41a9495f41a9495fPostConfirmation-x",
         "Region": "us-east-1",
@@ -116,7 +116,7 @@
         "Name": "storelocator41a9495f41a9495fPostConfirmation-x",
         "LambdaExecutionRole": "storelocator41a9495f41a9495fPostConfirmation-x"
       },
-      "lastPushDirHash": "pTxm83zj2K+lzNeUrPxBbaw1CvM="
+      "lastPushDirHash": "USuDOxWYbVc89R8jbYFk084MUDU="
     }
   },
   "geo": {
@@ -146,14 +146,14 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
         "logicalId": "geostoreLocatorMap"
       },
-      "lastPushTimeStamp": "2026-04-18T13:40:04.688Z",
+      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
       "output": {
         "Style": "VectorEsriStreets",
         "Region": "us-east-1",
         "Arn": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-x",
         "Name": "storeLocatorMap-x"
       },
-      "lastPushDirHash": "5dwl3U/GEt2xgz6cJMRDBa5NT58="
+      "lastPushDirHash": "83BNu1WBvqATjVJFZfeXWW42EEo="
     },
     "storeLocatorSearch": {
       "isDefault": true,
@@ -182,13 +182,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
         "logicalId": "geostoreLocatorSearch"
       },
-      "lastPushTimeStamp": "2026-04-18T13:40:04.688Z",
+      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
       "output": {
         "Region": "us-east-1",
         "Arn": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-x",
         "Name": "storeLocatorSearch-x"
       },
-      "lastPushDirHash": "VnLKQDB6OpFbLSPc1x/verz/KLs="
+      "lastPushDirHash": "tsVFmyFlVrpTi0MPhsFRI07p4wc="
     },
     "storeLocatorGeofence": {
       "isDefault": true,
@@ -215,13 +215,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
         "logicalId": "geostoreLocatorGeofence"
       },
-      "lastPushTimeStamp": "2026-04-18T13:40:04.688Z",
+      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
       "output": {
         "Region": "us-east-1",
         "Arn": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-x",
         "Name": "storeLocatorGeofence-x"
       },
-      "lastPushDirHash": "6XnH6uYG+AzXepml4bvWyOkZLck="
+      "lastPushDirHash": "Kq6auY5HtW0SrWEan4uiTIa8yt4="
     }
   }
 }

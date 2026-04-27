@@ -62,8 +62,8 @@
           "SmsMessage": "The verification code to your new account is {####}"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
@@ -87,8 +87,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
@@ -123,8 +123,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
@@ -171,8 +171,8 @@
         ],
         "SupportedLoginProviders": {}
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
@@ -243,7 +243,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":apis/hscmwhprkbaljmcpavj3dcztrq/*"
+                    ":apis/ygivvj3x3fgkjcyo2xd4oyyhuu/*"
                   ]
                 ]
               }
@@ -360,8 +360,8 @@
         "amplifyAuthIdentityPool3FDE84CC",
         "amplifyAuthUserPoolAppClient2626C6F8"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
@@ -369,7 +369,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02Lyw6CMBBFv4V9GbGJ7g0rN4ZgXJvajjpQ2oSOEtL03w0SlNU99yVB7gooMjWEXJs2t3SDeMLAaM6sdCvUEK5R+4cj9hAvAfvKeyvKu/vxAqUldLyu/snRoGPicTmvfe0tHpiVfnboOAlSHcQpnIZfrbwlPU52ppSScN4gNGHzlhK2eyiyJhDl/csxdQj1rB8nXeTo3wAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02Lyw6CMBBFv4V9GaGJ7g0rN8ZgXJvajjpQ2oSOEtL03w0SlNU99yVBbksoMjWEXJs2t3SDeMTAaM6sdCvUEK5R+4cj9hAvAfuT91ZUd/fjBSpL6Hhd/ZODQcfE43Je+9pb3DMr/ezQcRKkOohTOA2/evKW9DjZmVJKwnmD0ITNW0ood1BkTSDK+5dj6hDqWT+HExEE3wAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -644,27 +644,27 @@
     }
   },
   "Outputs": {
-    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPool28A7874FRef": {
+    "amplifyproductcataloge2esandbox554f5b1732authamplifyAuthUserPool6507527FRef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthUserPoolAppClient577E72DBRef": {
+    "amplifyproductcataloge2esandbox554f5b1732authamplifyAuthUserPoolAppClientB05B2955Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthIdentityPool9A695D5FRef": {
+    "amplifyproductcataloge2esandbox554f5b1732authamplifyAuthIdentityPool75952A1CRef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthauthenticatedUserRole858AD406Ref": {
+    "amplifyproductcataloge2esandbox554f5b1732authamplifyAuthauthenticatedUserRole9B178FF5Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyproductcataloge2esandboxde12df9a17authamplifyAuthunauthenticatedUserRole6E374C83Ref": {
+    "amplifyproductcataloge2esandbox554f5b1732authamplifyAuthunauthenticatedUserRole04DD28BBRef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

@@ -45,8 +45,8 @@ export function defineAdminapiApi(backend: Backend) {
     stack,
     'Gen1adminapiApi',
     {
-      restApiId: 'rnrkwt1ywc',
-      rootResourceId: 'rnrkwt1ywc-root',
+      restApiId: 'hpgcgkhgrd',
+      rootResourceId: '6b3958tl65',
     }
   );
   const gen1adminapiPolicy = new Policy(stack, 'Gen1adminapiPolicy', {

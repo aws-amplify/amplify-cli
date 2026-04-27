@@ -504,7 +504,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -618,7 +618,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -765,7 +765,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -933,7 +933,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1098,7 +1098,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1184,7 +1184,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1240,7 +1240,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1296,7 +1296,7 @@
               {
                 "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef"
               },
-              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:1e75f5e8-00d2-4619-8a36-ba53a08d35c1\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"S3Trigger1ef46783-x\",\"lowstockproducts-x\",\"amplify-productcat\"]))\n$util.toJson({})"
             ]
           ]
         },

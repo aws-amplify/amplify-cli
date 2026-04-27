@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -166,7 +166,9 @@
         "UsernameConfiguration": {
           "CaseSensitive": false
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClientWeb": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -176,8 +178,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_cI3qDOXA2"
-      }
+        "UserPoolId": "us-east-1_ZBk9pkkL1"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -188,8 +192,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_cI3qDOXA2"
-      }
+        "UserPoolId": "us-east-1_ZBk9pkkL1"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "UserPoolClientRole": {
       "Type": "AWS::IAM::Role",
@@ -235,7 +241,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "3ggneb92n0rfe5qet1h7p48evc",
+            "ClientId": "gud63b4ojpv3bruh773osqvea",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -243,13 +249,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_cI3qDOXA2"
+                  "client": "us-east-1_ZBk9pkkL1"
                 }
               ]
             }
           },
           {
-            "ClientId": "6h7936arcjp36o7dhshkqb6d2a",
+            "ClientId": "7co1u9jfpg4oilmh8culo47bmh",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -257,7 +263,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_cI3qDOXA2"
+                  "client": "us-east-1_ZBk9pkkL1"
                 }
               ]
             }
@@ -272,45 +278,49 @@
             ]
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:ad436de3-7529-46d9-be87-050ea1dd015c",
+        "IdentityPoolId": "us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c",
         "Roles": {
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-x-x-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-x-x-authRole"
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     }
   },
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:ad436de3-7529-46d9-be87-050ea1dd015c"
+      "Value": "us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c"
     },
     "IdentityPoolName": {
       "Value": "backendonlyf8c4c57b_identitypool_f8c4c57b__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_cI3qDOXA2"
+      "Value": "us-east-1_ZBk9pkkL1"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_cI3qDOXA2"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_ZBk9pkkL1"
     },
     "UserPoolName": {
       "Value": "backendonlyf8c4c57b_userpool_f8c4c57b"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "6h7936arcjp36o7dhshkqb6d2a"
+      "Value": "7co1u9jfpg4oilmh8culo47bmh"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "3ggneb92n0rfe5qet1h7p48evc"
+      "Value": "gud63b4ojpv3bruh773osqvea"
     }
   }
 }

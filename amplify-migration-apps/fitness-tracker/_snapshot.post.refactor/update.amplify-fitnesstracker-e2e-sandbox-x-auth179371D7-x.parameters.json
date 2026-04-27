@@ -1,6 +1,6 @@
 [
   {
-    "ParameterKey": "referencetoamplifyfitnesstrackere2esandbox803499bc27functionNestedStackfunctionNestedStackResource14041EA1Outputsamplifyfitnesstrackere2esandbox803499bc27functionfitnesstracker33f5545533f55455PreSignupgen2xlambda983C2B9AArn",
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931functionNestedStackfunctionNestedStackResource832AF155Outputsamplifyfitnesstrackere2esandboxde9d3c8931functionfitnesstracker33f5545533f55455PreSignupgen2xlambda76E52587Arn",
     "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:fitnesstracker33f5545533f55455PreSignup-gen2-x"
   }
 ]

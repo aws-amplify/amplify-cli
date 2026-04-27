@@ -137,7 +137,7 @@
           ]
         },
         "Description": "graphqlapi",
-        "Expires": 1776829873
+        "Expires": 1777849232
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -1149,5 +1149,5 @@
       }
     }
   },
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
 }

@@ -34,7 +34,7 @@ export interface geostoreLocatorSearchProps {
 }
 
 /**
- * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"geo-PlaceIndex","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
+ * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.3.0","stackType":"geo-PlaceIndex","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
  */
 export class geostoreLocatorSearch extends Construct {
   public readonly name;

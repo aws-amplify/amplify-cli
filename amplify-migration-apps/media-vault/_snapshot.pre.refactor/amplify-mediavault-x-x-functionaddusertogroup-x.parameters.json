@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/addusertogroup-374b6158625065387750-build.zip"
+    "ParameterValue": "amplify-builds/addusertogroup-4450364f57513932534d-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "us-east-1_baREhKWox"
+    "ParameterValue": "us-east-1_wxZfjy0c4"
   },
   {
     "ParameterKey": "env",

@@ -4,8 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthUserPoolC6936963Ref",
-    "ParameterValue": "us-east-1_QCCMEQ5di"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox26ff64ae95authNestedStackauthNestedStackResourceFF5A04B3Outputsamplifybackendonlye2esandbox26ff64ae95authamplifyAuthunauthenticatedUserRoleF1059779Ref",
+    "ParameterValue": "amplify-backendonl2604261-amplifyAuthunauthenticate-KwRXukFGjgZa"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox26ff64ae95authNestedStackauthNestedStackResourceFF5A04B3Outputsamplifybackendonlye2esandbox26ff64ae95authamplifyAuthIdentityPool5D1D7D59Ref",
+    "ParameterValue": "us-east-1:30317ae2-aaba-4184-9b83-3c8222f04fdd"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -24,15 +28,11 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthauthenticatedUserRole183CF69ARef",
-    "ParameterValue": "amplify-backendonl2604142-amplifyAuthauthenticatedU-e2MZgmxI4x06"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox26ff64ae95authNestedStackauthNestedStackResourceFF5A04B3Outputsamplifybackendonlye2esandbox26ff64ae95authamplifyAuthauthenticatedUserRoleB566BDCARef",
+    "ParameterValue": "amplify-backendonl2604261-amplifyAuthauthenticatedU-ZGQ2GmBmoCuX"
   },
   {
-    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthunauthenticatedUserRoleECB5AFB3Ref",
-    "ParameterValue": "amplify-backendonl2604142-amplifyAuthunauthenticate-T0OFU3aW6x78"
-  },
-  {
-    "ParameterKey": "referencetoamplifybackendonlye2esandbox363d3cd24dauthNestedStackauthNestedStackResource276193F6Outputsamplifybackendonlye2esandbox363d3cd24dauthamplifyAuthIdentityPool210F50E3Ref",
-    "ParameterValue": "us-east-1:253c6cb3-ea32-4bc6-9532-d622a04831ed"
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox26ff64ae95authNestedStackauthNestedStackResourceFF5A04B3Outputsamplifybackendonlye2esandbox26ff64ae95authamplifyAuthUserPool27D4C0B2Ref",
+    "ParameterValue": "us-east-1_O5pxivvKW"
   }
 ]

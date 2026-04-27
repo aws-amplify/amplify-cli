@@ -31,7 +31,7 @@ export interface geostoreLocatorMapProps {
 }
 
 /**
- * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"geo-Map","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
+ * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.3.0","stackType":"geo-Map","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
  */
 export class geostoreLocatorMap extends Construct {
   public readonly name;

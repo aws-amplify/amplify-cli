@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455IdentityPoolId",
-    "ParameterValue": "us-east-1:47b5d736-61eb-49b8-ac45-b87c5a2d5bb8"
+    "ParameterValue": "us-east-1:219ac99d-0294-49a3-aad1-abd4063c42cf"
   },
   {
     "ParameterKey": "AuthRoleArn",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "us-east-1_yGeHz6G3D"
+    "ParameterValue": "us-east-1_meUfbq8Lb"
   },
   {
     "ParameterKey": "env",
@@ -21,10 +21,10 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455AppClientIDWeb",
-    "ParameterValue": "4c75d20fqn4dr60ardcqbld32j"
+    "ParameterValue": "7757qf7k4fnkmni8spsllsf657"
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455AppClientID",
-    "ParameterValue": "4bqa09jfll3k8ouiflhbk991br"
+    "ParameterValue": "1i0f15mvl5o0lqddsbjf7d1nn4"
   }
 ]

@@ -394,7 +394,7 @@
         "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/function/lognutrition-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
-          "s3Key": "amplify-builds/lognutrition-67534c457675315a7242-build.zip",
+          "s3Key": "amplify-builds/lognutrition-7738454a57786b4c636d-build.zip",
           "apifitnesstrackerGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
               "apifitnesstracker",
@@ -411,7 +411,7 @@
         "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-x-x-deployment/amplify-cfn-templates/function/admin-cloudformation-template.json",
         "Parameters": {
           "deploymentBucketName": "amplify-fitnesstracker-x-x-deployment",
-          "s3Key": "amplify-builds/admin-65737069332b35547136-build.zip",
+          "s3Key": "amplify-builds/admin-4d474753696b544a5249-build.zip",
           "authfitnesstracker33f5545533f55455UserPoolId": {
             "Fn::GetAtt": [
               "authfitnesstracker33f5545533f55455",

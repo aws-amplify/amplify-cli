@@ -4,7 +4,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGSwqDMBAA0LO4T6bpQE/gvgvbfZlkRoifBJxEEfHugl29h4AvB66hTW3g0U7Rw/EWLcKfQmE0tOmP90RzZg/Hl/wkpu3TndN0orkuQU6TMgsM+lgRAZ/gmkFjtEtNJc4C3d8LDvm/AG4AAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ6MG3AvYW6i9TDKzED8JOImyiHdf0Oo9A6apoSrwFO1o0au3cHUsiWlI6BaFp0z0C7hFsnCNaFdW7Tc8uVXPEvPu+FYhEsMs5WEM1B+oilm813sOyW8M/esfhTv+dG4AAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/storagebookmarks/CDKMetadata/Default"

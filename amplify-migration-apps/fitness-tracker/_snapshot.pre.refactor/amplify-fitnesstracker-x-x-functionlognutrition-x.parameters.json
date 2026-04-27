@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "apifitnesstrackerGraphQLAPIIdOutput",
-    "ParameterValue": "elicmdfqbrhdzhj5vaymxv72ze"
+    "ParameterValue": "bdrql4nrffefnbpcrkkc27shn4"
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/lognutrition-67534c457675315a7242-build.zip"
+    "ParameterValue": "amplify-builds/lognutrition-7738454a57786b4c636d-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",

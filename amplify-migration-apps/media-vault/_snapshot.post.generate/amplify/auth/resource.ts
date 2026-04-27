@@ -98,9 +98,9 @@ export function applyEscapeHatches(backend: Backend) {
     enablePropagateAdditionalUserContextData: false,
     authSessionValidity: Duration.minutes(3),
     supportedIdentityProviders: [
+      UserPoolClientIdentityProvider.COGNITO,
       UserPoolClientIdentityProvider.FACEBOOK,
       UserPoolClientIdentityProvider.GOOGLE,
-      UserPoolClientIdentityProvider.COGNITO,
     ],
     oAuth: {
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
@@ -111,11 +111,11 @@ export function applyEscapeHatches(backend: Backend) {
         clientCredentials: false,
       },
       scopes: [
-        OAuthScope.PHONE,
+        OAuthScope.COGNITO_ADMIN,
         OAuthScope.EMAIL,
         OAuthScope.OPENID,
+        OAuthScope.PHONE,
         OAuthScope.PROFILE,
-        OAuthScope.COGNITO_ADMIN,
       ],
     },
     // flows: ['code'],

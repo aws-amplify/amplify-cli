@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataGraphQLAPI7A910277ApiId"
+                            "Ref": "referencetoamplifydiscussionse2esandbox16be747e30dataamplifyDataGraphQLAPI99090D67ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Topic-kvgq5sominembcf7pb3nqurkby-x"
+                          "tableName": "Topic-ofxtncx3vjdyxe6g4bijjb7jie-x"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Post-kvgq5sominembcf7pb3nqurkby-x"
+                          "tableName": "Post-ofxtncx3vjdyxe6g4bijjb7jie-x"
                         }
                       ]
                     },
@@ -80,7 +80,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Comment-kvgq5sominembcf7pb3nqurkby-x"
+                          "tableName": "Comment-ofxtncx3vjdyxe6g4bijjb7jie-x"
                         }
                       ]
                     }
@@ -177,7 +177,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataGraphQLAPI7A910277ApiId"
+                            "Ref": "referencetoamplifydiscussionse2esandbox16be747e30dataamplifyDataGraphQLAPI99090D67ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -187,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Topic-kvgq5sominembcf7pb3nqurkby-x"
+                          "tableName": "Topic-ofxtncx3vjdyxe6g4bijjb7jie-x"
                         }
                       ]
                     },
@@ -195,7 +195,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Post-kvgq5sominembcf7pb3nqurkby-x"
+                          "tableName": "Post-ofxtncx3vjdyxe6g4bijjb7jie-x"
                         }
                       ]
                     },
@@ -203,7 +203,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Comment-kvgq5sominembcf7pb3nqurkby-x"
+                          "tableName": "Comment-ofxtncx3vjdyxe6g4bijjb7jie-x"
                         }
                       ]
                     }
@@ -495,7 +495,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNTQ6CMBBGz8K+jFjiAcTEpTFwADK0Iyk/bcK0EtP07gbQ1Xtf3uKTIC8FFBmunCs95pPpID6IPenGoxoFrtxGgzPE2k0kbi+78+kmoz7bPCyJCedOI8R7sMobZ7f29yS4bJGZPMN1g+ASqqBG8hUyJVETu7AoEnttPPbG9vvZLyRhnSYY+PSWEuQZimxgY/IlWG9mgvrgF13iClnPAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNyw6CMBBFv4V9GXlE92Li0hj4ADKUkQyUNmGKxDT8uwF0dc7NWdwMsnMKSYSLxLodYsMNhAeJp7byqAeFi9SBcYRQOkPq9rI7n86w/mzzsFUZHJsWIdxnqz07u7W/r0ryGkXIC1w3KMmhmPVAvkChVZUkbp40qb1WHju23X72C6uyriXo5fTOMkgvkES9MMfTbD2PBOXBL8qRVQjPAAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
@@ -770,12 +770,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifydiscussionse2esandbox1aa0693a85dataamplifyDataGraphQLAPI7A910277ApiId": {
+    "referencetoamplifydiscussionse2esandbox16be747e30dataamplifyDataGraphQLAPI99090D67ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifydiscussionse2esandbox1aa0693a85dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventA329B826Arn": {
+    "amplifydiscussionse2esandbox16be747e30dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent316FEFD0Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

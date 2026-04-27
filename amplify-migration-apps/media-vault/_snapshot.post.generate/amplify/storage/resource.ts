@@ -34,7 +34,8 @@ export const storage = defineStorage({
 
 export function postRefactor(backend: Backend) {
   const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-  s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bedx-x';
+  s3Bucket.bucketName =
+    'mediavaultb574f210f1634e3a8d1934f263da5bedx-x';
 }
 
 export function applyEscapeHatches(backend: Backend) {

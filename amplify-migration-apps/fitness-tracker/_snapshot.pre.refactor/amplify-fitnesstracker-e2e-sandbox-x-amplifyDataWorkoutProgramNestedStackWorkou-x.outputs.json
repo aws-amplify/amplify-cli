@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAttWorkoutProgramTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/WorkoutProgram-elicmdfqbrhdzhj5vaymxv72ze-x/stream/2026-04-18T13:36:36.569",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/WorkoutProgram-bdrql4nrffefnbpcrkkc27shn4-x/stream/2026-04-26T23:00:40.974",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "jezyel522nguhhkcnj7iohpuxe:GetAtt:WorkoutProgramTable:StreamArn"
+    "ExportName": "2jo7dgnljncqdcy2v3snkmtnbm:GetAtt:WorkoutProgramTable:StreamArn"
   },
   {
     "OutputKey": "GetAttWorkoutProgramTableName",
-    "OutputValue": "WorkoutProgram-elicmdfqbrhdzhj5vaymxv72ze-x",
+    "OutputValue": "WorkoutProgram-bdrql4nrffefnbpcrkkc27shn4-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "jezyel522nguhhkcnj7iohpuxe:GetAtt:WorkoutProgramTable:Name"
+    "ExportName": "2jo7dgnljncqdcy2v3snkmtnbm:GetAtt:WorkoutProgramTable:Name"
   }
 ]

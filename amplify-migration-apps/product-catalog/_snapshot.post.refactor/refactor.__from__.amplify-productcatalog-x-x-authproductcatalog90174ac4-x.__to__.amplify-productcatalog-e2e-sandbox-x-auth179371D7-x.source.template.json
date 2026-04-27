@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -162,29 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:a3f1cc1e-f560-4202-ba02-4c435dec114d"
+      "Value": "us-east-1:c03019f2-a6c5-4d5d-9e0d-e4077c08d534"
     },
     "IdentityPoolName": {
       "Value": "productcatalog90174ac4_identitypool_90174ac4__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_HpX9WE297"
+      "Value": "us-east-1_klJXJrZWx"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_HpX9WE297"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_klJXJrZWx"
     },
     "UserPoolName": {
       "Value": "productcatalog90174ac4_userpool_90174ac4"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "5t4ot0q04ialfrcrbs42ja7pul"
+      "Value": "hnnbu1vjentdirodp3bd1t907"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "4kaqq4k3inp7kumdv6bqelrm7"
+      "Value": "3puvqnlfeamqdj6isivfsbe45u"
     }
   }
 }

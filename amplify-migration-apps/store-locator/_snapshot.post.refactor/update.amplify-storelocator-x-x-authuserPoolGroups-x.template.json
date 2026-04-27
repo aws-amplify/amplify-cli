@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -43,9 +43,11 @@
         "Description": "override success",
         "GroupName": "storeLocatorAdmin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_VKtSrP6gt-storeLocatorAdminGroupRole",
-        "UserPoolId": "us-east-1_VKtSrP6gt"
-      }
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_e1bfGhJ7T-storeLocatorAdminGroupRole",
+        "UserPoolId": "us-east-1_e1bfGhJ7T"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "storeLocatorAdminGroupRole": {
       "Type": "AWS::IAM::Role",
@@ -62,7 +64,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:0184377c-9d75-4624-9e32-e22ec2c123fd"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:fed60bb9-df36-471c-be9c-2abb1eec3666"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -75,7 +77,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_VKtSrP6gt",
+              "us-east-1_e1bfGhJ7T",
               "-storeLocatorAdminGroupRole"
             ]
           ]
@@ -85,7 +87,7 @@
   },
   "Outputs": {
     "storeLocatorAdminGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_VKtSrP6gt-storeLocatorAdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_e1bfGhJ7T-storeLocatorAdminGroupRole"
     }
   }
 }

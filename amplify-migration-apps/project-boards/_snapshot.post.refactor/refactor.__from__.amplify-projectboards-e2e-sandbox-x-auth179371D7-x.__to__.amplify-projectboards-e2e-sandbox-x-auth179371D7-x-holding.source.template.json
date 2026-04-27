@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:7792bdd9-773b-4af4-a7a8-035a45723fac"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:7792bdd9-773b-4af4-a7a8-035a45723fac"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -92,7 +92,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVVIUZY2ldV3q6QjpgFHQnMbZTZoyXZMOdSQKkc8ThGIJX9Y1/fja1J2RZVn+yd8hC8p7Py9wEjzsRYx89smRFpoc0wWk4ac5ZcXAIbVy9tIb1FqqijUTl8GShHqH56gf10GUazgAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv8V7urYBvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVlCszxsK6rvB0hXTAKOhOYmynzBgvyYY7kwRI54jDMQSv6hv//GxqT8iyrP5k75CF5D2fl7kJHncixj56ZMmKTA9pgtNw0pyz4uAQ2rh+aQ3VFspVG4mK4clCPULz1Q9CTLG1zgAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -367,20 +367,20 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolE690205FRef": {
-      "Value": "us-east-1_KIRz8bn0l"
+    "amplifyprojectboardse2esandbox4e89bdf911authamplifyAuthUserPool741E2875Ref": {
+      "Value": "us-east-1_NjyzLtLGP"
     },
-    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthUserPoolAppClient619348A5Ref": {
-      "Value": "5u0pu7spa0tin8np6oitsr50ke"
+    "amplifyprojectboardse2esandbox4e89bdf911authamplifyAuthUserPoolAppClient55F4AC5DRef": {
+      "Value": "6fj2vrdm9s7rr58cttk9t8ksf0"
     },
-    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthIdentityPoolB48353E5Ref": {
-      "Value": "us-east-1:f53c9465-a0fb-4a04-81d2-b13c6999b9a2"
+    "amplifyprojectboardse2esandbox4e89bdf911authamplifyAuthIdentityPool422FACB5Ref": {
+      "Value": "us-east-1:7792bdd9-773b-4af4-a7a8-035a45723fac"
     },
-    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthauthenticatedUserRoleAB70D6A0Ref": {
-      "Value": "amplify-projectboa2604142-amplifyAuthauthenticatedU-1jxM3hVSjIDm"
+    "amplifyprojectboardse2esandbox4e89bdf911authamplifyAuthauthenticatedUserRole6DCD3C6DRef": {
+      "Value": "amplify-projectboa2604261-amplifyAuthauthenticatedU-qbafrylxvEIG"
     },
-    "amplifyprojectboardse2esandboxb2cbfff775authamplifyAuthunauthenticatedUserRole8524B4C2Ref": {
-      "Value": "amplify-projectboa2604142-amplifyAuthunauthenticate-LvEI2or1a1b4"
+    "amplifyprojectboardse2esandbox4e89bdf911authamplifyAuthunauthenticatedUserRole0D813339Ref": {
+      "Value": "amplify-projectboa2604261-amplifyAuthunauthenticate-lsN2mJov2h1E"
     }
   }
 }

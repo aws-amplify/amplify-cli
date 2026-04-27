@@ -7,11 +7,11 @@
       "Properties": {
         "GroupName": "Admin",
         "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604180-amplifyAuthAdminGroupRole-1itvNi45n9Yy",
-        "UserPoolId": "us-east-1_tmL6Kxfl1"
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604261-amplifyAuthAdminGroupRole-flbPCV3FKAa6",
+        "UserPoolId": "us-east-1_ajusuzRl2"
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/AdminGroup"
       }
@@ -77,8 +77,8 @@
           "SmsMessage": "The verification code to your new account is {####}"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
@@ -98,10 +98,10 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_tmL6Kxfl1"
+        "UserPoolId": "us-east-1_ajusuzRl2"
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
@@ -132,10 +132,10 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_tmL6Kxfl1"
+        "UserPoolId": "us-east-1_ajusuzRl2"
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
@@ -146,7 +146,7 @@
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "1kf9pbheuol9bju6lcj4ni2jr0",
+            "ClientId": "67q0k3hh8oat50ihljtd4nsqq",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -156,7 +156,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_tmL6Kxfl1"
+                  "us-east-1_ajusuzRl2"
                 ]
               ]
             }
@@ -178,8 +178,8 @@
         ],
         "SupportedLoginProviders": {}
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
@@ -187,7 +187,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:46a806ec-c984-49ca-965e-cefbfdfd1888",
+        "IdentityPoolId": "us-east-1:bd6461c2-ca69-4013-b6ce-b23e8f1fec7b",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -200,9 +200,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_tmL6Kxfl1",
+                  "us-east-1_ajusuzRl2",
                   ":",
-                  "1kf9pbheuol9bju6lcj4ni2jr0"
+                  "67q0k3hh8oat50ihljtd4nsqq"
                 ]
               ]
             },
@@ -210,12 +210,12 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604180-amplifyAuthunauthenticate-lllCdODCrNf9",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604180-amplifyAuthauthenticatedU-VyFDEJ1eZy5j"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604261-amplifyAuthunauthenticate-ecqoiuGQ5H3A",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstra2604261-amplifyAuthauthenticatedU-VBypwE3n9aIB"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

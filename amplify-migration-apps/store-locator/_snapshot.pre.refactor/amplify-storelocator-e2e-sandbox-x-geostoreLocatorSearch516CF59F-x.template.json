@@ -257,13 +257,13 @@
         "PolicyName": "storeLocatorSearch-gen2-xPolicy",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthauthenticatedUserRole4CEAF139Ref"
+            "Ref": "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthauthenticatedUserRoleD7BE3F2CRef"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthunauthenticatedUserRole3DDDFC0ERef"
+            "Ref": "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthunauthenticatedUserRole65DC1FBBRef"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthstoreLocatorAdminGroupRoleD95D53BFRef"
+            "Ref": "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthstoreLocatorAdminGroupRoleE03DDAA7Ref"
           }
         ]
       },
@@ -309,13 +309,13 @@
         "PolicyName": "storeLocatorSearchgen1AuthPolicy275D2FAF",
         "Roles": [
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthauthenticatedUserRole4CEAF139Ref"
+            "Ref": "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthauthenticatedUserRoleD7BE3F2CRef"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthunauthenticatedUserRole3DDDFC0ERef"
+            "Ref": "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthunauthenticatedUserRole65DC1FBBRef"
           },
           {
-            "Ref": "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthstoreLocatorAdminGroupRoleD95D53BFRef"
+            "Ref": "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthstoreLocatorAdminGroupRoleE03DDAA7Ref"
           }
         ]
       },
@@ -328,7 +328,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWLSw6DIBQAz+IeXy1JewGS7voJPUCDgM1TeBgf1DTGuzfW1SxmRoI8NdBUZubauqEO2MJy85y9e2ZjB6E6uppxRHoLM/NrQRNhUR3pFPwmHymg/Yodqwgmts6A6uhSyGZMtG6VKpxT1J5Tmez/u5c8lrwKSs5Dz4ePlHA8Q1P1jFhPhTJGD3rnD6MRsB+mAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWLQQ6CMBAA38K9rNBEP9DEm0rwAaa0xSy0W8K2EkP4u0FOc5gZCfJcQ1XohUtjx9JjB+vdcXL2mbQZherppqcJ6S30wq8VdYBV9dRG73bZRI/mKw5swuvQWQ2qp2smkzDStlcqc4qhdRzzbP7fI6cpp01QtA4GPn2khPoCVTEwYjlnShgctAd/P+jF8KYAAAA="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorSearch/CDKMetadata/Default"
@@ -364,7 +364,7 @@
         ]
       }
     },
-    "amplifystorelocatore2esandboxe0ed5f31d0geostoreLocatorSearchCustomPlaceIndex1BE82425IndexName": {
+    "amplifystorelocatore2esandbox059ec84174geostoreLocatorSearchCustomPlaceIndexBE2E8CCCIndexName": {
       "Value": {
         "Fn::GetAtt": [
           "storeLocatorSearchCustomPlaceIndexF0192882",
@@ -640,13 +640,13 @@
     }
   },
   "Parameters": {
-    "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthauthenticatedUserRole4CEAF139Ref": {
+    "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthauthenticatedUserRoleD7BE3F2CRef": {
       "Type": "String"
     },
-    "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthunauthenticatedUserRole3DDDFC0ERef": {
+    "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthunauthenticatedUserRole65DC1FBBRef": {
       "Type": "String"
     },
-    "referencetoamplifystorelocatore2esandboxe0ed5f31d0authNestedStackauthNestedStackResourceAEBFCDB8Outputsamplifystorelocatore2esandboxe0ed5f31d0authamplifyAuthstoreLocatorAdminGroupRoleD95D53BFRef": {
+    "referencetoamplifystorelocatore2esandbox059ec84174authNestedStackauthNestedStackResource3F24F0E2Outputsamplifystorelocatore2esandbox059ec84174authamplifyAuthstoreLocatorAdminGroupRoleE03DDAA7Ref": {
       "Type": "String"
     }
   }

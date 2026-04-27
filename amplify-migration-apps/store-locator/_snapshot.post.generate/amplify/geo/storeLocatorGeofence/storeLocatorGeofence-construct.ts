@@ -22,7 +22,7 @@ export interface geostoreLocatorGeofenceProps {
 }
 
 /**
- * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"geo-GeofenceCollection","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
+ * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.3.0","stackType":"geo-GeofenceCollection","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
  */
 export class geostoreLocatorGeofence extends Construct {
   public readonly name;

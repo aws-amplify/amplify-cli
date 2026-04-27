@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "s3Key",
-    "ParameterValue": "amplify-builds/admin-65737069332b35547136-build.zip"
+    "ParameterValue": "amplify-builds/admin-4d474753696b544a5249-build.zip"
   },
   {
     "ParameterKey": "deploymentBucketName",
@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
-    "ParameterValue": "us-east-1_yGeHz6G3D"
+    "ParameterValue": "us-east-1_meUfbq8Lb"
   },
   {
     "ParameterKey": "env",

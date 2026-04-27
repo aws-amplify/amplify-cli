@@ -17,27 +17,27 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-    "ParameterValue": "elicmdfqbrhdzhj5vaymxv72ze"
+    "ParameterValue": "bdrql4nrffefnbpcrkkc27shn4"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgrampostAuth0FunctionQuerygetWorkoutProgrampostAuth0FunctionAppSyncFunction6E15B378FunctionId",
-    "ParameterValue": "kyjfzxdugvfhnnxzchcy4mphze"
+    "ParameterValue": "zvqgnvssrvb3nfhjowgv3npvgy"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptiononCreateWorkoutProgramauth0FunctionSubscriptiononCreateWorkoutProgramauth0FunctionAppSyncF52D36F4F",
-    "ParameterValue": "6nfspjtobbbehbhmw626vugvq4"
+    "ParameterValue": "dgcpjkcg6ja47kvjgofxsmvzyu"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramQuerygetWorkoutProgramauth0FunctionQuerygetWorkoutProgramauth0FunctionAppSyncFunction8D95BFD8FunctionId",
-    "ParameterValue": "6fhtp67nkbelxm4srclnrncdoy"
+    "ParameterValue": "rmh3a5l2tfc5zgqw7eezmzqy6q"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationupdateWorkoutPrograminit0FunctionMutationupdateWorkoutPrograminit0FunctionAppSyncFunctionB2E2FC20FunctionId",
-    "ParameterValue": "qax74v35ajgbxdoa6ewmavzaaa"
+    "ParameterValue": "yl5zud5fqndwvaux4n4gyg4n3q"
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramMutationcreateWorkoutPrograminit0FunctionMutationcreateWorkoutPrograminit0FunctionAppSyncFunctionD55A286BFunctionId",
-    "ParameterValue": "axg3eo6aszaf3lxxjlgkr44igm"
+    "ParameterValue": "tzdylhx6zndzjcmzewl26mxvbu"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -49,7 +49,7 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramWorkoutProgramOwnerDataResolverFnWorkoutProgramOwnerDataResolverFnAppSyncFunctionB902B95DFunctionId",
-    "ParameterValue": "nysbi64jafhq7ink3hppclol64"
+    "ParameterValue": "hwlyvgk6cvf5rolssfkzp7gise"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
@@ -65,6 +65,6 @@
   },
   {
     "ParameterKey": "referencetotransformerrootstackWorkoutProgramNestedStackWorkoutProgramNestedStackResource515A29CDOutputstransformerrootstackWorkoutProgramSubscriptionOnCreateWorkoutProgramDataResolverFnSubscriptionOnCreateWorkoutProgramDataResolverFnAppSyn4D846E8C",
-    "ParameterValue": "27omu74t55addo7s4vwmkjiflq"
+    "ParameterValue": "p7paepoyhfgc7cfyd4arpvmqbq"
   }
 ]
