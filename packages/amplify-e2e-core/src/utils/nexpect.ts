@@ -224,7 +224,12 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendKeyDown(repeat?: number): ExecutionContext {
-      const repetitions = repeat ? Math.max(1, repeat) : 1;
+      if (repeat !== undefined && repeat <= 0) {
+        throw new Error(`repeat must be a positive integer, received: ${repeat}`);
+      }
+
+      const repetitions = repeat ?? 1;
+
       const _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
@@ -241,7 +246,12 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendKeyUp(repeat?: number): ExecutionContext {
-      const repetitions = repeat ? Math.max(1, repeat) : 1;
+      if (repeat !== undefined && repeat <= 0) {
+        throw new Error(`repeat must be a positive integer, received: ${repeat}`);
+      }
+
+      const repetitions = repeat ?? 1;
+
       const _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
@@ -411,16 +421,17 @@ function chain(context: Context): ExecutionContext {
       if (logDumpFile) {
         logDumpFile.close();
       }
+      const recordings = context.process?.getRecordingFrames() || [];
+      const lastScreen = recordings.length
+        ? recordings
+            .filter((f) => f[1] === 'o')
+            .map((f) => f[2])
+            .slice(-10)
+            .join('\n')
+        : 'No output';
+
       if (code !== 0) {
         if (code === EXIT_CODE_TIMEOUT) {
-          const recordings = context.process?.getRecordingFrames() || [];
-          const lastScreen = recordings.length
-            ? recordings
-                .filter((f) => f[1] === 'o')
-                .map((f) => f[2])
-                .slice(-10)
-                .join('\n')
-            : 'No output';
           const err = new Error(
             `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
@@ -439,7 +450,10 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error(`Command not found: ${context.command}`), false);
         }
-        return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+        const err = new Error(
+          `Process exited with non zero exit code ${code}. Last 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
+        );
+        return onError(err, false);
       }
       if (context.queue.length && !flushQueue()) {
         // if flushQueue returned false, onError was called

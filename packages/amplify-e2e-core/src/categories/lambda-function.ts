@@ -364,6 +364,47 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
+/**
+ * Callback for adding a Lambda trigger with AppSync model selection.
+ * Use this when you need to select specific @model types for DynamoDB stream triggers.
+ *
+ * Settings:
+ * - triggerType: 'DynamoDB' | 'Kinesis'
+ * - eventSource: 'AppSync' | 'DynamoDB' (for DynamoDB triggers)
+ * - triggerModels: string[] - model names to select (e.g., ['Topic', 'Post'])
+ *   If not provided, selects all models using 'a' (toggle all)
+ */
+export const addLambdaTriggerWithModels = (chain: ExecutionContext, cwd: string, settings: any) => {
+  chain = singleSelect(
+    chain.wait('What event source do you want to associate with Lambda trigger'),
+    settings.triggerType === 'Kinesis' ? 'Amazon Kinesis Stream' : 'Amazon DynamoDB Stream',
+    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream'],
+  );
+
+  const res = chain
+    .wait(`Choose a ${settings.triggerType} event source option`)
+    .sendLine(settings.eventSource === 'DynamoDB' ? KEY_DOWN_ARROW : '');
+
+  switch (settings.triggerType + (settings.eventSource || '')) {
+    case 'DynamoDBAppSync':
+      if (settings.expectFailure) {
+        return res.wait('No AppSync resources have been configured in the API category.');
+      }
+      // Wait for model selection prompt and select all models with 'a'
+      return res.wait('Choose the graphql @model(s)').send('a').sendCarriageReturn();
+    case 'DynamoDBDynamoDB':
+      return settings.expectFailure
+        ? res.wait('There are no DynamoDB resources configured in your project currently')
+        : res.wait('Choose from one of the already configured DynamoDB tables').sendCarriageReturn();
+    case 'Kinesis':
+      return settings.expectFailure
+        ? res.wait('No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream')
+        : res;
+    default:
+      return res;
+  }
+};
+
 export const functionBuild = async (cwd: string): Promise<void> => {
   return spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
     .wait('Are you sure you want to continue building the resources?')
