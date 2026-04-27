@@ -1,4 +1,4 @@
-import { CommandLineInput } from '@aws-amplify/amplify-cli-core/src/types';
+import { CommandLineInput } from '@aws-amplify/amplify-cli-core';
 
 export class CLIInput implements CommandLineInput {
   argv: Array<string>;

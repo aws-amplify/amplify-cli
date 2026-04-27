@@ -2,8 +2,7 @@ import nock from 'nock';
 import url from 'url';
 import * as uuid from 'uuid';
 
-import { AmplifyError, ManuallyTimedCodePath } from '@aws-amplify/amplify-cli-core';
-import { ProjectSettings } from '@aws-amplify/amplify-cli-core/src/types';
+import { AmplifyError, ManuallyTimedCodePath, ProjectSettings } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
 import { UsageData } from '../domain/amplify-usageData/UsageData';
