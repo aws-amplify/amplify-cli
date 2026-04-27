@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 
-import { createNewProjectDir, deleteProjectDir, getNpxPath, nspawn as spawn, getCLIPath } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, nspawn as spawn, getCLIPath } from '@aws-amplify/amplify-e2e-core';
 
 describe('amplify init - Gen 1 new-customer restriction', () => {
   let projRoot: string;
