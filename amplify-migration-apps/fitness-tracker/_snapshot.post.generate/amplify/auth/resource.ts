@@ -23,12 +23,16 @@ export const auth = defineAuth({
     mode: 'OFF',
   },
   access: (allow: any) => [
-    allow.resource(admin).to(['getDevice']),
-    allow.resource(admin).to(['getUser']),
-    allow.resource(admin).to(['listDevices']),
-    allow.resource(admin).to(['listGroupsForUser']),
-    allow.resource(admin).to(['listUsers']),
-    allow.resource(admin).to(['listUsersInGroup']),
-    allow.resource(admin).to(['listGroups']),
+    allow
+      .resource(admin)
+      .to([
+        'getDevice',
+        'getUser',
+        'listDevices',
+        'listGroupsForUser',
+        'listUsers',
+        'listUsersInGroup',
+        'listGroups',
+      ]),
   ],
 });

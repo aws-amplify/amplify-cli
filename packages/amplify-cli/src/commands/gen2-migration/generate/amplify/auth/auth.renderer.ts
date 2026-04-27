@@ -63,6 +63,10 @@ export interface AuthPermissions {
   readonly listGroupsForUser?: boolean;
   readonly listUsersInGroup?: boolean;
   readonly listGroups?: boolean;
+  readonly getGroup?: boolean;
+  readonly createGroup?: boolean;
+  readonly deleteGroup?: boolean;
+  readonly updateGroup?: boolean;
   readonly removeUserFromGroup?: boolean;
   readonly resetUserPassword?: boolean;
   readonly setUserMfaPreference?: boolean;
@@ -538,24 +542,24 @@ export class AuthRenderer {
     const accessRules: ts.Expression[] = [];
 
     for (const func of functionsWithAuthAccess) {
-      for (const [permission, enabled] of Object.entries(func.permissions)) {
-        if (enabled) {
-          accessRules.push(
+      const permissions = Object.entries(func.permissions)
+        .filter(([, enabled]) => enabled)
+        .map(([permission]) => permission);
+      if (permissions.length === 0) continue;
+      accessRules.push(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
             factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
-                  undefined,
-                  [factory.createIdentifier(func.resourceName)],
-                ),
-                factory.createIdentifier('to'),
-              ),
+              factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
               undefined,
-              [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
+              [factory.createIdentifier(func.resourceName)],
             ),
-          );
-        }
-      }
+            factory.createIdentifier('to'),
+          ),
+          undefined,
+          [factory.createArrayLiteralExpression(permissions.map((p) => factory.createStringLiteral(p)))],
+        ),
+      );
     }
 
     if (accessRules.length > 0) {
