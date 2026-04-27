@@ -104,7 +104,9 @@ describe('Gen 1 new-customer restriction in initializer', () => {
   });
 
   it('blocks new app creation when account is not an existing Gen 1 customer', async () => {
-    const restrictionError = new Error('AWS Amplify Gen 1 has entered maintenance mode');
+    const restrictionError = new Error(
+      'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Gen 1 will reach end of life on May 1, 2027. Start a new app with Amplify Gen 2: https://docs.amplify.aws/',
+    );
     (restrictionError as any).name = 'ProjectInitError';
     enforceGen1NewCustomerRestrictionMock.mockRejectedValueOnce(restrictionError);
 
@@ -142,10 +144,7 @@ describe('Gen 1 new-customer restriction in initializer', () => {
     try {
       await run(baseContextStub);
 
-      expect(getConfiguredAmplifyClientMock).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({ region: 'eu-central-1' }),
-      );
+      expect(getConfiguredAmplifyClientMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ region: 'eu-central-1' }));
     } finally {
       if (originalAwsRegion === undefined) {
         delete process.env.AWS_REGION;
@@ -165,10 +164,7 @@ describe('Gen 1 new-customer restriction in initializer', () => {
     try {
       await run(baseContextStub);
 
-      expect(getConfiguredAmplifyClientMock).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({ region: 'us-west-2' }),
-      );
+      expect(getConfiguredAmplifyClientMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ region: 'us-west-2' }));
     } finally {
       if (originalAwsRegion !== undefined) process.env.AWS_REGION = originalAwsRegion;
       if (originalAmazonRegion !== undefined) process.env.AMAZON_REGION = originalAmazonRegion;

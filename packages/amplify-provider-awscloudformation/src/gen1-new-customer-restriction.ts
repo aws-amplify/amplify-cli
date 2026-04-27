@@ -2,7 +2,7 @@ import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, ListAppsCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
 
 const GEN1_DEPRECATION_MESSAGE =
-  'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Start a new app with Amplify Gen 2: https://docs.amplify.aws/';
+  'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Gen 1 will reach end of life on May 1, 2027. Start a new app with Amplify Gen 2: https://docs.amplify.aws/';
 
 /**
  * Check whether the current AWS account+region is an existing Gen 1 customer.
@@ -59,7 +59,6 @@ export const enforceGen1NewCustomerRestriction = async (amplifyClient: AmplifyCl
   const isExisting = await isExistingGen1Customer(amplifyClient);
 
   if (!isExisting) {
-    process.stderr.write(`\n\x1b[33m${GEN1_DEPRECATION_MESSAGE}\x1b[0m\n\n`);
     throw new AmplifyError('ProjectInitError', {
       message: GEN1_DEPRECATION_MESSAGE,
     });

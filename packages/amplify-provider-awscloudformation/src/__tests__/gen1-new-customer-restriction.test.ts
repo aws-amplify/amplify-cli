@@ -6,7 +6,7 @@ import { isExistingGen1Customer, enforceGen1NewCustomerRestriction } from '../ge
 const mockAmplifyClient = mockClient(AmplifyClient);
 
 const GEN1_DEPRECATION_MESSAGE =
-  'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Start a new app with Amplify Gen 2: https://docs.amplify.aws/';
+  'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Gen 1 will reach end of life on May 1, 2027. Start a new app with Amplify Gen 2: https://docs.amplify.aws/';
 
 describe('isExistingGen1Customer', () => {
   beforeEach(() => {
@@ -84,15 +84,8 @@ describe('isExistingGen1Customer', () => {
 });
 
 describe('enforceGen1NewCustomerRestriction', () => {
-  let stderrSpy: jest.SpyInstance;
-
   beforeEach(() => {
     mockAmplifyClient.reset();
-    stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
-  });
-
-  afterEach(() => {
-    stderrSpy.mockRestore();
   });
 
   it('allows existing Gen 1 customer', async () => {
@@ -102,10 +95,9 @@ describe('enforceGen1NewCustomerRestriction', () => {
     });
 
     await expect(enforceGen1NewCustomerRestriction(mockAmplifyClient as unknown as AmplifyClient)).resolves.toBeUndefined();
-    expect(stderrSpy).not.toHaveBeenCalled();
   });
 
-  it('blocks non-existing customer with correct error and stderr warning', async () => {
+  it('blocks non-existing customer with correct error', async () => {
     mockAmplifyClient.on(ListAppsCommand).resolves({ apps: [] });
 
     await expect(enforceGen1NewCustomerRestriction(mockAmplifyClient as unknown as AmplifyClient)).rejects.toThrow(
@@ -117,8 +109,5 @@ describe('enforceGen1NewCustomerRestriction', () => {
     } catch (e) {
       expect(e.name).toBe('ProjectInitError');
     }
-
-    expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining(GEN1_DEPRECATION_MESSAGE));
-    expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining('\x1b[33m'));
   });
 });
