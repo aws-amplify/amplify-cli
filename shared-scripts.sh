@@ -210,7 +210,7 @@ function _mockE2ETests {
     source .circleci/local_publish_helpers_codebuild.sh
     cd packages/amplify-util-mock/
     # run mock e2e tests as codebuild-user, root can't run open search
-    sudo -u codebuild-user bash -c 'export NODE_OPTIONS=--max-old-space-size=4096 && yarn e2e'
+    sudo -u codebuild-user bash -c 'export NODE_OPTIONS="--max-old-space-size=4096 --experimental-vm-modules" && yarn e2e'
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
