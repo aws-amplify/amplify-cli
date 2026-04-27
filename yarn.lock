@@ -1169,7 +1169,6 @@ __metadata:
     "@aws-sdk/client-s3": ^3.919.0
     "@aws-sdk/client-sts": ^3.919.0
     "@aws-sdk/credential-providers": 3.721.0
-    "@cdklabs/cdk-atmosphere-client": latest
     "@paralleldrive/cuid2": ^3.0.6
     "@types/fs-extra": ^11.0.4
     "@types/inquirer": ^8.2.6
@@ -1192,9 +1191,6 @@ __metadata:
     typescript: ^4.9.5
     uuid: ^9.0.1
     yargs: ^17.7.2
-  dependenciesMeta:
-    "@cdklabs/cdk-atmosphere-client":
-      optional: true
   bin:
     amplify-migrate: dist/cli.js
   languageName: unknown
@@ -10546,7 +10542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-providers@npm:^3, @aws-sdk/credential-providers@npm:^3.1032.0, @aws-sdk/credential-providers@npm:^3.936.0":
+"@aws-sdk/credential-providers@npm:^3, @aws-sdk/credential-providers@npm:^3.936.0":
   version: 3.1037.0
   resolution: "@aws-sdk/credential-providers@npm:3.1037.0"
   dependencies:
@@ -15570,16 +15566,6 @@ __metadata:
   version: 0.2.3
   resolution: "@bcoe/v8-coverage@npm:0.2.3"
   checksum: 6b80ae4cb3db53f486da2dc63b6e190a74c8c3cca16bb2733f234a0b6a9382b09b146488ae08e2b22cf00f6c83e20f3e040a2f7894f05c045c946d6a090b1d52
-  languageName: node
-  linkType: hard
-
-"@cdklabs/cdk-atmosphere-client@npm:latest":
-  version: 0.0.98
-  resolution: "@cdklabs/cdk-atmosphere-client@npm:0.0.98"
-  dependencies:
-    "@aws-sdk/credential-providers": ^3.1032.0
-    aws4fetch: ^1.0.20
-  checksum: 1e9aaf6b65664ffd7c5cb0152cc20f1d3895236fd0fcb2d11ec59f23712d73a634644178cffc82030ac76b9995bb9d4b4c2dd074d5fb42ca575aff3fbb2b3c47
   languageName: node
   linkType: hard
 
@@ -25928,13 +25914,6 @@ __metadata:
   version: 1.11.0
   resolution: "aws4@npm:1.11.0"
   checksum: 00c32a5dc0f864a731e26406fa7d51595e09359dd8f9c813fa3122e3833f564bf95b78cdf6acf8b5d0462403d7c73ce5f22ad19050d75b17019c7978f970c4fa
-  languageName: node
-  linkType: hard
-
-"aws4fetch@npm:^1.0.20":
-  version: 1.0.20
-  resolution: "aws4fetch@npm:1.0.20"
-  checksum: a4eac7bd0d1c3e611c17ed1ef41ac0b48c0a8e74a985ad968c071e74d94586d3572edc943b43fa5ca756c686ea73baa2f48e264d657bb8c2e95c8e0037d48a87
   languageName: node
   linkType: hard
 

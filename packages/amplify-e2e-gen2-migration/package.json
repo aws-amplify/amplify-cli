@@ -32,9 +32,6 @@
     "uuid": "^9.0.1",
     "yargs": "^17.7.2"
   },
-  "optionalDependencies": {
-    "@cdklabs/cdk-atmosphere-client": "latest"
-  },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^8.2.6",
