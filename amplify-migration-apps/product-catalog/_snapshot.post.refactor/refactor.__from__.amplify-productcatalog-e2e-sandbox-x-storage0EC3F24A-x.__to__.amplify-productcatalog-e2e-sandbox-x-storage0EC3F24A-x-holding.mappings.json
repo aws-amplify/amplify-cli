@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucket99715AA1"
+    },
+    "Destination": {
+      "StackName": "amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x-holding",
+      "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucket99715AA1"
+    }
+  }
+]

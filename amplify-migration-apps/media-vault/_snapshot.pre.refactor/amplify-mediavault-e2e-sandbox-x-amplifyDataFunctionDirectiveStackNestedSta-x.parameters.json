@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref",
+    "ParameterValue": "amplify-mediavault2604261-amplifyAuthauthenticatedU-jQA6OQUFPNZP"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref",
+    "ParameterValue": "amplify-mediavault2604261-amplifyAuthunauthenticate-FebAhXFwzu3H"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPINONEDS8F079C24Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId",
+    "ParameterValue": "xc54wskwirbthaeghdgjpesz6a"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref",
+    "ParameterValue": "us-east-1:a57e7d41-b0af-461c-b4b2-d4b94738131b"
+  }
+]

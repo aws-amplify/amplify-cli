@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref",
+    "ParameterValue": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef",
+    "ParameterValue": "amplify-moodboard26042620-amplifyAuthunauthenticate-fNLBa6hbaz77"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId",
+    "ParameterValue": "mqcggtoqqvgtdgfi7dhatqxh7q"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref",
+    "ParameterValue": "amplify-moodboard26042620-amplifyAuthauthenticatedU-epoTvTg7Pgx4"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB3B68342Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableD060951D",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-moodboard26042620-TableManagerCustomProvid-n4X2bYVk8ke4"
+  }
+]

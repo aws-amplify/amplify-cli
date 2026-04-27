@@ -1,0 +1,35 @@
+[
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_o8FErENVK",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "3nfrl5249bnjldo0t6keodptp3",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "6g6g6e80fqddvinci1eloo9pc9",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:5becba09-c1de-4903-abea-a5508ffba824",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_o8FErENVK",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "moodboard759ae00a_identitypool_759ae00a__x"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "moodboard759ae00a_userpool_759ae00a"
+  }
+]

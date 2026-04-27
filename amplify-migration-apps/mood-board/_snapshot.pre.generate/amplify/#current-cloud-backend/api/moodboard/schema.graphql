@@ -1,0 +1,24 @@
+type MoodItem @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  title: String!
+  description: String
+  image: String!
+  boardID: ID! @index(name: "byBoard")
+  board: Board @belongsTo(fields: ["boardID"])
+}
+
+type Board @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  name: String!
+  moodItems: [MoodItem] @hasMany(indexName: "byBoard", fields: ["id"])
+}
+
+type KinesisEventCount @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  processedAt: AWSDateTime!
+}
+
+type Query {
+  getRandomEmoji: String @function(name: "moodboardGetRandomEmoji-${env}") @auth(rules: [{ allow: private }])
+  getKinesisEvents: AWSJSON @function(name: "moodboardKinesisReader-${env}") @auth(rules: [{ allow: private }])
+}

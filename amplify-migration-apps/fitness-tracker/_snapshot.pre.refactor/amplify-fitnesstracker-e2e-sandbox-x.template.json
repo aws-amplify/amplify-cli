@@ -1,0 +1,918 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"root\",\"metadata\":{}}",
+  "Metadata": {
+    "AWS::Amplify::Platform": {
+      "version": "1",
+      "stackOutputs": [
+        "deploymentType",
+        "region"
+      ]
+    },
+    "AWS::Amplify::Auth": {
+      "version": "1",
+      "stackOutputs": [
+        "userPoolId",
+        "webClientId",
+        "identityPoolId",
+        "authRegion",
+        "allowUnauthenticatedIdentities",
+        "signupAttributes",
+        "usernameAttributes",
+        "verificationMechanisms",
+        "passwordPolicyMinLength",
+        "passwordPolicyRequirements",
+        "mfaConfiguration",
+        "mfaTypes",
+        "passwordlessOptions",
+        "socialProviders",
+        "oauthCognitoDomain",
+        "oauthScope",
+        "oauthRedirectSignIn",
+        "oauthRedirectSignOut",
+        "oauthResponseType",
+        "oauthClientId",
+        "groups"
+      ]
+    },
+    "AWS::Amplify::Function": {
+      "version": "1",
+      "stackOutputs": [
+        "definedFunctions"
+      ]
+    },
+    "AWS::Amplify::GraphQL": {
+      "version": "1",
+      "stackOutputs": [
+        "awsAppsyncApiId",
+        "awsAppsyncApiEndpoint",
+        "awsAppsyncAuthenticationType",
+        "awsAppsyncRegion",
+        "amplifyApiModelSchemaS3Uri",
+        "awsAppsyncApiKey",
+        "awsAppsyncAdditionalAuthenticationTypes"
+      ]
+    },
+    "AWS::Amplify::Custom": {
+      "version": "1",
+      "stackOutputs": [
+        "customOutputs"
+      ]
+    }
+  },
+  "Outputs": {
+    "deploymentType": {
+      "Value": "sandbox"
+    },
+    "region": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "userPoolId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthUserPool6F24EA08Ref"
+        ]
+      }
+    },
+    "webClientId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthUserPoolAppClient4A038B22Ref"
+        ]
+      }
+    },
+    "identityPoolId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthIdentityPool10BED867Ref"
+        ]
+      }
+    },
+    "authRegion": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "allowUnauthenticatedIdentities": {
+      "Value": "false"
+    },
+    "signupAttributes": {
+      "Value": "[\"email\"]"
+    },
+    "usernameAttributes": {
+      "Value": "[]"
+    },
+    "verificationMechanisms": {
+      "Value": "[\"email\"]"
+    },
+    "passwordPolicyMinLength": {
+      "Value": "8"
+    },
+    "passwordPolicyRequirements": {
+      "Value": "[]"
+    },
+    "mfaConfiguration": {
+      "Value": "OFF"
+    },
+    "mfaTypes": {
+      "Value": "[]"
+    },
+    "passwordlessOptions": {
+      "Value": ""
+    },
+    "socialProviders": {
+      "Value": ""
+    },
+    "oauthCognitoDomain": {
+      "Value": ""
+    },
+    "oauthScope": {
+      "Value": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+    },
+    "oauthRedirectSignIn": {
+      "Value": "https://example.com"
+    },
+    "oauthRedirectSignOut": {
+      "Value": ""
+    },
+    "oauthResponseType": {
+      "Value": "code"
+    },
+    "oauthClientId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "auth179371D7",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthUserPoolAppClient4A038B22Ref"
+        ]
+      }
+    },
+    "groups": {
+      "Value": "[{\"Admin\":{\"precedence\":0}}]"
+    },
+    "definedFunctions": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "[\"",
+            {
+              "Fn::GetAtt": [
+                "function1351588B",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931functionfitnesstracker33f5545533f55455PreSignupgen2xlambda76E52587Ref"
+              ]
+            },
+            "\",\"",
+            {
+              "Fn::GetAtt": [
+                "auth179371D7",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authadmingen2xlambda831F5B43Ref"
+              ]
+            },
+            "\",\"",
+            {
+              "Fn::GetAtt": [
+                "data7552DF31",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931datalognutritiongen2xlambda0DEE3FECRef"
+              ]
+            },
+            "\"]"
+          ]
+        ]
+      }
+    },
+    "awsAppsyncApiId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "data7552DF31",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPI42E8974CApiId"
+        ]
+      }
+    },
+    "awsAppsyncApiEndpoint": {
+      "Value": {
+        "Fn::GetAtt": [
+          "data7552DF31",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPI42E8974CGraphQLUrl"
+        ]
+      }
+    },
+    "awsAppsyncAuthenticationType": {
+      "Value": "AMAZON_COGNITO_USER_POOLS"
+    },
+    "awsAppsyncRegion": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "amplifyApiModelSchemaS3Uri": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "s3://",
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    "/",
+                    {
+                      "Fn::Select": [
+                        5,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Fn::GetAtt": [
+                                "data7552DF31",
+                                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB2060D0D3DestinationBucketArn"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "/model-schema.graphql"
+          ]
+        ]
+      }
+    },
+    "awsAppsyncApiKey": {
+      "Value": {
+        "Fn::GetAtt": [
+          "data7552DF31",
+          "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPIDefaultApiKey120A508DApiKey"
+        ]
+      }
+    },
+    "awsAppsyncAdditionalAuthenticationTypes": {
+      "Value": "API_KEY,AWS_IAM"
+    },
+    "customOutputs": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "{\"custom\":{\"API\":{\"nutritionapi-gen2-x\":{\"endpoint\":\"https://",
+            {
+              "Fn::GetAtt": [
+                "restapistacknutritionapi72914ECD",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931restapistacknutritionapiRestApi5C20F999Ref"
+              ]
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Fn::GetAtt": [
+                "restapistacknutritionapi72914ECD",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931restapistacknutritionapiRestApiDeploymentStageprod4B9DEE70Ref"
+              ]
+            },
+            "\",\"region\":\"",
+            {
+              "Ref": "AWS::Region"
+            },
+            "\",\"apiName\":\"nutritionapi-gen2-x\"},\"adminapi-gen2-x\":{\"endpoint\":\"https://",
+            {
+              "Fn::GetAtt": [
+                "restapistackadminapi43EA27F6",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931restapistackadminapiRestApiF538F9AERef"
+              ]
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Fn::GetAtt": [
+                "restapistackadminapi43EA27F6",
+                "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931restapistackadminapiRestApiDeploymentStageprod32CFCD28Ref"
+              ]
+            },
+            "\",\"region\":\"",
+            {
+              "Ref": "AWS::Region"
+            },
+            "\",\"apiName\":\"adminapi-gen2-x\"}}},\"version\":\"1.4\"}"
+          ]
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "auth179371D7": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931functionNestedStackfunctionNestedStackResource832AF155Outputsamplifyfitnesstrackere2esandboxde9d3c8931functionfitnesstracker33f5545533f55455PreSignupgen2xlambda76E52587Arn": {
+            "Fn::GetAtt": [
+              "function1351588B",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931functionfitnesstracker33f5545533f55455PreSignupgen2xlambda76E52587Arn"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/4cbf833e7a74b9f07e0a74bfc6e7b6131f988c3bf2af52ffb0a4f49bd91bf371.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/auth.NestedStack/auth.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackere2esandboxde9d3c8931authE7F63A46.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "function1351588B": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/750cf8a3e9064a54c51eb4090c523dba878bec5255b2db78cf7c4d652ce9c06c.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/function.NestedStack/function.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackere2esandboxde9d3c8931function32D61667.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "data7552DF31": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthUserPool6F24EA08Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthUserPool6F24EA08Ref"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthunauthenticatedUserRole1D29338ARef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthunauthenticatedUserRole1D29338ARef"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthIdentityPool10BED867Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthIdentityPool10BED867Ref"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/52ea64ec3e88083abedea621c960b5112cc70d6b45268b26242b91420af3114f.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/data.NestedStack/data.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackere2esandboxde9d3c8931dataA17626FD.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "restapistacknutritionapi72914ECD": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931dataNestedStackdataNestedStackResourceA7E0BD4EOutputsamplifyfitnesstrackere2esandboxde9d3c8931datalognutritiongen2xlambda0DEE3FECArn": {
+            "Fn::GetAtt": [
+              "data7552DF31",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931datalognutritiongen2xlambda0DEE3FECArn"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthAdminGroupRole248BC660Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthAdminGroupRole248BC660Ref"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/0a63b34a3fbfe565dd7e5a1d7dff7842b6681ba40ebbbb92c32ec38b162a5aeb.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-nutritionapi.NestedStack/rest-api-stack-nutritionapi.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackere2esandboxde9d3c8931restapistacknutritionapi36C4B0B8.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "restapistackadminapi43EA27F6": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authadmingen2xlambda831F5B43Arn": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authadmingen2xlambda831F5B43Arn"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef"
+            ]
+          },
+          "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthAdminGroupRole248BC660Ref": {
+            "Fn::GetAtt": [
+              "auth179371D7",
+              "Outputs.amplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthAdminGroupRole248BC660Ref"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/82c72a4c85fa1fb52d5bab0d4072e9844d127e0050a936506cdb71ce582b095f.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/rest-api-stack-adminapi.NestedStack/rest-api-stack-adminapi.NestedStackResource",
+        "aws:asset:path": "amplifyfitnesstrackere2esandboxde9d3c8931restapistackadminapi5AE4FABB.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzI11DNQTCwv1k1OydbNyUzSqw4uSUzO1nFOy/MvLSkoLQGxwEK1Onn5Kal6WcX6ZUZGeoZmegaKWcWZmbpFpXklmbmpekEQGgAT4m/SVAAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-e2e-sandbox-x/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataBoardNestedStackBoardNestedStackResource1E8D7633Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataBoardBoardDataSource08BD6496Name",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataBoardNestedStackBoardNestedStackResource1E8D7633Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataBoardBoardTable4832A57ETableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-vyw4apkp65cjxjp6ojxlou7twi-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemNestedStackMoodItemNestedStackResourceC54A6F2EOutputsamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemMoodItemTable9C9675A3TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MoodItem-vyw4apkp65cjxjp6ojxlou7twi-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref",
+    "ParameterValue": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef",
+    "ParameterValue": "amplify-moodboard26042620-amplifyAuthunauthenticate-fNLBa6hbaz77"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId",
+    "ParameterValue": "mqcggtoqqvgtdgfi7dhatqxh7q"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemNestedStackMoodItemNestedStackResourceC54A6F2EOutputsamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemMoodItemDataSourceD5210AEDName",
+    "ParameterValue": "MoodItemTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref",
+    "ParameterValue": "amplify-moodboard26042620-amplifyAuthauthenticatedU-epoTvTg7Pgx4"
+  }
+]

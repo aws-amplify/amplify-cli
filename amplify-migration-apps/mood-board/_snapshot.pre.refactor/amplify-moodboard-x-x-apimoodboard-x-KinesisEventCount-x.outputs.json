@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GetAttKinesisEventCountTableName",
+    "OutputValue": "KinesisEventCount-vyw4apkp65cjxjp6ojxlou7twi-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "vyw4apkp65cjxjp6ojxlou7twi:GetAtt:KinesisEventCountTable:Name"
+  },
+  {
+    "OutputKey": "GetAttKinesisEventCountTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/KinesisEventCount-vyw4apkp65cjxjp6ojxlou7twi-x/stream/2026-04-27T00:22:08.625",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "vyw4apkp65cjxjp6ojxlou7twi:GetAtt:KinesisEventCountTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttKinesisEventCountDataSourceName",
+    "OutputValue": "KinesisEventCountTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "vyw4apkp65cjxjp6ojxlou7twi:GetAtt:KinesisEventCountDataSource:Name"
+  }
+]

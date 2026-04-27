@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "UnauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "authstorelocator41a9495f41a9495fAppClientID",
+    "ParameterValue": "2g3n9rii1hrfa4r7cs5fu6bru6"
+  },
+  {
+    "ParameterKey": "authstorelocator41a9495f41a9495fIdentityPoolId",
+    "ParameterValue": "us-east-1:fed60bb9-df36-471c-be9c-2abb1eec3666"
+  },
+  {
+    "ParameterKey": "AuthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "authstorelocator41a9495f41a9495fAppClientIDWeb",
+    "ParameterValue": "2sdm7fhjfai09vgc47cl0b3hb2"
+  },
+  {
+    "ParameterKey": "authstorelocator41a9495f41a9495fUserPoolId",
+    "ParameterValue": "us-east-1_e1bfGhJ7T"
+  }
+]

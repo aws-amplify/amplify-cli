@@ -1,0 +1,248 @@
+type Note {
+  id: ID!
+  title: String!
+  content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Query {
+  getNote(id: ID!): Note
+  listNotes(filter: ModelNoteFilterInput, limit: Int, nextToken: String): ModelNoteConnection
+  generateThumbnail(mediaFileKey: String!): GenerateThumbnailResponse @aws_api_key
+  addUserToGroup(userSub: String!, group: String!): AddUserToGroupResponse @aws_api_key
+  removeUserFromGroup(userSub: String!, group: String!): RemoveUserFromGroupResponse @aws_api_key
+}
+
+type GenerateThumbnailResponse {
+  statusCode: Int! @aws_api_key
+  message: String! @aws_api_key
+}
+
+type AddUserToGroupResponse {
+  statusCode: Int! @aws_api_key
+  message: String! @aws_api_key
+}
+
+type RemoveUserFromGroupResponse {
+  statusCode: Int! @aws_api_key
+  message: String! @aws_api_key
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelNoteConnection {
+  items: [Note]!
+  nextToken: String
+}
+
+input ModelNoteFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  content: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelNoteFilterInput]
+  or: [ModelNoteFilterInput]
+  not: ModelNoteFilterInput
+  owner: ModelStringInput
+}
+
+input ModelNoteConditionInput {
+  title: ModelStringInput
+  content: ModelStringInput
+  and: [ModelNoteConditionInput]
+  or: [ModelNoteConditionInput]
+  not: ModelNoteConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateNoteInput {
+  id: ID
+  title: String!
+  content: String
+}
+
+input UpdateNoteInput {
+  id: ID!
+  title: String
+  content: String
+}
+
+input DeleteNoteInput {
+  id: ID!
+}
+
+type Mutation {
+  createNote(input: CreateNoteInput!, condition: ModelNoteConditionInput): Note
+  updateNote(input: UpdateNoteInput!, condition: ModelNoteConditionInput): Note
+  deleteNote(input: DeleteNoteInput!, condition: ModelNoteConditionInput): Note
+}
+
+input ModelSubscriptionNoteFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  content: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionNoteFilterInput]
+  or: [ModelSubscriptionNoteFilterInput]
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateNote(filter: ModelSubscriptionNoteFilterInput, owner: String): Note @aws_subscribe(mutations: ["createNote"])
+  onUpdateNote(filter: ModelSubscriptionNoteFilterInput, owner: String): Note @aws_subscribe(mutations: ["updateNote"])
+  onDeleteNote(filter: ModelSubscriptionNoteFilterInput, owner: String): Note @aws_subscribe(mutations: ["deleteNote"])
+}

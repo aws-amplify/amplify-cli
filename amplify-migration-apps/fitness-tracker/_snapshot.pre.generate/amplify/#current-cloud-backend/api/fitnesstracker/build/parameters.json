@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "fitnesstracker",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authfitnesstracker33f5545533f55455",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-fitnesstracker-x-x-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/0dfc08688d63d8488428487f6da4262eda6de0d7"
+}

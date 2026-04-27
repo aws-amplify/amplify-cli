@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
+    "ParameterValue": "wl2oasglxvbnza7q3obncdxijq"
+  },
+  {
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoDataSource108D508BName",
+    "ParameterValue": "TodoTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoNestedStackTodoNestedStackResourceA317627EOutputsamplifyimportedresourcesgen2mainbranch908544b6dddataamplifyDataTodoTodoTable2DD94F95TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-xzx4nj36zzemlloxzhpkicpa7i-main"
+  }
+]

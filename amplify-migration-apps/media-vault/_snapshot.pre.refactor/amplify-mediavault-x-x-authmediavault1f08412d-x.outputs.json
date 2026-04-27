@@ -1,0 +1,43 @@
+[
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_wxZfjy0c4",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "7nj4qltosu297iuucdll5m2ve1",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "7jm2dji0nhoe4r45m7j6h8iop3",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "HostedUIDomain",
+    "OutputValue": "mediavault1f08412d-1f08412d-x"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:afbc1828-7e4f-4972-a9fd-650c18de3bf8",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_wxZfjy0c4",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "mediavault1f08412d_identitypool_1f08412d__x"
+  },
+  {
+    "OutputKey": "OAuthMetadata",
+    "OutputValue": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.mediavault.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.mediavault.amplifyapp.com/\"]}"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "mediavault1f08412d_userpool_1f08412d"
+  }
+]

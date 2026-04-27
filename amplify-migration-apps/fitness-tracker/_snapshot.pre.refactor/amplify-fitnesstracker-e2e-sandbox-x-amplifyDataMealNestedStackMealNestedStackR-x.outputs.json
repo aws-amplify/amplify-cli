@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "GetAttMealTableName",
+    "OutputValue": "Meal-bdrql4nrffefnbpcrkkc27shn4-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "2jo7dgnljncqdcy2v3snkmtnbm:GetAtt:MealTable:Name"
+  },
+  {
+    "OutputKey": "GetAttMealTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-bdrql4nrffefnbpcrkkc27shn4-x/stream/2026-04-26T23:01:29.096",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "2jo7dgnljncqdcy2v3snkmtnbm:GetAtt:MealTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataMealMealTableAD5C2897TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-bdrql4nrffefnbpcrkkc27shn4-x"
+  }
+]

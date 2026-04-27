@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "functionadminArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-x"
+  },
+  {
+    "ParameterKey": "functionadminName",
+    "ParameterValue": "admin-x"
+  },
+  {
+    "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
+    "ParameterValue": "us-east-1_meUfbq8Lb"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "authuserPoolGroupsAdminGroupRole",
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_meUfbq8Lb-AdminGroupRole"
+  }
+]

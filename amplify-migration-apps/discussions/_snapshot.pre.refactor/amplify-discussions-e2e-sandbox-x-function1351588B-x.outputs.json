@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30functionfetchuseractivitygen2xlambda0F34074ERef",
+    "OutputValue": "fetchuseractivity-gen2-x"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30functionactivityTriggergen2xlambdaC05CCC4BRef",
+    "OutputValue": "activityTrigger-gen2-x"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30functionrecorduseractivitygen2xlambda67C2D65ERef",
+    "OutputValue": "recorduseractivity-gen2-x"
+  }
+]

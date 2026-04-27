@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "GetAttTodoTableName",
+    "OutputValue": "Todo-gqow23rg3nb4hcj5vunlwg4imm-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "yzu4caotfvfmhjvb3xgbhfcklq:GetAtt:TodoTable:Name"
+  },
+  {
+    "OutputKey": "amplifyprojectboardse2esandbox4e89bdf911dataamplifyDataTodoTodoDataSource2DE0D720Name",
+    "OutputValue": "TodoTable"
+  },
+  {
+    "OutputKey": "amplifyprojectboardse2esandbox4e89bdf911dataamplifyDataTodoTodoTable8416B472TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-gqow23rg3nb4hcj5vunlwg4imm-x"
+  },
+  {
+    "OutputKey": "GetAttTodoTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-gqow23rg3nb4hcj5vunlwg4imm-x/stream/2026-04-26T23:15:08.460",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "yzu4caotfvfmhjvb3xgbhfcklq:GetAtt:TodoTable:StreamArn"
+  }
+]

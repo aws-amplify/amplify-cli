@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30dataamplifyDataGraphQLAPI99090D67ApiId",
+    "ParameterValue": "wrh7t7sgazhldidomxxf4vzfii"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthIdentityPool2B69FEE4Ref",
+    "ParameterValue": "us-east-1:48663aa6-2f3e-4bbf-ad42-796f9f4c1673"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30dataamplifyDataGraphQLAPINONEDS07ED74FFName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthunauthenticatedUserRoleAE3DAE47Ref",
+    "ParameterValue": "amplify-discussion2604261-amplifyAuthunauthenticate-X0syNMj6Bw9A"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthauthenticatedUserRole653CC0EDRef",
+    "ParameterValue": "amplify-discussion2604261-amplifyAuthauthenticatedU-1LlvGIJO4FUB"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "UnauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "authmediavault1f08412dIdentityPoolId",
+    "ParameterValue": "us-east-1:afbc1828-7e4f-4972-a9fd-650c18de3bf8"
+  },
+  {
+    "ParameterKey": "authmediavault1f08412dAppClientID",
+    "ParameterValue": "7jm2dji0nhoe4r45m7j6h8iop3"
+  },
+  {
+    "ParameterKey": "AuthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authRole"
+  },
+  {
+    "ParameterKey": "authmediavault1f08412dUserPoolId",
+    "ParameterValue": "us-east-1_wxZfjy0c4"
+  },
+  {
+    "ParameterKey": "authmediavault1f08412dAppClientIDWeb",
+    "ParameterValue": "7nj4qltosu297iuucdll5m2ve1"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]
