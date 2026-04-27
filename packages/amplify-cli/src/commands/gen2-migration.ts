@@ -2,9 +2,7 @@ import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './gen2-migration/_common/step';
 import { printer, prompter, isDebug } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
-import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
-import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
 import { SpinningLogger } from './gen2-migration/_common/spinning-logger';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
@@ -16,15 +14,6 @@ const STEPS = {
   lock: {
     class: AmplifyMigrationLockStep,
     description: 'Locks your Gen1 environment to prevent updates during migration',
-  },
-  generate: {
-    class: AmplifyMigrationGenerateStep,
-    description: 'Generate Gen2 application code from your existing Gen1 environment',
-  },
-  refactor: {
-    class: AmplifyMigrationRefactorStep,
-    // eslint-disable-next-line spellcheck/spell-checker
-    description: 'Move stateful resources from your Gen1 environment to your newly deployed Gen2 branch',
   },
   decommission: {
     class: AmplifyMigrationDecommissionStep,
