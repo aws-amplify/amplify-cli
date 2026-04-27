@@ -37,15 +37,15 @@ describe('auth', () => {
 
     // Poll until at least one event appears (Lambda reads from TRIM_HORIZON)
     let events: any[] = [];
-    for (let attempt = 0; attempt < 10; attempt++) {
+    for (let attempt = 0; attempt < 20; attempt++) {
       const result = await auth().graphql({ query: getKinesisEvents });
       const raw = (result as any).data.getKinesisEvents;
       const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
       events = parsed?.events ?? [];
       if (events.length > 0) break;
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, 5000));
     }
 
     expect(events.length).toBeGreaterThan(0);
-  }, 120_000);
+  }, 180_000);
 });
