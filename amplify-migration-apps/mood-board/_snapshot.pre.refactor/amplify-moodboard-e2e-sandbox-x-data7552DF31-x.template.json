@@ -12,7 +12,7 @@
                 "Ref": "AWS::Region"
               },
               "UserPoolId": {
-                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPool390B0381Ref"
+                "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthUserPoolCCACFDE7Ref"
               }
             }
           }
@@ -69,7 +69,7 @@
           ]
         },
         "Description": "moodBoard API Key",
-        "Expires": 1807834250
+        "Expires": 1808786090
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -99,7 +99,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
@@ -136,7 +136,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/c92abf5f5fe3be82fd8b4be45fd5752b46f4b5aab9163f01d79d1438f8e0b2b6.json"
+              "/1bfa2dd83dedbb9f2ee8a430e0d88104953208f6c4bb4abca1fe8ad7571a4fb7.json"
             ]
           ]
         }
@@ -145,7 +145,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/AmplifyTableManager.NestedStack/AmplifyTableManager.NestedStackResource",
-        "aws:asset:path": "amplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerC23F7C4A.nested.template.json",
+        "aws:asset:path": "amplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManager5C2CA2D7.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -168,32 +168,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceEDAFB4EEOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTable155EE028": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB3B68342Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableD060951D": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventA0825010Arn"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent73F7E43BArn"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref"
           }
         },
         "Tags": [
@@ -226,7 +226,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/ab8ac10686eaa9be64f5479d98f4e70ad661e882d5822b53d081cebeb3869e47.json"
+              "/b1e75427a4ae8a12b47138e923dee2fd7f85013fb6b078d86c3fcdcf76f3295a.json"
             ]
           ]
         }
@@ -238,7 +238,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/MoodItem.NestedStack/MoodItem.NestedStackResource",
-        "aws:asset:path": "amplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItem684502EA.nested.template.json",
+        "aws:asset:path": "amplifymoodboarde2esandbox5972880194dataamplifyDataMoodItem78769B5B.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -261,32 +261,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceEDAFB4EEOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTable155EE028": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB3B68342Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableD060951D": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventA0825010Arn"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent73F7E43BArn"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref"
           }
         },
         "Tags": [
@@ -319,7 +319,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/170425ccf15f62ef45ba178f4b2734987a5ae1db4045578d1e91fc31d14edf8a.json"
+              "/58f799f74dc8d66116f0ba7016484b627b781f075922d8808d398193ce615ccb.json"
             ]
           ]
         }
@@ -331,7 +331,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board.NestedStack/Board.NestedStackResource",
-        "aws:asset:path": "amplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardFD292231.nested.template.json",
+        "aws:asset:path": "amplifymoodboarde2esandbox5972880194dataamplifyDataBoard5DD1456D.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -354,32 +354,32 @@
           "DynamoDBEnableServerSideEncryption": {
             "Ref": "DynamoDBEnableServerSideEncryption"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceEDAFB4EEOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTable155EE028": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceB3B68342Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableD060951D": {
             "Fn::GetAtt": [
               "amplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource86290833",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventA0825010Arn"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent73F7E43BArn"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref"
           }
         },
         "Tags": [
@@ -412,7 +412,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/15fe43ea2a271e4f7497ea4ec44bffd92ada32d743a9d00c1d1f4eba73fb3aaf.json"
+              "/e196c7708404ee64778bf69f51df5b7ad17be3542b128af646507d5030cbc75a.json"
             ]
           ]
         }
@@ -424,7 +424,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/KinesisEventCount.NestedStack/KinesisEventCount.NestedStackResource",
-        "aws:asset:path": "amplifymoodboarde2esandbox685dc54d14dataamplifyDataKinesisEventCountC7888BAB.nested.template.json",
+        "aws:asset:path": "amplifymoodboarde2esandbox5972880194dataamplifyDataKinesisEventCountFBA7E495.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -432,22 +432,22 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
@@ -484,7 +484,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/2bc7c6559ee852d684360aa255bb5a28612c0fe5418ce2e4fcaccf0753d277b1.json"
+              "/0dc6e145120e25e6b90e1b5248ab72e1dd6c5eb444057d7b87eadc17c63b69de.json"
             ]
           ]
         }
@@ -496,7 +496,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack.NestedStack/FunctionDirectiveStack.NestedStackResource",
-        "aws:asset:path": "amplifymoodboarde2esandbox685dc54d14dataamplifyDataFunctionDirectiveStackFF0225C2.nested.template.json",
+        "aws:asset:path": "amplifymoodboarde2esandbox5972880194dataamplifyDataFunctionDirectiveStackE9707A19.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -504,49 +504,49 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPI42A6FA33",
               "ApiId"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName": {
             "Fn::GetAtt": [
               "amplifyDataGraphQLAPINONEDS684BF699",
               "Name"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource1B190385Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemMoodItemDataSource92236A55Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemNestedStackMoodItemNestedStackResourceC54A6F2EOutputsamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemMoodItemDataSourceD5210AEDName": {
             "Fn::GetAtt": [
               "amplifyDataMoodItemNestedStackMoodItemNestedStackResource4E6CE7C0",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemMoodItemDataSource92236A55Name"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemMoodItemDataSourceD5210AEDName"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemNestedStackMoodItemNestedStackResource1B190385Outputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemMoodItemTable596E9348TableArn": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemNestedStackMoodItemNestedStackResourceC54A6F2EOutputsamplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemMoodItemTable9C9675A3TableArn": {
             "Fn::GetAtt": [
               "amplifyDataMoodItemNestedStackMoodItemNestedStackResource4E6CE7C0",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataMoodItemMoodItemTable596E9348TableArn"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataMoodItemMoodItemTable9C9675A3TableArn"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
-            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+          "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
+            "Ref": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref"
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardNestedStackBoardNestedStackResource06103DCFOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardDataSourceED4EAD30Name": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataBoardNestedStackBoardNestedStackResource1E8D7633Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataBoardBoardDataSource08BD6496Name": {
             "Fn::GetAtt": [
               "amplifyDataBoardNestedStackBoardNestedStackResourceC5F2D278",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardDataSourceED4EAD30Name"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataBoardBoardDataSource08BD6496Name"
             ]
           },
-          "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardNestedStackBoardNestedStackResource06103DCFOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardTable05921B50TableArn": {
+          "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataBoardNestedStackBoardNestedStackResource1E8D7633Outputsamplifymoodboarde2esandbox5972880194dataamplifyDataBoardBoardTable4832A57ETableArn": {
             "Fn::GetAtt": [
               "amplifyDataBoardNestedStackBoardNestedStackResourceC5F2D278",
-              "Outputs.amplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardTable05921B50TableArn"
+              "Outputs.amplifymoodboarde2esandbox5972880194dataamplifyDataBoardBoardTable4832A57ETableArn"
             ]
           }
         },
@@ -580,7 +580,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/0840d25cfd394af872b7fedd94bccf8f0fed274bd191218f39fea5a55b236028.json"
+              "/7463e4fc89aa79bebbb8686a79191a215612f678068fd4d8aa0abb70a09c35ec.json"
             ]
           ]
         }
@@ -594,7 +594,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/ConnectionStack.NestedStack/ConnectionStack.NestedStackResource",
-        "aws:asset:path": "amplifymoodboarde2esandbox685dc54d14dataamplifyDataConnectionStackE06AF98B.nested.template.json",
+        "aws:asset:path": "amplifymoodboarde2esandbox5972880194dataamplifyDataConnectionStackBDEC3BBF.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -642,7 +642,7 @@
             "Value": "true"
           },
           {
-            "Key": "aws-cdk:cr-owned:c2c39317",
+            "Key": "aws-cdk:cr-owned:680c7240",
             "Value": "true"
           },
           {
@@ -771,7 +771,7 @@
           }
         ],
         "SourceObjectKeys": [
-          "86a5216a6a33ec3ee1d9c73c639f089127a432b38fcd622bd4fcd6b5f3c06bcb.zip"
+          "10f68fc1e973f69c05461cbbeee5ac4b2ce6ee14f876ab2c8f842647099493b8.zip"
         ],
         "SourceMarkers": [
           {}
@@ -1113,7 +1113,7 @@
             "Value": "true"
           },
           {
-            "Key": "aws-cdk:cr-owned:0cccd1bc",
+            "Key": "aws-cdk:cr-owned:c1e3741d",
             "Value": "true"
           },
           {
@@ -1372,7 +1372,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/6VSwW7bMAz9luasaKmLXXZzHayHFV0WA7sMRcDITMpEljyRbmYI/vdBVpt026nYiY+P5vN7EAtdfFzoxRWceG6a49zSVscHZMGmFjBHtUb2fTCo4MSbCF3HgzM63gXonn7asqNbYFTVzk3Mt/uyozddbZ6whUSUHX3BQT14h0sQqLNotXOXblR8s4nAjMK6TEU12Fk/tOhE3/bmiLI8E+lrHTM7ecgwSWb0I85a+kVu9mn2Nl3KwTd6GvGLatmLX6JFwa/bAxrh2aj+a/vxxc3KWzLDxVPu3+EsL9QCgin0+4z9u/w4KgvttgEdq527hwHDdwxM3qma3N6iePe5d0YScwbV7kyOiqDVce3t9HhTvYTMaFTMrY61BHL7FQRoUTBM89dmHNX0wLXAntw+zfK5VT2Lb89Hl37xirPxjU2mN3BiY0mXJ64sTTn+0P9LZxX8MzUY0p2MyvkG9YE/PBeFLq714urARPPQO6EW9TrX3x7hnsYZAwAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/6VSwW7bMAz9luasqG2K7rCb66A9rOiyGOhlKAJGZlImsuSKdDND8L8Pstqk207FTnx8NJ/fgzjTs+tLfXEGB56aej+1tNbxAVmwrgTMXi2RfRcMKjjwKkLbcu+MjncB2ucXW7R0A4yq3LiR+XFftPShq8wzNpCIoqVv2KsH73AOAlUWLTfu1A2Kr1YRmFFYF6moGlvr+wad6JvO7FHmRyJ9rWNmRw8ZJsmMfsZJQ7/ITb5OPqZLOfhKjyN+Uy068XO0KPh9vUMjPBnUf20/vblZeEumP3nK/Sec5YVKQDCF/pyxf5efBmWhWdegY7lx99BjeMTA5J2qyG0tine3nTOSmCMoN0dyUASNjktvx8cb6ylkRoNibnSsJJDbLiBAg4JhnL83w6DGB64EtuS2aZbPrexYfHM8uvSLd5yNr2wyvYIDG0u6OHBpaczxh/5fOovgX6nGkO5kUM7XqHd8/jqb6csv+uJsx0TT0DmhBvUy19+DFCsKGQMAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/CDKMetadata/Default"
@@ -1418,16 +1418,16 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPool390B0381Ref": {
+    "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthUserPoolCCACFDE7Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
+    "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
+    "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
+    "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
       "Type": "String"
     }
   },
@@ -1698,7 +1698,7 @@
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+    "amplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPI42A6FA33",
@@ -1706,7 +1706,7 @@
         ]
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791GraphQLUrl": {
+    "amplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050GraphQLUrl": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPI42A6FA33",
@@ -1714,7 +1714,7 @@
         ]
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB1CECC87FDestinationBucketArn": {
+    "amplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB16E63006DestinationBucketArn": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB21775929",
@@ -1722,7 +1722,7 @@
         ]
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPIDefaultApiKeyB2AB63AEApiKey": {
+    "amplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIDefaultApiKey38E2D6BEApiKey": {
       "Value": {
         "Fn::GetAtt": [
           "amplifyDataGraphQLAPIDefaultApiKey1C8ED374",

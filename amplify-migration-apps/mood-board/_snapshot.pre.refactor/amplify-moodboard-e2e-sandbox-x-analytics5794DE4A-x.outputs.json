@@ -4,12 +4,12 @@
     "OutputValue": "moodboardKinesis-gen2-x"
   },
   {
-    "OutputKey": "amplifymoodboarde2esandbox685dc54d14analyticsmoodboardKinesisKinesisStream0B86977BArn",
-    "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
-  },
-  {
     "OutputKey": "kinesisStreamShardCount",
     "OutputValue": "1"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox5972880194analyticsMoodboardKinesisKinesisStreamAABA29B2Arn",
+    "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
   },
   {
     "OutputKey": "kinesisStreamArn",

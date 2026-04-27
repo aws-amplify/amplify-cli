@@ -62,8 +62,8 @@
           "SmsMessage": "The verification code to your new account is {####}"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
@@ -87,8 +87,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
@@ -123,8 +123,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
@@ -171,8 +171,8 @@
         ],
         "SupportedLoginProviders": {}
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
@@ -319,8 +319,8 @@
         "amplifyAuthIdentityPool3FDE84CC",
         "amplifyAuthUserPoolAppClient2626C6F8"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
@@ -328,7 +328,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK0BP0B68iLS4llisuq26Qaa1SIh/y5Fqj3NzJsZDXpXQVWYKZbW9aWnK6QjRkHXirG9MlO8JBvuTBIgnSOOpxC8qm/884upPSHLuvqTg0MWkvdyXucmeNyLGPsYkCUrMgOkGc7DWXPOioND6OLmpTXoLVRFF4nK8clCA0Lz1Q/RUZAezgAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv8V7urYBvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVlCszxsK6rvB0hXTAKOhOYmynzBgvyYY7kwRI54jDMQSv6hv//GxqT8iyrP5k75CF5D2fl7kJHncixj56ZMmKTA9pgtNw0pyz4uAQ2rh+aQ3VFspVG4mK4clCPULz1Q9CTLG1zgAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -603,27 +603,27 @@
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPool390B0381Ref": {
+    "amplifymoodboarde2esandbox5972880194authamplifyAuthUserPoolCCACFDE7Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthUserPoolAppClient54FF5C73Ref": {
+    "amplifymoodboarde2esandbox5972880194authamplifyAuthUserPoolAppClient91256821Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
+    "amplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
+    "amplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
+    "amplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

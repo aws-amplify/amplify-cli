@@ -509,6 +509,32 @@ However, you will need to update your frontend code to point to the new Gen2 API
 
 Both APIs are fully functional so your Gen1 app will continue to work and access the Gen1 API.
 
+The Gen2 API name follows the pattern `<api-name>-<branch-name>` (e.g. `adminapi-gen2main`).
+You can find it in the generated `./amplify/api/<api-name>/resource.ts` file.
+
+#### Post Generate | Hardcoded Resource Names in Frontend Code
+
+Gen2 uses different naming conventions for resources. If your frontend code hardcodes resource
+names (e.g. Kinesis stream names, API names, queue names), you need to update them to match
+the Gen2 names.
+
+For example, if your app records events to a Kinesis stream by name:
+
+```diff
+- export const KINESIS_STREAM_NAME = 'myStream-main';
++ export const KINESIS_STREAM_NAME = 'myStream-gen2-main';
+```
+
+After `refactor`, the Gen1 stream is moved to the Gen2 stack and the original Gen1 name is
+restored. You will need to revert the name back:
+
+```diff
+- export const KINESIS_STREAM_NAME = 'myStream-gen2-main';
++ export const KINESIS_STREAM_NAME = 'myStream-main';
+```
+
+Check your generated `./amplify/` code for the actual resource names used by Gen2.
+
 #### Post Generate | Functions with Dynamic Require
 
 If you have a function that uses a dynamic require statement:
@@ -674,56 +700,33 @@ npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 > Note: This operations makes use of
 > the [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html) APIs
 
-#### 📢 Post Refactor | S3 Storage 📢 `[CRITICAL - DO NOT SKIP]`
+#### 📢 Post Refactor | Activate Post-Refactor Code 📢 `[CRITICAL - DO NOT SKIP]`
 
 ```console
 git checkout gen2-main
 ```
 
-If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
+After refactoring, you must activate the post-refactor code that syncs your local resource names
+with the deployed templates. The `generate` step produces a `postRefactor()` function in
+`./amplify/backend.ts` that is commented out by default. Uncomment the call to activate it:
+
+**Edit in `./amplify/backend.ts`:**
 
 ```diff
-- // s3Bucket.bucketName = '...';
-+ s3Bucket.bucketName = '...';
+- // postRefactor();
++ postRefactor();
 ```
 
-> This is required in order to sync your local bucket name with the deployed template.
-> **Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.**
+This function handles all necessary post-refactor adjustments for your app, including:
 
-#### 📢 Post Refactor | DynamoDB Storage 📢 `[CRITICAL - DO NOT SKIP]`
+- Setting S3 bucket names to match the Gen1 bucket being reused
+- Setting DynamoDB table names to match the Gen1 tables being reused
+- Setting Kinesis stream names to match the Gen1 stream being reused
+- Tagging the stack to indicate post-refactor has been applied
 
-```console
-git checkout gen2-main
-```
-
-If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
-
-```diff
-- new Table(storageStack, "myTable", {
--   partitionKey: {...}
--   ...,
-- });
-+ new Table(storageStack, "myTable", {
-+   tableName: 'my-table-main'
-+   partitionKey: {...},
-+.  ...,
-+ });
-```
-
-> This is required in order to sync your local table name with the deployed template.
-> **Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.**
-
-#### 📢 Post Refactor | Kinesis Stream 📢 `[CRITICAL - DO NOT SKIP]`
-
-If your application contains a Kinesis stream as part of the analytics category, edit in `./amplify/analytics/resource.ts`:
-
-```diff
-- // (analytics.node.findChild('KinesisStream') as CfnStream).name = "mystream-main"
-+ (analytics.node.findChild('KinesisStream') as CfnStream).name = "mystream-main"
-```
-
-> This is required in order to sync your local stream name with the deployed template.
-> **Otherwise, pushing changes to the `gen2-main` branch will result in a stream replacement.**
+> [!WARNING]
+> Skipping this step will cause the next deployment to **replace** your stateful resources
+> (S3 buckets, DynamoDB tables, Kinesis streams) with new empty ones, resulting in data loss.
 
 #### Post Refactor | Redeploy
 
@@ -758,8 +761,21 @@ Gen1 apps where functions access multiple other resources (e.g. a query handler 
 access to the data API, or an auth trigger that depends on storage) can produce circular
 dependencies between CloudFormation nested stacks when deployed as Gen2.
 
+A common fix is to add `resourceGroupName` to the function definition, which moves the function
+into the same CloudFormation stack as the resource it depends on:
+
+```diff
+  export const myFunction = defineFunction({
+    entry: './index.js',
++   resourceGroupName: 'auth',
+  });
+```
+
+Valid group names correspond to the category the function primarily accesses (e.g. `'auth'`,
+`'data'`, `'storage'`).
+
 See [Troubleshoot circular dependency issues](https://docs.amplify.aws/vue/build-a-backend/troubleshooting/circular-dependency/)
-for resolution steps.
+for more details.
 
 # Feature Coverage
 

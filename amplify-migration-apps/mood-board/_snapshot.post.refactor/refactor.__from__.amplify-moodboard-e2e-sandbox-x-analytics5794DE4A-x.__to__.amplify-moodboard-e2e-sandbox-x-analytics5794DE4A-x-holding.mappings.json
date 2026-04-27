@@ -2,11 +2,11 @@
   {
     "Source": {
       "StackName": "amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x",
-      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+      "LogicalResourceId": "MoodboardKinesisKinesisStreamECC0FDEB"
     },
     "Destination": {
       "StackName": "amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x-holding",
-      "LogicalResourceId": "moodboardKinesisKinesisStreamD5E97047"
+      "LogicalResourceId": "MoodboardKinesisKinesisStreamECC0FDEB"
     }
   }
 ]

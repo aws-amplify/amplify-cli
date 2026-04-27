@@ -69,6 +69,25 @@
     }
   },
   "function": {
+    "moodboardGetRandomEmoji": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "moodboardKinesisReader": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "kinesisStreamArn"
+          ],
+          "category": "analytics",
+          "resourceName": "moodboardKinesis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "moodboardKinesisTrigger": {
       "build": true,
       "dependsOn": [
@@ -91,44 +110,9 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
-    },
-    "moodboardGetRandomEmoji": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "moodboardKinesisReader": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributes": [
-            "kinesisStreamArn"
-          ],
-          "category": "analytics",
-          "resourceName": "moodboardKinesis"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
     }
   },
   "parameters": {
-    "AMPLIFY_function_moodboardKinesisTrigger_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "moodboardKinesisTrigger"
-        }
-      ]
-    },
-    "AMPLIFY_function_moodboardKinesisTrigger_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "moodboardKinesisTrigger"
-        }
-      ]
-    },
     "AMPLIFY_function_moodboardGetRandomEmoji_deploymentBucketName": {
       "usedBy": [
         {
@@ -158,6 +142,22 @@
         {
           "category": "function",
           "resourceName": "moodboardKinesisReader"
+        }
+      ]
+    },
+    "AMPLIFY_function_moodboardKinesisTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "moodboardKinesisTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_moodboardKinesisTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "moodboardKinesisTrigger"
         }
       ]
     }

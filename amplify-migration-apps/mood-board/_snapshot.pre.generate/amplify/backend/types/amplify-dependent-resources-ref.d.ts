@@ -25,13 +25,6 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
-    "moodboardKinesisTrigger": {
-      "Arn": "string",
-      "LambdaExecutionRole": "string",
-      "LambdaExecutionRoleArn": "string",
-      "Name": "string",
-      "Region": "string"
-    },
     "moodboardGetRandomEmoji": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
@@ -40,6 +33,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "moodboardKinesisReader": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "moodboardKinesisTrigger": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "g26hrobfy5b5pniveska5ylg4u",
+    "OutputValue": "vyw4apkp65cjxjp6ojxlou7twi",
     "Description": "Your GraphQL API ID.",
     "ExportName": "amplify-moodboard-x-x-apimoodboard-x:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "https://e4tubez5fjbb3nezriwdcqaade.appsync-api.us-east-1.amazonaws.com/graphql",
+    "OutputValue": "https://2ym5jjrzkjd3xbz2dbcmpr7i6m.appsync-api.us-east-1.amazonaws.com/graphql",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "amplify-moodboard-x-x-apimoodboard-x:GraphQLApiEndpoint"
   },

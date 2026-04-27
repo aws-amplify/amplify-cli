@@ -29,7 +29,7 @@ export interface MoodboardKinesisProps {
 }
 
 /**
- * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"analytics-Kinesis","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
+ * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.3.0","stackType":"analytics-Kinesis","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
  */
 export class MoodboardKinesis extends Construct {
   public readonly kinesisStreamArn;
