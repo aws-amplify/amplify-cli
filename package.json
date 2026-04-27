@@ -102,7 +102,17 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "amplify-migration-apps/**/_snapshot.post.generate",
+      "amplify-migration-apps/backend-only",
+      "amplify-migration-apps/discussions",
+      "amplify-migration-apps/fitness-tracker",
+      "amplify-migration-apps/imported-resources",
+      "amplify-migration-apps/media-vault",
+      "amplify-migration-apps/mood-board",
+      "amplify-migration-apps/product-catalog",
+      "amplify-migration-apps/project-boards",
+      "amplify-migration-apps/store-locator"
     ]
   },
   "devDependencies": {

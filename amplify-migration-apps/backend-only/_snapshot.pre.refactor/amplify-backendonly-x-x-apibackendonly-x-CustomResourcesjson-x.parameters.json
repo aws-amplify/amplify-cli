@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-backendonly-x-x-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "qjgez2h2dfenrkezjjoo3i4utu"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/1bb98024bb45fe354a03a385c4e3bfd9504f2f39"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "backendonly"
+  }
+]

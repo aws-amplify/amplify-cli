@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "api": {
+      "productcatalog": [
+        "Mutation"
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+enum WorkoutProgramStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+type WorkoutProgram @model @auth(rules: [{ allow: owner, operations: [create, read, update, delete] }]) {
+  id: ID!
+  title: String!
+  description: String
+  status: WorkoutProgramStatus!
+  deadline: AWSDateTime
+  color: String
+  exercises: [Exercise] @hasMany
+}
+
+type Exercise @model @auth(rules: [{ allow: owner, operations: [create, read, update, delete] }]) {
+  id: ID!
+  workoutProgramId: ID
+  name: String!
+  description: String
+}
+
+type Meal @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  userName: String!
+  content: String!
+  timestamp: String!
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/S3Trigger1ef46783-6547674f396832763433-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-productcatalog-x-x-deployment"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIKeyOutput",
+    "ParameterValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIEndpointOutput",
+    "ParameterValue": "https://s7pk7zqqprdl3mxsanjc4feaia.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "apiproductcatalogGraphQLAPIIdOutput",
+    "ParameterValue": "ygivvj3x3fgkjcyo2xd4oyyhuu"
+  }
+]

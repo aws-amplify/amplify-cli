@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/removeuserfromgroup-4d374c646c33716f6471-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-mediavault-x-x-deployment"
+  },
+  {
+    "ParameterKey": "authmediavault1f08412dUserPoolId",
+    "ParameterValue": "us-east-1_wxZfjy0c4"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthIdentityPool2B69FEE4Ref",
+    "ParameterValue": "us-east-1:48663aa6-2f3e-4bbf-ad42-796f9f4c1673"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthunauthenticatedUserRoleAE3DAE47Ref",
+    "ParameterValue": "amplify-discussion2604261-amplifyAuthunauthenticate-X0syNMj6Bw9A"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthUserPoolD53CCEAFRef",
+    "ParameterValue": "us-east-1_7U3vm4vrD"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionse2esandbox16be747e30authNestedStackauthNestedStackResourceF06EC12BOutputsamplifydiscussionse2esandbox16be747e30authamplifyAuthauthenticatedUserRole653CC0EDRef",
+    "ParameterValue": "amplify-discussion2604261-amplifyAuthauthenticatedU-1LlvGIJO4FUB"
+  }
+]

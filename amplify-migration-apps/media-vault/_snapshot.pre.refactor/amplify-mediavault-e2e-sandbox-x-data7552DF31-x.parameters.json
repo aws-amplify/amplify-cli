@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref",
+    "ParameterValue": "amplify-mediavault2604261-amplifyAuthauthenticatedU-jQA6OQUFPNZP"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref",
+    "ParameterValue": "amplify-mediavault2604261-amplifyAuthunauthenticate-FebAhXFwzu3H"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref",
+    "ParameterValue": "us-east-1:a57e7d41-b0af-461c-b4b2-d4b94738131b"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPool9CA29B1CRef",
+    "ParameterValue": "us-east-1_spBDDdG7A"
+  }
+]

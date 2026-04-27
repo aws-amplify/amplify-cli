@@ -1,0 +1,109 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "AuthRoleArn": {
+      "Type": "String"
+    },
+    "UnauthRoleArn": {
+      "Type": "String"
+    },
+    "authstorelocator41a9495f41a9495fUserPoolId": {
+      "Type": "String",
+      "Default": "authstorelocator41a9495f41a9495fUserPoolId"
+    },
+    "authstorelocator41a9495f41a9495fIdentityPoolId": {
+      "Type": "String",
+      "Default": "authstorelocator41a9495f41a9495fIdentityPoolId"
+    },
+    "authstorelocator41a9495f41a9495fAppClientID": {
+      "Type": "String",
+      "Default": "authstorelocator41a9495f41a9495fAppClientID"
+    },
+    "authstorelocator41a9495f41a9495fAppClientIDWeb": {
+      "Type": "String",
+      "Default": "authstorelocator41a9495f41a9495fAppClientIDWeb"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "storeLocatorAdminGroup": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "storeLocatorAdmin",
+        "Precedence": 1,
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "storeLocatorAdminGroupRole",
+            "Arn"
+          ]
+        },
+        "UserPoolId": {
+          "Ref": "authstorelocator41a9495f41a9495fUserPoolId"
+        }
+      }
+    },
+    "storeLocatorAdminGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "authstorelocator41a9495f41a9495fIdentityPoolId"
+                  }
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "authstorelocator41a9495f41a9495fUserPoolId"
+              },
+              "-storeLocatorAdminGroupRole"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "storeLocatorAdminGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
+          "storeLocatorAdminGroupRole",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

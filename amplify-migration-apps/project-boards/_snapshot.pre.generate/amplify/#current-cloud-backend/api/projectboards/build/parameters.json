@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "projectboards",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authprojectboards54040ecc",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-projectboards-x-x-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/aec3df0ce66b9e507c81ba2a6fe8dad0e853f143"
+}

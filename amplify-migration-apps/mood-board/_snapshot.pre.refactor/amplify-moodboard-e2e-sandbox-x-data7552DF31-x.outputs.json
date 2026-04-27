@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "amplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIDefaultApiKey38E2D6BEApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId",
+    "OutputValue": "mqcggtoqqvgtdgfi7dhatqxh7q"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox5972880194dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB16E63006DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-moodboard26042620-amplifydataamplifycodege-u2plydq72hue"
+  },
+  {
+    "OutputKey": "amplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050GraphQLUrl",
+    "OutputValue": "https://ihtcqlpxqbhhngtypvwc7y6woy.appsync-api.us-east-1.amazonaws.com/graphql"
+  }
+]

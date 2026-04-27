@@ -1,0 +1,135 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"storage-DynamoDB\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "partitionKeyName": {
+      "Type": "String"
+    },
+    "partitionKeyType": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "sortKeyName": {
+      "Type": "String"
+    },
+    "sortKeyType": {
+      "Type": "String"
+    },
+    "tableName": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "timestamp",
+            "AttributeType": "S"
+          }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "byUserId",
+            "KeySchema": [
+              {
+                "AttributeName": "userId",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "timestamp",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "userId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_IMAGE"
+        },
+        "TableName": {
+          "Fn::Join": [
+            "",
+            [
+              "activity",
+              "-",
+              "x"
+            ]
+          ]
+        },
+        "DeletionProtectionEnabled": true
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": "activity-x"
+    },
+    "Arn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x"
+    },
+    "StreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-26T23:13:33.099"
+    },
+    "PartitionKeyName": {
+      "Value": "id"
+    },
+    "PartitionKeyType": {
+      "Value": "S"
+    },
+    "SortKeyName": {
+      "Value": "userId"
+    },
+    "SortKeyType": {
+      "Value": "S"
+    },
+    "Region": {
+      "Value": "us-east-1"
+    }
+  }
+}

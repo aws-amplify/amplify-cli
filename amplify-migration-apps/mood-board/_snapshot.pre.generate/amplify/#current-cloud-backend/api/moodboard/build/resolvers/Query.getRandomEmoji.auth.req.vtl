@@ -1,0 +1,13 @@
+## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == "API Key Authorization" )
+
+#end
+#if( $util.authType() == "User Pool Authorization" )
+  #set( $isAuthorized = true )
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({"version":"2018-05-29","payload":{}})
+## [End] Field Authorization Steps. **
