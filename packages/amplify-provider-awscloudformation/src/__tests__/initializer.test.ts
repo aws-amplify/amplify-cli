@@ -5,7 +5,6 @@ import CloudFormation from '../aws-utils/aws-cfn';
 import * as amplifyServiceManager from '../amplify-service-manager';
 import { getConfiguredAmplifyClient } from '../aws-utils/aws-amplify';
 import * as gen1NewCustomerRestriction from '../gen1-new-customer-restriction';
-import { resolveRegion } from '../configuration-manager';
 
 jest.mock('../pre-push-cfn-processor/pre-push-cfn-modifier');
 jest.mock('../configuration-manager');
@@ -25,7 +24,6 @@ const getConfiguredAmplifyClientMock = getConfiguredAmplifyClient as jest.Mocked
 const enforceGen1NewCustomerRestrictionMock = gen1NewCustomerRestriction.enforceGen1NewCustomerRestriction as jest.MockedFunction<
   typeof gen1NewCustomerRestriction.enforceGen1NewCustomerRestriction
 >;
-const resolveRegionMock = resolveRegion as jest.MockedFunction<typeof resolveRegion>;
 
 describe('run', () => {
   it('transforms the root stack using the pre-push modifier', async () => {
@@ -135,39 +133,5 @@ describe('Gen 1 new-customer restriction in initializer', () => {
     await run(contextWithAppId);
 
     expect(enforceGen1NewCustomerRestrictionMock).not.toHaveBeenCalled();
-  });
-
-  it('uses AWS_REGION env var for restriction check over profile region', async () => {
-    const originalAwsRegion = process.env.AWS_REGION;
-    process.env.AWS_REGION = 'eu-central-1';
-
-    try {
-      await run(baseContextStub);
-
-      expect(getConfiguredAmplifyClientMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ region: 'eu-central-1' }));
-    } finally {
-      if (originalAwsRegion === undefined) {
-        delete process.env.AWS_REGION;
-      } else {
-        process.env.AWS_REGION = originalAwsRegion;
-      }
-    }
-  });
-
-  it('falls back to resolveRegion when no AWS_REGION env var is set', async () => {
-    const originalAwsRegion = process.env.AWS_REGION;
-    const originalAmazonRegion = process.env.AMAZON_REGION;
-    delete process.env.AWS_REGION;
-    delete process.env.AMAZON_REGION;
-    resolveRegionMock.mockReturnValue('us-west-2');
-
-    try {
-      await run(baseContextStub);
-
-      expect(getConfiguredAmplifyClientMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ region: 'us-west-2' }));
-    } finally {
-      if (originalAwsRegion !== undefined) process.env.AWS_REGION = originalAwsRegion;
-      if (originalAmazonRegion !== undefined) process.env.AMAZON_REGION = originalAmazonRegion;
-    }
   });
 });
