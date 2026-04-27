@@ -35,6 +35,9 @@ import { fileLogger } from './utils/aws-logger';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { handleCommonSdkError } from './handle-common-sdk-errors';
+import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
+import { enforceGen1NewCustomerRestriction } from './gen1-new-customer-restriction';
+import { resolveRegion } from './configuration-manager';
 
 const logger = fileLogger('initializer');
 
@@ -61,6 +64,17 @@ export const run = async (context: $TSContext): Promise<void> => {
     const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
     await configurePermissionsBoundaryForInit(context);
+
+    // Block new Gen 1 app creation for non-existing customers
+    const hasAppId = context.exeInfo?.inputParams?.amplify?.appId;
+    if (!hasAppId) {
+      const envRegion = process.env.AWS_REGION || process.env.AMAZON_REGION || resolveRegion();
+      const restrictionConfig = envRegion ? { ...awsConfigInfo, region: envRegion } : awsConfigInfo;
+      const amplifyClient = await getConfiguredAmplifyClient(context, restrictionConfig);
+      if (amplifyClient) {
+        await enforceGen1NewCustomerRestriction(amplifyClient);
+      }
+    }
 
     const amplifyServiceParams = {
       context,

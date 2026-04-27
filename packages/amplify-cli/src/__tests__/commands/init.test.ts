@@ -192,4 +192,46 @@ describe('amplify init:', () => {
       expect(mockGetGitIgnoreFilePath).toBeCalledWith(cwd);
     });
   });
+
+  describe('quickstart new-customer restriction', () => {
+    let stderrSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      jest.spyOn(stateManager, 'metaFileExists').mockReturnValue(false);
+      stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    });
+
+    afterEach(() => {
+      stderrSpy.mockRestore();
+    });
+
+    it('blocks --quickstart with ProjectInitError', async () => {
+      const context = {
+        ...mockContext,
+        parameters: { options: { quickstart: true } },
+      } as unknown as $TSContext;
+
+      await expect(initCommand(context)).rejects.toThrow(
+        'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers.',
+      );
+    });
+
+    it('prints yellow deprecation warning to stderr for --quickstart', async () => {
+      const context = {
+        ...mockContext,
+        parameters: { options: { quickstart: true } },
+      } as unknown as $TSContext;
+
+      try {
+        await initCommand(context);
+      } catch {
+        // expected
+      }
+
+      expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining('\x1b[33m'));
+      expect(stderrSpy).toHaveBeenCalledWith(
+        expect.stringContaining('AWS Amplify Gen 1 has entered maintenance mode'),
+      );
+    });
+  });
 });
