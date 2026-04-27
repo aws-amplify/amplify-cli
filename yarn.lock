@@ -2109,7 +2109,10 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.32
     amplify-python-function-runtime-provider: 2.4.54
     aws-cdk-lib: ~2.189.1
+    aws-sdk-client-mock: ^4.1.0
+    aws-sdk-client-mock-jest: ^4.1.0
     bottleneck: 2.19.5
+    cdk-from-cfn: ^0.291.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -2128,10 +2131,12 @@ __metadata:
     ini: ^1.3.5
     inquirer: ^7.3.3
     jest: ^29.7.0
+    jest-diff: ^29.7.0
     lodash: ^4.17.21
     nock: ^13.5.0
     node-fetch: ^2.6.7
     ora: ^4.0.3
+    prettier: ^2.8.4
     progress: ^2.0.3
     promise-sequential: ^1.1.1
     proxy-agent: ^6.3.0
@@ -2143,6 +2148,7 @@ __metadata:
     update-notifier: ^5.1.0
     uuid: ^8.3.2
     which: ^2.0.2
+    yaml: ^2.2.2
   bin:
     amplify: bin/amplify
   languageName: unknown
@@ -27147,6 +27153,13 @@ __metadata:
   version: 0.263.0
   resolution: "cdk-from-cfn@npm:0.263.0"
   checksum: db4c153128427e44d9a38faa75b8eb5c9ac73b7509a0b774c4e82c0a977430a1dafab7e352977cc8f63d58dac2c4586bd0650dd66030bb2ef42315c3e303aec3
+  languageName: node
+  linkType: hard
+
+"cdk-from-cfn@npm:^0.291.0":
+  version: 0.291.0
+  resolution: "cdk-from-cfn@npm:0.291.0"
+  checksum: f8014f8aded5d1b2091b5bbc9d825a958bf92c75f0cf11bf7b48c47756672e82c4ff71e043af15e5d7e6db6f09d8e1bbbb48f5fb01e955796a585069b13ffa43
   languageName: node
   linkType: hard
 
