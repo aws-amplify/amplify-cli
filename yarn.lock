@@ -21020,20 +21020,20 @@ __metadata:
   linkType: hard
 
 "@smithy/middleware-retry@npm:^4.4.16, @smithy/middleware-retry@npm:^4.4.18, @smithy/middleware-retry@npm:^4.5.5":
-  version: 4.5.5
-  resolution: "@smithy/middleware-retry@npm:4.5.5"
+  version: 4.5.6
+  resolution: "@smithy/middleware-retry@npm:4.5.6"
   dependencies:
     "@smithy/core": ^3.23.17
     "@smithy/node-config-provider": ^4.3.14
     "@smithy/protocol-http": ^5.3.14
-    "@smithy/service-error-classification": ^4.3.0
+    "@smithy/service-error-classification": ^4.3.1
     "@smithy/smithy-client": ^4.12.13
     "@smithy/types": ^4.14.1
     "@smithy/util-middleware": ^4.2.14
-    "@smithy/util-retry": ^4.3.4
+    "@smithy/util-retry": ^4.3.5
     "@smithy/uuid": ^1.1.2
     tslib: ^2.6.2
-  checksum: 90bc79a5103e81a1f628c5c426cb4df3577cead58cc50776285ac130f9b128f51963f6ca43d9e68dd253d106ed126f069515396a8c08b29aade039dc67b7cfd0
+  checksum: 75fe6e3b06e901a10f16d761ec9cba37375b3e149e8770e2d94292926c0188db2d06f864ca7a1922decbd33bc6d703d428c0835f0575be6906b144a85c35623f
   languageName: node
   linkType: hard
 
@@ -21315,12 +21315,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/service-error-classification@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@smithy/service-error-classification@npm:4.3.0"
+"@smithy/service-error-classification@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "@smithy/service-error-classification@npm:4.3.1"
   dependencies:
     "@smithy/types": ^4.14.1
-  checksum: 713110456940c21dcf63beafe13b3e67bc14311472cc87e00e58dff325e524866dd8b590a2d5ee1b6f5954a9a8c50f639402d56586c81ddfc66a0c6e5ee5c93a
+  checksum: 1bc927f53693035165f4b15232c644be579cdd432cf2d3e026faa746d26693e6b1e0f35bcd5d812dd89445695fd1eb7188e415e2523d6d8991e8db900cecdf36
   languageName: node
   linkType: hard
 
@@ -21871,14 +21871,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-retry@npm:^4, @smithy/util-retry@npm:^4.2.6, @smithy/util-retry@npm:^4.2.7, @smithy/util-retry@npm:^4.3.4":
-  version: 4.3.4
-  resolution: "@smithy/util-retry@npm:4.3.4"
+"@smithy/util-retry@npm:^4, @smithy/util-retry@npm:^4.2.6, @smithy/util-retry@npm:^4.2.7, @smithy/util-retry@npm:^4.3.4, @smithy/util-retry@npm:^4.3.5":
+  version: 4.3.5
+  resolution: "@smithy/util-retry@npm:4.3.5"
   dependencies:
-    "@smithy/service-error-classification": ^4.3.0
+    "@smithy/service-error-classification": ^4.3.1
     "@smithy/types": ^4.14.1
     tslib: ^2.6.2
-  checksum: 8d80edf2dfb23199f5b8095b20ae3774edf3f34b391ce8b7acc6c0ac89a7963677cfdccf8a388d8e688c67a453e8a94448c1753ec3bfdcaa253373770e58538b
+  checksum: e411178a315092535bc18df94f60a483ad0446f25bb75cf8ef4ce2fe4a566938709b800a6a19dbe528173b1ff89c676bb86bbd052f072b86884796e9cf5a40b7
   languageName: node
   linkType: hard
 
@@ -22020,12 +22020,12 @@ __metadata:
   linkType: hard
 
 "@smithy/util-waiter@npm:^4, @smithy/util-waiter@npm:^4.2.16, @smithy/util-waiter@npm:^4.2.7":
-  version: 4.2.16
-  resolution: "@smithy/util-waiter@npm:4.2.16"
+  version: 4.3.0
+  resolution: "@smithy/util-waiter@npm:4.3.0"
   dependencies:
     "@smithy/types": ^4.14.1
     tslib: ^2.6.2
-  checksum: c2ee5f83f5325af0c26be5d535ecd9166aa30b59c8f4ee3675bdd682521f3e2391015265afeae8585bf4009ba257d39ba7866ccc4a95c429ae14dc570ef3d9aa
+  checksum: 44e18c946c731740801787714a513e6c119f9997f29191d3bababe9781e0935d08a927caa475d70f7dcb02d70b532639be94317ac3c6305496f1ebe90fcfcf9b
   languageName: node
   linkType: hard
 
