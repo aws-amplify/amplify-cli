@@ -9,11 +9,11 @@ export const fitnesstracker33f5545533f55455PreSignup = defineFunction({
   timeoutSeconds: 25,
   memoryMB: 128,
   environment: {
+    ENV: `${branchName}`,
     MODULES: 'email-filter-allowlist',
+    REGION: 'us-east-1',
     DOMAINALLOWLIST: 'amazon.com',
     DOMAINBLACKLIST: '',
-    ENV: `${branchName}`,
-    REGION: 'us-east-1',
   },
   runtime: 22,
 });

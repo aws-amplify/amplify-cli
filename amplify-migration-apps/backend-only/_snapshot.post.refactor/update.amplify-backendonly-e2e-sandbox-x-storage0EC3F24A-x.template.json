@@ -104,7 +104,7 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "AWS": "arn:aws:iam::123456789012:role/amplify-backendonl2604261-CustomS3AutoDeleteObjects-cbrJVhYD89sZ"
+                "AWS": "arn:aws:iam::123456789012:role/amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
                 "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
@@ -132,7 +132,7 @@
     "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketAutoDeleteObjectsCustomResourceAD12AD28": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
-        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-backendonl2604261-CustomS3AutoDeleteObject-iY2ep0GurB3s",
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
         "BucketName": "amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n"
       },
       "UpdateReplacePolicy": "Retain",
@@ -180,7 +180,7 @@
         "Timeout": 900,
         "MemorySize": 128,
         "Handler": "index.handler",
-        "Role": "arn:aws:iam::123456789012:role/amplify-backendonl2604261-CustomS3AutoDeleteObjects-cbrJVhYD89sZ",
+        "Role": "arn:aws:iam::123456789012:role/amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
         "Runtime": "nodejs22.x",
         "Description": {
           "Fn::Join": [

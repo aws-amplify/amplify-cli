@@ -9,10 +9,10 @@ export const storelocator41a9495f41a9495fPostConfirmation = defineFunction({
   timeoutSeconds: 25,
   memoryMB: 128,
   environment: {
-    GROUP: 'storeLocatorAdmin',
-    MODULES: 'add-to-group',
     ENV: `${branchName}`,
+    MODULES: 'add-to-group',
     REGION: 'us-east-1',
+    GROUP: 'storeLocatorAdmin',
   },
   runtime: 22,
 });

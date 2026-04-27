@@ -46,7 +46,7 @@ export function defineNutritionapiApi(backend: Backend) {
     'Gen1nutritionapiApi',
     {
       restApiId: 'xxhikloa6h',
-      rootResourceId: 'wzb55bj6p7',
+      rootResourceId: 'xxhikloa6h-root',
     }
   );
   const gen1nutritionapiPolicy = new Policy(stack, 'Gen1nutritionapiPolicy', {
