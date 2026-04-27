@@ -42,7 +42,6 @@ export class AuthGenerator implements Planner {
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
     const userPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
     const userPool = await this.gen1App.aws.fetchUserPool(userPoolId);
 
