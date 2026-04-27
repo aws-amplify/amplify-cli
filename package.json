@@ -102,17 +102,7 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*",
-      "amplify-migration-apps/**/_snapshot.post.generate",
-      "amplify-migration-apps/backend-only",
-      "amplify-migration-apps/discussions",
-      "amplify-migration-apps/fitness-tracker",
-      "amplify-migration-apps/imported-resources",
-      "amplify-migration-apps/media-vault",
-      "amplify-migration-apps/mood-board",
-      "amplify-migration-apps/product-catalog",
-      "amplify-migration-apps/project-boards",
-      "amplify-migration-apps/store-locator"
+      "packages/*"
     ]
   },
   "devDependencies": {
@@ -200,7 +190,6 @@
     "rollup": "2.80.0",
     "immutable": "^4.3.8",
     "svgo": "^3.3.3",
-    "serialize-javascript": "^7.0.3",
-    "@types/react": "^17.0.39"
+    "serialize-javascript": "^7.0.3"
   }
 }
