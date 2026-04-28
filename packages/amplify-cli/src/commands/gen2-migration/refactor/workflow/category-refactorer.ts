@@ -185,7 +185,7 @@ export abstract class CategoryRefactorer implements Planner {
           run: async () => ({ valid, report }),
         }),
         describe: async () => {
-          const header = `Update source stack '${sourceStackName}' with resolved references`;
+          const header = `Prepare '${sourceStackName}' for resource move (replace inter-resource references with concrete values)`;
           return [valid ? header : `${header}\n\n${report.trimStart()}`];
         },
         execute: async () => {
@@ -231,7 +231,7 @@ export abstract class CategoryRefactorer implements Planner {
           run: async () => ({ valid, report }),
         }),
         describe: async () => {
-          const header = `Update target stack '${targetStackName}' with resolved references`;
+          const header = `Prepare '${targetStackName}' for resource move (replace inter-resource references with concrete values)`;
           return [valid ? header : `${header}\n\n${report.trimStart()}`];
         },
         execute: async () => {

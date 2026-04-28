@@ -178,13 +178,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     generators.push(new AmplifyYmlGenerator(this.gen1App));
     generators.push(new GitIgnoreGenerator());
 
-    operations.push({
-      validate: () => undefined,
-      describe: async () => [`Delete directory: ${path.join(process.cwd(), 'amplify')}`],
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    });
-
     // Collect all operations from generators in order.
     for (const generator of generators) {
       operations.push(...(await generator.plan()));
@@ -204,23 +197,14 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       },
     });
 
-    // Post-generation: instruct user to install dependencies.
-    operations.push({
-      validate: () => undefined,
-      describe: async () => ['Instruct user to install Gen2 dependencies'],
-      execute: async () => {
-        this.logger.info(
-          'Run "npm install" to install the new Gen2 dependencies. ' +
-            'If you encounter version conflicts, check the npm logs and resolve them manually.',
-        );
-      },
-    });
-
     return new Plan({
       operations,
       logger: this.logger,
       title: 'Execute',
-      implications: ["Your local 'amplify/' directory will be replaced with Gen2 code"],
+      implications: [
+        "Your local 'amplify/' directory will be replaced with Gen2 code",
+        "Your root 'package.json' will be updated with Gen2 dependencies",
+      ],
     });
   }
 

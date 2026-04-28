@@ -222,8 +222,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       logger: this.logger,
       title: 'Execute',
       implications: [
-        `You will not be able to run 'amplify push' on environment '${this.gen1App.envName}'`,
-        `You will not be able to migrate another environment until migration of '${this.gen1App.envName}' is complete or rolled back`,
+        `You will not be able to run 'amplify push' on '${this.gen1App.appName}/${this.gen1App.envName}'`,
+        `You will not be able to migrate another environment until migration of '${this.gen1App.appName}/${this.gen1App.envName}' is complete or rolled back`,
       ],
     });
   }
@@ -285,8 +285,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       logger: this.logger,
       title: 'Rollback',
       implications: [
-        `You will be able to run 'amplify push' on environment '${this.gen1App.envName}'`,
-        `You will be able to start migration of another environment`,
+        `You will be able to run 'amplify push' on '${this.gen1App.appName}/${this.gen1App.envName}'`,
+        `You will be able to start migration on a different environment (lock on '${this.gen1App.appName}/${this.gen1App.envName}' will be released)`,
       ],
     });
   }
@@ -424,7 +424,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     operations.push({
       resource: appResource,
-      describe: async () => [`Apply the following ChangeSet to stack ${stackName}\n\n${report}\n`],
+      describe: async () => [
+        `Set Retain policies on stateful resources and/or enable DynamoDB deletion protection in '${stackName}'\n\n${report}\n`,
+      ],
       validate: () => ({
         description: `Ensure no unexpected changes to ${stackName}`,
         run: async () => ({ valid, report }),
