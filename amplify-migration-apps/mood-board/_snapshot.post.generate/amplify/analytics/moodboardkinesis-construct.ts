@@ -36,7 +36,11 @@ export class MoodboardKinesis extends Construct {
   public readonly kinesisStreamId;
   public readonly kinesisStreamShardCount;
 
-  public constructor(scope: Construct, id: string, props: MoodboardKinesisProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: MoodboardKinesisProps
+  ) {
     super(scope, id);
 
     // Applying default props

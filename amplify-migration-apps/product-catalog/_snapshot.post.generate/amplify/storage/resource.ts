@@ -9,8 +9,12 @@ export const storage = defineStorage({
   name: `productcatalogf95af07481f845caa6594c26ac9c8ed3x-${branchName}`,
   access: (allow) => ({
     'public/*': [allow.authenticated.to(['write', 'read', 'delete'])],
-    'protected/{entity_id}/*': [allow.authenticated.to(['write', 'read', 'delete'])],
-    'private/{entity_id}/*': [allow.authenticated.to(['write', 'read', 'delete'])],
+    'protected/{entity_id}/*': [
+      allow.authenticated.to(['write', 'read', 'delete']),
+    ],
+    'private/{entity_id}/*': [
+      allow.authenticated.to(['write', 'read', 'delete']),
+    ],
   }),
   triggers: {
     onUpload: S3Trigger1ef46783,
@@ -37,7 +41,13 @@ export function applyEscapeHatches(backend: Backend) {
   };
   for (const cfnResource of backend.storage.stack.node
     .findAll()
-    .filter((c) => CfnResource.isCfnResource(c) && ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(c.cfnResourceType))) {
+    .filter(
+      (c) =>
+        CfnResource.isCfnResource(c) &&
+        ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
+          c.cfnResourceType
+        )
+    )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }

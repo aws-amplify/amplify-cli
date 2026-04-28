@@ -24,9 +24,15 @@ export const auth = defineAuth({
     mode: 'OFF',
   },
   access: (allow) => [
-    allow.resource(storelocator41a9495f41a9495fPostConfirmation).to(['addUserToGroup']),
-    allow.resource(storelocator41a9495f41a9495fPostConfirmation).to(['getGroup']),
-    allow.resource(storelocator41a9495f41a9495fPostConfirmation).to(['createGroup']),
+    allow
+      .resource(storelocator41a9495f41a9495fPostConfirmation)
+      .to(['addUserToGroup']),
+    allow
+      .resource(storelocator41a9495f41a9495fPostConfirmation)
+      .to(['getGroup']),
+    allow
+      .resource(storelocator41a9495f41a9495fPostConfirmation)
+      .to(['createGroup']),
   ],
 });
 
@@ -63,7 +69,7 @@ export function applyEscapeHatches(backend: Backend) {
           'AWS::Cognito::UserPoolClient',
           'AWS::Cognito::IdentityPoolRoleAttachment',
           'AWS::Cognito::UserPoolGroup',
-        ].includes(c.cfnResourceType),
+        ].includes(c.cfnResourceType)
     )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');

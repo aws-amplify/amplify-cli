@@ -12,15 +12,27 @@ export const lowstockproducts = defineFunction({
     ENV: `${branchName}`,
     REGION: 'us-east-1',
     LOW_STOCK_THRESHOLD: '5',
-    PRODUCT_CATALOG_SECRET: '/amplify/productcatalog/x/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
+    PRODUCT_CATALOG_SECRET:
+      '/amplify/productcatalog/x/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
   },
   runtime: 22,
 });
 
 export function applyEscapeHatches(backend: Backend) {
   backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${branchName}`;
-  backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!);
-  backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl);
-  backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId);
-  backend.data.resources.graphqlApi.grantQuery(backend.lowstockproducts.resources.lambda);
+  backend.lowstockproducts.addEnvironment(
+    'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
+    backend.data.apiKey!
+  );
+  backend.lowstockproducts.addEnvironment(
+    'API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT',
+    backend.data.graphqlUrl
+  );
+  backend.lowstockproducts.addEnvironment(
+    'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
+    backend.data.apiId
+  );
+  backend.data.resources.graphqlApi.grantQuery(
+    backend.lowstockproducts.resources.lambda
+  );
 }

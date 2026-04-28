@@ -18,7 +18,11 @@ export function defineAnalytics(backend: Backend) {
   });
   for (const cfnResource of stack.node
     .findAll()
-    .filter((c) => CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::Kinesis::Stream')) {
+    .filter(
+      (c) =>
+        CfnResource.isCfnResource(c) &&
+        c.cfnResourceType === 'AWS::Kinesis::Stream'
+    )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }
@@ -26,5 +30,6 @@ export function defineAnalytics(backend: Backend) {
 }
 
 export function postRefactor(analytics: MoodboardKinesis) {
-  (analytics.node.findChild('KinesisStream') as CfnStream).name = 'moodboardKinesis-x';
+  (analytics.node.findChild('KinesisStream') as CfnStream).name =
+    'moodboardKinesis-x';
 }

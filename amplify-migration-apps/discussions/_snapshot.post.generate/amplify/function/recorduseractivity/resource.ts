@@ -17,9 +17,18 @@ export const recorduseractivity = defineFunction({
 
 export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
-  backend.recorduseractivity.addEnvironment('STORAGE_ACTIVITY_STREAMARN', activity.tableStreamArn!);
-  backend.recorduseractivity.addEnvironment('STORAGE_ACTIVITY_ARN', activity.tableArn);
-  backend.recorduseractivity.addEnvironment('STORAGE_ACTIVITY_NAME', activity.tableName);
+  backend.recorduseractivity.addEnvironment(
+    'STORAGE_ACTIVITY_STREAMARN',
+    activity.tableStreamArn!
+  );
+  backend.recorduseractivity.addEnvironment(
+    'STORAGE_ACTIVITY_ARN',
+    activity.tableArn
+  );
+  backend.recorduseractivity.addEnvironment(
+    'STORAGE_ACTIVITY_NAME',
+    activity.tableName
+  );
   activity.grant(
     backend.recorduseractivity.resources.lambda,
     'dynamodb:Put*',
@@ -37,16 +46,18 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
     'dynamodb:RestoreTable*',
     'dynamodb:PartiQLUpdate',
     'dynamodb:Delete*',
-    'dynamodb:PartiQLDelete',
+    'dynamodb:PartiQLDelete'
   );
   for (const model of ['Topic', 'Post', 'Comment']) {
     const table = backend.data.resources.tables[model];
     backend.recorduseractivity.resources.lambda.addEventSource(
       new DynamoEventSource(table, {
         startingPosition: StartingPosition.LATEST,
-      }),
+      })
     );
     table.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
-    table.grantTableListStreams(backend.recorduseractivity.resources.lambda.role!);
+    table.grantTableListStreams(
+      backend.recorduseractivity.resources.lambda.role!
+    );
   }
 }

@@ -10,7 +10,8 @@ import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
-  fitnesstracker33f5545533f55455PreSignup: fitnesstracker33f5545533f55455PreSignup.fitnesstracker33f5545533f55455PreSignup,
+  fitnesstracker33f5545533f55455PreSignup:
+    fitnesstracker33f5545533f55455PreSignup.fitnesstracker33f5545533f55455PreSignup,
   lognutrition: lognutrition.lognutrition,
   admin: admin.admin,
   data: data.data,

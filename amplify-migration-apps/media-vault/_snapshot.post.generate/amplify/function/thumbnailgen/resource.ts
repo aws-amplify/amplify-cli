@@ -14,5 +14,8 @@ export const thumbnailgen = defineFunction({
 
 export function applyEscapeHatches(backend: Backend) {
   backend.thumbnailgen.resources.cfnResources.cfnFunction.functionName = `thumbnailgen-${branchName}`;
-  backend.thumbnailgen.addEnvironment('STORAGE_MEDIAVAULT_BUCKETNAME', backend.storage.resources.bucket.bucketName);
+  backend.thumbnailgen.addEnvironment(
+    'STORAGE_MEDIAVAULT_BUCKETNAME',
+    backend.storage.resources.bucket.bucketName
+  );
 }

@@ -108,7 +108,9 @@ export function applyEscapeHatches(backend: Backend) {
     new aws_iam.PolicyStatement({
       effect: aws_iam.Effect.ALLOW,
       actions: ['appsync:GraphQL'],
-      resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/ygivvj3x3fgkjcyo2xd4oyyhuu/*`],
-    }),
+      resources: [
+        `arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/ygivvj3x3fgkjcyo2xd4oyyhuu/*`,
+      ],
+    })
   );
 }

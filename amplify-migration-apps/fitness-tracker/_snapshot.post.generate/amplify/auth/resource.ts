@@ -70,7 +70,7 @@ export function applyEscapeHatches(backend: Backend) {
           'AWS::Cognito::UserPoolClient',
           'AWS::Cognito::IdentityPoolRoleAttachment',
           'AWS::Cognito::UserPoolGroup',
-        ].includes(c.cfnResourceType),
+        ].includes(c.cfnResourceType)
     )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');

@@ -7,9 +7,16 @@ const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 export const storage = defineStorage({
   name: `backendonlycb1a13ab81664ecaa7d015068ab2d016x-${branchName}`,
   access: (allow) => ({
-    'public/*': [allow.guest.to(['read']), allow.authenticated.to(['write', 'read', 'delete'])],
-    'protected/{entity_id}/*': [allow.authenticated.to(['write', 'read', 'delete'])],
-    'private/{entity_id}/*': [allow.authenticated.to(['write', 'read', 'delete'])],
+    'public/*': [
+      allow.guest.to(['read']),
+      allow.authenticated.to(['write', 'read', 'delete']),
+    ],
+    'protected/{entity_id}/*': [
+      allow.authenticated.to(['write', 'read', 'delete']),
+    ],
+    'private/{entity_id}/*': [
+      allow.authenticated.to(['write', 'read', 'delete']),
+    ],
   }),
 });
 
@@ -32,7 +39,13 @@ export function applyEscapeHatches(backend: Backend) {
   };
   for (const cfnResource of backend.storage.stack.node
     .findAll()
-    .filter((c) => CfnResource.isCfnResource(c) && ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(c.cfnResourceType))) {
+    .filter(
+      (c) =>
+        CfnResource.isCfnResource(c) &&
+        ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
+          c.cfnResourceType
+        )
+    )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }

@@ -6,7 +6,8 @@ import { Tags } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth: auth.auth,
-  storelocator41a9495f41a9495fPostConfirmation: storelocator41a9495f41a9495fPostConfirmation.storelocator41a9495f41a9495fPostConfirmation,
+  storelocator41a9495f41a9495fPostConfirmation:
+    storelocator41a9495f41a9495fPostConfirmation.storelocator41a9495f41a9495fPostConfirmation,
 });
 
 export type Backend = typeof backend;
