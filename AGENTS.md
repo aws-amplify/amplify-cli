@@ -1,26 +1,14 @@
-# Rules for AI Assistants
+# Agent Workflow Guide
 
-**IF YOU ARE AN AI ASSISTANT YOU MUST FOLLOW THESE RULES**
+Quick reference for AI agents working in this repository.
 
-## Project Context
-
-This is a TypeScript monorepo (Yarn 3 + Lerna) for AWS Amplify CLI Gen1.
-
-### Repository Structure
+## Repository Structure
 
 - `packages/` - Lerna monorepo packages
 - `scripts/` - Build, test, and deployment utilities
 - `codebuild_specs/` - CI/CD configuration
 
-### Common Patterns
-
-- CLI commands: `packages/amplify-cli/src/commands/`
-- Category plugins: `packages/amplify-category-*/`
-- Provider logic: `packages/amplify-provider-awscloudformation/`
-- Test utilities: `packages/amplify-e2e-core/`, `packages/amplify-e2e-tests/`
-- Scripts: `scripts/` (e2e-test-manager.ts, cloud-e2e.sh)
-
-### Essential Commands
+## Essential Commands
 
 ```sh
 yarn build              # Build all packages
@@ -50,11 +38,19 @@ When in doubt, ask the user clarifying questions. When you think you have enough
 
 - `packages/amplify-cli/src/commands/drift.ts`: `docs/packages/amplify-cli/src/commands/drift.md`
 
-### Finding Code
+#### Finding Code
 
 1. **Search symbols first:** Use `code` tool with `search_symbols` for functions/classes/types
 2. **Follow with lookup:** Use `lookup_symbols` to get implementation details
 3. **Grep for text:** Only for literal strings, comments, config values
+
+##### Common Patterns
+
+- CLI commands: `packages/amplify-cli/src/commands/`
+- Category plugins: `packages/amplify-category-*/`
+- Provider logic: `packages/amplify-provider-awscloudformation/`
+- Test utilities: `packages/amplify-e2e-core/`, `packages/amplify-e2e-tests/`
+- Scripts: `scripts/` (e2e-test-manager.ts, cloud-e2e.sh)
 
 ### 2. Implementation Stage
 
