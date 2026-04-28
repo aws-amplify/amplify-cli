@@ -14,9 +14,11 @@ describe('amplify init - Gen 1 new-customer restriction', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('should block amplify init --quickstart for new Gen 1 customers', async () => {
+  it('should block amplify init --quickstart with deprecation message', async () => {
     await expect(
-      spawn(getCLIPath(), ['init', '--quickstart'], { cwd: projRoot, stripColors: true }).runAsync(),
+      spawn(getCLIPath(), ['init', '--quickstart'], { cwd: projRoot, stripColors: true })
+        .wait('AWS Amplify Gen 1 has entered maintenance mode')
+        .runAsync(),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 });

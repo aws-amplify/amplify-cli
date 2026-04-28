@@ -56,7 +56,18 @@ export const isExistingGen1Customer = async (amplifyClient: AmplifyClient): Prom
  * @throws {AmplifyError} with name `ProjectInitError` when the account is not an existing Gen 1 customer
  */
 export const enforceGen1NewCustomerRestriction = async (amplifyClient: AmplifyClient): Promise<void> => {
-  const isExisting = await isExistingGen1Customer(amplifyClient);
+  let isExisting: boolean;
+
+  try {
+    isExisting = await isExistingGen1Customer(amplifyClient);
+  } catch (error: any) {
+    // Fail-open: if we can't determine customer status (e.g., throttling, network error),
+    // allow init to proceed rather than blocking the customer
+    if (error?.name === 'ThrottlingException' || error?.name === 'TooManyRequestsException' || error?.$metadata?.httpStatusCode === 429) {
+      return;
+    }
+    throw error;
+  }
 
   if (!isExisting) {
     throw new AmplifyError('ProjectInitError', {
