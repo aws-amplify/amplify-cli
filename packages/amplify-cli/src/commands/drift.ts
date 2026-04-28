@@ -19,6 +19,8 @@ export interface DriftDetectionResult {
   readonly code: number;
   /** Human-readable drift report, undefined when no drift. */
   readonly report?: string;
+  /** True when one or more detection phases were skipped due to errors. */
+  readonly incomplete?: boolean;
 }
 
 /**
@@ -35,7 +37,11 @@ export const run = async (context: $TSContext): Promise<void> => {
   if (result.report) {
     printer.info(result.report);
     printer.info(chalk.yellow('Drift detected'));
-  } else {
+  }
+  if (result.incomplete) {
+    printer.info(chalk.yellow('Drift detection was incomplete'));
+  }
+  if (!result.report && !result.incomplete) {
     printer.info(chalk.green('No drift detected'));
   }
 
@@ -142,7 +148,7 @@ export class AmplifyDriftDetector {
         this.logger.warn(chalk.yellow(`Local drift error: ${phase3Results.skipReason}`));
       }
       this.logger.debug('Exit code 1: Incomplete drift detection - cannot guarantee no drift');
-      return { code: 1, report: driftReport ?? undefined };
+      return { code: 1, report: driftReport ?? undefined, incomplete: true };
     }
     return { code: driftReport ? 1 : 0, report: driftReport };
   }

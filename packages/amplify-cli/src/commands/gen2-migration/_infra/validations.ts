@@ -29,7 +29,7 @@ export class AmplifyGen2MigrationValidations {
     const result = await new AmplifyDriftDetector(this.context, this.logger).detect();
     if (result.code !== 0) {
       throw new AmplifyError('MigrationError', {
-        message: result.report?.trim() ?? 'Drift detected',
+        message: result.report?.trim() ?? 'Drift detection was incomplete',
         resolution: 'Inspect the drift report above and resolve the drift',
       });
     }
