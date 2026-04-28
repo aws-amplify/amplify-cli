@@ -1,5 +1,11 @@
 import type { Backend } from '../../backend';
-import { Table, AttributeType, BillingMode, StreamViewType, CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import {
+  Table,
+  AttributeType,
+  BillingMode,
+  StreamViewType,
+  CfnTable,
+} from 'aws-cdk-lib/aws-dynamodb';
 import { CfnResource } from 'aws-cdk-lib';
 
 export function defineStorageBookmarks(backend: Backend) {
@@ -20,7 +26,11 @@ export function defineStorageBookmarks(backend: Backend) {
   });
   for (const cfnResource of storageBookmarksStack.node
     .findAll()
-    .filter((c) => CfnResource.isCfnResource(c) && c.cfnResourceType === 'AWS::DynamoDB::Table')) {
+    .filter(
+      (c) =>
+        CfnResource.isCfnResource(c) &&
+        c.cfnResourceType === 'AWS::DynamoDB::Table'
+    )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }

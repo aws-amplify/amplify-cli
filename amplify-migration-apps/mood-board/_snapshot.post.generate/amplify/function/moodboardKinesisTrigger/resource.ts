@@ -16,20 +16,34 @@ export const moodboardKinesisTrigger = defineFunction({
   runtime: 22,
 });
 
-export function applyEscapeHatches(backend: Backend, analytics: MoodboardKinesis) {
+export function applyEscapeHatches(
+  backend: Backend,
+  analytics: MoodboardKinesis
+) {
   backend.moodboardKinesisTrigger.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisTrigger-${branchName}`;
-  backend.moodboardKinesisTrigger.addEnvironment('API_MOODBOARD_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!);
-  backend.moodboardKinesisTrigger.addEnvironment('API_MOODBOARD_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl);
-  backend.moodboardKinesisTrigger.addEnvironment('API_MOODBOARD_GRAPHQLAPIIDOUTPUT', backend.data.apiId);
-  backend.data.resources.graphqlApi.grantMutation(backend.moodboardKinesisTrigger.resources.lambda);
+  backend.moodboardKinesisTrigger.addEnvironment(
+    'API_MOODBOARD_GRAPHQLAPIKEYOUTPUT',
+    backend.data.apiKey!
+  );
+  backend.moodboardKinesisTrigger.addEnvironment(
+    'API_MOODBOARD_GRAPHQLAPIENDPOINTOUTPUT',
+    backend.data.graphqlUrl
+  );
+  backend.moodboardKinesisTrigger.addEnvironment(
+    'API_MOODBOARD_GRAPHQLAPIIDOUTPUT',
+    backend.data.apiId
+  );
+  backend.data.resources.graphqlApi.grantMutation(
+    backend.moodboardKinesisTrigger.resources.lambda
+  );
   const kinesisStream = Stream.fromStreamArn(
     backend.moodboardKinesisTrigger.resources.lambda.stack,
     'KinesisStream',
-    analytics.kinesisStreamArn,
+    analytics.kinesisStreamArn
   );
   backend.moodboardKinesisTrigger.resources.lambda.addEventSource(
     new KinesisEventSource(kinesisStream, {
       startingPosition: StartingPosition.LATEST,
-    }),
+    })
   );
 }

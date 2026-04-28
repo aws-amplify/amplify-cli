@@ -1,4 +1,10 @@
-import { RestApi, LambdaIntegration, AuthorizationType, Cors, ResponseType } from 'aws-cdk-lib/aws-apigateway';
+import {
+  RestApi,
+  LambdaIntegration,
+  AuthorizationType,
+  Cors,
+  ResponseType,
+} from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Stack } from 'aws-cdk-lib';
 import type { Backend } from '../../backend';
@@ -14,8 +20,10 @@ export function defineNutritionapiApi(backend: Backend) {
     type: ResponseType.DEFAULT_4XX,
     responseHeaders: {
       'Access-Control-Allow-Origin': "'*'",
-      'Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Headers':
+        "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
@@ -23,16 +31,24 @@ export function defineNutritionapiApi(backend: Backend) {
     type: ResponseType.DEFAULT_5XX,
     responseHeaders: {
       'Access-Control-Allow-Origin': "'*'",
-      'Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Headers':
+        "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
-  const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
-  const gen1nutritionapiApi = RestApi.fromRestApiAttributes(stack, 'Gen1nutritionapiApi', {
-    restApiId: 'xxhikloa6h',
-    rootResourceId: 'xxhikloa6h-root',
-  });
+  const lognutritionIntegration = new LambdaIntegration(
+    backend.lognutrition.resources.lambda
+  );
+  const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
+    stack,
+    'Gen1nutritionapiApi',
+    {
+      restApiId: 'xxhikloa6h',
+      rootResourceId: 'xxhikloa6h-root',
+    }
+  );
   const gen1nutritionapiPolicy = new Policy(stack, 'Gen1nutritionapiPolicy', {
     statements: [
       new PolicyStatement({
@@ -46,18 +62,29 @@ export function defineNutritionapiApi(backend: Backend) {
       }),
     ],
   });
-  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutritionapiPolicy);
-  const nutritionlog = nutritionapiApi.root.addResource('nutrition').addResource('log', {
-    defaultMethodOptions: {
-      authorizationType: AuthorizationType.IAM,
-    },
-    defaultCorsPreflightOptions: {
-      allowOrigins: Cors.ALL_ORIGINS,
-      allowMethods: Cors.ALL_METHODS,
-      allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent'],
-      statusCode: 200,
-    },
-  });
+  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+    gen1nutritionapiPolicy
+  );
+  const nutritionlog = nutritionapiApi.root
+    .addResource('nutrition')
+    .addResource('log', {
+      defaultMethodOptions: {
+        authorizationType: AuthorizationType.IAM,
+      },
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'X-Amz-Security-Token',
+          'X-Amz-User-Agent',
+        ],
+        statusCode: 200,
+      },
+    });
   nutritionlog.addMethod('ANY', lognutritionIntegration);
   nutritionlog.addProxy({
     anyMethod: true,
@@ -81,7 +108,7 @@ export function defineNutritionapiApi(backend: Backend) {
           ],
         }),
       ],
-    }),
+    })
   );
   // /nutrition/log - Admin group only
   backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
@@ -101,7 +128,7 @@ export function defineNutritionapiApi(backend: Backend) {
           ],
         }),
       ],
-    }),
+    })
   );
   backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     new Policy(stack, 'gen1NutritionlogAdminPolicy', {
@@ -120,7 +147,7 @@ export function defineNutritionapiApi(backend: Backend) {
           ],
         }),
       ],
-    }),
+    })
   );
   backend.addOutput({
     custom: {

@@ -1,4 +1,10 @@
-import { RestApi, LambdaIntegration, AuthorizationType, Cors, ResponseType } from 'aws-cdk-lib/aws-apigateway';
+import {
+  RestApi,
+  LambdaIntegration,
+  AuthorizationType,
+  Cors,
+  ResponseType,
+} from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Stack } from 'aws-cdk-lib';
 import type { Backend } from '../../backend';
@@ -14,8 +20,10 @@ export function defineAdminapiApi(backend: Backend) {
     type: ResponseType.DEFAULT_4XX,
     responseHeaders: {
       'Access-Control-Allow-Origin': "'*'",
-      'Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Headers':
+        "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
@@ -23,16 +31,24 @@ export function defineAdminapiApi(backend: Backend) {
     type: ResponseType.DEFAULT_5XX,
     responseHeaders: {
       'Access-Control-Allow-Origin': "'*'",
-      'Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+      'Access-Control-Allow-Headers':
+        "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+      'Access-Control-Allow-Methods':
+        "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
       'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
     },
   });
-  const adminIntegration = new LambdaIntegration(backend.admin.resources.lambda);
-  const gen1adminapiApi = RestApi.fromRestApiAttributes(stack, 'Gen1adminapiApi', {
-    restApiId: 'hpgcgkhgrd',
-    rootResourceId: 'hpgcgkhgrd-root',
-  });
+  const adminIntegration = new LambdaIntegration(
+    backend.admin.resources.lambda
+  );
+  const gen1adminapiApi = RestApi.fromRestApiAttributes(
+    stack,
+    'Gen1adminapiApi',
+    {
+      restApiId: 'hpgcgkhgrd',
+      rootResourceId: 'hpgcgkhgrd-root',
+    }
+  );
   const gen1adminapiPolicy = new Policy(stack, 'Gen1adminapiPolicy', {
     statements: [
       new PolicyStatement({
@@ -41,7 +57,9 @@ export function defineAdminapiApi(backend: Backend) {
       }),
     ],
   });
-  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1adminapiPolicy);
+  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+    gen1adminapiPolicy
+  );
   const admin = adminapiApi.root.addResource('admin', {
     defaultMethodOptions: {
       authorizationType: AuthorizationType.IAM,
@@ -49,7 +67,14 @@ export function defineAdminapiApi(backend: Backend) {
     defaultCorsPreflightOptions: {
       allowOrigins: Cors.ALL_ORIGINS,
       allowMethods: Cors.ALL_METHODS,
-      allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent'],
+      allowHeaders: [
+        'Content-Type',
+        'X-Amz-Date',
+        'Authorization',
+        'X-Api-Key',
+        'X-Amz-Security-Token',
+        'X-Amz-User-Agent',
+      ],
       statusCode: 200,
     },
   });
@@ -64,20 +89,26 @@ export function defineAdminapiApi(backend: Backend) {
       statements: [
         new PolicyStatement({
           actions: ['execute-api:Invoke'],
-          resources: [adminapiApi.arnForExecuteApi('GET', '/admin'), adminapiApi.arnForExecuteApi('GET', '/admin/*')],
+          resources: [
+            adminapiApi.arnForExecuteApi('GET', '/admin'),
+            adminapiApi.arnForExecuteApi('GET', '/admin/*'),
+          ],
         }),
       ],
-    }),
+    })
   );
   backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
     new Policy(stack, 'gen1AdminAdminPolicy', {
       statements: [
         new PolicyStatement({
           actions: ['execute-api:Invoke'],
-          resources: [gen1adminapiApi.arnForExecuteApi('GET', '/admin'), gen1adminapiApi.arnForExecuteApi('GET', '/admin/*')],
+          resources: [
+            gen1adminapiApi.arnForExecuteApi('GET', '/admin'),
+            gen1adminapiApi.arnForExecuteApi('GET', '/admin/*'),
+          ],
         }),
       ],
-    }),
+    })
   );
   backend.addOutput({
     custom: {

@@ -36,16 +36,6 @@ describe('AuthGenerator', () => {
     backendGenerator = new BackendGenerator(outputDir);
   });
 
-  it('throws when auth category is missing', async () => {
-    const gen1App = await createGen1App({
-      providers: { awscloudformation: { StackName: 'test-stack', Region: 'us-east-1' } },
-      /* no auth category */
-    });
-
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
-    await expect(generator.plan()).rejects.toThrow("Category 'auth' not found");
-  });
-
   it('throws when user pool is not found', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },

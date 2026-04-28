@@ -51,7 +51,13 @@ export function applyEscapeHatches(backend: Backend) {
   };
   for (const cfnResource of backend.storage.stack.node
     .findAll()
-    .filter((c) => CfnResource.isCfnResource(c) && ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(c.cfnResourceType))) {
+    .filter(
+      (c) =>
+        CfnResource.isCfnResource(c) &&
+        ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
+          c.cfnResourceType
+        )
+    )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }

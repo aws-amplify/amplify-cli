@@ -39,7 +39,11 @@ export class geostoreLocatorMap extends Construct {
   public readonly region;
   public readonly arn;
 
-  public constructor(scope: Construct, id: string, props: geostoreLocatorMapProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: geostoreLocatorMapProps
+  ) {
     super(scope, id);
 
     // Mappings
@@ -109,64 +113,97 @@ export class geostoreLocatorMap extends Construct {
     });
 
     // Resources
-    const customMapLambdaServiceRole4Ee7732c = new iam.CfnRole(this, 'CustomMapLambdaServiceRole4EE7732C', {
-      assumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'lambda.amazonaws.com',
+    const customMapLambdaServiceRole4Ee7732c = new iam.CfnRole(
+      this,
+      'CustomMapLambdaServiceRole4EE7732C',
+      {
+        assumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
             },
-          },
+          ],
+          Version: '2012-10-17',
+        },
+        managedPolicyArns: [
+          [
+            'arn:',
+            cdk.Stack.of(this).partition,
+            ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+          ].join(''),
         ],
-        Version: '2012-10-17',
-      },
-      managedPolicyArns: [['arn:', cdk.Stack.of(this).partition, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'].join('')],
-    });
+      }
+    );
 
-    const customMapLambdaServiceRoleDefaultPolicy983Fdd4e = new iam.CfnPolicy(this, 'CustomMapLambdaServiceRoleDefaultPolicy983FDD4E', {
-      policyDocument: {
-        Statement: [
-          {
-            Action: 'geo:CreateMap',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: ['geo:UpdateMap', 'geo:DeleteMap'],
-            Effect: 'Allow',
-            Resource: `arn:aws:geo:${regionMapping.findInMap(cdk.Stack.of(this).region, 'locationServiceRegion')}:${
-              cdk.Stack.of(this).account
-            }:map/${[props.mapName!, props.branchName!].join('-')}`,
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      policyName: 'CustomMapLambdaServiceRoleDefaultPolicy983FDD4E',
-      roles: [customMapLambdaServiceRole4Ee7732c.ref],
-    });
+    const customMapLambdaServiceRoleDefaultPolicy983Fdd4e = new iam.CfnPolicy(
+      this,
+      'CustomMapLambdaServiceRoleDefaultPolicy983FDD4E',
+      {
+        policyDocument: {
+          Statement: [
+            {
+              Action: 'geo:CreateMap',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: ['geo:UpdateMap', 'geo:DeleteMap'],
+              Effect: 'Allow',
+              Resource: `arn:aws:geo:${regionMapping.findInMap(
+                cdk.Stack.of(this).region,
+                'locationServiceRegion'
+              )}:${cdk.Stack.of(this).account}:map/${[
+                props.mapName!,
+                props.branchName!,
+              ].join('-')}`,
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        policyName: 'CustomMapLambdaServiceRoleDefaultPolicy983FDD4E',
+        roles: [customMapLambdaServiceRole4Ee7732c.ref],
+      }
+    );
 
-    const customMapLambda51D5d430 = new lambda.CfnFunction(this, 'CustomMapLambda51D5D430', {
-      code: {
-        zipFile:
-          "const response = require('cfn-response');\nconst { LocationClient, CreateMapCommand, DeleteMapCommand, UpdateMapCommand } = require('@aws-sdk/client-location');\nexports.handler = async function (event, context) {\n  try {\n    console.log('REQUEST RECEIVED:' + JSON.stringify(event));\n    const pricingPlan = 'RequestBasedUsage';\n    if (event.RequestType === 'Create') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n        Configuration: {\n          Style: event.ResourceProperties.mapStyle,\n        },\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new CreateMapCommand(params));\n      console.log('create resource response data' + JSON.stringify(res));\n      if (res.MapName && res.MapArn) {\n        await response.send(event, context, response.SUCCESS, res, params.MapName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.MapName);\n      }\n    }\n    if (event.RequestType === 'Update') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new UpdateMapCommand(params));\n      console.log('update resource response data' + JSON.stringify(res));\n      if (res.MapName && res.MapArn) {\n        await response.send(event, context, response.SUCCESS, res, params.MapName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.MapName);\n      }\n    }\n    if (event.RequestType === 'Delete') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new DeleteMapCommand(params));\n      console.log('delete resource response data' + JSON.stringify(res));\n      await response.send(event, context, response.SUCCESS, res, params.MapName);\n    }\n  } catch (err) {\n    console.log(err.stack);\n    const res = { Error: err };\n    await response.send(event, context, response.FAILED, res, event.ResourceProperties.mapName);\n    throw err;\n  }\n};\n",
-      },
-      handler: 'index.handler',
-      role: customMapLambdaServiceRole4Ee7732c.attrArn,
-      runtime: 'nodejs22.x',
-      timeout: 300,
-    });
-    customMapLambda51D5d430.addDependency(customMapLambdaServiceRoleDefaultPolicy983Fdd4e);
+    const customMapLambda51D5d430 = new lambda.CfnFunction(
+      this,
+      'CustomMapLambda51D5D430',
+      {
+        code: {
+          zipFile:
+            "const response = require('cfn-response');\nconst { LocationClient, CreateMapCommand, DeleteMapCommand, UpdateMapCommand } = require('@aws-sdk/client-location');\nexports.handler = async function (event, context) {\n  try {\n    console.log('REQUEST RECEIVED:' + JSON.stringify(event));\n    const pricingPlan = 'RequestBasedUsage';\n    if (event.RequestType === 'Create') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n        Configuration: {\n          Style: event.ResourceProperties.mapStyle,\n        },\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new CreateMapCommand(params));\n      console.log('create resource response data' + JSON.stringify(res));\n      if (res.MapName && res.MapArn) {\n        await response.send(event, context, response.SUCCESS, res, params.MapName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.MapName);\n      }\n    }\n    if (event.RequestType === 'Update') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new UpdateMapCommand(params));\n      console.log('update resource response data' + JSON.stringify(res));\n      if (res.MapName && res.MapArn) {\n        await response.send(event, context, response.SUCCESS, res, params.MapName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.MapName);\n      }\n    }\n    if (event.RequestType === 'Delete') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new DeleteMapCommand(params));\n      console.log('delete resource response data' + JSON.stringify(res));\n      await response.send(event, context, response.SUCCESS, res, params.MapName);\n    }\n  } catch (err) {\n    console.log(err.stack);\n    const res = { Error: err };\n    await response.send(event, context, response.FAILED, res, event.ResourceProperties.mapName);\n    throw err;\n  }\n};\n",
+        },
+        handler: 'index.handler',
+        role: customMapLambdaServiceRole4Ee7732c.attrArn,
+        runtime: 'nodejs22.x',
+        timeout: 300,
+      }
+    );
+    customMapLambda51D5d430.addDependency(
+      customMapLambdaServiceRoleDefaultPolicy983Fdd4e
+    );
     customMapLambda51D5d430.addDependency(customMapLambdaServiceRole4Ee7732c);
 
     const customMap = new cdk.CfnCustomResource(this, 'CustomMap', {
       serviceToken: customMapLambda51D5d430.attrArn,
     });
     customMap.addOverride('Type', 'Custom::LambdaCallout');
-    customMap.addPropertyOverride('mapName', [props.mapName!, props.branchName!].join('-'));
+    customMap.addPropertyOverride(
+      'mapName',
+      [props.mapName!, props.branchName!].join('-')
+    );
     customMap.addPropertyOverride('mapStyle', props.mapStyle!);
-    customMap.addPropertyOverride('region', regionMapping.findInMap(cdk.Stack.of(this).region, 'locationServiceRegion'));
+    customMap.addPropertyOverride(
+      'region',
+      regionMapping.findInMap(
+        cdk.Stack.of(this).region,
+        'locationServiceRegion'
+      )
+    );
     customMap.addPropertyOverride('env', props.branchName!);
     customMap.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.DELETE;
 
@@ -174,15 +211,27 @@ export class geostoreLocatorMap extends Construct {
       policyDocument: {
         Statement: [
           {
-            Action: ['geo:GetMapStyleDescriptor', 'geo:GetMapGlyphs', 'geo:GetMapSprites', 'geo:GetMapTile'],
+            Action: [
+              'geo:GetMapStyleDescriptor',
+              'geo:GetMapGlyphs',
+              'geo:GetMapSprites',
+              'geo:GetMapTile',
+            ],
             Effect: 'Allow',
             Resource: customMap.getAtt('MapArn').toString(),
           },
         ],
         Version: '2012-10-17',
       },
-      policyName: [[props.mapName!, props.branchName!].join('-'), 'Policy'].join(''),
-      roles: [props.authRoleName!, props.unauthRoleName!, props.authuserPoolGroupsstoreLocatorAdminGroupRole!],
+      policyName: [
+        [props.mapName!, props.branchName!].join('-'),
+        'Policy',
+      ].join(''),
+      roles: [
+        props.authRoleName!,
+        props.unauthRoleName!,
+        props.authuserPoolGroupsstoreLocatorAdminGroupRole!,
+      ],
     });
 
     // Outputs
@@ -196,7 +245,10 @@ export class geostoreLocatorMap extends Construct {
       key: 'Style',
       value: this.style!.toString(),
     });
-    this.region = regionMapping.findInMap(cdk.Stack.of(this).region, 'locationServiceRegion');
+    this.region = regionMapping.findInMap(
+      cdk.Stack.of(this).region,
+      'locationServiceRegion'
+    );
     new cdk.CfnOutput(this, 'CfnOutputRegion', {
       key: 'Region',
       value: this.region!.toString(),

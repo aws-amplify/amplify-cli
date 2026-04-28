@@ -17,9 +17,18 @@ export const activityTrigger = defineFunction({
 
 export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.activityTrigger.resources.cfnResources.cfnFunction.functionName = `activityTrigger-${branchName}`;
-  backend.activityTrigger.addEnvironment('STORAGE_ACTIVITY_STREAMARN', activity.tableStreamArn!);
-  backend.activityTrigger.addEnvironment('STORAGE_ACTIVITY_ARN', activity.tableArn);
-  backend.activityTrigger.addEnvironment('STORAGE_ACTIVITY_NAME', activity.tableName);
+  backend.activityTrigger.addEnvironment(
+    'STORAGE_ACTIVITY_STREAMARN',
+    activity.tableStreamArn!
+  );
+  backend.activityTrigger.addEnvironment(
+    'STORAGE_ACTIVITY_ARN',
+    activity.tableArn
+  );
+  backend.activityTrigger.addEnvironment(
+    'STORAGE_ACTIVITY_NAME',
+    activity.tableName
+  );
   activity.grant(
     backend.activityTrigger.resources.lambda,
     'dynamodb:Put*',
@@ -37,13 +46,15 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
     'dynamodb:RestoreTable*',
     'dynamodb:PartiQLUpdate',
     'dynamodb:Delete*',
-    'dynamodb:PartiQLDelete',
+    'dynamodb:PartiQLDelete'
   );
   backend.activityTrigger.resources.lambda.addEventSource(
     new DynamoEventSource(activity, {
       startingPosition: StartingPosition.LATEST,
-    }),
+    })
   );
   activity.grantStreamRead(backend.activityTrigger.resources.lambda.role!);
-  activity.grantTableListStreams(backend.activityTrigger.resources.lambda.role!);
+  activity.grantTableListStreams(
+    backend.activityTrigger.resources.lambda.role!
+  );
 }

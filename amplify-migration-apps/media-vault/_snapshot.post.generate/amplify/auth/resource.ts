@@ -2,7 +2,10 @@ import { defineAuth, secret } from '@aws-amplify/backend';
 import { addusertogroup } from '../function/addusertogroup/resource';
 import { removeuserfromgroup } from '../function/removeuserfromgroup/resource';
 import { CfnResource, Duration } from 'aws-cdk-lib';
-import { OAuthScope, UserPoolClientIdentityProvider } from 'aws-cdk-lib/aws-cognito';
+import {
+  OAuthScope,
+  UserPoolClientIdentityProvider,
+} from 'aws-cdk-lib/aws-cognito';
 import type { Backend } from '../backend';
 
 export const auth = defineAuth({
@@ -85,7 +88,8 @@ export function applyEscapeHatches(backend: Backend) {
       temporaryPasswordValidityDays: 7,
     },
   };
-  const cfnUserPoolClient = backend.auth.resources.cfnResources.cfnUserPoolClient;
+  const cfnUserPoolClient =
+    backend.auth.resources.cfnResources.cfnUserPoolClient;
   cfnUserPoolClient.allowedOAuthFlows = ['code'];
   const userPool = backend.auth.resources.userPool;
   const userPoolClient = userPool.addClient('NativeAppClient', {
@@ -106,17 +110,29 @@ export function applyEscapeHatches(backend: Backend) {
         implicitCodeGrant: false,
         clientCredentials: false,
       },
-      scopes: [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE, OAuthScope.COGNITO_ADMIN],
+      scopes: [
+        OAuthScope.PHONE,
+        OAuthScope.EMAIL,
+        OAuthScope.OPENID,
+        OAuthScope.PROFILE,
+        OAuthScope.COGNITO_ADMIN,
+      ],
     },
     // flows: ['code'],
     disableOAuth: false,
     generateSecret: false,
   });
-  const providerSetupResult = (backend.auth.stack.node.children.find((child) => child.node.id === 'amplifyAuth') as any)
-    .providerSetupResult;
+  const providerSetupResult = (
+    backend.auth.stack.node.children.find(
+      (child) => child.node.id === 'amplifyAuth'
+    ) as any
+  ).providerSetupResult;
   Object.keys(providerSetupResult).forEach((provider) => {
     const providerSetupPropertyValue = providerSetupResult[provider];
-    if (providerSetupPropertyValue.node && providerSetupPropertyValue.node.id.toLowerCase().endsWith('idp')) {
+    if (
+      providerSetupPropertyValue.node &&
+      providerSetupPropertyValue.node.id.toLowerCase().endsWith('idp')
+    ) {
       userPoolClient.node.addDependency(providerSetupPropertyValue);
     }
   });
@@ -132,7 +148,7 @@ export function applyEscapeHatches(backend: Backend) {
           'AWS::Cognito::UserPoolClient',
           'AWS::Cognito::IdentityPoolRoleAttachment',
           'AWS::Cognito::UserPoolGroup',
-        ].includes(c.cfnResourceType),
+        ].includes(c.cfnResourceType)
     )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');

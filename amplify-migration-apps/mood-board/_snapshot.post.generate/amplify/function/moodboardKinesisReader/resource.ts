@@ -14,9 +14,15 @@ export const moodboardKinesisReader = defineFunction({
   runtime: 22,
 });
 
-export function applyEscapeHatches(backend: Backend, analytics: MoodboardKinesis) {
+export function applyEscapeHatches(
+  backend: Backend,
+  analytics: MoodboardKinesis
+) {
   backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${branchName}`;
-  backend.moodboardKinesisReader.addEnvironment('ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN', analytics.kinesisStreamArn);
+  backend.moodboardKinesisReader.addEnvironment(
+    'ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN',
+    analytics.kinesisStreamArn
+  );
   backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
     new aws_iam.PolicyStatement({
       actions: [
@@ -33,6 +39,6 @@ export function applyEscapeHatches(backend: Backend, analytics: MoodboardKinesis
         'kinesis:ListTagsForStream',
       ],
       resources: [analytics.kinesisStreamArn],
-    }),
+    })
   );
 }
