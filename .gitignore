@@ -106,3 +106,6 @@ packages/amplify-environment-parameters/lib/
 
 .nx/cache
 .nx/workspace-data
+
+.pr-body.ai-generated.md
+.commit-message.ai-generated.txt

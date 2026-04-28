@@ -27,3 +27,5 @@ amplify-migration-apps/**
 
 /.nx/cache
 /.nx/workspace-data
+
+amplify-migration-apps/**
