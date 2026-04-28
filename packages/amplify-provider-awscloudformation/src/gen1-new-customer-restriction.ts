@@ -15,34 +15,39 @@ const GEN1_DEPRECATION_MESSAGE =
  * @returns `true` if at least one app has a backend environment, `false` otherwise
  */
 export const isExistingGen1Customer = async (amplifyClient: AmplifyClient): Promise<boolean> => {
-  let nextToken: string | undefined;
+  try {
+    let nextToken: string | undefined;
 
-  do {
-    const listAppsResponse = await amplifyClient.send(
-      new ListAppsCommand({
-        nextToken,
-        maxResults: 25,
-      }),
-    );
-
-    const apps = listAppsResponse.apps ?? [];
-
-    for (const app of apps) {
-      const envResponse = await amplifyClient.send(
-        new ListBackendEnvironmentsCommand({
-          appId: app.appId,
+    do {
+      const listAppsResponse = await amplifyClient.send(
+        new ListAppsCommand({
+          nextToken,
+          maxResults: 25,
         }),
       );
 
-      if (envResponse.backendEnvironments && envResponse.backendEnvironments.length > 0) {
-        return true;
+      const apps = listAppsResponse.apps ?? [];
+
+      for (const app of apps) {
+        const envResponse = await amplifyClient.send(
+          new ListBackendEnvironmentsCommand({
+            appId: app.appId,
+          }),
+        );
+
+        if (envResponse.backendEnvironments && envResponse.backendEnvironments.length > 0) {
+          return true;
+        }
       }
-    }
 
-    nextToken = listAppsResponse.nextToken;
-  } while (nextToken);
+      nextToken = listAppsResponse.nextToken;
+    } while (nextToken);
 
-  return false;
+    return false;
+  } catch {
+    // Fail-open: if we can't determine customer status, allow init to proceed
+    return true;
+  }
 };
 
 /**
@@ -56,18 +61,7 @@ export const isExistingGen1Customer = async (amplifyClient: AmplifyClient): Prom
  * @throws {AmplifyError} with name `ProjectInitError` when the account is not an existing Gen 1 customer
  */
 export const enforceGen1NewCustomerRestriction = async (amplifyClient: AmplifyClient): Promise<void> => {
-  let isExisting: boolean;
-
-  try {
-    isExisting = await isExistingGen1Customer(amplifyClient);
-  } catch (error: any) {
-    // Fail-open: if we can't determine customer status (e.g., throttling, network error),
-    // allow init to proceed rather than blocking the customer
-    if (error?.name === 'ThrottlingException' || error?.name === 'TooManyRequestsException' || error?.$metadata?.httpStatusCode === 429) {
-      return;
-    }
-    throw error;
-  }
+  const isExisting = await isExistingGen1Customer(amplifyClient);
 
   if (!isExisting) {
     throw new AmplifyError('ProjectInitError', {

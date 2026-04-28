@@ -77,9 +77,10 @@ describe('isExistingGen1Customer', () => {
     expect(mockAmplifyClient).toHaveReceivedCommandTimes(ListBackendEnvironmentsCommand, 1);
   });
 
-  it('propagates API errors', async () => {
+  it('returns true (fail-open) when API throws an error', async () => {
     mockAmplifyClient.on(ListAppsCommand).rejects(new Error('Access Denied'));
-    await expect(isExistingGen1Customer(mockAmplifyClient as unknown as AmplifyClient)).rejects.toThrow('Access Denied');
+    const result = await isExistingGen1Customer(mockAmplifyClient as unknown as AmplifyClient);
+    expect(result).toBe(true);
   });
 });
 
@@ -109,26 +110,5 @@ describe('enforceGen1NewCustomerRestriction', () => {
     } catch (e) {
       expect(e.name).toBe('ProjectInitError');
     }
-  });
-
-  it('fails open on throttling error', async () => {
-    const throttleError = new Error('Rate exceeded');
-    (throttleError as any).name = 'ThrottlingException';
-    mockAmplifyClient.on(ListAppsCommand).rejects(throttleError);
-
-    await expect(enforceGen1NewCustomerRestriction(mockAmplifyClient as unknown as AmplifyClient)).resolves.toBeUndefined();
-  });
-
-  it('fails open on TooManyRequestsException', async () => {
-    const throttleError = new Error('Too many requests');
-    (throttleError as any).name = 'TooManyRequestsException';
-    mockAmplifyClient.on(ListAppsCommand).rejects(throttleError);
-
-    await expect(enforceGen1NewCustomerRestriction(mockAmplifyClient as unknown as AmplifyClient)).resolves.toBeUndefined();
-  });
-
-  it('still propagates non-throttling errors', async () => {
-    mockAmplifyClient.on(ListAppsCommand).rejects(new Error('Access Denied'));
-    await expect(enforceGen1NewCustomerRestriction(mockAmplifyClient as unknown as AmplifyClient)).rejects.toThrow('Access Denied');
   });
 });
