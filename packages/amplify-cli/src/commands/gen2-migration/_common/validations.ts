@@ -55,18 +55,6 @@ export class AmplifyGen2MigrationValidations {
     }
   }
 
-  public async validateDeploymentVersion(): Promise<void> {
-    this.logger.warn('Not implemented');
-  }
-
-  public async validateIsolatedEnvironment(): Promise<void> {
-    this.logger.warn('Not implemented');
-  }
-
-  public async validateIngressTraffic(): Promise<void> {
-    this.logger.warn('Not implemented');
-  }
-
   public async validateLockStatus(): Promise<void> {
     this.logger.debug(`Inspecting stack policy for ${this.gen1App.rootStackName}`);
     const { StackPolicyBody } = await this.gen1App.clients.cloudFormation.send(
