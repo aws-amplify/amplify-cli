@@ -111,8 +111,11 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
   }
 
-  printer.info(chalk.yellow('⚠️ This tool is in developer preview. For more information, visit:'));
-  printer.info(chalk.yellow('  https://docs.amplify.aws/react/start/migrate-to-gen2'));
+  printer.info(
+    chalk.yellow(
+      '⚠️  This command is in developer preview. For more information, visit https://docs.amplify.aws/react/start/migrate-to-gen2',
+    ),
+  );
   printer.blankLine();
 
   if (!(await prompter.confirmContinue())) {
