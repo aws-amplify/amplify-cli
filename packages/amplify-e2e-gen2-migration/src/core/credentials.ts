@@ -1,8 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
+import crypto from 'crypto';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { Logger } from './logger';
+import { mergeManagedSection } from './ini-merge';
 
 /**
  * Duration for assumed-role sessions. One hour strikes a balance between
@@ -25,12 +27,16 @@ const SESSION_DURATION_SECONDS = 3600;
  *
  * ## Role mode (`callerProfile` is undefined, `TEST_ACCOUNT_ROLE` is set)
  *
- * `refresh()` assumes the role from `TEST_ACCOUNT_ROLE` via STS and writes
- * the returned credentials to `~/.aws/credentials` (and region to
- * `~/.aws/config`) under a generated profile name.
+ * `refresh()` assumes the role from `TEST_ACCOUNT_ROLE` via STS and merges
+ * the returned credentials into `~/.aws/credentials` (and region into
+ * `~/.aws/config`) under a generated profile name. Any pre-existing
+ * profiles in those files are preserved — the managed section is added if
+ * absent or replaced in place if already present.
  *
- * `refresh()` must be called before each long-running step so session tokens
- * don't expire mid-operation.
+ * `refresh()` is idempotent across repeat calls with the same generated
+ * profile name: calling it many times produces the same on-disk state as
+ * calling it once. It must be called before each long-running step so
+ * session tokens don't expire mid-operation.
  */
 export class CredentialManager {
   private readonly callerProfile: string | undefined;
@@ -55,16 +61,19 @@ export class CredentialManager {
   /**
    * Name of the AWS profile that `amplify init` should use. In profile mode,
    * this is the caller-supplied profile. In role mode, it's the generated
-   * profile written to `~/.aws/credentials` by `refresh()`.
+   * profile merged into `~/.aws/credentials` by `refresh()`.
    */
   public get profile(): string {
     return this.callerProfile ?? this.generatedProfile;
   }
 
   /**
-   * Refresh credentials if in role mode by assuming the role and rewriting
-   * the shared credentials file. No-op in profile mode — the caller's
-   * long-lived profile handles auth.
+   * Refresh credentials if in role mode by assuming the role and merging
+   * the managed profile into the shared credentials and config files.
+   * No-op in profile mode — the caller's long-lived profile handles auth.
+   *
+   * Idempotent: repeated calls with the same generated profile name produce
+   * the same on-disk state as a single call.
    */
   public async refresh(): Promise<void> {
     if (!this.isRoleMode) {
@@ -94,24 +103,83 @@ export class CredentialManager {
     fs.mkdirSync(awsDir, { recursive: true });
 
     const credsFile = path.join(awsDir, 'credentials');
-    if (fs.existsSync(credsFile)) {
-      throw new Error(`Refusing to overwrite existing credentials file: ${credsFile}`);
-    }
-
     const configFile = path.join(awsDir, 'config');
-    if (fs.existsSync(configFile)) {
-      throw new Error(`Refusing to overwrite existing config file: ${configFile}`);
+
+    const credsMerge = prepareMerge(credsFile, this.generatedProfile, {
+      aws_access_key_id: accessKeyId,
+      aws_secret_access_key: secretAccessKey,
+      aws_session_token: sessionToken,
+    });
+    const configMerge = prepareMerge(configFile, `profile ${this.generatedProfile}`, {
+      region: this.region,
+      output: 'json',
+    });
+
+    atomicWriteFile(credsFile, credsMerge.content, credsMerge.mode);
+    atomicWriteFile(configFile, configMerge.content, configMerge.mode);
+  }
+}
+
+/**
+ * Read the target file (if present), merge the managed section into its
+ * contents, and compute the mode to write with. A missing file yields
+ * empty existing bytes and the default mode `0o600`; existing files
+ * preserve their current POSIX mode so writes never widen (or tighten)
+ * what the caller chose.
+ */
+function prepareMerge(filePath: string, header: string, values: Record<string, string>): { content: string; mode: number } {
+  const { existing, existingMode } = readExistingFile(filePath);
+  const content = mergeManagedSection(existing, header, values);
+  const mode = existingMode ?? 0o600;
+  return { content, mode };
+}
+
+/**
+ * Read an existing INI file's bytes and POSIX mode, or return empty bytes
+ * and no mode if the file does not exist. Wraps read failures as
+ * `Failed to read <path>: <cause>` preserving the underlying error as
+ * `{ cause }`.
+ */
+function readExistingFile(filePath: string): { existing: string; existingMode: number | undefined } {
+  if (!fs.existsSync(filePath)) {
+    return { existing: '', existingMode: undefined };
+  }
+  try {
+    const existing = fs.readFileSync(filePath, 'utf-8');
+    // eslint-disable-next-line no-bitwise
+    const existingMode = fs.statSync(filePath).mode & 0o777;
+    return { existing, existingMode };
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(`Failed to read ${filePath}: ${message}`, { cause });
+  }
+}
+
+/**
+ * Write `content` to `filePath` atomically by writing to a unique temp
+ * file in the same directory and renaming into place. The rename is
+ * atomic on POSIX same-filesystem, so a failure at any step leaves the
+ * original `filePath` bytes untouched. On failure the temp file is
+ * best-effort removed and the error is rethrown as
+ * `Failed to write <path>: <cause>` with the underlying error as `{ cause }`.
+ *
+ * The `mode` argument is applied to the temp file on creation via
+ * `writeFileSync`'s `mode` option; the subsequent rename preserves those
+ * bits on the target inode.
+ */
+function atomicWriteFile(filePath: string, content: string, mode: number): void {
+  const tmp = `${filePath}.${process.pid}.${crypto.randomBytes(8).toString('hex')}.tmp`;
+  try {
+    fs.writeFileSync(tmp, content, { encoding: 'utf-8', mode });
+    fs.renameSync(tmp, filePath);
+  } catch (cause) {
+    // Best-effort temp-file cleanup: skip if the write failed before the
+    // temp file was created, or if something else already removed it.
+    if (fs.existsSync(tmp)) {
+      fs.unlinkSync(tmp);
     }
-
-    const credsContent =
-      `[${this.generatedProfile}]\n` +
-      `aws_access_key_id = ${accessKeyId}\n` +
-      `aws_secret_access_key = ${secretAccessKey}\n` +
-      `aws_session_token = ${sessionToken}\n`;
-    fs.writeFileSync(credsFile, credsContent, { encoding: 'utf-8', mode: 0o600 });
-
-    const configContent = `[profile ${this.generatedProfile}]\nregion = ${this.region}\noutput = json\n`;
-    fs.writeFileSync(configFile, configContent, { encoding: 'utf-8', mode: 0o600 });
+    const message = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(`Failed to write ${filePath}: ${message}`, { cause });
   }
 }
 
