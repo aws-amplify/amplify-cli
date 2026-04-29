@@ -9,6 +9,7 @@
     "diagnose",
     "env",
     "export",
+    "gen2-migration",
     "help",
     "init",
     "logout",

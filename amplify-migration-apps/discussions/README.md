@@ -411,7 +411,7 @@ this process for any number of users.
 
 ## Migrating to Gen2
 
-> Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
+> Based on http://localhost:3000/react/start/migrate-to-gen2/migrate-existing-app/
 
 First install the amplify CLI package:
 

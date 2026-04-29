@@ -54,12 +54,6 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  if (rollingBack && stepName === 'decommission') {
-    throw new AmplifyError('InputValidationError', {
-      message: 'Decommission is a one-way operation and does not support rollback.',
-    });
-  }
-
   const gen1App = await Gen1App.create(context);
 
   const logger = new SpinningLogger(`${stepName}] [${gen1App.appName}/${gen1App.envName}`, { debug: isDebug });
@@ -112,15 +106,14 @@ export const run = async (context: $TSContext) => {
 
   await plan.describe();
 
-  if (!rollingBack && stepName !== 'decommission') {
+  if (!rollingBack) {
     printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
     printer.blankLine();
   }
 
-  if (stepName === 'decommission') {
-    printer.info(chalk.grey('(Decommission is a one-way operation and cannot be rolled back.)'));
-    printer.blankLine();
-  }
+  printer.info(chalk.yellow('⚠️ This tool is in developer preview. For more information, visit:'));
+  printer.info(chalk.yellow('  https://docs.amplify.aws/react/start/migrate-to-gen2'));
+  printer.blankLine();
 
   if (!(await prompter.confirmContinue())) {
     return;

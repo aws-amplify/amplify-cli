@@ -371,7 +371,7 @@ Grab the App ID from the Amplify Console and the Cognito domain prefix from the 
 
 ## Migrating to Gen2
 
-> Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
+> Based on http://localhost:3000/react/start/migrate-to-gen2/migrate-existing-app/
 
 > [!WARNING]
 > Migration is not fully supported for this app yet due to a bug in refactoring the social provider

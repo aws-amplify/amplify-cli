@@ -181,7 +181,7 @@ export abstract class CategoryRefactorer implements Planner {
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure no unexpected changes to ${sourceStackName}`,
+          description: `Stack Unchanged: ${sourceStackName}`,
           run: async () => ({ valid, report }),
         }),
         describe: async () => {
@@ -227,7 +227,7 @@ export abstract class CategoryRefactorer implements Planner {
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure no unexpected changes to ${targetStackName}`,
+          description: `Stack Unchanged: ${targetStackName}`,
           run: async () => ({ valid, report }),
         }),
         describe: async () => {

@@ -120,7 +120,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     operations.push({
       describe: async () => [],
-      validate: () => ({ description: 'Environment Status', run: () => this.validateDeploymentStatus() }),
+      validate: () => ({ description: 'Environment Healthy', run: () => this.validateDeploymentStatus() }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: async () => {},
     });
@@ -428,7 +428,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         `Set Retain policies on stateful resources and/or enable DynamoDB deletion protection in '${stackName}'\n\n${report}\n`,
       ],
       validate: () => ({
-        description: `Ensure no unexpected changes to ${stackName}`,
+        description: `Stack Unchanged: ${stackName}`,
         run: async () => ({ valid, report }),
       }),
       execute: async () => {
