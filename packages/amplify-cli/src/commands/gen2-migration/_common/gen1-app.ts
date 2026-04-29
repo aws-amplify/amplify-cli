@@ -40,6 +40,7 @@ export const KNOWN_RESOURCE_KEYS = [
 export enum KNOWN_FEATURES {
   OVERRIDES = 'overrides',
   CUSTOM_FUNCTION_POLICIES = 'custom-policies',
+  CONFLICT_RESOLUTION = 'conflict-resolution',
 }
 
 /**
