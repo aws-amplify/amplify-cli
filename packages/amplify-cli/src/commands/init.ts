@@ -50,6 +50,14 @@ export const run = async (context: $TSContext): Promise<void> => {
     }
   }
 
+  // Unconditionally block quickstart — Gen 1 no longer accepts new customers
+  if (context?.parameters?.options?.quickstart) {
+    throw new AmplifyError('ProjectInitError', {
+      message:
+        'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Gen 1 will reach end of life on May 1, 2027. Start a new app with Amplify Gen 2: https://docs.amplify.aws/',
+    });
+  }
+
   const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
     await step(context);
