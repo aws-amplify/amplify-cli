@@ -16,7 +16,7 @@ Resources
 
 ⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
 
-https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage
+https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/
 "
 `;
 
@@ -38,6 +38,6 @@ During migration, unsupported resources/features can be skipped by passing --ski
 
 ⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
 
-https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage
+https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/
 "
 `;
