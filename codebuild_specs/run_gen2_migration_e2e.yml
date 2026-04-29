@@ -4,7 +4,7 @@ env:
   variables:
     CI: true
     IS_AMPLIFY_CI: true
-    TEARDOWN: "1"
+    TEARDOWN: '1'
 
 phases:
   build:
