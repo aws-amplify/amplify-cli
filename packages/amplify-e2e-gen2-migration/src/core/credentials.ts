@@ -86,7 +86,7 @@ export class CredentialManager {
 
     this.writeCredentialsFile(creds.AccessKeyId, creds.SecretAccessKey, creds.SessionToken);
 
-    this.logger.info('Credentials refreshed successfully');
+    this.logger.info('Credentials refreshed');
   }
 
   private writeCredentialsFile(accessKeyId: string, secretAccessKey: string, sessionToken: string): void {
