@@ -1,21 +1,26 @@
-import { Output, Parameter, ResourceToImport } from '@aws-sdk/client-cloudformation';
+import { ResourceToImport } from '@aws-sdk/client-cloudformation';
 import {
+  CognitoIdentityProviderClient,
   DescribeUserPoolCommand,
-  DescribeIdentityProviderCommand,
   ListIdentityProvidersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { RefactorBlueprint } from '../workflow/category-refactorer';
+import { ExpectedChange, RefactorBlueprint, ResolvedStack } from '../workflow/category-refactorer';
 import { CFNResource } from '../../_infra/cfn-template';
 import { AmplifyMigrationOperation } from '../../_infra/operation';
+import { walkCfnTree } from '../resolvers/cfn-tree-walker';
 import { extractStackNameFromId } from '../utils';
+import { StackFacade } from '../stack-facade';
 import CLITable from 'cli-table3';
 
-const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
-const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
-const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
+/**
+ * Gen2 logical ID of the Custom::AmplifySecretFetcherResource — a Lambda-backed
+ * custom resource that fetches OAuth client IDs/secrets from SSM at deploy time.
+ * Gen2 IDPs reference this via Fn::GetAtt in ProviderDetails, and the IdentityPool
+ * references it in SupportedLoginProviders.
+ */
+const AMPLIFY_SECRET_FETCHER_LOGICAL_ID = 'AmplifySecretFetcherResource';
 
 export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
 export const GEN1_WEB_CLIENT = 'UserPoolClientWeb';
@@ -30,89 +35,324 @@ export const IDENTITY_POOL_ROLE_ATTACHMENT_TYPE = 'AWS::Cognito::IdentityPoolRol
 export const USER_POOL_DOMAIN_TYPE = 'AWS::Cognito::UserPoolDomain';
 export const USER_POOL_IDENTITY_PROVIDER_TYPE = 'AWS::Cognito::UserPoolIdentityProvider';
 
-export const RESOURCE_TYPES = [
-  USER_POOL_TYPE,
-  USER_POOL_CLIENT_TYPE,
-  IDENTITY_POOL_TYPE,
-  IDENTITY_POOL_ROLE_ATTACHMENT_TYPE,
-  USER_POOL_DOMAIN_TYPE,
-  USER_POOL_IDENTITY_PROVIDER_TYPE,
-];
+/**
+ * Core Cognito resource types that move through the holding stack during the
+ * standard refactor. UserPoolDomain and UserPoolIdentityProvider are intentionally
+ * excluded — they carry Fn::GetAtt references to AmplifySecretFetcherResource
+ * (which stays in Gen2), so they cannot go through the holding stack without
+ * breaking references. They are handled separately via orphan + import.
+ */
+export const RESOURCE_TYPES = [USER_POOL_TYPE, USER_POOL_CLIENT_TYPE, IDENTITY_POOL_TYPE, IDENTITY_POOL_ROLE_ATTACHMENT_TYPE];
 
-interface IdpConfig {
+export interface IdpConfig {
   readonly providerName: string;
   readonly providerType: string;
-  readonly clientId: string;
-  readonly clientSecret: string;
-  readonly authorizeScopes: string;
-  readonly attributeMapping: Record<string, string>;
 }
 
-interface SocialAuthConfig {
+export interface SocialAuthConfig {
   readonly userPoolId: string;
   readonly domain: string;
   readonly providers: IdpConfig[];
 }
 
 /**
+ * Fetches the domain and IDP config directly from Cognito for a given UserPool.
+ *
+ * CFN Import only uses ResourceIdentifier (UserPoolId + ProviderName/Domain) to
+ * adopt physical resources — template property values are metadata for future
+ * updates. We therefore fetch only identity information (ProviderName, ProviderType,
+ * Domain). Real client_id/client_secret/scopes/AttributeMapping are NOT needed;
+ * buildImportSpec() uses dummy values. The next Gen2 deploy regenerates real
+ * values from AmplifySecretFetcherResource.
+ *
+ * Returns undefined if the pool has no domain or no identity providers.
+ *
+ * Exported so that both forward and rollback can reuse the same logic. The same
+ * Cognito client works for both directions because P1 and P2 live in the same
+ * account/region.
+ */
+export async function fetchSocialAuthConfig(
+  cognitoClient: CognitoIdentityProviderClient,
+  userPoolId: string,
+): Promise<SocialAuthConfig | undefined> {
+  const poolResponse = await cognitoClient.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
+  const domain = poolResponse?.UserPool?.Domain;
+  if (!domain) {
+    return undefined;
+  }
+
+  const listResponse = await cognitoClient.send(new ListIdentityProvidersCommand({ UserPoolId: userPoolId }));
+  const providerSummaries = listResponse?.Providers ?? [];
+  if (providerSummaries.length === 0) {
+    return undefined;
+  }
+
+  const providers: IdpConfig[] = [];
+  for (const summary of providerSummaries) {
+    const providerName = summary.ProviderName;
+    if (!providerName) continue;
+    providers.push({
+      providerName,
+      providerType: summary.ProviderType ?? providerName,
+    });
+  }
+
+  return { userPoolId, domain, providers };
+}
+
+/**
+ * Discovers the UserPool physical ID from a Gen2 auth stack via DescribeStackResources.
+ *
+ * Gen2 auth nested stack does not expose a `UserPoolId` output with a stable name
+ * (CDK generates hash-suffixed output names), so we rely on the resource type to
+ * find the single UserPool. Returns undefined if none is found.
+ *
+ * Symmetric for both directions:
+ *   - Forward move() after super.move(): finds P1 (just moved in from Gen1).
+ *   - Rollback afterMove() after super.afterMove(): finds P2 (just restored from holding).
+ */
+export async function discoverUserPoolId(facade: StackFacade, gen2StackId: string): Promise<string | undefined> {
+  const resources = await facade.fetchStackResources(gen2StackId);
+  const userPools = resources.filter((r) => r.ResourceType === USER_POOL_TYPE);
+  if (userPools.length > 1) {
+    const stackName = extractStackNameFromId(gen2StackId);
+    const physicalIds = userPools.map((p) => p.PhysicalResourceId ?? '<unknown>').join(', ');
+    throw new AmplifyError('MigrationError', {
+      message: `Expected exactly one UserPool in stack '${stackName}', found ${userPools.length}: ${physicalIds}`,
+    });
+  }
+  return userPools[0]?.PhysicalResourceId;
+}
+
+/**
+ * Builds the CFN import spec: template additions with DeletionPolicy: Retain
+ * (so rollback can orphan them without deleting the physical resources) and
+ * resource identifiers for the import change set.
+ *
+ * Uses dummy placeholder values for ProviderDetails and an empty
+ * AttributeMapping. CFN import does not validate property match — only the
+ * ResourceIdentifier (UserPoolId + ProviderName/Domain) is used to adopt the
+ * physical resource. The next Gen2 deploy regenerates real values via
+ * AmplifySecretFetcherResource.
+ *
+ * Exported so that both forward and rollback can reuse the same logic. Pure
+ * function — no instance state or logging.
+ */
+export function buildImportSpec(
+  config: SocialAuthConfig,
+  domainLogicalId: string,
+  idpLogicalIds: Map<string, string>,
+): { resourcesToImport: ResourceToImport[]; templateAdditions: Record<string, CFNResource> } {
+  const resourcesToImport: ResourceToImport[] = [];
+  const templateAdditions: Record<string, CFNResource> = {};
+
+  templateAdditions[domainLogicalId] = {
+    Type: USER_POOL_DOMAIN_TYPE,
+    DeletionPolicy: 'Retain',
+    Properties: {
+      Domain: config.domain,
+      UserPoolId: config.userPoolId,
+    },
+  };
+  resourcesToImport.push({
+    ResourceType: USER_POOL_DOMAIN_TYPE,
+    LogicalResourceId: domainLogicalId,
+    ResourceIdentifier: {
+      UserPoolId: config.userPoolId,
+      Domain: config.domain,
+    },
+  });
+
+  for (const provider of config.providers) {
+    const logicalId = idpLogicalIds.get(provider.providerName);
+    if (!logicalId) {
+      throw new AmplifyError('MigrationError', {
+        message:
+          `Identity provider '${provider.providerName}' exists on the UserPool but has no matching ` +
+          `UserPoolIdentityProvider resource in the Gen2 template. Add it to amplify/auth/resource.ts ` +
+          `and regenerate before refactoring.`,
+      });
+    }
+
+    templateAdditions[logicalId] = {
+      Type: USER_POOL_IDENTITY_PROVIDER_TYPE,
+      DeletionPolicy: 'Retain',
+      Properties: {
+        UserPoolId: config.userPoolId,
+        ProviderName: provider.providerName,
+        ProviderType: provider.providerType,
+        // Dummy values — CFN import does not validate property match. The next
+        // Gen2 deploy regenerates real values from AmplifySecretFetcherResource.
+        ProviderDetails: {
+          client_id: 'PLACEHOLDER',
+          client_secret: 'PLACEHOLDER',
+          authorize_scopes: 'PLACEHOLDER',
+        },
+        AttributeMapping: {},
+      },
+    };
+
+    resourcesToImport.push({
+      ResourceType: USER_POOL_IDENTITY_PROVIDER_TYPE,
+      LogicalResourceId: logicalId,
+      ResourceIdentifier: {
+        UserPoolId: config.userPoolId,
+        ProviderName: provider.providerName,
+      },
+    });
+  }
+
+  return { resourcesToImport, templateAdditions };
+}
+
+/**
  * Forward refactorer for the auth:Cognito resource.
  *
- * Moves main auth resources from Gen1 to Gen2.
- * For social auth apps, imports Gen1's LambdaCallout-created IDPs and domain
- * into the Gen2 stack as native CFN resources during the move phase.
+ * Moves main auth resources (UserPool, UserPoolClient, IdentityPool,
+ * IdentityPoolRoleAttachment) from Gen1 to Gen2 via the holding stack.
+ *
+ * For social auth apps, the Gen2 UserPoolDomain and UserPoolIdentityProvider
+ * resources are orphaned from Gen2 in beforeMove() (physical resources survive
+ * via DeletionPolicy: Retain). After the core resources move in during move(),
+ * Gen1's physical domain and IDPs are imported into Gen2 as native CFN resources
+ * — the import operation is appended to the move() phase so that the pool is
+ * already in Gen2 when the import runs.
  */
 export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   /**
-   * Returns the full set including domain and IDP types. These types don't exist in the
-   * Gen1 CFN template (they're created by a Lambda trigger), so they won't appear in the
-   * refactor mappings. They are imported into Gen2 as a separate step in move().
+   * Logical IDs of AWS::Cognito::IdentityPool resources detected in the Gen2
+   * template during resolveTarget(). Populated so that expectedTargetChanges()
+   * can declare the intentional PLACEHOLDER diff updateTarget() produces.
+   */
+  private identityPoolLogicalIds: string[] = [];
+
+  /**
+   * Returns only the core Cognito resource types. UserPoolDomain and
+   * UserPoolIdentityProvider are handled via the orphan + import path
+   * (beforeMove orphans them from Gen2, move imports Gen1's).
    */
   protected resourceTypes(): string[] {
     return RESOURCE_TYPES;
   }
 
   /**
-   * OAuth hook: retrieves credentials and updates the hostedUIProviderCreds parameter.
+   * Resolves the Gen2 target stack template, then replaces any Fn::GetAtt to
+   * AmplifySecretFetcherResource inside an IdentityPool's SupportedLoginProviders
+   * with the literal string "PLACEHOLDER".
+   *
+   * Why: the IdentityPool is a core resource that MUST go through the holding
+   * stack. Its SupportedLoginProviders has Fn::GetAtt references to
+   * AmplifySecretFetcherResource — a Custom::AmplifySecretFetcherResource that
+   * stays in Gen2. If we leave the GetAtt in place, CloudFormation rejects the
+   * holding-stack template with
+   *   "instance of Fn::GetAtt references undefined resource AmplifySecretFetcherResource".
+   *
+   * The StackRefactor API validates property match for non-custom ref types, but
+   * CloudFormation accepts the literal string "PLACEHOLDER" in an IdentityPool's
+   * SupportedLoginProviders values (verified via changeset experiment in ADR-005
+   * Addendum: CREATE_COMPLETE, Replacement: False). The next Gen2 deploy
+   * regenerates the correct values from AmplifySecretFetcherResource.
+   *
+   * Scope is intentionally narrow: only Fn::GetAtt nodes whose target is
+   * AmplifySecretFetcherResource, only inside IdentityPool resources, only under
+   * SupportedLoginProviders.
    */
-  protected override async resolveOAuthParameters(parameters: Parameter[], outputs: Output[]): Promise<Parameter[]> {
-    const oAuthParam = parameters.find((p) => p.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME);
-    if (!oAuthParam) return parameters;
-
-    const userPoolId = outputs.find((o) => o.OutputKey === USER_POOL_ID_OUTPUT_KEY_NAME)?.OutputValue;
-    if (!userPoolId) {
-      throw new AmplifyError('MissingExpectedParameterError', {
-        message: `Auth stack output '${USER_POOL_ID_OUTPUT_KEY_NAME}' not found — required for OAuth credential retrieval`,
+  protected override async resolveTarget(stackId: string): Promise<ResolvedStack> {
+    const resolved = await super.resolveTarget(stackId);
+    const template = resolved.resolvedTemplate;
+    const identityPoolLogicalIds: string[] = [];
+    for (const [logicalId, resource] of Object.entries(template.Resources)) {
+      if (resource.Type !== IDENTITY_POOL_TYPE) continue;
+      identityPoolLogicalIds.push(logicalId);
+      const slp = resource.Properties.SupportedLoginProviders;
+      if (!slp || typeof slp !== 'object') continue;
+      const walked = walkCfnTree(slp, (node) => {
+        if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
+          const [target] = node['Fn::GetAtt'] as string[];
+          if (target === AMPLIFY_SECRET_FETCHER_LOGICAL_ID) {
+            return 'PLACEHOLDER';
+          }
+        }
+        return undefined;
       });
+      resource.Properties.SupportedLoginProviders = walked as object;
     }
-
-    const oAuthValues = await retrieveOAuthValues({
-      ssmClient: this.gen1App.clients.ssm,
-      cognitoIdpClient: this.gen1App.clients.cognitoIdentityProvider,
-      oAuthParameter: oAuthParam,
-      userPoolId,
-      appId: this.gen1App.appId,
-      environmentName: this.gen1App.envName,
-    });
-
-    const credsParam = parameters.find((p) => p.ParameterKey === HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME);
-    if (!credsParam) {
-      throw new AmplifyError('MissingExpectedParameterError', {
-        message: `Auth stack parameter '${HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME}' not found`,
-      });
-    }
-    credsParam.ParameterValue = JSON.stringify(oAuthValues);
-
-    return parameters;
+    this.identityPoolLogicalIds = identityPoolLogicalIds;
+    return resolved;
   }
 
   /**
-   * Executes the standard resource refactor, then imports Gen1's
-   * physical domain and IDPs into the Gen2 stack as native CFN resources.
+   * Declares the expected changeset diff produced by resolveTarget(): the
+   * IdentityPool's SupportedLoginProviders values are replaced with the literal
+   * string 'PLACEHOLDER'. updateTarget() validate() uses this allowlist to
+   * accept those intentional diffs while still failing on unrelated diffs.
+   *
+   * Populated from `identityPoolLogicalIds` which resolveTarget() captures.
+   * Ordering: plan() calls resolveTarget before updateTarget, so this method
+   * is consulted after identityPoolLogicalIds is set.
+   */
+  protected override expectedTargetChanges(): ExpectedChange[] {
+    return this.identityPoolLogicalIds.map((logicalId) => ({
+      logicalId,
+      // CFN's ResourceChangeDetail.Target.Path is `/Properties/<PropertyName>` — the leading `/Properties/`
+      // segment is part of Path, not separated via Attribute (Attribute is `"Properties"`, indicating the change
+      // is at the property level). We prefix with `/Properties/SupportedLoginProviders` so nested changes like
+      // `/Properties/SupportedLoginProviders/accounts.google.com` are correctly matched.
+      propertyPathPrefix: '/Properties/SupportedLoginProviders',
+      expectedAfterValueSubstring: 'PLACEHOLDER',
+    }));
+  }
+
+  /**
+   * Executes the standard beforeMove (moves 4 core Cognito resources to holding),
+   * then appends two additional operations in order:
+   *
+   *   1. super.beforeMove() — moves the 4 core Cognito types (UserPool,
+   *      UserPoolClient, IdentityPool, IdentityPoolRoleAttachment) to the
+   *      holding stack.
+   *   2. Retain-set — adds `DeletionPolicy: Retain` to Gen2's UserPoolDomain
+   *      and UserPoolIdentityProvider resources if any lack it. Idempotent:
+   *      skipped entirely when every target already has Retain. Needed because
+   *      `lock` only sets Retain on Gen1 LambdaCallout resources — Gen2 IDP
+   *      and domain resources are out of `lock`'s scope (lock has no
+   *      reference to the Gen2 stack). Without Retain, orphaning would
+   *      delete the physical resources.
+   *   3. Orphan — validates Retain (defense in depth — the Retain-set op
+   *      just ran), then removes the IDP and domain resources from the
+   *      Gen2 template in a single CFN update. CloudFormation orphans
+   *      them because of DeletionPolicy: Retain; the physical IDPs and
+   *      domain on the pool survive.
+   *
+   * If the Gen2 stack has no IDP or domain resources (non-social-auth app),
+   * both the Retain-set and orphan operations are skipped.
+   */
+  protected override async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+    const baseOps = await super.beforeMove(gen2StackId);
+
+    const retainOp = await this.buildRetainSocialAuthOperation(gen2StackId);
+    const orphanOp = await this.buildOrphanSocialAuthOperation(gen2StackId);
+
+    const extraOps: AmplifyMigrationOperation[] = [];
+    if (retainOp) extraOps.push(retainOp);
+    if (orphanOp) extraOps.push(orphanOp);
+
+    return [...baseOps, ...extraOps];
+  }
+
+  /**
+   * Executes the standard move (moves core Gen1 resources into Gen2), then
+   * appends an import operation that re-imports Gen1's physical UserPoolDomain
+   * and UserPoolIdentityProvider resources into the Gen2 stack as native CFN
+   * resources.
+   *
+   * The import must run AFTER super.move() completes — the core move transfers
+   * the Gen1 UserPool into Gen2, and the UserPool must be in the Gen2 stack
+   * before we can import resources that reference it by UserPoolId.
    */
   protected override async move(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const baseOps = await super.move(blueprint);
 
-    const importOp = await this.buildImportSocialAuthOperation(blueprint);
+    const importOp = await this.buildImportSocialAuthOperation(blueprint.targetStackId);
     if (importOp) {
       return [...baseOps, importOp];
     }
@@ -121,16 +361,178 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   /**
-   * Builds an operation that imports Gen1's physical domain and IDPs into the
-   * Gen2 stack. Returns undefined if the app doesn't use social auth.
+   * Builds an operation that sets `DeletionPolicy: Retain` on Gen2's
+   * UserPoolDomain and UserPoolIdentityProvider resources. Returns undefined
+   * if no such resources exist in the Gen2 template, or if every one of them
+   * already has Retain.
+   *
+   * This is idempotent: if a future `lock` update sets Retain on Gen2
+   * resources, this operation short-circuits and issues no CFN update. Also
+   * re-fetches the template at execute-time (in case plan-time snapshot has
+   * drifted) and skips the update if every target already has Retain.
+   *
+   * Pattern borrowed from `lock.ts` `buildHostedUiRetainOperation`. Uses
+   * `this.cfn.update()` (which wraps UpdateStackCommand + wait + IAM
+   * capability) for consistency with the rest of the refactor code. Stack
+   * parameters are preserved via `UsePreviousValue: true` — we don't need
+   * to know actual values (many are NoEcho).
    */
-  private async buildImportSocialAuthOperation(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation | undefined> {
-    const socialAuthConfig = await this.fetchSocialAuthConfig(blueprint.sourceStackId);
-    if (!socialAuthConfig) {
+  private async buildRetainSocialAuthOperation(gen2StackId: string): Promise<AmplifyMigrationOperation | undefined> {
+    const template = await this.cfn.fetchTemplate(gen2StackId);
+
+    const logicalIdsNeedingRetain = Object.entries(template.Resources)
+      .filter(
+        ([, r]) =>
+          (r.Type === USER_POOL_DOMAIN_TYPE || r.Type === USER_POOL_IDENTITY_PROVIDER_TYPE) && r.DeletionPolicy !== 'Retain',
+      )
+      .map(([id]) => id);
+
+    if (logicalIdsNeedingRetain.length === 0) {
       return undefined;
     }
 
-    const gen2StackId = blueprint.targetStackId;
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+
+    return {
+      resource: this.resource,
+      validate: () => undefined,
+      describe: async () => [
+        `Set DeletionPolicy: Retain on ${logicalIdsNeedingRetain.length} social auth resource(s) in '${gen2StackName}': ${logicalIdsNeedingRetain.join(
+          ', ',
+        )}`,
+      ],
+      execute: async () => {
+        // Re-fetch the template at execute time in case it has drifted since plan.
+        const currentTemplate = await this.cfn.fetchTemplate(gen2StackId);
+
+        const appliedIds: string[] = [];
+        let retainAdded = false;
+        for (const id of logicalIdsNeedingRetain) {
+          const resource = currentTemplate.Resources[id];
+          if (!resource) continue;
+          if (resource.DeletionPolicy !== 'Retain') {
+            resource.DeletionPolicy = 'Retain';
+            retainAdded = true;
+            appliedIds.push(id);
+          }
+        }
+
+        if (!retainAdded) {
+          this.info(`All social auth resources already have DeletionPolicy: Retain in '${gen2StackName}'`);
+          return;
+        }
+
+        const stack = await this.cfn.describeStack(gen2StackId);
+        const parameters = (stack.Parameters ?? []).map((p) => ({
+          ParameterKey: p.ParameterKey,
+          UsePreviousValue: true,
+        }));
+
+        await this.cfn.update({
+          stackName: gen2StackId,
+          templateBody: currentTemplate,
+          parameters,
+          resource: this.resource,
+        });
+
+        this.info(`Set DeletionPolicy: Retain on social auth resources in '${gen2StackName}': ${appliedIds.join(', ')}`);
+      },
+    };
+  }
+
+  /**
+   * Builds an operation that orphans Gen2's UserPoolDomain and
+   * UserPoolIdentityProvider resources from the Gen2 stack. Returns undefined
+   * if the Gen2 template has no such resources (non-social-auth app).
+   *
+   * Validates at execute-time that every orphan target has DeletionPolicy:
+   * Retain (established by the prior Retain-set op in this beforeMove), then
+   * removes the resources from the template in a single CFN update. Retain
+   * guarantees the physical IDPs and domain survive the template update.
+   */
+  private async buildOrphanSocialAuthOperation(gen2StackId: string): Promise<AmplifyMigrationOperation | undefined> {
+    const template = await this.cfn.fetchTemplate(gen2StackId);
+
+    const logicalIdsToOrphan = Object.entries(template.Resources)
+      .filter(([, r]) => r.Type === USER_POOL_DOMAIN_TYPE || r.Type === USER_POOL_IDENTITY_PROVIDER_TYPE)
+      .map(([id]) => id);
+
+    if (logicalIdsToOrphan.length === 0) {
+      return undefined;
+    }
+
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+
+    return {
+      resource: this.resource,
+      // Retain is established by the preceding Retain-set op. We verify at execute time, not plan-validation
+      // time, because plan.validate() runs ALL operation validate() callbacks before ANY execute(). Checking
+      // here during plan-validation would see the pre-Retain-set state and fail on every first run. At execute
+      // time the Retain-set op has already durably set Retain on the targets. If the invariant is somehow
+      // violated (e.g. manual template edits between plan and execute), we abort before any destructive
+      // template mutation — missing Retain would cause the subsequent cfn.update to delete the physical
+      // resource.
+      validate: () => undefined,
+      describe: async () => [
+        `Orphan ${logicalIdsToOrphan.length} social auth resource(s) from '${gen2StackName}': ${logicalIdsToOrphan.join(', ')}`,
+      ],
+      execute: async () => {
+        const currentTemplate = await this.cfn.fetchTemplate(gen2StackId);
+
+        // Execute-time Retain verification (defense-in-depth). See the comment on validate above for why
+        // this runs here rather than in validate(). Orphaning without Retain would delete the physical
+        // UserPoolDomain / UserPoolIdentityProvider.
+        const missingRetain = logicalIdsToOrphan.filter(
+          (id) => id in currentTemplate.Resources && currentTemplate.Resources[id].DeletionPolicy !== 'Retain',
+        );
+        if (missingRetain.length > 0) {
+          throw new AmplifyError('MigrationError', {
+            message:
+              `Cannot orphan social auth resources from '${gen2StackName}': the following resources are missing ` +
+              `DeletionPolicy: Retain and would be physically deleted: ${missingRetain.join(', ')}.`,
+            resolution: 'Ensure the preceding Retain-set operation succeeded, then re-run the refactor.',
+          });
+        }
+
+        const stack = await this.cfn.describeStack(gen2StackId);
+
+        for (const id of logicalIdsToOrphan) {
+          delete currentTemplate.Resources[id];
+        }
+
+        await this.cfn.update({
+          stackName: gen2StackId,
+          templateBody: currentTemplate,
+          parameters: stack.Parameters ?? [],
+          resource: this.resource,
+        });
+
+        this.info(`Orphaned social auth resources from '${gen2StackName}': ${logicalIdsToOrphan.join(', ')}`);
+      },
+    };
+  }
+
+  /**
+   * Builds an operation that imports physical UserPoolDomain and
+   * UserPoolIdentityProvider resources into the Gen2 stack under the Gen2
+   * original logical IDs. Returns undefined if the app doesn't use social auth
+   * (no domain or no IDP resources in the Gen2 template).
+   *
+   * Plan-time work:
+   *   - Read the Gen2 template and capture `{providerName → logicalId}` and the
+   *     domain logical ID into the operation closure. These are the Gen2 original
+   *     logical IDs, which we reuse for the import so subsequent Gen2 deploys see
+   *     the same IDs.
+   *
+   * Execute-time work:
+   *   - Discover the UserPool physical ID from the Gen2 stack (P1 after
+   *     super.move() has transferred Gen1's pool in).
+   *   - Fetch the live domain and IDP list from Cognito.
+   *   - Build the import spec and execute the import changeset.
+   */
+  private async buildImportSocialAuthOperation(gen2StackId: string): Promise<AmplifyMigrationOperation | undefined> {
+    // Plan-time: capture logical IDs from the Gen2 template before any orphan
+    // operation runs at execute-time.
     const gen2Template = await this.cfn.fetchTemplate(gen2StackId);
     const gen2IdpLogicalIds = new Map<string, string>();
     let gen2DomainLogicalId: string | undefined;
@@ -158,32 +560,43 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
       return undefined;
     }
 
+    const domainLogicalId = gen2DomainLogicalId;
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+
     return {
       resource: this.resource,
       validate: () => undefined,
       describe: async () => {
-        const gen2StackName = extractStackNameFromId(gen2StackId);
         const table = new CLITable({
-          head: ['Source Physical ID', 'Target Logical ID'],
+          head: ['Provider', 'Target Logical ID'],
           style: { head: [] },
         });
-        table.push([socialAuthConfig.domain, gen2DomainLogicalId!]);
-        for (const provider of socialAuthConfig.providers) {
-          const logicalId = gen2IdpLogicalIds.get(provider.providerName);
-          if (logicalId) {
-            const label =
-              provider.providerType !== provider.providerName
-                ? `${provider.providerName} (${provider.providerType})`
-                : provider.providerName;
-            table.push([label, logicalId]);
-          }
+        table.push(['(domain)', domainLogicalId]);
+        for (const [providerName, logicalId] of gen2IdpLogicalIds) {
+          table.push([providerName, logicalId]);
         }
         return [`Import social auth resources into '${gen2StackName}'\n\n${table.toString()}`];
       },
       execute: async () => {
+        // Execute-time: discover the UserPool in Gen2 (P1 after super.move()).
+        const userPoolId = await discoverUserPoolId(this.gen2Branch, gen2StackId);
+        if (!userPoolId) {
+          throw new AmplifyError('MigrationError', {
+            message: `Unable to discover UserPool in Gen2 stack '${gen2StackName}' for social auth import`,
+          });
+        }
+
+        const cognitoClient = this.gen1App.clients.cognitoIdentityProvider;
+        const socialAuthConfig = await fetchSocialAuthConfig(cognitoClient, userPoolId);
+        if (!socialAuthConfig) {
+          this.debug(`UserPool ${userPoolId} has no domain or no identity providers — skipping import`);
+          return;
+        }
+
+        // Fetch the current (post-orphan) template. Import re-adds the resources.
         const templateForImport = await this.cfn.fetchTemplate(gen2StackId);
 
-        const { resourcesToImport, templateAdditions } = this.buildImportSpec(socialAuthConfig, gen2DomainLogicalId!, gen2IdpLogicalIds);
+        const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, gen2IdpLogicalIds);
 
         for (const [logicalId, resource] of Object.entries(templateAdditions)) {
           templateForImport.Resources[logicalId] = resource;
@@ -228,123 +641,5 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   protected async fetchDestStackId(): Promise<string | undefined> {
     // in gen2 all auth resources are in a single auth nested stack
     return this.findNestedStack(this.gen2Branch, 'auth');
-  }
-
-  /**
-   * Fetches domain and IDP config directly from Cognito. These resources are
-   * Lambda-created (not in the Gen1 CFN template) so the live API is the only source.
-   */
-  private async fetchSocialAuthConfig(sourceStackId: string): Promise<SocialAuthConfig | undefined> {
-    const sourceStack = await this.gen1Env.fetchStack(sourceStackId);
-    const userPoolId = (sourceStack.Outputs ?? []).find((o) => o.OutputKey === USER_POOL_ID_OUTPUT_KEY_NAME)?.OutputValue;
-    if (!userPoolId) {
-      return undefined;
-    }
-
-    const cognitoClient = this.gen1App.clients.cognitoIdentityProvider;
-
-    const poolResponse = await cognitoClient.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
-    const domain = poolResponse?.UserPool?.Domain;
-    if (!domain) {
-      this.debug('Gen1 UserPool has no domain — skipping social auth import');
-      return undefined;
-    }
-
-    const listResponse = await cognitoClient.send(new ListIdentityProvidersCommand({ UserPoolId: userPoolId }));
-    const providerSummaries = listResponse?.Providers ?? [];
-    if (providerSummaries.length === 0) {
-      this.debug('Gen1 UserPool has no identity providers — skipping social auth import');
-      return undefined;
-    }
-
-    const providers: IdpConfig[] = [];
-    for (const summary of providerSummaries) {
-      const providerName = summary.ProviderName;
-      if (!providerName) continue;
-
-      const describeResponse = await cognitoClient.send(
-        new DescribeIdentityProviderCommand({ UserPoolId: userPoolId, ProviderName: providerName }),
-      );
-      const idp = describeResponse.IdentityProvider;
-      if (!idp?.ProviderDetails) continue;
-
-      providers.push({
-        providerName,
-        providerType: idp.ProviderType ?? providerName,
-        clientId: idp.ProviderDetails.client_id ?? '',
-        clientSecret: idp.ProviderDetails.client_secret ?? '',
-        authorizeScopes: idp.ProviderDetails.authorize_scopes ?? '',
-        attributeMapping: (idp.AttributeMapping as Record<string, string>) ?? {},
-      });
-    }
-
-    this.debug(`Fetched social auth config: domain=${domain}, providers=${providers.map((p) => p.providerName).join(',')}`);
-    return { userPoolId, domain, providers };
-  }
-
-  /**
-   * Builds the CFN import spec: template additions with DeletionPolicy: Retain
-   * (so rollback can orphan them without deleting the physical resources) and
-   * resource identifiers for the import change set.
-   */
-  private buildImportSpec(
-    config: SocialAuthConfig,
-    domainLogicalId: string,
-    idpLogicalIds: Map<string, string>,
-  ): { resourcesToImport: ResourceToImport[]; templateAdditions: Record<string, CFNResource> } {
-    const resourcesToImport: ResourceToImport[] = [];
-    const templateAdditions: Record<string, CFNResource> = {};
-
-    templateAdditions[domainLogicalId] = {
-      Type: USER_POOL_DOMAIN_TYPE,
-      DeletionPolicy: 'Retain',
-      Properties: {
-        Domain: config.domain,
-        UserPoolId: config.userPoolId,
-      },
-    };
-    resourcesToImport.push({
-      ResourceType: USER_POOL_DOMAIN_TYPE,
-      LogicalResourceId: domainLogicalId,
-      ResourceIdentifier: {
-        UserPoolId: config.userPoolId,
-        Domain: config.domain,
-      },
-    });
-
-    for (const provider of config.providers) {
-      const logicalId = idpLogicalIds.get(provider.providerName);
-      if (!logicalId) {
-        this.debug(`No Gen2 logical ID for provider ${provider.providerName} — skipping import`);
-        continue;
-      }
-
-      templateAdditions[logicalId] = {
-        Type: USER_POOL_IDENTITY_PROVIDER_TYPE,
-        DeletionPolicy: 'Retain',
-        Properties: {
-          UserPoolId: config.userPoolId,
-          ProviderName: provider.providerName,
-          ProviderType: provider.providerType,
-          ProviderDetails: {
-            client_id: provider.clientId,
-            client_secret: provider.clientSecret,
-            authorize_scopes: provider.authorizeScopes,
-          },
-          AttributeMapping: provider.attributeMapping,
-        },
-      };
-
-      resourcesToImport.push({
-        ResourceType: USER_POOL_IDENTITY_PROVIDER_TYPE,
-        LogicalResourceId: logicalId,
-        ResourceIdentifier: {
-          UserPoolId: config.userPoolId,
-          ProviderName: provider.providerName,
-        },
-      });
-    }
-
-    return { resourcesToImport, templateAdditions };
   }
 }

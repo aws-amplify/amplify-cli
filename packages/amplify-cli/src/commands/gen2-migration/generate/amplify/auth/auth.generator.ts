@@ -104,7 +104,7 @@ export class AuthGenerator implements Planner {
           this.contributeToBackend(renderOptions);
 
           if (hasIdentityProviders) {
-            this.contributeProviderSetup();
+            this.contributeProviderSetup(userPool.Domain);
           }
         },
       },
@@ -342,16 +342,6 @@ export class AuthGenerator implements Planner {
       clientProps.push(factory.createPropertyAssignment('oAuth', factory.createObjectLiteralExpression(oAuthProps, true)));
     }
 
-    // Commented-out flows property when OAuth flows exist
-    if (userPoolClient.AllowedOAuthFlows?.length) {
-      clientProps.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('// flows'),
-          factory.createArrayLiteralExpression(userPoolClient.AllowedOAuthFlows.map((flow) => factory.createStringLiteral(flow, true))),
-        ),
-      );
-    }
-
     // disableOAuth
     const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;
     clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
@@ -391,7 +381,7 @@ export class AuthGenerator implements Planner {
    * Must run after storage overrides so it appears in the correct
    * position in backend.ts.
    */
-  private contributeProviderSetup(): void {
+  private contributeProviderSetup(gen1Domain?: string): void {
     // const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;
     const findCall = factory.createCallExpression(
       factory.createPropertyAccessExpression(
@@ -542,20 +532,51 @@ export class AuthGenerator implements Planner {
     );
     this.backendGenerator.addStatement(forEachStatement);
 
-    // // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
-    const commentedStatement = factory.createExpressionStatement(
-      factory.createCallExpression(
+    if (gen1Domain) {
+      this.contributeDomainOverride(gen1Domain);
+    }
+  }
+
+  /**
+   * Generates an escape hatch that overrides the UserPoolDomain to match the
+   * Gen1 domain prefix, preventing CFN from replacing it on next deploy.
+   *
+   * Output:
+   *   const cfnUserPoolDomain = backend.auth.resources.userPool.node
+   *     .findChild("UserPoolDomain").node.defaultChild as CfnUserPoolDomain;
+   *   cfnUserPoolDomain.domain = "<gen1-domain>";
+   */
+  private contributeDomainOverride(gen1Domain: string): void {
+    this.backendGenerator.addImport('aws-cdk-lib/aws-cognito', ['CfnUserPoolDomain']);
+
+    const domainExpr = factory.createAsExpression(
+      factory.createPropertyAccessExpression(
         factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(
-            factory.createIdentifier('// backend.auth.resources.userPool'),
-            factory.createIdentifier('node'),
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('userPool'),
+                ),
+                factory.createIdentifier('node'),
+              ),
+              factory.createIdentifier('findChild'),
+            ),
+            undefined,
+            [factory.createStringLiteral('UserPoolDomain')],
           ),
-          factory.createIdentifier('tryRemoveChild'),
+          factory.createIdentifier('node'),
         ),
-        undefined,
-        [factory.createStringLiteral('UserPoolDomain')],
+        factory.createIdentifier('defaultChild'),
       ),
+      factory.createTypeReferenceNode('CfnUserPoolDomain'),
     );
-    this.backendGenerator.addStatement(commentedStatement);
+
+    this.backendGenerator.addStatement(TS.constDecl('cfnUserPoolDomain', domainExpr));
+    this.backendGenerator.addStatement(TS.assignProp('cfnUserPoolDomain', 'domain', gen1Domain));
   }
 }

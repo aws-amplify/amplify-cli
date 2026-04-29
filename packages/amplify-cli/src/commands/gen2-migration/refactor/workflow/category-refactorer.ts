@@ -23,6 +23,72 @@ export interface ResolvedStack {
 }
 
 /**
+ * Describes a CFN change detail that a refactorer intentionally produces and
+ * expects updateTarget() to accept. Used to narrow the updateTarget validate()
+ * check so it only fails on UNEXPECTED diffs.
+ *
+ * A change detail is considered expected iff:
+ *   - detail.Target.Attribute === 'Properties'
+ *   - change.ResourceChange.LogicalResourceId === entry.logicalId
+ *   - detail.Target.Path starts with entry.propertyPathPrefix
+ *   - detail.Target.AfterValue contains entry.expectedAfterValueSubstring
+ */
+export interface ExpectedChange {
+  readonly logicalId: string;
+  readonly propertyPathPrefix: string;
+  readonly expectedAfterValueSubstring: string;
+}
+
+interface UnexpectedChangeEntry {
+  readonly logicalId: string;
+  readonly path: string;
+  readonly beforeValue?: string;
+  readonly afterValue?: string;
+}
+
+/**
+ * Returns the subset of change details in the changeset that are NOT covered by
+ * any ExpectedChange allowlist entry. If the returned array is empty, all diffs
+ * are expected and validate() should pass.
+ */
+function filterUnexpectedChanges(changeSet: DescribeChangeSetOutput, allowlist: ExpectedChange[]): UnexpectedChangeEntry[] {
+  const unexpected: UnexpectedChangeEntry[] = [];
+  for (const change of changeSet.Changes ?? []) {
+    const rc = change.ResourceChange;
+    if (!rc) continue;
+    const logicalId = rc.LogicalResourceId ?? '';
+    for (const detail of rc.Details ?? []) {
+      const target = detail.Target;
+      if (target?.Attribute !== 'Properties') continue;
+      const path = target.Path ?? '';
+      const afterValue = target.AfterValue;
+      const matches = allowlist.some(
+        (entry) =>
+          entry.logicalId === logicalId &&
+          path.startsWith(entry.propertyPathPrefix) &&
+          typeof afterValue === 'string' &&
+          afterValue.includes(entry.expectedAfterValueSubstring),
+      );
+      if (!matches) {
+        unexpected.push({ logicalId, path, beforeValue: target.BeforeValue, afterValue });
+      }
+    }
+  }
+  return unexpected;
+}
+
+/**
+ * Formats the unexpected entries for user display, prepending a summary header
+ * to the full rendered changeset report.
+ */
+function renderUnexpectedChanges(unexpected: UnexpectedChangeEntry[], fullReport: string): string {
+  const lines = unexpected.map(
+    (u) => `  ${u.logicalId}${u.path}: ${u.beforeValue ?? '(none)'} → ${u.afterValue ?? '(none)'}`,
+  );
+  return `Unexpected changes:\n${lines.join('\n')}\n\nFull changeset:\n${fullReport}`;
+}
+
+/**
  * Mappings-only refactor plan. Templates are fetched fresh at execution time
  * so that sequential refactorers targeting the same stack always see current state.
  */
@@ -177,6 +243,13 @@ export abstract class CategoryRefactorer implements Planner {
   /**
    * Creates operations to update the target stack with the resolved template.
    * Skips if the stack was already updated by a previous refactorer.
+   *
+   * Unlike updateSource(), updateTarget allows the changeset to contain diffs
+   * that are covered by an explicit allowlist returned from expectedTargetChanges().
+   * A refactorer that intentionally rewrites part of the target template during
+   * resolveTarget() (e.g. replacing an Fn::GetAtt with a literal PLACEHOLDER)
+   * must override expectedTargetChanges() so that its intentional diff does not
+   * cause validate() to fail. Anything outside the allowlist still fails.
    */
   protected async updateTarget(target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     if (this.cfn.isUpdateClaimed(target.stackId)) return [];
@@ -189,7 +262,16 @@ export abstract class CategoryRefactorer implements Planner {
         resource: this.resource,
         validate: () => ({
           description: `Ensure no unexpected changes to ${targetStackName}`,
-          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
+          run: async () => {
+            if (!change) return { valid: true };
+            const allowlist = this.expectedTargetChanges();
+            const unexpected = filterUnexpectedChanges(change.changeSet, allowlist);
+            if (unexpected.length === 0) return { valid: true };
+            return {
+              valid: false,
+              report: renderUnexpectedChanges(unexpected, change.report ?? ''),
+            };
+          },
         }),
         describe: async () => {
           if (!change) return [];
@@ -202,6 +284,18 @@ export abstract class CategoryRefactorer implements Planner {
         },
       },
     ];
+  }
+
+  /**
+   * Returns an allowlist of CFN changes that updateTarget() should treat as expected.
+   * Base implementation: no expected changes — updateTarget validate() fails on any diff.
+   *
+   * Subclasses that intentionally mutate the target template during resolveTarget()
+   * must override this to declare the expected diff, otherwise updateTarget validate()
+   * will fail.
+   */
+  protected expectedTargetChanges(): ExpectedChange[] {
+    return [];
   }
 
   /**
@@ -317,10 +411,15 @@ export abstract class CategoryRefactorer implements Planner {
         run: async (): Promise<ValidationResult> => {
           const stack = await this.cfn.describeStack(stackId);
           const status = stack.StackStatus;
-          if (status !== 'CREATE_COMPLETE' && status !== 'UPDATE_COMPLETE') {
+          // CloudFormation documents UPDATE_ROLLBACK_COMPLETE as a terminal state from which new updates are permitted.
+          // The root-level migration validator (_infra/validations.ts) accepts it so a prior failed update does not
+          // prevent retrying with a fixed template; we align the per-category check with that policy.
+          if (status !== 'CREATE_COMPLETE' && status !== 'UPDATE_COMPLETE' && status !== 'UPDATE_ROLLBACK_COMPLETE') {
             return {
               valid: false,
-              report: `Stack '${stackName}' is in ${status ?? 'UNKNOWN'} state, expected CREATE_COMPLETE or UPDATE_COMPLETE`,
+              report: `Stack '${stackName}' is in ${
+                status ?? 'UNKNOWN'
+              } state, expected CREATE_COMPLETE, UPDATE_COMPLETE, or UPDATE_ROLLBACK_COMPLETE`,
             };
           }
           return { valid: true };
