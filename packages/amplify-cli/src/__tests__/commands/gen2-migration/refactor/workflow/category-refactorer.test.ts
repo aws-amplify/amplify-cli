@@ -208,8 +208,8 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     expect(descriptions).toHaveLength(4);
-    expect(descriptions[0]).toContain('Update source');
-    expect(descriptions[1]).toContain('Update target');
+    expect(descriptions[0]).toContain('Prepare source');
+    expect(descriptions[1]).toContain('Prepare target');
     expect(descriptions[2]).toContain('holding');
     expect(descriptions[3]).toContain('Move');
   });

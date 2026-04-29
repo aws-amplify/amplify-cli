@@ -164,12 +164,11 @@ describe('AmplifyMigrationGenerateStep', () => {
       const plan = await new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext, {} as AmplifyGen2MigrationValidations).forward();
 
       // 3 validation ops (lock, working dir, assessment)
-      // 1 delete amplify dir
       // 6 infrastructure generators (backend, root package.json, backend package.json, tsconfig, amplify.yml, gitignore)
-      // 2 post-generation ops (replace folder, install deps)
-      // = 12 total — the unsupported function contributes zero operations.
+      // 1 post-generation op (replace folder)
+      // = 10 total — the unsupported function contributes zero operations.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- accessing private field to assert operation count
-      expect((plan as any).operations).toHaveLength(12);
+      expect((plan as any).operations).toHaveLength(10);
     });
   });
 });

@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import CLITable from 'cli-table3';
 import { DiscoveredResource } from '../_common/gen1-app';
 
-const GUIDE_LINK = 'https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage';
+const GUIDE_LINK = 'https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/';
 
 /**
  * Support level for a resource or feature dimension.

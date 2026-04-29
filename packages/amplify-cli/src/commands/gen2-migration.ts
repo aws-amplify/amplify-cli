@@ -1,7 +1,6 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './gen2-migration/_common/step';
 import { printer, prompter, isDebug } from '@aws-amplify/amplify-prompts';
-import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
@@ -19,16 +18,12 @@ const STEPS = {
   },
   generate: {
     class: AmplifyMigrationGenerateStep,
-    description: 'Generate Gen2 application code from your existing Gen1 environment',
+    description: 'Generates Gen2 application code from your existing Gen1 environment',
   },
   refactor: {
     class: AmplifyMigrationRefactorStep,
     // eslint-disable-next-line spellcheck/spell-checker
-    description: 'Move stateful resources from your Gen1 environment to your newly deployed Gen2 branch',
-  },
-  decommission: {
-    class: AmplifyMigrationDecommissionStep,
-    description: 'Decommission the Gen1 environment post migration',
+    description: 'Moves stateful resources from your Gen1 CloudFormation stacks to your Gen2 stacks',
   },
 };
 
@@ -56,12 +51,6 @@ export const run = async (context: $TSContext) => {
   if (rollingBack && disableAutoRollback) {
     throw new AmplifyError('InputValidationError', {
       message: 'Cannot specify both --rollback and --no-rollback',
-    });
-  }
-
-  if (rollingBack && stepName === 'decommission') {
-    throw new AmplifyError('InputValidationError', {
-      message: 'Decommission is a one-way operation and does not support rollback.',
     });
   }
 
@@ -110,22 +99,24 @@ export const run = async (context: $TSContext) => {
   printer.blankLine();
   printer.info(
     chalk.yellow(
-      `You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${gen1App.appId}/${gen1App.envName}'.`,
+      `You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${gen1App.appName}/${gen1App.envName}'.`,
     ),
   );
   printer.blankLine();
 
   await plan.describe();
 
-  if (!rollingBack && stepName !== 'decommission') {
+  if (!rollingBack) {
     printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
     printer.blankLine();
   }
 
-  if (stepName === 'decommission') {
-    printer.info(chalk.grey('(Decommission is a one-way operation and cannot be rolled back.)'));
-    printer.blankLine();
-  }
+  printer.info(
+    chalk.yellow(
+      '⚠️  This command is in developer preview. For more information, visit https://docs.amplify.aws/react/start/migrate-to-gen2',
+    ),
+  );
+  printer.blankLine();
 
   if (!(await prompter.confirmContinue())) {
     return;
@@ -167,7 +158,7 @@ function shiftParams(context) {
 
 function displayHelp(context: $TSContext) {
   const commands = [
-    { name: 'assess', description: 'Assess migration readiness for your Gen1 environment' },
+    { name: 'assess', description: 'Assesses migration readiness for your Gen1 environment' },
     ...Object.entries(STEPS).map(([name, v]) => ({ name, description: v.description })),
   ];
   context.amplify.showHelp('amplify gen2-migration <subcommands>', commands);

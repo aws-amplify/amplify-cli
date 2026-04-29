@@ -22,7 +22,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './assess';
 
-const GUIDE_LINK = 'https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#5-refactor';
+const GUIDE_LINK = 'https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/#step-8-post-refactor-critical';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
@@ -91,8 +91,8 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       refactorers,
       assessment,
       [
-        'Stateful resources (Cognito, S3, DynamoDB, etc...) will be moved from Gen1 to Gen2 CloudFormation stacks',
-        'Your Gen1 app will no longer manage these resources',
+        'Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved from' +
+          ' Gen1 to Gen2 CloudFormation stacks — Gen2 will own them going forward',
       ],
       'Execute',
     );
@@ -179,7 +179,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return this.buildPlan(
       refactorers,
       assessment,
-      ['Stateful resources will be moved back to Gen1 CloudFormation stacks', 'Your Gen2 app will no longer manage these resources'],
+      [
+        'Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved back to Gen1 CloudFormation stacks — Gen1 will own them again',
+      ],
       'Rollback',
     );
   }
@@ -214,7 +216,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     operations.push({
       describe: async () => [],
-      validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),
+      validate: () => ({ description: 'Environment Locked', run: () => this.validateLockStatus() }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: async () => {},
     });

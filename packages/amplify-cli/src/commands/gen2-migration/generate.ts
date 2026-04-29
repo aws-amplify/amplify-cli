@@ -1,6 +1,7 @@
 import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs/promises';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './_common/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_common/operation';
 import { Plan } from './_common/plan';
@@ -40,13 +41,13 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     const operations: AmplifyMigrationOperation[] = [
       {
         describe: async () => [],
-        validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),
+        validate: () => ({ description: 'Environment Locked', run: () => this.validateLockStatus() }),
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         execute: async () => {},
       },
       {
         describe: async () => [],
-        validate: () => ({ description: 'Working directory', run: () => this.validateWorkingDirectory() }),
+        validate: () => ({ description: 'Clean Working Directory', run: () => this.validateWorkingDirectory() }),
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         execute: async () => {},
       },
@@ -178,13 +179,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     generators.push(new AmplifyYmlGenerator(this.gen1App));
     generators.push(new GitIgnoreGenerator());
 
-    operations.push({
-      validate: () => undefined,
-      describe: async () => [`Delete directory: ${path.join(process.cwd(), 'amplify')}`],
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    });
-
     // Collect all operations from generators in order.
     for (const generator of generators) {
       operations.push(...(await generator.plan()));
@@ -204,28 +198,26 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       },
     });
 
-    // Post-generation: instruct user to install dependencies.
-    operations.push({
-      validate: () => undefined,
-      describe: async () => ['Instruct user to install Gen2 dependencies'],
-      execute: async () => {
-        this.logger.info(
-          'Run "npm install" to install the new Gen2 dependencies. ' +
-            'If you encounter version conflicts, check the npm logs and resolve them manually.',
-        );
-      },
-    });
-
     return new Plan({
       operations,
       logger: this.logger,
       title: 'Execute',
-      implications: ["Your local 'amplify/' directory will be replaced with Gen2 code"],
+      implications: [
+        "Your local 'amplify/' directory will be replaced with Gen2 code",
+        "Your root 'package.json' will be updated with Gen2 dependencies",
+      ],
     });
   }
 
   public async rollback(): Promise<Plan> {
-    throw new Error('Not Implemented');
+    throw new AmplifyError('MigrationError', {
+      message: 'Rollback is not supported for the generate step.',
+      resolution: [
+        'To restore your local directory to its previous state, use git to discard the changes.',
+        '',
+        `Then restore the Amplify configuration by running: 'amplify pull --appId ${this.gen1App.appId} --envName ${this.gen1App.appName}'`,
+      ].join('\n'),
+    });
   }
 
   private async validateLockStatus(): Promise<ValidationResult> {

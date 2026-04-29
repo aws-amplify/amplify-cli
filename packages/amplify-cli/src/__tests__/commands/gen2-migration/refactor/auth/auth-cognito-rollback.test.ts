@@ -115,8 +115,8 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     // Rollback now resolves and updates both stacks before moving
-    expect(descriptions.some((d) => d.includes('Update source'))).toBe(true);
-    expect(descriptions.some((d) => d.includes('Update target'))).toBe(true);
+    expect(descriptions.some((d) => d.includes('Prepare source'))).toBe(true);
+    expect(descriptions.some((d) => d.includes('Prepare target'))).toBe(true);
     expect(descriptions.some((d) => d.includes('Move'))).toBe(true);
   });
 });
