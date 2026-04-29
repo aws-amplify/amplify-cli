@@ -91,7 +91,8 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       refactorers,
       assessment,
       [
-        'Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved from Gen1 to Gen2 CloudFormation stacks — Gen2 will own them going forward',
+        'Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved from' +
+          ' Gen1 to Gen2 CloudFormation stacks — Gen2 will own them going forward',
       ],
       'Execute',
     );
@@ -178,7 +179,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return this.buildPlan(
       refactorers,
       assessment,
-      ['Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved back to Gen1 CloudFormation stacks — Gen1 will own them again'],
+      [
+        'Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved back to Gen1 CloudFormation stacks — Gen1 will own them again',
+      ],
       'Rollback',
     );
   }
