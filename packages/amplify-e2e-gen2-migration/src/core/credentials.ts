@@ -94,16 +94,24 @@ export class CredentialManager {
     fs.mkdirSync(awsDir, { recursive: true });
 
     const credsFile = path.join(awsDir, 'credentials');
+    if (fs.existsSync(credsFile)) {
+      throw new Error(`Refusing to overwrite existing credentials file: ${credsFile}`);
+    }
+
+    const configFile = path.join(awsDir, 'config');
+    if (fs.existsSync(configFile)) {
+      throw new Error(`Refusing to overwrite existing config file: ${configFile}`);
+    }
+
     const credsContent =
       `[${this.generatedProfile}]\n` +
       `aws_access_key_id = ${accessKeyId}\n` +
       `aws_secret_access_key = ${secretAccessKey}\n` +
       `aws_session_token = ${sessionToken}\n`;
-    fs.writeFileSync(credsFile, credsContent, 'utf-8');
+    fs.writeFileSync(credsFile, credsContent, { encoding: 'utf-8', mode: 0o600 });
 
-    const configFile = path.join(awsDir, 'config');
     const configContent = `[profile ${this.generatedProfile}]\nregion = ${this.region}\noutput = json\n`;
-    fs.writeFileSync(configFile, configContent, 'utf-8');
+    fs.writeFileSync(configFile, configContent, { encoding: 'utf-8', mode: 0o600 });
   }
 }
 
