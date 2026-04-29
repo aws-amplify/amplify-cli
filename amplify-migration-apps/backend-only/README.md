@@ -176,7 +176,7 @@ git push origin main
 
 ## Migrating to Gen2
 
-> Based on http://localhost:3000/react/start/migrate-to-gen2/migrate-existing-app/
+> Based on https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/
 
 First install the amplify CLI package:
 

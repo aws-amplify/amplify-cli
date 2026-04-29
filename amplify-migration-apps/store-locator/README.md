@@ -195,7 +195,7 @@ Wait for the deployment to finish successfully.
 
 ## Migrating to Gen2
 
-> Based on http://localhost:3000/react/start/migrate-to-gen2/migrate-existing-app/
+> Based on https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/
 
 > [!WARNING]
 > Migration is not fully supported for this app because the geo category doesn't support refactoring yet.
