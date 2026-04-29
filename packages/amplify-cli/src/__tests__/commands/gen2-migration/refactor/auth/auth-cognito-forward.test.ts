@@ -128,8 +128,8 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
 
     // Expected sequence: updateSource, updateTarget, beforeMove (holding), mainAuthMove
     expect(flat).toHaveLength(4);
-    expect(flat[0]).toContain('Prepare');
-    expect(flat[1]).toContain('Prepare');
+    expect(flat[0]).toContain('Prepare source');
+    expect(flat[1]).toContain('Prepare target');
     expect(flat[2]).toContain('holding');
     expect(flat[3]).toContain('Move');
   });
