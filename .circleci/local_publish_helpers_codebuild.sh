@@ -28,7 +28,8 @@ function uploadPkgCliCodeBuild {
     set -e
 
     cd out/
-    export version=$(./amplify-pkg-linux-x64 --version)
+    # --version can emit warnings before the version line; keep only the last line
+    export version=$(./amplify-pkg-linux-x64 --version | tail -n 1)
 
     # validate that version is uploaded in right build
     if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
