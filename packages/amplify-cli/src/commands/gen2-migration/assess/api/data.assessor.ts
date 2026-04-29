@@ -4,7 +4,7 @@ import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../_common/gen1-
 
 /**
  * Assesses migration readiness for an AppSync GraphQL API resource.
- * Detects overrides.ts usage.
+ * Detects overrides.ts usage and conflict resolution (DataStore).
  */
 export class DataAssessor implements Assessor {
   public constructor(private readonly gen1App: Gen1App, private readonly resource: DiscoveredResource) {}
@@ -25,5 +25,28 @@ export class DataAssessor implements Assessor {
         refactor: notApplicable(),
       });
     }
+
+    if (this.hasConflictResolution()) {
+      const cliInputsPath = `api/${this.resource.resourceName}/cli-inputs.json`;
+      assessment.recordFeature({
+        feature: { name: KNOWN_FEATURES.CONFLICT_RESOLUTION, path: cliInputsPath },
+        generate: unsupported('conflict resolution (DataStore) is not supported in Gen2'),
+        refactor: unsupported('conflict resolution (DataStore) is not supported in Gen2'),
+      });
+    }
+  }
+
+  /**
+   * Returns true if the API has non-empty conflict resolution configuration in cli-inputs.json (indicates DataStore usage).
+   */
+  private hasConflictResolution(): boolean {
+    const cliInputs = this.gen1App.cliInputs(this.resource.category, this.resource.resourceName);
+    const conflictResolution = cliInputs?.serviceConfiguration?.conflictResolution;
+    return (
+      conflictResolution != null &&
+      typeof conflictResolution === 'object' &&
+      !Array.isArray(conflictResolution) &&
+      Object.keys(conflictResolution).length > 0
+    );
   }
 }
