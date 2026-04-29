@@ -91,7 +91,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       refactorers,
       assessment,
       [
-        'Stateful resources (Cognito, S3, DynamoDB, Kinesis) will be moved from Gen1 to Gen2 CloudFormation stacks — Gen2 will own them going forward',
+        'Stateful resources (Cognito, S3, DynamoDB, Kinesis, etc...) will be moved from Gen1 to Gen2 CloudFormation stacks — Gen2 will own them going forward',
       ],
       'Execute',
     );
