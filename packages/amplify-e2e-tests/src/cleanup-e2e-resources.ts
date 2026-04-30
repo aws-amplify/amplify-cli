@@ -326,6 +326,11 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 })); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
     for (const app of amplifyApps.apps) {
+      if (app.name === 'gen1-placeholder-do-not-delete') {
+        // we keep at least one app (this one) so that
+        // we can continue creating Gen1 apps, following https://github.com/aws-amplify/amplify-cli/pull/14826
+        continue;
+      }
       if (!isStale(app.createTime)) {
         continue; // skip
       }
