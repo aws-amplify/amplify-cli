@@ -9,18 +9,10 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    operations.push({
-      //TODO
-      describe: function (): Promise<string[]> {
-        throw new Error('Function not implemented.');
-      },
-      validate: function (): Validation | undefined {
-        throw new Error('Function not implemented.');
-      },
-      execute: function (): Promise<void> {
-        throw new Error('Function not implemented.');
-      },
-    });
+    const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
+    for (const stackId of stackIds) {
+      operations.push(await this.buildRetainOperation(stackId));
+    }
 
     return new Plan({
       operations,
