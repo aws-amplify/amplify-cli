@@ -1,6 +1,6 @@
 import { Plan } from './_common/plan';
 import { AmplifyMigrationStep } from './_common/step';
-import { AmplifyMigrationOperation, Validation } from './_common/operation';
+import { AmplifyMigrationOperation } from './_common/operation';
 import { DescribeChangeSetOutput, DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
@@ -75,7 +75,16 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     return {
       describe: async () => [`Apply DeletionPolicy: Retain to resources in ${stackName}`],
-      validate: () => undefined,
+      validate: () => ({
+        description: `Ensure only retain changes for ${stackName}`,
+        run: async () => {
+          const valid = this.isAllowedRetainChangeset(changeset);
+          return {
+            valid,
+            report: valid ? undefined : cfn.renderChangeSet(changeset),
+          };
+        },
+      }),
       execute: async () => {
         await cfn.executeChangeSet({
           changeSet: changeset,
