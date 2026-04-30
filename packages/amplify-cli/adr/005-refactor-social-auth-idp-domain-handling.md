@@ -144,7 +144,7 @@ or `AWS::Cognito::UserPoolDomain`. They're physically present on the pool but
 ### Case 2 failure (override approach)
 
 Experimentally verified using `cfn-import-test/override-test.mjs` against UserPool
-`us-east-1_9UB4KPsWg` (app `mediavault-import-test`, ID `d1igd1gdzabina`):
+`us-east-1_TESTPOOL` (app `mediavault-import-test`, ID `d1exampleappid`):
 
 | Resource | CFN CREATE Result |
 |----------|-------------------|
@@ -193,7 +193,7 @@ a clean state where subsequent deploys see zero drift.
 | Override failure script | `oauth-workspace/cfn-import-test/override-test.mjs` |
 | Full test results | `oauth-workspace/cfn-import-test/full-context.md` |
 | Summary | `oauth-workspace/cfn-import-test/summary.md` |
-| Gen1 test app | `oauth-workspace/mediavault-import-test/` (App ID `d1igd1gdzabina`, UserPool `us-east-1_9UB4KPsWg`) |
+| Gen1 test app | `oauth-workspace/mediavault-import-test/` (App ID `d1exampleappid`, UserPool `us-east-1_TESTPOOL`) |
 
 ## Decision
 
@@ -238,8 +238,8 @@ social-auth apps are completely unaffected.
 
 | Resource Type | Identifier Keys | Example Values |
 |---------------|-----------------|----------------|
-| `AWS::Cognito::UserPoolDomain` | `{UserPoolId, Domain}` | `us-east-1_sL46vhIrI`, `mediavaultfresh-devenv` |
-| `AWS::Cognito::UserPoolIdentityProvider` | `{UserPoolId, ProviderName}` | `us-east-1_sL46vhIrI`, `Google` |
+| `AWS::Cognito::UserPoolDomain` | `{UserPoolId, Domain}` | `us-east-1_EXAMPLE`, `myapp-devenv` |
+| `AWS::Cognito::UserPoolIdentityProvider` | `{UserPoolId, ProviderName}` | `us-east-1_EXAMPLE`, `Google` |
 
 **Conceptual CFN API call:**
 
@@ -253,17 +253,17 @@ await cfn.send(new CreateChangeSetCommand({
     {
       ResourceType: 'AWS::Cognito::UserPoolDomain',
       LogicalResourceId: 'amplifyAuthUserPoolUserPoolDomain1F688B5B',
-      ResourceIdentifier: { UserPoolId: 'us-east-1_sL46vhIrI', Domain: 'mediavaultfresh-devenv' },
+      ResourceIdentifier: { UserPoolId: 'us-east-1_EXAMPLE', Domain: 'myapp-devenv' },
     },
     {
       ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
       LogicalResourceId: 'amplifyAuthGoogleIdPA9736819',
-      ResourceIdentifier: { UserPoolId: 'us-east-1_sL46vhIrI', ProviderName: 'Google' },
+      ResourceIdentifier: { UserPoolId: 'us-east-1_EXAMPLE', ProviderName: 'Google' },
     },
     {
       ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
       LogicalResourceId: 'amplifyAuthFacebookIDP7CB5B5CC',
-      ResourceIdentifier: { UserPoolId: 'us-east-1_sL46vhIrI', ProviderName: 'Facebook' },
+      ResourceIdentifier: { UserPoolId: 'us-east-1_EXAMPLE', ProviderName: 'Facebook' },
     },
   ],
 }));
@@ -298,8 +298,8 @@ Two layers of protection:
 
 ### Domain handling
 
-The Gen1 domain prefix (e.g., `mediavaultfresh-devenv`) differs from Gen2's
-auto-generated prefix (e.g., `8f20214d49ee8819a1c1`). The import uses the Gen1 domain
+The Gen1 domain prefix (e.g., `myapp-devenv`) differs from Gen2's
+auto-generated prefix (e.g., `a1b2c3d4e5f6g7h8i9j0`). The import uses the Gen1 domain
 value. On the next Gen2 deploy, the domain is a replacement property — if the generated
 code specifies a different prefix, CloudFormation would delete and recreate the domain,
 which takes the hosted UI down and changes the URL.
@@ -312,7 +312,7 @@ import { CfnUserPoolDomain } from 'aws-cdk-lib/aws-cognito';
 const cfnUserPoolDomain = backend.auth.resources.userPool.node
   .findChild('UserPoolDomain')
   .node.defaultChild as CfnUserPoolDomain;
-cfnUserPoolDomain.domain = 'mediavaultfresh-devenv'; // Gen1 domain prefix
+cfnUserPoolDomain.domain = 'myapp-devenv'; // Gen1 domain prefix
 ```
 
 Implementation note: `auth.generator.ts` `contributeProviderSetup()` already emits a
