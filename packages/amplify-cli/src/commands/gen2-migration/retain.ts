@@ -4,6 +4,7 @@ import { AmplifyMigrationOperation } from './_common/operation';
 import { DescribeChangeSetOutput, DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
@@ -26,7 +27,11 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   }
 
   public rollback(): Promise<Plan> {
-    throw new Error('Method not implemented.');
+    throw new AmplifyFault('NotImplementedFault', {
+      message: 'Rollback is not supported for the retain step',
+      resolution:
+        'Retain only marks resources with DeletionPolicy: Retain. If you need to undo it, manually update the CloudFormation templates to remove the policy.',
+    });
   }
 
   private async walkStackHierarchy(stackId: string): Promise<string[]> {

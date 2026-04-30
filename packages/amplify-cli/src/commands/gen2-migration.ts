@@ -59,6 +59,12 @@ export const run = async (context: $TSContext) => {
     });
   }
 
+  if (rollingBack && stepName === 'retain') {
+    throw new AmplifyError('InputValidationError', {
+      message: 'Retain is a one-way operation and does not support rollback.',
+    });
+  }
+
   const gen1App = await Gen1App.create(context);
 
   const logger = new SpinningLogger(`${stepName}] [${gen1App.appName}/${gen1App.envName}`, { debug: isDebug });
