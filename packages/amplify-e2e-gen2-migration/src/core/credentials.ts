@@ -149,10 +149,8 @@ function readExistingFile(filePath: string): { existing: string; existingMode: n
     // eslint-disable-next-line no-bitwise
     const existingMode = fs.statSync(filePath).mode & 0o777;
     return { existing, existingMode };
-  } catch (cause) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  } catch (cause: unknown) {
     const message = cause instanceof Error ? cause.message : String(cause);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     throw new Error(`Failed to read ${filePath}: ${message}`, { cause });
   }
 }
@@ -174,15 +172,13 @@ function atomicWriteFile(filePath: string, content: string, mode: number): void 
   try {
     fs.writeFileSync(tmp, content, { encoding: 'utf-8', mode });
     fs.renameSync(tmp, filePath);
-  } catch (cause) {
+  } catch (cause: unknown) {
     // Best-effort temp-file cleanup: skip if the write failed before the
     // temp file was created, or if something else already removed it.
     if (fs.existsSync(tmp)) {
       fs.unlinkSync(tmp);
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const message = cause instanceof Error ? cause.message : String(cause);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     throw new Error(`Failed to write ${filePath}: ${message}`, { cause });
   }
 }
