@@ -6,21 +6,12 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { ExpectedChange, RefactorBlueprint, ResolvedStack } from '../workflow/category-refactorer';
+import { RefactorBlueprint } from '../workflow/category-refactorer';
 import { CFNResource } from '../../_infra/cfn-template';
 import { AmplifyMigrationOperation } from '../../_infra/operation';
-import { walkCfnTree } from '../resolvers/cfn-tree-walker';
 import { extractStackNameFromId } from '../utils';
 import { StackFacade } from '../stack-facade';
 import CLITable from 'cli-table3';
-
-/**
- * Gen2 logical ID of the Custom::AmplifySecretFetcherResource — a Lambda-backed
- * custom resource that fetches OAuth client IDs/secrets from SSM at deploy time.
- * Gen2 IDPs reference this via Fn::GetAtt in ProviderDetails, and the IdentityPool
- * references it in SupportedLoginProviders.
- */
-const AMPLIFY_SECRET_FETCHER_LOGICAL_ID = 'AmplifySecretFetcherResource';
 
 export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
 export const GEN1_WEB_CLIENT = 'UserPoolClientWeb';
@@ -220,87 +211,12 @@ export function buildImportSpec(
  */
 export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   /**
-   * Logical IDs of AWS::Cognito::IdentityPool resources detected in the Gen2
-   * template during resolveTarget(). Populated so that expectedTargetChanges()
-   * can declare the intentional PLACEHOLDER diff updateTarget() produces.
-   */
-  private identityPoolLogicalIds: string[] = [];
-
-  /**
    * Returns only the core Cognito resource types. UserPoolDomain and
    * UserPoolIdentityProvider are handled via the orphan + import path
    * (beforeMove orphans them from Gen2, move imports Gen1's).
    */
   protected resourceTypes(): string[] {
     return RESOURCE_TYPES;
-  }
-
-  /**
-   * Resolves the Gen2 target stack template, then replaces any Fn::GetAtt to
-   * AmplifySecretFetcherResource inside an IdentityPool's SupportedLoginProviders
-   * with the literal string "PLACEHOLDER".
-   *
-   * Why: the IdentityPool is a core resource that MUST go through the holding
-   * stack. Its SupportedLoginProviders has Fn::GetAtt references to
-   * AmplifySecretFetcherResource — a Custom::AmplifySecretFetcherResource that
-   * stays in Gen2. If we leave the GetAtt in place, CloudFormation rejects the
-   * holding-stack template with
-   *   "instance of Fn::GetAtt references undefined resource AmplifySecretFetcherResource".
-   *
-   * The StackRefactor API validates property match for non-custom ref types, but
-   * CloudFormation accepts the literal string "PLACEHOLDER" in an IdentityPool's
-   * SupportedLoginProviders values (verified via changeset experiment in ADR-005
-   * Addendum: CREATE_COMPLETE, Replacement: False). The next Gen2 deploy
-   * regenerates the correct values from AmplifySecretFetcherResource.
-   *
-   * Scope is intentionally narrow: only Fn::GetAtt nodes whose target is
-   * AmplifySecretFetcherResource, only inside IdentityPool resources, only under
-   * SupportedLoginProviders.
-   */
-  protected override async resolveTarget(stackId: string): Promise<ResolvedStack> {
-    const resolved = await super.resolveTarget(stackId);
-    const template = resolved.resolvedTemplate;
-    const identityPoolLogicalIds: string[] = [];
-    for (const [logicalId, resource] of Object.entries(template.Resources)) {
-      if (resource.Type !== IDENTITY_POOL_TYPE) continue;
-      identityPoolLogicalIds.push(logicalId);
-      const slp = resource.Properties.SupportedLoginProviders;
-      if (!slp || typeof slp !== 'object') continue;
-      const walked = walkCfnTree(slp, (node) => {
-        if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
-          const [target] = node['Fn::GetAtt'] as string[];
-          if (target === AMPLIFY_SECRET_FETCHER_LOGICAL_ID) {
-            return 'PLACEHOLDER';
-          }
-        }
-        return undefined;
-      });
-      resource.Properties.SupportedLoginProviders = walked as object;
-    }
-    this.identityPoolLogicalIds = identityPoolLogicalIds;
-    return resolved;
-  }
-
-  /**
-   * Declares the expected changeset diff produced by resolveTarget(): the
-   * IdentityPool's SupportedLoginProviders values are replaced with the literal
-   * string 'PLACEHOLDER'. updateTarget() validate() uses this allowlist to
-   * accept those intentional diffs while still failing on unrelated diffs.
-   *
-   * Populated from `identityPoolLogicalIds` which resolveTarget() captures.
-   * Ordering: plan() calls resolveTarget before updateTarget, so this method
-   * is consulted after identityPoolLogicalIds is set.
-   */
-  protected override expectedTargetChanges(): ExpectedChange[] {
-    return this.identityPoolLogicalIds.map((logicalId) => ({
-      logicalId,
-      // CFN's ResourceChangeDetail.Target.Path is `/Properties/<PropertyName>` — the leading `/Properties/`
-      // segment is part of Path, not separated via Attribute (Attribute is `"Properties"`, indicating the change
-      // is at the property level). We prefix with `/Properties/SupportedLoginProviders` so nested changes like
-      // `/Properties/SupportedLoginProviders/accounts.google.com` are correctly matched.
-      propertyPathPrefix: '/Properties/SupportedLoginProviders',
-      expectedAfterValueSubstring: 'PLACEHOLDER',
-    }));
   }
 
   /**

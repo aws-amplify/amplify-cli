@@ -101,7 +101,7 @@ export class AuthGenerator implements Planner {
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
 
-          this.contributeToBackend(renderOptions);
+          this.contributeToBackend(renderOptions, hasIdentityProviders);
 
           if (hasIdentityProviders) {
             this.contributeProviderSetup(userPool.Domain);
@@ -117,7 +117,7 @@ export class AuthGenerator implements Planner {
    * Generates password policy overrides, identity pool config,
    * and user pool client overrides as post-defineBackend statements.
    */
-  private contributeToBackend(options: AuthRenderOptions): void {
+  private contributeToBackend(options: AuthRenderOptions, hasIdentityProviders: boolean): void {
     const authIdentifier = factory.createIdentifier('auth');
     this.backendGenerator.addImport('./auth/resource', ['auth']);
     this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(authIdentifier));
@@ -128,9 +128,15 @@ export class AuthGenerator implements Planner {
       this.contributeUserPoolOverrides(userPoolOverrides);
     }
 
-    // Identity pool: disable guest access
+    // Identity Pool Overrides
+    if (options.identityPool?.AllowUnauthenticatedIdentities === false || hasIdentityProviders) {
+      this.backendGenerator.addConstFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool');
+    }
     if (options.identityPool?.AllowUnauthenticatedIdentities === false) {
-      this.contributeIdentityPoolOverrides();
+      this.backendGenerator.addStatement(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
+    }
+    if (hasIdentityProviders) {
+      this.contributeSupportedLoginProvidersOverride();
     }
 
     // cfnUserPoolClient override for OAuth flows (must come before addClient)
@@ -143,6 +149,21 @@ export class AuthGenerator implements Planner {
     if (options.userPoolClient) {
       this.contributeUserPoolClientOverrides(options.userPoolClient);
     }
+  }
+
+  private contributeSupportedLoginProvidersOverride(): void {
+    this.backendGenerator.addStatement(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createIdentifier('cfnIdentityPool'),
+            factory.createIdentifier('addPropertyDeletionOverride'),
+          ),
+          undefined,
+          [factory.createStringLiteral('SupportedLoginProviders')],
+        ),
+      ),
+    );
   }
 
   /**
@@ -180,14 +201,6 @@ export class AuthGenerator implements Planner {
 
     // cfnUserPool.policies = { passwordPolicy: { ... } }
     this.backendGenerator.addStatement(TS.assignProp('cfnUserPool', 'policies', policies));
-  }
-
-  /**
-   * Generates cfnIdentityPool.allowUnauthenticatedIdentities = false.
-   */
-  private contributeIdentityPoolOverrides(): void {
-    this.backendGenerator.addConstFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool');
-    this.backendGenerator.addStatement(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
   }
 
   /**

@@ -387,12 +387,10 @@ design which assumed the imported resources would be deleted during rollback.
   The migration guide instructs users to configure SSM secrets matching their Gen1
   credentials.
 
-- **IdentityPool `SupportedLoginProviders`**: The Gen2 `IdentityPool` has
-  `SupportedLoginProviders` mapping `accounts.google.com` and `graph.facebook.com` to
-  client IDs via `AmplifySecretFetcherResource`. After the Gen1 IdentityPool moves in,
-  this property reflects Gen1's state. The next deploy would update it to whatever
-  `AmplifySecretFetcherResource` returns from SSM — this should be correct if the SSM
-  secrets match Gen1's credentials.
+- **IdentityPool `SupportedLoginProviders`**: Removed from the Gen2 template by the
+  generate step. Gen1 does not set this property. Amplify's social login flow uses
+  `CognitoIdentityProviders` (UserPool-to-IdentityPool mapping), not direct federation
+  via `SupportedLoginProviders`. No impact on social login functionality.
 
 ### Open questions (from original analysis)
 
@@ -435,7 +433,34 @@ Instead of moving IDPs and domain through the holding stack, **orphan them from 
 
 1. **Remove `UserPoolIdentityProvider` and `UserPoolDomain` from `RESOURCE_TYPES`**: Only 4 core types move through the holding stack: UserPool, UserPoolClient, IdentityPool, IdentityPoolRoleAttachment.
 
-2. **Resolve IdentityPool's `Fn::GetAtt` to PLACEHOLDER in `resolveTarget()`**: Before `updateTarget()` pushes the Gen2 template, replace the IdentityPool's `SupportedLoginProviders` `Fn::GetAtt` references to `AmplifySecretFetcherResource` with `"PLACEHOLDER"`. CloudFormation accepts this. The live IdentityPool is updated (PLACEHOLDER in `SupportedLoginProviders`), but this is restored on next deploy.
+2. **Remove `SupportedLoginProviders` from the Gen2 IdentityPool via generate**: The
+   CDK `defineAuth` construct with `externalProviders` generates `SupportedLoginProviders`
+   on the IdentityPool, mapping social provider domains to client IDs via `Fn::GetAtt` →
+   `AmplifySecretFetcherResource`. This property enables **direct federation** — signing
+   in to the IdentityPool directly with a social provider token, bypassing the UserPool.
+   Amplify's social login flow does not use direct federation; it routes through the
+   UserPool's Hosted UI → UserPoolIdentityProvider → UserPool tokens → IdentityPool via
+   `CognitoIdentityProviders`. Gen1 never sets `SupportedLoginProviders` on the
+   IdentityPool, and social login works correctly without it. The `generate` command
+   removes it via a CDK escape hatch:
+
+   ```typescript
+   const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+   cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders');
+   ```
+
+   This eliminates the `Fn::GetAtt` → `AmplifySecretFetcherResource` reference on the
+   IdentityPool entirely. No PLACEHOLDER substitution is needed in `resolveTarget()`
+   (forward) or `resolveSource()` (rollback), and no `expectedTargetChanges()` override
+   is needed. Both `updateTarget()` and `updateSource()` produce empty changesets for
+   the auth stack.
+
+   An earlier iteration used a PLACEHOLDER approach: `resolveTarget()` replaced the
+   `Fn::GetAtt` with `"PLACEHOLDER"` before `updateTarget()` pushed the template. This
+   worked for the forward path but caused problems on rollback — the IdentityPool would
+   arrive in Gen1 with PLACEHOLDER in `SupportedLoginProviders`, and Gen1's template
+   does not declare this property nor do Gen1's LambdaCallouts manage it, so PLACEHOLDER
+   would persist permanently.
 
 3. **Orphan IDPs + domain from Gen2 after `super.beforeMove()`**: Remove them from the Gen2 template. Physical resources survive via `DeletionPolicy: Retain`.
 
@@ -443,12 +468,18 @@ Instead of moving IDPs and domain through the holding stack, **orphan them from 
 
 5. **Rollback**: After `super.move()` (Gen2 → Gen1), orphan the imported IDPs + domain from Gen2. After `super.afterMove()` restores holding stack resources (P2) to Gen2, import Gen2's original IDPs + domain back into Gen2.
 
+6. **`DeletionPolicy: Retain` on IDPs and domain**: The generate step must also set
+   `DeletionPolicy: Retain` on `UserPoolDomain` and `UserPoolIdentityProvider` resources
+   so that CDK deploys do not strip Retain and break the orphan safety check. This is
+   handled by the upstream `gen2-migration` branch's existing Retain and validation
+   framework.
+
 ### Forward Flow
 
 ```
-resolveTarget()     → Replace IdentityPool Fn::GetAtt with PLACEHOLDER
-updateTarget()      → Push clean Gen2 template (PLACEHOLDER in SupportedLoginProviders)
+updateTarget()      → empty changeset (no SupportedLoginProviders to resolve)
 beforeMove()        → super.beforeMove() moves 4 core resources to holding
+                    → Set DeletionPolicy: Retain on Gen2 IDPs + domain
                     → Orphan IDPs + domain from Gen2
 move()              → super.move() moves Gen1 core resources into Gen2
                     → Import Gen1 IDPs + domain into Gen2 (dummy ProviderDetails)
@@ -458,6 +489,7 @@ afterMove()         → empty (not overridden)
 ### Rollback Flow
 
 ```
+updateSource()      → empty changeset
 move()              → super.move() moves core resources Gen2 → Gen1
                     → Orphan IDPs + domain from Gen2 (imported during forward move)
 afterMove()         → super.afterMove() restores holding stack resources (P2) to Gen2
