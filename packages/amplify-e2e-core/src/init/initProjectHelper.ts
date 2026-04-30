@@ -174,6 +174,7 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
     env,
     disableCIDetection: s.disableCIDetection,
   });
+  console.log(`Spawned ${binaryPath} with args: '${cliArgs.join(' ')}'`);
 
   if (s.includeGen2RecommendationPrompt) {
     chain
