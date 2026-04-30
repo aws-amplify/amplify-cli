@@ -87,6 +87,7 @@ export class App {
     this.gen2BranchName = `gen2-${this.envName}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.amplifyPath = getCLIPath(true);
+    this.logger.info(`Amplify Path: ${this.amplifyPath}`);
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
     const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
