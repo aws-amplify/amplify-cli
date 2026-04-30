@@ -166,7 +166,9 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-  const chain = spawn(getCLIPath(s.testingWithLatestCodebase), cliArgs, {
+  const binaryPath = getCLIPath(s.testingWithLatestCodebase);
+  console.log(`Running ${binaryPath} with args: '${cliArgs.join(' ')}'`);
+  const chain = spawn(binaryPath, cliArgs, {
     cwd,
     stripColors: true,
     env,
@@ -205,6 +207,7 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
 
   if (!providerConfigSpecified) {
     const profileIndex = getProfileIndex(s.profileName);
+    console.log(`profile index: ${profileIndex}, profile name: ${s.profileName}`);
 
     chain
       .wait('Using default provider  awscloudformation')
