@@ -12,15 +12,23 @@ export const auth = defineAuth({
       google: {
         clientId: secret('GOOGLE_CLIENT_ID'),
         clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+        scopes: ['openid', 'email', 'profile'],
         attributeMapping: {
           email: 'email',
+          custom: {
+            username: 'sub',
+          },
         },
       },
       facebook: {
         clientId: secret('FACEBOOK_CLIENT_ID'),
         clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
+        scopes: ['email', 'public_profile'],
         attributeMapping: {
           email: 'email',
+          custom: {
+            username: 'id',
+          },
         },
       },
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],

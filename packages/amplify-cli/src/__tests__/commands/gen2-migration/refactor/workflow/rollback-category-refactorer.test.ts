@@ -185,9 +185,9 @@ describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based
 
   it('throws for resource with no known Gen1 logical ID', async () => {
     const refactorer = new TestRollbackMappingRefactorer(new Map());
-    await expect(refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map())).rejects.toThrow(
-      'Unable to determine target id of resource amplifyTopic',
-    );
+    await expect(
+      refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map()),
+    ).rejects.toThrow('Unable to determine target id of resource amplifyTopic');
   });
 
   it('skips resources that already exist in target stack', async () => {

@@ -1,4 +1,7 @@
-import { resolveParameters } from '../../../../../commands/gen2-migration/refactor/resolvers/cfn-parameter-resolver';
+import {
+  resolveNoEchoParameters,
+  resolveParameters,
+} from '../../../../../commands/gen2-migration/refactor/resolvers/cfn-parameter-resolver';
 import { CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
 
 const baseTemplate: CFNTemplate = {
@@ -103,5 +106,45 @@ describe('resolveParameters', () => {
     };
     const result = resolveParameters(template, [{ ParameterKey: 'ListParam', ParameterValue: 'single' }]);
     expect(result.Resources.R.Properties.Zones).toEqual(['single']);
+  });
+});
+
+describe('resolveNoEchoParameters', () => {
+  it('transforms NoEcho parameter to UsePreviousValue', () => {
+    const result = resolveNoEchoParameters(baseTemplate, [{ ParameterKey: 'SecretParam', ParameterValue: '****' }]);
+    expect(result).toEqual([{ ParameterKey: 'SecretParam', UsePreviousValue: true }]);
+    expect(result[0]).not.toHaveProperty('ParameterValue');
+  });
+
+  it('passes non-NoEcho parameters through unchanged', () => {
+    const input = [{ ParameterKey: 'BucketNameParam', ParameterValue: 'my-bucket' }];
+    const result = resolveNoEchoParameters(baseTemplate, input);
+    expect(result).toEqual(input);
+  });
+
+  it('handles mixed NoEcho and regular parameters', () => {
+    const input = [
+      { ParameterKey: 'BucketNameParam', ParameterValue: 'my-bucket' },
+      { ParameterKey: 'SecretParam', ParameterValue: '****' },
+      { ParameterKey: 'ListParam', ParameterValue: 'a,b,c' },
+    ];
+    const result = resolveNoEchoParameters(baseTemplate, input);
+    expect(result).toEqual([
+      { ParameterKey: 'BucketNameParam', ParameterValue: 'my-bucket' },
+      { ParameterKey: 'SecretParam', UsePreviousValue: true },
+      { ParameterKey: 'ListParam', ParameterValue: 'a,b,c' },
+    ]);
+  });
+
+  it('leaves parameters without a ParameterKey alone', () => {
+    const input = [{ ParameterValue: 'orphan' }] as any[];
+    const result = resolveNoEchoParameters(baseTemplate, input);
+    expect(result).toEqual(input);
+  });
+
+  it('passes through parameters with no matching template declaration', () => {
+    const input = [{ ParameterKey: 'UnknownParam', ParameterValue: 'value' }];
+    const result = resolveNoEchoParameters(baseTemplate, input);
+    expect(result).toEqual(input);
   });
 });

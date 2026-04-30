@@ -9,6 +9,7 @@ import { Duration } from 'aws-cdk-lib';
 import {
   OAuthScope,
   UserPoolClientIdentityProvider,
+  CfnUserPoolDomain,
 } from 'aws-cdk-lib/aws-cognito';
 
 const backend = defineBackend({
@@ -78,7 +79,10 @@ Object.keys(providerSetupResult).forEach((provider) => {
     userPoolClient.node.addDependency(providerSetupPropertyValue);
   }
 });
-// backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
+const cfnUserPoolDomain = backend.auth.resources.userPool.node.findChild(
+  'UserPoolDomain'
+).node.defaultChild as CfnUserPoolDomain;
+cfnUserPoolDomain.domain = 'mediavault1f08412d-1f08412d-main';
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
   {

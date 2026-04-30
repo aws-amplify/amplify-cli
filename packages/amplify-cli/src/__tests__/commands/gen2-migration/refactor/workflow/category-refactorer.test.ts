@@ -418,13 +418,27 @@ describe('stack status validation', () => {
     expect(result.report).toMatch(/gen1-storage-stack.*UPDATE_IN_PROGRESS/);
   });
 
-  it('reports failure when destination stack is in UPDATE_ROLLBACK_COMPLETE', async () => {
+  it('passes when destination stack is in UPDATE_ROLLBACK_COMPLETE', async () => {
+    // UPDATE_ROLLBACK_COMPLETE is a terminal CFN state from which new updates are permitted.
+    // The per-category check accepts it for parity with the root-level validateDeploymentStatus
+    // (a prior failed update should not block retrying with a fixed template).
     setupWithStatuses(StackStatus.CREATE_COMPLETE, 'UPDATE_ROLLBACK_COMPLETE' as StackStatus);
     const ops = await createRefactorer().plan();
     const validation = ops[1].validate();
     const result = await validation!.run();
+    expect(result.valid).toBe(true);
+    expect(result.report).toBeUndefined();
+  });
+
+  it('reports failure when destination stack is in ROLLBACK_COMPLETE (non-updatable)', async () => {
+    setupWithStatuses(StackStatus.CREATE_COMPLETE, 'ROLLBACK_COMPLETE' as StackStatus);
+    const ops = await createRefactorer().plan();
+    const validation = ops[1].validate();
+    const result = await validation!.run();
     expect(result.valid).toBe(false);
-    expect(result.report).toMatch(/gen2-storage-stack.*UPDATE_ROLLBACK_COMPLETE/);
+    expect(result.report).toMatch(/gen2-storage-stack.*ROLLBACK_COMPLETE/);
+    // Report should mention all three accepted terminal states.
+    expect(result.report).toContain('UPDATE_ROLLBACK_COMPLETE');
   });
 
   it('passes when both stacks are in CREATE_COMPLETE', async () => {
@@ -453,5 +467,143 @@ describe('placeholder constants', () => {
 
   it('placeholder logical ID is MigrationPlaceholder', () => {
     expect(MIGRATION_PLACEHOLDER_LOGICAL_ID).toBe('MigrationPlaceholder');
+  });
+});
+
+import { ExpectedChange } from '../../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+
+describe('CategoryRefactorer.updateTarget validate — expected-change allowlist', () => {
+  let cfnMock: ReturnType<typeof mockClient>;
+  beforeEach(() => {
+    cfnMock = mockClient(CloudFormationClient);
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+  });
+  afterEach(() => cfnMock.restore());
+
+  /**
+   * Returns the updateTarget operation by running plan() against a storage
+   * setup where the target changeset is configured via the provided
+   * DescribeChangeSet mock. Uses a custom subclass that overrides
+   * expectedTargetChanges() so we can exercise the allowlist behavior
+   * without depending on auth-specific logic.
+   */
+  async function runWithChangeSet(opts: {
+    changeSet: any;
+    allowlist: ExpectedChange[];
+  }) {
+    setupStorageMocks(cfnMock);
+    // updateSource = source stack describe call: return an empty changes array.
+    cfnMock.on(DescribeChangeSetCommand).callsFake((input) => {
+      if (input.StackName === 'gen2-storage-stack') {
+        return { Status: 'CREATE_COMPLETE', StackName: input.StackName, Changes: [], ...opts.changeSet };
+      }
+      return { Status: 'CREATE_COMPLETE', StackName: input.StackName, Changes: [] };
+    });
+
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
+    const Subclass = class extends StorageS3ForwardRefactorer {
+      protected override expectedTargetChanges(): ExpectedChange[] {
+        return opts.allowlist;
+      }
+    };
+    const ops = await new Subclass(
+      gen1Env,
+      gen2Branch,
+      gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' as const },
+      cfn,
+    ).plan();
+
+    // Op order in plan(): [sourceStatus, destStatus, updateSource, updateTarget, ...]
+    const updateTargetOp = ops[3];
+    expect(updateTargetOp).toBeDefined();
+    return updateTargetOp;
+  }
+
+  it('passes when changeset is empty (no changes detected)', async () => {
+    const op = await runWithChangeSet({
+      changeSet: { Changes: [] },
+      allowlist: [],
+    });
+    const result = await op.validate()!.run();
+    expect(result.valid).toBe(true);
+    expect(result.report).toBeUndefined();
+  });
+
+  it('passes when all diffs are on the expected allowlist', async () => {
+    const op = await runWithChangeSet({
+      changeSet: {
+        Changes: [
+          {
+            ResourceChange: {
+              LogicalResourceId: 'amplifyStorageBucket12345678',
+              Action: 'Modify',
+              Details: [
+                {
+                  Target: {
+                    Attribute: 'Properties',
+                    Name: 'Policy',
+                    Path: '/Policy/Foo',
+                    BeforeValue: 'X',
+                    AfterValue: 'PLACEHOLDER-value',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      allowlist: [
+        {
+          logicalId: 'amplifyStorageBucket12345678',
+          propertyPathPrefix: '/Policy',
+          expectedAfterValueSubstring: 'PLACEHOLDER',
+        },
+      ],
+    });
+    const result = await op.validate()!.run();
+    expect(result.valid).toBe(true);
+  });
+
+  it('fails when an unexpected diff exists outside the allowlist', async () => {
+    const op = await runWithChangeSet({
+      changeSet: {
+        Changes: [
+          {
+            ResourceChange: {
+              LogicalResourceId: 'amplifyStorageBucket12345678',
+              Action: 'Modify',
+              Details: [
+                {
+                  Target: {
+                    Attribute: 'Properties',
+                    Name: 'BucketName',
+                    Path: '/BucketName',
+                    BeforeValue: 'old',
+                    AfterValue: 'new',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      allowlist: [
+        {
+          logicalId: 'amplifyStorageBucket12345678',
+          propertyPathPrefix: '/Policy',
+          expectedAfterValueSubstring: 'PLACEHOLDER',
+        },
+      ],
+    });
+    const result = await op.validate()!.run();
+    expect(result.valid).toBe(false);
+    expect(result.report).toBeDefined();
+    expect(result.report).toContain('amplifyStorageBucket12345678');
+    expect(result.report).toContain('/BucketName');
   });
 });
