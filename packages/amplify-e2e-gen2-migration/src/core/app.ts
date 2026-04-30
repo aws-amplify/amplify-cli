@@ -133,19 +133,35 @@ export class App {
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await initJSProjectWithProfileGen2Migration(this.targetAppPath, {
-      name: this.deploymentName,
-      envName: this.envName,
-      editor: 'Visual Studio Code',
-      framework,
-      srcDir: 'src',
-      distDir: 'dist',
-      buildCmd: 'npm run build',
-      startCmd: 'npm run start',
-      disableAmplifyAppCreation: false,
-      profileName: this.profile,
-    });
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      await initJSProjectWithProfileGen2Migration(this.targetAppPath, {
+        name: this.deploymentName,
+        envName: this.envName,
+        editor: 'Visual Studio Code',
+        framework,
+        srcDir: 'src',
+        distDir: 'dist',
+        buildCmd: 'npm run build',
+        startCmd: 'npm run start',
+        disableAmplifyAppCreation: false,
+        profileName: this.profile,
+      });
+    } catch (error) {
+      // The nexpect-based init helper runs amplify under node-pty and
+      // captures its output in an asciinema recorder buffer that's
+      // discarded on exit. On failure the thrown error contains only
+      // "Process exited with non zero exit code 1", so we surface the
+      // amplify CLI's own log file here to make the actual failure
+      // diagnosable in CI.
+      const logTail = readRecentAmplifyLogs(this.targetAppPath);
+      if (logTail) {
+        this.logger.error(`amplify init failed. Tail of amplify CLI logs:\n${logTail}`);
+      } else {
+        this.logger.error('amplify init failed. No amplify CLI log output was captured.');
+      }
+      throw error;
+    }
     this.logger.info('amplify init completed');
   }
 
@@ -647,4 +663,71 @@ async function findStackByPattern(
     if (match?.StackName) return match.StackName;
   }
   throw new Error(`No stack found matching pattern "${pattern.source}"`);
+}
+
+/**
+ * Number of lines to include from the tail of each amplify CLI log file.
+ * Enough to carry the stack trace and surrounding context without flooding
+ * CI logs.
+ */
+const AMPLIFY_LOG_TAIL_LINES = 200;
+
+/**
+ * Read the tail of the amplify CLI's log files (global under `~/.amplify/logs`
+ * plus the project-local `<projectPath>/logs`) and format them as a single
+ * labeled block. Returns an empty string if no readable log files are found.
+ *
+ * Amplify uses `winston-daily-rotate-file`, so filenames are dated:
+ * `amplify-cli-YYYY-MM-DD.log`. We pick the most recently modified file in
+ * each directory rather than computing the date ourselves, which keeps this
+ * robust across day rollovers and clock skew.
+ */
+function readRecentAmplifyLogs(projectPath: string): string {
+  const sources: { label: string; dir: string }[] = [
+    { label: 'global amplify log', dir: path.join(os.homedir(), '.amplify', 'logs') },
+    { label: 'project amplify log', dir: path.join(projectPath, 'logs') },
+  ];
+
+  const blocks: string[] = [];
+  for (const { label, dir } of sources) {
+    const tail = readMostRecentLogTail(dir);
+    if (tail) {
+      blocks.push(`--- ${label} (${dir}) ---\n${tail}`);
+    }
+  }
+  return blocks.join('\n\n');
+}
+
+/**
+ * Return the last `AMPLIFY_LOG_TAIL_LINES` lines of the most recently
+ * modified `amplify-cli-*.log` file in `dir`. Returns an empty string if
+ * the directory is missing or empty. Read errors are swallowed — this is a
+ * best-effort diagnostic helper and must not mask the original failure.
+ */
+function readMostRecentLogTail(dir: string): string {
+  if (!fs.existsSync(dir)) {
+    return '';
+  }
+  const candidates = fs
+    .readdirSync(dir)
+    .filter((name) => name.startsWith('amplify-cli-') && name.endsWith('.log'))
+    .map((name) => {
+      const full = path.join(dir, name);
+      return { full, mtime: fs.statSync(full).mtimeMs };
+    })
+    .sort((a, b) => b.mtime - a.mtime);
+  if (candidates.length === 0) {
+    return '';
+  }
+  try {
+    const content = fs.readFileSync(candidates[0].full, 'utf-8');
+    const lines = content.split('\n');
+    return lines.slice(-AMPLIFY_LOG_TAIL_LINES).join('\n');
+  } catch {
+    // Intentional swallow: this helper is a best-effort diagnostic for a
+    // failure we're already about to rethrow. Letting a log-read error
+    // escape here would replace the caller's init error with a less-useful
+    // "ENOENT/EACCES on amplify-cli-*.log" and hide the real problem.
+    return '';
+  }
 }
