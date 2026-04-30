@@ -1,7 +1,7 @@
 import { Plan } from './_common/plan';
 import { AmplifyMigrationStep } from './_common/step';
 import { AmplifyMigrationOperation, Validation } from './_common/operation';
-import { DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
+import { DescribeChangeSetOutput, DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 
@@ -84,5 +84,31 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
         });
       },
     };
+  }
+
+  private isAllowedRetainChangeset(changeSet: DescribeChangeSetOutput): boolean {
+    const changes = changeSet.Changes ?? [];
+
+    if (changes.length === 0) return true;
+
+    for (const change of changes) {
+      const rc = change.ResourceChange;
+
+      if (!rc) return false;
+      if (rc.Action !== 'Modify') return false;
+      if (rc.Replacement === 'True') return false;
+
+      const details = rc.Details ?? [];
+      if (details.length === 0) return false;
+
+      for (const detail of details) {
+        const attr = detail.Target?.Attribute;
+        const after = detail.Target?.AfterValue;
+        if (attr !== 'DeletionPolicy' && attr !== 'UpdateReplacePolicy') return false;
+        if (after !== 'Retain') return false;
+      }
+    }
+
+    return true;
   }
 }
