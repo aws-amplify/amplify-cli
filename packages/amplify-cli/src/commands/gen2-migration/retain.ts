@@ -1,7 +1,9 @@
 import { Plan } from './_common/plan';
 import { AmplifyMigrationStep } from './_common/step';
 import { AmplifyMigrationOperation, Validation } from './_common/operation';
-import { paginateListStackResources } from '@aws-sdk/client-cloudformation';
+import { DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
+import { Cfn } from './_common/cfn';
+import { extractStackNameFromId } from './_common/utils';
 
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
@@ -48,5 +50,47 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     result.push(stackId);
     return result;
+  }
+
+  private async buildRetainOperation(stackId: string): Promise<AmplifyMigrationOperation> {
+    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+    const stackName = extractStackNameFromId(stackId);
+
+    const template = await cfn.fetchTemplate(stackId);
+    for (const resource of Object.values(template.Resources)) {
+      resource.DeletionPolicy = 'Retain';
+      resource.UpdateReplacePolicy = 'Retain';
+    }
+
+    const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
+
+    const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
+      ParameterKey: p.ParameterKey,
+      UsePreviousValue: true,
+    }));
+
+    const changeset = await cfn.createChangeSet({ stackName: stackId, parameters, templateBody: template });
+
+    if (!changeset) {
+      return {
+        describe: async () => [`${stackName} already retained`],
+        validate: () => undefined,
+        execute: async () => {
+          // no-op: stack is already fully retained
+        },
+      };
+    }
+
+    return {
+      describe: async () => [`Apply DeletionPolicy: Retain to resources in ${stackName}`],
+      validate: () => undefined,
+      execute: async () => {
+        await cfn.executeChangeSet({
+          changeSet: changeset,
+          templateBody: template,
+          captureSnapshot: false,
+        });
+      },
+    };
   }
 }
