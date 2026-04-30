@@ -140,6 +140,78 @@ batch:
       buildspec: codebuild_specs/cleanup_resources.yml
       depend-on:
         - aggregate_e2e_reports
+        - migrate_backend_only
+        - migrate_discussions
+        - migrate_fitness_tracker
+        - migrate_media_vault
+        - migrate_mood_board
+        - migrate_product_catalog
+        - migrate_project_boards
+        - migrate_store_locator
+    - identifier: migrate_backend_only
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: backend-only
+    - identifier: migrate_discussions
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: discussions
+    - identifier: migrate_fitness_tracker
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: fitness-tracker
+    - identifier: migrate_media_vault
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: media-vault
+    - identifier: migrate_mood_board
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: mood-board
+    - identifier: migrate_product_catalog
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: product-catalog
+    - identifier: migrate_project_boards
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: project-boards
+    - identifier: migrate_store_locator
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: store-locator
     - identifier: l_diagnose_mock_api_hooks_a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
