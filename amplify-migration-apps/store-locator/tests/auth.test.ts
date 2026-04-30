@@ -11,7 +11,9 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { signUp } from 'aws-amplify/auth';
 import { randomBytes } from 'crypto';
-import { config } from './signup';
+import { configureAmplify } from './signup';
+
+const config = configureAmplify();
 
 /**
  * Verifies the PostConfirmation Cognito trigger auto-adds confirmed users
@@ -30,7 +32,7 @@ import { config } from './signup';
  * config with just the one field flipped.
  */
 describe('PostConfirmation trigger', () => {
-  const gen2Auth = (config as any)?.auth;
+  const gen2Auth = config.auth;
   const userPoolId = config.aws_user_pools_id ?? gen2Auth?.user_pool_id;
   const region = config.aws_cognito_region ?? gen2Auth?.aws_region;
 
