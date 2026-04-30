@@ -150,7 +150,9 @@ function readExistingFile(filePath: string): { existing: string; existingMode: n
     const existingMode = fs.statSync(filePath).mode & 0o777;
     return { existing, existingMode };
   } catch (cause) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const message = cause instanceof Error ? cause.message : String(cause);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     throw new Error(`Failed to read ${filePath}: ${message}`, { cause });
   }
 }
@@ -178,7 +180,9 @@ function atomicWriteFile(filePath: string, content: string, mode: number): void 
     if (fs.existsSync(tmp)) {
       fs.unlinkSync(tmp);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const message = cause instanceof Error ? cause.message : String(cause);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     throw new Error(`Failed to write ${filePath}: ${message}`, { cause });
   }
 }
