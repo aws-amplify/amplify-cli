@@ -18,7 +18,10 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       operations,
       logger: this.logger,
       title: 'Execute',
-      implications: ['Set DeletionPolicy and UpdateReplacePolicy to Retain for every resource in Gen1 CloudFormation stacks'],
+      implications: [
+        'DeletionPolicy and UpdateReplacePolicy will be set to Retain on every resource in Gen1 CloudFormation stacks',
+        'This protects your Gen2 environment from unintended impact caused by changes to Gen1 stacks',
+      ],
     });
   }
 
