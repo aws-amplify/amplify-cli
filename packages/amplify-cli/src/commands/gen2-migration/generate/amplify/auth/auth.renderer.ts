@@ -255,7 +255,8 @@ export class AuthRenderer {
 
     defineAuthProperties.push(this.createLogInWithPropertyAssignment(options, loginFlags));
 
-    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes);
+    const clientAttributeNames = AuthRenderer.collectClientAttributeNames(options.userPoolClient);
+    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes, clientAttributeNames);
     const customAttributes = AuthRenderer.deriveCustomUserAttributes(options.userPool.SchemaAttributes);
     const hasStandard = Object.keys(standardAttributes).length > 0;
     const hasCustom = Object.keys(customAttributes).length > 0;
@@ -402,15 +403,33 @@ export class AuthRenderer {
   }
 
   /**
+   * Collects unique standard attribute names from a user pool client's
+   * ReadAttributes and WriteAttributes lists.
+   */
+  private static collectClientAttributeNames(client?: UserPoolClientType): string[] {
+    if (!client) return [];
+    const names = new Set<string>();
+    for (const attr of client.ReadAttributes ?? []) {
+      if (attr in MAPPED_USER_ATTRIBUTE_NAME) names.add(attr);
+    }
+    for (const attr of client.WriteAttributes ?? []) {
+      if (attr in MAPPED_USER_ATTRIBUTE_NAME) names.add(attr);
+    }
+    return Array.from(names);
+  }
+
+  /**
    * Extracts standard user attributes from schema, keeping only required ones.
    */
   private static deriveStandardUserAttributes(
     schema?: readonly SchemaAttributeType[],
+    additionalAttributeNames?: readonly string[],
   ): Record<string, { readonly required?: boolean; readonly mutable?: boolean }> {
     if (!schema) return {};
     const result: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> = {};
+    const additionalSet = new Set(additionalAttributeNames ?? []);
     for (const attribute of schema) {
-      if (attribute.Name && attribute.Name in MAPPED_USER_ATTRIBUTE_NAME && attribute.Required) {
+      if (attribute.Name && attribute.Name in MAPPED_USER_ATTRIBUTE_NAME && (attribute.Required || additionalSet.has(attribute.Name))) {
         result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
           required: attribute.Required,
           mutable: attribute.Mutable,
@@ -905,6 +924,38 @@ export class AuthRenderer {
     return factory.createObjectLiteralExpression(properties, true);
   }
 
+  /**
+   * Creates a `new ClientAttributes().withStandardAttributes({...}).withCustomAttributes(...)` expression
+   * from a list of Cognito attribute names (e.g. ['email', 'birthdate', 'custom:dept']).
+   */
+  private static createClientAttributesExpression(attributes: string[]): ts.Expression {
+    const standardAttrs = attributes.filter((a) => a in MAPPED_USER_ATTRIBUTE_NAME);
+    const customAttrs = attributes.filter((a) => a.startsWith('custom:'));
+
+    let expr: ts.Expression = factory.createNewExpression(factory.createIdentifier('ClientAttributes'), undefined, []);
+
+    if (standardAttrs.length > 0) {
+      const props = standardAttrs.map((attr) =>
+        factory.createPropertyAssignment(factory.createIdentifier(MAPPED_USER_ATTRIBUTE_NAME[attr]), factory.createTrue()),
+      );
+      expr = factory.createCallExpression(
+        factory.createPropertyAccessExpression(expr, factory.createIdentifier('withStandardAttributes')),
+        undefined,
+        [factory.createObjectLiteralExpression(props, true)],
+      );
+    }
+
+    if (customAttrs.length > 0) {
+      expr = factory.createCallExpression(
+        factory.createPropertyAccessExpression(expr, factory.createIdentifier('withCustomAttributes')),
+        undefined,
+        customAttrs.map((a) => factory.createStringLiteral(a)),
+      );
+    }
+
+    return expr;
+  }
+
   private static createProviderConfig(
     config: Record<string, string>,
     attributeMapping: Record<string, string> | undefined,
@@ -1018,6 +1069,10 @@ export class AuthRenderer {
 
     if (options.userPoolClient) {
       imports['aws-cdk-lib'].add('Duration');
+      if (options.userPoolClient.ReadAttributes?.length || options.userPoolClient.WriteAttributes?.length) {
+        if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
+        imports['aws-cdk-lib/aws-cognito'].add('ClientAttributes');
+      }
     }
 
     if (hasIdentityProviders) {
@@ -1198,6 +1253,18 @@ export class AuthRenderer {
       }
 
       clientProps.push(factory.createPropertyAssignment('oAuth', factory.createObjectLiteralExpression(oAuthProps, true)));
+    }
+
+    if (userPoolClient.ReadAttributes?.length) {
+      clientProps.push(
+        factory.createPropertyAssignment('readAttributes', AuthRenderer.createClientAttributesExpression(userPoolClient.ReadAttributes)),
+      );
+    }
+
+    if (userPoolClient.WriteAttributes?.length) {
+      clientProps.push(
+        factory.createPropertyAssignment('writeAttributes', AuthRenderer.createClientAttributesExpression(userPoolClient.WriteAttributes)),
+      );
     }
 
     const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;

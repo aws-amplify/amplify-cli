@@ -1703,6 +1703,69 @@ describe('AuthGenerator', () => {
       `);
   });
 
+  it('preserves user attribute read/write restrictions on NativeAppClient', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', Required: true, Mutable: true },
+        { Name: 'birthdate', Required: false, Mutable: true },
+        { Name: 'address', Required: false, Mutable: true },
+      ],
+      Policies: {
+        PasswordPolicy: {
+          MinimumLength: 12,
+          RequireLowercase: true,
+          RequireNumbers: true,
+          RequireSymbols: true,
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: false,
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockImplementation((_poolId: string, clientId: string) => {
+      if (clientId === 'webclient123') {
+        return Promise.resolve(undefined);
+      }
+      return Promise.resolve({
+        RefreshTokenValidity: 30,
+        ReadAttributes: ['birthdate', 'email'],
+        WriteAttributes: ['address', 'email'],
+      });
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('auth/resource.ts');
+    // birthdate and address should be declared in userAttributes even though not required
+    expect(resourceTs).toContain('birthdate');
+    expect(resourceTs).toContain('address');
+    // readAttributes and writeAttributes should be on the NativeAppClient
+    expect(resourceTs).toContain('readAttributes');
+    expect(resourceTs).toContain('writeAttributes');
+    expect(resourceTs).toContain('ClientAttributes');
+  });
+
   it('emits aliasAttributes in escape hatch', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
