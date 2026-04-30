@@ -255,7 +255,7 @@ export class AuthRenderer {
 
     defineAuthProperties.push(this.createLogInWithPropertyAssignment(options, loginFlags));
 
-    const clientAttributeNames = AuthRenderer.collectClientAttributeNames(options.userPoolClient);
+    const clientAttributeNames = options.userPoolClient ? AuthRenderer.collectClientAttributeNames(options.userPoolClient) : [];
     const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes, clientAttributeNames);
     const customAttributes = AuthRenderer.deriveCustomUserAttributes(options.userPool.SchemaAttributes);
     const hasStandard = Object.keys(standardAttributes).length > 0;
@@ -406,8 +406,7 @@ export class AuthRenderer {
    * Collects unique standard attribute names from a user pool client's
    * ReadAttributes and WriteAttributes lists.
    */
-  private static collectClientAttributeNames(client?: UserPoolClientType): string[] {
-    if (!client) return [];
+  private static collectClientAttributeNames(client: UserPoolClientType): string[] {
     const names = new Set<string>();
     for (const attr of client.ReadAttributes ?? []) {
       if (attr in MAPPED_USER_ATTRIBUTE_NAME) names.add(attr);
