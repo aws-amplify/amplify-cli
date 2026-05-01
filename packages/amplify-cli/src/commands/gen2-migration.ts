@@ -118,7 +118,11 @@ export const run = async (context: $TSContext) => {
   await plan.describe();
 
   if (!rollingBack) {
-    printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
+    if (stepName === 'retain') {
+      printer.info(chalk.grey('(This operation cannot be rolled back.)'));
+    } else {
+      printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
+    }
     printer.blankLine();
   }
 
