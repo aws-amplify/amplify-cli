@@ -80,7 +80,30 @@ export class DataGenerator implements Planner {
     ];
   }
 
+  /**
+   * Extracts @model type names and maps each to its DynamoDB table
+   * name ({ModelName}-{apiId}-{envName}).
+   *
+   * Reads the compiled build/schema.graphql where the Amplify
+   * transformer expands each @model type into a `Model<Name>Connection`
+   * type. This is more reliable than regex-matching `@model` in the
+   * raw schema, which is sensitive to directive ordering.
+   *
+   * Falls back to the raw schema regex when build/schema.graphql is
+   * absent.
+   */
   private createTableMappings(schema: string, apiId: string): Record<string, string> {
+    const buildSchemaPath = path.join('api', this.resource.resourceName, 'build', 'schema.graphql');
+    if (this.gen1App.fileExists(buildSchemaPath)) {
+      const buildSchema = this.gen1App.file(buildSchemaPath);
+      const connectionRegex = /type\s+Model(\w+)Connection\b/g;
+      const mapping: Record<string, string> = {};
+      let match: RegExpExecArray | null;
+      while ((match = connectionRegex.exec(buildSchema)) !== null) {
+        mapping[match[1]] = [match[1], apiId, this.gen1App.envName].join('-');
+      }
+      return mapping;
+    }
     const modelRegex = /type\s+(\w+)\s+@model/g;
     const mapping: Record<string, string> = {};
     let match: RegExpExecArray | null;

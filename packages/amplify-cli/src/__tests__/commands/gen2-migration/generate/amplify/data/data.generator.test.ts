@@ -659,4 +659,59 @@ describe('DataGenerator', () => {
       "
     `);
   });
+
+  it('renders table mappings when @model is not the first directive', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'abc' },
+        },
+      },
+    });
+    const rawSchema = 'type Todo @auth(rules: [{ allow: public }]) @model { id: ID! } type Post @key(name: "byUser") @model { id: ID! }';
+    const buildSchema = [
+      'type Todo { id: ID! createdAt: AWSDateTime! updatedAt: AWSDateTime! }',
+      'type Post { id: ID! createdAt: AWSDateTime! updatedAt: AWSDateTime! }',
+      'type ModelTodoConnection { items: [Todo]! nextToken: String }',
+      'type ModelPostConnection { items: [Post]! nextToken: String }',
+    ].join('\n');
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((p: string) => p.includes('build/schema.graphql'));
+    jest.spyOn(gen1App, 'file').mockImplementation((p: string) => {
+      if (p.includes('build/schema.graphql')) return buildSchema;
+      return rawSchema;
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'abc';
+      return undefined as any;
+    });
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @auth(rules: [{ allow: public }]) @model { id: ID! } type Post @key(name: "byUser") @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {
+              Todo: 'Todo-abc-main',
+              Post: 'Post-abc-main',
+            },
+          },
+        ],
+        schema,
+      });
+      "
+    `);
+  });
 });
