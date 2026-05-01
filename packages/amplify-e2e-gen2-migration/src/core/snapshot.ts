@@ -9,6 +9,8 @@ import {
   paginateListStackResources,
 } from '@aws-sdk/client-cloudformation';
 
+export const REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY = '.amplify/gen2-migration/refactor.operations';
+
 // ---------------------------------------------------------------------------
 // Shared helpers
 // ---------------------------------------------------------------------------
@@ -134,7 +136,7 @@ export async function capturePreRefactor(
  * Copies refactor operations into `_snapshot.post.refactor/`.
  */
 export async function capturePostRefactor(deployedAppPath: string, dstBasePath: string): Promise<void> {
-  const srcBasePath = path.join(deployedAppPath, '.gen2-migration/refactor.operations');
+  const srcBasePath = path.join(deployedAppPath, REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY);
   const destPath = path.join(dstBasePath, '_snapshot.post.refactor');
   resetDir(destPath);
   copySync(srcBasePath, destPath);

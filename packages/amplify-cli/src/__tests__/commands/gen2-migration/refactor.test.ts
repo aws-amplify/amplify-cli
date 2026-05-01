@@ -1,5 +1,5 @@
 import { AmplifyMigrationRefactorStep } from '../../../commands/gen2-migration/refactor';
-import { OUTPUT_DIRECTORY } from '../../../commands/gen2-migration/_common/cfn';
+import { REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY } from '../../../commands/gen2-migration/_common/cfn';
 import { MigrationApp, MigrationAppOptions } from './_framework/app';
 import { Gen1App } from '../../../commands/gen2-migration/_common/gen1-app';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
@@ -100,7 +100,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       await plan.execute();
 
       const isUpdatingSnapshots = process.env.UPDATE_SNAPSHOTS === '1' || expect.getState().snapshotState._updateSnapshot === 'all';
-      const actualPath = path.join(process.cwd(), OUTPUT_DIRECTORY);
+      const actualPath = path.join(process.cwd(), REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY);
       const report = await app.snapshots.refactor.compare(actualPath);
 
       if (report.hasChanges) {
