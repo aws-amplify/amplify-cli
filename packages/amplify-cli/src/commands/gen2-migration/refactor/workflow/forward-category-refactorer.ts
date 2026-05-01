@@ -1,8 +1,8 @@
-import { Output, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
-import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
+import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
@@ -109,9 +109,12 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const withDeps = resolveDependencies(withOutputs);
     const resolved = resolveConditions(withDeps, parameters);
 
-    const updatedParameters = await this.resolveOAuthParameters(parameters, outputs);
+    // Transform masked NoEcho parameter values to UsePreviousValue so the "****"
+    // returned by DescribeStacks does not flow back into CreateChangeSet /
+    // UpdateStack and re-resolve into the template.
+    const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
 
-    return { stackId, resolvedTemplate: resolved, parameters: updatedParameters };
+    return { stackId, resolvedTemplate: resolved, parameters: sanitizedParameters };
   }
 
   /**
@@ -137,7 +140,12 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       accountId: this.accountId,
     });
 
-    return { stackId, resolvedTemplate: resolved, parameters };
+    // Transform masked NoEcho parameter values to UsePreviousValue so the "****"
+    // returned by DescribeStacks does not flow back into CreateChangeSet /
+    // UpdateStack and re-resolve into the template.
+    const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
+
+    return { stackId, resolvedTemplate: resolved, parameters: sanitizedParameters };
   }
 
   /**
@@ -215,13 +223,5 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected async afterMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     return [];
-  }
-
-  /**
-   * Hook for OAuth parameter resolution. Override in auth category.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async resolveOAuthParameters(parameters: Parameter[], _outputs: Output[]): Promise<Parameter[]> {
-    return parameters;
   }
 }
