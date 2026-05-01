@@ -113,18 +113,22 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       const noun = toApply.length === 1 ? 'stack' : 'stacks';
       const sectionLines: string[] = [];
       sectionLines.push(`Apply DeletionPolicy: Retain to all resources in ${toApply.length} Gen1 CloudFormation ${noun}:`);
-      for (const b of toApply) {
-        sectionLines.push(`    • ${b.stackName}`);
+      toApply.forEach((b, i) => {
+        sectionLines.push('');
+        sectionLines.push(`    ${i + 1}) ${b.stackName}`);
         const url = b.changeSet ? cfnChangesetConsoleUrl(b.changeSet.ChangeSetId ?? '', b.changeSet.StackId) : undefined;
-        if (url) sectionLines.push(`      ${url}`);
-      }
+        if (url) sectionLines.push(`       ${url}`);
+      });
       lines.push(sectionLines.join('\n'));
     }
     if (alreadyRetained.length > 0) {
       const noun = alreadyRetained.length === 1 ? 'stack' : 'stacks';
       const sectionLines: string[] = [];
       sectionLines.push(`Skip ${alreadyRetained.length} ${noun} — resources are already retained:`);
-      for (const b of alreadyRetained) sectionLines.push(`    • ${b.stackName}`);
+      alreadyRetained.forEach((b, i) => {
+        sectionLines.push('');
+        sectionLines.push(`    ${i + 1}) ${b.stackName}`);
+      });
       lines.push(sectionLines.join('\n'));
     }
     return lines;
