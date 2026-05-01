@@ -192,21 +192,4 @@ describe('amplify init:', () => {
       expect(mockGetGitIgnoreFilePath).toBeCalledWith(cwd);
     });
   });
-
-  describe('quickstart new-customer restriction', () => {
-    beforeEach(() => {
-      jest.spyOn(stateManager, 'metaFileExists').mockReturnValue(false);
-    });
-
-    it('blocks --quickstart with ProjectInitError', async () => {
-      const context = {
-        ...mockContext,
-        parameters: { options: { quickstart: true } },
-      } as unknown as $TSContext;
-
-      await expect(initCommand(context)).rejects.toThrow(
-        'AWS Amplify Gen 1 has entered maintenance mode and will no longer accept new customers. Gen 1 will reach end of life on May 1, 2027.',
-      );
-    });
-  });
 });

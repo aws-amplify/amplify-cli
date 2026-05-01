@@ -2,7 +2,7 @@ import execa from 'execa';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { getCLIPath, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, initJSProjectWithProfileGen2Migration } from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
 import { Git } from './git';
 import * as snapshot from './snapshot';
@@ -87,6 +87,7 @@ export class App {
     this.gen2BranchName = `gen2-${this.envName}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.amplifyPath = getCLIPath(true);
+    this.logger.info(`Amplify Path: ${this.amplifyPath}`);
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
     const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
@@ -134,7 +135,7 @@ export class App {
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await initJSProjectWithProfile(this.targetAppPath, {
+    await initJSProjectWithProfileGen2Migration(this.targetAppPath, {
       name: this.deploymentName,
       envName: this.envName,
       editor: 'Visual Studio Code',

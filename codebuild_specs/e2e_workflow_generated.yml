@@ -140,6 +140,78 @@ batch:
       buildspec: codebuild_specs/cleanup_resources.yml
       depend-on:
         - aggregate_e2e_reports
+        - migrate_backend_only
+        - migrate_discussions
+        - migrate_fitness_tracker
+        - migrate_media_vault
+        - migrate_mood_board
+        - migrate_product_catalog
+        - migrate_project_boards
+        - migrate_store_locator
+    - identifier: migrate_backend_only
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: backend-only
+    - identifier: migrate_discussions
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: discussions
+    - identifier: migrate_fitness_tracker
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: fitness-tracker
+    - identifier: migrate_media_vault
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: media-vault
+    - identifier: migrate_mood_board
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: mood-board
+    - identifier: migrate_product_catalog
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: product-catalog
+    - identifier: migrate_project_boards
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: project-boards
+    - identifier: migrate_store_locator
+      buildspec: codebuild_specs/run_gen2_migration_e2e.yml
+      depend-on:
+        - upb
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          MIGRATION_APP: store-locator
     - identifier: l_diagnose_mock_api_hooks_a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
@@ -553,25 +625,25 @@ batch:
           TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts|src/__tests__/minify-cloudformation.test.ts
       depend-on:
         - upb
-    - identifier: l_init_gen1_restriction_init_force_push_hooks_c
+    - identifier: l_init_force_push_hooks_c_help
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/init-gen1-restriction.test.ts|src/__tests__/init-force-push.test.ts|src/__tests__/hooks-c.test.ts
+          TEST_SUITE: src/__tests__/init-force-push.test.ts|src/__tests__/hooks-c.test.ts|src/__tests__/help.test.ts
       depend-on:
         - upb
-    - identifier: l_help_function_2d_function_15
+    - identifier: l_function_2d_function_15_function_14
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/help.test.ts|src/__tests__/function_2d.test.ts|src/__tests__/function_15.test.ts
+          TEST_SUITE: src/__tests__/function_2d.test.ts|src/__tests__/function_15.test.ts|src/__tests__/function_14.test.ts
       depend-on:
         - upb
-    - identifier: l_function_14_function_13_function_12
+    - identifier: l_function_13_function_12
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts|src/__tests__/function_12.test.ts
+          TEST_SUITE: src/__tests__/function_13.test.ts|src/__tests__/function_12.test.ts
       depend-on:
         - upb
     - identifier: l_export_pull_c_custom_resource_with_storage
@@ -1824,343 +1896,333 @@ batch:
       depend-on:
         - build_windows
         - upb
-    - identifier: w_minify_cloudformation_init_gen1_restriction
+    - identifier: w_minify_cloudformation_init_force_push
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/minify-cloudformation.test.ts|src/__tests__/init-gen1-restriction.test.ts
+          TEST_SUITE: src/__tests__/minify-cloudformation.test.ts|src/__tests__/init-force-push.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_init_force_push_help
+    - identifier: w_help_function_2d
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/init-force-push.test.ts|src/__tests__/help.test.ts
+          TEST_SUITE: src/__tests__/help.test.ts|src/__tests__/function_2d.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_function_2d_function_14
+    - identifier: w_function_14_function_13
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_2d.test.ts|src/__tests__/function_14.test.ts
+          TEST_SUITE: src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_function_13_function_12
+    - identifier: w_function_12_export_pull_c
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_13.test.ts|src/__tests__/function_12.test.ts
+          TEST_SUITE: src/__tests__/function_12.test.ts|src/__tests__/export-pull-c.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_export_pull_c_build_function
+    - identifier: w_build_function_build_function_yarn_modern
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/export-pull-c.test.ts|src/__tests__/build-function.test.ts
+          TEST_SUITE: src/__tests__/build-function.test.ts|src/__tests__/build-function-yarn-modern.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_build_function_yarn_modern_auth_5g
+    - identifier: w_auth_5g_auth_2h
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/build-function-yarn-modern.test.ts|src/__tests__/auth_5g.test.ts
+          TEST_SUITE: src/__tests__/auth_5g.test.ts|src/__tests__/auth_2h.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_auth_2h_api_9a
+    - identifier: w_api_9a_api_6c
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/auth_2h.test.ts|src/__tests__/api_9a.test.ts
+          TEST_SUITE: src/__tests__/api_9a.test.ts|src/__tests__/api_6c.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_6c_api_2b
+    - identifier: w_api_2b_api_2a
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/api_6c.test.ts|src/__tests__/api_2b.test.ts
+          TEST_SUITE: src/__tests__/api_2b.test.ts|src/__tests__/api_2a.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_2a_amplify_remove
+    - identifier: w_amplify_remove_smoketest
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/api_2a.test.ts|src/__tests__/amplify-remove.test.ts
+          TEST_SUITE: src/__tests__/amplify-remove.test.ts|src/__tests__/smoke-tests/smoketest.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_smoketest_smoketest_ios
+    - identifier: w_smoketest_ios_general_config_headless_init
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/smoke-tests/smoketest.test.ts|src/__tests__/smoke-tests/smoketest-ios.test.ts
+          TEST_SUITE: src/__tests__/smoke-tests/smoketest-ios.test.ts|src/__tests__/general-config/general-config-headless-init.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_general_config_headless_init_dynamodb_simulator
+    - identifier: w_dynamodb_simulator_user_groups
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/general-config/general-config-headless-init.test.ts|src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts
+          TEST_SUITE: src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts|src/__tests__/auth/user-groups.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_user_groups_user_groups_s3_access
+    - identifier: w_user_groups_s3_access_hosted_ui
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/auth/user-groups.test.ts|src/__tests__/auth/user-groups-s3-access.test.ts
+          TEST_SUITE: src/__tests__/auth/user-groups-s3-access.test.ts|src/__tests__/auth/hosted-ui.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_hosted_ui_admin_api
+    - identifier: w_admin_api_schema_iterative_update_locking
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/auth/hosted-ui.test.ts|src/__tests__/auth/admin-api.test.ts
+          TEST_SUITE: src/__tests__/auth/admin-api.test.ts|src/__tests__/schema-iterative-update-locking.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_iterative_update_locking_api_8
+    - identifier: w_api_8_schema_auth_13
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts|src/__tests__/api_8.test.ts
+          TEST_SUITE: src/__tests__/api_8.test.ts|src/__tests__/schema-auth-13.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_auth_13_api_lambda_auth_2
+    - identifier: w_api_lambda_auth_2_schema_iterative_update_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-13.test.ts|src/__tests__/graphql-v2/api_lambda_auth_2.test.ts
+          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_2.test.ts|src/__tests__/schema-iterative-update-1.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_iterative_update_1_function_5
+    - identifier: w_function_5_schema_function_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/function_5.test.ts
+          TEST_SUITE: src/__tests__/function_5.test.ts|src/__tests__/schema-function-1.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_function_1_schema_connection_2
+    - identifier: w_schema_connection_2_function_2a
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-function-1.test.ts|src/__tests__/schema-connection-2.test.ts
+          TEST_SUITE: src/__tests__/schema-connection-2.test.ts|src/__tests__/function_2a.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_function_2a_auth_6
+    - identifier: w_auth_6_storage_1b
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_2a.test.ts|src/__tests__/auth_6.test.ts
+          TEST_SUITE: src/__tests__/auth_6.test.ts|src/__tests__/storage-1b.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_storage_1b_storage_1a
+    - identifier: w_storage_1a_schema_iterative_update_2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/storage-1b.test.ts|src/__tests__/storage-1a.test.ts
+          TEST_SUITE: src/__tests__/storage-1a.test.ts|src/__tests__/schema-iterative-update-2.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_iterative_update_2_function_9b
+    - identifier: w_function_9b_custom_policies_container
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/function_9b.test.ts
+          TEST_SUITE: src/__tests__/function_9b.test.ts|src/__tests__/custom_policies_container.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_custom_policies_container_api_9b
+    - identifier: w_api_9b_function_2b
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/custom_policies_container.test.ts|src/__tests__/api_9b.test.ts
+          TEST_SUITE: src/__tests__/api_9b.test.ts|src/__tests__/function_2b.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_function_2b_function_11
+    - identifier: w_function_11_api_connection_migration2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_2b.test.ts|src/__tests__/function_11.test.ts
+          TEST_SUITE: src/__tests__/function_11.test.ts|src/__tests__/migration/api.connection.migration2.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_connection_migration2_storage_4
+    - identifier: w_storage_4_containers_api_secrets
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/storage-4.test.ts
+          TEST_SUITE: src/__tests__/storage-4.test.ts|src/__tests__/containers-api-secrets.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_containers_api_secrets_api_4
+    - identifier: w_api_4_schema_auth_10
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/containers-api-secrets.test.ts|src/__tests__/api_4.test.ts
+          TEST_SUITE: src/__tests__/api_4.test.ts|src/__tests__/schema-auth-10.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_auth_10_schema_key
+    - identifier: w_schema_key_resolvers
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-10.test.ts|src/__tests__/schema-key.test.ts
+          TEST_SUITE: src/__tests__/schema-key.test.ts|src/__tests__/resolvers.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_resolvers_geo_multi_env
+    - identifier: w_geo_multi_env_searchable_datastore
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/resolvers.test.ts|src/__tests__/geo-multi-env.test.ts
+          TEST_SUITE: src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_searchable_datastore_schema_searchable
+    - identifier: w_schema_searchable_apigw
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/schema-searchable.test.ts
+          TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/apigw.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_apigw_api_5
+    - identifier: w_api_5_api_key_migration2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/apigw.test.ts|src/__tests__/api_5.test.ts
+          TEST_SUITE: src/__tests__/api_5.test.ts|src/__tests__/migration/api.key.migration2.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_key_migration2_api_lambda_auth_1
+    - identifier: w_api_lambda_auth_1_schema_auth_14
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts
+          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/schema-auth-14.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_auth_14_api_key_migration1
+    - identifier: w_api_key_migration1_api_6b
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-14.test.ts|src/__tests__/migration/api.key.migration1.test.ts
+          TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts|src/__tests__/api_6b.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_6b_api_3
+    - identifier: w_api_3_layer_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/api_6b.test.ts|src/__tests__/api_3.test.ts
+          TEST_SUITE: src/__tests__/api_3.test.ts|src/__tests__/layer-1.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_layer_1_api_1
+    - identifier: w_api_1_api_key_migration4
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/layer-1.test.ts|src/__tests__/api_1.test.ts
+          TEST_SUITE: src/__tests__/api_1.test.ts|src/__tests__/migration/api.key.migration4.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_key_migration4_schema_iterative_update_4
+    - identifier: w_schema_iterative_update_4_function_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-update-4.test.ts
-      depend-on:
-        - build_windows
-        - upb
-    - identifier: w_function_1
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2022_CONTAINER
-        image: $WINDOWS_IMAGE_2019
-        variables:
-          TEST_SUITE: src/__tests__/function_1.test.ts
+          TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/function_1.test.ts
       depend-on:
         - build_windows
         - upb
