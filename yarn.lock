@@ -1277,7 +1277,7 @@ __metadata:
     semver: ^7.5.4
     tar-fs: ^2.1.1
     treeify: ^1.1.0
-    typescript: ^4.9.5
+    typescript: ~4.9.5
     unzipper: ^0.10.14
     update-notifier: ^5.1.0
     uuid: ^8.3.2
@@ -33810,7 +33810,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.8.4, typescript@npm:^4.9.5":
+"typescript@npm:^4.8.4, typescript@npm:^4.9.5, typescript@npm:~4.9.5":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
   bin:
@@ -33850,7 +33850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>, typescript@patch:typescript@~4.9.5#~builtin<compat/typescript>":
   version: 4.9.5
   resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"
   bin:
