@@ -42,10 +42,15 @@ export function resolveOutputs(params: {
 
   // Phase 1: Resolve Ref/GetAtt in Resources using stack outputs
   cloned.Resources = walkCfnTree(templateResources, (node) => {
-    // {"Ref": "LogicalId"} → replace with stack output value from Ref-based outputs
+    // {"Ref": "LogicalId"} → replace with stack output value from Ref-based outputs,
+    // falling back to PhysicalResourceId for intra-stack refs that are not exposed
+    // as Outputs (e.g., UserPoolClient's SupportedIdentityProviders referencing
+    // IDP logical IDs within the same stack).
     if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
       const value = refLookup.get(node.Ref);
-      if (value !== undefined) return value;
+      const physicalId = stackResources.find((r) => r.LogicalResourceId === node.Ref)?.PhysicalResourceId;
+      const resolved = value ?? physicalId;
+      if (resolved !== undefined) return resolved;
     }
 
     // {"Fn::GetAtt": ["LogicalId", "AttrName"]} → resolve via GetAtt-based outputs + ARN builder
@@ -54,6 +59,11 @@ export function resolveOutputs(params: {
       if (typeof logicalId === 'string' && typeof attrName === 'string') {
         const outputValue = getAttLookup.get(logicalId);
         if (outputValue !== undefined && attrName === 'Arn') {
+          // getAttLookup stores runtime output values. When the output is a
+          // GetAtt...Arn, the runtime value is already the full ARN. Passing
+          // it through buildArn() would nest the ARN inside another ARN
+          // (e.g. arn:.../userpool/arn:.../userpool/poolId).
+          if (outputValue.startsWith('arn:')) return outputValue;
           const resourceType = templateResources[logicalId]?.Type;
           if (resourceType) {
             const arn = buildArn(resourceType, outputValue, region, accountId);
@@ -67,6 +77,17 @@ export function resolveOutputs(params: {
   }) as Record<string, CFNResource>;
 
   // Phase 2: Resolve remaining Fn::GetAtt using physical resource IDs (fallback)
+  //
+  // Known limitation: this phase assumes physical resource ID == attribute value,
+  // which is only true for native AWS resources where PhysicalResourceId is the
+  // primary identifier. It is incorrect for Custom:: resources (whose GetAtt
+  // attributes come from Lambda response Data, not the physical ID) and for Arn
+  // attributes when the physical ID is already an ARN.
+  //
+  // A more robust approach would be to only resolve GetAtts for resources that
+  // are being moved between stacks (since those are the only references that
+  // will break post-refactor), but that requires threading resource mappings
+  // into the resolver.
   cloned.Resources = walkCfnTree(cloned.Resources, (node) => {
     if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
       const [logicalId, attrName] = node['Fn::GetAtt'] as [string, string];
@@ -77,6 +98,11 @@ export function resolveOutputs(params: {
 
       const physicalId = stackResource.PhysicalResourceId;
       const resourceType = stackResource.ResourceType ?? '';
+
+      // Custom resource GetAtt attributes are returned by the backing Lambda
+      // in its response Data object — they bear no relation to the physical
+      // resource ID. Leave these unresolved so CloudFormation evaluates them.
+      if (resourceType.startsWith('Custom::')) return undefined;
 
       // Kinesis streams require ARN in outputs — physical ID is the stream name, not ARN
       if (resourceType === 'AWS::Kinesis::Stream' && attrName === 'Arn' && !physicalId.startsWith('arn:aws:kinesis')) {
