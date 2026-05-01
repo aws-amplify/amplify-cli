@@ -14,7 +14,7 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
-import { RESOURCES_TO_RETAIN } from './_common/resource-types';
+import { AUTH_HOSTED_UI_RESOURCES_TO_RETAIN, RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
 
@@ -390,8 +390,22 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const stackName = extractStackNameFromId(stackId);
     const template = await cfn.fetchTemplate(stackId);
 
-    for (const resource of Object.values(template.Resources)) {
+    for (const [logicalId, resource] of Object.entries(template.Resources)) {
       if (RESOURCES_TO_RETAIN.includes(resource.Type)) {
+        resource.DeletionPolicy = 'Retain';
+        resource.UpdateReplacePolicy = 'Retain';
+      }
+      // Prevent Gen1 HostedUI Lambda-backed custom resources (which manage the
+      // UserPoolDomain and UserPoolIdentityProvider physical resources) from
+      // destroying those physical resources when their containing auth stack is
+      // decommissioned after a successful refactor. The IDPs and domain are
+      // orphaned from Gen2 into a "floating" state and re-imported back into
+      // Gen2 during the refactor; if the Gen1 custom resource's Delete handler
+      // fires on stack deletion, it would delete the underlying Cognito
+      // resources out from under Gen2. Matched by logical ID rather than type
+      // (Custom::LambdaCallout) so we don't accidentally retain unrelated
+      // Lambda-backed custom resources that happen to share the Custom::LambdaCallout type.
+      if (AUTH_HOSTED_UI_RESOURCES_TO_RETAIN.includes(logicalId)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
