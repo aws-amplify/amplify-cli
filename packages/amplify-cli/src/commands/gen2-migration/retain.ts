@@ -5,6 +5,7 @@ import { DescribeChangeSetOutput, DescribeStacksCommand, paginateListStackResour
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 
 /** Internal: a built retain operation with the context needed to describe, validate, and execute it. */
 interface BuiltRetainOperation {
@@ -102,7 +103,11 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     if (toApply.length > 0) {
       const noun = toApply.length === 1 ? 'stack' : 'stacks';
       lines.push(`Apply DeletionPolicy: Retain to all resources in ${toApply.length} Gen1 CloudFormation ${noun}:`);
-      for (const b of toApply) lines.push(`    • ${b.stackName}`);
+      for (const b of toApply) {
+        lines.push(`    • ${b.stackName}`);
+        const url = b.changeSet ? cfnChangesetConsoleUrl(b.changeSet.ChangeSetId ?? '', b.changeSet.StackId) : undefined;
+        if (url) lines.push(`      ${url}`);
+      }
     }
     if (alreadyRetained.length > 0) {
       if (lines.length > 0) lines.push('');
