@@ -140,6 +140,15 @@ export class Plan {
     printer.blankLine();
     printer.info(chalk.bold(chalk.underline('Validations Summary')));
     printer.blankLine();
+
+    // Collapse to a one-liner when all validations passed — the per-entry table
+    // adds no signal when every row is ✔ Passed.
+    const allPassed = entries.every((e) => e.valid);
+    if (allPassed) {
+      printer.info(chalk.green(`✔ All ${entries.length} validations passed`));
+      return;
+    }
+
     const table = new CLITable({
       head: ['Validation', 'Status'],
       style: { head: [] },
