@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.17-rc.0363a26e55df110.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.16...amplify-e2e-tests@4.11.17-rc.0363a26e55df110.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* remove unconditional quickstart block ([#14837](https://github.com/aws-amplify/amplify-cli/issues/14837)) ([412db64](https://github.com/aws-amplify/amplify-cli/commit/412db649c4affdace43656eaa6d60043686515da))
+
+
+
+
+
 ## [4.11.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.15...amplify-e2e-tests@4.11.16) (2026-03-20)
 
 
