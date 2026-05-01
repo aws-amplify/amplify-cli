@@ -6,18 +6,44 @@ import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 
+/** Internal: a built operation plus classification so `forward()` can produce a grouped summary. */
+interface BuiltRetainOperation {
+  readonly stackName: string;
+  readonly alreadyRetained: boolean;
+  readonly operation: AmplifyMigrationOperation;
+}
+
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
-    const operations: AmplifyMigrationOperation[] = [];
-
     const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
     this.logger.info(`Discovered ${stackIds.length} stacks to retain`);
+
+    const built: BuiltRetainOperation[] = [];
     for (const stackId of stackIds) {
-      operations.push(await this.buildRetainOperation(stackId));
+      built.push(await this.buildRetainOperation(stackId));
     }
 
+    const toApply = built.filter((b) => !b.alreadyRetained);
+    const alreadyRetained = built.filter((b) => b.alreadyRetained);
+
+    // Produce one "summary" operation whose `describe()` emits the grouped bullet list
+    // for all stacks, and replace each per-stack operation's `describe()` with an empty
+    // list so Plan.describe() only renders the grouped view.
+    const summaryOperation: AmplifyMigrationOperation = {
+      describe: async () => this.renderOperationsSummary(toApply, alreadyRetained),
+      validate: () => undefined,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
+
+    const silencedOperations = built.map<AmplifyMigrationOperation>((b) => ({
+      describe: async () => [],
+      validate: b.operation.validate,
+      execute: b.operation.execute,
+    }));
+
     return new Plan({
-      operations,
+      operations: [summaryOperation, ...silencedOperations],
       logger: this.logger,
       title: 'Execute',
       implications: [
@@ -33,6 +59,22 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       resolution:
         'Retain only marks resources with DeletionPolicy: Retain. If you need to undo it, manually update the CloudFormation templates to remove the policy.',
     });
+  }
+
+  private renderOperationsSummary(toApply: BuiltRetainOperation[], alreadyRetained: BuiltRetainOperation[]): string[] {
+    const lines: string[] = [];
+    if (toApply.length > 0) {
+      const noun = toApply.length === 1 ? 'stack' : 'stacks';
+      lines.push(`Apply DeletionPolicy: Retain to all resources in ${toApply.length} Gen1 CloudFormation ${noun}:`);
+      for (const b of toApply) lines.push(`    • ${b.stackName}`);
+    }
+    if (alreadyRetained.length > 0) {
+      if (lines.length > 0) lines.push('');
+      const noun = alreadyRetained.length === 1 ? 'stack' : 'stacks';
+      lines.push(`Skip ${alreadyRetained.length} ${noun} — resources are already retained:`);
+      for (const b of alreadyRetained) lines.push(`    • ${b.stackName}`);
+    }
+    return lines;
   }
 
   private async walkStackHierarchy(stackId: string): Promise<string[]> {
@@ -53,7 +95,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     return result;
   }
 
-  private async buildRetainOperation(stackId: string): Promise<AmplifyMigrationOperation> {
+  private async buildRetainOperation(stackId: string): Promise<BuiltRetainOperation> {
     const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
     const stackName = extractStackNameFromId(stackId);
 
@@ -76,32 +118,40 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     if (!changeset) {
       return {
-        describe: async () => [`${stackName} already retained`],
-        validate: () => undefined,
-        execute: async () => {
-          // no-op: stack is already fully retained
+        stackName,
+        alreadyRetained: true,
+        operation: {
+          describe: async () => [`${stackName} already retained`],
+          validate: () => undefined,
+          execute: async () => {
+            // no-op: stack is already fully retained
+          },
         },
       };
     }
 
     return {
-      describe: async () => [`Apply DeletionPolicy: Retain to resources in ${stackName}`],
-      validate: () => ({
-        description: `Ensure only retain changes for ${stackName}`,
-        run: async () => {
-          const valid = this.isAllowedRetainChangeset(changeset);
-          return {
-            valid,
-            report: valid ? undefined : cfn.renderChangeSet(changeset),
-          };
+      stackName,
+      alreadyRetained: false,
+      operation: {
+        describe: async () => [`Apply DeletionPolicy: Retain to resources in ${stackName}`],
+        validate: () => ({
+          description: `Ensure only retain changes for ${stackName}`,
+          run: async () => {
+            const valid = this.isAllowedRetainChangeset(changeset);
+            return {
+              valid,
+              report: valid ? undefined : cfn.renderChangeSet(changeset),
+            };
+          },
+        }),
+        execute: async () => {
+          await cfn.executeChangeSet({
+            changeSet: changeset,
+            templateBody: template,
+            captureSnapshot: false,
+          });
         },
-      }),
-      execute: async () => {
-        await cfn.executeChangeSet({
-          changeSet: changeset,
-          templateBody: template,
-          captureSnapshot: false,
-        });
       },
     };
   }
