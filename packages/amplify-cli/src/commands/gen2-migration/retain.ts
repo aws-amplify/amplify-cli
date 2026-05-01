@@ -6,11 +6,14 @@ import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 
-/** Internal: a built operation plus classification so `forward()` can produce a grouped summary. */
+/** Internal: a built retain operation with the context needed to describe, validate, and execute it. */
 interface BuiltRetainOperation {
   readonly stackName: string;
   readonly alreadyRetained: boolean;
+  /** Undefined when alreadyRetained; otherwise the changeset that will be executed. */
+  readonly changeSet?: DescribeChangeSetOutput;
   readonly operation: AmplifyMigrationOperation;
+  readonly cfn: Cfn;
 }
 
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
@@ -26,9 +29,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     const toApply = built.filter((b) => !b.alreadyRetained);
     const alreadyRetained = built.filter((b) => b.alreadyRetained);
 
-    // Produce one "summary" operation whose `describe()` emits the grouped bullet list
-    // for all stacks, and replace each per-stack operation's `describe()` with an empty
-    // list so Plan.describe() only renders the grouped view.
+    // One "summary" operation that only describes — renders a grouped view of all stacks.
     const summaryOperation: AmplifyMigrationOperation = {
       describe: async () => this.renderOperationsSummary(toApply, alreadyRetained),
       validate: () => undefined,
@@ -36,14 +37,30 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       execute: async () => {},
     };
 
-    const silencedOperations = built.map<AmplifyMigrationOperation>((b) => ({
+    // One aggregated validator — runs the retain-only whitelist across every changeset
+    // and rolls up the result into a single summary row.
+    const validatorOperation: AmplifyMigrationOperation = {
       describe: async () => [],
-      validate: b.operation.validate,
+      validate: () => {
+        if (toApply.length === 0) return undefined;
+        return {
+          description: `Retain-only changes (${toApply.length} stacks)`,
+          run: async () => this.validateAll(toApply),
+        };
+      },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
+
+    // Per-stack operations now only execute — no describe, no validate.
+    const executeOnlyOperations = built.map<AmplifyMigrationOperation>((b) => ({
+      describe: async () => [],
+      validate: () => undefined,
       execute: b.operation.execute,
     }));
 
     return new Plan({
-      operations: [summaryOperation, ...silencedOperations],
+      operations: [summaryOperation, validatorOperation, ...executeOnlyOperations],
       logger: this.logger,
       title: 'Execute',
       implications: [
@@ -59,6 +76,25 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       resolution:
         'Retain only marks resources with DeletionPolicy: Retain. If you need to undo it, manually update the CloudFormation templates to remove the policy.',
     });
+  }
+
+  /** Validates every pending changeset. Returns a pass if all are retain-only; otherwise a consolidated failure report. */
+  private async validateAll(toApply: BuiltRetainOperation[]): Promise<{ valid: boolean; report?: string }> {
+    const failures: Array<{ stackName: string; report: string }> = [];
+    for (const b of toApply) {
+      if (!b.changeSet) continue;
+      if (!this.isAllowedRetainChangeset(b.changeSet)) {
+        failures.push({ stackName: b.stackName, report: b.cfn.renderChangeSet(b.changeSet) });
+      }
+    }
+    if (failures.length === 0) return { valid: true };
+    const lines: string[] = [];
+    for (const f of failures) {
+      lines.push(`• ${f.stackName}:`);
+      lines.push(f.report);
+      lines.push('');
+    }
+    return { valid: false, report: lines.join('\n').trimEnd() };
   }
 
   private renderOperationsSummary(toApply: BuiltRetainOperation[], alreadyRetained: BuiltRetainOperation[]): string[] {
@@ -120,8 +156,9 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       return {
         stackName,
         alreadyRetained: true,
+        cfn,
         operation: {
-          describe: async () => [`${stackName} already retained`],
+          describe: async () => [],
           validate: () => undefined,
           execute: async () => {
             // no-op: stack is already fully retained
@@ -133,18 +170,11 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     return {
       stackName,
       alreadyRetained: false,
+      changeSet: changeset,
+      cfn,
       operation: {
-        describe: async () => [`Apply DeletionPolicy: Retain to resources in ${stackName}`],
-        validate: () => ({
-          description: `Ensure only retain changes for ${stackName}`,
-          run: async () => {
-            const valid = this.isAllowedRetainChangeset(changeset);
-            return {
-              valid,
-              report: valid ? undefined : cfn.renderChangeSet(changeset),
-            };
-          },
-        }),
+        describe: async () => [],
+        validate: () => undefined,
         execute: async () => {
           await cfn.executeChangeSet({
             changeSet: changeset,
