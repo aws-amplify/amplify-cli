@@ -4,6 +4,33 @@ import { newLineIdentifier, TS } from '../../ts';
 const factory = ts.factory;
 
 /**
+ * Gen1 IAM actions granted for the `read` CRUD option on auth resources.
+ *
+ * Gen2's `iamActionMap` only covers specific `cognito-idp:*` actions.
+ * These additional actions (cognito-identity, cognito-sync, iam, sns)
+ * must be escape-hatched as inline policies when a REST API path has
+ * `read` access configured.
+ *
+ * Source: `getIAMPolicies` in Gen1 `auth-questions.ts`, `case 'read'`.
+ */
+const GEN1_AUTH_READ_ACTIONS: readonly string[] = [
+  'cognito-identity:Describe*',
+  'cognito-identity:Get*',
+  'cognito-identity:List*',
+  'cognito-idp:Describe*',
+  'cognito-idp:AdminGetDevice',
+  'cognito-idp:AdminGetUser',
+  'cognito-idp:AdminList*',
+  'cognito-idp:List*',
+  'cognito-sync:Describe*',
+  'cognito-sync:Get*',
+  'cognito-sync:List*',
+  'iam:ListOpenIdConnectProviders',
+  'iam:ListRoles',
+  'sns:ListPlatformApplications',
+];
+
+/**
  * Complete definition of a REST API extracted from Gen1 cli-inputs.json.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any -- paths are untyped Gen1 cli-inputs.json */
@@ -88,6 +115,7 @@ export class RestApiRenderer {
 
     statements.push(...this.renderPaths(restApi, apiVarName, integrations.map));
     statements.push(...this.renderPathPolicies(restApi, apiVarName, 'stack', gen1ApiVarName));
+    statements.push(...this.renderReadAccessPolicies(restApi, 'stack'));
     statements.push(this.renderOutput(apiVarName));
 
     return statements;
@@ -847,6 +875,123 @@ export class RestApiRenderer {
         ],
       ),
     );
+  }
+
+  /**
+   * Renders additional IAM policies for paths with `read` access.
+   *
+   * Gen1 grants broad Cognito/IAM/SNS read policies when a REST API
+   * path has `read` permission. Gen2 does not natively support these,
+   * so they are escape-hatched as inline policies on the authenticated
+   * user role or group role.
+   */
+  private renderReadAccessPolicies(restApi: RestApiRenderOptions, stackVarName: string): ts.Statement[] {
+    if (!this.hasAuth) return [];
+
+    const statements: ts.Statement[] = [];
+    let authReadEmitted = false;
+
+    for (const [, pathConfig] of Object.entries(restApi.paths)) {
+      if (!authReadEmitted && this.pathHasReadPermission(pathConfig.permissions?.auth)) {
+        statements.push(
+          ...this.renderReadPolicyForRole(
+            restApi.apiName,
+            stackVarName,
+            'AuthReadPolicy',
+            TS.propAccess('backend', 'auth', 'resources', 'authenticatedUserIamRole') as ts.Expression,
+          ),
+        );
+        authReadEmitted = true;
+      }
+
+      if (pathConfig.permissions?.groups) {
+        for (const [groupName, permissions] of Object.entries(pathConfig.permissions.groups) as [string, string[]][]) {
+          if (this.pathHasReadPermission(permissions)) {
+            statements.push(
+              ...this.renderReadPolicyForRole(
+                restApi.apiName,
+                stackVarName,
+                `${groupName}ReadPolicy`,
+                factory.createPropertyAccessExpression(
+                  factory.createElementAccessExpression(
+                    TS.propAccess('backend', 'auth', 'resources', 'groups') as ts.Expression,
+                    factory.createStringLiteral(groupName),
+                  ),
+                  factory.createIdentifier('role'),
+                ),
+              ),
+            );
+          }
+        }
+      }
+    }
+
+    return statements;
+  }
+
+  /**
+   * Renders a single read-access policy and attaches it to the given IAM role.
+   */
+  private renderReadPolicyForRole(
+    apiName: string,
+    stackVarName: string,
+    policyName: string,
+    roleExpression: ts.Expression,
+  ): ts.Statement[] {
+    const comment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
+    ts.addSyntheticLeadingComment(
+      comment,
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ' Gen1 read access policies not natively supported by Gen2',
+      true,
+    );
+
+    const attachCall = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(roleExpression, factory.createIdentifier('attachInlinePolicy')),
+        undefined,
+        [
+          factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+            factory.createIdentifier(stackVarName),
+            factory.createStringLiteral(`${apiName}${policyName}`),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  'statements',
+                  factory.createArrayLiteralExpression([
+                    factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            'actions',
+                            factory.createArrayLiteralExpression(
+                              GEN1_AUTH_READ_ACTIONS.map((action) => factory.createStringLiteral(action)),
+                            ),
+                          ),
+                          factory.createPropertyAssignment(
+                            'resources',
+                            factory.createArrayLiteralExpression([factory.createStringLiteral('*')]),
+                          ),
+                        ],
+                        true,
+                      ),
+                    ]),
+                  ]),
+                ),
+              ],
+              true,
+            ),
+          ]),
+        ],
+      ),
+    );
+
+    return [comment as unknown as ts.Statement, attachCall];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw cli-inputs permissions array
+  private pathHasReadPermission(permissions: any): boolean {
+    return Array.isArray(permissions) && permissions.includes('read');
   }
 
   private hasPathAuth(restApi: RestApiRenderOptions): boolean {

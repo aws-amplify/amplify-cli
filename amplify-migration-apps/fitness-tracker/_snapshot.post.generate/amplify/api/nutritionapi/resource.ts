@@ -149,6 +149,58 @@ export function defineNutritionapiApi(backend: Backend) {
       ],
     })
   );
+  // Gen1 read access policies not natively supported by Gen2
+  backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+    new Policy(stack, 'nutritionapiAuthReadPolicy', {
+      statements: [
+        new PolicyStatement({
+          actions: [
+            'cognito-identity:Describe*',
+            'cognito-identity:Get*',
+            'cognito-identity:List*',
+            'cognito-idp:Describe*',
+            'cognito-idp:AdminGetDevice',
+            'cognito-idp:AdminGetUser',
+            'cognito-idp:AdminList*',
+            'cognito-idp:List*',
+            'cognito-sync:Describe*',
+            'cognito-sync:Get*',
+            'cognito-sync:List*',
+            'iam:ListOpenIdConnectProviders',
+            'iam:ListRoles',
+            'sns:ListPlatformApplications',
+          ],
+          resources: ['*'],
+        }),
+      ],
+    })
+  );
+  // Gen1 read access policies not natively supported by Gen2
+  backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
+    new Policy(stack, 'nutritionapiAdminReadPolicy', {
+      statements: [
+        new PolicyStatement({
+          actions: [
+            'cognito-identity:Describe*',
+            'cognito-identity:Get*',
+            'cognito-identity:List*',
+            'cognito-idp:Describe*',
+            'cognito-idp:AdminGetDevice',
+            'cognito-idp:AdminGetUser',
+            'cognito-idp:AdminList*',
+            'cognito-idp:List*',
+            'cognito-sync:Describe*',
+            'cognito-sync:Get*',
+            'cognito-sync:List*',
+            'iam:ListOpenIdConnectProviders',
+            'iam:ListRoles',
+            'sns:ListPlatformApplications',
+          ],
+          resources: ['*'],
+        }),
+      ],
+    })
+  );
   backend.addOutput({
     custom: {
       API: {

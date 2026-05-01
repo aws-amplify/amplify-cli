@@ -635,6 +635,32 @@ describe('RestApiGenerator', () => {
             ],
           })
         );
+        // Gen1 read access policies not natively supported by Gen2
+        backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+          new Policy(stack, 'myApiAuthReadPolicy', {
+            statements: [
+              new PolicyStatement({
+                actions: [
+                  'cognito-identity:Describe*',
+                  'cognito-identity:Get*',
+                  'cognito-identity:List*',
+                  'cognito-idp:Describe*',
+                  'cognito-idp:AdminGetDevice',
+                  'cognito-idp:AdminGetUser',
+                  'cognito-idp:AdminList*',
+                  'cognito-idp:List*',
+                  'cognito-sync:Describe*',
+                  'cognito-sync:Get*',
+                  'cognito-sync:List*',
+                  'iam:ListOpenIdConnectProviders',
+                  'iam:ListRoles',
+                  'sns:ListPlatformApplications',
+                ],
+                resources: ['*'],
+              }),
+            ],
+          })
+        );
         backend.addOutput({
           custom: {
             API: {
@@ -784,6 +810,32 @@ describe('RestApiGenerator', () => {
                   gen1myApiApi.arnForExecuteApi('GET', '/admin'),
                   gen1myApiApi.arnForExecuteApi('GET', '/admin/*'),
                 ],
+              }),
+            ],
+          })
+        );
+        // Gen1 read access policies not natively supported by Gen2
+        backend.auth.resources.groups['admins'].role.attachInlinePolicy(
+          new Policy(stack, 'myApiadminsReadPolicy', {
+            statements: [
+              new PolicyStatement({
+                actions: [
+                  'cognito-identity:Describe*',
+                  'cognito-identity:Get*',
+                  'cognito-identity:List*',
+                  'cognito-idp:Describe*',
+                  'cognito-idp:AdminGetDevice',
+                  'cognito-idp:AdminGetUser',
+                  'cognito-idp:AdminList*',
+                  'cognito-idp:List*',
+                  'cognito-sync:Describe*',
+                  'cognito-sync:Get*',
+                  'cognito-sync:List*',
+                  'iam:ListOpenIdConnectProviders',
+                  'iam:ListRoles',
+                  'sns:ListPlatformApplications',
+                ],
+                resources: ['*'],
               }),
             ],
           })
@@ -1004,5 +1056,157 @@ describe('RestApiGenerator', () => {
 
     const output = writtenFile('resource.ts');
     expect(output).toContain('myapiApi');
+  });
+
+  it('renders additional read access policies for auth users with read permission', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        myApi: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito' } },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('abc123');
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: {
+        '/items': {
+          lambdaFunction: 'myFunc',
+          permissions: { setting: 'private', auth: ['read'] },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'myApi',
+      service: 'API Gateway',
+      key: 'api:API Gateway',
+    });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).toContain('Gen1 read access policies not natively supported by Gen2');
+    expect(output).toContain('myApiAuthReadPolicy');
+    expect(output).toContain('cognito-identity:Describe*');
+    expect(output).toContain('cognito-idp:AdminGetUser');
+    expect(output).toContain('cognito-sync:Get*');
+    expect(output).toContain('iam:ListOpenIdConnectProviders');
+    expect(output).toContain('iam:ListRoles');
+    expect(output).toContain('sns:ListPlatformApplications');
+    expect(output).toContain("resources: ['*']");
+    expect(output).toContain('authenticatedUserIamRole');
+  });
+
+  it('does not render read access policies when no read permission', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        myApi: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito' } },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('abc123');
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: {
+        '/items': {
+          lambdaFunction: 'myFunc',
+          permissions: { setting: 'private', auth: ['create', 'update'] },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'myApi',
+      service: 'API Gateway',
+      key: 'api:API Gateway',
+    });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).not.toContain('ReadPolicy');
+    expect(output).not.toContain('cognito-identity:Describe*');
+  });
+
+  it('renders read access policies for group with read permission', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        myApi: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito' } },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('abc123');
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: {
+        '/admin': {
+          lambdaFunction: 'myFunc',
+          permissions: { setting: 'protected', groups: { admins: ['read', 'create'] } },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'myApi',
+      service: 'API Gateway',
+      key: 'api:API Gateway',
+    });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).toContain('myApiadminsReadPolicy');
+    expect(output).toContain('cognito-identity:Describe*');
+    expect(output).toContain("groups['admins'].role.attachInlinePolicy");
+  });
+
+  it('does not render read access policies when no auth category', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        myApi: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('abc123');
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: {
+        '/items': {
+          lambdaFunction: 'myFunc',
+          permissions: { setting: 'private', auth: ['read'] },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'myApi',
+      service: 'API Gateway',
+      key: 'api:API Gateway',
+    });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).not.toContain('ReadPolicy');
+    expect(output).not.toContain('cognito-identity:Describe*');
   });
 });
