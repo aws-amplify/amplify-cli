@@ -88,7 +88,8 @@ export class App {
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    this.amplifyPath = getCLIPath(false);
+    const testingWithLatestCodebase = process.env.AMPLIFY_PATH ? false : true;
+    this.amplifyPath = getCLIPath(testingWithLatestCodebase);
     this.logger.info(`Amplify Path: ${this.amplifyPath}`);
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
