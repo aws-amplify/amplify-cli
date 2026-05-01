@@ -11,6 +11,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     const operations: AmplifyMigrationOperation[] = [];
 
     const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
+    this.logger.info(`Discovered ${stackIds.length} stacks to retain`);
     for (const stackId of stackIds) {
       operations.push(await this.buildRetainOperation(stackId));
     }
@@ -69,7 +70,9 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       UsePreviousValue: true,
     }));
 
+    this.logger.push(`${stackName} (Create ChangeSet)`);
     const changeset = await cfn.createChangeSet({ stackName: stackId, parameters, templateBody: template });
+    this.logger.pop();
 
     if (!changeset) {
       return {
