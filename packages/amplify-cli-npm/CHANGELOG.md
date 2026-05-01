@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.4.0-rc.b490ca31634487e.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.3.0...@aws-amplify/cli@14.4.0-rc.b490ca31634487e.0) (2026-05-01)
+
+
+### Features
+
+* bump version ([#14838](https://github.com/aws-amplify/amplify-cli/issues/14838)) ([0363a26](https://github.com/aws-amplify/amplify-cli/commit/0363a26e55df110065a9f7f989320a497d8e4fdd))
+* **cli:** detect conflict resolution (DataStore) in gen2-migration assess ([#14832](https://github.com/aws-amplify/amplify-cli/issues/14832)) ([5f93417](https://github.com/aws-amplify/amplify-cli/commit/5f93417a84347d68fe72480f727084910e9e2b61))
+* **cli:** developer preview footer for `gen2-migration` commands ([#14831](https://github.com/aws-amplify/amplify-cli/issues/14831)) ([22216a3](https://github.com/aws-amplify/amplify-cli/commit/22216a348252c2e74cd50a35ee4f7a3052893a9f))
+
+
+
+
+
 # [14.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.2.5...@aws-amplify/cli@14.3.0) (2026-03-20)
 
 

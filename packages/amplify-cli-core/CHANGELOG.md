@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-rc.b490ca31634487e.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.4...@aws-amplify/amplify-cli-core@4.5.0-rc.b490ca31634487e.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* bump aws-cdk-lib to 2.241.0 and constructs to 10.5.0 ([b7ea5cf](https://github.com/aws-amplify/amplify-cli/commit/b7ea5cf5b28a4b0137fb6b0f28c91113e60e7285)), closes [#14631](https://github.com/aws-amplify/amplify-cli/issues/14631)
+
+
+### Features
+
+* **cli:** developer preview footer for `gen2-migration` commands ([#14831](https://github.com/aws-amplify/amplify-cli/issues/14831)) ([22216a3](https://github.com/aws-amplify/amplify-cli/commit/22216a348252c2e74cd50a35ee4f7a3052893a9f))
+
+
+
+
+
 ## [4.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.3...@aws-amplify/amplify-cli-core@4.4.4) (2025-10-31)
 
 
