@@ -11,6 +11,7 @@ export const storelocator41a9495f41a9495fPostConfirmation = defineFunction({
   environment: {
     ENV: `${branchName}`,
     MODULES: 'add-to-group',
+    REGION: process.env.AWS_REGION ?? '',
     GROUP: 'storeLocatorAdmin',
   },
   runtime: 22,

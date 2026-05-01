@@ -393,7 +393,7 @@ describe('FunctionGenerator', () => {
     `);
   });
 
-  it('omits REGION env var since AWS_REGION is auto-available in Lambda', async () => {
+  it('renders REGION env var as dynamic process.env.AWS_REGION reference', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       function: {
@@ -432,7 +432,7 @@ describe('FunctionGenerator', () => {
         name: \`myFunc-\${branchName}\`,
         timeoutSeconds: 3,
         memoryMB: 128,
-        environment: { ENV: \`\${branchName}\` },
+        environment: { ENV: \`\${branchName}\`, REGION: process.env.AWS_REGION ?? '' },
         runtime: 18,
       });
 
@@ -443,7 +443,7 @@ describe('FunctionGenerator', () => {
     `);
   });
 
-  it('omits environment block when REGION is the only env var', async () => {
+  it('renders environment block when REGION is the only env var', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       function: {
@@ -482,6 +482,7 @@ describe('FunctionGenerator', () => {
         name: \`myFunc-\${branchName}\`,
         timeoutSeconds: 3,
         memoryMB: 128,
+        environment: { REGION: process.env.AWS_REGION ?? '' },
         runtime: 18,
       });
 

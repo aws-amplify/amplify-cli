@@ -310,8 +310,23 @@ export class FunctionRenderer {
 
     const envProps: ts.PropertyAssignment[] = [];
     for (const [key, value] of Object.entries(opts.literalEnvVars)) {
-      // REGION is omitted — AWS Lambda provides process.env.AWS_REGION automatically.
-      if (key === 'REGION') continue;
+      // REGION: resolve dynamically from AWS_REGION (auto-injected by Lambda) instead of hardcoding.
+      if (key === 'REGION') {
+        envProps.push(
+          factory.createPropertyAssignment(
+            key,
+            factory.createBinaryExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('process'), 'env'),
+                'AWS_REGION',
+              ),
+              ts.SyntaxKind.QuestionQuestionToken,
+              factory.createStringLiteral(''),
+            ),
+          ),
+        );
+        continue;
+      }
 
       if (key === 'API_KEY' && value.startsWith(`/amplify/${this.appId}/${this.backendEnvironmentName}`)) {
         namedImports['@aws-amplify/backend'].add('secret');

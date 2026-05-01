@@ -8,7 +8,7 @@ export const quotegenerator = defineFunction({
   name: `quotegenerator-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}` },
+  environment: { ENV: `${branchName}`, REGION: process.env.AWS_REGION ?? '' },
   runtime: 22,
 });
 

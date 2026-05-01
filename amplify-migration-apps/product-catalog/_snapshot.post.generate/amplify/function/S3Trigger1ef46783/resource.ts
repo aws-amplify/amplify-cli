@@ -8,7 +8,7 @@ export const S3Trigger1ef46783 = defineFunction({
   name: `S3Trigger1ef46783-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}` },
+  environment: { ENV: `${branchName}`, REGION: process.env.AWS_REGION ?? '' },
   runtime: 22,
 });
 
