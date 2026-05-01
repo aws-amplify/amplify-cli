@@ -111,18 +111,21 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     const lines: string[] = [];
     if (toApply.length > 0) {
       const noun = toApply.length === 1 ? 'stack' : 'stacks';
-      lines.push(`Apply DeletionPolicy: Retain to all resources in ${toApply.length} Gen1 CloudFormation ${noun}:`);
+      const sectionLines: string[] = [];
+      sectionLines.push(`Apply DeletionPolicy: Retain to all resources in ${toApply.length} Gen1 CloudFormation ${noun}:`);
       for (const b of toApply) {
-        lines.push(`    • ${b.stackName}`);
+        sectionLines.push(`    • ${b.stackName}`);
         const url = b.changeSet ? cfnChangesetConsoleUrl(b.changeSet.ChangeSetId ?? '', b.changeSet.StackId) : undefined;
-        if (url) lines.push(`      ${url}`);
+        if (url) sectionLines.push(`      ${url}`);
       }
+      lines.push(sectionLines.join('\n'));
     }
     if (alreadyRetained.length > 0) {
-      if (lines.length > 0) lines.push('');
       const noun = alreadyRetained.length === 1 ? 'stack' : 'stacks';
-      lines.push(`Skip ${alreadyRetained.length} ${noun} — resources are already retained:`);
-      for (const b of alreadyRetained) lines.push(`    • ${b.stackName}`);
+      const sectionLines: string[] = [];
+      sectionLines.push(`Skip ${alreadyRetained.length} ${noun} — resources are already retained:`);
+      for (const b of alreadyRetained) sectionLines.push(`    • ${b.stackName}`);
+      lines.push(sectionLines.join('\n'));
     }
     return lines;
   }
