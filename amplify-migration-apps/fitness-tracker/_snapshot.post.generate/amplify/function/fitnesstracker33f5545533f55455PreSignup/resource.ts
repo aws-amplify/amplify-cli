@@ -11,7 +11,6 @@ export const fitnesstracker33f5545533f55455PreSignup = defineFunction({
   environment: {
     ENV: `${branchName}`,
     MODULES: 'email-filter-allowlist',
-    REGION: 'us-east-1',
     DOMAINALLOWLIST: 'amazon.com',
     DOMAINBLACKLIST: '',
   },
