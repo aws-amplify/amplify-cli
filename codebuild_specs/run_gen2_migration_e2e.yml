@@ -11,7 +11,7 @@ phases:
     commands:
       - export NODE_OPTIONS=--max-old-space-size=4096
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
-      - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify
+      - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo "AMPLIFY_DIR=$AMPLIFY_DIR"
       - echo "AMPLIFY_PATH=$AMPLIFY_PATH"
       - echo "MIGRATION_APP=$MIGRATION_APP"
