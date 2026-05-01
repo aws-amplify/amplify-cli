@@ -20,7 +20,7 @@ interface BuiltRetainOperation {
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
-    this.logger.info(`Discovered ${stackIds.length} stacks to retain`);
+    this.logger.info(`Discovered ${stackIds.length} stacks`);
 
     const built: BuiltRetainOperation[] = [];
     for (const stackId of stackIds) {
@@ -29,6 +29,15 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     const toApply = built.filter((b) => !b.alreadyRetained);
     const alreadyRetained = built.filter((b) => b.alreadyRetained);
+    if (toApply.length > 0 && alreadyRetained.length > 0) {
+      this.logger.info(
+        `${toApply.length} need retain policies applied to resources; ${alreadyRetained.length} already have all resources retained`,
+      );
+    } else if (toApply.length > 0) {
+      this.logger.info(`${toApply.length} need retain policies applied to resources`);
+    } else {
+      this.logger.info(`All ${alreadyRetained.length} already have all resources retained`);
+    }
 
     // One "summary" operation that only describes — renders a grouped view of all stacks.
     const summaryOperation: AmplifyMigrationOperation = {
