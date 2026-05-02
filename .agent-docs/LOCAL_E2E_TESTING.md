@@ -259,8 +259,9 @@ The e2e workflow includes these build types:
 2. **Check pre-commit hooks** - they run tests automatically
 3. **Monitor resource usage** - e2e tests create real AWS resources
 4. **Clean up resources** - use cleanup scripts periodically
-5. **Check credentials** - most failures are due to expired credentials
-6. **Read the logs** - build logs contain detailed error information
+5. **Ensure Gen1 placeholder app** - if `amplify init` fails with a Gen1 new-customer restriction error in a fresh account, run `yarn ensure-gen1-placeholder-apps` from `packages/amplify-e2e-tests` (requires org root account credentials) to create the placeholder app in all accounts and regions
+6. **Check credentials** - most failures are due to expired credentials
+7. **Read the logs** - build logs contain detailed error information
 
 ## Troubleshooting
 

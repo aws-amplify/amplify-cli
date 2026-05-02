@@ -164,11 +164,13 @@ export class App {
     const tpiPath = path.join(this.targetAppPath, 'amplify', 'team-provider-info.json');
     const tpi = JSON.parse(fs.readFileSync(tpiPath, { encoding: 'utf-8' }));
     const appId = tpi[this.envName].awscloudformation.AmplifyAppId;
+    this.logger.info('amplify pull');
     await amplifyPullNonInteractive(this.targetAppPath, {
       appId: appId,
       envName: this.envName,
       profile: this.profile,
     });
+    this.logger.info('amplify pull completed');
   }
 
   /**
