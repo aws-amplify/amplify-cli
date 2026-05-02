@@ -74,7 +74,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -88,44 +88,58 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
     const backendOps = await backendGenerator.plan();
     await backendOps[0].execute();
     expect(writtenFile('backend.ts')).toMatchInlineSnapshot(`
@@ -171,7 +185,7 @@ describe('AuthGenerator', () => {
       SchemaAttributes: [],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -184,44 +198,58 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = ['phone_number'];
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = ['phone_number'];
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates email with verification options', async () => {
@@ -245,7 +273,7 @@ describe('AuthGenerator', () => {
       SchemaAttributes: [],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -258,47 +286,61 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: {
-              verificationEmailSubject: 'Verify your account',
-              verificationEmailBody: () => 'Your code is {####}',
-            },
+      export const auth = defineAuth({
+        loginWith: {
+          email: {
+            verificationEmailSubject: 'Verify your account',
+            verificationEmailBody: () => 'Your code is {####}',
           },
-          multifactor: {
-            mode: 'OFF',
-          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates user groups', async () => {
@@ -318,7 +360,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([
       { GroupName: 'admin', Precedence: 1 },
@@ -335,45 +377,59 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          groups: ['admin', 'editors', 'viewers'],
-          multifactor: {
-            mode: 'OFF',
-          },
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        groups: ['admin', 'editors', 'viewers'],
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates standard user attributes', async () => {
@@ -398,7 +454,7 @@ describe('AuthGenerator', () => {
       ],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -411,54 +467,68 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        userAttributes: {
+          email: {
+            required: true,
+            mutable: true,
           },
-          userAttributes: {
-            email: {
-              required: true,
-              mutable: true,
-            },
-            givenName: {
-              required: true,
-              mutable: false,
-            },
+          givenName: {
+            required: true,
+            mutable: false,
           },
-          multifactor: {
-            mode: 'OFF',
-          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates custom user attributes', async () => {
@@ -487,7 +557,7 @@ describe('AuthGenerator', () => {
       ],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -500,52 +570,66 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        userAttributes: {
+          'custom:department': {
+            mutable: true,
+            dataType: 'String',
+            minLen: 1,
+            maxLen: 50,
           },
-          userAttributes: {
-            'custom:department': {
-              mutable: true,
-              dataType: 'String',
-              minLen: 1,
-              maxLen: 50,
-            },
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates MFA with REQUIRED mode', async () => {
@@ -568,7 +652,7 @@ describe('AuthGenerator', () => {
       MfaConfiguration: 'ON',
       SoftwareTokenMfaConfiguration: { Enabled: true },
     });
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -581,46 +665,60 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'REQUIRED',
-            totp: true,
-            sms: true,
-          },
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'REQUIRED',
+          totp: true,
+          sms: true,
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates MFA with OPTIONAL mode', async () => {
@@ -643,7 +741,7 @@ describe('AuthGenerator', () => {
       MfaConfiguration: 'OPTIONAL',
       SoftwareTokenMfaConfiguration: { Enabled: true },
     });
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -658,7 +756,7 @@ describe('AuthGenerator', () => {
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -678,6 +776,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -716,7 +828,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -733,50 +845,64 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { preSignUpFn } from '../function/preSignUpFn/resource';
-        import { postConfirmFn } from '../function/postConfirmFn/resource';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { preSignUpFn } from '../function/preSignUpFn/resource';
+      import { postConfirmFn } from '../function/postConfirmFn/resource';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          triggers: {
-            preSignUp: preSignUpFn,
-            postConfirmation: postConfirmFn,
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        triggers: {
+          preSignUp: preSignUpFn,
+          postConfirmation: postConfirmFn,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates Google login with secrets', async () => {
@@ -842,7 +968,7 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        const nativeClient = userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
@@ -855,7 +981,7 @@ describe('AuthGenerator', () => {
             .cognitoIdentityProviders;
         if (cognitoProviders && Array.isArray(cognitoProviders)) {
           cognitoProviders.push({
-            clientId: nativeClient.userPoolClientId,
+            clientId: nativeUserPoolClient.userPoolClientId,
             providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
           });
         }
@@ -953,7 +1079,7 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        const nativeClient = userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           disableOAuth: true,
           generateSecret: false,
         });
@@ -962,7 +1088,7 @@ describe('AuthGenerator', () => {
             .cognitoIdentityProviders;
         if (cognitoProviders && Array.isArray(cognitoProviders)) {
           cognitoProviders.push({
-            clientId: nativeClient.userPoolClientId,
+            clientId: nativeUserPoolClient.userPoolClientId,
             providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
           });
         }
@@ -1104,7 +1230,7 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        const nativeClient = userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
@@ -1117,7 +1243,7 @@ describe('AuthGenerator', () => {
             .cognitoIdentityProviders;
         if (cognitoProviders && Array.isArray(cognitoProviders)) {
           cognitoProviders.push({
-            clientId: nativeClient.userPoolClientId,
+            clientId: nativeUserPoolClient.userPoolClientId,
             providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
           });
         }
@@ -1159,7 +1285,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1178,49 +1304,63 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { adminFunc } from '../function/adminFunc/resource';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { adminFunc } from '../function/adminFunc/resource';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-          access: (allow) => [
-            allow.resource(adminFunc).to(['manageUsers']),
-            allow.resource(adminFunc).to(['listUsers']),
-          ],
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+        access: (allow) => [
+          allow.resource(adminFunc).to(['manageUsers']),
+          allow.resource(adminFunc).to(['listUsers']),
+        ],
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('generates multiple functions with auth access', async () => {
@@ -1240,7 +1380,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1257,51 +1397,65 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { func1 } from '../function/func1/resource';
-        import { func2 } from '../function/func2/resource';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { func1 } from '../function/func1/resource';
+      import { func2 } from '../function/func2/resource';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
-          access: (allow) => [
-            allow.resource(func1).to(['createUser']),
-            allow.resource(func2).to(['deleteUser']),
-            allow.resource(func2).to(['getUser']),
-          ],
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+        access: (allow) => [
+          allow.resource(func1).to(['createUser']),
+          allow.resource(func2).to(['deleteUser']),
+          allow.resource(func2).to(['getUser']),
+        ],
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('skips functions with empty auth access', async () => {
@@ -1321,7 +1475,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1358,7 +1512,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1371,46 +1525,60 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
-          },
-          multifactor: {
-            mode: 'OFF',
-          },
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+        cfnIdentityPool.allowUnauthenticatedIdentities = false;
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {},
-          };
-          const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
-          cfnIdentityPool.allowUnauthenticatedIdentities = false;
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('emits cfnUserPoolClient.allowedOAuthFlows when webClient has AllowedOAuthFlows', async () => {
@@ -1470,7 +1638,7 @@ describe('AuthGenerator', () => {
           backend.auth.resources.cfnResources.cfnUserPoolClient;
         cfnUserPoolClient.allowedOAuthFlows = ['code', 'implicit'];
         const userPool = backend.auth.resources.userPool;
-        const nativeClient = userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
@@ -1489,7 +1657,7 @@ describe('AuthGenerator', () => {
             .cognitoIdentityProviders;
         if (cognitoProviders && Array.isArray(cognitoProviders)) {
           cognitoProviders.push({
-            clientId: nativeClient.userPoolClientId,
+            clientId: nativeUserPoolClient.userPoolClientId,
             providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
           });
         }
@@ -1595,7 +1763,7 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        const userPoolClient = userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           refreshTokenValidity: Duration.days(30),
           enableTokenRevocation: true,
           supportedIdentityProviders: [
@@ -1621,7 +1789,7 @@ describe('AuthGenerator', () => {
             .cognitoIdentityProviders;
         if (cognitoProviders && Array.isArray(cognitoProviders)) {
           cognitoProviders.push({
-            clientId: userPoolClient.userPoolClientId,
+            clientId: nativeUserPoolClient.userPoolClientId,
             providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
           });
         }
@@ -1689,7 +1857,7 @@ describe('AuthGenerator', () => {
       },
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1702,50 +1870,64 @@ describe('AuthGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-        "import { defineAuth } from '@aws-amplify/backend';
-        import { CfnResource } from 'aws-cdk-lib';
-        import type { Backend } from '../backend';
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-        export const auth = defineAuth({
-          loginWith: {
-            email: true,
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {
+            minimumLength: 12,
+            requireUppercase: true,
+            requireLowercase: true,
+            requireNumbers: false,
+            requireSymbols: false,
           },
-          multifactor: {
-            mode: 'OFF',
-          },
+        };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
         });
-
-        export function applyEscapeHatches(backend: Backend) {
-          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-          cfnUserPool.usernameAttributes = undefined;
-          cfnUserPool.policies = {
-            passwordPolicy: {
-              minimumLength: 12,
-              requireUppercase: true,
-              requireLowercase: true,
-              requireNumbers: false,
-              requireSymbols: false,
-            },
-          };
-          for (const cfnResource of backend.auth.stack.node
-            .findAll()
-            .filter(
-              (c) =>
-                CfnResource.isCfnResource(c) &&
-                [
-                  'AWS::Cognito::UserPool',
-                  'AWS::Cognito::IdentityPool',
-                  'AWS::Cognito::UserPoolClient',
-                  'AWS::Cognito::IdentityPoolRoleAttachment',
-                  'AWS::Cognito::UserPoolGroup',
-                ].includes(c.cfnResourceType)
-            )) {
-            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-          }
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
         }
-        "
-      `);
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('emits aliasAttributes in escape hatch', async () => {
@@ -1768,7 +1950,7 @@ describe('AuthGenerator', () => {
       AliasAttributes: ['email', 'preferred_username'],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1782,7 +1964,7 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -1801,6 +1983,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(

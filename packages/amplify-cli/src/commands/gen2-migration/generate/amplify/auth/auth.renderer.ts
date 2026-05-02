@@ -97,13 +97,13 @@ export interface FunctionAccess {
  */
 export interface AuthRenderOptions {
   readonly userPool: UserPoolType;
+  readonly webClient: UserPoolClientType;
+  readonly nativeClient: UserPoolClientType;
   readonly identityPool?: IdentityPool;
   readonly identityProviders?: readonly IdentityProviderType[];
   readonly identityGroups?: readonly GroupType[];
-  readonly webClient?: UserPoolClientType;
   readonly triggers?: readonly AuthTrigger[];
   readonly mfaConfig?: GetUserPoolMfaConfigResponse;
-  readonly userPoolClient?: UserPoolClientType;
   readonly access?: readonly FunctionAccess[];
 }
 
@@ -182,12 +182,9 @@ export class AuthRenderer {
     const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
     const baseNodes = this.renderStandardAuth(options, namedImports);
 
-    const hasIdentityProviders =
-      options.userPoolClient?.SupportedIdentityProviders !== undefined && options.userPoolClient.SupportedIdentityProviders.length > 0;
-
-    const additionalImportDeclarations = this.renderCdkImports(options, hasIdentityProviders);
+    const additionalImportDeclarations = this.renderCdkImports(options);
     const backendTypeImport = this.renderBackendTypeImport();
-    const applyEscapeHatchesDeclarations = this.renderApplyEscapeHatches(options, hasIdentityProviders);
+    const applyEscapeHatchesDeclarations = this.renderApplyEscapeHatches(options);
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -222,8 +219,8 @@ export class AuthRenderer {
     return TS.typeImport('../backend', 'Backend');
   }
 
-  private renderCdkImports(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.ImportDeclaration[] {
-    const additionalImports = this.buildAdditionalImports(options, hasIdentityProviders);
+  private renderCdkImports(options: AuthRenderOptions): ts.ImportDeclaration[] {
+    const additionalImports = this.buildAdditionalImports(options);
     const declarations: ts.ImportDeclaration[] = [];
     for (const [source, identifiers] of Object.entries(additionalImports)) {
       declarations.push(TS.namedImport(source, ...Array.from(identifiers)));
@@ -231,8 +228,8 @@ export class AuthRenderer {
     return declarations;
   }
 
-  private renderApplyEscapeHatches(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.FunctionDeclaration {
-    const escapeHatchStatements = this.buildEscapeHatchStatements(options, hasIdentityProviders);
+  private renderApplyEscapeHatches(options: AuthRenderOptions): ts.FunctionDeclaration {
+    const escapeHatchStatements = this.buildEscapeHatchStatements(options);
     return TS.exportedFunction('applyEscapeHatches', escapeHatchStatements);
   }
 
@@ -671,8 +668,8 @@ export class AuthRenderer {
           this.createExternalProvidersExpression(
             loginFlags,
             externalProviders,
-            options.webClient?.CallbackURLs,
-            options.webClient?.LogoutURLs,
+            options.webClient.CallbackURLs,
+            options.webClient.LogoutURLs,
           ),
         ),
       );
@@ -978,7 +975,7 @@ export class AuthRenderer {
   // ── Escape hatch rendering ───────────────────────────────────────
 
   /** Builds the statements for the applyEscapeHatches function body. */
-  private buildEscapeHatchStatements(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.Statement[] {
+  private buildEscapeHatchStatements(options: AuthRenderOptions): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
@@ -991,17 +988,13 @@ export class AuthRenderer {
       statements.push(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
     }
 
-    if (options.webClient?.AllowedOAuthFlows) {
+    if (options.webClient.AllowedOAuthFlows) {
       statements.push(TS.constFromBackend('cfnUserPoolClient', 'auth', 'resources', 'cfnResources', 'cfnUserPoolClient'));
       statements.push(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
     }
 
-    if (options.userPoolClient) {
-      statements.push(...this.buildUserPoolClientStatements(options.userPoolClient, hasIdentityProviders));
-    }
-
-    if (hasIdentityProviders) {
-      statements.push(...this.buildProviderSetupStatements());
+    if (options.nativeClient) {
+      statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient));
     }
 
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
@@ -1010,17 +1003,17 @@ export class AuthRenderer {
   }
 
   /** Builds additional imports needed for the applyEscapeHatches function. */
-  private buildAdditionalImports(options: AuthRenderOptions, hasIdentityProviders: boolean): Record<string, Set<string>> {
+  private buildAdditionalImports(options: AuthRenderOptions): Record<string, Set<string>> {
     const imports: Record<string, Set<string>> = {};
 
     if (!imports['aws-cdk-lib']) imports['aws-cdk-lib'] = new Set();
     imports['aws-cdk-lib'].add('CfnResource');
 
-    if (options.userPoolClient) {
+    if (options.nativeClient) {
       imports['aws-cdk-lib'].add('Duration');
     }
 
-    if (hasIdentityProviders) {
+    if (options.nativeClient.SupportedIdentityProviders && options.nativeClient.SupportedIdentityProviders.length > 0) {
       if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
       imports['aws-cdk-lib/aws-cognito'].add('OAuthScope');
       imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
@@ -1063,8 +1056,7 @@ export class AuthRenderer {
     return statements;
   }
 
-  /** Builds userPool.addClient statements. */
-  private buildUserPoolClientStatements(userPoolClient: UserPoolClientType, hasIdentityProviders: boolean): ts.Statement[] {
+  private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
     statements.push(TS.constFromBackend('userPool', 'auth', 'resources', 'userPool'));
@@ -1115,7 +1107,8 @@ export class AuthRenderer {
       );
     }
 
-    if (hasIdentityProviders) {
+    const supportedIdentityProviders = userPoolClient.SupportedIdentityProviders ?? [];
+    if (supportedIdentityProviders.length > 0) {
       const providerMap: Record<string, string> = {
         COGNITO: 'COGNITO',
         Facebook: 'FACEBOOK',
@@ -1123,7 +1116,7 @@ export class AuthRenderer {
         LoginWithAmazon: 'AMAZON',
         SignInWithApple: 'APPLE',
       };
-      const providerElements = userPoolClient.SupportedIdentityProviders!.map((provider) => {
+      const providerElements = supportedIdentityProviders.map((provider) => {
         const mapped = providerMap[provider] ?? provider.toUpperCase();
         return factory.createPropertyAccessExpression(
           factory.createIdentifier('UserPoolClientIdentityProvider'),
@@ -1223,7 +1216,7 @@ export class AuthRenderer {
       [factory.createStringLiteral('NativeAppClient'), factory.createObjectLiteralExpression(clientProps, true)],
     );
 
-    const clientVarName = hasIdentityProviders ? 'userPoolClient' : 'nativeClient';
+    const clientVarName = 'nativeUserPoolClient';
     statements.push(
       factory.createVariableStatement(
         undefined,
@@ -1235,6 +1228,10 @@ export class AuthRenderer {
     );
 
     statements.push(...this.buildCognitoProvidersPushStatements(clientVarName));
+
+    if (supportedIdentityProviders.length > 0) {
+      statements.push(...this.buildProviderSetupStatements());
+    }
 
     return statements;
   }

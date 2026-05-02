@@ -51,7 +51,7 @@ export function applyEscapeHatches(backend: Backend) {
   const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
   cfnIdentityPool.allowUnauthenticatedIdentities = false;
   const userPool = backend.auth.resources.userPool;
-  const nativeClient = userPool.addClient('NativeAppClient', {
+  const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
     refreshTokenValidity: Duration.days(30),
     enableTokenRevocation: true,
     enablePropagateAdditionalUserContextData: false,
@@ -64,7 +64,7 @@ export function applyEscapeHatches(backend: Backend) {
       .cognitoIdentityProviders;
   if (cognitoProviders && Array.isArray(cognitoProviders)) {
     cognitoProviders.push({
-      clientId: nativeClient.userPoolClientId,
+      clientId: nativeUserPoolClient.userPoolClientId,
       providerName: `cognito-idp.${backend.auth.stack.region}.amazonaws.com/${userPool.userPoolId}`,
     });
   }
