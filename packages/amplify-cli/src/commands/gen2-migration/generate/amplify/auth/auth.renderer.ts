@@ -1223,19 +1223,83 @@ export class AuthRenderer {
       [factory.createStringLiteral('NativeAppClient'), factory.createObjectLiteralExpression(clientProps, true)],
     );
 
-    if (hasIdentityProviders) {
-      statements.push(
-        factory.createVariableStatement(
-          undefined,
-          factory.createVariableDeclarationList(
-            [factory.createVariableDeclaration(factory.createIdentifier('userPoolClient'), undefined, undefined, addClientCall)],
-            ts.NodeFlags.Const,
-          ),
+    const clientVarName = hasIdentityProviders ? 'userPoolClient' : 'nativeClient';
+    statements.push(
+      factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [factory.createVariableDeclaration(factory.createIdentifier(clientVarName), undefined, undefined, addClientCall)],
+          ts.NodeFlags.Const,
         ),
-      );
-    } else {
-      statements.push(factory.createExpressionStatement(addClientCall));
-    }
+      ),
+    );
+
+    statements.push(...this.buildCognitoProvidersPushStatements(clientVarName));
+
+    return statements;
+  }
+
+  /**
+   * Builds the cognitoIdentityProviders push block that registers the native app client
+   * with the identity pool.
+   */
+  private buildCognitoProvidersPushStatements(clientVarName: string): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // const cognitoProviders = backend.auth.resources.cfnResources.cfnIdentityPool.cognitoIdentityProviders;
+    statements.push(
+      TS.declareConst(
+        'cognitoProviders',
+        TS.propAccess('backend', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool', 'cognitoIdentityProviders'),
+      ),
+    );
+
+    // if (cognitoProviders && Array.isArray(cognitoProviders)) { cognitoProviders.push({...}) }
+    const pushArg = factory.createObjectLiteralExpression(
+      [
+        factory.createPropertyAssignment(
+          'clientId',
+          factory.createPropertyAccessExpression(factory.createIdentifier(clientVarName), factory.createIdentifier('userPoolClientId')),
+        ),
+        factory.createPropertyAssignment(
+          'providerName',
+          factory.createTemplateExpression(factory.createTemplateHead('cognito-idp.'), [
+            factory.createTemplateSpan(
+              TS.propAccess('backend', 'auth', 'stack', 'region') as ts.Expression,
+              factory.createTemplateMiddle('.amazonaws.com/'),
+            ),
+            factory.createTemplateSpan(
+              factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('userPoolId')),
+              factory.createTemplateTail(''),
+            ),
+          ]),
+        ),
+      ],
+      false,
+    );
+
+    const pushCall = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('cognitoProviders'), factory.createIdentifier('push')),
+        undefined,
+        [pushArg],
+      ),
+    );
+
+    const ifStatement = factory.createIfStatement(
+      factory.createBinaryExpression(
+        factory.createIdentifier('cognitoProviders'),
+        factory.createToken(ts.SyntaxKind.AmpersandAmpersandToken),
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier('Array'), factory.createIdentifier('isArray')),
+          undefined,
+          [factory.createIdentifier('cognitoProviders')],
+        ),
+      ),
+      factory.createBlock([pushCall], true),
+    );
+
+    statements.push(ifStatement);
 
     return statements;
   }

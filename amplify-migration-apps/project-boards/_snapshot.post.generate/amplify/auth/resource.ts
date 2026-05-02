@@ -42,12 +42,14 @@ export function applyEscapeHatches(backend: Backend) {
     disableOAuth: true,
     generateSecret: false,
   });
-  const cognitoProviders = backend.auth.resources.cfnResources.cfnIdentityPool.cognitoIdentityProviders;
+  const cognitoProviders =
+    backend.auth.resources.cfnResources.cfnIdentityPool
+      .cognitoIdentityProviders;
   if (cognitoProviders && Array.isArray(cognitoProviders)) {
     cognitoProviders.push({
       clientId: nativeClient.userPoolClientId,
-      providerName: `cognito-idp.${backend.auth.stack.region}.amazonaws.com/${userPool.userPoolId}`
-    })
+      providerName: `cognito-idp.${backend.auth.stack.region}.amazonaws.com/${userPool.userPoolId}`,
+    });
   }
   for (const cfnResource of backend.auth.stack.node
     .findAll()

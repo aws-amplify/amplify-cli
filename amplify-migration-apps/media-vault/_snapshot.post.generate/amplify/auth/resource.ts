@@ -122,6 +122,15 @@ export function applyEscapeHatches(backend: Backend) {
     disableOAuth: false,
     generateSecret: false,
   });
+  const cognitoProviders =
+    backend.auth.resources.cfnResources.cfnIdentityPool
+      .cognitoIdentityProviders;
+  if (cognitoProviders && Array.isArray(cognitoProviders)) {
+    cognitoProviders.push({
+      clientId: userPoolClient.userPoolClientId,
+      providerName: `cognito-idp.${backend.auth.stack.region}.amazonaws.com/${userPool.userPoolId}`,
+    });
+  }
   const providerSetupResult = (
     backend.auth.stack.node.children.find(
       (child) => child.node.id === 'amplifyAuth'
