@@ -50,6 +50,7 @@ import {
   waitUntilBucketNotExists,
 } from '@aws-sdk/client-s3';
 import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
+import { GEN1_PLACEHOLDER_APP_NAME } from '@aws-amplify/amplify-e2e-core';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
@@ -407,6 +408,11 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 })); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
     for (const app of amplifyApps.apps) {
+      if (app.name === GEN1_PLACEHOLDER_APP_NAME) {
+        // we keep at least one app (this one) so that
+        // we can continue creating Gen1 apps, following https://github.com/aws-amplify/amplify-cli/pull/14826
+        continue;
+      }
       if (!isStale(app.createTime)) {
         continue; // skip
       }

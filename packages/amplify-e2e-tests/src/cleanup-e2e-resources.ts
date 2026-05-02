@@ -47,7 +47,7 @@ import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organi
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
-import { deleteS3Bucket, sleep } from '@aws-amplify/amplify-e2e-core';
+import { deleteS3Bucket, sleep, GEN1_PLACEHOLDER_APP_NAME } from '@aws-amplify/amplify-e2e-core';
 
 // Ensure that scripts/cci-utils.ts is also updated when this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
@@ -326,6 +326,11 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 })); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
     for (const app of amplifyApps.apps) {
+      if (app.name === GEN1_PLACEHOLDER_APP_NAME) {
+        // we keep at least one app (this one) so that
+        // we can continue creating Gen1 apps, following https://github.com/aws-amplify/amplify-cli/pull/14826
+        continue;
+      }
       if (!isStale(app.createTime)) {
         continue; // skip
       }

@@ -22,6 +22,7 @@
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
+    "ensure-gen1-placeholder-apps": "ts-node ./src/ensure-gen1-placeholder-apps.ts",
     "smoketest": "yarn e2e --testPathPattern='src/__tests__/smoke-tests/.*.test.ts'"
   },
   "dependencies": {

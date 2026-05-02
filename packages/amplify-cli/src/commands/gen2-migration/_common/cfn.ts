@@ -30,6 +30,7 @@ import { extractStackNameFromId } from './utils';
 import { SpinningLogger } from './spinning-logger';
 import { cfnChangesetConsoleUrl } from '../../drift/services/drift-formatter';
 import chalk from 'chalk';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DiscoveredResource } from './gen1-app';
@@ -37,7 +38,7 @@ import { DiscoveredResource } from './gen1-app';
 const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
-export const OUTPUT_DIRECTORY = '.gen2-migration/refactor.operations';
+export const REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY = '.amplify/gen2-migration/refactor.operations';
 
 const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -62,8 +63,8 @@ export class Cfn {
   private readonly updateStackClaims = new Set<string>();
 
   constructor(private readonly client: CloudFormationClient, private readonly logger: SpinningLogger) {
-    if (!fs.existsSync(OUTPUT_DIRECTORY)) {
-      fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
+    if (!fs.existsSync(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY)) {
+      fs.mkdirSync(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, { recursive: true });
     }
   }
 
@@ -485,8 +486,14 @@ interface WriteUpdateSnapshotInput {
 
 function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.template.json`), formatTemplateBody(input.templateBody));
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2) + '\n');
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `update.${stackName}.template.json`),
+    formatTemplateBody(input.templateBody),
+  );
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`),
+    JSON.stringify(input.parameters, null, 2) + '\n',
+  );
 }
 
 function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
@@ -495,11 +502,29 @@ function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
   const sourceStackName = extractStackNameFromId(source.StackName!);
   const targetStackName = extractStackNameFromId(target.StackName!);
   const description = `refactor.__from__.${sourceStackName}.__to__.${targetStackName}`;
-  const basePath = path.join(OUTPUT_DIRECTORY, description);
-  fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
-  fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
-  fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `${description}.mappings.json`),
+  const basePath = path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, description);
+  writeRefactorSnapshotFile(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
+  writeRefactorSnapshotFile(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${description}.mappings.json`),
     JSON.stringify(input.ResourceMappings ?? [], null, 2) + '\n',
   );
+}
+
+const FILENAME_MAPPING_FILE = 'filename-mapping.json';
+
+/**
+ * Writes content to a file whose name is a 10-character hash of the original filename.
+ * Records the hash→original mapping in a separate JSON file that is updated on each call.
+ */
+function writeRefactorSnapshotFile(filename: string, content: string): void {
+  const hash = crypto.createHash('sha256').update(filename).digest('hex').slice(0, 10);
+  const hashedFilename = `${hash}.json`;
+
+  fs.writeFileSync(path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, hashedFilename), content);
+
+  const mappingPath = path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, FILENAME_MAPPING_FILE);
+  const mapping: Record<string, string> = fs.existsSync(mappingPath) ? JSON.parse(fs.readFileSync(mappingPath, 'utf-8')) : {};
+  mapping[hash] = path.basename(filename);
+  fs.writeFileSync(mappingPath, JSON.stringify(mapping, null, 2) + '\n');
 }
