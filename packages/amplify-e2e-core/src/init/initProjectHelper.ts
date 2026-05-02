@@ -156,7 +156,6 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
   if (providerConfigSpecified) {
-    console.log('initJSProjectWithProfile: provider config specified: ', s.providerConfig);
     cliArgs.push('--providers', JSON.stringify(s.providerConfig));
   }
 
@@ -167,14 +166,12 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   const binaryPath = getCLIPath(s.testingWithLatestCodebase);
-  console.log(`Running ${binaryPath} with args: '${cliArgs.join(' ')}'`);
   const chain = spawn(binaryPath, cliArgs, {
     cwd,
     stripColors: true,
     env,
     disableCIDetection: s.disableCIDetection,
   });
-  console.log(`Spawned ${binaryPath} with args: '${cliArgs.join(' ')}'`);
 
   if (s.includeGen2RecommendationPrompt) {
     chain
@@ -208,7 +205,6 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
 
   if (!providerConfigSpecified) {
     const profileIndex = getProfileIndex(s.profileName);
-    console.log(`profile index: ${profileIndex}, profile name: ${s.profileName}`);
 
     chain
       .wait('Using default provider  awscloudformation')
@@ -219,7 +215,6 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
     if (profileIndex > 0) {
       chain.sendKeyDown(profileIndex);
     }
-
     chain.sendCarriageReturn();
   }
 

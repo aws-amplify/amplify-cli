@@ -533,17 +533,18 @@ export class App {
     const originalCwd = process.cwd();
     process.chdir(this.targetAppPath);
     try {
+      const startTime = Date.now();
       const command = `${this.amplifyPath} ${args.join(' ')}`;
-      this.logger.info(`→ ${command}`);
+      this.logger.info(`${command} (→)`);
       const result = await execa(this.amplifyPath, args, {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
         env: this.getEnv(),
       });
       if (result.exitCode !== 0) {
-        throw new Error(`amplify ${args[0]} failed with exit code ${result.exitCode}`);
+        throw new Error(`${command} failed with exit code ${result.exitCode}`);
       }
-      this.logger.info(`✔ ${command}`);
+      this.logger.info(`${command} (✔ ${Date.now() - startTime}ms)`);
     } finally {
       process.chdir(originalCwd);
     }
@@ -554,7 +555,7 @@ export class App {
 
     const args = ['gen2-migration', step, '--yes', ...extraArgs];
     const command = `${this.amplifyPath} ${args.join(' ')}`;
-    this.logger.info(`→ ${command}`);
+    this.logger.info(`${command} (→)`);
     const result = await execa(this.amplifyPath, args, {
       cwd: this.targetAppPath,
       stdio: 'inherit',
@@ -563,10 +564,10 @@ export class App {
     });
 
     if (result.exitCode !== 0) {
-      throw new Error(`gen2-migration ${step} failed with exit code ${result.exitCode}`);
+      throw new Error(`${command} failed with exit code ${result.exitCode}`);
     }
 
-    this.logger.info(`✔ ${command} (${Date.now() - startTime}ms)`);
+    this.logger.info(`${command} (✔ ${Date.now() - startTime}ms)`);
   }
 
   /**

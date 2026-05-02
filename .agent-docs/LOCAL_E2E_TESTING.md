@@ -284,6 +284,18 @@ Check if this is a pre-existing issue by testing on the base branch. Coverage ca
 
 Run `yarn lint-fix` to auto-fix some issues. Others require manual fixes.
 
+### "posix_spawnp failed" when running gen2-migration E2Es
+
+If you see an error like `Error: Execution failed: posix_spawnp failed` originating from `node-pty`, the `spawn-helper` binary shipped with `node-pty` lost its execute permission (common after a fresh `yarn install`).
+
+**Fix:**
+
+```bash
+chmod +x node_modules/node-pty/prebuilds/darwin-arm64/spawn-helper
+```
+
+Run this from the repository root.
+
 ## Related Documentation
 
 - [DEPENDABOT.md](./DEPENDABOT.md) - Dependency update workflow
