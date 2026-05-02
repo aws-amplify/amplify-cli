@@ -4,7 +4,12 @@ import execa from 'execa';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { amplifyPullNonInteractive, getCLIPath, initJSProjectWithProfileGen2Migration } from '@aws-amplify/amplify-e2e-core';
+import {
+  amplifyPullNonInteractive,
+  getCLIPath,
+  initJSProjectWithProfileGen2Migration,
+  ensureGen1PlaceholderApp,
+} from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
 import { Git } from './git';
 import * as snapshot from './snapshot';
@@ -12,6 +17,7 @@ import { sanitize } from './sanitize';
 import { normalize } from './normalize';
 import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
@@ -133,6 +139,7 @@ export class App {
    */
   public async init(): Promise<void> {
     await this.refreshCredentials();
+    await ensureGen1PlaceholderApp(new AmplifyClient(this.getClientConfig()));
     this.logger.info('amplify init');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
@@ -205,9 +212,7 @@ export class App {
    * Run `amplify status`.
    */
   public async status(): Promise<void> {
-    this.logger.info('amplify status');
     await this.runAmplify(['status'], { stdio: 'inherit' });
-    this.logger.info('amplify status completed');
   }
 
   /**
@@ -215,9 +220,7 @@ export class App {
    */
   public async push(): Promise<void> {
     await this.refreshCredentials();
-    this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
-    this.logger.info('amplify push completed');
   }
 
   /**
@@ -535,7 +538,7 @@ export class App {
     try {
       const startTime = Date.now();
       const command = `${this.amplifyPath} ${args.join(' ')}`;
-      this.logger.info(`${command} (→)`);
+      this.logger.info(`(→) ${command}`);
       const result = await execa(this.amplifyPath, args, {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
@@ -555,7 +558,7 @@ export class App {
 
     const args = ['gen2-migration', step, '--yes', ...extraArgs];
     const command = `${this.amplifyPath} ${args.join(' ')}`;
-    this.logger.info(`${command} (→)`);
+    this.logger.info(`(→) ${command}`);
     const result = await execa(this.amplifyPath, args, {
       cwd: this.targetAppPath,
       stdio: 'inherit',

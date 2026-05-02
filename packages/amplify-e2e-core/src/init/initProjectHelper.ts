@@ -9,6 +9,12 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+import { AmplifyClient, CreateAppCommand, CreateBackendEnvironmentCommand, paginateListApps } from '@aws-sdk/client-amplify';
+
+/**
+ * Name of the app that should exist in our accounts to satisfy the new customer restriction.
+ */
+export const GEN1_PLACEHOLDER_APP_NAME = 'gen1-placeholder-do-not-delete';
 
 const defaultSettings = {
   name: EOL,
@@ -673,4 +679,29 @@ export function initHeadless(cwd: string, envName?: string, appId?: string): Pro
   }
 
   return spawn(getCLIPath(), cliArgs, { cwd, stripColors: true }).runAsync();
+}
+
+/**
+ * Ensure a placeholder Amplify app with a backend environment exists so that
+ * the Gen1 new-customer restriction (`isExistingGen1Customer`) passes.
+ * No-ops only if the specific placeholder app already exists.
+ */
+export async function ensureGen1PlaceholderApp(client: AmplifyClient): Promise<void> {
+  for await (const page of paginateListApps({ client }, {})) {
+    if (page.apps?.some((a) => a.name === GEN1_PLACEHOLDER_APP_NAME)) {
+      return;
+    }
+  }
+
+  const createResponse = await client.send(new CreateAppCommand({ name: GEN1_PLACEHOLDER_APP_NAME }));
+  const appId = createResponse.app?.appId;
+  if (!appId) {
+    throw new Error('Failed to create placeholder Amplify app — no appId returned');
+  }
+  await client.send(
+    new CreateBackendEnvironmentCommand({
+      appId,
+      environmentName: 'main',
+    }),
+  );
 }
