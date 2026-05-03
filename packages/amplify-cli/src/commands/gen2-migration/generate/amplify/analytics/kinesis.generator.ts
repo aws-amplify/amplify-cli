@@ -11,6 +11,7 @@ import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
 import * as prettier from 'prettier';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 // e.g `const analyticsResult = definedAnalytics(...)`
 // an exported constant because the function generator needs this as well
@@ -30,13 +31,21 @@ export class AnalyticsKinesisGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
   private readonly renderer: AnalyticsRenderer;
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.renderer = new AnalyticsRenderer(resource);
+    this.logger = logger;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -65,6 +74,7 @@ export class AnalyticsKinesisGenerator implements Planner {
             tabWidth: 2,
             printWidth: 80,
           });
+          this.logger.info(`Rendering analytics/${constructFileName}.ts`);
           await fs.mkdir(path.dirname(constructFilePath), { recursive: true });
           await fs.writeFile(constructFilePath, formatted, 'utf-8');
         },
@@ -77,6 +87,7 @@ export class AnalyticsKinesisGenerator implements Planner {
           const shardCount = parseInt(this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamShardCount'), 10);
           const streamName = this.gen1App.resourceMetaOutput(this.resource, 'kinesisStreamId');
 
+          this.logger.info('Rendering analytics/resource.ts');
           const nodes = this.renderer.render({
             constructClassName,
             constructFileName,
@@ -106,6 +117,7 @@ export class AnalyticsKinesisGenerator implements Planner {
   }
 
   private async fetchNestedStackParameters(logicalId: string): Promise<Parameter[]> {
+    this.logger.debug(`Fetching nested stack parameters for '${logicalId}'`);
     const resourcesResponse = await this.gen1App.clients.cloudFormation.send(
       new DescribeStackResourcesCommand({ StackName: this.gen1App.rootStackName, LogicalResourceId: logicalId }),
     );

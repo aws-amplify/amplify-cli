@@ -6,6 +6,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { RestApiRenderOptions, RestApiRenderer } from './rest-api.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates a single REST API (API Gateway) resource and contributes
@@ -21,12 +22,20 @@ export class RestApiGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly resource: DiscoveredResource;
   private readonly outputDir: string;
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
+    this.logger = logger;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -42,6 +51,7 @@ export class RestApiGenerator implements Planner {
           const apiDir = path.join(this.outputDir, 'amplify', 'api', restApi.apiName);
           const renderer = new RestApiRenderer(hasAuth);
 
+          this.logger.info(`Rendering api/${restApi.apiName}/resource.ts`);
           const nodes = renderer.render(restApi);
           const content = TS.printNodes(nodes);
 
@@ -63,6 +73,7 @@ export class RestApiGenerator implements Planner {
   private async readRestApiConfig(): Promise<RestApiRenderOptions> {
     const cliInputs = this.gen1App.cliInputs('api', this.resource.resourceName);
     const gen1ApiId = this.gen1App.resourceMetaOutput(this.resource, 'ApiId');
+    this.logger.debug(`Fetching REST API root resource for '${gen1ApiId}'`);
     const gen1RootResourceId = await this.gen1App.aws.fetchRestApiRootResourceId(gen1ApiId);
     return {
       apiName: this.resource.resourceName,

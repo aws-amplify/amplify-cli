@@ -7,6 +7,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { ReferenceAuth, ReferenceAuthRenderer } from './reference-auth.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates auth resource files for imported (reference) auth resources.
@@ -19,12 +20,20 @@ export class ReferenceAuthGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
   private readonly renderer = new ReferenceAuthRenderer();
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
+    this.logger = logger;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -51,6 +60,7 @@ export class ReferenceAuthGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts (reference auth)'],
         execute: async () => {
+          this.logger.info('Rendering auth/resource.ts (reference auth)');
           const nodes = this.renderer.render(referenceAuth);
           const content = TS.printNodes(nodes);
 
@@ -87,8 +97,16 @@ export class ReferenceAuthGenerator implements Planner {
       });
     }
 
-    const roles = identityPoolId ? await this.gen1App.aws.fetchIdentityPoolRoles(identityPoolId) : undefined;
-    const groups = userPoolId ? await this.gen1App.aws.fetchGroupsByUserPoolId(userPoolId) : undefined;
+    let roles: { authenticated?: string; unauthenticated?: string } | undefined;
+    if (identityPoolId) {
+      this.logger.debug(`Fetching identity pool roles for '${identityPoolId}'`);
+      roles = await this.gen1App.aws.fetchIdentityPoolRoles(identityPoolId);
+    }
+    let groups: Record<string, string> | undefined;
+    if (userPoolId) {
+      this.logger.debug(`Fetching user pool groups for '${userPoolId}'`);
+      groups = await this.gen1App.aws.fetchGroupsByUserPoolId(userPoolId);
+    }
 
     return {
       userPoolId,

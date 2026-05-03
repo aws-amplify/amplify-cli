@@ -31,7 +31,7 @@ const AMPLIFY_DIR = 'amplify';
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
-    const backendGenerator = new BackendGenerator(outputDir);
+    const backendGenerator = new BackendGenerator(outputDir, this.logger);
     const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
     const generators: Planner[] = [];
@@ -90,9 +90,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             });
 
           if (isReferenceAuth) {
-            generators.push(new ReferenceAuthGenerator(this.gen1App, backendGenerator, outputDir, resource));
+            generators.push(new ReferenceAuthGenerator(this.gen1App, backendGenerator, outputDir, resource, this.logger));
           } else {
-            authGenerator = new AuthGenerator(this.gen1App, backendGenerator, outputDir, resource);
+            authGenerator = new AuthGenerator(this.gen1App, backendGenerator, outputDir, resource, this.logger);
             generators.push(authGenerator);
           }
           break;
@@ -101,41 +101,41 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           // Handled by the AuthGenerator created for the main Cognito resource.
           break;
         case 'storage:S3':
-          s3Generator = new S3Generator(this.gen1App, backendGenerator, outputDir, resource);
+          s3Generator = new S3Generator(this.gen1App, backendGenerator, outputDir, resource, this.logger);
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          generators.push(new DynamoDBGenerator(this.gen1App, backendGenerator, outputDir, resource));
+          generators.push(new DynamoDBGenerator(this.gen1App, backendGenerator, outputDir, resource, this.logger));
           break;
         }
         case 'api:AppSync':
-          generators.push(new DataGenerator(this.gen1App, backendGenerator, outputDir, resource));
+          generators.push(new DataGenerator(this.gen1App, backendGenerator, outputDir, resource, this.logger));
           break;
         case 'api:API Gateway':
-          generators.push(new RestApiGenerator(this.gen1App, backendGenerator, outputDir, resource));
+          generators.push(new RestApiGenerator(this.gen1App, backendGenerator, outputDir, resource, this.logger));
           break;
         case 'analytics:Kinesis':
-          generators.push(new AnalyticsKinesisGenerator(this.gen1App, backendGenerator, outputDir, resource));
+          generators.push(new AnalyticsKinesisGenerator(this.gen1App, backendGenerator, outputDir, resource, this.logger));
           break;
         case 'geo:Map': {
           if (!geoGenerator) {
-            geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+            geoGenerator = new GeoGenerator(backendGenerator, outputDir, this.logger);
           }
-          generators.push(new GeoMapGenerator(this.gen1App, outputDir, resource, geoGenerator));
+          generators.push(new GeoMapGenerator(this.gen1App, outputDir, resource, geoGenerator, this.logger));
           break;
         }
         case 'geo:PlaceIndex': {
           if (!geoGenerator) {
-            geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+            geoGenerator = new GeoGenerator(backendGenerator, outputDir, this.logger);
           }
-          generators.push(new GeoPlaceIndexGenerator(this.gen1App, outputDir, resource, geoGenerator));
+          generators.push(new GeoPlaceIndexGenerator(this.gen1App, outputDir, resource, geoGenerator, this.logger));
           break;
         }
         case 'geo:GeofenceCollection': {
           if (!geoGenerator) {
-            geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+            geoGenerator = new GeoGenerator(backendGenerator, outputDir, this.logger);
           }
-          generators.push(new GeoGeofenceCollectionGenerator(this.gen1App, outputDir, resource, geoGenerator));
+          generators.push(new GeoGeofenceCollectionGenerator(this.gen1App, outputDir, resource, geoGenerator, this.logger));
           break;
         }
         case 'function:Lambda': {
@@ -145,6 +145,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             packageJsonGenerator,
             outputDir,
             resource,
+            logger: this.logger,
           });
           generators.push(funcGen);
           functionGenerators.push(funcGen);

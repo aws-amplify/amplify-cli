@@ -6,6 +6,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { AuthRenderOptions, AuthRenderer, AuthTrigger, FunctionAccess } from './auth.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates auth resource files and contributes to backend.ts.
@@ -23,13 +24,21 @@ export class AuthGenerator implements Planner {
   private readonly defineAuth: AuthRenderer;
   private readonly access: FunctionAccess[] = [];
   private readonly triggers: AuthTrigger[] = [];
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.defineAuth = new AuthRenderer();
+    this.logger = logger;
   }
 
   /** Registers a function's auth access permissions. */
@@ -49,6 +58,7 @@ export class AuthGenerator implements Planner {
     const appClientId = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
     const identityPoolId = this.gen1App.resourceMetaOutput(this.resource, 'IdentityPoolId');
 
+    this.logger.debug(`Fetching auth resources for user pool '${userPoolId}'`);
     const [mfaConfig, webClient, userPoolClient, identityProviders, identityGroups, identityPool] = await Promise.all([
       this.gen1App.aws.fetchMfaConfig(userPoolId),
       appClientIdWeb ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdWeb) : Promise.resolve(undefined),
@@ -78,6 +88,7 @@ export class AuthGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
+          this.logger.info('Rendering auth/resource.ts');
           const nodeArray = this.defineAuth.render(renderOptions);
           let content = TS.printNodes(nodeArray);
 

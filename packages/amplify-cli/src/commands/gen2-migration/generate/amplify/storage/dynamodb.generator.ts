@@ -8,6 +8,7 @@ import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
 import { TS } from '../../ts';
 import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates a single DynamoDB table construct and contributes it to backend.ts.
@@ -22,13 +23,21 @@ export class DynamoDBGenerator implements Planner {
   private readonly resource: DiscoveredResource;
   private readonly outputDir: string;
   private readonly renderer: DynamoDBRenderer;
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.renderer = new DynamoDBRenderer(resource.resourceName);
+    this.logger = logger;
   }
 
   /**
@@ -49,6 +58,7 @@ export class DynamoDBGenerator implements Planner {
 
           // Write the resource.ts file for this DynamoDB table
           const resourceDir = path.join(this.outputDir, 'amplify', 'storage', this.resource.resourceName);
+          this.logger.info(`Rendering storage/${this.resource.resourceName}/resource.ts`);
           const nodes = this.renderer.render(table);
           const content = TS.printNodes(nodes);
           await fs.mkdir(resourceDir, { recursive: true });
@@ -66,6 +76,7 @@ export class DynamoDBGenerator implements Planner {
   private async fetchTable(): Promise<DynamoDBTableDefinition> {
     const actualTableName = this.gen1App.resourceMetaOutput(this.resource, 'Name');
 
+    this.logger.debug(`Fetching DynamoDB table '${actualTableName}'`);
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {
       throw new AmplifyError('DynamoDBTableNotFoundError', {

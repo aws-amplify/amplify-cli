@@ -5,6 +5,7 @@ import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
 import { TS } from '../../ts';
 import { GeoRenderer } from './geo.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Base fields common to all geo resource props.
@@ -40,14 +41,16 @@ export class GeoGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly renderer = new GeoRenderer();
+  private readonly logger: SpinningLogger;
 
   private readonly maps: GeoResourceProps[] = [];
   private readonly placeIndices: GeoResourceProps[] = [];
   private readonly geofenceCollections: GeoResourceProps[] = [];
 
-  public constructor(backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(backendGenerator: BackendGenerator, outputDir: string, logger: SpinningLogger) {
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
+    this.logger = logger;
   }
 
   /** Register a Map resource. */
@@ -73,6 +76,7 @@ export class GeoGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/geo/resource.ts'],
         execute: async () => {
+          this.logger.info('Rendering geo/resource.ts');
           const nodes = this.renderer.render(this.maps, this.placeIndices, this.geofenceCollections);
           const content = TS.printNodes(nodes);
 

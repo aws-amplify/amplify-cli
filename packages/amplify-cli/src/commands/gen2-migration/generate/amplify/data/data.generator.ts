@@ -8,6 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { DataRenderer } from './data.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates the AppSync/GraphQL data resource and contributes to backend.ts.
@@ -24,13 +25,21 @@ export class DataGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
   private readonly renderer: DataRenderer;
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.renderer = new DataRenderer(gen1App.envName);
+    this.logger = logger;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -39,6 +48,7 @@ export class DataGenerator implements Planner {
 
     const tableMappings = this.createTableMappings(schema, apiId);
 
+    this.logger.debug(`Fetching AppSync API '${apiId}'`);
     const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
     if (!graphqlApi) {
       throw new AmplifyError('AppSyncApiNotFoundError', {
@@ -61,6 +71,7 @@ export class DataGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/data/resource.ts'],
         execute: async () => {
+          this.logger.info('Rendering data/resource.ts');
           const nodes = this.renderer.render({
             schema,
             tableMappings,
