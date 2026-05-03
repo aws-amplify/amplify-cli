@@ -3,6 +3,7 @@ import { BackendGenerator } from '../../../../../../commands/gen2-migration/gene
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -30,10 +31,11 @@ function writtenFile(suffix: string): string {
 describe('AuthGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('throws when user pool is not found', async () => {
@@ -53,7 +55,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
   });
 
@@ -83,7 +85,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -180,7 +182,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -254,7 +256,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -331,7 +333,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -407,7 +409,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -496,7 +498,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -577,7 +579,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -652,7 +654,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -725,7 +727,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addTrigger({ event: 'preSignUp', resourceName: 'preSignUpFn' });
     generator.addTrigger({ event: 'postConfirmation', resourceName: 'postConfirmFn' });
 
@@ -810,7 +812,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: ['https://example.com/logout'],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -907,7 +909,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: [],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1019,7 +1021,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: ['https://example.com/logout'],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1141,7 +1143,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({
       resourceName: 'adminFunc',
       permissions: { manageUsers: true, listUsers: true },
@@ -1222,7 +1224,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({ resourceName: 'func1', permissions: { createUser: true } });
     generator.addFunctionAuthAccess({ resourceName: 'func2', permissions: { deleteUser: true, getUser: true } });
 
@@ -1303,7 +1305,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({ resourceName: 'noAccessFunc', permissions: {} });
 
     const ops = await generator.plan();
@@ -1340,7 +1342,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: false,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1416,7 +1418,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: ['https://example.com/logout'],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1523,7 +1525,7 @@ describe('AuthGenerator', () => {
       });
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1653,7 +1655,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1732,7 +1734,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`

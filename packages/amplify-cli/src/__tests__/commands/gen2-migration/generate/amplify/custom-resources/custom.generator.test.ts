@@ -2,6 +2,7 @@ import { CustomResourceGenerator } from '../../../../../../commands/gen2-migrati
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -59,10 +60,11 @@ describe('CustomResourceGenerator', () => {
   let backendGenerator: BackendGenerator;
   let packageJsonGenerator: RootPackageJsonGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
     packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
     mockReadFile.mockResolvedValue(CDK_STACK_CONTENT);
   });
@@ -74,7 +76,7 @@ describe('CustomResourceGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({});
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
 
-    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -89,7 +91,7 @@ describe('CustomResourceGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({});
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
 
-    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -111,7 +113,7 @@ describe('CustomResourceGenerator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addPostDefineBackendCallSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendCall');
 
-    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -126,7 +128,7 @@ describe('CustomResourceGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({});
     jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
 
-    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -145,7 +147,7 @@ describe('CustomResourceGenerator', () => {
 
     const addDependencySpy = jest.spyOn(packageJsonGenerator, 'addDependency');
 
-    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -161,7 +163,7 @@ describe('CustomResourceGenerator', () => {
 
     mockReadFile.mockRejectedValue(new Error('ENOENT: no such file'));
 
-    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom');
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await expect(ops[0].execute()).rejects.toThrow();
   });

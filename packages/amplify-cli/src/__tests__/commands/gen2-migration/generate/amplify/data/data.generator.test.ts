@@ -3,6 +3,7 @@ import { DataGenerator } from '../../../../../../commands/gen2-migration/generat
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -29,10 +30,11 @@ const dataResource: DiscoveredResource = {
 describe('DataGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
@@ -49,7 +51,7 @@ describe('DataGenerator', () => {
     });
     jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     await expect(generator.plan()).rejects.toThrow('GraphQLAPIIdOutput');
   });
 
@@ -66,7 +68,7 @@ describe('DataGenerator', () => {
     jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue(undefined);
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
   });
 
@@ -91,7 +93,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -123,7 +125,7 @@ describe('DataGenerator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -155,7 +157,7 @@ describe('DataGenerator', () => {
 
     const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -185,7 +187,7 @@ describe('DataGenerator', () => {
 
     const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -216,7 +218,7 @@ describe('DataGenerator', () => {
 
     const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -244,7 +246,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -286,7 +288,7 @@ describe('DataGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -341,7 +343,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -405,7 +407,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -468,7 +470,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -515,7 +517,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     } as unknown as GraphqlApi);
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -561,7 +563,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -609,7 +611,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -633,7 +635,7 @@ describe('DataGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
