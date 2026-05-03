@@ -41,6 +41,7 @@ export class AmplifyGen2MigrationValidations {
     const { stdout: statusOutput } = await execa('git', ['status', '--porcelain']);
     if (statusOutput.trim()) {
       throw new AmplifyError('UncommittedChangesError', {
+        message: 'Working directory has uncommitted changes',
         resolution: 'Commit or stash your changes before proceeding with migration.',
       });
     }
