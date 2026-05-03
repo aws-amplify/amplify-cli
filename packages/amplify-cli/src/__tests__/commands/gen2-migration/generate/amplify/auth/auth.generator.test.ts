@@ -1804,7 +1804,7 @@ describe('AuthGenerator', () => {
             providerSetupPropertyValue.node &&
             providerSetupPropertyValue.node.id.toLowerCase().endsWith('idp')
           ) {
-            userPoolClient.node.addDependency(providerSetupPropertyValue);
+            nativeUserPoolClient.node.addDependency(providerSetupPropertyValue);
           }
         });
         // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");

@@ -1431,7 +1431,7 @@ export class AuthRenderer {
                         factory.createCallExpression(
                           factory.createPropertyAccessExpression(
                             factory.createPropertyAccessExpression(
-                              factory.createIdentifier('userPoolClient'),
+                              factory.createIdentifier('nativeUserPoolClient'),
                               factory.createIdentifier('node'),
                             ),
                             factory.createIdentifier('addDependency'),
