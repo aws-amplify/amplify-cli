@@ -182,6 +182,7 @@ export type AmplifyErrorType =
   | 'ResourceRemoveError'
   | 'ResourceMappingError'
   | 'ResourceMetaNotFoundError'
+  | 'ResourceMetaOutputNotFoundError'
   | 'RestApiResourceNotFoundError'
   | 'SchemaNotFoundError'
   | 'SchemaValidationError'
