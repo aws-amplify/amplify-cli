@@ -110,7 +110,7 @@ export class Assessment {
       (ra) => ra.resource.category === resource.category && ra.resource.resourceName === resource.resourceName,
     );
     if (!entry) {
-      throw new AmplifyFault('ResourceNotFoundFault', {
+      throw new AmplifyFault('ResourceAssessmentNotFoundFault', {
         message: `No assessment recorded for resource '${resource.category}/${resource.resourceName}'`,
       });
     }

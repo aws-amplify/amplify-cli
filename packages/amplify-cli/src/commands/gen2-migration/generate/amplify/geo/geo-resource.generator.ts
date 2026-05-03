@@ -107,7 +107,7 @@ export abstract class GeoResourceGenerator implements Planner {
 
     const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
     if (!classNameMatch) {
-      throw new AmplifyFault('ResourceNotFoundFault', {
+      throw new AmplifyFault('RegexMatchingFault', {
         message: `Failed to extract class name from generated construct for geo resource: ${this.resource.resourceName}`,
       });
     }
