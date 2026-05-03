@@ -207,7 +207,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_e1bfGhJ7T"
+        "UserPoolId": "us-east-1_bXsy5KSVZ"
       },
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
@@ -221,7 +221,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_e1bfGhJ7T"
+        "UserPoolId": "us-east-1_bXsy5KSVZ"
       },
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
@@ -270,7 +270,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "2g3n9rii1hrfa4r7cs5fu6bru6",
+            "ClientId": "ekdlfabni4oefvrh8hbt92t6v",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -278,13 +278,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_e1bfGhJ7T"
+                  "client": "us-east-1_bXsy5KSVZ"
                 }
               ]
             }
           },
           {
-            "ClientId": "2sdm7fhjfai09vgc47cl0b3hb2",
+            "ClientId": "7obnc5l0qida3dd3kqbtltkea0",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -292,7 +292,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_e1bfGhJ7T"
+                  "client": "us-east-1_bXsy5KSVZ"
                 }
               ]
             }
@@ -314,7 +314,7 @@
     "IdentityPoolRoleMap": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:fed60bb9-df36-471c-be9c-2abb1eec3666",
+        "IdentityPoolId": "us-east-1:be2cc697-5f0e-4bf0-831a-7c5f63d38e56",
         "RoleMappings": {
           "UserPoolClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -325,8 +325,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "us-east-1_e1bfGhJ7T",
-                  "client": "2g3n9rii1hrfa4r7cs5fu6bru6"
+                  "userPool": "us-east-1_bXsy5KSVZ",
+                  "client": "ekdlfabni4oefvrh8hbt92t6v"
                 }
               ]
             },
@@ -341,8 +341,8 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "userPool": "us-east-1_e1bfGhJ7T",
-                  "webClient": "2sdm7fhjfai09vgc47cl0b3hb2"
+                  "userPool": "us-east-1_bXsy5KSVZ",
+                  "webClient": "7obnc5l0qida3dd3kqbtltkea0"
                 }
               ]
             },
@@ -361,29 +361,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:fed60bb9-df36-471c-be9c-2abb1eec3666"
+      "Value": "us-east-1:be2cc697-5f0e-4bf0-831a-7c5f63d38e56"
     },
     "IdentityPoolName": {
       "Value": "storelocator41a9495f_identitypool_41a9495f__x"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_e1bfGhJ7T"
+      "Value": "us-east-1_bXsy5KSVZ"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_e1bfGhJ7T"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_bXsy5KSVZ"
     },
     "UserPoolName": {
       "Value": "storelocator41a9495f_userpool_41a9495f"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "2sdm7fhjfai09vgc47cl0b3hb2"
+      "Value": "7obnc5l0qida3dd3kqbtltkea0"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "2g3n9rii1hrfa4r7cs5fu6bru6"
+      "Value": "ekdlfabni4oefvrh8hbt92t6v"
     }
   }
 }
