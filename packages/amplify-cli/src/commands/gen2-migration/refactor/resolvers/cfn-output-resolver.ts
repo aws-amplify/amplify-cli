@@ -30,7 +30,7 @@ export function resolveOutputs(params: {
   const templateResources = cloned.Resources;
 
   if (!templateResources) {
-    throw new AmplifyError('MigrationError', {
+    throw new AmplifyError('CFNOutputError', {
       message: 'Template is missing Resources section',
     });
   }
@@ -80,7 +80,7 @@ export function resolveOutputs(params: {
 
       // Kinesis streams require ARN in outputs — physical ID is the stream name, not ARN
       if (resourceType === 'AWS::Kinesis::Stream' && attrName === 'Arn' && !physicalId.startsWith('arn:aws:kinesis')) {
-        throw new AmplifyError('MigrationError', {
+        throw new AmplifyError('CFNOutputError', {
           message:
             `Kinesis stream ARN must be exposed in CloudFormation outputs. ` +
             `Found physical resource ID '${physicalId}' for logical resource '${logicalId}' which is not a valid ARN. ` +
@@ -105,7 +105,7 @@ export function resolveOutputs(params: {
   for (const [outputKey, outputDef] of Object.entries(templateOutputs)) {
     const runtimeOutput = stackOutputs.find((o) => o.OutputKey === outputKey);
     if (!runtimeOutput?.OutputValue) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('CFNOutputError', {
         message: `Stack output '${outputKey}' has no runtime value`,
       });
     }

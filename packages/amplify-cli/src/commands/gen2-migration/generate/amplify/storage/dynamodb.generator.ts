@@ -68,7 +68,7 @@ export class DynamoDBGenerator implements Planner {
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('DynamoDBTableNotFoundError', {
         message: `DynamoDB table '${actualTableName}' not found`,
         resolution: 'Verify the DynamoDB table exists and the CLI has the correct AWS credentials and region configured.',
       });
@@ -86,7 +86,7 @@ export class DynamoDBGenerator implements Planner {
         : undefined;
 
       if (!gsi.IndexName) {
-        throw new AmplifyError('MigrationError', {
+        throw new AmplifyError('DynamoDBSchemaError', {
           message: `GSI on table '${actualTableName}' has no IndexName`,
           resolution: 'Verify the DynamoDB table GSI configuration is valid.',
         });
@@ -129,14 +129,14 @@ function extractKeyFromSchema(
 ): { readonly name: string; readonly type: 'STRING' | 'NUMBER' | 'BINARY' } {
   const keyElement = keySchema.find((k) => k.KeyType === keyType);
   if (!keyElement?.AttributeName) {
-    throw new AmplifyError('MigrationError', {
+    throw new AmplifyError('DynamoDBSchemaError', {
       message: `${keyType} key not found in KeySchema for '${context}'`,
       resolution: 'Verify the DynamoDB table key schema is valid.',
     });
   }
   const attrDef = attributeDefinitions.find((a) => a.AttributeName === keyElement.AttributeName);
   if (!attrDef?.AttributeType) {
-    throw new AmplifyError('MigrationError', {
+    throw new AmplifyError('DynamoDBSchemaError', {
       message: `Attribute definition for '${keyElement.AttributeName}' not found in '${context}'`,
       resolution: 'Verify the DynamoDB table attribute definitions match the key schema.',
     });

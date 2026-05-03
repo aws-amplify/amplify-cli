@@ -28,7 +28,7 @@ export class AmplifyGen2MigrationValidations {
   public async validateDrift(): Promise<void> {
     const result = await new AmplifyDriftDetector(this.context, this.logger).detect();
     if (result.code !== 0) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('DriftDetectedError', {
         message: result.report?.trim() ?? 'Drift detected',
         resolution: 'Inspect the drift report above and resolve the drift',
       });
@@ -40,8 +40,7 @@ export class AmplifyGen2MigrationValidations {
 
     const { stdout: statusOutput } = await execa('git', ['status', '--porcelain']);
     if (statusOutput.trim()) {
-      throw new AmplifyError('MigrationError', {
-        message: 'Working directory has uncommitted changes',
+      throw new AmplifyError('UncommittedChangesError', {
         resolution: 'Commit or stash your changes before proceeding with migration.',
       });
     }
@@ -52,7 +51,7 @@ export class AmplifyGen2MigrationValidations {
     const response = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: this.gen1App.rootStackName }));
 
     if (!response.Stacks || response.Stacks.length === 0) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackNotFoundError', {
         message: `Stack ${this.gen1App.rootStackName} not found in CloudFormation`,
         resolution: 'Ensure the project is deployed.',
       });
@@ -64,7 +63,7 @@ export class AmplifyGen2MigrationValidations {
     const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus!)) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackStateError', {
         message: `Root stack status is ${stackStatus}, expected UPDATE_COMPLETE or CREATE_COMPLETE`,
         resolution: 'Complete the deployment before proceeding.',
       });
@@ -136,7 +135,7 @@ export class AmplifyGen2MigrationValidations {
       printer.info(table.toString());
       printer.blankLine();
 
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('DestructiveMigrationError', {
         message: 'Decommission will delete stateful resources.',
         resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
@@ -154,7 +153,7 @@ export class AmplifyGen2MigrationValidations {
     );
 
     if (!StackPolicyBody) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackPolicyError', {
         message: 'Stack is not locked',
         resolution: 'Run the lock command before proceeding with migration.',
       });
@@ -166,7 +165,7 @@ export class AmplifyGen2MigrationValidations {
     );
 
     if (!hasLockStatement) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackPolicyError', {
         message: 'Stack policy does not match expected lock policy',
         resolution: 'Run the lock command to set the correct stack policy.',
       });

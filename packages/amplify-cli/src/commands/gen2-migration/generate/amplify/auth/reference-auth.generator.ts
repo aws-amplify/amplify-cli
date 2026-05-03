@@ -81,7 +81,7 @@ export class ReferenceAuthGenerator implements Planner {
     const identityPoolId = output?.IdentityPoolId;
 
     if (!userPoolId && !userPoolClientId && !identityPoolId) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('AuthImportError', {
         message: 'No user pool or identity pool found for import.',
         resolution: 'Verify the imported auth resource has valid User Pool or Identity Pool configuration in amplify-meta.json.',
       });

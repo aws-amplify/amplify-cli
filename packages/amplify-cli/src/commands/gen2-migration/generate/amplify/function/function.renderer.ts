@@ -338,7 +338,7 @@ export class FunctionRenderer {
 
     const nodeVersion = parseNodejsRuntime(runtime);
     if (nodeVersion === undefined) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('UnsupportedRuntimeError', {
         message: `Unsupported nodejs runtime for function: ${runtime}`,
         resolution: 'Update the Lambda function runtime to a supported Node.js version before migrating.',
       });

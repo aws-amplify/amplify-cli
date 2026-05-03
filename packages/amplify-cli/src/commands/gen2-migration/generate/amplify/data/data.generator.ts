@@ -41,7 +41,7 @@ export class DataGenerator implements Planner {
 
     const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
     if (!graphqlApi) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('AppSyncApiNotFoundError', {
         message: `AppSync API '${apiId}' not found`,
         resolution: 'Verify the AppSync API exists and the CLI has the correct AWS credentials and region configured.',
       });

@@ -111,7 +111,7 @@ export class AnalyticsKinesisGenerator implements Planner {
     );
     const nestedStackName = resourcesResponse.StackResources?.[0]?.PhysicalResourceId;
     if (!nestedStackName) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('NestedStackNotFoundError', {
         message: `Nested stack not found for logical ID '${logicalId}' in stack '${this.gen1App.rootStackName}'`,
         resolution: 'Verify the CloudFormation stack exists and has not been manually modified.',
       });

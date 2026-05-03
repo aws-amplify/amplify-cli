@@ -101,7 +101,7 @@ export class Gen1App {
 
     const tpiRelPath = `./${path.relative(process.cwd(), pathManager.getTeamProviderInfoFilePath())}`;
     if (!stateManager.teamProviderInfoExists()) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('TeamProviderInfoNotFoundError', {
         message: `Unable to find '${tpiRelPath}' - Are you sure you're on the right branch?`,
         resolution: 'Checkout to the Gen1 branch and rerun the command',
       });
@@ -115,7 +115,7 @@ export class Gen1App {
     const envName = await Gen1App.currentEnvName(app.app!);
     const envInfo = tpi[envName];
     if (!envInfo) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('TpiEnvironmentNotFoundError', {
         message: `Environment ${envName} does not exist in ${tpiRelPath}`,
         resolution: `Checkout to the branch corresponding to environment ${envName} and rerun the command`,
       });
@@ -123,7 +123,7 @@ export class Gen1App {
 
     const cfnProvider = envInfo.awscloudformation;
     if (!cfnProvider?.StackName || !cfnProvider?.DeploymentBucketName) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('TpiEnvironmentNotFoundError', {
         message: `Missing StackName or DeploymentBucketName for environment '${envName}' in '${tpiRelPath}'`,
       });
     }
@@ -151,13 +151,13 @@ export class Gen1App {
   public resourceMeta(resource: DiscoveredResource): Record<string, any> {
     const category = this.categoryMeta(resource.category);
     if (!category) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('CategoryMetaNotFoundError', {
         message: `Category '${resource.category}' not found in amplify-meta.json`,
       });
     }
     const entry = category[resource.resourceName];
     if (!entry || typeof entry !== 'object') {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('ResourceMetaNotFoundError', {
         message: `Resource '${resource.resourceName}' not found in '${resource.category}' category in amplify-meta.json`,
       });
     }
@@ -177,11 +177,11 @@ export class Gen1App {
       if (skip.has(category) || !block || typeof block !== 'object') continue;
       for (const [resourceName, resourceMeta] of Object.entries(block as Record<string, unknown>)) {
         if (!resourceMeta || typeof resourceMeta !== 'object') {
-          throw new AmplifyError('MigrationError', { message: `Unable to find meta entry for resource ${resourceName}` });
+          throw new AmplifyError('ResourceMetaNotFoundError', { message: `Unable to find meta entry for resource ${resourceName}` });
         }
         const service = (resourceMeta as Record<string, unknown>).service as string | undefined;
         if (!service) {
-          throw new AmplifyError('MigrationError', {
+          throw new AmplifyError('ResourceMetaNotFoundError', {
             message: `Resource '${resourceName}' in category '${category}' is missing the 'service' field in amplify-meta.json`,
           });
         }
@@ -201,7 +201,7 @@ export class Gen1App {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
     const value = (this._meta as any)[resource.category]?.[resource.resourceName]?.output?.[outputKey];
     if (value === undefined) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('ResourceMetaNotFoundError', {
         message: `Missing output '${outputKey}' for resource '${resource.resourceName}' in category '${resource.category}'`,
       });
     }
@@ -214,11 +214,11 @@ export class Gen1App {
   public singleResourceName(category: string, service: string): string {
     const categoryBlock = this.categoryMeta(category);
     if (!categoryBlock) {
-      throw new AmplifyError('MigrationError', { message: `Category '${category}' not found in amplify-meta.json` });
+      throw new AmplifyError('CategoryMetaNotFoundError', { message: `Category '${category}' not found in amplify-meta.json` });
     }
     const names = Object.keys(categoryBlock).filter((name) => (categoryBlock[name] as Record<string, unknown>).service === service);
     if (names.length !== 1) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('ResourceMetaNotFoundError', {
         message: `Expected exactly one '${service}' resource in '${category}', found ${names.length}: ${names.join(', ')}`,
       });
     }
@@ -253,7 +253,7 @@ export class Gen1App {
     try {
       JSONUtilities.readJson(fullPath, { throwIfNotExist: true });
     } catch {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('CliInputsFileNotFoundError', {
         message: `Unable to find ${relativePath}. Your app was created with an old Gen1 CLI version (<=v6) that did not produce this file.`,
         resolution:
           'You must first migrate to the latest Gen1 CLI version by following https://docs.amplify.aws/gen1/javascript/tools/cli/migration/override/',
@@ -273,14 +273,14 @@ export class Gen1App {
     const localEnvName = stateManager.getCurrentEnvName();
 
     if (!localEnvName && !migratingEnvName) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('EnvironmentNotInitializedError', {
         message: `No environment configured for app '${app.name}'`,
         resolution: 'Run "amplify pull" to configure an environment.',
       });
     }
 
     if (migratingEnvName && localEnvName && migratingEnvName !== localEnvName) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('TpiEnvironmentMismatchError', {
         message: `Environment mismatch: Your local env (${localEnvName}) does 
       not match the environment you marked for migration (${migratingEnvName})`,
       });
@@ -296,7 +296,7 @@ export class Gen1App {
 
     const response = await s3Client.send(new GetObjectCommand({ Key: zipKey, Bucket: bucket }));
     if (!response.Body) {
-      throw new AmplifyError('MigrationError', { message: 'S3 GetObject response body is empty' });
+      throw new AmplifyError('BucketNotFoundError', { message: 'S3 GetObject response body is empty' });
     }
     await fs.writeFile(zipPath, response.Body as Stream);
 

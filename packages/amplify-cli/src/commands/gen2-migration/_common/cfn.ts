@@ -133,12 +133,12 @@ export class Cfn {
     if (!targetStack && !targetStackName.endsWith(HOLDING_STACK_NAME_SUFFIX)) {
       // only holding stacks may be absent because they don't exist prior
       // to refactor.
-      throw new AmplifyError('MigrationError', { message: `Target stack ${targetStackName} does not exist` });
+      throw new AmplifyError('StackNotFoundError', { message: `Target stack ${targetStackName} does not exist` });
     }
 
     if (!sourceStack) {
       // should never happen
-      throw new AmplifyError('MigrationError', { message: `Source stack ${sourceStackName} does not exist` });
+      throw new AmplifyError('StackNotFoundError', { message: `Source stack ${sourceStackName} does not exist` });
     }
 
     const sourceTemplate = await this.fetchTemplate(sourceStackId);
@@ -148,7 +148,7 @@ export class Cfn {
     for (const mapping of resourceMappings) {
       if (mapping.Destination!.LogicalResourceId! in targetTemplate.Resources) {
         // our refactoring is expected to move resources into vacancies, not override
-        throw new AmplifyError('MigrationError', {
+        throw new AmplifyError('ResourceMappingError', {
           message: `Unable to create stack refactor. Resource ${
             mapping.Destination!.LogicalResourceId
           } already exists in stack ${targetStackName}`,
@@ -190,7 +190,7 @@ export class Cfn {
 
     const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
     if (!StackRefactorId) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackStateError', {
         message: 'CreateStackRefactor returned no StackRefactorId',
       });
     }
@@ -323,7 +323,7 @@ export class Cfn {
   public async describeStack(stackName: string): Promise<Stack> {
     const stack = await this.findStack(stackName);
     if (!stack) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackNotFoundError', {
         message: `Stack '${extractStackNameFromId(stackName)}' does not exist`,
       });
     }
@@ -337,7 +337,7 @@ export class Cfn {
   public async fetchTemplate(stackName: string): Promise<CFNTemplate> {
     const response = await this.client.send(new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }));
     if (!response.TemplateBody) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('InvalidStackError', {
         message: `Stack '${extractStackNameFromId(stackName)}' returned an empty template`,
       });
     }

@@ -210,7 +210,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   }
 
   public async rollback(): Promise<Plan> {
-    throw new AmplifyError('MigrationError', {
+    throw new AmplifyError('UnsupportedOperationError', {
       message: 'Rollback is not supported for the generate step.',
       resolution: [
         'To restore your local directory to its previous state, use git to discard the changes.',

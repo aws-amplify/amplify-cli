@@ -55,14 +55,14 @@ export class FunctionGenerator implements Planner {
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
     if (!config)
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('LambdaFunctionNotFoundError', {
         message: `Lambda function '${deployedName}' not found`,
         resolution: 'Verify the Lambda function exists and the CLI has the correct AWS credentials and region configured.',
       });
 
     const runtime = config.Runtime;
     if (runtime && !runtime.startsWith('nodejs')) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('UnsupportedRuntimeError', {
         message: `Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`,
         resolution: 'Migrate the function to a Node.js runtime before running the Gen 2 migration.',
       });
