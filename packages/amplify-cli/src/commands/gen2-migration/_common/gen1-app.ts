@@ -273,7 +273,7 @@ export class Gen1App {
     const localEnvName = stateManager.getCurrentEnvName();
 
     if (!localEnvName && !migratingEnvName) {
-      throw new AmplifyError('EnvironmentNotInitializedError', {
+      throw new AmplifyError('MigrationError', {
         message: `No environment configured for app '${app.name}'`,
         resolution: 'Run "amplify pull" to configure an environment.',
       });

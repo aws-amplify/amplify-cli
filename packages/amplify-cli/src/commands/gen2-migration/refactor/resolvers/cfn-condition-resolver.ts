@@ -27,7 +27,7 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
 
     const statements = conditionDef[fnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
     if ((fnType === CFNFunction.Or || fnType === CFNFunction.And) && statements.length > 2) {
-      throw new AmplifyError('CloudFormationTemplateError', {
+      throw new AmplifyError('MigrationError', {
         message: `${fnType} with ${statements.length} operands is not supported (condition '${conditionKey}'). Only 2 operands are handled.`,
       });
     }
@@ -97,14 +97,14 @@ function resolveStatement(
     const paramKey = record.Ref as string;
     const value = parameters.find((p) => p.ParameterKey === paramKey)?.ParameterValue;
     if (value === undefined) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('MigrationError', {
         message: `Condition references parameter '${paramKey}' but no value was provided`,
       });
     }
     return value;
   }
 
-  throw new AmplifyError('CloudFormationTemplateError', {
+  throw new AmplifyError('MigrationError', {
     message: `Unsupported condition statement: ${JSON.stringify(statement)}`,
   });
 }
@@ -132,7 +132,7 @@ function evaluateCondition(
     case CFNFunction.And:
       return !!(resolvedLeft && resolvedRight);
     default:
-      throw new AmplifyError('CloudFormationTemplateError', {
+      throw new AmplifyError('MigrationError', {
         message: `Unsupported condition function: ${fnType}`,
       });
   }

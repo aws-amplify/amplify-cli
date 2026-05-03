@@ -45,14 +45,14 @@ export async function retrieveOAuthValues({
 }: RetrieveOAuthValuesParams): Promise<OAuthClient[]> {
   const value = oAuthParameter.ParameterValue;
   if (!value) {
-    throw new AmplifyError('MissingExpectedParameterError', {
+    throw new AmplifyError('MigrationError', {
       message: "OAuth parameter 'hostedUIProviderMeta' has no value",
     });
   }
 
   const parsedValue = JSON.parse(value);
   if (!Array.isArray(parsedValue) || parsedValue.length === 0) {
-    throw new AmplifyError('InputValidationError', {
+    throw new AmplifyError('MigrationError', {
       message: "OAuth parameter 'hostedUIProviderMeta' must be a non-empty array of provider metadata",
     });
   }
@@ -60,7 +60,7 @@ export async function retrieveOAuthValues({
   const oAuthClients: OAuthClient[] = [];
   for (const provider of parsedValue) {
     if (!isHostedProviderMetadata(provider)) {
-      throw new AmplifyError('InputValidationError', {
+      throw new AmplifyError('MigrationError', {
         message: `Invalid OAuth provider metadata: ${JSON.stringify(provider)}`,
       });
     }
@@ -69,21 +69,21 @@ export async function retrieveOAuthValues({
     const { IdentityProvider } = await cognitoIdpClient.send(new DescribeIdentityProviderCommand({ UserPoolId: userPoolId, ProviderName }));
     const providerDetails = IdentityProvider?.ProviderDetails;
     if (!providerDetails) {
-      throw new AmplifyError('ResourceNotReadyError', {
+      throw new AmplifyError('MigrationError', {
         message: `OAuth provider '${ProviderName}' returned no provider details from Cognito`,
       });
     }
 
     const { client_id, client_secret, team_id, key_id } = providerDetails;
     if (!client_id) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('MigrationError', {
         message: `OAuth provider '${ProviderName}' has no client_id in Cognito provider details`,
       });
     }
 
     if (ProviderName === 'SignInWithApple') {
       if (!team_id || !key_id) {
-        throw new AmplifyError('MissingExpectedParameterError', {
+        throw new AmplifyError('MigrationError', {
           message: `SignInWithApple provider is missing team_id or key_id in Cognito provider details`,
         });
       }
@@ -95,7 +95,7 @@ export async function retrieveOAuthValues({
       );
       const privateKey = privateKeyParam?.Value;
       if (!privateKey) {
-        throw new AmplifyError('ParameterNotFoundError', {
+        throw new AmplifyError('MigrationError', {
           message: `SignInWithApple private key not found in SSM at '${constructSignInWithApplePrivateKeyParamName(
             appId,
             environmentName,
@@ -105,7 +105,7 @@ export async function retrieveOAuthValues({
       oAuthClients.push({ ProviderName, client_id, team_id, key_id, private_key: privateKey });
     } else {
       if (!client_secret) {
-        throw new AmplifyError('MissingExpectedParameterError', {
+        throw new AmplifyError('MigrationError', {
           message: `OAuth provider '${ProviderName}' has no client_secret in Cognito provider details`,
         });
       }

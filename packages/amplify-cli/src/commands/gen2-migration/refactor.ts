@@ -197,7 +197,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }> {
     const { Account: accountId } = await this.gen1App.clients.sts.send(new GetCallerIdentityCommand({}));
     if (!accountId) {
-      throw new AmplifyError('ConfigurationError', { message: 'Unable to determine AWS account ID' });
+      throw new AmplifyError('MigrationError', { message: 'Unable to determine AWS account ID' });
     }
 
     const clients = this.gen1App.clients;
@@ -254,7 +254,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const toStack = this.context.parameters?.options?.to;
 
     if (!toStack) {
-      throw new AmplifyError('InputValidationError', { message: '--to is required' });
+      throw new AmplifyError('MigrationError', { message: '--to is required' });
     }
 
     return toStack;

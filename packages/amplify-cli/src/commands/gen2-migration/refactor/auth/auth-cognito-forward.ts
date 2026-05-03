@@ -47,7 +47,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     const userPoolId = outputs.find((o) => o.OutputKey === USER_POOL_ID_OUTPUT_KEY_NAME)?.OutputValue;
     if (!userPoolId) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('MigrationError', {
         message: `Auth stack output '${USER_POOL_ID_OUTPUT_KEY_NAME}' not found — required for OAuth credential retrieval`,
       });
     }
@@ -63,7 +63,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     const credsParam = parameters.find((p) => p.ParameterKey === HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME);
     if (!credsParam) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('MigrationError', {
         message: `Auth stack parameter '${HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME}' not found`,
       });
     }

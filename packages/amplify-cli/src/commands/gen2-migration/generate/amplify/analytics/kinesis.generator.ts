@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import * as cdkFromCfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -110,7 +111,10 @@ export class AnalyticsKinesisGenerator implements Planner {
     );
     const nestedStackName = resourcesResponse.StackResources?.[0]?.PhysicalResourceId;
     if (!nestedStackName) {
-      throw new Error(`Nested stack not found for logical ID '${logicalId}' in stack '${this.gen1App.rootStackName}'`);
+      throw new AmplifyError('MigrationError', {
+        message: `Nested stack not found for logical ID '${logicalId}' in stack '${this.gen1App.rootStackName}'`,
+        resolution: 'Verify the CloudFormation stack exists and has not been manually modified.',
+      });
     }
 
     const stacksResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: nestedStackName }));

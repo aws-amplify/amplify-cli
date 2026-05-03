@@ -30,7 +30,7 @@ export class StackFacade {
   public async fetchTemplate(stackId: string): Promise<CFNTemplate> {
     const response = await this.clients.cloudFormation.send(new GetTemplateCommand({ StackName: stackId, TemplateStage: 'Original' }));
     if (!response.TemplateBody) {
-      throw new AmplifyError('InvalidStackError', { message: `Stack '${stackId}' returned an empty template` });
+      throw new AmplifyError('MigrationError', { message: `Stack '${stackId}' returned an empty template` });
     }
     return JSON.parse(response.TemplateBody) as CFNTemplate;
   }
@@ -42,7 +42,7 @@ export class StackFacade {
     const response = await this.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
     const stack = response.Stacks?.[0];
     if (!stack) {
-      throw new AmplifyError('StackNotFoundError', { message: `Stack '${stackId}' not found` });
+      throw new AmplifyError('MigrationError', { message: `Stack '${stackId}' not found` });
     }
     return stack;
   }

@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -67,7 +68,10 @@ export class DynamoDBGenerator implements Planner {
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {
-      throw new Error(`DynamoDB table '${actualTableName}' not found`);
+      throw new AmplifyError('MigrationError', {
+        message: `DynamoDB table '${actualTableName}' not found`,
+        resolution: 'Verify the DynamoDB table exists and the CLI has the correct AWS credentials and region configured.',
+      });
     }
 
     const partitionKey = extractKey(table, 'HASH');
@@ -82,7 +86,10 @@ export class DynamoDBGenerator implements Planner {
         : undefined;
 
       if (!gsi.IndexName) {
-        throw new Error(`GSI on table '${actualTableName}' has no IndexName`);
+        throw new AmplifyError('MigrationError', {
+          message: `GSI on table '${actualTableName}' has no IndexName`,
+          resolution: 'Verify the DynamoDB table GSI configuration is valid.',
+        });
       }
       return { indexName: gsi.IndexName, partitionKey: gsiPartitionKey, sortKey: gsiSortKey };
     });
@@ -122,11 +129,17 @@ function extractKeyFromSchema(
 ): { readonly name: string; readonly type: 'STRING' | 'NUMBER' | 'BINARY' } {
   const keyElement = keySchema.find((k) => k.KeyType === keyType);
   if (!keyElement?.AttributeName) {
-    throw new Error(`${keyType} key not found in KeySchema for '${context}'`);
+    throw new AmplifyError('MigrationError', {
+      message: `${keyType} key not found in KeySchema for '${context}'`,
+      resolution: 'Verify the DynamoDB table key schema is valid.',
+    });
   }
   const attrDef = attributeDefinitions.find((a) => a.AttributeName === keyElement.AttributeName);
   if (!attrDef?.AttributeType) {
-    throw new Error(`Attribute definition for '${keyElement.AttributeName}' not found in '${context}'`);
+    throw new AmplifyError('MigrationError', {
+      message: `Attribute definition for '${keyElement.AttributeName}' not found in '${context}'`,
+      resolution: 'Verify the DynamoDB table attribute definitions match the key schema.',
+    });
   }
   return { name: keyElement.AttributeName, type: mapAttributeType(attrDef.AttributeType) };
 }

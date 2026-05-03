@@ -3,6 +3,7 @@ import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { DiscoveredResource, Gen1App } from '../../../_common/gen1-app';
@@ -95,7 +96,9 @@ export abstract class GeoResourceGenerator implements Planner {
 
     const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
     if (!classNameMatch) {
-      throw new Error(`Failed to extract class name from generated construct for geo resource: ${this.resource.resourceName}`);
+      throw new AmplifyFault('ResourceNotFoundFault', {
+        message: `Failed to extract class name from generated construct for geo resource: ${this.resource.resourceName}`,
+      });
     }
     const constructClassName = classNameMatch[1];
 

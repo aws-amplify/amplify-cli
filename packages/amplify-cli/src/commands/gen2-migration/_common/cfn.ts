@@ -190,7 +190,7 @@ export class Cfn {
 
     const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
     if (!StackRefactorId) {
-      throw new AmplifyError('StackStateError', {
+      throw new AmplifyError('MigrationError', {
         message: 'CreateStackRefactor returned no StackRefactorId',
       });
     }
@@ -323,7 +323,7 @@ export class Cfn {
   public async describeStack(stackName: string): Promise<Stack> {
     const stack = await this.findStack(stackName);
     if (!stack) {
-      throw new AmplifyError('StackNotFoundError', {
+      throw new AmplifyError('MigrationError', {
         message: `Stack '${extractStackNameFromId(stackName)}' does not exist`,
       });
     }
@@ -337,7 +337,7 @@ export class Cfn {
   public async fetchTemplate(stackName: string): Promise<CFNTemplate> {
     const response = await this.client.send(new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }));
     if (!response.TemplateBody) {
-      throw new AmplifyError('InvalidStackError', {
+      throw new AmplifyError('MigrationError', {
         message: `Stack '${extractStackNameFromId(stackName)}' returned an empty template`,
       });
     }

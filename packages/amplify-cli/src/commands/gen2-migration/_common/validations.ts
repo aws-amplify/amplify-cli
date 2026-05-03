@@ -52,7 +52,7 @@ export class AmplifyGen2MigrationValidations {
     const response = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: this.gen1App.rootStackName }));
 
     if (!response.Stacks || response.Stacks.length === 0) {
-      throw new AmplifyError('StackNotFoundError', {
+      throw new AmplifyError('MigrationError', {
         message: `Stack ${this.gen1App.rootStackName} not found in CloudFormation`,
         resolution: 'Ensure the project is deployed.',
       });
@@ -64,7 +64,7 @@ export class AmplifyGen2MigrationValidations {
     const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus!)) {
-      throw new AmplifyError('StackStateError', {
+      throw new AmplifyError('MigrationError', {
         message: `Root stack status is ${stackStatus}, expected UPDATE_COMPLETE or CREATE_COMPLETE`,
         resolution: 'Complete the deployment before proceeding.',
       });
@@ -136,7 +136,7 @@ export class AmplifyGen2MigrationValidations {
       printer.info(table.toString());
       printer.blankLine();
 
-      throw new AmplifyError('DestructiveMigrationError', {
+      throw new AmplifyError('MigrationError', {
         message: 'Decommission will delete stateful resources.',
         resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });

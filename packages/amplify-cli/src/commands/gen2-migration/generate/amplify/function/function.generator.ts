@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
@@ -54,11 +54,18 @@ export class FunctionGenerator implements Planner {
     const deployedName = this.gen1App.resourceMetaOutput(this.resource, 'Name');
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
-    if (!config) throw new Error(`Lambda function '${deployedName}' not found`);
+    if (!config)
+      throw new AmplifyError('MigrationError', {
+        message: `Lambda function '${deployedName}' not found`,
+        resolution: 'Verify the Lambda function exists and the CLI has the correct AWS credentials and region configured.',
+      });
 
     const runtime = config.Runtime;
     if (runtime && !runtime.startsWith('nodejs')) {
-      throw new Error(`Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`);
+      throw new AmplifyError('MigrationError', {
+        message: `Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`,
+        resolution: 'Migrate the function to a Node.js runtime before running the Gen 2 migration.',
+      });
     }
 
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);

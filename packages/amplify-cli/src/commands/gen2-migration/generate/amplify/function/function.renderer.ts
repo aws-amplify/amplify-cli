@@ -1,4 +1,5 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { newLineIdentifier, TS } from '../../ts';
 import { AnalyticsKinesisGenerator } from '../analytics/kinesis.generator';
 
@@ -337,7 +338,10 @@ export class FunctionRenderer {
 
     const nodeVersion = parseNodejsRuntime(runtime);
     if (nodeVersion === undefined) {
-      throw new Error(`Unsupported nodejs runtime for function: ${runtime}`);
+      throw new AmplifyError('MigrationError', {
+        message: `Unsupported nodejs runtime for function: ${runtime}`,
+        resolution: 'Update the Lambda function runtime to a supported Node.js version before migrating.',
+      });
     }
     target.push(factory.createPropertyAssignment('runtime', factory.createNumericLiteral(nodeVersion)));
   }

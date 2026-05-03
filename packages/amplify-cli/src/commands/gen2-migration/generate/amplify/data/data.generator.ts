@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -40,7 +41,10 @@ export class DataGenerator implements Planner {
 
     const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
     if (!graphqlApi) {
-      throw new Error(`AppSync API '${apiId}' not found`);
+      throw new AmplifyError('MigrationError', {
+        message: `AppSync API '${apiId}' not found`,
+        resolution: 'Verify the AppSync API exists and the CLI has the correct AWS credentials and region configured.',
+      });
     }
 
     const dataDir = path.join(this.outputDir, 'amplify', 'data');

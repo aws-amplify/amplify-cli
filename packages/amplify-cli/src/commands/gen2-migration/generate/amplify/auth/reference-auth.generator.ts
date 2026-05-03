@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
@@ -29,14 +30,17 @@ export class ReferenceAuthGenerator implements Planner {
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const authCategory = this.gen1App.categoryMeta('auth');
     if (!authCategory) {
-      throw new Error('Auth category not found in amplify-meta.json — ReferenceAuthGenerator should only be created when auth exists');
+      throw new AmplifyFault('AuthCategoryFault', {
+        message: 'Auth category not found in amplify-meta.json — ReferenceAuthGenerator should only be created when auth exists',
+      });
     }
 
     const referenceAuth = await this.buildReferenceAuth(authCategory);
     if (!referenceAuth) {
-      throw new Error(
-        'Auth category exists but no imported auth resource found — ReferenceAuthGenerator should only be created for imported auth',
-      );
+      throw new AmplifyFault('AuthCategoryFault', {
+        message:
+          'Auth category exists but no imported auth resource found — ReferenceAuthGenerator should only be created for imported auth',
+      });
     }
 
     const authDir = path.join(this.outputDir, 'amplify', 'auth');
@@ -77,7 +81,10 @@ export class ReferenceAuthGenerator implements Planner {
     const identityPoolId = output?.IdentityPoolId;
 
     if (!userPoolId && !userPoolClientId && !identityPoolId) {
-      throw new Error('No user pool or identity pool found for import.');
+      throw new AmplifyError('MigrationError', {
+        message: 'No user pool or identity pool found for import.',
+        resolution: 'Verify the imported auth resource has valid User Pool or Identity Pool configuration in amplify-meta.json.',
+      });
     }
 
     const roles = identityPoolId ? await this.gen1App.aws.fetchIdentityPoolRoles(identityPoolId) : undefined;
