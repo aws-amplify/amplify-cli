@@ -993,10 +993,7 @@ export class AuthRenderer {
       statements.push(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
     }
 
-    if (options.nativeClient) {
-      statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient));
-    }
-
+    statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient));
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
 
     return statements;
