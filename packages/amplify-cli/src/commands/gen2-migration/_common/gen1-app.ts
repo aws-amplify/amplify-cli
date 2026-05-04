@@ -35,6 +35,7 @@ export const KNOWN_RESOURCE_KEYS = [
   'geo:Map',
   'geo:PlaceIndex',
   'geo:GeofenceCollection',
+  'custom:customCDK',
 ] as const;
 
 export enum KNOWN_FEATURES {

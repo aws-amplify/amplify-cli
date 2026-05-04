@@ -1,0 +1,83 @@
+{
+  "Parameters": {
+    "env": {
+      "Type": "String",
+      "Description": "Current Amplify CLI env name"
+    }
+  },
+  "Resources": {
+    "BudgetAlertTopicF20DF526": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Fin Tracker Budget Alerts"
+      }
+    },
+    "BudgetAlertTopicsanjanaravikumarazgmailcom9C5B945F": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "BudgetAlertTopicF20DF526"
+        }
+      }
+    },
+    "MonthlyReportTopic8D223100": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Finance Tracker Monthly Reports"
+      }
+    },
+    "MonthlyReportTopicsanjanaravikumarazgmailcomFBA75CE0": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "MonthlyReportTopic8D223100"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "BudgetAlertTopicArn": {
+      "Description": "SNS Topic ARN for budget alerts",
+      "Value": {
+        "Ref": "BudgetAlertTopicF20DF526"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              "financetracker-BudgetAlertTopicArn-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MonthlyReportTopicArn": {
+      "Description": "SNS Topic ARN for monthly reports",
+      "Value": {
+        "Ref": "MonthlyReportTopic8D223100"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              "financetracker-MonthlyReportTopicArn-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"custom-customCDK\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
+}

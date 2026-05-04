@@ -29,6 +29,7 @@ interface MigrationConfig {
    * Per-step configuration overrides.
    */
   readonly lock?: StepConfig;
+  readonly generate?: StepConfig;
   readonly refactor?: RefactorConfig;
 }
 
@@ -339,7 +340,8 @@ export class App {
    */
   public async generate(): Promise<void> {
     await this.refreshCredentials();
-    await this.runMigrationStep('generate');
+    const extraArgs = this.migrationConfig.generate?.skipValidations ? ['--skip-validations'] : [];
+    await this.runMigrationStep('generate', extraArgs);
     this.removeGitignoreLine('amplify_outputs*');
   }
 

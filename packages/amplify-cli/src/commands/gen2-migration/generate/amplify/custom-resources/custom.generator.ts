@@ -1,11 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import ts from 'typescript';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
-import { Gen1App } from '../../../_common/gen1-app';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
 
 const CUSTOM_DIR = 'custom';
@@ -13,7 +13,20 @@ const TYPES_DIR = 'types';
 const AMPLIFY_DIR = 'amplify';
 const BACKEND_DIR = 'backend';
 const FILTER_FILES = new Set(['package.json', 'yarn.lock']);
-const BUILD_ARTIFACTS = ['build', 'node_modules', '.npmrc', 'yarn.lock', 'tsconfig.json'];
+const BUILD_ARTIFACTS = ['build', 'node_modules', '.npmrc', 'yarn.lock', 'package-lock.json', 'tsconfig.json'];
+
+/**
+ * Packages that should not be merged into the root package.json.
+ * CDK v1 scoped packages are subsumed by aws-cdk-lib in v2.
+ * Gen2 devDependencies (aws-cdk-lib, constructs, aws-cdk) are already
+ * provided by RootPackageJsonGenerator. Gen1-only helpers are unused in Gen2.
+ */
+const EXCLUDED_DEPENDENCIES = new Set(['aws-cdk-lib', 'constructs', 'aws-cdk', '@aws-amplify/cli-extensibility-helper']);
+
+/** Returns true if the package name should be excluded from the root package.json. */
+function isExcludedDependency(name: string): boolean {
+  return EXCLUDED_DEPENDENCIES.has(name) || name.startsWith('@aws-cdk/');
+}
 
 /**
  * Generates a single custom resource and contributes to backend.ts.
@@ -26,20 +39,17 @@ const BUILD_ARTIFACTS = ['build', 'node_modules', '.npmrc', 'yarn.lock', 'tsconf
  * 6. Contributes import and stack creation to backend.ts
  */
 export class CustomResourceGenerator implements Planner {
-  private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
 
   public constructor(
-    gen1App: Gen1App,
     backendGenerator: BackendGenerator,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
   ) {
-    this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
@@ -67,7 +77,8 @@ export class CustomResourceGenerator implements Planner {
             filter: (src) => !FILTER_FILES.has(path.basename(src)),
           });
 
-          // Copy types directory if it exists (idempotent — multiple generators may do this)
+          // Copy types directory if it exists. Idempotent — harmless if
+          // multiple CustomResourceGenerator instances repeat this.
           const sourceTypesPath = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR, TYPES_DIR);
           const destTypesPath = path.join(this.outputDir, AMPLIFY_DIR, TYPES_DIR);
           try {
@@ -105,16 +116,20 @@ export class CustomResourceGenerator implements Planner {
       const pkg = JSONUtilities.readJson<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }>(pkgJsonPath);
       if (pkg?.dependencies) {
         for (const [name, version] of Object.entries(pkg.dependencies)) {
-          this.packageJsonGenerator.addDependency(name, version);
+          if (!isExcludedDependency(name)) {
+            this.packageJsonGenerator.addDependency(name, version);
+          }
         }
       }
       if (pkg?.devDependencies) {
         for (const [name, version] of Object.entries(pkg.devDependencies)) {
-          this.packageJsonGenerator.addDevDependency(name, version);
+          if (!isExcludedDependency(name)) {
+            this.packageJsonGenerator.addDevDependency(name, version);
+          }
         }
       }
     } catch (e) {
-      throw new Error(`Failed to read package.json for custom resource '${this.resourceName}': ${e}`);
+      throw new Error(`Failed to read package.json for custom resource '${this.resourceName}': ${String(e)}`);
     }
   }
 
@@ -124,18 +139,17 @@ export class CustomResourceGenerator implements Planner {
   private contributeToBackend(className: string | undefined, dependencies: string[]): void {
     if (!className) return;
 
-    // Custom resources render directly into backend.ts as CDK constructs
-    // They use addPostDefineBackendCall to instantiate after defineBackend
-    const args: string[] = [`backend.createStack('${this.resourceName}')`, `'${this.resourceName}'`];
+    const alias = `custom_${this.resourceName}`;
+    this.backendGenerator.addNamespaceImport(alias, `./custom/${this.resourceName}/resource`);
+
+    const args = [`backend.createStack('${this.resourceName}')`, `'${this.resourceName}'`];
+
+    // Pass the backend object when the resource has dependencies
     if (dependencies.length > 0) {
       args.push('backend');
     }
 
-    this.backendGenerator.addNamespaceImport(this.resourceName, `./custom/${this.resourceName}/resource`);
-    this.backendGenerator.addPostDefineBackendCall(
-      `_custom_${this.resourceName}`,
-      `new ${this.resourceName}.${className}(${args.join(', ')})`,
-    );
+    this.backendGenerator.addPostDefineBackendStatement(`new ${alias}.${className}(${args.join(', ')})`);
   }
 }
 
@@ -148,12 +162,13 @@ async function extractClassName(sourceResourcePath: string): Promise<string | un
     const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
     return content.match(/export class (\w+)/)?.[1];
   } catch (e) {
-    throw new Error(`Failed to read cdk-stack.ts for custom resource '${sourceResourcePath}': ${e}`);
+    throw new Error(`Failed to read cdk-stack.ts for custom resource '${sourceResourcePath}': ${String(e)}`);
   }
 }
 
 /**
- * Extracts category dependencies from AmplifyHelpers.addResourceDependency calls.
+ * Extracts category dependencies from AmplifyHelpers.addResourceDependency calls
+ * and amplify-dependent-resources-ref imports.
  */
 async function extractDependencies(sourceResourcePath: string): Promise<string[]> {
   const cdkStackFilePath = path.join(sourceResourcePath, 'cdk-stack.ts');
@@ -161,6 +176,7 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
     const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
     const dependencies: string[] = [];
 
+    // Detect AmplifyHelpers.addResourceDependency calls
     const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
     let match: RegExpExecArray | null;
     while ((match = dependencyRegex.exec(content)) !== null) {
@@ -173,9 +189,27 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
       }
     }
 
+    // Detect amplify-dependent-resources-ref imports as a dependency signal.
+    // Resources using this pattern access other categories via the returned object.
+    if (dependencies.length === 0 && content.includes('amplify-dependent-resources-ref')) {
+      // Extract categories from property access patterns like retVal.api.xxx or retVal.auth.xxx
+      const categoryAccessRegex = /\.\s*(auth|api|storage|function|analytics)\s*\./g;
+      let catMatch: RegExpExecArray | null;
+      while ((catMatch = categoryAccessRegex.exec(content)) !== null) {
+        if (!dependencies.includes(catMatch[1])) {
+          dependencies.push(catMatch[1]);
+        }
+      }
+      // If we found the import but couldn't extract specific categories,
+      // still signal that dependencies exist so backend is passed.
+      if (dependencies.length === 0) {
+        dependencies.push('unknown');
+      }
+    }
+
     return dependencies;
   } catch (e) {
-    throw new Error(`Failed to read dependencies for custom resource '${sourceResourcePath}': ${e}`);
+    throw new Error(`Failed to read dependencies for custom resource '${sourceResourcePath}': ${String(e)}`);
   }
 }
 
@@ -203,18 +237,12 @@ async function transformResource(destResourcePath: string, projectName: string |
     }
   }
 
-  // Replace CfnParameter for env with default value
-  content = content.replace(
-    /new cdk\.CfnParameter\(this, ['"]env['"], {[\s\S]*?}\);/,
-    `new cdk.CfnParameter(this, "env", {
-                type: "String",
-                description: "Current Amplify CLI env name",
-                default: \`\${branchName}\`
-              });`,
-  );
-
-  // Apply AST-based transformations
-  content = AmplifyHelperTransformer.transformAndPrint(cdkStackFilePath, content, projectName);
+  // Apply AST-based transformations (handles CfnParameter removal, dependency rewrites, etc.)
+  const sourceFile = ts.createSourceFile(cdkStackFilePath, content, ts.ScriptTarget.Latest, true);
+  const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
+  const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  content = printer.printFile(transformedWithBranchName);
 
   await fs.writeFile(cdkStackFilePath, content, { encoding: 'utf-8' });
 }
@@ -241,7 +269,7 @@ async function renameCdkStack(destResourcePath: string): Promise<void> {
   try {
     await fs.rename(cdkStackPath, resourceFilePath);
   } catch (e) {
-    throw new Error(`Failed to rename cdk-stack.ts to resource.ts for custom resource: ${e}`);
+    throw new Error(`Failed to rename cdk-stack.ts to resource.ts for custom resource: ${String(e)}`);
   }
 }
 
@@ -254,6 +282,6 @@ async function readProjectName(rootDir: string): Promise<string | undefined> {
     const projectConfig = JSONUtilities.readJson<{ projectName?: string }>(projectConfigPath);
     return projectConfig?.projectName;
   } catch (e) {
-    throw new Error(`Failed to read project config: ${e}`);
+    throw new Error(`Failed to read project config: ${String(e)}`);
   }
 }

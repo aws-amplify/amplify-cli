@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref",
+    "ParameterValue": "amplify-financetra2604231-amplifyAuthauthenticatedU-mtMR6VW2YKH5"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref",
+    "ParameterValue": "us-east-1:ccae5924-7e98-4b8f-bf21-ac09c945a04b"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolBB38D142Ref",
+    "ParameterValue": "us-east-1_Qrh9UxVmy"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref",
+    "ParameterValue": "amplify-financetra2604231-amplifyAuthunauthenticate-rSgiGOevcLBc"
+  }
+]

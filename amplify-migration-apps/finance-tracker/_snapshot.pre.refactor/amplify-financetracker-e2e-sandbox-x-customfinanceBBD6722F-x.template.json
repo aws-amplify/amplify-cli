@@ -1,0 +1,407 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Resources": {
+    "customfinanceBudgetAlertTopic1D98F61E": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Fin Tracker Budget Alerts",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/BudgetAlertTopic/Resource"
+      }
+    },
+    "customfinanceBudgetAlertTopicsanjanaravikumarazgmailcom068B0461": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "customfinanceBudgetAlertTopic1D98F61E"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/BudgetAlertTopic/sanjana.ravikumar.az@gmail.com/Resource"
+      }
+    },
+    "customfinanceMonthlyReportTopic558EAC22": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Finance Tracker Monthly Reports",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/MonthlyReportTopic/Resource"
+      }
+    },
+    "customfinanceMonthlyReportTopicsanjanaravikumarazgmailcom16F3B397": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "customfinanceMonthlyReportTopic558EAC22"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/MonthlyReportTopic/sanjana.ravikumar.az@gmail.com/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02NMQ6DMBAE35LevliWeAE9kUL6yNhGOkjOFneGAvF3ZNFQ7cw0a8E2BszDbax9mPUPB9i7yBJDL87Pym38ZWLYPymjV+1IF/RlYL9gFkxU692PGl5FcpFDUQoRJn6u1oCtVxMj6qWQ4D/C+9oT9buSQocAAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "customfinanceBudgetAlertTopicArnB3C2C0AB": {
+      "Description": "SNS Topic ARN for budget alerts",
+      "Value": {
+        "Ref": "customfinanceBudgetAlertTopic1D98F61E"
+      },
+      "Export": {
+        "Name": "financetracker-BudgetAlertTopicArn-gen2-x"
+      }
+    },
+    "customfinanceMonthlyReportTopicArn3264B244": {
+      "Description": "SNS Topic ARN for monthly reports",
+      "Value": {
+        "Ref": "customfinanceMonthlyReportTopic558EAC22"
+      },
+      "Export": {
+        "Name": "financetracker-MonthlyReportTopicArn-gen2-x"
+      }
+    },
+    "amplifyfinancetrackere2esandbox9663a3a206customfinanceBudgetAlertTopicF822F6FBRef": {
+      "Value": {
+        "Ref": "customfinanceBudgetAlertTopic1D98F61E"
+      }
+    },
+    "amplifyfinancetrackere2esandbox9663a3a206customfinanceMonthlyReportTopic795F5FD4Ref": {
+      "Value": {
+        "Ref": "customfinanceMonthlyReportTopic558EAC22"
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  }
+}
