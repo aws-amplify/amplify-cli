@@ -1336,6 +1336,13 @@ export const commandsInfo: Array<CommandInfo> = [
     ],
   },
   {
+    command: 'drift',
+    commandDescription: 'Detect drift between local, deployed, and actual cloud resource states',
+    commandUsage: 'amplify drift',
+    commandFlags: [],
+    subCommands: [],
+  },
+  {
     command: 'build',
     commandDescription: 'Builds all resources in the project',
     commandUsage: 'amplify build',

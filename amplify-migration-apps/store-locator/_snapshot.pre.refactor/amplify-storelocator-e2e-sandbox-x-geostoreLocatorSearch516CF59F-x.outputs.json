@@ -4,12 +4,12 @@
     "OutputValue": "us-east-1"
   },
   {
-    "OutputKey": "Arn",
-    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-x"
+    "OutputKey": "amplifystorelocatore2esandboxeac7f296ebgeostoreLocatorSearchCustomPlaceIndex588CEBB4IndexName",
+    "OutputValue": "storeLocatorSearch-gen2-x"
   },
   {
-    "OutputKey": "amplifystorelocatore2esandbox059ec84174geostoreLocatorSearchCustomPlaceIndexBE2E8CCCIndexName",
-    "OutputValue": "storeLocatorSearch-gen2-x"
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-x"
   },
   {
     "OutputKey": "Name",
