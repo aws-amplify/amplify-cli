@@ -12,7 +12,7 @@ import {
   PIPELINE_4_SLOT_MAP,
   ParsedExtended,
   ExtendedResolverGroup,
-} from '../../../../../../commands/gen2-migration/generate/amplify/data/resolver-utils';
+} from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 
 describe('parseVtlFilename', () => {
   it('returns ParsedOverride with correct fields for a 4-segment filename', () => {

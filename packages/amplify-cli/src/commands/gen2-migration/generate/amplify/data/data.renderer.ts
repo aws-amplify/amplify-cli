@@ -1,7 +1,7 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { newLineIdentifier, TS } from '../../ts';
-import { ExtendedResolverGroup, PipelineSpliceResult } from './resolver-utils';
+import { ExtendedResolverGroup, PipelineSpliceResult } from './data.generator';
 
 const factory = ts.factory;
 
