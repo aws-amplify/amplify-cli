@@ -38,7 +38,7 @@ describe('guest', () => {
 
       expect(typeof board.id).toBe('string');
       expect(board.id.length).toBeGreaterThan(0);
-      expect(board.name).toContain(name);
+      expect(board.name).toMatch(new RegExp(`^[🌅☀️🌙] ${name} \\(new!\\)$`));
       expect(board.createdAt).toBeDefined();
       expect(board.updatedAt).toBeDefined();
     });
