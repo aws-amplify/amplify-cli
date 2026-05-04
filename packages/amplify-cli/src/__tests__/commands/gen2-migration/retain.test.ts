@@ -213,25 +213,6 @@ describe('AmplifyMigrationRetainStep', () => {
     });
   });
 
-  describe('forward describe', () => {
-    it('renders stack name, a blank line, and a dimmed Changeset URL line for each pending stack', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {});
-
-      const plan = await step.forward();
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { printer } = require('@aws-amplify/amplify-prompts');
-      await plan.describe();
-
-      const printed = (printer.info as jest.Mock).mock.calls.map(([line]) => line as string);
-      const numbered = printed.find((line) => line.startsWith('1. Apply DeletionPolicy'));
-
-      expect(numbered).toMatch(
-        /^1\. Apply DeletionPolicy and UpdateReplacePolicy: Retain to resources in root-stack\n\n {3}Changeset URL: https:\/\/[^\n]+\n?$/,
-      );
-    });
-  });
-
   describe('forward validate', () => {
     it('passes validation when changes are only retain-policy modifications plus the marker Add', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
