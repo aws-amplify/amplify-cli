@@ -26,16 +26,13 @@ const dataResource: DiscoveredResource = {
   key: 'api:AppSync',
 };
 
-/** Generates a minimal build schema containing ModelXConnection types for each model name. */
-function buildSchemaFor(...modelNames: string[]): string {
-  return modelNames.map((m) => `type Model${m}Connection { items: [${m}]! nextToken: String }`).join('\n');
-}
-
 /**
- * Mocks gen1App.file() to return the build schema for the build path
- * and the raw schema for all other paths.
+ * Mocks gen1App.file() so it returns the raw schema for the source
+ * path and a synthetic build schema (with ModelXConnection types)
+ * for the build path.
  */
-function mockFiles(gen1App: Gen1App, rawSchema: string, buildSchema: string): void {
+function mockSchema(gen1App: Gen1App, rawSchema: string, modelNames: string[]): void {
+  const buildSchema = modelNames.map((m) => `type Model${m}Connection { items: [${m}]! nextToken: String }`).join('\n');
   jest.spyOn(gen1App, 'file').mockImplementation((p: string) => {
     if (p.includes('build/schema.graphql')) return buildSchema;
     return rawSchema;
@@ -63,7 +60,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
     await expect(generator.plan()).rejects.toThrow('GraphQLAPIIdOutput');
@@ -79,7 +76,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue(undefined);
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
@@ -96,7 +93,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -125,7 +122,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -158,7 +155,7 @@ describe('DataGenerator', () => {
       },
       auth: { myAuth: { service: 'Cognito' } },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -188,7 +185,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -219,7 +216,7 @@ describe('DataGenerator', () => {
       },
       auth: { myAuth: { service: 'Cognito' } },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -249,7 +246,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! title: String! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! title: String! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc123';
       return undefined as any;
@@ -294,7 +291,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
       if (key === 'authConfig') return { defaultAuthentication: { authenticationType: 'AWS_IAM' } } as any;
@@ -339,7 +336,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       if (key === 'authConfig')
@@ -395,7 +392,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       if (key === 'authConfig')
@@ -464,7 +461,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       if (key === 'authConfig')
@@ -521,7 +518,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -566,7 +563,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { env: String @default(value: "${env}") }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { env: String @default(value: "${env}") }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -614,7 +611,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! }', buildSchemaFor('Todo'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -642,7 +639,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    mockFiles(gen1App, 'type Todo @model { id: ID! } type Post @model { id: ID! }', buildSchemaFor('Todo', 'Post'));
+    mockSchema(gen1App, 'type Todo @model { id: ID! } type Post @model { id: ID! }', ['Todo', 'Post']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
       return undefined as any;
@@ -687,7 +684,7 @@ describe('DataGenerator', () => {
       },
     });
     const rawSchema = 'type Todo @auth(rules: [{ allow: public }]) @model { id: ID! } type Post @key(name: "byUser") @model { id: ID! }';
-    mockFiles(gen1App, rawSchema, buildSchemaFor('Todo', 'Post'));
+    mockSchema(gen1App, rawSchema, ['Todo', 'Post']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
       return undefined as any;
