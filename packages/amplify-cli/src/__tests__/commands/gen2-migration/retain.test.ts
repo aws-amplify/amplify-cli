@@ -115,31 +115,29 @@ describe('AmplifyMigrationRetainStep', () => {
     });
 
     it('executes a retain change set for every stack in the hierarchy, leaves first', async () => {
-      // root -> A, B
-      // A    -> A1
+      // root
+      // ├── api-stack
+      // │   ├── ModelA      (leaf)
+      // │   └── ModelB      (leaf)
+      // └── aux             (leaf)
       (paginateListStackResources as jest.Mock)
-        .mockReturnValueOnce(pages([stackResource('A'), stackResource('B')]))
-        .mockReturnValueOnce(pages([stackResource('A1')]))
-        .mockReturnValueOnce(pages([])) // A1 leaf
-        .mockReturnValueOnce(pages([])); // B leaf
+        .mockReturnValueOnce(pages([stackResource('api-stack'), stackResource('aux')]))
+        .mockReturnValueOnce(pages([stackResource('ModelA'), stackResource('ModelB')]))
+        .mockReturnValueOnce(pages([])) // ModelA leaf
+        .mockReturnValueOnce(pages([])) // ModelB leaf
+        .mockReturnValueOnce(pages([])); // aux leaf
 
-      // Planning calls fire in leaf-first order: A1, A, B, root.
-      mockPlanningForStack(mockCfnSend, {});
-      mockPlanningForStack(mockCfnSend, {});
-      mockPlanningForStack(mockCfnSend, {});
-      mockPlanningForStack(mockCfnSend, {});
+      // Planning calls fire in leaf-first order: ModelA, ModelB, api-stack, aux, root.
+      for (let i = 0; i < 5; i++) mockPlanningForStack(mockCfnSend, {});
 
-      // Four ExecuteChangeSet responses.
-      mockCfnSend.mockResolvedValueOnce({});
-      mockCfnSend.mockResolvedValueOnce({});
-      mockCfnSend.mockResolvedValueOnce({});
-      mockCfnSend.mockResolvedValueOnce({});
+      // Five ExecuteChangeSet responses.
+      for (let i = 0; i < 5; i++) mockCfnSend.mockResolvedValueOnce({});
 
       const plan = await step.forward();
       await plan.execute();
 
       const executes = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof ExecuteChangeSetCommand);
-      expect(executes).toHaveLength(4);
+      expect(executes).toHaveLength(5);
     });
 
     it('submits a template with DeletionPolicy and UpdateReplacePolicy set to Retain on every resource', async () => {
