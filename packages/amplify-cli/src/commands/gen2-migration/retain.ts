@@ -8,68 +8,18 @@ import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 import chalk from 'chalk';
 
-/** Internal: a built retain operation with the context needed to describe, validate, and execute it. */
-interface BuiltRetainOperation {
-  readonly stackName: string;
-  readonly alreadyRetained: boolean;
-  /** Undefined when alreadyRetained; otherwise the changeset that will be executed. */
-  readonly changeSet?: DescribeChangeSetOutput;
-  readonly operation: AmplifyMigrationOperation;
-  readonly cfn: Cfn;
-}
-
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
     this.logger.info(`Discovered ${stackIds.length} stacks`);
 
-    const built: BuiltRetainOperation[] = [];
+    const operations: AmplifyMigrationOperation[] = [];
     for (const stackId of stackIds) {
-      built.push(await this.buildRetainOperation(stackId));
+      operations.push(await this.buildRetainOperation(stackId));
     }
-
-    const toApply = built.filter((b) => !b.alreadyRetained);
-    const alreadyRetained = built.filter((b) => b.alreadyRetained);
-    if (toApply.length > 0 && alreadyRetained.length > 0) {
-      this.logger.info(`${toApply.length} need retain changes; ${alreadyRetained.length} need no retain changes`);
-    } else if (toApply.length > 0) {
-      this.logger.info(`${toApply.length} need retain changes`);
-    } else {
-      this.logger.info(`All ${alreadyRetained.length} need no retain changes`);
-    }
-
-    // One "summary" operation that only describes — renders a grouped view of all stacks.
-    const summaryOperation: AmplifyMigrationOperation = {
-      describe: async () => this.renderOperationsSummary(toApply, alreadyRetained),
-      validate: () => undefined,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    };
-
-    // One aggregated validator — runs the retain-only whitelist across every changeset
-    // and rolls up the result into a single summary row.
-    const validatorOperation: AmplifyMigrationOperation = {
-      describe: async () => [],
-      validate: () => {
-        if (toApply.length === 0) return undefined;
-        return {
-          description: `Retain-only changes (${toApply.length} stacks)`,
-          run: async () => this.validateAll(toApply),
-        };
-      },
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    };
-
-    // Per-stack operations now only execute — no describe, no validate.
-    const executeOnlyOperations = built.map<AmplifyMigrationOperation>((b) => ({
-      describe: async () => [],
-      validate: () => undefined,
-      execute: b.operation.execute,
-    }));
 
     return new Plan({
-      operations: [summaryOperation, validatorOperation, ...executeOnlyOperations],
+      operations,
       logger: this.logger,
       title: 'Execute',
       implications: [
@@ -85,60 +35,6 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       resolution:
         'Retain only marks resources with DeletionPolicy: Retain. If you need to undo it, manually update the CloudFormation templates to remove the policy.',
     });
-  }
-
-  /** Validates every pending changeset. Returns a pass if all are retain-only; otherwise a consolidated failure report. */
-  private async validateAll(toApply: BuiltRetainOperation[]): Promise<{ valid: boolean; report?: string }> {
-    const failures: Array<{ stackName: string; report: string }> = [];
-    for (const b of toApply) {
-      if (!b.changeSet) continue;
-      if (!this.isAllowedRetainChangeset(b.changeSet)) {
-        failures.push({ stackName: b.stackName, report: b.cfn.renderChangeSet(b.changeSet) });
-      }
-    }
-    if (failures.length === 0) return { valid: true };
-    const lines: string[] = [];
-    for (const f of failures) {
-      lines.push(`• ${f.stackName}:`);
-      lines.push(f.report);
-      lines.push('');
-    }
-    return { valid: false, report: lines.join('\n').trimEnd() };
-  }
-
-  private renderOperationsSummary(toApply: BuiltRetainOperation[], alreadyRetained: BuiltRetainOperation[]): string[] {
-    const lines: string[] = [];
-    if (toApply.length > 0) {
-      const noun = toApply.length === 1 ? 'stack' : 'stacks';
-      const sectionLines: string[] = [];
-      sectionLines.push(
-        `Apply Retain as DeletionPolicy and UpdateReplacePolicy to all resources in ${toApply.length} Gen1 CloudFormation ${noun}:`,
-      );
-      toApply.forEach((b, i) => {
-        sectionLines.push('');
-        sectionLines.push(`    ${i + 1}) ${b.stackName}`);
-        const url = b.changeSet ? cfnChangesetConsoleUrl(b.changeSet.ChangeSetId ?? '', b.changeSet.StackId) : undefined;
-        if (url) sectionLines.push(`       Changeset URL: ${chalk.dim(url)}`);
-      });
-      // Trailing blank line so the next section visually separates from this
-      // section's last bullet/URL. The blank goes here (not as a leading blank
-      // on the next section) because Plan.describe() prefixes each section
-      // string with "N. " — a leading blank on the next section would cause
-      // "N. " to appear alone on one line.
-      sectionLines.push('');
-      lines.push(sectionLines.join('\n'));
-    }
-    if (alreadyRetained.length > 0) {
-      const noun = alreadyRetained.length === 1 ? 'stack' : 'stacks';
-      const sectionLines: string[] = [];
-      sectionLines.push(`Skip ${alreadyRetained.length} ${noun} — no retain changes needed:`);
-      alreadyRetained.forEach((b, i) => {
-        sectionLines.push('');
-        sectionLines.push(`    ${i + 1}) ${b.stackName}`);
-      });
-      lines.push(sectionLines.join('\n'));
-    }
-    return lines;
   }
 
   private async walkStackHierarchy(stackId: string): Promise<string[]> {
@@ -159,7 +55,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     return result;
   }
 
-  private async buildRetainOperation(stackId: string): Promise<BuiltRetainOperation> {
+  private async buildRetainOperation(stackId: string): Promise<AmplifyMigrationOperation> {
     const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
     const stackName = extractStackNameFromId(stackId);
 
@@ -170,7 +66,6 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     }
 
     const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
-
     const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
       ParameterKey: p.ParameterKey,
       UsePreviousValue: true,
@@ -182,34 +77,36 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     if (!changeset) {
       return {
-        stackName,
-        alreadyRetained: true,
-        cfn,
-        operation: {
-          describe: async () => [],
-          validate: () => undefined,
-          execute: async () => {
-            // no-op: stack is already fully retained
-          },
+        describe: async () => [`${stackName} — no retain changes needed`],
+        validate: () => undefined,
+        execute: async () => {
+          // no-op: nothing to change for this stack
         },
       };
     }
 
+    const url = cfnChangesetConsoleUrl(changeset.ChangeSetId ?? '', changeset.StackId);
+    const describeLines: string[] = [`Apply DeletionPolicy and UpdateReplacePolicy: Retain to resources in ${stackName}`];
+    if (url) describeLines.push(`   Changeset URL: ${chalk.dim(url)}`);
+
     return {
-      stackName,
-      alreadyRetained: false,
-      changeSet: changeset,
-      cfn,
-      operation: {
-        describe: async () => [],
-        validate: () => undefined,
-        execute: async () => {
-          await cfn.executeChangeSet({
-            changeSet: changeset,
-            templateBody: template,
-            captureSnapshot: false,
-          });
+      describe: async () => [describeLines.join('\n')],
+      validate: () => ({
+        description: `Ensure only retain changes for ${stackName}`,
+        run: async () => {
+          const valid = this.isAllowedRetainChangeset(changeset);
+          return {
+            valid,
+            report: valid ? undefined : cfn.renderChangeSet(changeset),
+          };
         },
+      }),
+      execute: async () => {
+        await cfn.executeChangeSet({
+          changeSet: changeset,
+          templateBody: template,
+          captureSnapshot: false,
+        });
       },
     };
   }
