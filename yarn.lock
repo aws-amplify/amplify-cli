@@ -539,6 +539,7 @@ __metadata:
   resolution: "@aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.5.0
+    "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-amplifybackend": ^3.919.0
     "@aws-sdk/client-amplifyuibuilder": ^3.919.0
     "@aws-sdk/client-appsync": ^3.919.0

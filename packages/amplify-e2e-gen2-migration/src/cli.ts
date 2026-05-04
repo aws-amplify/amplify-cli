@@ -73,7 +73,8 @@ async function main(): Promise<void> {
     }
     app.logger.info(`Execution completed successfully (${app.targetAppPath})`);
   } catch (error) {
-    (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
+    console.log();
+    (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)}\n\n(App path: ${app.targetAppPath})\n`;
     throw error;
   } finally {
     if (argv.teardown) {

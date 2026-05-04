@@ -1,8 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import execa from 'execa';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { getCLIPath, initJSProjectWithProfileGen2Migration } from '@aws-amplify/amplify-e2e-core';
+import {
+  amplifyPullNonInteractive,
+  getCLIPath,
+  initJSProjectWithProfileGen2Migration,
+  ensureGen1PlaceholderApp,
+} from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
 import { Git } from './git';
 import * as snapshot from './snapshot';
@@ -10,6 +17,7 @@ import { sanitize } from './sanitize';
 import { normalize } from './normalize';
 import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
@@ -86,7 +94,8 @@ export class App {
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    this.amplifyPath = getCLIPath(true);
+    const testingWithLatestCodebase = process.env.AMPLIFY_PATH ? false : true;
+    this.amplifyPath = getCLIPath(testingWithLatestCodebase);
     this.logger.info(`Amplify Path: ${this.amplifyPath}`);
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
@@ -130,6 +139,7 @@ export class App {
    */
   public async init(): Promise<void> {
     await this.refreshCredentials();
+    await ensureGen1PlaceholderApp(new AmplifyClient(this.getClientConfig()));
     this.logger.info('amplify init');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
@@ -148,6 +158,19 @@ export class App {
       profileName: this.profile,
     });
     this.logger.info('amplify init completed');
+  }
+
+  public async pull(): Promise<void> {
+    const tpiPath = path.join(this.targetAppPath, 'amplify', 'team-provider-info.json');
+    const tpi = JSON.parse(fs.readFileSync(tpiPath, { encoding: 'utf-8' }));
+    const appId = tpi[this.envName].awscloudformation.AmplifyAppId;
+    this.logger.info('amplify pull');
+    await amplifyPullNonInteractive(this.targetAppPath, {
+      appId: appId,
+      envName: this.envName,
+      profile: this.profile,
+    });
+    this.logger.info('amplify pull completed');
   }
 
   /**
@@ -191,9 +214,7 @@ export class App {
    * Run `amplify status`.
    */
   public async status(): Promise<void> {
-    this.logger.info('amplify status');
     await this.runAmplify(['status'], { stdio: 'inherit' });
-    this.logger.info('amplify status completed');
   }
 
   /**
@@ -201,9 +222,7 @@ export class App {
    */
   public async push(): Promise<void> {
     await this.refreshCredentials();
-    this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
-    this.logger.info('amplify push completed');
   }
 
   /**
@@ -274,6 +293,7 @@ export class App {
     }
 
     await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
     await this.refactor(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
@@ -518,25 +538,30 @@ export class App {
     const originalCwd = process.cwd();
     process.chdir(this.targetAppPath);
     try {
+      const startTime = Date.now();
+      const command = `${this.amplifyPath} ${args.join(' ')}`;
+      this.logger.info(`(→) ${command}`);
       const result = await execa(this.amplifyPath, args, {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
         env: this.getEnv(),
       });
       if (result.exitCode !== 0) {
-        throw new Error(`amplify ${args[0]} failed with exit code ${result.exitCode}`);
+        throw new Error(`${command} failed with exit code ${result.exitCode}`);
       }
+      this.logger.info(`${command} (✔ ${Date.now() - startTime}ms)`);
     } finally {
       process.chdir(originalCwd);
     }
   }
 
   private async runMigrationStep(step: string, extraArgs: string[] = []): Promise<void> {
-    const argsStr = extraArgs.length > 0 ? ` ${extraArgs.join(' ')}` : '';
-    this.logger.info(`Executing gen2-migration ${step}${argsStr}...`);
     const startTime = Date.now();
 
-    const result = await execa(this.amplifyPath, ['gen2-migration', step, '--yes', ...extraArgs], {
+    const args = ['gen2-migration', step, '--yes', ...extraArgs];
+    const command = `${this.amplifyPath} ${args.join(' ')}`;
+    this.logger.info(`(→) ${command}`);
+    const result = await execa(this.amplifyPath, args, {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
@@ -544,10 +569,10 @@ export class App {
     });
 
     if (result.exitCode !== 0) {
-      throw new Error(`gen2-migration ${step} failed with exit code ${result.exitCode}`);
+      throw new Error(`${command} failed with exit code ${result.exitCode}`);
     }
 
-    this.logger.info(`gen2-migration ${step} completed (${Date.now() - startTime}ms)`);
+    this.logger.info(`${command} (✔ ${Date.now() - startTime}ms)`);
   }
 
   /**
