@@ -10,6 +10,8 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { getShortId } from '../import-helpers';
 
+jest.retryTimes(2);
+
 describe('notification category pull test', () => {
   const testChannel = 'SMS';
   const testChannelSelection = 'SMS';

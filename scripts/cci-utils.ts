@@ -27,6 +27,10 @@ export const USE_PARENT_ACCOUNT = [
   'src/__tests__/import_dynamodb_1.test.ts',
   'src/__tests__/import_s3_1.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+  'src/__tests__/notifications-sms.test.ts',
+  'src/__tests__/notifications-sms-pull.test.ts',
+  'src/__tests__/notifications-sms-update.test.ts',
+  'src/__tests__/notifications-multi-env.test.ts',
 ];
 
 export const REPO_ROOT = join(__dirname, '..');
