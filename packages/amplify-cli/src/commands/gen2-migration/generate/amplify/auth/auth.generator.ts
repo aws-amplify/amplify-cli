@@ -46,16 +46,16 @@ export class AuthGenerator implements Planner {
     const userPool = await this.gen1App.aws.fetchUserPool(userPoolId);
 
     const appClientIdWeb = this.gen1App.resourceMetaOutput(this.resource, 'AppClientIDWeb');
-    const appClientId = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
+    const appClientIdNative = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
     const identityPoolId = this.gen1App.resourceMetaOutput(this.resource, 'IdentityPoolId');
 
-    const [mfaConfig, webClient, userPoolClient, identityProviders, identityGroups, identityPool] = await Promise.all([
+    const [mfaConfig, webClient, nativeClient, identityProviders, identityGroups, identityPool] = await Promise.all([
       this.gen1App.aws.fetchMfaConfig(userPoolId),
-      appClientIdWeb ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdWeb) : Promise.resolve(undefined),
-      appClientId ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientId) : Promise.resolve(undefined),
+      this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdWeb),
+      this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdNative),
       this.gen1App.aws.fetchIdentityProviders(userPoolId),
       this.gen1App.aws.fetchIdentityGroups(userPoolId),
-      identityPoolId ? this.gen1App.aws.fetchIdentityPool(identityPoolId) : Promise.resolve(undefined),
+      this.gen1App.aws.fetchIdentityPool(identityPoolId),
     ]);
 
     const renderOptions: AuthRenderOptions = {
@@ -65,7 +65,7 @@ export class AuthGenerator implements Planner {
       identityGroups,
       webClient,
       mfaConfig,
-      userPoolClient,
+      nativeClient,
       triggers: this.triggers,
       access: this.access,
     };
