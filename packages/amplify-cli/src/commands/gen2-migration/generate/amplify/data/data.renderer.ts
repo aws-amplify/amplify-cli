@@ -1,7 +1,13 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { newLineIdentifier, TS } from '../../ts';
-import { ExtendedResolverGroup, PipelineSpliceResult } from './data.generator';
+import {
+  ClassifiedVtlFiles,
+  ExtendedResolverGroup,
+  PipelineSpliceResult,
+  groupExtendedResolvers,
+  computeSpliceIndexes,
+} from './data.generator';
 
 const factory = ts.factory;
 
@@ -16,6 +22,7 @@ export interface DataRenderOptions {
   readonly graphqlApi: GraphqlApi;
   readonly hasAuth?: boolean;
   readonly apiId?: string;
+  readonly classifiedResolvers?: ClassifiedVtlFiles;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -127,6 +134,33 @@ export class DataRenderer {
     if (iamGrantStatements.length > 0) {
       additionalImports.push(TS.namedImport('aws-cdk-lib', 'aws_iam'));
       escapeHatchStatements.push(...iamGrantStatements);
+    }
+
+    // Resolver escape hatch statements
+    const classified = opts.classifiedResolvers;
+    if (classified) {
+      const hasOverrides = classified.overrides.length > 0;
+      const hasExtended = classified.extended.length > 0;
+
+      if (hasOverrides || hasExtended) {
+        // Common imports and declarations
+        additionalImports.push(TS.namedImport('path', 'join', 'dirname'));
+        additionalImports.push(TS.namedImport('url', 'fileURLToPath'));
+        escapeHatchStatements.push(TS.declareConst('__dirname', factory.createIdentifier('dirname(fileURLToPath(import.meta.url))')));
+        escapeHatchStatements.push(TS.declareConst('resolversDir', factory.createIdentifier('join(__dirname, "resolvers")')));
+      }
+
+      if (hasOverrides) {
+        additionalImports.push(TS.namedImport('fs', 'readdirSync'));
+        additionalImports.push(TS.namespaceImport('assets', 'aws-cdk-lib/aws-s3-assets'));
+        escapeHatchStatements.push(...this.buildOverrideResolverStatements());
+      }
+
+      if (hasExtended) {
+        additionalImports.push(TS.namedImport('aws-cdk-lib', 'aws_appsync'));
+        additionalImports.push(TS.namedImport('aws-cdk-lib/aws-appsync', 'CfnResolver'));
+        escapeHatchStatements.push(...this.buildExtendedResolverStatements(classified));
+      }
     }
 
     if (escapeHatchStatements.length === 0) return { func: undefined, additionalImports: [] };
@@ -450,6 +484,233 @@ export class DataRenderer {
         ),
       ),
     ];
+  }
+
+  /** Builds override resolver statements for the applyEscapeHatches function. */
+  private buildOverrideResolverStatements(): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // const resolverFiles = readdirSync(resolversDir).filter(...)
+    const filterCallback = factory.createArrowFunction(
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'f')],
+      undefined,
+      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      factory.createBinaryExpression(
+        factory.createParenthesizedExpression(
+          factory.createBinaryExpression(
+            factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('f'), 'endsWith'), undefined, [
+              factory.createStringLiteral('.req.vtl'),
+            ]),
+            ts.SyntaxKind.BarBarToken,
+            factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('f'), 'endsWith'), undefined, [
+              factory.createStringLiteral('.res.vtl'),
+            ]),
+          ),
+        ),
+        ts.SyntaxKind.AmpersandAmpersandToken,
+        factory.createBinaryExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('f'), 'split'), undefined, [
+              factory.createStringLiteral('.'),
+            ]),
+            'length',
+          ),
+          ts.SyntaxKind.EqualsEqualsEqualsToken,
+          factory.createNumericLiteral(4),
+        ),
+      ),
+    );
+
+    statements.push(
+      TS.declareConst(
+        'resolverFiles',
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(factory.createIdentifier('readdirSync'), undefined, [factory.createIdentifier('resolversDir')]),
+            'filter',
+          ),
+          undefined,
+          [filterCallback],
+        ),
+      ),
+    );
+
+    // for-of loop over resolverFiles
+    const loopBody = this.buildOverrideLoopBody();
+    statements.push(
+      factory.createForOfStatement(
+        undefined,
+        factory.createVariableDeclarationList([factory.createVariableDeclaration('file')], ts.NodeFlags.Const),
+        factory.createIdentifier('resolverFiles'),
+        factory.createBlock(loopBody, true),
+      ),
+    );
+
+    return statements;
+  }
+
+  /** Builds the body statements for the override resolver for-of loop. */
+  private buildOverrideLoopBody(): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // const [typeName, fieldName, templateType] = file.split(".");
+    statements.push(
+      factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              factory.createArrayBindingPattern([
+                factory.createBindingElement(undefined, undefined, 'typeName'),
+                factory.createBindingElement(undefined, undefined, 'fieldName'),
+                factory.createBindingElement(undefined, undefined, 'templateType'),
+              ]),
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('file'), 'split'), undefined, [
+                factory.createStringLiteral('.'),
+              ]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      ),
+    );
+
+    // const capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+    statements.push(
+      TS.declareConst(
+        'capitalizedFieldName',
+        factory.createBinaryExpression(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('fieldName'), 'charAt'),
+                undefined,
+                [factory.createNumericLiteral(0)],
+              ),
+              'toUpperCase',
+            ),
+            undefined,
+            [],
+          ),
+          ts.SyntaxKind.PlusToken,
+          factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('fieldName'), 'slice'), undefined, [
+            factory.createNumericLiteral(1),
+          ]),
+        ),
+      ),
+    );
+
+    // const functionId = `${typeName}${capitalizedFieldName}DataResolverFn`;
+    statements.push(
+      TS.declareConst(
+        'functionId',
+        factory.createTemplateExpression(factory.createTemplateHead(''), [
+          factory.createTemplateSpan(factory.createIdentifier('typeName'), factory.createTemplateMiddle('')),
+          factory.createTemplateSpan(factory.createIdentifier('capitalizedFieldName'), factory.createTemplateTail('DataResolverFn')),
+        ]),
+      ),
+    );
+
+    // const fn = backend.data.resources.cfnResources.cfnFunctionConfigurations[functionId];
+    statements.push(
+      TS.declareConst(
+        'fn',
+        factory.createElementAccessExpression(
+          TS.propAccess('backend', 'data', 'resources', 'cfnResources', 'cfnFunctionConfigurations') as ts.Expression,
+          factory.createIdentifier('functionId'),
+        ),
+      ),
+    );
+
+    // const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, { path: join(resolversDir, file) });
+    statements.push(
+      TS.declareConst(
+        'vtlTemplate',
+        factory.createNewExpression(TS.propAccess('assets', 'Asset') as ts.Expression, undefined, [
+          TS.propAccess('backend', 'data') as ts.Expression,
+          factory.createTemplateExpression(factory.createTemplateHead('VTLTemplate-'), [
+            factory.createTemplateSpan(factory.createIdentifier('file'), factory.createTemplateTail('')),
+          ]),
+          factory.createObjectLiteralExpression(
+            [
+              factory.createPropertyAssignment(
+                'path',
+                factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+                  factory.createIdentifier('resolversDir'),
+                  factory.createIdentifier('file'),
+                ]),
+              ),
+            ],
+            false,
+          ),
+        ]),
+      ),
+    );
+
+    // if (templateType === "req") { ... } else { ... }
+    const s3ObjectUrl = TS.propAccess('vtlTemplate', 's3ObjectUrl') as ts.Expression;
+    statements.push(
+      factory.createIfStatement(
+        factory.createBinaryExpression(
+          factory.createIdentifier('templateType'),
+          ts.SyntaxKind.EqualsEqualsEqualsToken,
+          factory.createStringLiteral('req'),
+        ),
+        factory.createBlock(
+          [
+            factory.createExpressionStatement(
+              factory.createAssignment(
+                factory.createPropertyAccessExpression(factory.createIdentifier('fn'), 'requestMappingTemplateS3Location'),
+                s3ObjectUrl,
+              ),
+            ),
+          ],
+          true,
+        ),
+        factory.createBlock(
+          [
+            factory.createExpressionStatement(
+              factory.createAssignment(
+                factory.createPropertyAccessExpression(factory.createIdentifier('fn'), 'responseMappingTemplateS3Location'),
+                s3ObjectUrl,
+              ),
+            ),
+          ],
+          true,
+        ),
+      ),
+    );
+
+    return statements;
+  }
+
+  /** Builds extended resolver statements for the applyEscapeHatches function. */
+  private buildExtendedResolverStatements(classified: ClassifiedVtlFiles): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // noneDataSource declaration
+    statements.push(this.renderNoneDataSource());
+
+    const grouped = groupExtendedResolvers(classified.extended);
+
+    for (const [key, groups] of grouped) {
+      const [typeName, fieldName] = key.split('.');
+
+      // Render AppsyncFunction constructs for each group entry
+      for (const group of groups) {
+        statements.push(this.renderAppsyncFunction(group));
+      }
+
+      // Compute splice indexes and render splice statements
+      const spliceResult = computeSpliceIndexes(typeName, fieldName, groups);
+      statements.push(...this.renderSpliceStatements(spliceResult));
+    }
+
+    return statements;
   }
 
   /** Renders `const noneDataSource = backend.data.resources.graphqlApi.addNoneDataSource("none");` */

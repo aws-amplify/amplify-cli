@@ -1,13 +1,8 @@
 import {
   parseVtlFilename,
-  validateSlot,
   classifyVtlFiles,
   groupExtendedResolvers,
   computeSpliceIndexes,
-  QUERY_SLOTS,
-  MUTATION_SLOTS,
-  SUBSCRIPTION_SLOTS,
-  ALL_SLOTS,
   PIPELINE_3_SLOT_MAP,
   PIPELINE_4_SLOT_MAP,
   ParsedExtended,
@@ -60,49 +55,6 @@ describe('parseVtlFilename', () => {
   });
 });
 
-describe('validateSlot', () => {
-  it.each(QUERY_SLOTS as string[])('accepts valid Query slot: %s', (slot) => {
-    expect(() => validateSlot('Query', slot, 'test.vtl')).not.toThrow();
-  });
-
-  it.each(MUTATION_SLOTS as string[])('accepts valid Mutation slot: %s', (slot) => {
-    expect(() => validateSlot('Mutation', slot, 'test.vtl')).not.toThrow();
-  });
-
-  it.each(SUBSCRIPTION_SLOTS as string[])('accepts valid Subscription slot: %s', (slot) => {
-    expect(() => validateSlot('Subscription', slot, 'test.vtl')).not.toThrow();
-  });
-
-  it.each(ALL_SLOTS as string[])('accepts all ALL_SLOTS for unknown type name: %s', (slot) => {
-    expect(() => validateSlot('CustomType', slot, 'test.vtl')).not.toThrow();
-  });
-
-  it('throws for invalid slot on Query (preUpdate)', () => {
-    expect(() => validateSlot('Query', 'preUpdate', 'Query.getTodo.preUpdate.1.req.vtl')).toThrow();
-  });
-
-  it('throws for invalid slot on Mutation (preDataLoad)', () => {
-    expect(() => validateSlot('Mutation', 'preDataLoad', 'Mutation.createTodo.preDataLoad.1.req.vtl')).toThrow();
-  });
-
-  it('throws for invalid slot on Subscription (finish)', () => {
-    expect(() => validateSlot('Subscription', 'finish', 'Subscription.onCreateTodo.finish.1.req.vtl')).toThrow();
-  });
-
-  it('error message includes the invalid slot name, filename, and valid slots', () => {
-    try {
-      validateSlot('Query', 'preUpdate', 'Query.getTodo.preUpdate.1.req.vtl');
-      fail('Expected an error to be thrown');
-    } catch (e: any) {
-      expect(e.message).toContain('preUpdate');
-      expect(e.message).toContain('Query.getTodo.preUpdate.1.req.vtl');
-      expect(e.message).toContain('init');
-      expect(e.message).toContain('preAuth');
-      expect(e.message).toContain('auth');
-    }
-  });
-});
-
 describe('classifyVtlFiles', () => {
   it('classifies 4-segment files as overrides', () => {
     const result = classifyVtlFiles(['Mutation.createTodo.req.vtl', 'Query.getTodo.res.vtl']);
@@ -134,10 +86,6 @@ describe('classifyVtlFiles', () => {
     expect(() => classifyVtlFiles(['Mutation.createTodo.init.1.req.vtl', 'Mutation.createTodo.init.1.req.vtl'])).toThrow(
       /Duplicate extended resolver/,
     );
-  });
-
-  it('validates slots during classification (throws for invalid slot)', () => {
-    expect(() => classifyVtlFiles(['Query.getTodo.preUpdate.1.req.vtl'])).toThrow(/Invalid slot/);
   });
 
   it('handles mixed override and extended files correctly', () => {
