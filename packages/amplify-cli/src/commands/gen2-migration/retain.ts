@@ -2,11 +2,26 @@ import { Plan } from './_common/plan';
 import { AmplifyMigrationStep } from './_common/step';
 import { AmplifyMigrationOperation } from './_common/operation';
 import { DescribeChangeSetOutput, DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
+import { CFNResource } from './_common/cfn-template';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 import chalk from 'chalk';
+
+/**
+ * Synthetic marker injected into each Gen1 stack. A changeset of only
+ * DeletionPolicy/UpdateReplacePolicy edits is treated as a no-op by CFN, so
+ * we add a real resource to force a non-empty diff.
+ *
+ * See https://github.com/aws/aws-cdk/issues/11521.
+ */
+const AMPLIFY_RETAIN_MARKER_LOGICAL_ID = 'AmplifyRetainMarker';
+
+const AMPLIFY_RETAIN_MARKER_RESOURCE: CFNResource = {
+  Type: 'AWS::CloudFormation::WaitConditionHandle',
+  Properties: {},
+};
 
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
@@ -38,7 +53,11 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   }
 
   private async walkStackHierarchy(stackId: string): Promise<string[]> {
-    const result: string[] = [];
+    // Root-first (pre-order) so each stack is updated *after* its parent.
+    // Updating a parent re-synthesizes children from their TemplateURL, which
+    // clobbers any direct edits. By descending top-down we ensure nothing
+    // cascades over a stack we've already edited.
+    const result: string[] = [stackId];
 
     const pages = paginateListStackResources({ client: this.gen1App.clients.cloudFormation }, { StackName: stackId });
 
@@ -51,7 +70,6 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       }
     }
 
-    result.push(stackId);
     return result;
   }
 
@@ -64,6 +82,13 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       resource.DeletionPolicy = 'Retain';
       resource.UpdateReplacePolicy = 'Retain';
     }
+
+    // Inject the marker so the changeset has a real Add entry.
+    template.Resources[AMPLIFY_RETAIN_MARKER_LOGICAL_ID] = {
+      ...AMPLIFY_RETAIN_MARKER_RESOURCE,
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    };
 
     const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
     const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
@@ -87,12 +112,16 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     const url = cfnChangesetConsoleUrl(changeset.ChangeSetId ?? '', changeset.StackId);
     const describeLines: string[] = [`Apply DeletionPolicy and UpdateReplacePolicy: Retain to resources in ${stackName}`];
-    if (url) describeLines.push(`   Changeset URL: ${chalk.dim(url)}`);
+    if (url) {
+      describeLines.push('');
+      describeLines.push(`   Changeset URL: ${chalk.dim(url)}`);
+      describeLines.push('');
+    }
 
     return {
       describe: async () => [describeLines.join('\n')],
       validate: () => ({
-        description: `Ensure only retain changes for ${stackName}`,
+        description: `Ensure retain-only changes for ${stackName}`,
         run: async () => {
           const valid = this.isAllowedRetainChangeset(changeset);
           return {
@@ -120,6 +149,10 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       const rc = change.ResourceChange;
 
       if (!rc) return false;
+
+      // Adding the marker resource is expected and part of the retain operation.
+      if (rc.Action === 'Add' && rc.LogicalResourceId === AMPLIFY_RETAIN_MARKER_LOGICAL_ID) continue;
+
       if (rc.Action !== 'Modify') return false;
       if (rc.Replacement === 'True') return false;
 
