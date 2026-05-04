@@ -5,6 +5,7 @@
     "lib": ["ES2020"],
     "outDir": "./lib",
     "rootDir": "./src",
+    "composite": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

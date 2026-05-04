@@ -361,6 +361,7 @@ export class App {
    */
   public async deployGen2Sandbox(): Promise<string> {
     await this.refreshCredentials();
+    await this.bootstrapCDK();
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
@@ -517,6 +518,29 @@ export class App {
   // Private Helpers
   // ============================================================
 
+  /**
+   * Bootstrap CDK in the target account/region. Idempotent — succeeds
+   * silently if the CDKToolkit stack already exists.
+   */
+  private async bootstrapCDK(): Promise<void> {
+    const region = process.env.CLI_REGION ?? 'us-east-1';
+    this.logger.info(`Bootstrapping CDK for region ${region}...`);
+
+    const identity = await execa('aws', ['sts', 'get-caller-identity', '--query', 'Account', '--output', 'text'], {
+      env: this.getEnv(),
+    });
+    const accountId = identity.stdout.trim();
+
+    const result = await execa('npx', ['cdk', 'bootstrap', `aws://${accountId}/${region}`], {
+      cwd: this.targetAppPath,
+      reject: false,
+      stdio: 'inherit',
+      env: this.getEnv(),
+    });
+    if (result.exitCode !== 0) {
+      this.logger.info('CDK bootstrap may already exist or failed, continuing...');
+    }
+  }
   private removeGitignoreLine(line: string): void {
     const gitignorePath = path.join(this.targetAppPath, '.gitignore');
     if (!fs.existsSync(gitignorePath)) return;
