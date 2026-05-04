@@ -27,15 +27,15 @@ const dataResource: DiscoveredResource = {
 };
 
 /**
- * Mocks gen1App.file() so it returns the raw schema for the source
- * path and a synthetic build schema (with ModelXConnection types)
- * for the build path.
+ * Mocks gen1App.file() to return the appropriate schema content
+ * based on the requested path. Throws on unexpected paths.
  */
 function mockSchema(gen1App: Gen1App, rawSchema: string, modelNames: string[]): void {
   const buildSchema = modelNames.map((m) => `type Model${m}Connection { items: [${m}]! nextToken: String }`).join('\n');
   jest.spyOn(gen1App, 'file').mockImplementation((p: string) => {
     if (p.includes('build/schema.graphql')) return buildSchema;
-    return rawSchema;
+    if (p.endsWith('schema.graphql')) return rawSchema;
+    throw new Error(`Unexpected file() call with path: ${p}`);
   });
 }
 
