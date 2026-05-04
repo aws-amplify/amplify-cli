@@ -56,21 +56,10 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
 }
 
 /**
- * Transforms NoEcho parameters in a CloudFormation-bound Parameters array to use
- * UsePreviousValue instead of the masked ParameterValue returned by DescribeStacks.
- *
- * Background: DescribeStacks masks NoEcho parameter values as "****". Passing that
- * masked value back to CreateChangeSet / UpdateStack causes CloudFormation to treat
- * it as an explicit new value. For templates that reference the NoEcho parameter
- * via {Ref: <paramKey>} inside a Custom::LambdaCallout's Properties, this re-resolves
- * the Ref to the literal string "****", triggers a Custom resource update, and crashes
- * the Lambda when it JSON.parses the masked token.
- *
- * The fix: for each parameter whose template declaration has NoEcho: true, send
- * { ParameterKey, UsePreviousValue: true } — CloudFormation uses the real stored
- * value internally and the masked "****" never flows through the template.
- *
- * Non-NoEcho parameters pass through unchanged.
+ * Replaces NoEcho parameters with UsePreviousValue to prevent DescribeStacks'
+ * masked "****" values from flowing back into CreateChangeSet / UpdateStack,
+ * where they would re-resolve {Ref}s to the literal "****" and crash
+ * Custom::LambdaCallout Lambdas that JSON.parse the value.
  */
 export function resolveNoEchoParameters(template: CFNTemplate, parameters: Parameter[]): Parameter[] {
   const templateParams = template.Parameters ?? {};

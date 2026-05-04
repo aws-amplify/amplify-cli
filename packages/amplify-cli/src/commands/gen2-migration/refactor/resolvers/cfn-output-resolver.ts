@@ -76,18 +76,10 @@ export function resolveOutputs(params: {
     return undefined;
   }) as Record<string, CFNResource>;
 
-  // Phase 2: Resolve remaining Fn::GetAtt using physical resource IDs (fallback)
-  //
-  // Known limitation: this phase assumes physical resource ID == attribute value,
-  // which is only true for native AWS resources where PhysicalResourceId is the
-  // primary identifier. It is incorrect for Custom:: resources (whose GetAtt
-  // attributes come from Lambda response Data, not the physical ID) and for Arn
-  // attributes when the physical ID is already an ARN.
-  //
-  // A more robust approach would be to only resolve GetAtts for resources that
-  // are being moved between stacks (since those are the only references that
-  // will break post-refactor), but that requires threading resource mappings
-  // into the resolver.
+  // Phase 2: Resolve remaining Fn::GetAtt using physical resource IDs (fallback).
+  // Assumes physical resource ID == attribute value — true for native AWS resources,
+  // not for Custom:: (Lambda response Data). A future improvement would thread
+  // resource mappings to resolve only cross-stack GetAtts.
   cloned.Resources = walkCfnTree(cloned.Resources, (node) => {
     if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
       const [logicalId, attrName] = node['Fn::GetAtt'] as [string, string];

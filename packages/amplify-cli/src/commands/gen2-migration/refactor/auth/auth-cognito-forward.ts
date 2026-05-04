@@ -215,19 +215,12 @@ export interface SocialAuthOperationContext {
 }
 
 /**
- * Builds an operation that orphans the UserPoolDomain and
- * UserPoolIdentityProvider resources from the given Gen2 stack. Returns
- * undefined if the Gen2 template has no such resources (non-social-auth app).
+ * Builds an operation that orphans UserPoolDomain and UserPoolIdentityProvider
+ * from a Gen2 stack. Returns undefined for non-social-auth apps.
  *
- * Validates at execute time that every orphan target has DeletionPolicy:
- * Retain, then removes the resources from the template in a single CFN
- * update. Retain guarantees the physical IDPs and domain survive the update.
- *
- * Exported so that forward and rollback share the same logic — forward relies
- * on generate having set Retain via CDK escape hatches; rollback relies on
- * forward's import step having set Retain inline. The only difference between
- * the two callers is the wording of the error resolution hint, passed in via
- * `retainSetBy`.
+ * Validates at execute time that every target has DeletionPolicy: Retain, then
+ * removes the resources in a single CFN update. `retainSetBy` controls the
+ * error hint (forward: set by generate; rollback: set by forward's import).
  */
 export async function buildOrphanSocialAuthOperation(
   ctx: SocialAuthOperationContext,
@@ -253,11 +246,8 @@ export async function buildOrphanSocialAuthOperation(
 
   return {
     resource: ctx.resource,
-    // Retain is established upstream (generate for forward, forward-import for rollback). We verify at execute
-    // time, not plan-validation time, because plan.validate() runs ALL operation validate() callbacks before
-    // ANY execute(). If the invariant is violated (e.g. manual template edits between plan and execute), we
-    // abort before any destructive template mutation — missing Retain would cause the subsequent cfn.update
-    // to delete the physical resource.
+    // Verify Retain at execute time (not plan time) to catch manual template edits
+    // between plan and execute. Missing Retain would delete the physical resource.
     validate: () => undefined,
     describe: async () => [
       `Orphan ${logicalIdsToOrphan.length} social auth resource(s) from '${gen2StackName}': ${logicalIdsToOrphan.join(', ')}`,
@@ -299,22 +289,12 @@ export async function buildOrphanSocialAuthOperation(
 
 /**
  * Builds an operation that imports physical UserPoolDomain and
- * UserPoolIdentityProvider resources into the given Gen2 stack under the Gen2
- * original logical IDs. Returns undefined if the Gen2 template has no such
- * resources (non-social-auth app).
+ * UserPoolIdentityProvider into a Gen2 stack under the Gen2 original logical
+ * IDs. Returns undefined for non-social-auth apps.
  *
- * Plan-time: captures `{providerName → logicalId}` and the domain logical ID
- * from the Gen2 template into the operation closure. These are the Gen2
- * original logical IDs, reused for the import so subsequent Gen2 deploys see
- * the same IDs.
- *
- * Execute-time: discovers the UserPool physical ID from the Gen2 stack, fetches
- * the live domain and IDP list from Cognito, builds the import spec, and
- * executes the import changeset.
- *
- * Exported so that forward and rollback share the same logic. Forward calls
- * this after super.move() (P1 transferred in); rollback calls this after
- * super.afterMove() (P2 restored from holding).
+ * Plan-time: captures {providerName → logicalId} and domain logical ID from
+ * the Gen2 template. Execute-time: discovers UserPool via DescribeStackResources,
+ * fetches domain/IDP list from Cognito, and runs the import changeset.
  */
 export async function buildImportSocialAuthOperation(
   ctx: SocialAuthOperationContext,
@@ -424,14 +404,9 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   /**
-   * Executes the standard beforeMove (moves 4 core Cognito resources to holding),
-   * then appends an orphan operation that removes the IDP and domain resources
-   * from the Gen2 template in a single CFN update. CloudFormation orphans them
-   * because of DeletionPolicy: Retain (established by generate's CDK escape
-   * hatches); the physical IDPs and domain on the pool survive.
-   *
-   * If the Gen2 stack has no IDP or domain resources (non-social-auth app), the
-   * orphan operation is skipped.
+   * Moves core resources to holding, then orphans domain/IDP from Gen2
+   * (DeletionPolicy: Retain ensures physical resources survive).
+   * Skipped for non-social-auth apps.
    */
   protected override async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     const baseOps = await super.beforeMove(gen2StackId);
@@ -445,14 +420,9 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   /**
-   * Executes the standard move (moves core Gen1 resources into Gen2), then
-   * appends an import operation that re-imports Gen1's physical UserPoolDomain
-   * and UserPoolIdentityProvider resources into the Gen2 stack as native CFN
-   * resources.
-   *
-   * The import must run AFTER super.move() completes — the core move transfers
-   * the Gen1 UserPool into Gen2, and the UserPool must be in the Gen2 stack
-   * before we can import resources that reference it by UserPoolId.
+   * Moves core Gen1 resources into Gen2, then imports Gen1's domain/IDP as
+   * native CFN resources. Runs after super.move() so the UserPool is already
+   * in Gen2 when the import references it.
    */
   protected override async move(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const baseOps = await super.move(blueprint);

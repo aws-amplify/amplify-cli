@@ -395,16 +395,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
-      // Prevent Gen1 HostedUI Lambda-backed custom resources (which manage the
-      // UserPoolDomain and UserPoolIdentityProvider physical resources) from
-      // destroying those physical resources when their containing auth stack is
-      // decommissioned after a successful refactor. The IDPs and domain are
-      // orphaned from Gen2 into a "floating" state and re-imported back into
-      // Gen2 during the refactor; if the Gen1 custom resource's Delete handler
-      // fires on stack deletion, it would delete the underlying Cognito
-      // resources out from under Gen2. Matched by logical ID rather than type
-      // (Custom::LambdaCallout) so we don't accidentally retain unrelated
-      // Lambda-backed custom resources that happen to share the Custom::LambdaCallout type.
+      // Prevent HostedUI custom resource Delete handlers from destroying
+      // UserPoolDomain/IDP physical resources on Gen1 stack teardown.
+      // Match by logical ID, not type, to avoid retaining unrelated Custom::LambdaCallout resources.
       if (AUTH_HOSTED_UI_RESOURCES_TO_RETAIN.includes(logicalId)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';

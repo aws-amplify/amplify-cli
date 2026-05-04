@@ -91,9 +91,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const description = await facade.fetchStack(stackId);
     const parameters = description.Parameters ?? [];
 
-    // Transform masked NoEcho parameter values to UsePreviousValue so the "****"
-    // returned by DescribeStacks does not flow back into CreateChangeSet /
-    // UpdateStack and re-resolve into the template.
     const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
 
     return { stackId, resolvedTemplate: originalTemplate, parameters: sanitizedParameters };

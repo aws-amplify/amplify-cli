@@ -140,9 +140,6 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       accountId: this.accountId,
     });
 
-    // Transform masked NoEcho parameter values to UsePreviousValue so the "****"
-    // returned by DescribeStacks does not flow back into CreateChangeSet /
-    // UpdateStack and re-resolve into the template.
     const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
 
     return { stackId, resolvedTemplate: resolved, parameters: sanitizedParameters };

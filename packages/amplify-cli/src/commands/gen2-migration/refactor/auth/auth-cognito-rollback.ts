@@ -34,22 +34,10 @@ const IMPORTED_RESOURCE_TYPES = [USER_POOL_DOMAIN_TYPE, USER_POOL_IDENTITY_PROVI
 /**
  * Rollback refactorer for the auth:Cognito resource.
  *
- * Moves main auth resources (UserPool, UserPoolClient, IdentityPool,
- * IdentityPoolRoleAttachment) from Gen2 back to Gen1 via holding-stack
- * restoration.
- *
- * For social auth apps:
- *   - move() orphans the Gen2 UserPoolDomain and UserPoolIdentityProvider
- *     resources (imported during forward move) after the core Gen2→Gen1 move.
- *     Physical resources survive via DeletionPolicy: Retain and remain on the
- *     (now Gen1) UserPool. Gen1's LambdaCallout custom resources
- *     (HostedUICustomResourceInputs, HostedUIProvidersCustomResourceInputs) will
- *     recreate/update them as needed on the next Gen1 deploy.
- *   - afterMove() (after super.afterMove() restores P2 core resources from the
- *     holding stack) re-imports Gen2's original IDPs + domain back into Gen2
- *     under the Gen2 original logical IDs. This mirrors forward's import step
- *     so rollback produces a Gen2 stack state equivalent to the pre-refactor
- *     state.
+ * Moves core auth resources from Gen2 back to Gen1. For social auth apps,
+ * move() orphans the imported domain/IDPs from Gen2 (Retain keeps physical
+ * resources alive), then afterMove() re-imports Gen2's originals back.
+ * See ADR-005 Addendum for the full orphan+import design.
  */
 export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   /**
@@ -63,11 +51,8 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   }
 
   /**
-   * Excludes domain and IDP resources from the Gen2→Gen1 refactor mappings.
-   * Even though RESOURCE_TYPES already excludes these types (so they are
-   * filtered out by filterResourcesByType), this filter remains as a safety
-   * net — if a future change adds them to RESOURCE_TYPES for the forward
-   * direction, rollback would still correctly exclude them from the move.
+   * Safety net: exclude domain/IDP from refactor mappings even though
+   * resourceTypes() already filters them out.
    */
   protected async buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
@@ -103,15 +88,9 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   }
 
   /**
-   * Executes the standard afterMove (restores P2 core resources from the
-   * holding stack into Gen2), then re-imports Gen2's original domain and IDPs
-   * back into Gen2.
-   *
-   * Plan-time: the Gen2 template still contains the imported IDP/domain
-   * resources because rollback's move() orphan runs at EXECUTE time.
-   *
-   * Execute-time: after super.afterMove() restores P2 into Gen2, discover the
-   * UserPool (P2), fetch domain/IDP list from Cognito, and run the import.
+   * Restores P2 core resources from holding, then re-imports Gen2's
+   * domain/IDPs. Plan-time template still has them (move's orphan runs at
+   * execute). Execute-time discovers P2 UserPool and runs the import.
    */
   protected override async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     const baseOps = await super.afterMove(gen2StackId);

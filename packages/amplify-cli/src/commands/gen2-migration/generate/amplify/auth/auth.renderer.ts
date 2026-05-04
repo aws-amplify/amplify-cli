@@ -1059,14 +1059,8 @@ export class AuthRenderer {
 
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
 
-    // Emit Retain on Gen2 UserPoolDomain + UserPoolIdentityProvider as a
-    // separate retention loop. Refactor orphans these resources from Gen2 and
-    // re-imports the Gen1 physical resources under the same logical IDs; the
-    // orphan step relies on Retain being present, or the underlying Cognito
-    // domain / IDP would be physically deleted. Kept separate from the
-    // AUTH_RESOURCES_TO_RETAIN list because that list also drives the
-    // refactor's deletion-policy validation (which does not apply to the
-    // domain / IDPs — refactor's orphan op has its own execute-time guard).
+    // Separate Retain loop for domain/IDP — refactor's orphan step relies on Retain.
+    // Kept separate from AUTH_RESOURCES_TO_RETAIN which also drives refactor validation.
     if (hasIdentityProviders) {
       statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_IMPORT_RESOURCES_TO_RETAIN));
     }
