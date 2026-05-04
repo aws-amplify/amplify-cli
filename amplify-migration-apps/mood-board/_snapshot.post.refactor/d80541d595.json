@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"storage-S3\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"storage-S3\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -179,70 +179,6 @@
     }
   },
   "Resources": {
-    "S3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Fn::Join": [
-            "",
-            [
-              "moodboard20e29595008142e3ad16f01c4066e1c4",
-              {
-                "Fn::Select": [
-                  3,
-                  {
-                    "Fn::Split": [
-                      "-",
-                      "amplify-moodboard-x-x-storagemoodboardStorage-x"
-                    ]
-                  }
-                ]
-              },
-              "-",
-              "x"
-            ]
-          ]
-        },
-        "CorsConfiguration": {
-          "CorsRules": [
-            {
-              "AllowedHeaders": [
-                "*"
-              ],
-              "AllowedMethods": [
-                "GET",
-                "HEAD",
-                "PUT",
-                "POST",
-                "DELETE"
-              ],
-              "AllowedOrigins": [
-                "*"
-              ],
-              "ExposedHeaders": [
-                "x-amz-server-side-encryption",
-                "x-amz-request-id",
-                "x-amz-id-2",
-                "ETag"
-              ],
-              "Id": "S3CORSRuleId1",
-              "MaxAge": 3000
-            }
-          ]
-        },
-        "BucketEncryption": {
-          "ServerSideEncryptionConfiguration": [
-            {
-              "ServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "AES256"
-              }
-            }
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "S3AuthPublicPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {

@@ -1,100 +1,103 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.11.2\",\"stackType\":\"auth-Cognito\",\"metadata\":{}}",
   "Resources": {
-    "MoodboardKinesisCognitoAuthPolicyCE721FE6": {
-      "Type": "AWS::IAM::Policy",
+    "amplifyAuthauthenticatedUserRoleD8DA3689": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "PolicyDocument": {
-          "Version": "2012-10-17",
+        "AssumeRolePolicyDocument": {
           "Statement": [
             {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              },
               "Effect": "Allow",
-              "Action": [
-                "kinesis:PutRecord",
-                "kinesis:PutRecords"
-              ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
-        "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
-        "Roles": [
-          "amplify-moodboard26042620-amplifyAuthauthenticatedU-epoTvTg7Pgx4"
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/MoodboardKinesis/CognitoAuthPolicy"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
-    "MoodboardKinesisCognitoUnauthPolicyE7A8C80F": {
-      "Type": "AWS::IAM::Policy",
+    "amplifyAuthunauthenticatedUserRole2B524D9E": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "PolicyDocument": {
-          "Version": "2012-10-17",
+        "AssumeRolePolicyDocument": {
           "Statement": [
             {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                }
+              },
               "Effect": "Allow",
-              "Action": [
-                "kinesis:PutRecord",
-                "kinesis:PutRecords"
-              ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
-        "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
-        "Roles": [
-          "amplify-moodboard26042620-amplifyAuthunauthenticate-fNLBa6hbaz77"
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/MoodboardKinesis/CognitoUnauthPolicy"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQqDMAwA0LP432Za2C7g/zbmASRrI8TaOkw6GeLdRfb1eA7ctYG6wlWsD9FO/IbtTqIUOkUfDa7Sb5EzCQu0Q+50IUyGMZ17zhP7327aIT+KforuJs+BYJTL1zloblBXozDbpWTlRPD6ewCmstBRdwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/01LSwrCMBA9S/fpKAEPIF25Eal0LTEZddp0As1okZC7S5Bq4cH7a9A7DdvKzLG2bqg9XSEdMQq6sxg7KDPHS7LhziQBUhdxOoXgVXPjn15E4wlZ1tU/OThkIXkv57Vvg8e9iLGPEVmyIjNCKmEZFs45Kw4OoY+bl9ZQUPWRqJ6eLDQitF/+AFYOBuzOAAAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
-    },
-    "MoodboardKinesisKinesisStreamECC0FDEB": {
-      "Type": "AWS::Kinesis::Stream",
-      "Properties": {
-        "Name": {
-          "Fn::Join": [
-            "-",
-            [
-              "moodboardKinesis",
-              "x"
-            ]
-          ]
-        },
-        "ShardCount": "1"
-      },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
-    }
-  },
-  "Outputs": {
-    "kinesisStreamArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
-    },
-    "kinesisStreamId": {
-      "Value": "moodboardKinesis-gen2-x"
-    },
-    "kinesisStreamShardCount": {
-      "Value": "1"
-    },
-    "amplifymoodboarde2esandbox5972880194analyticsMoodboardKinesisKinesisStreamAABA29B2Arn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
     }
   },
   "Conditions": {
@@ -363,12 +366,21 @@
       ]
     }
   },
-  "Parameters": {
-    "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
-      "Type": "String"
+  "Outputs": {
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthUserPool5FF73B88Ref": {
+      "Value": "us-east-1_cqYuFX4HK"
     },
-    "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
-      "Type": "String"
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthUserPoolAppClientC738D790Ref": {
+      "Value": "3v94ud83hsep5rnh3ta3k6rgal"
+    },
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthIdentityPool795773D0Ref": {
+      "Value": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
+    },
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref": {
+      "Value": "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
+    },
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref": {
+      "Value": "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
     }
   }
 }
