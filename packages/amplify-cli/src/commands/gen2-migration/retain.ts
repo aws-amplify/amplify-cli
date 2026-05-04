@@ -31,13 +31,11 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     const toApply = built.filter((b) => !b.alreadyRetained);
     const alreadyRetained = built.filter((b) => b.alreadyRetained);
     if (toApply.length > 0 && alreadyRetained.length > 0) {
-      this.logger.info(
-        `${toApply.length} need retain policies applied to resources; ${alreadyRetained.length} already have all resources retained`,
-      );
+      this.logger.info(`${toApply.length} need retain changes; ${alreadyRetained.length} need no retain changes`);
     } else if (toApply.length > 0) {
-      this.logger.info(`${toApply.length} need retain policies applied to resources`);
+      this.logger.info(`${toApply.length} need retain changes`);
     } else {
-      this.logger.info(`All ${alreadyRetained.length} already have all resources retained`);
+      this.logger.info(`All ${alreadyRetained.length} need no retain changes`);
     }
 
     // One "summary" operation that only describes — renders a grouped view of all stacks.
@@ -133,7 +131,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     if (alreadyRetained.length > 0) {
       const noun = alreadyRetained.length === 1 ? 'stack' : 'stacks';
       const sectionLines: string[] = [];
-      sectionLines.push(`Skip ${alreadyRetained.length} ${noun} — resources are already retained:`);
+      sectionLines.push(`Skip ${alreadyRetained.length} ${noun} — no retain changes needed:`);
       alreadyRetained.forEach((b, i) => {
         sectionLines.push('');
         sectionLines.push(`    ${i + 1}) ${b.stackName}`);
@@ -230,6 +228,23 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
       const details = rc.Details ?? [];
       if (details.length === 0) return false;
+
+      // CloudFormation flags every child `AWS::CloudFormation::Stack` entry in a
+      // parent template as a dynamic re-evaluation whenever the parent is
+      // updated — even when our only change is adding Retain attributes. These
+      // re-evaluations have `RequiresRecreation: 'Never'` and don't represent
+      // a real property change, so we accept them as part of the retain
+      // operation.
+      if (rc.ResourceType === 'AWS::CloudFormation::Stack') {
+        const allDynamicReEvaluation = details.every(
+          (d) =>
+            d.Target?.Attribute === 'Properties' &&
+            d.Target?.RequiresRecreation === 'Never' &&
+            d.Evaluation === 'Dynamic' &&
+            d.ChangeSource === 'Automatic',
+        );
+        if (allDynamicReEvaluation) continue;
+      }
 
       for (const detail of details) {
         const attr = detail.Target?.Attribute;
