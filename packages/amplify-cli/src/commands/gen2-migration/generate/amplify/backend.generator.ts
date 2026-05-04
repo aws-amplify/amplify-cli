@@ -7,6 +7,7 @@ import {
   BackendRenderer,
   BackendRenderOptions,
   NamespaceImport,
+  NamedImport,
   DefineBackendEntry,
   PostDefineBackendCall,
   EscapeHatchCall,
@@ -19,6 +20,7 @@ import {
  */
 export class BackendGenerator implements Planner {
   private readonly namespaceImports: NamespaceImport[] = [];
+  private readonly namedImports = new Map<string, Set<string>>();
   private readonly defineBackendEntries: DefineBackendEntry[] = [];
   private readonly applyEscapeHatchesCalls: EscapeHatchCall[] = [];
   private readonly postRefactorCalls: string[] = [];
@@ -36,6 +38,18 @@ export class BackendGenerator implements Planner {
    */
   public addNamespaceImport(alias: string, source: string): void {
     this.namespaceImports.push({ alias, source });
+  }
+
+  /** Adds a named import: `import { id1, id2 } from 'source';` */
+  public addNamedImport(source: string, ...identifiers: string[]): void {
+    let ids = this.namedImports.get(source);
+    if (!ids) {
+      ids = new Set<string>();
+      this.namedImports.set(source, ids);
+    }
+    for (const id of identifiers) {
+      ids.add(id);
+    }
   }
 
   /**
@@ -88,8 +102,14 @@ export class BackendGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/backend.ts'],
         execute: async () => {
+          const namedImportsList: NamedImport[] = [];
+          for (const [source, ids] of this.namedImports) {
+            namedImportsList.push({ source, identifiers: [...ids] });
+          }
+
           const options: BackendRenderOptions = {
             namespaceImports: this.namespaceImports,
+            namedImports: namedImportsList,
             defineBackendEntries: this.defineBackendEntries,
             postDefineBackendCalls: this.postDefineBackendCalls,
             postDefineBackendStatements: this.postDefineBackendStatements,
