@@ -349,11 +349,10 @@ export class DataGenerator implements Planner {
     const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
     const authorizationModes = this.gen1App.resourceMetaOutput(this.resource, 'authConfig');
     const hasIamAuth = this.detectIamAuth(authorizationModes, graphqlApi);
-    const needsEscapeHatches = hasAdditionalAuthProviders || (hasIamAuth && hasAuth);
-
     const vtlFiles = this.findResolverVtlFiles(this.resource.resourceName);
     const hasResolvers = vtlFiles.length > 0;
     const classifiedResolvers = hasResolvers ? classifyVtlFiles([...vtlFiles]) : undefined;
+    const needsEscapeHatches = hasAdditionalAuthProviders || (hasIamAuth && hasAuth) || hasResolvers;
 
     const operations: AmplifyMigrationOperation[] = [
       {
@@ -377,7 +376,7 @@ export class DataGenerator implements Planner {
 
           this.backendGenerator.addNamespaceImport('data', './data/resource');
           this.backendGenerator.addDefineBackendEntry('data', 'data', 'data');
-          if (needsEscapeHatches || hasResolvers) {
+          if (needsEscapeHatches) {
             this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'data', extraArgs: [] });
           }
         },
