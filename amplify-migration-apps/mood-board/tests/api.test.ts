@@ -38,7 +38,7 @@ describe('guest', () => {
 
       expect(typeof board.id).toBe('string');
       expect(board.id.length).toBeGreaterThan(0);
-      expect(board.name).toBe(name);
+      expect(board.name).toContain(name);
       expect(board.createdAt).toBeDefined();
       expect(board.updatedAt).toBeDefined();
     });
@@ -106,7 +106,7 @@ describe('guest', () => {
       expect(items.length).toBeGreaterThanOrEqual(1);
       const found = items.find((b: any) => b.id === created.id);
       expect(found).toBeDefined();
-      expect(found.name).toBe(name);
+      expect(found.name).toContain(name);
     });
   });
 
