@@ -221,6 +221,9 @@ describe('DataRenderer - resolver code generation', () => {
   });
 
   describe('extended resolvers only', () => {
+    // 4-function pipeline (create/update Mutation): [init0, auth0, postAuth0, DataResolverFn]
+    // preUpdate maps to index 3 → splice inserts before DataResolverFn
+    // Final pipeline: [init0, auth0, postAuth0, preUpdate1, DataResolverFn]
     it('generates AppsyncFunction + splice for a single extended resolver (preUpdate slot on create Mutation)', () => {
       const classified = classifyVtlFiles(['Mutation.createTodo.preUpdate.1.req.vtl']);
 
@@ -287,6 +290,9 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
+    // 4-function pipeline (create Mutation): [init0, auth0, postAuth0, DataResolverFn]
+    // auth maps to index 2, postUpdate maps to index 4 (+ running offset 1 = 5)
+    // Final pipeline: [init0, auth0, auth1, postAuth0, DataResolverFn, postUpdate1]
     it('generates multiple AppsyncFunctions + splices for auth and postUpdate slots on create Mutation', () => {
       const classified = classifyVtlFiles(['Mutation.createTodo.auth.1.req.vtl', 'Mutation.createTodo.postUpdate.1.res.vtl']);
 
@@ -372,6 +378,9 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
+    // 3-function pipeline (Query): [auth0, postAuth0, DataResolverFn]
+    // postDataLoad maps to index 3 → splice inserts after DataResolverFn
+    // Final pipeline: [auth0, postAuth0, DataResolverFn, postDataLoad1]
     it('generates splice for Query resolver using 3-function pipeline', () => {
       const classified = classifyVtlFiles(['Query.listTodos.postDataLoad.1.req.vtl', 'Query.listTodos.postDataLoad.1.res.vtl']);
 
@@ -438,6 +447,9 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
+    // 3-function pipeline (Subscription): [auth0, postAuth0, DataResolverFn]
+    // preSubscribe maps to index 2 → splice inserts before DataResolverFn
+    // Final pipeline: [auth0, postAuth0, preSubscribe1, DataResolverFn]
     it('generates splice for Subscription resolver with preSubscribe slot (3-function pipeline)', () => {
       const classified = classifyVtlFiles([
         'Subscription.onCreateTodo.preSubscribe.1.req.vtl',
@@ -509,6 +521,10 @@ describe('DataRenderer - resolver code generation', () => {
   });
 
   describe('mixed override and extended resolvers', () => {
+    // Overrides: Query.getTodo req+res (replaces the DataResolverFn's VTL at runtime)
+    // Extended on 4-function pipeline (create Mutation): [init0, auth0, postAuth0, DataResolverFn]
+    // init.2 maps to index 1, finish.1 maps to index 4 (+ running offset 1 = 5)
+    // Final pipeline: [init0, init2, auth0, postAuth0, DataResolverFn, finish1]
     it('generates both override loop and extended splice for combined scenario', () => {
       const classified = classifyVtlFiles([
         // Override: 4-segment files
@@ -624,6 +640,10 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
+    // Mutation.createTodo: 4-function pipeline [init0, auth0, postAuth0, DataResolverFn]
+    //   init.1 maps to index 1 → Final: [init0, init1, auth0, postAuth0, DataResolverFn]
+    // Subscription.onCreateTodo: 3-function pipeline [auth0, postAuth0, DataResolverFn]
+    //   preSubscribe.1 maps to index 2 → Final: [auth0, postAuth0, preSubscribe1, DataResolverFn]
     it('generates extended resolvers across Mutation and Subscription fields', () => {
       const classified = classifyVtlFiles([
         'Mutation.createTodo.init.1.req.vtl',
@@ -723,6 +743,13 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
+    // Overrides: Mutation.createTodo.req, Query.getTodo.res (replace DataResolverFn VTL at runtime)
+    // Mutation.createTodo: 4-function pipeline [init0, auth0, postAuth0, DataResolverFn]
+    //   init.1 at index 1, finish.1 at index 4+1=5 → Final: [init0, init1, auth0, postAuth0, DataResolverFn, finish1]
+    // Query.listTodos: 3-function pipeline [auth0, postAuth0, DataResolverFn]
+    //   postDataLoad.1 at index 3 → Final: [auth0, postAuth0, DataResolverFn, postDataLoad1]
+    // Subscription.onCreateTodo: 3-function pipeline [auth0, postAuth0, DataResolverFn]
+    //   preAuth.1 at index 0 → Final: [preAuth1, auth0, postAuth0, DataResolverFn]
     it('generates overrides + extended resolvers across Query, Mutation, and Subscription', () => {
       const classified = classifyVtlFiles([
         // Overrides
@@ -899,6 +926,11 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
+    // Override: Mutation.deleteTodo.req (replaces DataResolverFn VTL at runtime)
+    // Mutation.deleteTodo: 3-function pipeline [auth0, postAuth0, DataResolverFn]
+    //   preAuth.1 at index 0, postAuth.1 at index 2+1=3 → Final: [preAuth1, auth0, postAuth0, postAuth1, DataResolverFn]
+    // Mutation.updateTodo: 4-function pipeline [init0, auth0, postAuth0, DataResolverFn]
+    //   preUpdate.1 at index 3 → Final: [init0, auth0, postAuth0, preUpdate1, DataResolverFn]
     it('generates overrides + extended resolvers with multiple slots on delete Mutation (3-function pipeline)', () => {
       const classified = classifyVtlFiles([
         // Override
