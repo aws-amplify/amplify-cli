@@ -81,11 +81,14 @@ export abstract class CategoryRefactorer implements Planner {
     const source = await this.resolveSource(sourceStackId);
     const target = await this.resolveTarget(destStackId);
 
-    const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
-    const targetResources = this.filterResourcesByType(target.resolvedTemplate);
+    const sourceResources = filterResourcesByTypes(source.resolvedTemplate, this.resourceTypes());
+    const targetResources = filterResourcesByTypes(target.resolvedTemplate, this.resourceTypes());
 
-    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, sourceResources);
-    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, targetResources);
+    const sourceRetainResources = filterResourcesByTypes(source.resolvedTemplate, this.retainValidationTypes());
+    const targetRetainResources = filterResourcesByTypes(target.resolvedTemplate, this.retainValidationTypes());
+
+    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, sourceRetainResources);
+    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, targetRetainResources);
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
@@ -117,6 +120,15 @@ export abstract class CategoryRefactorer implements Planner {
   protected abstract fetchSourceStackId(): Promise<string | undefined>;
   protected abstract fetchDestStackId(): Promise<string | undefined>;
   protected abstract resourceTypes(): string[];
+
+  /**
+   * Resource types validated for `DeletionPolicy: Retain` at plan time.
+   * Defaults to resourceTypes(). Override to include types that aren't moved
+   * through the refactor but still must have Retain before the refactor runs
+   */
+  protected retainValidationTypes(): string[] {
+    return this.resourceTypes();
+  }
 
   /**
    * Builds the resource mappings from source to destination.
@@ -269,14 +281,6 @@ export abstract class CategoryRefactorer implements Planner {
   }
 
   /**
-   * Filters resources from a template by the category's resource types.
-   */
-  protected filterResourcesByType(template: CFNTemplate): Map<string, CFNResource> {
-    const types = this.resourceTypes();
-    return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
-  }
-
-  /**
    * Finds a nested stack by logical ID prefix under the given facade's root stack.
    */
   protected async findNestedStack(facade: StackFacade, prefix: string): Promise<string | undefined> {
@@ -373,4 +377,11 @@ export abstract class CategoryRefactorer implements Planner {
       execute: async () => {},
     };
   }
+}
+
+/**
+ * Returns the template's resources whose Type is in `types`, keyed by logical ID.
+ */
+export function filterResourcesByTypes(template: CFNTemplate, types: readonly string[]): Map<string, CFNResource> {
+  return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
 }

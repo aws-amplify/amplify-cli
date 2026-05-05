@@ -43,33 +43,18 @@ export const AUTH_RESOURCES_TO_RETAIN = [
   'AWS::Cognito::UserPoolClient',
   'AWS::Cognito::IdentityPoolRoleAttachment',
   'AWS::Cognito::UserPoolGroup',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolIdentityProvider',
 ];
 
 /**
- * Cognito IDP and domain resources that must carry DeletionPolicy: Retain in the
- * Gen2 CDK output. The refactor step orphans these from Gen2 and re-imports the
- * Gen1 physical resources under the same logical IDs. Without Retain on the Gen2
- * resource, the orphan step would physically delete the Cognito domain / IDP.
- *
- * Kept separate from AUTH_RESOURCES_TO_RETAIN because that list also drives the
- * deletion-policy validation in the refactor command (which does not require
- * Retain on the domain / IDPs — the refactor's orphan operation has its own
- * execute-time guard).
+ * Logical IDs of Gen1 HostedUI Lambda-backed custom resources. These manage
+ * the UserPoolDomain and UserPoolIdentityProvider physical resources; their
+ * Delete handlers would destroy those physical resources when the Gen1 auth
+ * stack is decommissioned after a successful refactor. Lock sets Retain on
+ * them by logical ID rather than resource type (Custom::LambdaCallout)
  */
-export const AUTH_IMPORT_RESOURCES_TO_RETAIN = ['AWS::Cognito::UserPoolDomain', 'AWS::Cognito::UserPoolIdentityProvider'];
-
-/**
- * Logical IDs of the Gen1 HostedUI Lambda-backed custom resources. These
- * manage the UserPoolDomain and UserPoolIdentityProvider physical resources,
- * and their Delete handlers would destroy those physical resources when the
- * Gen1 auth stack is decommissioned after a successful refactor. Lock sets
- * Retain on them so decommissioning is non-destructive.
- *
- * Matched by logical ID rather than resource type (Custom::LambdaCallout)
- * because Gen1 uses Custom::LambdaCallout for other purposes too — only these
- * two logical IDs are the HostedUI managers that must survive Gen1 teardown.
- */
-export const AUTH_HOSTED_UI_RESOURCES_TO_RETAIN = ['HostedUICustomResourceInputs', 'HostedUIProvidersCustomResourceInputs'];
+export const AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN = ['HostedUICustomResourceInputs', 'HostedUIProvidersCustomResourceInputs'];
 
 export const STORAGE_S3_RESOURCES_TO_RETAIN = [
   'AWS::S3::Bucket',
@@ -87,7 +72,6 @@ export const ANALYTICS_RESOURCES_TO_RETAIN = ['AWS::Kinesis::Stream'];
 
 export const RESOURCES_TO_RETAIN = [
   ...AUTH_RESOURCES_TO_RETAIN,
-  ...AUTH_IMPORT_RESOURCES_TO_RETAIN,
   ...STORAGE_S3_RESOURCES_TO_RETAIN,
   ...STORAGE_DYNAMO_RESOURCES_TO_RETAIN,
   ...ANALYTICS_RESOURCES_TO_RETAIN,

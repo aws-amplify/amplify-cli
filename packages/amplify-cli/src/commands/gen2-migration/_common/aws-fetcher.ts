@@ -4,6 +4,7 @@ import {
   DescribeIdentityProviderCommand,
   GetUserPoolMfaConfigCommand,
   GetUserPoolMfaConfigResponse,
+  ListIdentityProvidersCommand,
   UserPoolType,
   UserPoolClientType,
   GroupType,
@@ -25,6 +26,19 @@ import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb
 import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 import { AwsClients } from './aws-clients';
+
+/** Non-null name + type pair for a Cognito identity provider. */
+interface IdpConfig {
+  readonly providerName: string;
+  readonly providerType: string;
+}
+
+/** A UserPool's domain and identity-provider summaries. */
+export interface SocialAuthConfig {
+  readonly userPoolId: string;
+  readonly domain: string;
+  readonly providers: IdpConfig[];
+}
 
 /**
  * Encapsulates all AWS SDK calls needed during Gen1 app introspection.
@@ -86,6 +100,26 @@ export class AwsFetcher {
 
   public async fetchIdentityPool(identityPoolId: string): Promise<IdentityPool> {
     return this.clients.cognitoIdentity.send(new DescribeIdentityPoolCommand({ IdentityPoolId: identityPoolId }));
+  }
+
+  /**
+   * Returns domain + IDP summaries for a UserPool, or undefined if the pool
+   * has no domain or no IDPs (non-social-auth app).
+   */
+  public async fetchSocialAuthConfig(userPoolId: string): Promise<SocialAuthConfig | undefined> {
+    const pool = await this.clients.cognitoIdentityProvider.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
+    const domain = pool?.UserPool?.Domain;
+    if (!domain) return undefined;
+
+    const list = await this.clients.cognitoIdentityProvider.send(new ListIdentityProvidersCommand({ UserPoolId: userPoolId }));
+    const providers: IdpConfig[] = [];
+    for (const p of list?.Providers ?? []) {
+      if (!p.ProviderName) continue;
+      providers.push({ providerName: p.ProviderName, providerType: p.ProviderType ?? p.ProviderName });
+    }
+    if (providers.length === 0) return undefined;
+
+    return { userPoolId, domain, providers };
   }
 
   public async fetchIdentityPoolRoles(identityPoolId: string): Promise<{ authenticated?: string; unauthenticated?: string } | undefined> {

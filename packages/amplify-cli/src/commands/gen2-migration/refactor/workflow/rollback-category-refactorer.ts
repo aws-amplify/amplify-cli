@@ -6,7 +6,7 @@ import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-par
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
-import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack, filterResourcesByTypes } from './category-refactorer';
 import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../../_common/cfn';
 
 /**
@@ -60,7 +60,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
     const outputs = description.Outputs ?? [];
 
     const withParams = resolveParameters(originalTemplate, parameters);
@@ -74,12 +74,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     });
     const resolved = resolveDependencies(withOutputs);
 
-    // Transform masked NoEcho parameter values to UsePreviousValue so the "****"
-    // returned by DescribeStacks does not flow back into CreateChangeSet /
-    // UpdateStack and re-resolve into the template.
-    const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
-
-    return { stackId, resolvedTemplate: resolved, parameters: sanitizedParameters };
+    return { stackId, resolvedTemplate: resolved, parameters };
   }
 
   /**
@@ -89,11 +84,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
 
-    const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
-
-    return { stackId, resolvedTemplate: originalTemplate, parameters: sanitizedParameters };
+    return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
 
   /**
@@ -134,7 +127,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);
     const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
-    const resources = this.filterResourcesByType(holdingStackTemplate);
+    const resources = filterResourcesByTypes(holdingStackTemplate, this.resourceTypes());
     this.debug(`Found ${resources.size} resources to move from stack: ${holdingStackName}`);
 
     const resourceMappings: ResourceMapping[] = [];

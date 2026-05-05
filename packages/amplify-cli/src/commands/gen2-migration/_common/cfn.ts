@@ -288,18 +288,59 @@ export class Cfn {
   }
 
   /**
+   * Orphans resources from a stack by removing them from the template and
+   * an UpdateStack. Target resources must have `DeletionPolicy: Retain`
+   */
+  public async orphan(params: {
+    readonly stackName: string;
+    readonly logicalIds: string[];
+    readonly resource?: DiscoveredResource;
+  }): Promise<void> {
+    const { stackName, logicalIds, resource } = params;
+    const displayName = extractStackNameFromId(stackName);
+    const template = await this.fetchTemplate(stackName);
+
+    const missingRetain = logicalIds.filter((id) => id in template.Resources && template.Resources[id].DeletionPolicy !== 'Retain');
+    if (missingRetain.length > 0) {
+      throw new AmplifyError('MigrationError', {
+        message:
+          `Cannot orphan resources from '${displayName}': ${missingRetain.join(', ')} ` +
+          `missing 'DeletionPolicy: Retain' - orphaning would delete the physical resources.`,
+      });
+    }
+
+    const stack = await this.describeStack(stackName);
+
+    for (const id of logicalIds) {
+      delete template.Resources[id];
+    }
+
+    await this.update({
+      stackName,
+      templateBody: template,
+      parameters: stack.Parameters ?? [],
+      resource,
+    });
+  }
+
+  /**
    * Imports existing physical resources into a stack via CreateChangeSet(IMPORT).
    * The template must include resource definitions matching the physical state.
    */
   public async importResources(params: {
     readonly stackName: string;
-    readonly templateBody: CFNTemplate;
+    readonly templateAdditions: Record<string, CFNResource>;
     readonly resourcesToImport: ResourceToImport[];
     readonly resource?: DiscoveredResource;
   }): Promise<void> {
-    const { stackName, templateBody, resourcesToImport, resource } = params;
+    const { stackName, templateAdditions, resourcesToImport, resource } = params;
     const displayName = extractStackNameFromId(stackName);
     const changeSetName = `import-resources-${Date.now()}`;
+
+    const templateBody = await this.fetchTemplate(stackName);
+    for (const [logicalId, r] of Object.entries(templateAdditions)) {
+      templateBody.Resources[logicalId] = r;
+    }
 
     writeImportSnapshot({
       stackName,

@@ -16,7 +16,7 @@ import { walkCfnTree } from './cfn-tree-walker';
 export function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): CFNTemplate {
   if (!parameters.length && !stackName) return template;
 
-  const templateParams = template.Parameters ?? {};
+  const paramDefinitions = template.Parameters ?? {};
 
   // Build a lookup of parameter key → resolved value.
   // The resolved value is already the final replacement (string, array, etc.).
@@ -34,7 +34,7 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
     }
     if (!ParameterValue) continue;
 
-    const paramDef = templateParams[ParameterKey];
+    const paramDef = paramDefinitions[ParameterKey];
     if (!paramDef) continue;
     if (paramDef.NoEcho) continue;
 
@@ -58,14 +58,13 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
 /**
  * Replaces NoEcho parameters with UsePreviousValue to prevent DescribeStacks'
  * masked "****" values from flowing back into CreateChangeSet / UpdateStack,
- * where they would re-resolve {Ref}s to the literal "****" and crash
- * Custom::LambdaCallout Lambdas that JSON.parse the value.
+ * where they would re-resolve {Ref}s to the literal "****"
  */
 export function resolveNoEchoParameters(template: CFNTemplate, parameters: Parameter[]): Parameter[] {
-  const templateParams = template.Parameters ?? {};
+  const paramDefinitions = template.Parameters ?? {};
   return parameters.map((param) => {
     if (!param.ParameterKey) return param;
-    const paramDef = templateParams[param.ParameterKey];
+    const paramDef = paramDefinitions[param.ParameterKey];
     if (paramDef?.NoEcho) {
       return { ParameterKey: param.ParameterKey, UsePreviousValue: true };
     }

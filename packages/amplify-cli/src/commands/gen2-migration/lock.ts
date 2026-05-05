@@ -14,7 +14,7 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
-import { AUTH_HOSTED_UI_RESOURCES_TO_RETAIN, RESOURCES_TO_RETAIN } from './_common/resource-types';
+import { AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN, RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
 
@@ -395,10 +395,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
-      // Prevent HostedUI custom resource Delete handlers from destroying
-      // UserPoolDomain/IDP physical resources on Gen1 stack teardown.
-      // Match by logical ID, not type, to avoid retaining unrelated Custom::LambdaCallout resources.
-      if (AUTH_HOSTED_UI_RESOURCES_TO_RETAIN.includes(logicalId)) {
+
+      if (AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN.includes(logicalId)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }

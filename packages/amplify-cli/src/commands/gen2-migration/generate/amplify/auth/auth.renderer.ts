@@ -11,7 +11,7 @@ import {
 import { IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
 import { newLineIdentifier, TS } from '../../ts';
-import { AUTH_IMPORT_RESOURCES_TO_RETAIN, AUTH_RESOURCES_TO_RETAIN } from '../../../_common/resource-types';
+import { AUTH_RESOURCES_TO_RETAIN } from '../../../_common/resource-types';
 
 /**
  * A registered auth trigger — contributed by the function generator.
@@ -1058,12 +1058,6 @@ export class AuthRenderer {
     }
 
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
-
-    // Separate Retain loop for domain/IDP — refactor's orphan step relies on Retain.
-    // Kept separate from AUTH_RESOURCES_TO_RETAIN which also drives refactor validation.
-    if (hasIdentityProviders) {
-      statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_IMPORT_RESOURCES_TO_RETAIN));
-    }
 
     return statements;
   }

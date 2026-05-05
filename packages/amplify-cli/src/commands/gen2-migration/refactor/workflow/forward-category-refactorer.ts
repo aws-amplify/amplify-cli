@@ -7,7 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
-import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack, filterResourcesByTypes } from './category-refactorer';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -93,7 +93,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
     const outputs = description.Outputs ?? [];
 
     const stackName = extractStackNameFromId(stackId);
@@ -109,12 +109,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const withDeps = resolveDependencies(withOutputs);
     const resolved = resolveConditions(withDeps, parameters);
 
-    // Transform masked NoEcho parameter values to UsePreviousValue so the "****"
-    // returned by DescribeStacks does not flow back into CreateChangeSet /
-    // UpdateStack and re-resolve into the template.
-    const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
-
-    return { stackId, resolvedTemplate: resolved, parameters: sanitizedParameters };
+    return { stackId, resolvedTemplate: resolved, parameters };
   }
 
   /**
@@ -125,7 +120,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const stack = await facade.fetchStack(stackId);
-    const parameters = stack.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, stack.Parameters ?? []);
     const outputs = stack.Outputs ?? [];
 
     const stackName = extractStackNameFromId(stackId);
@@ -140,9 +135,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       accountId: this.accountId,
     });
 
-    const sanitizedParameters = resolveNoEchoParameters(originalTemplate, parameters);
-
-    return { stackId, resolvedTemplate: resolved, parameters: sanitizedParameters };
+    return { stackId, resolvedTemplate: resolved, parameters };
   }
 
   /**
@@ -159,7 +152,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     this.debug(`Locating holding stack: ${holdingStackName}`);
     const holdingStack = await this.cfn.findStack(holdingStackName);
 
-    const resources = this.filterResourcesByType(gen2StackTemplate);
+    const resources = filterResourcesByTypes(gen2StackTemplate, this.resourceTypes());
     this.debug(`Found ${resources.size} resources to move from stack: ${gen2StackName}`);
 
     const holdingStackTemplate = holdingStack ? await this.cfn.fetchTemplate(holdingStackName) : undefined;
