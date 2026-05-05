@@ -36,7 +36,7 @@ export class DataGenerator implements Planner {
     const schema = this.gen1App.file(path.join('api', this.resource.resourceName, 'schema.graphql'));
     const apiId = this.gen1App.resourceMetaOutput(this.resource, 'GraphQLAPIIdOutput');
 
-    const tableMappings = this.createTableMappings(schema, apiId);
+    const tableMappings = this.createTableMappings(apiId);
 
     const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
     if (!graphqlApi) {
@@ -80,11 +80,22 @@ export class DataGenerator implements Planner {
     ];
   }
 
-  private createTableMappings(schema: string, apiId: string): Record<string, string> {
-    const modelRegex = /type\s+(\w+)\s+@model/g;
+  /**
+   * Extracts @model type names and maps each to its DynamoDB table
+   * name ({ModelName}-{apiId}-{envName}).
+   *
+   * Reads the compiled build/schema.graphql where the Amplify
+   * transformer expands each @model type into a `Model<Name>Connection`
+   * type. This is more reliable than regex-matching `@model` in the
+   * raw schema, which is sensitive to directive ordering.
+   */
+  private createTableMappings(apiId: string): Record<string, string> {
+    const buildSchemaPath = path.join('api', this.resource.resourceName, 'build', 'schema.graphql');
+    const buildSchema = this.gen1App.file(buildSchemaPath);
+    const connectionRegex = /type\s+Model(\w+)Connection\b/g;
     const mapping: Record<string, string> = {};
     let match: RegExpExecArray | null;
-    while ((match = modelRegex.exec(schema)) !== null) {
+    while ((match = connectionRegex.exec(buildSchema)) !== null) {
       mapping[match[1]] = [match[1], apiId, this.gen1App.envName].join('-');
     }
     return mapping;
