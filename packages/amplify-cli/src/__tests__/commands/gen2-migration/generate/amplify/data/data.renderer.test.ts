@@ -221,8 +221,8 @@ describe('DataRenderer - resolver code generation', () => {
   });
 
   describe('extended resolvers only', () => {
-    it('generates AppsyncFunction + splice for a single extended resolver (init slot on create Mutation)', () => {
-      const classified = classifyVtlFiles(['Mutation.createTodo.init.1.req.vtl']);
+    it('generates AppsyncFunction + splice for a single extended resolver (preUpdate slot on create Mutation)', () => {
+      const classified = classifyVtlFiles(['Mutation.createTodo.preUpdate.1.req.vtl']);
 
       const output = renderResolverOutput(classified);
 
@@ -253,15 +253,15 @@ describe('DataRenderer - resolver code generation', () => {
           // extending resolvers
           const noneDataSource =
             backend.data.resources.graphqlApi.addNoneDataSource('none');
-          const MutationcreateTodoinit1 = new aws_appsync.AppsyncFunction(
+          const MutationcreateTodopreUpdate1 = new aws_appsync.AppsyncFunction(
             backend.data.stack,
-            'MutationcreateTodoinit1',
+            'MutationcreateTodopreUpdate1',
             {
-              name: 'MutationcreateTodoinit1',
+              name: 'MutationcreateTodopreUpdate1',
               api: backend.data.resources.graphqlApi,
               dataSource: noneDataSource,
               requestMappingTemplate: aws_appsync.MappingTemplate.fromFile(
-                join(resolversDir, 'Mutation.createTodo.init.1.req.vtl')
+                join(resolversDir, 'Mutation.createTodo.preUpdate.1.req.vtl')
               ),
               responseMappingTemplate: aws_appsync.MappingTemplate.fromString(
                 '$util.toJson($ctx.prev.result)'
@@ -275,9 +275,9 @@ describe('DataRenderer - resolver code generation', () => {
               mutationCreateTodoResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
             ).functions || [];
           mutationCreateTodoPipelineFunctions.splice(
-            1,
+            3,
             0,
-            MutationcreateTodoinit1.functionId
+            MutationcreateTodopreUpdate1.functionId
           );
           mutationCreateTodoResolver.pipelineConfig = {
             functions: mutationCreateTodoPipelineFunctions,
@@ -287,8 +287,8 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
-    it('generates multiple AppsyncFunctions + splices for init and finish slots on create Mutation', () => {
-      const classified = classifyVtlFiles(['Mutation.createTodo.init.2.req.vtl', 'Mutation.createTodo.finish.1.res.vtl']);
+    it('generates multiple AppsyncFunctions + splices for auth and postUpdate slots on create Mutation', () => {
+      const classified = classifyVtlFiles(['Mutation.createTodo.auth.1.req.vtl', 'Mutation.createTodo.postUpdate.1.res.vtl']);
 
       const output = renderResolverOutput(classified);
 
@@ -319,32 +319,32 @@ describe('DataRenderer - resolver code generation', () => {
           // extending resolvers
           const noneDataSource =
             backend.data.resources.graphqlApi.addNoneDataSource('none');
-          const MutationcreateTodoinit2 = new aws_appsync.AppsyncFunction(
+          const MutationcreateTodoauth1 = new aws_appsync.AppsyncFunction(
             backend.data.stack,
-            'MutationcreateTodoinit2',
+            'MutationcreateTodoauth1',
             {
-              name: 'MutationcreateTodoinit2',
+              name: 'MutationcreateTodoauth1',
               api: backend.data.resources.graphqlApi,
               dataSource: noneDataSource,
               requestMappingTemplate: aws_appsync.MappingTemplate.fromFile(
-                join(resolversDir, 'Mutation.createTodo.init.2.req.vtl')
+                join(resolversDir, 'Mutation.createTodo.auth.1.req.vtl')
               ),
               responseMappingTemplate: aws_appsync.MappingTemplate.fromString(
                 '$util.toJson($ctx.prev.result)'
               ),
             }
           );
-          const MutationcreateTodofinish1 = new aws_appsync.AppsyncFunction(
+          const MutationcreateTodopostUpdate1 = new aws_appsync.AppsyncFunction(
             backend.data.stack,
-            'MutationcreateTodofinish1',
+            'MutationcreateTodopostUpdate1',
             {
-              name: 'MutationcreateTodofinish1',
+              name: 'MutationcreateTodopostUpdate1',
               api: backend.data.resources.graphqlApi,
               dataSource: noneDataSource,
               requestMappingTemplate:
                 aws_appsync.MappingTemplate.fromString('$util.toJson({})'),
               responseMappingTemplate: aws_appsync.MappingTemplate.fromFile(
-                join(resolversDir, 'Mutation.createTodo.finish.1.res.vtl')
+                join(resolversDir, 'Mutation.createTodo.postUpdate.1.res.vtl')
               ),
             }
           );
@@ -355,14 +355,14 @@ describe('DataRenderer - resolver code generation', () => {
               mutationCreateTodoResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
             ).functions || [];
           mutationCreateTodoPipelineFunctions.splice(
-            1,
+            2,
             0,
-            MutationcreateTodoinit2.functionId
+            MutationcreateTodoauth1.functionId
           );
           mutationCreateTodoPipelineFunctions.splice(
             5,
             0,
-            MutationcreateTodofinish1.functionId
+            MutationcreateTodopostUpdate1.functionId
           );
           mutationCreateTodoResolver.pipelineConfig = {
             functions: mutationCreateTodoPipelineFunctions,
@@ -432,6 +432,75 @@ describe('DataRenderer - resolver code generation', () => {
           );
           queryListTodosResolver.pipelineConfig = {
             functions: queryListTodosPipelineFunctions,
+          };
+        }
+        "
+      `);
+    });
+
+    it('generates splice for Subscription resolver with preSubscribe slot (3-function pipeline)', () => {
+      const classified = classifyVtlFiles([
+        'Subscription.onCreateTodo.preSubscribe.1.req.vtl',
+        'Subscription.onCreateTodo.preSubscribe.1.res.vtl',
+      ]);
+
+      const output = renderResolverOutput(classified);
+
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineData } from '@aws-amplify/backend';
+        import type { Backend } from '../backend';
+        import { join, dirname } from 'path';
+        import { fileURLToPath } from 'url';
+        import { aws_appsync } from 'aws-cdk-lib';
+        import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+
+        const schema = \`type Todo @model { id: ID! }\`;
+
+        export const data = defineData({
+          migratedAmplifyGen1DynamoDbTableMappings: [
+            {
+              //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+              branchName: 'dev',
+              modelNameToTableNameMapping: { Todo: 'Todo-abc-dev' },
+            },
+          ],
+          schema,
+        });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const __dirname = dirname(fileURLToPath(import.meta.url));
+          const resolversDir = join(__dirname, 'resolvers');
+          // extending resolvers
+          const noneDataSource =
+            backend.data.resources.graphqlApi.addNoneDataSource('none');
+          const SubscriptiononCreateTodopreSubscribe1 = new aws_appsync.AppsyncFunction(
+            backend.data.stack,
+            'SubscriptiononCreateTodopreSubscribe1',
+            {
+              name: 'SubscriptiononCreateTodopreSubscribe1',
+              api: backend.data.resources.graphqlApi,
+              dataSource: noneDataSource,
+              requestMappingTemplate: aws_appsync.MappingTemplate.fromFile(
+                join(resolversDir, 'Subscription.onCreateTodo.preSubscribe.1.req.vtl')
+              ),
+              responseMappingTemplate: aws_appsync.MappingTemplate.fromFile(
+                join(resolversDir, 'Subscription.onCreateTodo.preSubscribe.1.res.vtl')
+              ),
+            }
+          );
+          const subscriptionOnCreateTodoResolver = backend.data.resources.cfnResources
+            .cfnResolvers['Subscription.onCreateTodo'] as CfnResolver;
+          const subscriptionOnCreateTodoPipelineFunctions =
+            (
+              subscriptionOnCreateTodoResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
+            ).functions || [];
+          subscriptionOnCreateTodoPipelineFunctions.splice(
+            2,
+            0,
+            SubscriptiononCreateTodopreSubscribe1.functionId
+          );
+          subscriptionOnCreateTodoResolver.pipelineConfig = {
+            functions: subscriptionOnCreateTodoPipelineFunctions,
           };
         }
         "
@@ -555,11 +624,11 @@ describe('DataRenderer - resolver code generation', () => {
       `);
     });
 
-    it('generates extended resolvers across multiple fields', () => {
+    it('generates extended resolvers across Mutation and Subscription fields', () => {
       const classified = classifyVtlFiles([
         'Mutation.createTodo.init.1.req.vtl',
         'Mutation.createTodo.init.1.res.vtl',
-        'Query.listTodos.postDataLoad.1.req.vtl',
+        'Subscription.onCreateTodo.preSubscribe.1.req.vtl',
       ]);
 
       const output = renderResolverOutput(classified);
@@ -620,34 +689,34 @@ describe('DataRenderer - resolver code generation', () => {
           mutationCreateTodoResolver.pipelineConfig = {
             functions: mutationCreateTodoPipelineFunctions,
           };
-          const QuerylistTodospostDataLoad1 = new aws_appsync.AppsyncFunction(
+          const SubscriptiononCreateTodopreSubscribe1 = new aws_appsync.AppsyncFunction(
             backend.data.stack,
-            'QuerylistTodospostDataLoad1',
+            'SubscriptiononCreateTodopreSubscribe1',
             {
-              name: 'QuerylistTodospostDataLoad1',
+              name: 'SubscriptiononCreateTodopreSubscribe1',
               api: backend.data.resources.graphqlApi,
               dataSource: noneDataSource,
               requestMappingTemplate: aws_appsync.MappingTemplate.fromFile(
-                join(resolversDir, 'Query.listTodos.postDataLoad.1.req.vtl')
+                join(resolversDir, 'Subscription.onCreateTodo.preSubscribe.1.req.vtl')
               ),
               responseMappingTemplate: aws_appsync.MappingTemplate.fromString(
                 '$util.toJson($ctx.prev.result)'
               ),
             }
           );
-          const queryListTodosResolver = backend.data.resources.cfnResources
-            .cfnResolvers['Query.listTodos'] as CfnResolver;
-          const queryListTodosPipelineFunctions =
+          const subscriptionOnCreateTodoResolver = backend.data.resources.cfnResources
+            .cfnResolvers['Subscription.onCreateTodo'] as CfnResolver;
+          const subscriptionOnCreateTodoPipelineFunctions =
             (
-              queryListTodosResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
+              subscriptionOnCreateTodoResolver.pipelineConfig as CfnResolver.PipelineConfigProperty
             ).functions || [];
-          queryListTodosPipelineFunctions.splice(
-            3,
+          subscriptionOnCreateTodoPipelineFunctions.splice(
+            2,
             0,
-            QuerylistTodospostDataLoad1.functionId
+            SubscriptiononCreateTodopreSubscribe1.functionId
           );
-          queryListTodosResolver.pipelineConfig = {
-            functions: queryListTodosPipelineFunctions,
+          subscriptionOnCreateTodoResolver.pipelineConfig = {
+            functions: subscriptionOnCreateTodoPipelineFunctions,
           };
         }
         "
