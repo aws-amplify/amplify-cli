@@ -26,6 +26,7 @@ import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Encapsulates all AWS SDK calls needed during Gen1 app introspection.
@@ -58,10 +59,15 @@ export class AwsFetcher {
     return this.clients.cognitoIdentityProvider.send(new GetUserPoolMfaConfigCommand({ UserPoolId: userPoolId }));
   }
 
-  public async fetchUserPoolClient(userPoolId: string, clientId: string): Promise<UserPoolClientType | undefined> {
+  public async fetchUserPoolClient(userPoolId: string, clientId: string): Promise<UserPoolClientType> {
     const { UserPoolClient } = await this.clients.cognitoIdentityProvider.send(
       new DescribeUserPoolClientCommand({ UserPoolId: userPoolId, ClientId: clientId }),
     );
+    if (!UserPoolClient) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to find user pool client with id ${clientId} (UserPool: ${userPoolId})`,
+      });
+    }
     return UserPoolClient;
   }
 

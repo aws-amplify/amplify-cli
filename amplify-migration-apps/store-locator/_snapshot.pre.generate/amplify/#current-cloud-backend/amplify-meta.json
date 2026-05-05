@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-storelocator-x-x-deployment",
       "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
       "StackName": "amplify-storelocator-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/79e70150-41be-11f1-8508-0affc9b95623",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/c2b0fae0-4681-11f1-b98c-129a05736f99",
       "AmplifyAppId": "storelocator",
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     }
@@ -29,13 +29,13 @@
           ]
         }
       ],
-      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "logicalId": "authuserPoolGroups"
       },
       "output": {
-        "storeLocatorAdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_e1bfGhJ7T-storeLocatorAdminGroupRole"
+        "storeLocatorAdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_bXsy5KSVZ-storeLocatorAdminGroupRole"
       },
       "lastPushDirHash": "aY2fv0JwB9V2Pnq+Iavglw2oGVE="
     },
@@ -78,13 +78,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
         "logicalId": "authstorelocator41a9495f41a9495f"
       },
-      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
       "output": {
-        "UserPoolId": "us-east-1_e1bfGhJ7T",
-        "AppClientIDWeb": "2sdm7fhjfai09vgc47cl0b3hb2",
-        "AppClientID": "2g3n9rii1hrfa4r7cs5fu6bru6",
-        "IdentityPoolId": "us-east-1:fed60bb9-df36-471c-be9c-2abb1eec3666",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_e1bfGhJ7T",
+        "UserPoolId": "us-east-1_bXsy5KSVZ",
+        "AppClientIDWeb": "7obnc5l0qida3dd3kqbtltkea0",
+        "AppClientID": "ekdlfabni4oefvrh8hbt92t6v",
+        "IdentityPoolId": "us-east-1:be2cc697-5f0e-4bf0-831a-7c5f63d38e56",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_bXsy5KSVZ",
         "IdentityPoolName": "storelocator41a9495f_identitypool_41a9495f__x",
         "UserPoolName": "storelocator41a9495f_userpool_41a9495f"
       },
@@ -96,9 +96,9 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-04-26T22:24:14.165Z",
+      "lastBuildTimeStamp": "2026-05-02T23:52:02.764Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-26T22:24:14.446Z",
+      "lastPackageTimeStamp": "2026-05-02T23:52:03.036Z",
       "distZipFilename": "storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-storelocator-x-x-deployment",
@@ -108,7 +108,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
         "logicalId": "functionstorelocator41a9495f41a9495fPostConfirmation"
       },
-      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/storelocator41a9495f41a9495fPostConfirmation-x",
         "Region": "us-east-1",
@@ -146,7 +146,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
         "logicalId": "geostoreLocatorMap"
       },
-      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
       "output": {
         "Style": "VectorEsriStreets",
         "Region": "us-east-1",
@@ -182,7 +182,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
         "logicalId": "geostoreLocatorSearch"
       },
-      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
       "output": {
         "Region": "us-east-1",
         "Arn": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-x",
@@ -215,7 +215,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
         "logicalId": "geostoreLocatorGeofence"
       },
-      "lastPushTimeStamp": "2026-04-26T22:28:46.500Z",
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
       "output": {
         "Region": "us-east-1",
         "Arn": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-x",
