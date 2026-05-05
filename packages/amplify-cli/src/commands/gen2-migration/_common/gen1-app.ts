@@ -123,7 +123,7 @@ export class Gen1App {
 
     const cfnProvider = envInfo.awscloudformation;
     if (!cfnProvider?.StackName || !cfnProvider?.DeploymentBucketName) {
-      throw new AmplifyError('TpiEnvironmentNotFoundError', {
+      throw new AmplifyError('InvalidTpiEnvironmentError', {
         message: `Missing StackName or DeploymentBucketName for environment '${envName}' in '${tpiRelPath}'`,
       });
     }
@@ -296,7 +296,7 @@ export class Gen1App {
 
     const response = await s3Client.send(new GetObjectCommand({ Key: zipKey, Bucket: bucket }));
     if (!response.Body) {
-      throw new AmplifyError('BucketNotFoundError', { message: 'S3 GetObject response body is empty' });
+      throw new AmplifyError('S3ObjectNotFoundError', { message: 'S3 GetObject response body is empty' });
     }
     await fs.writeFile(zipPath, response.Body as Stream);
 
