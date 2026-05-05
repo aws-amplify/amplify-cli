@@ -8,7 +8,7 @@ const factory = ts.factory;
 // ── Resolver Utility Types ─────────────────────────────────────────────
 
 /** A grouped extended resolver pair (req + res for same slot/order). */
-export interface ExtendedResolverGroup {
+export interface ExtendedResolverFile {
   readonly typeName: string;
   readonly fieldName: string;
   readonly slot: string;
@@ -19,7 +19,7 @@ export interface ExtendedResolverGroup {
 
 /** A splice operation to insert a function at a pipeline index. */
 export interface SpliceEntry {
-  readonly group: ExtendedResolverGroup;
+  readonly resolverFile: ExtendedResolverFile;
   readonly spliceIndex: number;
 }
 
@@ -86,7 +86,7 @@ const SLOT_ORDER: Readonly<Record<string, number>> = Object.fromEntries(ALL_SLOT
  * Groups ParsedExtended entries by typeName.fieldName, sorts by slot
  * pipeline execution order then numeric order, and pairs req/res templates.
  */
-export function groupExtendedResolvers(extended: readonly ParsedExtended[]): Map<string, ExtendedResolverGroup[]> {
+export function groupExtendedResolverFiles(extended: readonly ParsedExtended[]): Map<string, ExtendedResolverFile[]> {
   // Collect entries by field key.
   const byField = new Map<string, ParsedExtended[]>();
   for (const entry of extended) {
@@ -99,7 +99,7 @@ export function groupExtendedResolvers(extended: readonly ParsedExtended[]): Map
     }
   }
 
-  const result = new Map<string, ExtendedResolverGroup[]>();
+  const result = new Map<string, ExtendedResolverFile[]>();
 
   for (const [key, entries] of byField) {
     // Sort by slot pipeline order, then by numeric order within the same slot.
@@ -128,14 +128,14 @@ export function groupExtendedResolvers(extended: readonly ParsedExtended[]): Map
       }
     }
 
-    // Build groups in sorted order.
-    const groups: ExtendedResolverGroup[] = [];
+    // Build resolver files in sorted order.
+    const resolverFiles: ExtendedResolverFile[] = [];
     for (const pairKey of pairOrder) {
       const pair = pairMap.get(pairKey)!;
       const [slot, orderStr] = pairKey.split('.');
       // Use the first entry's typeName/fieldName (all entries in this key share them).
       const sample = entries[0];
-      groups.push({
+      resolverFiles.push({
         typeName: sample.typeName,
         fieldName: sample.fieldName,
         slot,
@@ -145,7 +145,7 @@ export function groupExtendedResolvers(extended: readonly ParsedExtended[]): Map
       });
     }
 
-    result.set(key, groups);
+    result.set(key, resolverFiles);
   }
 
   return result;
@@ -173,18 +173,22 @@ function selectSlotMap(typeName: string, fieldName: string): Readonly<Record<str
  * Each entry's spliceIndex = baseSlotMap[slot] + runningOffset, where
  * runningOffset increments by 1 for each preceding entry.
  */
-export function computeSpliceIndexes(typeName: string, fieldName: string, groups: readonly ExtendedResolverGroup[]): PipelineSpliceResult {
+export function computeSpliceIndexes(
+  typeName: string,
+  fieldName: string,
+  resolverFiles: readonly ExtendedResolverFile[],
+): PipelineSpliceResult {
   const slotMap = selectSlotMap(typeName, fieldName);
   const entries: SpliceEntry[] = [];
   let runningOffset = 0;
 
-  for (const group of groups) {
-    const baseIndex = slotMap[group.slot];
+  for (const resolverFile of resolverFiles) {
+    const baseIndex = slotMap[resolverFile.slot];
     if (baseIndex === undefined) {
-      throw new Error(`Unknown slot '${group.slot}' for ${typeName}.${fieldName}`);
+      throw new Error(`Unknown slot '${resolverFile.slot}' for ${typeName}.${fieldName}`);
     }
     entries.push({
-      group,
+      resolverFile,
       spliceIndex: baseIndex + runningOffset,
     });
     runningOffset++;
@@ -883,18 +887,18 @@ export class DataRenderer {
     );
     statements.push(noneDataSourceStmt);
 
-    const grouped = groupExtendedResolvers(classified.extended);
+    const grouped = groupExtendedResolverFiles(classified.extended);
 
-    for (const [key, groups] of grouped) {
+    for (const [key, resolverFiles] of grouped) {
       const [typeName, fieldName] = key.split('.');
 
-      // Render AppsyncFunction constructs for each group entry
-      for (const group of groups) {
-        statements.push(this.renderAppsyncFunction(group));
+      // Render AppsyncFunction constructs for each extended resolver file
+      for (const resolverFile of resolverFiles) {
+        statements.push(this.renderAppsyncFunction(resolverFile));
       }
 
       // Compute splice indexes and render splice statements
-      const spliceResult = computeSpliceIndexes(typeName, fieldName, groups);
+      const spliceResult = computeSpliceIndexes(typeName, fieldName, resolverFiles);
       statements.push(...this.renderSpliceStatements(spliceResult));
     }
 
@@ -913,18 +917,18 @@ export class DataRenderer {
     );
   }
 
-  /** Renders an `AppsyncFunction` construct for a given extended resolver group. */
-  public renderAppsyncFunction(group: ExtendedResolverGroup): ts.Statement {
-    const constructName = `${group.typeName}${group.fieldName}${group.slot}${group.order}`;
+  /** Renders an `AppsyncFunction` construct for a given extended resolver file. */
+  public renderAppsyncFunction(resolverFile: ExtendedResolverFile): ts.Statement {
+    const constructName = `${resolverFile.typeName}${resolverFile.fieldName}${resolverFile.slot}${resolverFile.order}`;
 
-    const requestMapping = group.reqFile
+    const requestMapping = resolverFile.reqFile
       ? factory.createCallExpression(
           TS.propAccess('aws_appsync', 'MappingTemplate', 'fromFile') as ts.PropertyAccessExpression,
           undefined,
           [
             factory.createCallExpression(factory.createIdentifier('join'), undefined, [
               factory.createIdentifier('resolversDir'),
-              factory.createStringLiteral(group.reqFile),
+              factory.createStringLiteral(resolverFile.reqFile),
             ]),
           ],
         )
@@ -934,14 +938,14 @@ export class DataRenderer {
           [factory.createStringLiteral('$util.toJson({})')],
         );
 
-    const responseMapping = group.resFile
+    const responseMapping = resolverFile.resFile
       ? factory.createCallExpression(
           TS.propAccess('aws_appsync', 'MappingTemplate', 'fromFile') as ts.PropertyAccessExpression,
           undefined,
           [
             factory.createCallExpression(factory.createIdentifier('join'), undefined, [
               factory.createIdentifier('resolversDir'),
-              factory.createStringLiteral(group.resFile),
+              factory.createStringLiteral(resolverFile.resFile),
             ]),
           ],
         )
@@ -1007,7 +1011,7 @@ export class DataRenderer {
 
     // For each splice entry: <pipelineFunctionsVarName>.splice(spliceIndex, 0, <constructName>.functionId);
     for (const entry of spliceResult.entries) {
-      const constructName = `${entry.group.typeName}${entry.group.fieldName}${entry.group.slot}${entry.group.order}`;
+      const constructName = `${entry.resolverFile.typeName}${entry.resolverFile.fieldName}${entry.resolverFile.slot}${entry.resolverFile.order}`;
       statements.push(
         factory.createExpressionStatement(
           factory.createCallExpression(

@@ -6,11 +6,11 @@ import {
   ParsedExtended,
 } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import {
-  groupExtendedResolvers,
+  groupExtendedResolverFiles,
   computeSpliceIndexes,
   PIPELINE_3_SLOT_MAP,
   PIPELINE_4_SLOT_MAP,
-  ExtendedResolverGroup,
+  ExtendedResolverFile,
 } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.renderer';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
@@ -764,7 +764,7 @@ describe('classifyVtlFiles', () => {
   });
 });
 
-describe('groupExtendedResolvers', () => {
+describe('groupExtendedResolverFiles', () => {
   const makeExtended = (typeName: string, fieldName: string, slot: string, order: number, templateType: 'req' | 'res'): ParsedExtended => ({
     kind: 'extended',
     typeName,
@@ -780,7 +780,7 @@ describe('groupExtendedResolvers', () => {
       makeExtended('Mutation', 'createTodo', 'init', 1, 'req'),
       makeExtended('Query', 'listItems', 'postAuth', 1, 'req'),
     ];
-    const result = groupExtendedResolvers(entries);
+    const result = groupExtendedResolverFiles(entries);
     expect(result.size).toBe(2);
     expect(result.has('Mutation.createTodo')).toBe(true);
     expect(result.has('Query.listItems')).toBe(true);
@@ -792,7 +792,7 @@ describe('groupExtendedResolvers', () => {
       makeExtended('Mutation', 'createTodo', 'init', 1, 'req'),
       makeExtended('Mutation', 'createTodo', 'auth', 1, 'req'),
     ];
-    const result = groupExtendedResolvers(entries);
+    const result = groupExtendedResolverFiles(entries);
     const groups = result.get('Mutation.createTodo')!;
     expect(groups.map((g) => g.slot)).toEqual(['init', 'auth', 'finish']);
   });
@@ -803,7 +803,7 @@ describe('groupExtendedResolvers', () => {
       makeExtended('Mutation', 'createTodo', 'init', 1, 'req'),
       makeExtended('Mutation', 'createTodo', 'init', 2, 'req'),
     ];
-    const result = groupExtendedResolvers(entries);
+    const result = groupExtendedResolverFiles(entries);
     const groups = result.get('Mutation.createTodo')!;
     expect(groups.map((g) => g.order)).toEqual([1, 2, 3]);
   });
@@ -813,7 +813,7 @@ describe('groupExtendedResolvers', () => {
       makeExtended('Mutation', 'createTodo', 'init', 1, 'req'),
       makeExtended('Mutation', 'createTodo', 'init', 1, 'res'),
     ];
-    const result = groupExtendedResolvers(entries);
+    const result = groupExtendedResolverFiles(entries);
     const groups = result.get('Mutation.createTodo')!;
     expect(groups).toHaveLength(1);
     expect(groups[0].reqFile).toBe('Mutation.createTodo.init.1.req.vtl');
@@ -822,7 +822,7 @@ describe('groupExtendedResolvers', () => {
 
   it('handles entry with only req file (no res)', () => {
     const entries: ParsedExtended[] = [makeExtended('Mutation', 'createTodo', 'init', 1, 'req')];
-    const result = groupExtendedResolvers(entries);
+    const result = groupExtendedResolverFiles(entries);
     const groups = result.get('Mutation.createTodo')!;
     expect(groups).toHaveLength(1);
     expect(groups[0].reqFile).toBe('Mutation.createTodo.init.1.req.vtl');
@@ -831,7 +831,7 @@ describe('groupExtendedResolvers', () => {
 
   it('handles entry with only res file (no req)', () => {
     const entries: ParsedExtended[] = [makeExtended('Mutation', 'createTodo', 'init', 1, 'res')];
-    const result = groupExtendedResolvers(entries);
+    const result = groupExtendedResolverFiles(entries);
     const groups = result.get('Mutation.createTodo')!;
     expect(groups).toHaveLength(1);
     expect(groups[0].reqFile).toBeUndefined();
@@ -840,7 +840,7 @@ describe('groupExtendedResolvers', () => {
 });
 
 describe('computeSpliceIndexes', () => {
-  const makeGroup = (slot: string, order: number): ExtendedResolverGroup => ({
+  const makeResolverFile = (slot: string, order: number): ExtendedResolverFile => ({
     typeName: 'Mutation',
     fieldName: 'createTodo',
     slot,
@@ -848,46 +848,46 @@ describe('computeSpliceIndexes', () => {
   });
 
   it('uses 3-function pipeline for Query', () => {
-    const groups: ExtendedResolverGroup[] = [{ typeName: 'Query', fieldName: 'getTodo', slot: 'init', order: 1 }];
-    const result = computeSpliceIndexes('Query', 'getTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [{ typeName: 'Query', fieldName: 'getTodo', slot: 'init', order: 1 }];
+    const result = computeSpliceIndexes('Query', 'getTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(PIPELINE_3_SLOT_MAP['init']);
   });
 
   it('uses 3-function pipeline for Subscription', () => {
-    const groups: ExtendedResolverGroup[] = [{ typeName: 'Subscription', fieldName: 'onCreateTodo', slot: 'init', order: 1 }];
-    const result = computeSpliceIndexes('Subscription', 'onCreateTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [{ typeName: 'Subscription', fieldName: 'onCreateTodo', slot: 'init', order: 1 }];
+    const result = computeSpliceIndexes('Subscription', 'onCreateTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(PIPELINE_3_SLOT_MAP['init']);
   });
 
   it('uses 3-function pipeline for delete Mutation (fieldName starts with "delete")', () => {
-    const groups: ExtendedResolverGroup[] = [{ typeName: 'Mutation', fieldName: 'deleteTodo', slot: 'init', order: 1 }];
-    const result = computeSpliceIndexes('Mutation', 'deleteTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [{ typeName: 'Mutation', fieldName: 'deleteTodo', slot: 'init', order: 1 }];
+    const result = computeSpliceIndexes('Mutation', 'deleteTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(PIPELINE_3_SLOT_MAP['init']);
   });
 
   it('uses 4-function pipeline for create Mutation', () => {
-    const groups: ExtendedResolverGroup[] = [{ typeName: 'Mutation', fieldName: 'createTodo', slot: 'init', order: 1 }];
-    const result = computeSpliceIndexes('Mutation', 'createTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [{ typeName: 'Mutation', fieldName: 'createTodo', slot: 'init', order: 1 }];
+    const result = computeSpliceIndexes('Mutation', 'createTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(PIPELINE_4_SLOT_MAP['init']);
   });
 
   it('uses 4-function pipeline for update Mutation', () => {
-    const groups: ExtendedResolverGroup[] = [{ typeName: 'Mutation', fieldName: 'updateTodo', slot: 'init', order: 1 }];
-    const result = computeSpliceIndexes('Mutation', 'updateTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [{ typeName: 'Mutation', fieldName: 'updateTodo', slot: 'init', order: 1 }];
+    const result = computeSpliceIndexes('Mutation', 'updateTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(PIPELINE_4_SLOT_MAP['init']);
   });
 
   it('computes correct splice index with running offset for multiple entries', () => {
-    const groups: ExtendedResolverGroup[] = [makeGroup('init', 1), makeGroup('auth', 1), makeGroup('finish', 1)];
-    const result = computeSpliceIndexes('Mutation', 'createTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [makeResolverFile('init', 1), makeResolverFile('auth', 1), makeResolverFile('finish', 1)];
+    const result = computeSpliceIndexes('Mutation', 'createTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(PIPELINE_4_SLOT_MAP['init'] + 0);
     expect(result.entries[1].spliceIndex).toBe(PIPELINE_4_SLOT_MAP['auth'] + 1);
     expect(result.entries[2].spliceIndex).toBe(PIPELINE_4_SLOT_MAP['finish'] + 2);
   });
 
   it('computes init.2 and finish.1 on create mutation correctly', () => {
-    const groups: ExtendedResolverGroup[] = [makeGroup('init', 2), makeGroup('finish', 1)];
-    const result = computeSpliceIndexes('Mutation', 'createTodo', groups);
+    const resolverFiles: ExtendedResolverFile[] = [makeResolverFile('init', 2), makeResolverFile('finish', 1)];
+    const result = computeSpliceIndexes('Mutation', 'createTodo', resolverFiles);
     expect(result.entries[0].spliceIndex).toBe(1);
     expect(result.entries[1].spliceIndex).toBe(5);
   });
