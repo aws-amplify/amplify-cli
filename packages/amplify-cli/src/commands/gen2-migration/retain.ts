@@ -1,34 +1,28 @@
 import { Plan } from './_common/plan';
 import { AmplifyMigrationStep } from './_common/step';
 import { AmplifyMigrationOperation } from './_common/operation';
-import { DescribeChangeSetOutput, DescribeStacksCommand, paginateListStackResources } from '@aws-sdk/client-cloudformation';
-import { CFNResource } from './_common/cfn-template';
+import {
+  DescribeChangeSetOutput,
+  DescribeStacksCommand,
+  paginateListStackResources,
+  SetStackPolicyCommand,
+} from '@aws-sdk/client-cloudformation';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 import chalk from 'chalk';
 
-/**
- * Synthetic marker injected into each Gen1 stack. A changeset of only
- * DeletionPolicy/UpdateReplacePolicy edits is treated as a no-op by CFN, so
- * we add a real resource to force a non-empty diff.
- *
- * See https://github.com/aws/aws-cdk/issues/11521.
- */
-const AMPLIFY_RETAIN_MARKER_LOGICAL_ID = 'AmplifyRetainMarker';
-
-const AMPLIFY_RETAIN_MARKER_RESOURCE: CFNResource = {
-  Type: 'AWS::CloudFormation::WaitConditionHandle',
-  Properties: {},
-};
+const PERMISSIVE_STACK_POLICY = JSON.stringify({
+  Statement: [{ Effect: 'Allow', Action: 'Update:*', Principal: '*', Resource: '*' }],
+});
 
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
     this.logger.info(`Discovered ${stackIds.length} stacks`);
 
-    const operations: AmplifyMigrationOperation[] = [];
+    const operations: AmplifyMigrationOperation[] = [this.buildUnlockOperation()];
     for (const stackId of stackIds) {
       operations.push(await this.buildRetainOperation(stackId));
     }
@@ -40,6 +34,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       implications: [
         'DeletionPolicy and UpdateReplacePolicy will be set to Retain on every resource in Gen1 CloudFormation stacks',
         'This protects your Gen2 environment from unintended impact caused by changes to Gen1 stacks',
+        'If a stack-level deny policy was applied by gen2-migration lock, it will be replaced with a permissive one (no restore)',
       ],
     });
   }
@@ -52,11 +47,23 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     });
   }
 
+  private buildUnlockOperation(): AmplifyMigrationOperation {
+    return {
+      describe: async () => [`Overwrite stack policy on '${this.gen1App.rootStackName}' with Allow Update:*`],
+      validate: () => undefined,
+      execute: async () => {
+        await this.gen1App.clients.cloudFormation.send(
+          new SetStackPolicyCommand({
+            StackName: this.gen1App.rootStackName,
+            StackPolicyBody: PERMISSIVE_STACK_POLICY,
+          }),
+        );
+        this.logger.info(`Applied permissive stack policy to '${this.gen1App.rootStackName}'`);
+      },
+    };
+  }
+
   private async walkStackHierarchy(stackId: string): Promise<string[]> {
-    // Root-first (pre-order) so each stack is updated *after* its parent.
-    // Updating a parent re-synthesizes children from their TemplateURL, which
-    // clobbers any direct edits. By descending top-down we ensure nothing
-    // cascades over a stack we've already edited.
     const result: string[] = [stackId];
 
     const pages = paginateListStackResources({ client: this.gen1App.clients.cloudFormation }, { StackName: stackId });
@@ -78,17 +85,20 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     const stackName = extractStackNameFromId(stackId);
 
     const template = await cfn.fetchTemplate(stackId);
-    for (const resource of Object.values(template.Resources)) {
+    for (const [logicalId, resource] of Object.entries(template.Resources)) {
+      // Skip AWS::CloudFormation::Stack references. Applying Retain to them in
+      // the parent's template triggers the parent's cascade to reconcile every
+      // child from S3, which marks any pre-created child changesets as OBSOLETE.
+      // The children still get Retain on their own resources via their own
+      // per-stack operations below — this just avoids touching the parent's
+      // child-reference entries.
+      if (resource.Type === 'AWS::CloudFormation::Stack') {
+        this.logger.info(`Skipping nested-stack reference '${logicalId}' in ${stackName}`);
+        continue;
+      }
       resource.DeletionPolicy = 'Retain';
       resource.UpdateReplacePolicy = 'Retain';
     }
-
-    // Inject the marker so the changeset has a real Add entry.
-    template.Resources[AMPLIFY_RETAIN_MARKER_LOGICAL_ID] = {
-      ...AMPLIFY_RETAIN_MARKER_RESOURCE,
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
-    };
 
     const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
     const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
@@ -149,9 +159,6 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       const rc = change.ResourceChange;
 
       if (!rc) return false;
-
-      // Adding the marker resource is expected and part of the retain operation.
-      if (rc.Action === 'Add' && rc.LogicalResourceId === AMPLIFY_RETAIN_MARKER_LOGICAL_ID) continue;
 
       if (rc.Action !== 'Modify') return false;
       if (rc.Replacement === 'True') return false;

@@ -1,4 +1,9 @@
-import { CreateChangeSetCommand, DescribeChangeSetOutput, ExecuteChangeSetCommand } from '@aws-sdk/client-cloudformation';
+import {
+  CreateChangeSetCommand,
+  DescribeChangeSetOutput,
+  ExecuteChangeSetCommand,
+  SetStackPolicyCommand,
+} from '@aws-sdk/client-cloudformation';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationRetainStep } from '../../../commands/gen2-migration/retain';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
@@ -69,10 +74,7 @@ function mockPlanningForStack(
       ChangeSetName: 'cs',
       ChangeSetId: options.changeSetId ?? 'arn:aws:cloudformation:us-east-1:123:changeSet/gen2-migration-1/abc',
       StackId: options.stackId ?? 'arn:aws:cloudformation:us-east-1:123:stack/root-stack/def',
-      Changes: options.changes ?? [
-        { ResourceChange: { Action: 'Add', LogicalResourceId: 'AmplifyRetainMarker' } },
-        { ResourceChange: { Action: 'Modify', Details: retainDetails() } },
-      ],
+      Changes: options.changes ?? [{ ResourceChange: { Action: 'Modify', Details: retainDetails() } }],
     });
   }
 }
@@ -151,7 +153,7 @@ describe('AmplifyMigrationRetainStep', () => {
       expect(executes).toHaveLength(5);
     });
 
-    it('submits a template with retain policies on every existing resource plus an AmplifyRetainMarker', async () => {
+    it('submits a template with retain policies on every existing resource', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
       mockPlanningForStack(mockCfnSend, {
         template: {
@@ -173,13 +175,30 @@ describe('AmplifyMigrationRetainStep', () => {
       expect(submitted.Resources.Bucket.UpdateReplacePolicy).toBe('Retain');
       expect(submitted.Resources.Table.DeletionPolicy).toBe('Retain');
       expect(submitted.Resources.Table.UpdateReplacePolicy).toBe('Retain');
+    });
 
-      expect(submitted.Resources.AmplifyRetainMarker).toEqual({
-        Type: 'AWS::CloudFormation::WaitConditionHandle',
-        Properties: {},
-        DeletionPolicy: 'Retain',
-        UpdateReplacePolicy: 'Retain',
+    it('does not apply retain to AWS::CloudFormation::Stack resources', async () => {
+      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
+      mockPlanningForStack(mockCfnSend, {
+        template: {
+          Resources: {
+            Bucket: { Type: 'AWS::S3::Bucket', Properties: {} },
+            NestedAuth: { Type: 'AWS::CloudFormation::Stack', Properties: { TemplateURL: 'https://s3/x.yaml' } },
+          },
+        },
       });
+
+      const plan = await step.forward();
+      await plan.validate();
+
+      const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      expect(createCall).toBeDefined();
+      const submitted = JSON.parse(createCall![0].input.TemplateBody);
+
+      expect(submitted.Resources.Bucket.DeletionPolicy).toBe('Retain');
+      expect(submitted.Resources.Bucket.UpdateReplacePolicy).toBe('Retain');
+      expect(submitted.Resources.NestedAuth.DeletionPolicy).toBeUndefined();
+      expect(submitted.Resources.NestedAuth.UpdateReplacePolicy).toBeUndefined();
     });
 
     it('forwards existing parameters to CreateChangeSet as UsePreviousValue', async () => {
@@ -211,14 +230,30 @@ describe('AmplifyMigrationRetainStep', () => {
       const executes = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof ExecuteChangeSetCommand);
       expect(executes).toHaveLength(0);
     });
+
+    it('overwrites the root stack policy with a permissive one before retain operations', async () => {
+      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
+      mockPlanningForStack(mockCfnSend, {});
+      mockCfnSend.mockResolvedValueOnce({});
+
+      const plan = await step.forward();
+      await plan.execute();
+
+      const setPolicyCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setPolicyCalls).toHaveLength(1);
+      const input = (setPolicyCalls[0][0] as SetStackPolicyCommand).input;
+      expect(input.StackName).toBe('root-stack');
+      expect(JSON.parse(input.StackPolicyBody!)).toEqual({
+        Statement: [{ Effect: 'Allow', Action: 'Update:*', Principal: '*', Resource: '*' }],
+      });
+    });
   });
 
   describe('forward validate', () => {
-    it('passes validation when changes are only retain-policy modifications plus the marker Add', async () => {
+    it('passes validation when changes are only retain-policy modifications', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
       mockPlanningForStack(mockCfnSend, {
         changes: [
-          { ResourceChange: { Action: 'Add', LogicalResourceId: 'AmplifyRetainMarker' } },
           { ResourceChange: { Action: 'Modify', Details: retainDetails('DeletionPolicy') } },
           { ResourceChange: { Action: 'Modify', Details: retainDetails('UpdateReplacePolicy') } },
         ],
@@ -230,11 +265,11 @@ describe('AmplifyMigrationRetainStep', () => {
       expect(valid).toBe(true);
     });
 
-    it('fails validation when an Add change targets a resource other than the marker', async () => {
+    it('fails validation when a change uses Add', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
       mockPlanningForStack(mockCfnSend, {
         changes: [
-          { ResourceChange: { Action: 'Add', LogicalResourceId: 'SomeOtherResource' } },
+          { ResourceChange: { Action: 'Add', LogicalResourceId: 'SomeResource' } },
           { ResourceChange: { Action: 'Modify', Details: retainDetails() } },
         ],
       });
