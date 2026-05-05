@@ -2,13 +2,20 @@ import { DiscoveredResource, Gen1App } from '../../../_common/gen1-app';
 import type { GeoResourceProps } from './geo.generator';
 import { GeoResourceGenerator } from './geo-resource.generator';
 import { GeoGenerator } from './geo.generator';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates a geo Map resource file.
  */
 export class GeoMapGenerator extends GeoResourceGenerator {
-  public constructor(gen1App: Gen1App, outputDir: string, resource: DiscoveredResource, geoGenerator: GeoGenerator) {
-    super(gen1App, outputDir, resource, geoGenerator);
+  public constructor(
+    gen1App: Gen1App,
+    outputDir: string,
+    resource: DiscoveredResource,
+    geoGenerator: GeoGenerator,
+    logger: SpinningLogger,
+  ) {
+    super(gen1App, outputDir, resource, geoGenerator, logger);
   }
 
   protected addResource(base: GeoResourceProps, parameters: ReadonlyMap<string, string>): GeoResourceProps {

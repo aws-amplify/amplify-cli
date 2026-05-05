@@ -60,14 +60,14 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       }
     }
     if (matched.length === 0) {
-      throw new AmplifyError('InvalidStackError', {
+      throw new AmplifyError('ResourceMappingError', {
         message: `Source resource '${sourceId}' (${
           sourceResource.Type
         }) has no corresponding target resource in stack: ${extractStackNameFromId(targetStackId)}`,
       });
     }
     if (matched.length > 1) {
-      throw new AmplifyError('InvalidStackError', {
+      throw new AmplifyError('ResourceMappingError', {
         message: `Source resource '${sourceId}' (${
           sourceResource.Type
         }) has multiple corresponding target resources in stack: ${extractStackNameFromId(targetStackId)}`,

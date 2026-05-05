@@ -140,6 +140,9 @@ When asked to create a PR, generate a body into `.pr-body.ai-generated.md` **at 
 - Don't enumerate files changed. Instead, categorize changes into logical groups. Give each
   group an h4 title on its own line, followed by a blank line, then the explanation.
 - Before writing the body, inspect `git diff origin/<base-branch>..HEAD` to understand the total diff, not individual commits.
+- **Inventory before prose.** Before writing any description, process the diff file-by-file and produce a structured list of every behavioral change, new addition, and cosmetic change. Account for every hunk. Only after the inventory is complete, group changes into logical sections and write the prose. This prevents skimming the diff and missing significant changes.
+- **Never fabricate rationale.** If you don't understand _why_ a change was made, describe _what_ it does without speculating on why. Flag it for the author: "This change does X — author to confirm the motivation." Inventing a plausible-sounding explanation that turns out to be wrong is worse than admitting you don't know.
+- **Delegate to a sub-agent when possible.** PR body creation benefits from a fresh context that doesn't carry conversation bias. A sub-agent with just the diff, the PR template, and the coding guidelines is forced to work from the actual changes rather than a mental model of what happened during the session.
 
 ## E2E Testing
 

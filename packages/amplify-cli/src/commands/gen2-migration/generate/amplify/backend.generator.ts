@@ -12,6 +12,7 @@ import {
   PostDefineBackendCall,
   EscapeHatchCall,
 } from './backend.renderer';
+import { SpinningLogger } from '../../_common/spinning-logger';
 
 /**
  * Accumulates namespace imports, defineBackend entries, escape-hatch
@@ -28,9 +29,11 @@ export class BackendGenerator implements Planner {
   private readonly postDefineBackendStatements: string[] = [];
   private readonly outputDir: string;
   private readonly renderer = new BackendRenderer();
+  private readonly logger: SpinningLogger;
 
-  public constructor(outputDir: string) {
+  public constructor(outputDir: string, logger: SpinningLogger) {
     this.outputDir = outputDir;
+    this.logger = logger;
   }
 
   /**
@@ -117,6 +120,7 @@ export class BackendGenerator implements Planner {
             escapeHatchCalls: this.applyEscapeHatchesCalls,
           };
 
+          this.logger.info('Rendering backend.ts');
           const nodes = this.renderer.render(options);
           const content = TS.printNodes(nodes, 120);
 

@@ -4,6 +4,7 @@ import { GeoPlaceIndexGenerator } from '../../../../../../commands/gen2-migratio
 import { GeoGeofenceCollectionGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/geo/geofence-collection.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -35,10 +36,11 @@ function writtenFile(suffix: string): string {
 describe('GeoGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('renders geo/resource.ts with a single map', async () => {
@@ -89,7 +91,7 @@ describe('GeoGenerator', () => {
       }),
     };
 
-    const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+    const geoGenerator = new GeoGenerator(backendGenerator, outputDir, logger);
     const mapGenerator = new GeoMapGenerator(
       gen1App,
       outputDir,
@@ -100,6 +102,7 @@ describe('GeoGenerator', () => {
         key: 'geo:Map',
       },
       geoGenerator,
+      logger,
     );
 
     const mapOps = await mapGenerator.plan();
@@ -178,7 +181,7 @@ describe('GeoGenerator', () => {
       }),
     };
 
-    const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+    const geoGenerator = new GeoGenerator(backendGenerator, outputDir, logger);
     const mapGenerator = new GeoMapGenerator(
       gen1App,
       outputDir,
@@ -189,6 +192,7 @@ describe('GeoGenerator', () => {
         key: 'geo:Map',
       },
       geoGenerator,
+      logger,
     );
     const placeIndexGenerator = new GeoPlaceIndexGenerator(
       gen1App,
@@ -200,6 +204,7 @@ describe('GeoGenerator', () => {
         key: 'geo:PlaceIndex',
       },
       geoGenerator,
+      logger,
     );
 
     const mapOps = await mapGenerator.plan();
@@ -282,7 +287,7 @@ describe('GeoGenerator', () => {
       }),
     };
 
-    const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+    const geoGenerator = new GeoGenerator(backendGenerator, outputDir, logger);
     const mapGenerator = new GeoMapGenerator(
       gen1App,
       outputDir,
@@ -293,6 +298,7 @@ describe('GeoGenerator', () => {
         key: 'geo:Map',
       },
       geoGenerator,
+      logger,
     );
 
     const ops = await mapGenerator.plan();
@@ -385,7 +391,7 @@ describe('GeoGenerator', () => {
       }),
     };
 
-    const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+    const geoGenerator = new GeoGenerator(backendGenerator, outputDir, logger);
     const placeIndexGenerator = new GeoPlaceIndexGenerator(
       gen1App,
       outputDir,
@@ -396,6 +402,7 @@ describe('GeoGenerator', () => {
         key: 'geo:PlaceIndex',
       },
       geoGenerator,
+      logger,
     );
 
     const ops = await placeIndexGenerator.plan();
@@ -469,7 +476,7 @@ describe('GeoGenerator', () => {
       }),
     };
 
-    const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+    const geoGenerator = new GeoGenerator(backendGenerator, outputDir, logger);
     const geofenceGenerator = new GeoGeofenceCollectionGenerator(
       gen1App,
       outputDir,
@@ -480,6 +487,7 @@ describe('GeoGenerator', () => {
         key: 'geo:GeofenceCollection',
       },
       geoGenerator,
+      logger,
     );
 
     const ops = await geofenceGenerator.plan();
@@ -553,7 +561,7 @@ describe('GeoGenerator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
 
-    const geoGenerator = new GeoGenerator(backendGenerator, outputDir);
+    const geoGenerator = new GeoGenerator(backendGenerator, outputDir, logger);
     const mapGenerator = new GeoMapGenerator(
       gen1App,
       outputDir,
@@ -564,6 +572,7 @@ describe('GeoGenerator', () => {
         key: 'geo:Map',
       },
       geoGenerator,
+      logger,
     );
 
     const mapOps = await mapGenerator.plan();

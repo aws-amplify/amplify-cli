@@ -2,12 +2,14 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { existsSync, readdirSync } from 'node:fs';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { DataRenderer } from './data.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 // ── Resolver Utility Types ─────────────────────────────────────────────
 
@@ -130,24 +132,36 @@ export class DataGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
   private readonly renderer: DataRenderer;
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.renderer = new DataRenderer(gen1App.envName);
+    this.logger = logger;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const schema = this.gen1App.file(path.join('api', this.resource.resourceName, 'schema.graphql'));
     const apiId = this.gen1App.resourceMetaOutput(this.resource, 'GraphQLAPIIdOutput');
 
-    const tableMappings = this.createTableMappings(schema, apiId);
+    const tableMappings = this.createTableMappings(apiId);
 
+    this.logger.debug(`Fetching AppSync API '${apiId}'`);
     const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
     if (!graphqlApi) {
-      throw new Error(`AppSync API '${apiId}' not found`);
+      throw new AmplifyError('AppSyncApiNotFoundError', {
+        message: `AppSync API '${apiId}' not found`,
+        resolution: 'Verify the AppSync API exists and the CLI has the correct AWS credentials and region configured.',
+      });
     }
 
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
@@ -167,6 +181,7 @@ export class DataGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/data/resource.ts'],
         execute: async () => {
+          this.logger.info('Rendering data/resource.ts');
           const nodes = this.renderer.render({
             schema,
             tableMappings,
@@ -219,11 +234,22 @@ export class DataGenerator implements Planner {
     return readdirSync(resolversDir).filter((f) => f.endsWith('.vtl'));
   }
 
-  private createTableMappings(schema: string, apiId: string): Record<string, string> {
-    const modelRegex = /type\s+(\w+)\s+@model/g;
+  /**
+   * Extracts @model type names and maps each to its DynamoDB table
+   * name ({ModelName}-{apiId}-{envName}).
+   *
+   * Reads the compiled build/schema.graphql where the Amplify
+   * transformer expands each @model type into a `Model<Name>Connection`
+   * type. This is more reliable than regex-matching `@model` in the
+   * raw schema, which is sensitive to directive ordering.
+   */
+  private createTableMappings(apiId: string): Record<string, string> {
+    const buildSchemaPath = path.join('api', this.resource.resourceName, 'build', 'schema.graphql');
+    const buildSchema = this.gen1App.file(buildSchemaPath);
+    const connectionRegex = /type\s+Model(\w+)Connection\b/g;
     const mapping: Record<string, string> = {};
     let match: RegExpExecArray | null;
-    while ((match = modelRegex.exec(schema)) !== null) {
+    while ((match = connectionRegex.exec(buildSchema)) !== null) {
       mapping[match[1]] = [match[1], apiId, this.gen1App.envName].join('-');
     }
     return mapping;

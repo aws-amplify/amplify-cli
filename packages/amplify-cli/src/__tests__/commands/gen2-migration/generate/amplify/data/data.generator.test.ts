@@ -6,8 +6,9 @@ import {
   ParsedExtended,
 } from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
-import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
+import { DiscoveredResource, Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -31,13 +32,27 @@ const dataResource: DiscoveredResource = {
   key: 'api:AppSync',
 };
 
+/**
+ * Mocks gen1App.file() to return the appropriate schema content
+ * based on the requested path. Throws on unexpected paths.
+ */
+function mockSchema(gen1App: Gen1App, rawSchema: string, modelNames: string[]): void {
+  const buildSchema = modelNames.map((m) => `type Model${m}Connection { items: [${m}]! nextToken: String }`).join('\n');
+  jest.spyOn(gen1App, 'file').mockImplementation((p: string) => {
+    if (p.includes('build/schema.graphql')) return buildSchema;
+    if (p.endsWith('schema.graphql')) return rawSchema;
+    throw new Error(`Unexpected file() call with path: ${p}`);
+  });
+}
+
 describe('DataGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
@@ -52,9 +67,9 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     await expect(generator.plan()).rejects.toThrow('GraphQLAPIIdOutput');
   });
 
@@ -68,10 +83,10 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue(undefined);
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
   });
 
@@ -85,7 +100,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -96,7 +111,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -114,7 +129,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -128,7 +143,7 @@ describe('DataGenerator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -147,7 +162,7 @@ describe('DataGenerator', () => {
       },
       auth: { myAuth: { service: 'Cognito' } },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -160,7 +175,7 @@ describe('DataGenerator', () => {
 
     const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -177,7 +192,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -190,7 +205,7 @@ describe('DataGenerator', () => {
 
     const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -208,7 +223,7 @@ describe('DataGenerator', () => {
       },
       auth: { myAuth: { service: 'Cognito' } },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -221,7 +236,7 @@ describe('DataGenerator', () => {
 
     const addApplyEscapeHatchesCallSpy = jest.spyOn(backendGenerator, 'addApplyEscapeHatchesCall');
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -238,7 +253,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! title: String! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! title: String! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc123';
       return undefined as any;
@@ -249,7 +264,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -283,7 +298,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
       if (key === 'authConfig') return { defaultAuthentication: { authenticationType: 'AWS_IAM' } } as any;
@@ -291,7 +306,7 @@ describe('DataGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -328,7 +343,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       if (key === 'authConfig')
@@ -346,7 +361,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -384,7 +399,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       if (key === 'authConfig')
@@ -410,7 +425,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -453,7 +468,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       if (key === 'authConfig')
@@ -473,7 +488,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -510,7 +525,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -520,7 +535,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     } as unknown as GraphqlApi);
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -555,7 +570,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { env: String @default(value: "${env}") }');
+    mockSchema(gen1App, 'type Todo @model { env: String @default(value: "${env}") }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -566,7 +581,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -603,7 +618,7 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'api-123';
       return undefined as any;
@@ -614,7 +629,7 @@ describe('DataGenerator', () => {
       additionalAuthenticationProviders: [],
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -631,14 +646,14 @@ describe('DataGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App, 'file').mockReturnValue('type Todo @model { id: ID! } type Post @model { id: ID! }');
+    mockSchema(gen1App, 'type Todo @model { id: ID! } type Post @model { id: ID! }', ['Todo', 'Post']);
     jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
       if (key === 'GraphQLAPIIdOutput') return 'abc';
       return undefined as any;
     });
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -647,6 +662,51 @@ describe('DataGenerator', () => {
       import type { Backend } from '../backend';
 
       const schema = \`type Todo @model { id: ID! } type Post @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {
+              Todo: 'Todo-abc-main',
+              Post: 'Post-abc-main',
+            },
+          },
+        ],
+        schema,
+      });
+      "
+    `);
+  });
+
+  it('renders table mappings when @model is not the first directive', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'abc' },
+        },
+      },
+    });
+    const rawSchema = 'type Todo @auth(rules: [{ allow: public }]) @model { id: ID! } type Post @key(name: "byUser") @model { id: ID! }';
+    mockSchema(gen1App, rawSchema, ['Todo', 'Post']);
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'abc';
+      return undefined as any;
+    });
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+      import type { Backend } from '../backend';
+
+      const schema = \`type Todo @auth(rules: [{ allow: public }]) @model { id: ID! } type Post @key(name: "byUser") @model { id: ID! }\`;
 
       export const data = defineData({
         migratedAmplifyGen1DynamoDbTableMappings: [
