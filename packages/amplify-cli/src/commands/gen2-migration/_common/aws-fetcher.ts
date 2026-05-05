@@ -26,7 +26,6 @@ import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Encapsulates all AWS SDK calls needed during Gen1 app introspection.
