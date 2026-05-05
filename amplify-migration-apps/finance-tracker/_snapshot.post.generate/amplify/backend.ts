@@ -1,7 +1,7 @@
 import * as data from './data/resource';
 import * as auth from './auth/resource';
-import * as custom_customfinance from './custom/customfinance/resource';
-import * as custom_customresolver from './custom/customresolver/resource';
+import * as customfinance from './custom/customfinance/resource';
+import * as customresolver from './custom/customresolver/resource';
 import * as financetracker from './function/financetracker/resource';
 import * as storage from './storage/resource';
 import { defineBackend } from '@aws-amplify/backend';
@@ -16,8 +16,8 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
-new custom_customfinance.cdkStack(backend.createStack('customfinance'), 'customfinance');
-new custom_customresolver.cdkStack(backend.createStack('customresolver'), 'customresolver', backend);
+customfinance.defineCustomfinance(backend);
+customresolver.defineCustomresolver(backend);
 
 data.applyEscapeHatches(backend);
 auth.applyEscapeHatches(backend);
