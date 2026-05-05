@@ -41,7 +41,7 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
         if (sourceId.includes(GEN2_WEB_CLIENT)) {
           return GEN1_WEB_CLIENT;
         }
-        throw new AmplifyError('MigrationError', {
+        throw new AmplifyError('ResourceMappingError', {
           message: `Unable to determine Gen1 logical ID for UserPoolClient '${sourceId}' — expected logical ID to contain '${GEN2_NATIVE_APP_CLIENT}' or '${GEN2_WEB_CLIENT}'`,
         });
       }

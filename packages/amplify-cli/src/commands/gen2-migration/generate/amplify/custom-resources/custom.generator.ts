@@ -1,12 +1,13 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { AmplifyFault, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { Gen1App } from '../../../_common/gen1-app';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
@@ -31,6 +32,7 @@ export class CustomResourceGenerator implements Planner {
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
+  private readonly logger: SpinningLogger;
 
   public constructor(
     gen1App: Gen1App,
@@ -38,12 +40,14 @@ export class CustomResourceGenerator implements Planner {
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
+    logger: SpinningLogger,
   ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
     this.resourceName = resourceName;
+    this.logger = logger;
   }
 
   /**
@@ -60,6 +64,8 @@ export class CustomResourceGenerator implements Planner {
         validate: () => undefined,
         describe: async () => [`Migrate amplify/custom/${this.resourceName}/resource.ts`],
         execute: async () => {
+          this.logger.info(`Migrating custom/${this.resourceName}/resource.ts`);
+
           // Copy resource directory (excluding filtered files)
           await fs.mkdir(destResourcePath, { recursive: true });
           await fs.cp(sourceResourcePath, destResourcePath, {
@@ -114,7 +120,9 @@ export class CustomResourceGenerator implements Planner {
         }
       }
     } catch (e) {
-      throw new Error(`Failed to read package.json for custom resource '${this.resourceName}': ${e}`);
+      throw new AmplifyFault('ResourceNotFoundFault', {
+        message: `Failed to read package.json for custom resource '${this.resourceName}': ${e}`,
+      });
     }
   }
 
@@ -148,7 +156,9 @@ async function extractClassName(sourceResourcePath: string): Promise<string | un
     const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
     return content.match(/export class (\w+)/)?.[1];
   } catch (e) {
-    throw new Error(`Failed to read cdk-stack.ts for custom resource '${sourceResourcePath}': ${e}`);
+    throw new AmplifyFault('ResourceNotFoundFault', {
+      message: `Failed to read cdk-stack.ts for custom resource '${sourceResourcePath}': ${e}`,
+    });
   }
 }
 
@@ -175,7 +185,9 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
 
     return dependencies;
   } catch (e) {
-    throw new Error(`Failed to read dependencies for custom resource '${sourceResourcePath}': ${e}`);
+    throw new AmplifyFault('ResourceNotFoundFault', {
+      message: `Failed to read dependencies for custom resource '${sourceResourcePath}': ${e}`,
+    });
   }
 }
 
@@ -241,7 +253,9 @@ async function renameCdkStack(destResourcePath: string): Promise<void> {
   try {
     await fs.rename(cdkStackPath, resourceFilePath);
   } catch (e) {
-    throw new Error(`Failed to rename cdk-stack.ts to resource.ts for custom resource: ${e}`);
+    throw new AmplifyFault('FileNotFoundFault', {
+      message: `Failed to rename cdk-stack.ts to resource.ts for custom resource: ${e}`,
+    });
   }
 }
 
@@ -254,6 +268,8 @@ async function readProjectName(rootDir: string): Promise<string | undefined> {
     const projectConfig = JSONUtilities.readJson<{ projectName?: string }>(projectConfigPath);
     return projectConfig?.projectName;
   } catch (e) {
-    throw new Error(`Failed to read project config: ${e}`);
+    throw new AmplifyFault('ConfigurationFault', {
+      message: `Failed to read project config: ${e}`,
+    });
   }
 }

@@ -3,12 +3,14 @@ import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
 import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { DiscoveredResource, Gen1App } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { GeoResourceRenderer } from './geo-resource.renderer';
 import { GeoResourceProps, GeoGenerator } from './geo.generator';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Base class for geo sub-resource generators.
@@ -23,13 +25,21 @@ export abstract class GeoResourceGenerator implements Planner {
   protected readonly outputDir: string;
   protected readonly resource: DiscoveredResource;
   protected readonly geoGenerator: GeoGenerator;
+  protected readonly logger: SpinningLogger;
   private readonly renderer = new GeoResourceRenderer();
 
-  protected constructor(gen1App: Gen1App, outputDir: string, resource: DiscoveredResource, geoGenerator: GeoGenerator) {
+  protected constructor(
+    gen1App: Gen1App,
+    outputDir: string,
+    resource: DiscoveredResource,
+    geoGenerator: GeoGenerator,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.outputDir = outputDir;
     this.resource = resource;
     this.geoGenerator = geoGenerator;
+    this.logger = logger;
   }
 
   /**
@@ -51,6 +61,7 @@ export abstract class GeoResourceGenerator implements Planner {
         execute: async () => {
           const { props, parameters } = await this.generateBase(resourceMeta.providerMetadata.logicalId);
           const resource = this.addResource(props, parameters);
+          this.logger.info(`Rendering geo/${resourceName}/resource.ts`);
           const nodes = this.renderer.render(resource);
           const content = TS.printNodes(nodes);
 
@@ -73,6 +84,7 @@ export abstract class GeoResourceGenerator implements Planner {
     const filePath = path.join(this.outputDir, 'amplify', 'geo', this.resource.resourceName, `${constructFileName}.ts`);
     const template = this.gen1App.json(`geo/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`);
 
+    this.logger.debug(`Fetching nested stack parameters for geo resource '${this.resource.resourceName}'`);
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
     const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
     const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
@@ -95,7 +107,9 @@ export abstract class GeoResourceGenerator implements Planner {
 
     const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
     if (!classNameMatch) {
-      throw new Error(`Failed to extract class name from generated construct for geo resource: ${this.resource.resourceName}`);
+      throw new AmplifyFault('RegexMatchingFault', {
+        message: `Failed to extract class name from generated construct for geo resource: ${this.resource.resourceName}`,
+      });
     }
     const constructClassName = classNameMatch[1];
 

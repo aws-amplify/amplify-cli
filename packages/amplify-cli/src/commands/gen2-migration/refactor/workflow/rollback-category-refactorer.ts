@@ -32,7 +32,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     for (const [sourceId, resource] of sourceResources) {
       const gen1LogicalId = this.targetLogicalId(sourceId, resource);
       if (!gen1LogicalId) {
-        throw new AmplifyError('MigrationError', {
+        throw new AmplifyError('ResourceMappingError', {
           message: `Failed building mappings: Unable to determine target id of resource ${sourceId} (${resource.Type})`,
         });
       }

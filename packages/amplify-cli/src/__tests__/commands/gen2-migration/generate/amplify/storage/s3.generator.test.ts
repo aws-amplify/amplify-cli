@@ -1,6 +1,7 @@
 import { S3Generator } from '../../../../../../commands/gen2-migration/generate/amplify/storage/s3.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -20,10 +21,11 @@ function writtenFile(suffix: string): string {
 describe('S3Generator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('returns one operation describing storage/resource.ts', async () => {
@@ -36,12 +38,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -62,12 +70,18 @@ describe('S3Generator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addDefineBackendEntrySpy = jest.spyOn(backendGenerator, 'addDefineBackendEntry');
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -85,12 +99,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -143,12 +163,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -202,12 +228,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -262,12 +294,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -332,12 +370,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -402,12 +446,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     generator.addFunctionAccess('processImages', ['read', 'write']);
 
     const ops = await generator.plan();
@@ -468,12 +518,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     generator.addTrigger('onUpload', 'onUploadFn');
     generator.addTrigger('onDelete', 'onDeleteFn');
 
@@ -532,12 +588,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     generator.addFunctionAccess('myFunc', ['read']);
     generator.addFunctionAccess('myFunc', ['write']);
 
@@ -595,12 +657,18 @@ describe('S3Generator', () => {
     jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
     jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-    const generator = new S3Generator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myBucket',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myBucket',
+        service: 'S3',
+        key: 'storage:S3',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 

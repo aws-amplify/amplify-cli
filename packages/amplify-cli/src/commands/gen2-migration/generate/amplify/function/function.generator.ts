@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
@@ -14,6 +14,7 @@ import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
 import { DEFINE_ANALYTICS_VARIABLE_NAME } from '../analytics/kinesis.generator';
 import { SINGULAR_AUTH_PERMISSIONS, GROUPED_AUTH_PERMISSIONS, AUTH_TRIGGER_SUFFIX_TO_EVENT } from './auth-mappings';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
@@ -21,6 +22,7 @@ interface FunctionGeneratorOptions {
   readonly packageJsonGenerator: RootPackageJsonGenerator;
   readonly outputDir: string;
   readonly resource: DiscoveredResource;
+  readonly logger: SpinningLogger;
 }
 
 export class FunctionGenerator implements Planner {
@@ -32,6 +34,7 @@ export class FunctionGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
   private readonly renderer: FunctionRenderer;
+  private readonly logger: SpinningLogger;
 
   public constructor(options: FunctionGeneratorOptions) {
     this.gen1App = options.gen1App;
@@ -40,6 +43,7 @@ export class FunctionGenerator implements Planner {
     this.outputDir = options.outputDir;
     this.resource = options.resource;
     this.renderer = new FunctionRenderer(options.gen1App.appId, options.gen1App.envName);
+    this.logger = options.logger;
   }
 
   public setAuthGenerator(authGenerator: AuthGenerator): void {
@@ -53,14 +57,23 @@ export class FunctionGenerator implements Planner {
     const resourceName = this.resource.resourceName;
     const deployedName = this.gen1App.resourceMetaOutput(this.resource, 'Name');
 
+    this.logger.debug(`Fetching Lambda function config '${deployedName}'`);
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
-    if (!config) throw new Error(`Lambda function '${deployedName}' not found`);
+    if (!config)
+      throw new AmplifyError('LambdaFunctionNotFoundError', {
+        message: `Lambda function '${deployedName}' not found`,
+        resolution: 'Verify the Lambda function exists and the CLI has the correct AWS credentials and region configured.',
+      });
 
     const runtime = config.Runtime;
     if (runtime && !runtime.startsWith('nodejs')) {
-      throw new Error(`Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`);
+      throw new AmplifyError('UnsupportedRuntimeError', {
+        message: `Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`,
+        resolution: 'Migrate the function to a Node.js runtime before running the Gen 2 migration.',
+      });
     }
 
+    this.logger.debug(`Fetching Lambda function schedule '${deployedName}'`);
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
     const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
     const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {});
@@ -114,6 +127,7 @@ export class FunctionGenerator implements Planner {
         execute: async () => {
           const dirPath = path.join(this.outputDir, 'amplify', 'function', resourceName);
 
+          this.logger.info(`Rendering function/${resourceName}/resource.ts`);
           const nodes = this.renderer.render(renderOpts);
           const content = TS.printNodes(nodes);
 

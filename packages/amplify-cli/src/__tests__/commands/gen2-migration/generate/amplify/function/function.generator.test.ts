@@ -3,6 +3,7 @@ import { BackendGenerator } from '../../../../../../commands/gen2-migration/gene
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -44,6 +45,7 @@ function createFunctionGenerator(overrides: {
   outputDir: string;
   resourceName?: string;
 }): FunctionGenerator {
+  const logger = new SpinningLogger('function');
   return new FunctionGenerator({
     gen1App: overrides.gen1App,
     backendGenerator: overrides.backendGenerator,
@@ -55,6 +57,7 @@ function createFunctionGenerator(overrides: {
       service: 'Lambda',
       key: 'function:Lambda',
     },
+    logger,
   });
 }
 
@@ -62,10 +65,11 @@ describe('FunctionGenerator', () => {
   let backendGenerator: BackendGenerator;
   let packageJsonGenerator: RootPackageJsonGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
     packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
   });
 
