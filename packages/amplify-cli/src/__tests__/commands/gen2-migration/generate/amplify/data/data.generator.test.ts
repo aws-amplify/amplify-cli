@@ -693,7 +693,7 @@ describe('DataGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({ apiId: 'abc', name: 'testApi', additionalAuthenticationProviders: [] });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
