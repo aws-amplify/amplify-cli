@@ -64,16 +64,6 @@ export interface PipelineSpliceResult {
 }
 
 // ── Slot Constants ─────────────────────────────────────────────────────
-
-/** Valid slots for Query resolvers. */
-export const QUERY_SLOTS: readonly string[] = ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad', 'postDataLoad', 'finish'];
-
-/** Valid slots for Mutation resolvers. */
-export const MUTATION_SLOTS: readonly string[] = ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate', 'postUpdate', 'finish'];
-
-/** Valid slots for Subscription resolvers. */
-export const SUBSCRIPTION_SLOTS: readonly string[] = ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'];
-
 /** Union of all valid slots across all operation types. */
 export const ALL_SLOTS: readonly string[] = [
   'init',

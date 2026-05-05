@@ -69,12 +69,12 @@ export function applyEscapeHatches(backend: Backend) {
   ];
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const resolversDir = join(__dirname, 'resolvers');
-  const resolverFiles = readdirSync(resolversDir).filter(
+  const overiddenResolverFiles = readdirSync(resolversDir).filter(
     (f) =>
       (f.endsWith('.req.vtl') || f.endsWith('.res.vtl')) &&
       f.split('.').length === 4
   );
-  for (const file of resolverFiles) {
+  for (const file of overiddenResolverFiles) {
     const [typeName, fieldName, templateType] = file.split('.');
     const capitalizedFieldName =
       fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
@@ -90,6 +90,7 @@ export function applyEscapeHatches(backend: Backend) {
       fn.responseMappingTemplateS3Location = vtlTemplate.s3ObjectUrl;
     }
   }
+  // extending resolvers
   const noneDataSource =
     backend.data.resources.graphqlApi.addNoneDataSource('none');
   const MutationcreateBoardinit2 = new aws_appsync.AppsyncFunction(

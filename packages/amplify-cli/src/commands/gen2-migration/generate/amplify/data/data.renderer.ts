@@ -490,7 +490,7 @@ export class DataRenderer {
   private buildOverrideResolverStatements(): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
-    // const resolverFiles = readdirSync(resolversDir).filter(...)
+    // const overiddenResolverFiles = readdirSync(resolversDir).filter(...)
     const filterCallback = factory.createArrowFunction(
       undefined,
       undefined,
@@ -525,7 +525,7 @@ export class DataRenderer {
 
     statements.push(
       TS.declareConst(
-        'resolverFiles',
+        'overiddenResolverFiles',
         factory.createCallExpression(
           factory.createPropertyAccessExpression(
             factory.createCallExpression(factory.createIdentifier('readdirSync'), undefined, [factory.createIdentifier('resolversDir')]),
@@ -537,13 +537,13 @@ export class DataRenderer {
       ),
     );
 
-    // for-of loop over resolverFiles
+    // for-of loop over overiddenResolverFiles
     const loopBody = this.buildOverrideLoopBody();
     statements.push(
       factory.createForOfStatement(
         undefined,
         factory.createVariableDeclarationList([factory.createVariableDeclaration('file')], ts.NodeFlags.Const),
-        factory.createIdentifier('resolverFiles'),
+        factory.createIdentifier('overiddenResolverFiles'),
         factory.createBlock(loopBody, true),
       ),
     );
@@ -693,7 +693,13 @@ export class DataRenderer {
     const statements: ts.Statement[] = [];
 
     // noneDataSource declaration
-    statements.push(this.renderNoneDataSource());
+    const noneDataSourceStmt = ts.addSyntheticLeadingComment(
+      this.renderNoneDataSource(),
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ' extending resolvers',
+      true,
+    );
+    statements.push(noneDataSourceStmt);
 
     const grouped = groupExtendedResolvers(classified.extended);
 
