@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
-import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 import chalk from 'chalk';
 
@@ -24,7 +24,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
 
     const operations: AmplifyMigrationOperation[] = [this.buildUnlockOperation()];
     for (const stackId of stackIds) {
-      operations.push(await this.buildRetainOperation(stackId));
+      operations.push(this.buildRetainOperation(stackId));
     }
 
     return new Plan({
@@ -34,7 +34,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       implications: [
         'DeletionPolicy and UpdateReplacePolicy will be set to Retain on every resource in Gen1 CloudFormation stacks',
         'This protects your Gen2 environment from unintended impact caused by changes to Gen1 stacks',
-        'If a stack-level deny policy was applied by gen2-migration lock, it will be replaced with a permissive one (no restore)',
+        'A stack-level deny policy was applied by gen2-migration lock, it will be replaced with a permissive one (no restore)',
       ],
     });
   }
@@ -80,67 +80,55 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
     return result;
   }
 
-  private async buildRetainOperation(stackId: string): Promise<AmplifyMigrationOperation> {
+  private buildRetainOperation(stackId: string): AmplifyMigrationOperation {
     const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
     const stackName = extractStackNameFromId(stackId);
 
-    const template = await cfn.fetchTemplate(stackId);
-    for (const [logicalId, resource] of Object.entries(template.Resources)) {
-      // Skip AWS::CloudFormation::Stack references. Applying Retain to them in
-      // the parent's template triggers the parent's cascade to reconcile every
-      // child from S3, which marks any pre-created child changesets as OBSOLETE.
-      // The children still get Retain on their own resources via their own
-      // per-stack operations below — this just avoids touching the parent's
-      // child-reference entries.
-      if (resource.Type === 'AWS::CloudFormation::Stack') {
-        this.logger.info(`Skipping nested-stack reference '${logicalId}' in ${stackName}`);
-        continue;
-      }
-      resource.DeletionPolicy = 'Retain';
-      resource.UpdateReplacePolicy = 'Retain';
-    }
-
-    const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
-    const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
-      ParameterKey: p.ParameterKey,
-      UsePreviousValue: true,
-    }));
-
-    this.logger.push(`${stackName} (Create ChangeSet)`);
-    const changeset = await cfn.createChangeSet({ stackName: stackId, parameters, templateBody: template });
-    this.logger.pop();
-
-    if (!changeset) {
-      return {
-        describe: async () => [`${stackName} — no retain changes needed`],
-        validate: () => undefined,
-        execute: async () => {
-          // no-op: nothing to change for this stack
-        },
-      };
-    }
-
-    const url = cfnChangesetConsoleUrl(changeset.ChangeSetId ?? '', changeset.StackId);
-    const describeLines: string[] = [`Apply DeletionPolicy and UpdateReplacePolicy: Retain to resources in ${stackName}`];
-    if (url) {
-      describeLines.push('');
-      describeLines.push(`   Changeset URL: ${chalk.dim(url)}`);
-      describeLines.push('');
-    }
-
     return {
-      describe: async () => [describeLines.join('\n')],
-      validate: () => ({
-        description: `Ensure retain-only changes for ${stackName}`,
-        run: async () => {
-          const valid = this.isAllowedRetainChangeset(changeset);
-          return {
-            valid,
-            report: valid ? undefined : cfn.renderChangeSet(changeset),
-          };
-        },
-      }),
+      describe: async () => [`Apply DeletionPolicy and UpdateReplacePolicy: Retain to resources in ${stackName}`],
+      validate: () => undefined,
       execute: async () => {
+        const template = await cfn.fetchTemplate(stackId);
+        for (const [logicalId, resource] of Object.entries(template.Resources)) {
+          // Skip AWS::CloudFormation::Stack references. Adding Retain policies to them
+          // would be ineffective anyway because CloudFormation reconciles nested stacks
+          // from their TemplateURL during parent updates. We only retain the nested
+          // stacks' internal resources via their own per-stack operations.
+          if (resource.Type === 'AWS::CloudFormation::Stack') {
+            this.logger.info(`Skipping nested-stack reference '${logicalId}' in ${stackName}`);
+            continue;
+          }
+          resource.DeletionPolicy = 'Retain';
+          resource.UpdateReplacePolicy = 'Retain';
+        }
+
+        const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
+        const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
+          ParameterKey: p.ParameterKey,
+          UsePreviousValue: true,
+        }));
+
+        this.logger.push(`${stackName} (Create ChangeSet)`);
+        const changeset = await cfn.createChangeSet({ stackName: stackId, parameters, templateBody: template });
+        this.logger.pop();
+
+        if (!changeset) {
+          this.logger.info(`${stackName} — no retain changes needed`);
+          return;
+        }
+
+        if (!this.isAllowedRetainChangeset(changeset)) {
+          throw new AmplifyError('MigrationError', {
+            message: `Retain changeset for ${stackName} contains unexpected changes`,
+            resolution: cfn.renderChangeSet(changeset),
+          });
+        }
+
+        const url = cfnChangesetConsoleUrl(changeset.ChangeSetId ?? '', changeset.StackId);
+        if (url) {
+          this.logger.info(`Changeset URL: ${chalk.dim(url)}`);
+        }
+
         await cfn.executeChangeSet({
           changeSet: changeset,
           templateBody: template,

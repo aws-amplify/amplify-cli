@@ -49,33 +49,38 @@ const retainDetails = (attribute: 'DeletionPolicy' | 'UpdateReplacePolicy' = 'De
   { Target: { Attribute: attribute, AfterValue: 'Retain' } },
 ];
 
-function mockPlanningForStack(
+function mockExecutionForStack(
   mockCfnSend: jest.Mock,
   options: {
     template?: Record<string, unknown>;
     parameters?: Array<{ ParameterKey?: string; ParameterValue?: string }>;
     changes?: DescribeChangeSetOutput['Changes'];
     noChanges?: boolean;
-    changeSetId?: string;
-    stackId?: string;
   },
 ): void {
+  // GetTemplate
   mockCfnSend.mockResolvedValueOnce({
     TemplateBody: JSON.stringify(options.template ?? { Resources: { X: { Type: 'AWS::S3::Bucket', Properties: {} } } }),
   });
+  // DescribeStacks
   mockCfnSend.mockResolvedValueOnce({ Stacks: [{ Parameters: options.parameters ?? [] }] });
+  // CreateChangeSet
   mockCfnSend.mockResolvedValueOnce({});
   if (options.noChanges) {
     (waitUntilChangeSetCreateComplete as jest.Mock).mockRejectedValueOnce(new Error("The submitted information didn't contain changes"));
+    // DeleteChangeSet
     mockCfnSend.mockResolvedValueOnce({});
   } else {
+    // DescribeChangeSet
     mockCfnSend.mockResolvedValueOnce({
       StackName: 'stack',
       ChangeSetName: 'cs',
-      ChangeSetId: options.changeSetId ?? 'arn:aws:cloudformation:us-east-1:123:changeSet/gen2-migration-1/abc',
-      StackId: options.stackId ?? 'arn:aws:cloudformation:us-east-1:123:stack/root-stack/def',
+      ChangeSetId: 'arn:aws:cloudformation:us-east-1:123:changeSet/gen2-migration-1/abc',
+      StackId: 'arn:aws:cloudformation:us-east-1:123:stack/root-stack/def',
       Changes: options.changes ?? [{ ResourceChange: { Action: 'Modify', Details: retainDetails() } }],
     });
+    // ExecuteChangeSet
+    mockCfnSend.mockResolvedValueOnce({});
   }
 }
 
@@ -108,11 +113,12 @@ describe('AmplifyMigrationRetainStep', () => {
     jest.clearAllMocks();
   });
 
-  describe('forward', () => {
+  describe('execute', () => {
     it('executes a retain change set for the root stack when there are no nested stacks', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {});
+      // SetStackPolicy (unlock op)
       mockCfnSend.mockResolvedValueOnce({});
+      mockExecutionForStack(mockCfnSend, {});
 
       const plan = await step.forward();
       await plan.execute();
@@ -134,12 +140,10 @@ describe('AmplifyMigrationRetainStep', () => {
         .mockReturnValueOnce(pages([])) // ModelB leaf
         .mockReturnValueOnce(pages([])); // aux leaf
 
-      for (let i = 0; i < 5; i++) mockPlanningForStack(mockCfnSend, {});
-      for (let i = 0; i < 5; i++) mockCfnSend.mockResolvedValueOnce({});
+      // SetStackPolicy (unlock op)
+      mockCfnSend.mockResolvedValueOnce({});
+      for (let i = 0; i < 5; i++) mockExecutionForStack(mockCfnSend, {});
 
-      // Each CreateChangeSet carries the StackName it targeted — capture that order
-      // to verify the root comes before any descendant, and each intermediate comes
-      // before its own children.
       const plan = await step.forward();
       await plan.execute();
 
@@ -155,7 +159,8 @@ describe('AmplifyMigrationRetainStep', () => {
 
     it('submits a template with retain policies on every existing resource', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
+      mockCfnSend.mockResolvedValueOnce({}); // SetStackPolicy
+      mockExecutionForStack(mockCfnSend, {
         template: {
           Resources: {
             Bucket: { Type: 'AWS::S3::Bucket', Properties: {} },
@@ -165,7 +170,7 @@ describe('AmplifyMigrationRetainStep', () => {
       });
 
       const plan = await step.forward();
-      await plan.validate();
+      await plan.execute();
 
       const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
       expect(createCall).toBeDefined();
@@ -179,7 +184,8 @@ describe('AmplifyMigrationRetainStep', () => {
 
     it('does not apply retain to AWS::CloudFormation::Stack resources', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
+      mockCfnSend.mockResolvedValueOnce({}); // SetStackPolicy
+      mockExecutionForStack(mockCfnSend, {
         template: {
           Resources: {
             Bucket: { Type: 'AWS::S3::Bucket', Properties: {} },
@@ -189,7 +195,7 @@ describe('AmplifyMigrationRetainStep', () => {
       });
 
       const plan = await step.forward();
-      await plan.validate();
+      await plan.execute();
 
       const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
       expect(createCall).toBeDefined();
@@ -203,14 +209,16 @@ describe('AmplifyMigrationRetainStep', () => {
 
     it('forwards existing parameters to CreateChangeSet as UsePreviousValue', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
+      mockCfnSend.mockResolvedValueOnce({}); // SetStackPolicy
+      mockExecutionForStack(mockCfnSend, {
         parameters: [
           { ParameterKey: 'env', ParameterValue: 'dev' },
           { ParameterKey: 'appId', ParameterValue: 'abc' },
         ],
       });
 
-      await step.forward();
+      const plan = await step.forward();
+      await plan.execute();
 
       const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
       expect(createCall).toBeDefined();
@@ -222,7 +230,8 @@ describe('AmplifyMigrationRetainStep', () => {
 
     it('skips ExecuteChangeSet when the changeset reports no changes', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, { noChanges: true });
+      mockCfnSend.mockResolvedValueOnce({}); // SetStackPolicy
+      mockExecutionForStack(mockCfnSend, { noChanges: true });
 
       const plan = await step.forward();
       await plan.execute();
@@ -233,8 +242,8 @@ describe('AmplifyMigrationRetainStep', () => {
 
     it('overwrites the root stack policy with a permissive one before retain operations', async () => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {});
-      mockCfnSend.mockResolvedValueOnce({});
+      mockCfnSend.mockResolvedValueOnce({}); // SetStackPolicy
+      mockExecutionForStack(mockCfnSend, {});
 
       const plan = await step.forward();
       await plan.execute();
@@ -249,119 +258,74 @@ describe('AmplifyMigrationRetainStep', () => {
     });
   });
 
-  describe('forward validate', () => {
-    it('passes validation when changes are only retain-policy modifications', async () => {
+  describe('validation during execute', () => {
+    const runWithChanges = async (changes: DescribeChangeSetOutput['Changes']): Promise<Error | undefined> => {
       (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [
-          { ResourceChange: { Action: 'Modify', Details: retainDetails('DeletionPolicy') } },
-          { ResourceChange: { Action: 'Modify', Details: retainDetails('UpdateReplacePolicy') } },
-        ],
-      });
+      mockCfnSend.mockResolvedValueOnce({}); // SetStackPolicy
+      mockExecutionForStack(mockCfnSend, { changes });
 
       const plan = await step.forward();
-      const valid = await plan.validate();
+      try {
+        await plan.execute();
+        return undefined;
+      } catch (err) {
+        return err as Error;
+      }
+    };
 
-      expect(valid).toBe(true);
+    it('accepts a changeset with only retain-policy modifications', async () => {
+      const err = await runWithChanges([
+        { ResourceChange: { Action: 'Modify', Details: retainDetails('DeletionPolicy') } },
+        { ResourceChange: { Action: 'Modify', Details: retainDetails('UpdateReplacePolicy') } },
+      ]);
+      expect(err).toBeUndefined();
     });
 
-    it('fails validation when a change uses Add', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [
-          { ResourceChange: { Action: 'Add', LogicalResourceId: 'SomeResource' } },
-          { ResourceChange: { Action: 'Modify', Details: retainDetails() } },
-        ],
-      });
-
-      const plan = await step.forward();
-      const valid = await plan.validate();
-
-      expect(valid).toBe(false);
+    it('rejects a changeset that uses Add', async () => {
+      const err = await runWithChanges([
+        { ResourceChange: { Action: 'Add', LogicalResourceId: 'SomeResource' } },
+        { ResourceChange: { Action: 'Modify', Details: retainDetails() } },
+      ]);
+      expect(err?.message).toMatch(/Retain changeset for root-stack contains unexpected changes/);
     });
 
-    it('fails validation when a change uses Remove or other non-Modify action', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [{ ResourceChange: { Action: 'Remove', Details: retainDetails() } }],
-      });
-
-      const plan = await step.forward();
-      const valid = await plan.validate();
-
-      expect(valid).toBe(false);
+    it('rejects a changeset that uses Remove', async () => {
+      const err = await runWithChanges([{ ResourceChange: { Action: 'Remove', Details: retainDetails() } }]);
+      expect(err?.message).toMatch(/Retain changeset for root-stack contains unexpected changes/);
     });
 
-    it('fails validation when a Modify would replace the resource', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [{ ResourceChange: { Action: 'Modify', Replacement: 'True', Details: retainDetails() } }],
-      });
-
-      const plan = await step.forward();
-      const valid = await plan.validate();
-
-      expect(valid).toBe(false);
+    it('rejects a changeset where a Modify would replace the resource', async () => {
+      const err = await runWithChanges([{ ResourceChange: { Action: 'Modify', Replacement: 'True', Details: retainDetails() } }]);
+      expect(err?.message).toMatch(/Retain changeset for root-stack contains unexpected changes/);
     });
 
-    it('fails validation when a Modify has no Details', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [{ ResourceChange: { Action: 'Modify', Details: [] } }],
-      });
-
-      const plan = await step.forward();
-      const valid = await plan.validate();
-
-      expect(valid).toBe(false);
+    it('rejects a changeset where a Modify has no Details', async () => {
+      const err = await runWithChanges([{ ResourceChange: { Action: 'Modify', Details: [] } }]);
+      expect(err?.message).toMatch(/Retain changeset for root-stack contains unexpected changes/);
     });
 
-    it('fails validation when a detail targets an attribute other than DeletionPolicy or UpdateReplacePolicy', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [
-          {
-            ResourceChange: {
-              Action: 'Modify',
-              Details: [{ Target: { Attribute: 'Properties', AfterValue: 'whatever' } }],
-            },
+    it('rejects a changeset targeting an attribute other than DeletionPolicy or UpdateReplacePolicy', async () => {
+      const err = await runWithChanges([
+        {
+          ResourceChange: {
+            Action: 'Modify',
+            Details: [{ Target: { Attribute: 'Properties', AfterValue: 'whatever' } }],
           },
-        ],
-      });
-
-      const plan = await step.forward();
-      const valid = await plan.validate();
-
-      expect(valid).toBe(false);
+        },
+      ]);
+      expect(err?.message).toMatch(/Retain changeset for root-stack contains unexpected changes/);
     });
 
-    it('fails validation when DeletionPolicy is being set to a value other than Retain', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {
-        changes: [
-          {
-            ResourceChange: {
-              Action: 'Modify',
-              Details: [{ Target: { Attribute: 'DeletionPolicy', AfterValue: 'Delete' } }],
-            },
+    it('rejects a changeset where DeletionPolicy is being set to a value other than Retain', async () => {
+      const err = await runWithChanges([
+        {
+          ResourceChange: {
+            Action: 'Modify',
+            Details: [{ Target: { Attribute: 'DeletionPolicy', AfterValue: 'Delete' } }],
           },
-        ],
-      });
-
-      const plan = await step.forward();
-      const valid = await plan.validate();
-
-      expect(valid).toBe(false);
-    });
-
-    it('uses the "Ensure retain-only changes" description', async () => {
-      (paginateListStackResources as jest.Mock).mockReturnValueOnce(pages([]));
-      mockPlanningForStack(mockCfnSend, {});
-
-      const plan = await step.forward();
-      await plan.validate();
-
-      expect(mockLogger.push).toHaveBeenCalledWith('Ensure retain-only changes for root-stack');
+        },
+      ]);
+      expect(err?.message).toMatch(/Retain changeset for root-stack contains unexpected changes/);
     });
   });
 
