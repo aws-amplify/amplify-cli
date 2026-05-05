@@ -3,13 +3,15 @@ import {
   DataGenerator,
   parseVtlFilename,
   classifyVtlFiles,
+  ParsedExtended,
+} from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
+import {
   groupExtendedResolvers,
   computeSpliceIndexes,
   PIPELINE_3_SLOT_MAP,
   PIPELINE_4_SLOT_MAP,
-  ParsedExtended,
   ExtendedResolverGroup,
-} from '../../../../../../commands/gen2-migration/generate/amplify/data/data.generator';
+} from '../../../../../../commands/gen2-migration/generate/amplify/data/data.renderer';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';

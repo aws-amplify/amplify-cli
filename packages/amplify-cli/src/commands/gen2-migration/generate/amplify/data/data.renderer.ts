@@ -1,15 +1,197 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { newLineIdentifier, TS } from '../../ts';
-import {
-  ClassifiedVtlFiles,
-  ExtendedResolverGroup,
-  PipelineSpliceResult,
-  groupExtendedResolvers,
-  computeSpliceIndexes,
-} from './data.generator';
+import { ClassifiedVtlFiles, ParsedExtended } from './data.generator';
 
 const factory = ts.factory;
+
+// ── Resolver Utility Types ─────────────────────────────────────────────
+
+/** A grouped extended resolver pair (req + res for same slot/order). */
+export interface ExtendedResolverGroup {
+  readonly typeName: string;
+  readonly fieldName: string;
+  readonly slot: string;
+  readonly order: number;
+  readonly reqFile?: string;
+  readonly resFile?: string;
+}
+
+/** A splice operation to insert a function at a pipeline index. */
+export interface SpliceEntry {
+  readonly group: ExtendedResolverGroup;
+  readonly spliceIndex: number;
+}
+
+/** Pipeline splice result for a single typeName.fieldName. */
+export interface PipelineSpliceResult {
+  readonly typeName: string;
+  readonly fieldName: string;
+  readonly entries: readonly SpliceEntry[];
+}
+
+// ── Slot Constants ─────────────────────────────────────────────────────
+
+/** Union of all valid slots across all operation types. */
+export const ALL_SLOTS: readonly string[] = [
+  'init',
+  'preAuth',
+  'auth',
+  'postAuth',
+  'preDataLoad',
+  'postDataLoad',
+  'preUpdate',
+  'postUpdate',
+  'preSubscribe',
+  'finish',
+];
+
+/**
+ * Maps each slot to its base pipeline index for the 3-function pipeline
+ * shape (Query, Subscription, delete-Mutation): [auth0, postAuth0, DataResolverFn].
+ */
+export const PIPELINE_3_SLOT_MAP: Readonly<Record<string, number>> = {
+  init: 0,
+  preAuth: 0,
+  auth: 1,
+  postAuth: 2,
+  preDataLoad: 2,
+  postDataLoad: 3,
+  preUpdate: 2,
+  postUpdate: 3,
+  preSubscribe: 2,
+  finish: 3,
+};
+
+/**
+ * Maps each slot to its base pipeline index for the 4-function pipeline
+ * shape (create/update Mutation): [init0, auth0, postAuth0, DataResolverFn].
+ */
+export const PIPELINE_4_SLOT_MAP: Readonly<Record<string, number>> = {
+  init: 1,
+  preAuth: 1,
+  auth: 2,
+  postAuth: 3,
+  preUpdate: 3,
+  postUpdate: 4,
+  finish: 4,
+};
+
+// ── Resolver Utility Functions ─────────────────────────────────────────
+
+/** Canonical slot execution order used for sorting. */
+const SLOT_ORDER: Readonly<Record<string, number>> = Object.fromEntries(ALL_SLOTS.map((slot, i) => [slot, i]));
+
+/**
+ * Groups ParsedExtended entries by typeName.fieldName, sorts by slot
+ * pipeline execution order then numeric order, and pairs req/res templates.
+ */
+export function groupExtendedResolvers(extended: readonly ParsedExtended[]): Map<string, ExtendedResolverGroup[]> {
+  // Collect entries by field key.
+  const byField = new Map<string, ParsedExtended[]>();
+  for (const entry of extended) {
+    const key = `${entry.typeName}.${entry.fieldName}`;
+    const list = byField.get(key);
+    if (list) {
+      list.push(entry);
+    } else {
+      byField.set(key, [entry]);
+    }
+  }
+
+  const result = new Map<string, ExtendedResolverGroup[]>();
+
+  for (const [key, entries] of byField) {
+    // Sort by slot pipeline order, then by numeric order within the same slot.
+    entries.sort((a, b) => {
+      const slotDiff = (SLOT_ORDER[a.slot] ?? 0) - (SLOT_ORDER[b.slot] ?? 0);
+      if (slotDiff !== 0) return slotDiff;
+      return a.order - b.order;
+    });
+
+    // Pair req/res templates for the same slot+order.
+    const pairMap = new Map<string, { reqFile?: string; resFile?: string }>();
+    const pairOrder: string[] = [];
+
+    for (const entry of entries) {
+      const pairKey = `${entry.slot}.${entry.order}`;
+      let pair = pairMap.get(pairKey);
+      if (!pair) {
+        pair = {};
+        pairMap.set(pairKey, pair);
+        pairOrder.push(pairKey);
+      }
+      if (entry.templateType === 'req') {
+        pair.reqFile = entry.filename;
+      } else {
+        pair.resFile = entry.filename;
+      }
+    }
+
+    // Build groups in sorted order.
+    const groups: ExtendedResolverGroup[] = [];
+    for (const pairKey of pairOrder) {
+      const pair = pairMap.get(pairKey)!;
+      const [slot, orderStr] = pairKey.split('.');
+      // Use the first entry's typeName/fieldName (all entries in this key share them).
+      const sample = entries[0];
+      groups.push({
+        typeName: sample.typeName,
+        fieldName: sample.fieldName,
+        slot,
+        order: Number(orderStr),
+        reqFile: pair.reqFile,
+        resFile: pair.resFile,
+      });
+    }
+
+    result.set(key, groups);
+  }
+
+  return result;
+}
+
+/**
+ * Selects the pipeline slot map based on typeName and fieldName.
+ *
+ * Query, Subscription, and delete-Mutation use the 3-function pipeline.
+ * Other Mutations and custom types use the 4-function pipeline.
+ */
+function selectSlotMap(typeName: string, fieldName: string): Readonly<Record<string, number>> {
+  if (typeName === 'Query' || typeName === 'Subscription') {
+    return PIPELINE_3_SLOT_MAP;
+  }
+  if (typeName === 'Mutation' && fieldName.startsWith('delete')) {
+    return PIPELINE_3_SLOT_MAP;
+  }
+  return PIPELINE_4_SLOT_MAP;
+}
+
+/**
+ * Computes splice indexes for a set of grouped extended resolvers for a single field.
+ *
+ * Each entry's spliceIndex = baseSlotMap[slot] + runningOffset, where
+ * runningOffset increments by 1 for each preceding entry.
+ */
+export function computeSpliceIndexes(typeName: string, fieldName: string, groups: readonly ExtendedResolverGroup[]): PipelineSpliceResult {
+  const slotMap = selectSlotMap(typeName, fieldName);
+  const entries: SpliceEntry[] = [];
+  let runningOffset = 0;
+
+  for (const group of groups) {
+    const baseIndex = slotMap[group.slot];
+    if (baseIndex === undefined) {
+      throw new Error(`Unknown slot '${group.slot}' for ${typeName}.${fieldName}`);
+    }
+    entries.push({
+      group,
+      spliceIndex: baseIndex + runningOffset,
+    });
+    runningOffset++;
+  }
+
+  return { typeName, fieldName, entries };
+}
 
 /**
  * Options for rendering a defineData() resource file.
