@@ -1,4 +1,5 @@
 import { defineData } from '@aws-amplify/backend';
+import type { Backend } from '../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const schema = `type Transaction @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
@@ -61,19 +62,17 @@ type Mutation {
   sendMonthlyReport(email: String!): NotificationResult @function(name: "financetracker-${branchName}") @auth(rules: [{ allow: public }])
   sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult @function(name: "financetracker-${branchName}") @auth(rules: [{ allow: public }])
 }
-
 `;
 
 export const data = defineData({
   migratedAmplifyGen1DynamoDbTableMappings: [
     {
-      //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+      //The "branchName" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'x',
       modelNameToTableNameMapping: {
         Transaction: 'Transaction-adetddan7nd55gwre37yyck3vu-x',
         Budget: 'Budget-adetddan7nd55gwre37yyck3vu-x',
-        FinancialSummary:
-          'FinancialSummary-adetddan7nd55gwre37yyck3vu-x',
+        FinancialSummary: 'FinancialSummary-adetddan7nd55gwre37yyck3vu-x',
       },
     },
   ],
@@ -83,3 +82,16 @@ export const data = defineData({
   },
   schema,
 });
+
+export function applyEscapeHatches(backend: Backend) {
+  const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+  cfnGraphqlApi.additionalAuthenticationProviders = [
+    {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      userPoolConfig: {
+        userPoolId: backend.auth.resources.userPool.userPoolId,
+        awsRegion: backend.auth.stack.region,
+      },
+    },
+  ];
+}
