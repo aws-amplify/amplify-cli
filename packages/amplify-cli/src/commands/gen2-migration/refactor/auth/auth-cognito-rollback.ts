@@ -1,7 +1,7 @@
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
-import { RefactorBlueprint } from '../workflow/category-refactorer';
+import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-refactorer';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { extractStackNameFromId } from '../../_common/utils';
 import {
@@ -14,8 +14,6 @@ import {
   USER_POOL_TYPE,
   IDENTITY_POOL_TYPE,
   IDENTITY_POOL_ROLE_ATTACHMENT_TYPE,
-  USER_POOL_DOMAIN_TYPE,
-  USER_POOL_IDENTITY_PROVIDER_TYPE,
   buildImportSpec,
   extractImportLogicalIds,
   extractSocialAuthLogicalIds,
@@ -34,10 +32,6 @@ import {
 export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {
     return RESOURCE_TYPES;
-  }
-
-  protected override retainValidationTypes(): string[] {
-    return [...RESOURCE_TYPES, USER_POOL_DOMAIN_TYPE, USER_POOL_IDENTITY_PROVIDER_TYPE];
   }
 
   protected async fetchSourceStackId(): Promise<string | undefined> {
@@ -67,7 +61,10 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
       const gen2StackName = extractStackNameFromId(gen2StackId);
       baseOps.push({
         resource: this.resource,
-        validate: () => undefined,
+        validate: () => ({
+          description: `Deletion Protection: ${gen2StackName}`,
+          run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
+        }),
         describe: async () => [
           `Orphan ${
             socialProvidersResourceIds.length

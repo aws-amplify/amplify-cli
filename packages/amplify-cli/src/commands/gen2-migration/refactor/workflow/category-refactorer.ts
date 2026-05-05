@@ -84,11 +84,8 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceResources = filterResourcesByTypes(source.resolvedTemplate, this.resourceTypes());
     const targetResources = filterResourcesByTypes(target.resolvedTemplate, this.resourceTypes());
 
-    const sourceRetainResources = filterResourcesByTypes(source.resolvedTemplate, this.retainValidationTypes());
-    const targetRetainResources = filterResourcesByTypes(target.resolvedTemplate, this.retainValidationTypes());
-
-    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, sourceRetainResources);
-    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, targetRetainResources);
+    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, source.resolvedTemplate, [...sourceResources.keys()]);
+    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, target.resolvedTemplate, [...targetResources.keys()]);
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
@@ -120,15 +117,6 @@ export abstract class CategoryRefactorer implements Planner {
   protected abstract fetchSourceStackId(): Promise<string | undefined>;
   protected abstract fetchDestStackId(): Promise<string | undefined>;
   protected abstract resourceTypes(): string[];
-
-  /**
-   * Resource types validated for `DeletionPolicy: Retain` at plan time.
-   * Defaults to resourceTypes(). Override to include types that aren't moved
-   * through the refactor but still must have Retain before the refactor runs
-   */
-  protected retainValidationTypes(): string[] {
-    return this.resourceTypes();
-  }
 
   /**
    * Builds the resource mappings from source to destination.
@@ -323,28 +311,14 @@ export abstract class CategoryRefactorer implements Planner {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
   }
 
-  private buildRemovalPolicyValidation(stackId: string, resources: Map<string, CFNResource>): AmplifyMigrationOperation {
+  private buildRemovalPolicyValidation(stackId: string, template: CFNTemplate, logicalIds: string[]): AmplifyMigrationOperation {
     const stackName = extractStackNameFromId(stackId);
-    let valid = true;
-    const table = new CLITable({
-      head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
-      style: { head: [] },
-    });
-    for (const [logicalId, resource] of resources.entries()) {
-      valid = valid && resource.DeletionPolicy === 'Retain' && resource.UpdateReplacePolicy === 'Retain';
-      table.push([logicalId, resource.Type, resource.DeletionPolicy ?? '- (not set)', resource.UpdateReplacePolicy ?? '— (not set)']);
-    }
     return {
       resource: this.resource,
       describe: async () => [],
       validate: () => ({
         description: `Deletion Protection: ${stackName}`,
-        run: async (): Promise<ValidationResult> => {
-          return {
-            valid,
-            report: `Following resources are not set to Retain: \n\n${table.toString()}`,
-          };
-        },
+        run: async () => checkRetainPolicies(template, logicalIds),
       }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: async () => {},
@@ -384,4 +358,26 @@ export abstract class CategoryRefactorer implements Planner {
  */
 export function filterResourcesByTypes(template: CFNTemplate, types: readonly string[]): Map<string, CFNResource> {
   return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
+}
+
+/**
+ * Verifies that every resource at `logicalIds` in `template` has both
+ * DeletionPolicy: Retain and UpdateReplacePolicy: Retain. Missing logical
+ * IDs are skipped. Returns a ValidationResult with a CLI-table report when
+ * any checked resource is not set to Retain.
+ */
+export function checkRetainPolicies(template: CFNTemplate, logicalIds: readonly string[]): ValidationResult {
+  const table = new CLITable({
+    head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
+    style: { head: [] },
+  });
+  let valid = true;
+  for (const id of logicalIds) {
+    const resource = template.Resources[id];
+    if (!resource) continue;
+    valid = valid && resource.DeletionPolicy === 'Retain' && resource.UpdateReplacePolicy === 'Retain';
+    table.push([id, resource.Type, resource.DeletionPolicy ?? '— (not set)', resource.UpdateReplacePolicy ?? '— (not set)']);
+  }
+  if (valid) return { valid: true };
+  return { valid: false, report: `Following resources are not set to Retain:\n\n${table.toString()}` };
 }

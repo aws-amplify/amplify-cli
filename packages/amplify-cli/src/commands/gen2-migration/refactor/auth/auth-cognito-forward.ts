@@ -1,7 +1,7 @@
 import { ResourceToImport } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { RefactorBlueprint } from '../workflow/category-refactorer';
+import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-refactorer';
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
 import { extractStackNameFromId } from '../../_common/utils';
@@ -160,10 +160,6 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     return RESOURCE_TYPES;
   }
 
-  protected override retainValidationTypes(): string[] {
-    return [...RESOURCE_TYPES, USER_POOL_DOMAIN_TYPE, USER_POOL_IDENTITY_PROVIDER_TYPE];
-  }
-
   /**
    * Moves resources to holding
    *
@@ -182,7 +178,10 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
       const gen2StackName = extractStackNameFromId(gen2StackId);
       baseOps.push({
         resource: this.resource,
-        validate: () => undefined,
+        validate: () => ({
+          description: `Deletion Protection: ${gen2StackName}`,
+          run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
+        }),
         describe: async () => [
           `Orphan ${socialProvidersResourceIds.length} social auth resource(s) from '${gen2StackName}': ${socialProvidersResourceIds.join(
             ', ',
