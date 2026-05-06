@@ -872,5 +872,86 @@ describe('AmplifyMigrationLockStep', () => {
       const plan = await lockStep.forward();
       await expect(plan.execute()).rejects.toThrow(/contains unexpected changes/);
     });
+
+    it('walks a 3-layer hierarchy top-down (root → api → model) and applies retain to each', async () => {
+      // root → api-stack → model-stack (3 levels).
+      // walkStackHierarchy pages yielded in pre-order recursion order:
+      //   root's children, then api-stack's children, then model-stack's (empty).
+      paginateListStackResources
+        .mockReturnValueOnce({
+          [Symbol.asyncIterator]: async function* () {
+            yield {
+              StackResourceSummaries: [
+                {
+                  ResourceType: 'AWS::CloudFormation::Stack',
+                  LogicalResourceId: 'apitestApp',
+                  PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/api-stack/aaa',
+                },
+              ],
+            };
+          },
+        })
+        .mockReturnValueOnce({
+          [Symbol.asyncIterator]: async function* () {
+            yield {
+              StackResourceSummaries: [
+                {
+                  ResourceType: 'AWS::CloudFormation::Stack',
+                  LogicalResourceId: 'Todo',
+                  PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/model-stack/bbb',
+                },
+              ],
+            };
+          },
+        })
+        .mockReturnValueOnce({
+          [Symbol.asyncIterator]: async function* () {
+            yield { StackResourceSummaries: [] };
+          },
+        });
+
+      // classifyStacks
+      mockEmptyClassifyStacks();
+
+      // 3 retain ops (none idempotent — each fully runs). Each gets a distinct
+      // resource name in its template so we can assert retain was applied.
+      const templateForStack = (resName: string) => ({
+        Resources: { [resName]: { Type: 'AWS::S3::Bucket', Properties: {} } },
+      });
+      for (const name of ['RootRes', 'ApiRes', 'ModelRes']) {
+        mockRetainExecute(templateForStack(name), [
+          { ResourceChange: { Action: 'Modify', Details: [{ Target: { Attribute: 'DeletionPolicy', AfterValue: 'Retain' } }] } },
+        ]);
+      }
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await plan.execute();
+
+      // Assert walk order via GetTemplate call sequence.
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { GetTemplateCommand, CreateChangeSetCommand } = require('@aws-sdk/client-cloudformation');
+      const getTemplateCalls = mockCfnSend.mock.calls
+        .filter(([cmd]: [unknown]) => cmd instanceof GetTemplateCommand)
+        .map(([cmd]) => (cmd as InstanceType<typeof GetTemplateCommand>).input.StackName);
+
+      expect(getTemplateCalls).toEqual([
+        'test-root-stack',
+        'arn:aws:cloudformation:us-east-1:123:stack/api-stack/aaa',
+        'arn:aws:cloudformation:us-east-1:123:stack/model-stack/bbb',
+      ]);
+
+      // Assert every stack's submitted template has retain on its resource.
+      const createCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      expect(createCalls).toHaveLength(3);
+      for (const [, index] of createCalls.map((c, i) => [c, i] as const)) {
+        const submitted = JSON.parse(createCalls[index][0].input.TemplateBody);
+        const resourceName = ['RootRes', 'ApiRes', 'ModelRes'][index];
+        expect(submitted.Resources[resourceName].DeletionPolicy).toBe('Retain');
+        expect(submitted.Resources[resourceName].UpdateReplacePolicy).toBe('Retain');
+      }
+    });
   });
 });
