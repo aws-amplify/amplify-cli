@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="13" failures="0" errors="0" time="10.066">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2026-05-05T16:31:39" time="10.026" tests="13">
-    <testcase classname=" fitness-tracker snapshot" name=" fitness-tracker snapshot" time="0.724">
+<testsuites name="jest tests" tests="13" failures="0" errors="0" time="9.92">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2026-05-06T12:17:30" time="9.864" tests="13">
+    <testcase classname=" fitness-tracker snapshot" name=" fitness-tracker snapshot" time="0.575">
     </testcase>
-    <testcase classname=" product-catalog snapshot" name=" product-catalog snapshot" time="0.421">
+    <testcase classname=" product-catalog snapshot" name=" product-catalog snapshot" time="0.354">
     </testcase>
-    <testcase classname=" project-boards snapshot" name=" project-boards snapshot" time="0.299">
+    <testcase classname=" project-boards snapshot" name=" project-boards snapshot" time="0.26">
     </testcase>
-    <testcase classname=" backend-only snapshot" name=" backend-only snapshot" time="0.297">
+    <testcase classname=" backend-only snapshot" name=" backend-only snapshot" time="0.289">
     </testcase>
-    <testcase classname=" discussions snapshot" name=" discussions snapshot" time="0.421">
+    <testcase classname=" discussions snapshot" name=" discussions snapshot" time="0.407">
     </testcase>
-    <testcase classname=" media-vault snapshot" name=" media-vault snapshot" time="0.3">
+    <testcase classname=" media-vault snapshot" name=" media-vault snapshot" time="0.307">
     </testcase>
-    <testcase classname=" mood-board snapshot" name=" mood-board snapshot" time="0.466">
+    <testcase classname=" mood-board snapshot" name=" mood-board snapshot" time="0.396">
     </testcase>
-    <testcase classname=" finance-tracker snapshot" name=" finance-tracker snapshot" time="0.532">
+    <testcase classname=" finance-tracker snapshot" name=" finance-tracker snapshot" time="0.396">
     </testcase>
-    <testcase classname=" store-locator snapshot" name=" store-locator snapshot" time="0.215">
+    <testcase classname=" store-locator snapshot" name=" store-locator snapshot" time="0.201">
     </testcase>
-    <testcase classname=" imported-resources snapshot" name=" imported-resources snapshot" time="0.353">
+    <testcase classname=" imported-resources snapshot" name=" imported-resources snapshot" time="0.292">
     </testcase>
-    <testcase classname="AmplifyMigrationGenerateStep forward() fails validation when assessment contains unsupported resources" name="AmplifyMigrationGenerateStep forward() fails validation when assessment contains unsupported resources" time="0.006">
+    <testcase classname="AmplifyMigrationGenerateStep forward() fails validation when assessment contains unsupported resources" name="AmplifyMigrationGenerateStep forward() fails validation when assessment contains unsupported resources" time="0.005">
     </testcase>
-    <testcase classname="AmplifyMigrationGenerateStep forward() passes validation when all resources are supported" name="AmplifyMigrationGenerateStep forward() passes validation when all resources are supported" time="0.001">
+    <testcase classname="AmplifyMigrationGenerateStep forward() passes validation when all resources are supported" name="AmplifyMigrationGenerateStep forward() passes validation when all resources are supported" time="0.003">
     </testcase>
     <testcase classname="AmplifyMigrationGenerateStep forward() skips unsupported resources without instantiating generators" name="AmplifyMigrationGenerateStep forward() skips unsupported resources without instantiating generators" time="0.001">
     </testcase>

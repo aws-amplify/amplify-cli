@@ -341,7 +341,7 @@ export class AmplifyHelperTransformer {
                 undefined,
                 'backend',
                 undefined,
-                ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+                ts.factory.createTypeReferenceNode('Backend', undefined),
                 undefined,
               );
               baseParams.push(backendParam);

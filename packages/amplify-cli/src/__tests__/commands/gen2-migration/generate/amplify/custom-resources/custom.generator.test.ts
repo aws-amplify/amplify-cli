@@ -84,7 +84,7 @@ describe('CustomResourceGenerator', () => {
       expect.stringContaining('myCustom'),
       expect.objectContaining({ recursive: true }),
     );
-    expect(mockRename).toHaveBeenCalledWith(expect.stringContaining('cdk-stack.ts'), expect.stringContaining('resource.ts'));
+    expect(mockRename).toHaveBeenCalledWith(expect.stringContaining('cdk-stack.ts'), expect.stringContaining('construct.ts'));
   });
 
   it('contributes namespace import and post-define statement to backend', async () => {
@@ -95,8 +95,8 @@ describe('CustomResourceGenerator', () => {
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(addNamespaceImportSpy).toHaveBeenCalledWith('custom_myCustom', './custom/myCustom/resource');
-    expect(addPostDefineStatementSpy).toHaveBeenCalledWith(expect.stringContaining('custom_myCustom.cdkStack'));
+    expect(addNamespaceImportSpy).toHaveBeenCalledWith('myCustom', './custom/myCustom/resource');
+    expect(addPostDefineStatementSpy).toHaveBeenCalledWith(expect.stringContaining('myCustom.defineMyCustom(backend)'));
   });
 
   it('removes build artifacts', async () => {

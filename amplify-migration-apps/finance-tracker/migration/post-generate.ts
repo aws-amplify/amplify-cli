@@ -135,24 +135,25 @@ async function wireSnsTopicEnvVars(appPath: string): Promise<void> {
 
   if (content.includes('BUDGET_ALERT_TOPIC_ARN')) return;
 
-  // Find the custom resource stack name (e.g. customfinance, financereport)
-  // Pattern: new <ClassName>(backend.createStack('<stackName>'), '<stackName>')
+  // Find the custom resource define call (e.g. customfinance.defineCustomfinance(backend))
+  // Pattern: <alias>.define<Name>(backend)
   const customResMatch = content.match(
-    /new\s+(\w+)\(\s*backend\.createStack\(\s*['"](\w*finance\w*)['"]\s*\)\s*,\s*['"]\2['"]/,
+    /(\w*finance\w*)\.define\w+\(backend\)/,
   );
 
   if (!customResMatch) {
-    console.warn('Could not find custom finance resource instantiation in backend.ts');
+    console.warn('Could not find custom finance resource define call in backend.ts');
     return;
   }
 
-  const [fullMatch, , stackName] = customResMatch;
+  const [fullMatch, stackName] = customResMatch;
 
-  // Capture the instance: new X(...) -> const stackName = new X(...)
-  if (!content.includes(`const ${stackName} = ${fullMatch.split('(')[0]}`)) {
+  // Capture the instance with a prefixed name to avoid shadowing the namespace import
+  const varName = `_${stackName}`;
+  if (!content.includes(`const ${varName} =`)) {
     content = content.replace(
       fullMatch,
-      `const ${stackName} = ${fullMatch}`,
+      `const ${varName} = ${fullMatch}`,
     );
   }
 
@@ -161,11 +162,11 @@ async function wireSnsTopicEnvVars(appPath: string): Promise<void> {
 // Wire SNS topic ARNs to Lambda environment variables
 backend.${fnDir}.addEnvironment(
   'BUDGET_ALERT_TOPIC_ARN',
-  ${stackName}.budgetAlertTopic.topicArn
+  ${varName}.budgetAlertTopic.topicArn
 );
 backend.${fnDir}.addEnvironment(
   'MONTHLY_REPORT_TOPIC_ARN',
-  ${stackName}.monthlyReportTopic.topicArn
+  ${varName}.monthlyReportTopic.topicArn
 );
 `;
 
@@ -185,7 +186,7 @@ async function fixCustomResolverTableName(appPath: string): Promise<void> {
   const resolverDir = entries.find((e) => e.includes('resolver'));
   if (!resolverDir) return;
 
-  const resourcePath = path.join(customDir, resolverDir, 'resource.ts');
+  const resourcePath = path.join(customDir, resolverDir, 'construct.ts');
   if (!fsSync.existsSync(resourcePath)) return;
 
   let content = await fs.readFile(resourcePath, 'utf-8');

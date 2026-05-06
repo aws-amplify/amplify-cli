@@ -28,15 +28,22 @@ function isExcludedDependency(name: string): boolean {
   return EXCLUDED_DEPENDENCIES.has(name) || name.startsWith('@aws-cdk/');
 }
 
+/** Capitalizes the first letter of a string. */
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 /**
  * Generates a single custom resource and contributes to backend.ts.
  *
  * 1. Copies the custom resource directory (excluding package.json, yarn.lock)
  * 2. Transforms cdk-stack.ts using AmplifyHelperTransformer (Gen1 → Gen2)
- * 3. Renames cdk-stack.ts to resource.ts
- * 4. Removes build artifacts
- * 5. Merges custom resource dependencies into root package.json
- * 6. Contributes import and stack creation to backend.ts
+ * 3. Renames the class to the capitalized resource name
+ * 4. Renames cdk-stack.ts to construct.ts
+ * 5. Generates a resource.ts wrapper with defineXxx(backend) function
+ * 6. Removes build artifacts
+ * 7. Merges custom resource dependencies into root package.json
+ * 8. Contributes import and defineXxx call to backend.ts
  */
 export class CustomResourceGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
@@ -93,15 +100,16 @@ export class CustomResourceGenerator implements Planner {
           }
 
           const projectName = await readProjectName(rootDir);
-          const className = await extractClassName(sourceResourcePath);
           const dependencies = await extractDependencies(sourceResourcePath);
+          const constructClassName = capitalize(this.resourceName);
 
-          await transformResource(destResourcePath, projectName);
+          await transformResource(destResourcePath, projectName, this.resourceName, constructClassName, dependencies);
           await removeBuildArtifacts(destResourcePath);
-          await renameCdkStack(destResourcePath);
+          await renameCdkStackToConstruct(destResourcePath);
+          await generateResourceWrapper(destResourcePath, this.resourceName, constructClassName, dependencies);
 
           await this.mergeDependencies(sourceResourcePath);
-          this.contributeToBackend(className, dependencies);
+          this.contributeToBackend(constructClassName);
         },
       },
     ];
@@ -134,35 +142,14 @@ export class CustomResourceGenerator implements Planner {
   }
 
   /**
-   * Contributes import and instantiation for this custom resource to backend.ts.
+   * Contributes import and defineXxx call for this custom resource to backend.ts.
    */
-  private contributeToBackend(className: string | undefined, dependencies: string[]): void {
-    if (!className) return;
+  private contributeToBackend(constructClassName: string): void {
+    const alias = this.resourceName;
+    const defineFnName = `define${constructClassName}`;
 
-    const alias = `custom_${this.resourceName}`;
     this.backendGenerator.addNamespaceImport(alias, `./custom/${this.resourceName}/resource`);
-
-    const args = [`backend.createStack('${this.resourceName}')`, `'${this.resourceName}'`];
-
-    // Pass the backend object when the resource has dependencies
-    if (dependencies.length > 0) {
-      args.push('backend');
-    }
-
-    this.backendGenerator.addPostDefineBackendStatement(`new ${alias}.${className}(${args.join(', ')})`);
-  }
-}
-
-/**
- * Extracts the exported class name from a cdk-stack.ts file.
- */
-async function extractClassName(sourceResourcePath: string): Promise<string | undefined> {
-  const cdkStackFilePath = path.join(sourceResourcePath, 'cdk-stack.ts');
-  try {
-    const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-    return content.match(/export class (\w+)/)?.[1];
-  } catch (e) {
-    throw new Error(`Failed to read cdk-stack.ts for custom resource '${sourceResourcePath}': ${String(e)}`);
+    this.backendGenerator.addPostDefineBackendStatement(`${alias}.${defineFnName}(backend)`);
   }
 }
 
@@ -190,9 +177,7 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
     }
 
     // Detect amplify-dependent-resources-ref imports as a dependency signal.
-    // Resources using this pattern access other categories via the returned object.
     if (dependencies.length === 0 && content.includes('amplify-dependent-resources-ref')) {
-      // Extract categories from property access patterns like retVal.api.xxx or retVal.auth.xxx
       const categoryAccessRegex = /\.\s*(auth|api|storage|function|analytics)\s*\./g;
       let catMatch: RegExpExecArray | null;
       while ((catMatch = categoryAccessRegex.exec(content)) !== null) {
@@ -200,8 +185,6 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
           dependencies.push(catMatch[1]);
         }
       }
-      // If we found the import but couldn't extract specific categories,
-      // still signal that dependencies exist so backend is passed.
       if (dependencies.length === 0) {
         dependencies.push('unknown');
       }
@@ -214,9 +197,16 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
 }
 
 /**
- * Transforms a single custom resource's cdk-stack.ts (Gen1 → Gen2 patterns).
+ * Transforms cdk-stack.ts: applies AST transformations, renames the class,
+ * and adds the Backend type import.
  */
-async function transformResource(destResourcePath: string, projectName: string | undefined): Promise<void> {
+async function transformResource(
+  destResourcePath: string,
+  projectName: string | undefined,
+  resourceName: string,
+  constructClassName: string,
+  dependencies: string[],
+): Promise<void> {
   const cdkStackFilePath = path.join(destResourcePath, 'cdk-stack.ts');
   let content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
@@ -244,6 +234,25 @@ async function transformResource(destResourcePath: string, projectName: string |
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   content = printer.printFile(transformedWithBranchName);
 
+  // Rename the exported class from its original name to the capitalized resource name
+  content = content.replace(/export class \w+/, `export class ${constructClassName}`);
+
+  // Add Backend type import only when the construct has dependencies
+  // (i.e., when the transformer added a `backend` parameter).
+  // Place it after other imports to match expected output.
+  if (dependencies.length > 0) {
+    const importRegex2 = /(import.*from.*['"].*['"];?\s*\n)/g;
+    let lastImportMatch2: RegExpExecArray | null = null;
+    let regexMatch2: RegExpExecArray | null;
+    while ((regexMatch2 = importRegex2.exec(content)) !== null) {
+      lastImportMatch2 = regexMatch2;
+    }
+    if (lastImportMatch2) {
+      const insertIndex = lastImportMatch2.index + lastImportMatch2[0].length;
+      content = content.slice(0, insertIndex) + "import type { Backend } from '../../backend';\n" + content.slice(insertIndex);
+    }
+  }
+
   await fs.writeFile(cdkStackFilePath, content, { encoding: 'utf-8' });
 }
 
@@ -261,16 +270,47 @@ async function removeBuildArtifacts(destResourcePath: string): Promise<void> {
 }
 
 /**
- * Renames cdk-stack.ts to resource.ts.
+ * Renames cdk-stack.ts to construct.ts.
  */
-async function renameCdkStack(destResourcePath: string): Promise<void> {
+async function renameCdkStackToConstruct(destResourcePath: string): Promise<void> {
   const cdkStackPath = path.join(destResourcePath, 'cdk-stack.ts');
-  const resourceFilePath = path.join(destResourcePath, 'resource.ts');
+  const constructPath = path.join(destResourcePath, 'construct.ts');
   try {
-    await fs.rename(cdkStackPath, resourceFilePath);
+    await fs.rename(cdkStackPath, constructPath);
   } catch (e) {
-    throw new Error(`Failed to rename cdk-stack.ts to resource.ts for custom resource: ${String(e)}`);
+    throw new Error(`Failed to rename cdk-stack.ts to construct.ts for custom resource: ${String(e)}`);
   }
+}
+
+/**
+ * Generates a resource.ts wrapper that exports a defineXxx(backend) function.
+ */
+async function generateResourceWrapper(
+  destResourcePath: string,
+  resourceName: string,
+  constructClassName: string,
+  dependencies: string[],
+): Promise<void> {
+  const defineFnName = `define${constructClassName}`;
+  const args = [`backend.createStack('${resourceName}')`, `'${resourceName}'`];
+
+  // Pass backend when the resource has dependencies on other categories
+  if (dependencies.length > 0) {
+    args.push('backend');
+  }
+
+  const content = [
+    "import type { Backend } from '../../backend';",
+    `import { ${constructClassName} } from './construct';`,
+    '',
+    `export function ${defineFnName}(backend: Backend) {`,
+    `  return new ${constructClassName}(${args.join(', ')});`,
+    '}',
+    '',
+  ].join('\n');
+
+  const resourceTsPath = path.join(destResourcePath, 'resource.ts');
+  await fs.writeFile(resourceTsPath, content, 'utf-8');
 }
 
 /**
