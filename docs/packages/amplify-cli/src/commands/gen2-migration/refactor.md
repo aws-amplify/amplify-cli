@@ -171,6 +171,19 @@ During forward migration, Gen2 resources are moved to a temporary holding stack 
 
 Auth Cognito and UserPoolGroups are separate refactorers because they come from different Gen1 stacks but map to the same Gen2 auth stack.
 
+## Stateless Resources (No Refactor)
+
+The following resources are stateless and do not require refactoring — they are recreated in the Gen2 stack by the generate step:
+
+| Category | Service            | Reason                                         |
+| -------- | ------------------ | ---------------------------------------------- |
+| function | Lambda             | Stateless — code is redeployed                 |
+| api      | AppSync            | Stateless — schema is redeployed               |
+| api      | API Gateway        | Stateless — API is redeployed                  |
+| geo      | Map                | Stateless — recreated in Gen2                  |
+| geo      | PlaceIndex         | Stateless — recreated in Gen2                  |
+| geo      | GeofenceCollection | Unsupported for refactor (assessment marks it) |
+
 ## Validations
 
 Before execution, the `Plan` runs a validation pass over all operations. Each operation can optionally return a validation check that runs before the user is asked to confirm.
