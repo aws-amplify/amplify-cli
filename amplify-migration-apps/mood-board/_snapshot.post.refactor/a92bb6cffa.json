@@ -10,7 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -54,7 +54,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -92,7 +92,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv8V7urYBvUtPXkQqniUmq26bbqBZLRLy71Kk2tPMvJnRoDcVlCszxsK6rvB0hXTAKOhOYmynzBgvyYY7kwRI54jDMQSv6hv//GxqT8iyrP5k75CF5D2fl7kJHncixj56ZMmKTA9pgtNw0pyz4uAQ2rh+aQ3VFspVG4mK4clCPULz1Q9CTLG1zgAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/01LSwrCMBA9S/fpKAEPIF25Eal0LTEZddp0As1okZC7S5Bq4cH7a9A7DdvKzLG2bqg9XSEdMQq6sxg7KDPHS7LhziQBUhdxOoXgVXPjn15E4wlZ1tU/OThkIXkv57Vvg8e9iLGPEVmyIjNCKmEZFs45Kw4OoY+bl9ZQUPWRqJ6eLDQitF/+AFYOBuzOAAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -157,7 +157,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_o8FErENVK"
+        "UserPoolId": "us-east-1_F4GcdueKX"
       },
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
@@ -171,7 +171,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "days"
         },
-        "UserPoolId": "us-east-1_o8FErENVK"
+        "UserPoolId": "us-east-1_F4GcdueKX"
       },
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
@@ -182,7 +182,7 @@
         "AllowUnauthenticatedIdentities": "true",
         "CognitoIdentityProviders": [
           {
-            "ClientId": "6g6g6e80fqddvinci1eloo9pc9",
+            "ClientId": "774vuljc79gaapqe6n6vpqefft",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -190,13 +190,13 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_o8FErENVK"
+                  "client": "us-east-1_F4GcdueKX"
                 }
               ]
             }
           },
           {
-            "ClientId": "3nfrl5249bnjldo0t6keodptp3",
+            "ClientId": "313cg5sb1l4aisbiks3bbsv0od",
             "ProviderName": {
               "Fn::Sub": [
                 "cognito-idp.${region}.amazonaws.com/${client}",
@@ -204,7 +204,7 @@
                   "region": {
                     "Ref": "AWS::Region"
                   },
-                  "client": "us-east-1_o8FErENVK"
+                  "client": "us-east-1_F4GcdueKX"
                 }
               ]
             }
@@ -226,7 +226,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:5becba09-c1de-4903-abea-a5508ffba824",
+        "IdentityPoolId": "us-east-1:008bc527-3c3f-45f0-9a49-b070b8fc9610",
         "Roles": {
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-authRole"
@@ -503,20 +503,20 @@
     }
   },
   "Outputs": {
-    "amplifymoodboarde2esandbox5972880194authamplifyAuthUserPoolCCACFDE7Ref": {
-      "Value": "us-east-1_JGz6FiGtE"
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthUserPool5FF73B88Ref": {
+      "Value": "us-east-1_cqYuFX4HK"
     },
-    "amplifymoodboarde2esandbox5972880194authamplifyAuthUserPoolAppClient91256821Ref": {
-      "Value": "5uh7k7dh65moi4103m2s6j17u5"
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthUserPoolAppClientC738D790Ref": {
+      "Value": "3v94ud83hsep5rnh3ta3k6rgal"
     },
-    "amplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref": {
-      "Value": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e"
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthIdentityPool795773D0Ref": {
+      "Value": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
     },
-    "amplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref": {
-      "Value": "amplify-moodboard26042620-amplifyAuthauthenticatedU-epoTvTg7Pgx4"
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref": {
+      "Value": "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
     },
-    "amplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef": {
-      "Value": "amplify-moodboard26042620-amplifyAuthunauthenticate-fNLBa6hbaz77"
+    "amplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref": {
+      "Value": "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
     }
   }
 }

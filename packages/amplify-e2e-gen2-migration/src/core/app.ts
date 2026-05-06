@@ -141,7 +141,7 @@ export class App {
   public async init(): Promise<void> {
     await this.refreshCredentials();
     await ensureGen1PlaceholderApp(new AmplifyClient(this.getClientConfig()));
-    this.logger.info('amplify init');
+    this.logger.info('amplify init started');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
 
@@ -165,7 +165,7 @@ export class App {
     const tpiPath = path.join(this.targetAppPath, 'amplify', 'team-provider-info.json');
     const tpi = JSON.parse(fs.readFileSync(tpiPath, { encoding: 'utf-8' }));
     const appId = tpi[this.envName].awscloudformation.AmplifyAppId;
-    this.logger.info('amplify pull');
+    this.logger.info('amplify pull started');
     await amplifyPullNonInteractive(this.targetAppPath, {
       appId: appId,
       envName: this.envName,
@@ -542,7 +542,11 @@ export class App {
     try {
       const startTime = Date.now();
       const command = `${this.amplifyPath} ${args.join(' ')}`;
-      this.logger.info(`(→) ${command}`);
+
+      // just to have shorter log lines that fit the laptop screen
+      const commandToLog = command.replace(this.amplifyPath, path.basename(this.amplifyPath));
+
+      this.logger.info(`(→) ${commandToLog}`);
       const result = await execa(this.amplifyPath, args, {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
@@ -551,7 +555,7 @@ export class App {
       if (result.exitCode !== 0) {
         throw new Error(`${command} failed with exit code ${result.exitCode}`);
       }
-      this.logger.info(`${command} (✔ ${Date.now() - startTime}ms)`);
+      this.logger.info(`(✔) ${commandToLog} (${Date.now() - startTime}ms)`);
     } finally {
       process.chdir(originalCwd);
     }
@@ -562,7 +566,11 @@ export class App {
 
     const args = ['gen2-migration', step, '--yes', ...extraArgs];
     const command = `${this.amplifyPath} ${args.join(' ')}`;
-    this.logger.info(`(→) ${command}`);
+
+    // just to have shorter log lines that fit the laptop screen
+    const commandToLog = command.replace(this.amplifyPath, path.basename(this.amplifyPath));
+
+    this.logger.info(`(→) ${commandToLog}`);
     const result = await execa(this.amplifyPath, args, {
       cwd: this.targetAppPath,
       stdio: 'inherit',
@@ -574,7 +582,7 @@ export class App {
       throw new Error(`${command} failed with exit code ${result.exitCode}`);
     }
 
-    this.logger.info(`${command} (✔ ${Date.now() - startTime}ms)`);
+    this.logger.info(`(✔) ${commandToLog} (${Date.now() - startTime}ms)`);
   }
 
   /**

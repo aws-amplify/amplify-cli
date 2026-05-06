@@ -1,22 +1,22 @@
 [
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPINONEDSB0E64F6BName",
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4ApiId",
+    "ParameterValue": "hcupii7azrauhgy5ecxnsstcfu"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPINONEDSFA6D0E83Name",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthIdentityPool98095A40Ref",
-    "ParameterValue": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthunauthenticatedUserRole933FCA7DRef",
-    "ParameterValue": "amplify-moodboard26042620-amplifyAuthunauthenticate-fNLBa6hbaz77"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthIdentityPool795773D0Ref",
+    "ParameterValue": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
   },
   {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194dataamplifyDataGraphQLAPIE0A1E050ApiId",
-    "ParameterValue": "mqcggtoqqvgtdgfi7dhatqxh7q"
-  },
-  {
-    "ParameterKey": "referencetoamplifymoodboarde2esandbox5972880194authNestedStackauthNestedStackResource8387146BOutputsamplifymoodboarde2esandbox5972880194authamplifyAuthauthenticatedUserRole07505A06Ref",
-    "ParameterValue": "amplify-moodboard26042620-amplifyAuthauthenticatedU-epoTvTg7Pgx4"
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
   }
 ]

@@ -47,7 +47,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     const userPoolId = outputs.find((o) => o.OutputKey === USER_POOL_ID_OUTPUT_KEY_NAME)?.OutputValue;
     if (!userPoolId) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('OAuthConfigError', {
         message: `Auth stack output '${USER_POOL_ID_OUTPUT_KEY_NAME}' not found — required for OAuth credential retrieval`,
       });
     }
@@ -63,7 +63,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     const credsParam = parameters.find((p) => p.ParameterKey === HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME);
     if (!credsParam) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('OAuthConfigError', {
         message: `Auth stack parameter '${HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME}' not found`,
       });
     }
@@ -83,7 +83,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
           case GEN1_NATIVE_APP_CLIENT:
             return targetId.includes(GEN2_NATIVE_APP_CLIENT);
           default:
-            throw new AmplifyError('MigrationError', {
+            throw new AmplifyError('ResourceMappingError', {
               message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
             });
         }

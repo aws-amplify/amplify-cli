@@ -1,6 +1,7 @@
 import { RestApiGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/rest-api/rest-api.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -20,10 +21,11 @@ function writtenFile(suffix: string): string {
 describe('RestApiGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/tmp/test-output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('returns one operation with correct description', async () => {
@@ -42,12 +44,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -74,12 +82,18 @@ describe('RestApiGenerator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addPostDefineStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -103,12 +117,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root456');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -223,12 +243,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -367,12 +393,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -490,12 +522,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -525,12 +563,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -673,12 +717,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -823,12 +873,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -963,12 +1019,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myApi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -993,12 +1055,18 @@ describe('RestApiGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'api',
-      resourceName: 'myapi',
-      service: 'API Gateway',
-      key: 'api:API Gateway',
-    });
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'myapi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 

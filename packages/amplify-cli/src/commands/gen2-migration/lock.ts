@@ -501,7 +501,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private findNestedStack(nestedStacks: StackResource[], logicalIdPrefix: string) {
     const stackId = nestedStacks.find((s) => s.LogicalResourceId?.startsWith(logicalIdPrefix))?.PhysicalResourceId;
     if (!stackId) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('NestedStackNotFoundError', {
         message: `Unable to find nested stack logical id prefix: ${logicalIdPrefix}`,
       });
     }

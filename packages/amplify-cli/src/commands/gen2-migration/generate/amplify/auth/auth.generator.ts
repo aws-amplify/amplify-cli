@@ -6,6 +6,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { AuthRenderOptions, AuthRenderer, AuthTrigger, FunctionAccess } from './auth.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * Generates auth resource files and contributes to backend.ts.
@@ -23,13 +24,21 @@ export class AuthGenerator implements Planner {
   private readonly defineAuth: AuthRenderer;
   private readonly access: FunctionAccess[] = [];
   private readonly triggers: AuthTrigger[] = [];
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.defineAuth = new AuthRenderer();
+    this.logger = logger;
   }
 
   /** Registers a function's auth access permissions. */
@@ -46,16 +55,17 @@ export class AuthGenerator implements Planner {
     const userPool = await this.gen1App.aws.fetchUserPool(userPoolId);
 
     const appClientIdWeb = this.gen1App.resourceMetaOutput(this.resource, 'AppClientIDWeb');
-    const appClientId = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
+    const appClientIdNative = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
     const identityPoolId = this.gen1App.resourceMetaOutput(this.resource, 'IdentityPoolId');
 
-    const [mfaConfig, webClient, userPoolClient, identityProviders, identityGroups, identityPool] = await Promise.all([
+    this.logger.debug(`Fetching auth resources for user pool '${userPoolId}'`);
+    const [mfaConfig, webClient, nativeClient, identityProviders, identityGroups, identityPool] = await Promise.all([
       this.gen1App.aws.fetchMfaConfig(userPoolId),
-      appClientIdWeb ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdWeb) : Promise.resolve(undefined),
-      appClientId ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientId) : Promise.resolve(undefined),
+      this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdWeb),
+      this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdNative),
       this.gen1App.aws.fetchIdentityProviders(userPoolId),
       this.gen1App.aws.fetchIdentityGroups(userPoolId),
-      identityPoolId ? this.gen1App.aws.fetchIdentityPool(identityPoolId) : Promise.resolve(undefined),
+      this.gen1App.aws.fetchIdentityPool(identityPoolId),
     ]);
 
     const renderOptions: AuthRenderOptions = {
@@ -65,7 +75,7 @@ export class AuthGenerator implements Planner {
       identityGroups,
       webClient,
       mfaConfig,
-      userPoolClient,
+      nativeClient,
       triggers: this.triggers,
       access: this.access,
     };
@@ -78,6 +88,7 @@ export class AuthGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
+          this.logger.info('Rendering auth/resource.ts');
           const nodeArray = this.defineAuth.render(renderOptions);
           let content = TS.printNodes(nodeArray);
 

@@ -57,10 +57,11 @@ describe('CustomResourceGenerator', () => {
   let backendGenerator: BackendGenerator;
   let packageJsonGenerator: RootPackageJsonGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
     packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
     mockReadFile.mockResolvedValue(CDK_STACK_CONTENT);
   });

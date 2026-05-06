@@ -104,7 +104,7 @@ describe('Gen1App', () => {
         app.ensureCliInputs('storage', 'myResource');
         fail('Expected ensureCliInputs to throw');
       } catch (e: any) {
-        expect(e.name).toBe('MigrationError');
+        expect(e.name).toBe('CliInputsFileNotFoundError');
         expect(e.message).toContain('Unable to find');
         expect(e.message).toContain('cli-inputs.json');
         expect(e.resolution).toContain('latest Gen1 CLI version');

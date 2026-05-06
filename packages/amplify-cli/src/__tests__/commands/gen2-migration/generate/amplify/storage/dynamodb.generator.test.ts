@@ -1,6 +1,7 @@
 import { DynamoDBGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/storage/dynamodb.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -20,10 +21,11 @@ function writtenFile(suffix: string): string {
 describe('DynamoDBGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/tmp/test-output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('throws when table is not found in AWS', async () => {
@@ -38,12 +40,18 @@ describe('DynamoDBGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchTableDescription').mockResolvedValue(undefined);
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
 
     await expect(generator.plan()).rejects.toThrow("DynamoDB table 'myTable-abc123' not found");
   });
@@ -65,12 +73,18 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -99,12 +113,18 @@ describe('DynamoDBGenerator', () => {
     const addPostDefineCallSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendCall');
     const addPostRefactorCallSpy = jest.spyOn(backendGenerator, 'addPostRefactorCall');
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -130,18 +150,30 @@ describe('DynamoDBGenerator', () => {
 
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
 
-    const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'activity',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
-    const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'bookmarks',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const gen1 = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'activity',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
+    const gen2 = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'bookmarks',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
 
     const ops1 = await gen1.plan();
     await ops1[0].execute();
@@ -169,12 +201,18 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -237,12 +275,18 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 5 },
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'myTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'myTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -303,12 +347,18 @@ describe('DynamoDBGenerator', () => {
       StreamSpecification: { StreamEnabled: true, StreamViewType: 'NEW_AND_OLD_IMAGES' },
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'streamTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'streamTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -367,12 +417,18 @@ describe('DynamoDBGenerator', () => {
       StreamSpecification: { StreamEnabled: false },
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'noStream',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'noStream',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -447,12 +503,18 @@ describe('DynamoDBGenerator', () => {
       ],
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'gsiTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'gsiTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -523,12 +585,18 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'storage',
-      resourceName: 'binaryTable',
-      service: 'DynamoDB',
-      key: 'storage:DynamoDB',
-    });
+    const generator = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'storage',
+        resourceName: 'binaryTable',
+        service: 'DynamoDB',
+        key: 'storage:DynamoDB',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
