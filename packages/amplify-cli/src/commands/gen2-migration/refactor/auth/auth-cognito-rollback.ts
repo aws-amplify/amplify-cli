@@ -107,14 +107,10 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
 
-    const userPoolId = await this.gen2Branch.fetchUserPoolId(holdingStackName);
-    if (!userPoolId) {
-      throw new AmplifyError('MigrationError', {
-        message: `Unable to discover UserPool in holding stack '${holdingStackName}' for social auth re-import`,
-      });
-    }
-
-    const socialAuthConfig = await this.gen1App.aws.fetchSocialAuthConfig(userPoolId);
+    // The holding stack is a workflow artifact, not a nested stack under
+    // gen2Branch's root — but StackFacade methods are stackId-parameterized,
+    // so the call reads the pool inside holdingStackName directly.
+    const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(holdingStackName);
     if (!socialAuthConfig) return baseOps;
 
     const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);

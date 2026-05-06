@@ -5,7 +5,7 @@ import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-ref
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
 import { extractStackNameFromId } from '../../_common/utils';
-import { SocialAuthConfig } from '../../_common/aws-fetcher';
+import { SocialAuthConfig } from '../stack-facade';
 import CLITable from 'cli-table3';
 
 export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
@@ -135,7 +135,6 @@ export function extractImportLogicalIds(
  * Renders the describe-table for the import operation: one row per resource
  * to import, showing the CFN ResourceIdentifier tuple (slash-joined, the
  * physical identity CFN will adopt) alongside the target logical ID.
- * Shared between forward and rollback.
  */
 export function renderImportTable(resourcesToImport: ResourceToImport[], gen2StackName: string): string {
   const table = new CLITable({ head: ['Physical ID', 'Target Logical ID'], style: { head: [] } });
@@ -211,29 +210,34 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     const gen2StackId = blueprint.targetStackId;
     const template = await this.cfn.fetchTemplate(gen2StackId);
-    const importTargets = extractImportLogicalIds(template);
-    if (!importTargets) return baseOps;
 
-    const { domainLogicalId, idpLogicalIds } = importTargets;
-    const userPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
-    const socialAuthConfig = await this.gen1App.aws.fetchSocialAuthConfig(userPoolId);
-    if (!socialAuthConfig) return baseOps;
+    const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(gen2StackId);
+    if (socialAuthConfig) {
+      const importTargets = extractImportLogicalIds(template);
+      if (!importTargets) {
+        throw new AmplifyError('MigrationError', {
+          message: `Unable to determine logical IDs for social auth import`,
+        });
+      }
 
-    const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);
-    const gen2StackName = extractStackNameFromId(gen2StackId);
+      const { domainLogicalId, idpLogicalIds } = importTargets;
 
-    baseOps.push({
-      resource: this.resource,
-      validate: () => undefined,
-      describe: async () => [renderImportTable(resourcesToImport, gen2StackName)],
-      execute: () =>
-        this.cfn.importResources({
-          stackName: gen2StackId,
-          templateAdditions,
-          resourcesToImport,
-          resource: this.resource,
-        }),
-    });
+      const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);
+      const gen2StackName = extractStackNameFromId(gen2StackId);
+
+      baseOps.push({
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => [renderImportTable(resourcesToImport, gen2StackName)],
+        execute: () =>
+          this.cfn.importResources({
+            stackName: gen2StackId,
+            templateAdditions,
+            resourcesToImport,
+            resource: this.resource,
+          }),
+      });
+    }
 
     return baseOps;
   }

@@ -5,9 +5,23 @@ import {
   Stack,
   StackResource,
 } from '@aws-sdk/client-cloudformation';
+import { DescribeUserPoolCommand, ListIdentityProvidersCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from '../_common/aws-clients';
 import { CFNTemplate } from '../_common/cfn-template';
+
+/** Non-null name + type pair for a Cognito identity provider. */
+interface IdpConfig {
+  readonly providerName: string;
+  readonly providerType: string;
+}
+
+/** A UserPool's domain and identity-provider summaries. */
+export interface SocialAuthConfig {
+  readonly userPoolId: string;
+  readonly domain: string;
+  readonly providers: IdpConfig[];
+}
 
 /**
  * Read-only facade over a CloudFormation stack hierarchy.
@@ -69,5 +83,29 @@ export class StackFacade {
       });
     }
     return pools[0]?.PhysicalResourceId;
+  }
+
+  /**
+   * Returns the social auth config (domain + IDP summaries) for the
+   * UserPool in the given stack, or undefined if the pool has no
+   * domain or no IDPs (non-social-auth app).
+   */
+  public async fetchSocialAuthConfig(stackId: string): Promise<SocialAuthConfig | undefined> {
+    const userPoolId = await this.fetchUserPoolId(stackId);
+    if (!userPoolId) return undefined;
+
+    const pool = await this.clients.cognitoIdentityProvider.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
+    const domain = pool?.UserPool?.Domain;
+    if (!domain) return undefined;
+
+    const list = await this.clients.cognitoIdentityProvider.send(new ListIdentityProvidersCommand({ UserPoolId: userPoolId }));
+    const providers: IdpConfig[] = [];
+    for (const p of list?.Providers ?? []) {
+      if (!p.ProviderName) continue;
+      providers.push({ providerName: p.ProviderName, providerType: p.ProviderType ?? p.ProviderName });
+    }
+    if (providers.length === 0) return undefined;
+
+    return { userPoolId, domain, providers };
   }
 }
