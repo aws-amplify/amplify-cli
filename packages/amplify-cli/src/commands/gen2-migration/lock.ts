@@ -537,20 +537,117 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   }
 
   /**
-   * Stub — filled out in the next commit. Returns an
-   * `AmplifyMigrationOperation` that, when executed, applies retain to
-   * every resource in the stack identified by `stackId`. The `ctx` (when
-   * provided) preserves lock's existing `Resource: cat/name (service)`
-   * grouping in `Plan.describe` and nested spinner labels during execute.
+   * Returns an `AmplifyMigrationOperation` that, on execute, applies
+   * retain to every resource in the stack identified by `stackId` using
+   * the proven lazy flow: fetch template → mutate → createChangeSet →
+   * validate → executeChangeSet, all back-to-back on one stack. No window
+   * for the changeset to go OBSOLETE via a parent update in between.
+   *
+   * When `ctx` is provided the operation carries its `resource:` so
+   * `Plan.describe` groups it under
+   * `Resource: <category>/<name> (<service>)`. During execute, the
+   * matching `logger.push` labels appear on the spinner:
+   * `category/name (service)` → optional `modelName` or
+   * `subStackLabel` → `stackName (Create ChangeSet)`.
+   *
+   * Idempotent on reruns: if every resource already has retain (and
+   * every DynamoDB table has `DeletionProtectionEnabled === true`), the
+   * whole CFN round-trip is skipped. This keeps the flow safe to re-run
+   * and also avoids emitting a changeset whose only content would be
+   * Dynamic/Automatic nested-stack re-evaluations, which would clobber
+   * retained state via TemplateURL reconciliation.
    */
-  private buildRetainOperation(stackId: string, _ctx?: StackContext): AmplifyMigrationOperation {
+  private buildRetainOperation(stackId: string, ctx?: StackContext): AmplifyMigrationOperation {
+    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
     const stackName = extractStackNameFromId(stackId);
+
+    const describeSuffix = ctx?.modelName ? ` (model: ${ctx.modelName})` : ctx?.subStackLabel ? ` (${ctx.subStackLabel})` : '';
+
     return {
-      describe: async () => [`Set Retain policies on resources in '${stackName}'`],
+      resource: ctx?.resource,
+      describe: async () => [`Set Retain policies on resources in '${stackName}'${describeSuffix}`],
       validate: () => undefined,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
+      execute: async () => {
+        const pushedLabels: number = this.pushContextLabels(ctx);
+        try {
+          const template = await cfn.fetchTemplate(stackId);
+
+          const needsChange = Object.values(template.Resources).some((r) => {
+            if (r.DeletionPolicy !== 'Retain' || r.UpdateReplacePolicy !== 'Retain') return true;
+            if (r.Type === DYNAMO_RESOURCE_TYPE && r.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] !== true) return true;
+            return false;
+          });
+
+          if (!needsChange) {
+            this.logger.info(`${stackName} — no retain changes needed`);
+            return;
+          }
+
+          for (const resource of Object.values(template.Resources)) {
+            resource.DeletionPolicy = 'Retain';
+            resource.UpdateReplacePolicy = 'Retain';
+            if (resource.Type === DYNAMO_RESOURCE_TYPE) {
+              // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
+              resource.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] = true;
+            }
+          }
+
+          const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
+          const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
+            ParameterKey: p.ParameterKey,
+            UsePreviousValue: true,
+          }));
+
+          this.logger.push(`${stackName} (Create ChangeSet)`);
+          const changeset = await cfn.createChangeSet({ stackName: stackId, parameters, templateBody: template });
+          this.logger.pop();
+
+          if (!changeset) {
+            this.logger.info(`${stackName} — no retain changes needed`);
+            return;
+          }
+
+          if (!this.isAllowedRetainEverythingChangeset(changeset)) {
+            throw new AmplifyError('MigrationError', {
+              message: `Retain changeset for ${stackName} contains unexpected changes`,
+              resolution: cfn.renderChangeSet(changeset),
+            });
+          }
+
+          const url = cfnChangesetConsoleUrl(changeset.ChangeSetId ?? '', changeset.StackId);
+          if (url) {
+            this.logger.info(`Changeset URL: ${chalk.dim(url)}`);
+          }
+
+          await cfn.executeChangeSet({
+            changeSet: changeset,
+            templateBody: template,
+            captureSnapshot: false,
+          });
+        } finally {
+          for (let i = 0; i < pushedLabels; i++) this.logger.pop();
+        }
+      },
     };
+  }
+
+  /**
+   * Pushes the nested spinner labels derived from `ctx` (category/name,
+   * then modelName or subStackLabel if present). Returns the number of
+   * labels pushed so the caller can pop them in a `finally` block.
+   */
+  private pushContextLabels(ctx?: StackContext): number {
+    if (!ctx) return 0;
+    this.logger.push(`${ctx.resource.category}/${ctx.resource.resourceName} (${ctx.resource.service})`);
+    let count = 1;
+    if (ctx.modelName) {
+      this.logger.push(ctx.modelName);
+      count++;
+    } else if (ctx.subStackLabel) {
+      this.logger.push(ctx.subStackLabel);
+      count++;
+    }
+    return count;
   }
 
   /**
