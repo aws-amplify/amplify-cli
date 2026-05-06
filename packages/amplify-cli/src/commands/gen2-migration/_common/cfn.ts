@@ -317,6 +317,8 @@ export class Cfn {
       delete template.Resources[id];
     }
 
+    writeOrphanSnapshot({ stackName, logicalIds, prefix: 'orphan' });
+
     await this.update({
       stackName,
       templateBody: template,
@@ -589,6 +591,12 @@ interface WriteImportSnapshotInput extends WriteUpdateSnapshotInput {
   readonly resourcesToImport: ResourceToImport[];
 }
 
+interface WriteOrphanSnapshotInput {
+  readonly stackName: string;
+  readonly logicalIds: string[];
+  readonly prefix: string;
+}
+
 function writeImportSnapshot(input: WriteImportSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
   fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`), formatTemplateBody(input.templateBody));
@@ -608,6 +616,14 @@ function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
   fs.writeFileSync(
     path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
     JSON.stringify(input.parameters, null, 2) + '\n',
+  );
+}
+
+function writeOrphanSnapshot(input: WriteOrphanSnapshotInput): void {
+  const stackName = extractStackNameFromId(input.stackName);
+  fs.writeFileSync(
+    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.logicalIds.json`),
+    JSON.stringify(input.logicalIds, null, 2) + '\n',
   );
 }
 
