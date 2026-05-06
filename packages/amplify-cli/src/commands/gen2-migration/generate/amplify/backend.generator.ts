@@ -43,18 +43,6 @@ export class BackendGenerator implements Planner {
     this.namespaceImports.push({ alias, source });
   }
 
-  /** Adds a named import: `import { id1, id2 } from 'source';` */
-  public addNamedImport(source: string, ...identifiers: string[]): void {
-    let ids = this.namedImports.get(source);
-    if (!ids) {
-      ids = new Set<string>();
-      this.namedImports.set(source, ids);
-    }
-    for (const id of identifiers) {
-      ids.add(id);
-    }
-  }
-
   /**
    * Adds an entry to the `defineBackend({ key: alias.exportName })` call.
    */
