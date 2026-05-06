@@ -3,15 +3,15 @@
     "ResourceType": "AWS::Cognito::UserPoolDomain",
     "LogicalResourceId": "amplifyAuthUserPoolUserPoolDomain1F688B5B",
     "ResourceIdentifier": {
-      "UserPoolId": "us-east-1_5vldwMiiK",
-      "Domain": "mediavault1f08412d-1f08412d"
+      "UserPoolId": "us-east-1_10XCh2HEz",
+      "Domain": "mediavault1f08412d-1f08412d-x"
     }
   },
   {
     "ResourceType": "AWS::Cognito::UserPoolIdentityProvider",
     "LogicalResourceId": "amplifyAuthFacebookIDP7CB5B5CC",
     "ResourceIdentifier": {
-      "UserPoolId": "us-east-1_5vldwMiiK",
+      "UserPoolId": "us-east-1_10XCh2HEz",
       "ProviderName": "Facebook"
     }
   },
@@ -19,7 +19,7 @@
     "ResourceType": "AWS::Cognito::UserPoolIdentityProvider",
     "LogicalResourceId": "amplifyAuthGoogleIdPA9736819",
     "ResourceIdentifier": {
-      "UserPoolId": "us-east-1_5vldwMiiK",
+      "UserPoolId": "us-east-1_10XCh2HEz",
       "ProviderName": "Google"
     }
   }

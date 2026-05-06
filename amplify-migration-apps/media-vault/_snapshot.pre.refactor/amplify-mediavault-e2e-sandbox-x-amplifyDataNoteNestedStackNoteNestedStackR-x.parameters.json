@@ -4,12 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource62A468BEOutputsamplifymediavaulte2esandbox6b70779011dataamplifyDataAmplifyTableManagerTab6769CA1B",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault2605060-TableManagerCustomProvid-DjrgoGUQIcZ3"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthIdentityPool87FBEA1CRef",
+    "ParameterValue": "us-east-1:b6e4912b-1122-4674-8e7e-27e0fc110d94"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref",
-    "ParameterValue": "us-east-1:997e5d38-0bb1-4b0f-826d-391f051f4a86"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6dataamplifyDataGraphQLAPIE05ED0C8ApiId",
+    "ParameterValue": "7eddrzeh7benpmtjooxhgkl5pq"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -20,27 +20,27 @@
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPINONEDS974EC080Name",
-    "ParameterValue": "NONE_DS"
-  },
-  {
     "ParameterKey": "DynamoDBBillingMode",
     "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceF1566CAAOutputsamplifymediavaulte2esandbox0d6352a7e6dataamplifyDataAmplifyTableManagerTabC426DE87",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault2605061-TableManagerCustomProvid-Q8YSIfTPNWsc"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef",
-    "ParameterValue": "amplify-mediavault2605060-amplifyAuthauthenticatedU-Ku1OGzzQy9Cw"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthauthenticatedUserRole8F31C94BRef",
+    "ParameterValue": "amplify-mediavault2605061-amplifyAuthauthenticatedU-e8ZobVKZeICV"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef",
-    "ParameterValue": "amplify-mediavault2605060-amplifyAuthunauthenticate-JhcoGUsezYtG"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6dataamplifyDataGraphQLAPINONEDSF08C1A20Name",
+    "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId",
-    "ParameterValue": "7kc2hgcgend5blba74lbxge6xi"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthunauthenticatedUserRole8C755CBBRef",
+    "ParameterValue": "amplify-mediavault2605061-amplifyAuthunauthenticate-pgZt4EoKnACS"
   }
 ]

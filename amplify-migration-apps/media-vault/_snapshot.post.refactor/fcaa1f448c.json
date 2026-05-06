@@ -49,7 +49,7 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsAdminGroupRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_5vldwMiiK-AdminGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-AdminGroupRole"
   },
   {
     "ParameterKey": "unauthPolicyName",
@@ -57,7 +57,7 @@
   },
   {
     "ParameterKey": "authuserPoolGroupsBasicGroupRole",
-    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_5vldwMiiK-BasicGroupRole"
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-BasicGroupRole"
   },
   {
     "ParameterKey": "authRoleName",
@@ -73,7 +73,7 @@
   },
   {
     "ParameterKey": "authmediavault1f08412dUserPoolId",
-    "ParameterValue": "us-east-1_5vldwMiiK"
+    "ParameterValue": "us-east-1_10XCh2HEz"
   },
   {
     "ParameterKey": "s3PermissionsAuthenticatedProtected",

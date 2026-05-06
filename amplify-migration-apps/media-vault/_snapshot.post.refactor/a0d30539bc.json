@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -43,8 +43,8 @@
         "Description": "override success",
         "GroupName": "Admin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_5vldwMiiK-AdminGroupRole",
-        "UserPoolId": "us-east-1_5vldwMiiK"
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-AdminGroupRole",
+        "UserPoolId": "us-east-1_10XCh2HEz"
       },
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
@@ -64,7 +64,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:d4cd0b09-b7f6-4cab-a246-c2f34d27757b"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -77,7 +77,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_5vldwMiiK",
+              "us-east-1_10XCh2HEz",
               "-AdminGroupRole"
             ]
           ]
@@ -90,8 +90,8 @@
         "Description": "override success",
         "GroupName": "Basic",
         "Precedence": 2,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_5vldwMiiK-BasicGroupRole",
-        "UserPoolId": "us-east-1_5vldwMiiK"
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-BasicGroupRole",
+        "UserPoolId": "us-east-1_10XCh2HEz"
       },
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
@@ -111,7 +111,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:d4cd0b09-b7f6-4cab-a246-c2f34d27757b"
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -124,7 +124,7 @@
           "Fn::Join": [
             "",
             [
-              "us-east-1_5vldwMiiK",
+              "us-east-1_10XCh2HEz",
               "-BasicGroupRole"
             ]
           ]
@@ -134,10 +134,10 @@
   },
   "Outputs": {
     "AdminGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_5vldwMiiK-AdminGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-AdminGroupRole"
     },
     "BasicGroupRole": {
-      "Value": "arn:aws:iam::123456789012:role/us-east-1_5vldwMiiK-BasicGroupRole"
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-BasicGroupRole"
     }
   }
 }

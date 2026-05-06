@@ -165,6 +165,6 @@
   },
   {
     "ParameterKey": "hostedUIProviderCreds",
-    "UsePreviousValue": true
+    "ParameterValue": "****"
   }
 ]

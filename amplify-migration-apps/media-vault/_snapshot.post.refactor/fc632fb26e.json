@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "mediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucket28E0F4A7": {
+    "mediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucketF165D505": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
