@@ -848,9 +848,14 @@ export class AuthRenderer {
 
     const properties = [
       ...providerAssignments,
-      factory.createPropertyAssignment(
-        factory.createIdentifier('callbackUrls'),
-        factory.createArrayLiteralExpression(callbackUrls?.map((url) => factory.createStringLiteral(url))),
+      ts.addSyntheticLeadingComment(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('callbackUrls'),
+          factory.createArrayLiteralExpression(callbackUrls?.map((url) => factory.createStringLiteral(url))),
+        ),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.',
+        true,
       ),
       factory.createPropertyAssignment(
         factory.createIdentifier('logoutUrls'),
@@ -1254,9 +1259,14 @@ export class AuthRenderer {
 
       if (userPoolClient.CallbackURLs?.length) {
         oAuthProps.push(
-          factory.createPropertyAssignment(
-            'callbackUrls',
-            factory.createArrayLiteralExpression(userPoolClient.CallbackURLs.map((url) => factory.createStringLiteral(url))),
+          ts.addSyntheticLeadingComment(
+            factory.createPropertyAssignment(
+              'callbackUrls',
+              factory.createArrayLiteralExpression(userPoolClient.CallbackURLs.map((url) => factory.createStringLiteral(url))),
+            ),
+            ts.SyntaxKind.SingleLineCommentTrivia,
+            ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.',
+            true,
           ),
         );
       }

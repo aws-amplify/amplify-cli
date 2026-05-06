@@ -845,6 +845,7 @@ describe('AuthGenerator', () => {
               clientId: secret('GOOGLE_CLIENT_ID'),
               clientSecret: secret('GOOGLE_CLIENT_SECRET'),
             },
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
           },
@@ -863,6 +864,7 @@ describe('AuthGenerator', () => {
         const userPool = backend.auth.resources.userPool;
         userPool.addClient('NativeAppClient', {
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
           },
@@ -956,6 +958,7 @@ describe('AuthGenerator', () => {
                 givenName: 'given_name',
               },
             },
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: [],
             logoutUrls: [],
           },
@@ -1100,6 +1103,7 @@ describe('AuthGenerator', () => {
                 },
               },
             ],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
           },
@@ -1118,6 +1122,7 @@ describe('AuthGenerator', () => {
         const userPool = backend.auth.resources.userPool;
         userPool.addClient('NativeAppClient', {
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
           },
@@ -1483,6 +1488,7 @@ describe('AuthGenerator', () => {
         const userPool = backend.auth.resources.userPool;
         userPool.addClient('NativeAppClient', {
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
             flows: {
@@ -1582,6 +1588,7 @@ describe('AuthGenerator', () => {
               clientId: secret('GOOGLE_CLIENT_ID'),
               clientSecret: secret('GOOGLE_CLIENT_SECRET'),
             },
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
             logoutUrls: ['https://example.com/logout'],
           },
@@ -1608,6 +1615,7 @@ describe('AuthGenerator', () => {
             UserPoolClientIdentityProvider.GOOGLE,
           ],
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['myapp://callback'],
             logoutUrls: ['myapp://logout'],
             flows: {
