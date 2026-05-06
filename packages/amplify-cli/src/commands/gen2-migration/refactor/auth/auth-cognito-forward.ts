@@ -60,10 +60,7 @@ export function buildImportSpec(
     const logicalId = idpLogicalIds.get(provider.providerName);
     if (!logicalId) {
       throw new AmplifyError('MigrationError', {
-        message:
-          `Identity provider '${provider.providerName}' exists on the UserPool but has no matching ` +
-          `UserPoolIdentityProvider resource in the Gen2 template. Add it to amplify/auth/resource.ts ` +
-          `and regenerate before refactoring.`,
+        message: `Identity provider '${provider.providerName}' exists on the UserPool but has no matching UserPoolIdentityProvider resource in the Gen2 template.`,
       });
     }
 
