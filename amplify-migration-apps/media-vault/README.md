@@ -390,9 +390,9 @@ npm run post-generate
 
 > [!NOTE]
 > If you're deploying from your own machine (e.g. validating hosting manually
-> instead of running the CLI's automated e2e), run `npm run post-generate-local`
-> instead of `npm run post-generate`. The `-local` variant skips the
-> `monkeyPatchAuthSecret` step, which stubs out `secret()` with plaintext
+> instead of running the CLI's automated e2e), set `SKIP_AUTH_SECRET_PATCH=1`
+> on the command: `SKIP_AUTH_SECRET_PATCH=1 npm run post-generate`. This skips
+> the `monkeyPatchAuthSecret` step, which stubs out `secret()` with plaintext
 > placeholders — that's only appropriate for the automated e2e harness.
 
 ```console
