@@ -291,8 +291,14 @@ export class Cfn {
   }
 
   /**
-   * Orphans resources from a stack by removing them from the template and
-   * an UpdateStack. Target resources must have `DeletionPolicy: Retain`
+   * Removes resources from a stack's template (they become CFN-unmanaged).
+   *
+   * Callers MUST have verified that every targeted logical ID has
+   * DeletionPolicy: Retain AND UpdateReplacePolicy: Retain before invoking,
+   * typically via a preceding checkRetainPolicies validation op. This method
+   * also throws at execute time if any Retain policy is missing, but by then
+   * the validation phase has passed and the user sees a later error than
+   * ideal.
    */
   public async orphan(params: {
     readonly stackName: string;

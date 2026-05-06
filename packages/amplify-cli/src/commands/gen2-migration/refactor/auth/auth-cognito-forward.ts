@@ -40,6 +40,7 @@ export function buildImportSpec(
 
   templateAdditions[domainLogicalId] = {
     Type: USER_POOL_DOMAIN_TYPE,
+    // Retain so CFN import can adopt the live physical resource without deleting it on subsequent stack updates.
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
     Properties: {
