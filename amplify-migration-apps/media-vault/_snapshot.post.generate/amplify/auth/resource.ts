@@ -5,6 +5,7 @@ import { CfnResource, Duration } from 'aws-cdk-lib';
 import {
   OAuthScope,
   UserPoolClientIdentityProvider,
+  CfnUserPoolDomain,
 } from 'aws-cdk-lib/aws-cognito';
 import type { Backend } from '../backend';
 
@@ -18,15 +19,23 @@ export const auth = defineAuth({
       google: {
         clientId: secret('GOOGLE_CLIENT_ID'),
         clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+        scopes: ['openid', 'email', 'profile'],
         attributeMapping: {
           email: 'email',
+          custom: {
+            username: 'sub',
+          },
         },
       },
       facebook: {
         clientId: secret('FACEBOOK_CLIENT_ID'),
         clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
+        scopes: ['email', 'public_profile'],
         attributeMapping: {
           email: 'email',
+          custom: {
+            username: 'id',
+          },
         },
       },
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
@@ -88,6 +97,8 @@ export function applyEscapeHatches(backend: Backend) {
       temporaryPasswordValidityDays: 7,
     },
   };
+  const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+  cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders');
   const cfnUserPoolClient =
     backend.auth.resources.cfnResources.cfnUserPoolClient;
   cfnUserPoolClient.allowedOAuthFlows = ['code'];
@@ -148,9 +159,18 @@ export function applyEscapeHatches(backend: Backend) {
           'AWS::Cognito::UserPoolClient',
           'AWS::Cognito::IdentityPoolRoleAttachment',
           'AWS::Cognito::UserPoolGroup',
+          'AWS::Cognito::UserPoolDomain',
+          'AWS::Cognito::UserPoolIdentityProvider',
         ].includes(c.cfnResourceType)
     )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }
+}
+
+export function postRefactor(backend: Backend) {
+  const cfnUserPoolDomain = backend.auth.resources.userPool.node.findChild(
+    'UserPoolDomain'
+  ).node.defaultChild as CfnUserPoolDomain;
+  cfnUserPoolDomain.domain = 'mediavault1f08412d-1f08412d';
 }

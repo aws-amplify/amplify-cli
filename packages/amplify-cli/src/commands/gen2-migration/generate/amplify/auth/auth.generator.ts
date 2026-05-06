@@ -89,6 +89,9 @@ export class AuthGenerator implements Planner {
           this.backendGenerator.addNamespaceImport('auth', './auth/resource');
           this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
           this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'auth', extraArgs: [] });
+          if (userPool.Domain) {
+            this.backendGenerator.addPostRefactorCall('auth.postRefactor(backend)');
+          }
         },
       },
     ];

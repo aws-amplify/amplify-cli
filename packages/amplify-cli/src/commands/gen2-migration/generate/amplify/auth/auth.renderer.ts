@@ -186,6 +186,7 @@ export class AuthRenderer {
     const additionalImportDeclarations = this.renderCdkImports(options, hasIdentityProviders);
     const backendTypeImport = this.renderBackendTypeImport();
     const applyEscapeHatchesDeclarations = this.renderApplyEscapeHatches(options, hasIdentityProviders);
+    const postRefactorDeclaration = options.userPool.Domain ? this.renderPostRefactor(options) : undefined;
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -212,6 +213,10 @@ export class AuthRenderer {
 
     allNodes.push(newLineIdentifier);
     allNodes.push(applyEscapeHatchesDeclarations);
+    if (postRefactorDeclaration) {
+      allNodes.push(newLineIdentifier);
+      allNodes.push(postRefactorDeclaration);
+    }
 
     return factory.createNodeArray(allNodes as ts.Statement[]);
   }
@@ -232,6 +237,10 @@ export class AuthRenderer {
   private renderApplyEscapeHatches(options: AuthRenderOptions, hasIdentityProviders: boolean): ts.FunctionDeclaration {
     const escapeHatchStatements = this.buildEscapeHatchStatements(options, hasIdentityProviders);
     return TS.exportedFunction('applyEscapeHatches', escapeHatchStatements);
+  }
+
+  private renderPostRefactor(options: AuthRenderOptions): ts.FunctionDeclaration {
+    return TS.exportedFunction('postRefactor', this.buildDomainOverrideStatements(options.userPool.Domain));
   }
 
   private renderStandardAuth(options: AuthRenderOptions, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
@@ -1054,7 +1063,6 @@ export class AuthRenderer {
 
     if (hasIdentityProviders) {
       statements.push(...this.buildProviderSetupStatements());
-      statements.push(...this.buildDomainOverrideStatements(options.userPool.Domain));
     }
 
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
@@ -1117,6 +1125,13 @@ export class AuthRenderer {
       if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
       imports['aws-cdk-lib/aws-cognito'].add('OAuthScope');
       imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
+    }
+
+    // CfnUserPoolDomain is the only symbol postRefactor() needs. Import whenever
+    // a domain is present, independent of social providers — a hosted UI domain
+    // can exist without IDPs.
+    if (options.userPool.Domain) {
+      if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
       imports['aws-cdk-lib/aws-cognito'].add('CfnUserPoolDomain');
     }
 

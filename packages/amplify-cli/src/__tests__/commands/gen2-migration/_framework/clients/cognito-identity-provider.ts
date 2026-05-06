@@ -127,6 +127,7 @@ export class CognitoIdentityProviderMock {
         return {
           UserPool: {
             Id: input.UserPoolId,
+            Domain: authCliInputs.cognitoConfig.hostedUIDomainName,
             EmailVerificationMessage: authCliInputs.cognitoConfig.emailVerificationMessage,
             EmailVerificationSubject: authCliInputs.cognitoConfig.emailVerificationSubject,
             SchemaAttributes: template.Resources.UserPool.Properties.Schema,
