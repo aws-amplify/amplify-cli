@@ -13,7 +13,7 @@ export class Customfinance extends Construct {
         this.budgetAlertTopic = new sns.Topic(this, 'BudgetAlertTopic', {
             displayName: 'Fin Tracker Budget Alerts',
         });
-        this.budgetAlertTopic.addSubscription(new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com'));
+        this.budgetAlertTopic.addSubscription(new subscriptions.EmailSubscription('example@gmail.com'));
         new cdk.CfnOutput(this, 'BudgetAlertTopicArn', {
             value: this.budgetAlertTopic.topicArn,
             description: 'SNS Topic ARN for budget alerts',
@@ -23,7 +23,7 @@ export class Customfinance extends Construct {
         this.monthlyReportTopic = new sns.Topic(this, 'MonthlyReportTopic', {
             displayName: 'Finance Tracker Monthly Reports',
         });
-        this.monthlyReportTopic.addSubscription(new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com'));
+        this.monthlyReportTopic.addSubscription(new subscriptions.EmailSubscription('example@gmail.com'));
         new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
             value: this.monthlyReportTopic.topicArn,
             description: 'SNS Topic ARN for monthly reports',

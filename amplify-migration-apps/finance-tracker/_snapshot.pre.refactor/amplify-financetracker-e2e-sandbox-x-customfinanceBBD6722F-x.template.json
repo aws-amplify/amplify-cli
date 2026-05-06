@@ -37,7 +37,7 @@
     "customfinanceBudgetAlertTopicsanjanaravikumarazgmailcom068B0461": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Endpoint": "example@gmail.com",
         "Protocol": "email",
         "TopicArn": {
           "Ref": "customfinanceBudgetAlertTopic1D98F61E"
@@ -46,7 +46,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/BudgetAlertTopic/sanjana.ravikumar.az@gmail.com/Resource"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/BudgetAlertTopic/example@gmail.com/Resource"
       }
     },
     "customfinanceMonthlyReportTopic558EAC22": {
@@ -85,7 +85,7 @@
     "customfinanceMonthlyReportTopicsanjanaravikumarazgmailcom16F3B397": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Endpoint": "example@gmail.com",
         "Protocol": "email",
         "TopicArn": {
           "Ref": "customfinanceMonthlyReportTopic558EAC22"
@@ -94,7 +94,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/MonthlyReportTopic/sanjana.ravikumar.az@gmail.com/Resource"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance/customfinance/MonthlyReportTopic/example@gmail.com/Resource"
       }
     },
     "CDKMetadata": {

@@ -15,7 +15,7 @@
     "BudgetAlertTopicsanjanaravikumarazgmailcom9C5B945F": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Endpoint": "example@gmail.com",
         "Protocol": "email",
         "TopicArn": {
           "Ref": "BudgetAlertTopicF20DF526"
@@ -31,7 +31,7 @@
     "MonthlyReportTopicsanjanaravikumarazgmailcomFBA75CE0": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": "sanjana.ravikumar.az@gmail.com",
+        "Endpoint": "example@gmail.com",
         "Protocol": "email",
         "TopicArn": {
           "Ref": "MonthlyReportTopic8D223100"

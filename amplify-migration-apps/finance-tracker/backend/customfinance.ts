@@ -24,7 +24,7 @@ export class cdkStack extends cdk.Stack {
     });
 
     this.budgetAlertTopic.addSubscription(
-      new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com')
+      new subscriptions.EmailSubscription('example@gmail.com')
     );
 
     new cdk.CfnOutput(this, 'BudgetAlertTopicArn', {
@@ -39,7 +39,7 @@ export class cdkStack extends cdk.Stack {
     });
 
     this.monthlyReportTopic.addSubscription(
-      new subscriptions.EmailSubscription('sanjana.ravikumar.az@gmail.com')
+      new subscriptions.EmailSubscription('example@gmail.com')
     );
 
     new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
