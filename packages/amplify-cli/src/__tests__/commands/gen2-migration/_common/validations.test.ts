@@ -751,7 +751,7 @@ describe('AmplifyGen2MigrationValidations', () => {
       mockCfnSend.mockResolvedValue({ StackPolicyBody: undefined });
 
       await expect(validations.validateLockStatus()).rejects.toMatchObject({
-        name: 'MigrationError',
+        name: 'StackPolicyError',
         message: 'Stack is not locked',
         resolution: 'Run the lock command before proceeding with migration.',
       });
@@ -817,7 +817,7 @@ describe('AmplifyGen2MigrationValidations', () => {
       await expect(validations.validateLockStatus()).resolves.not.toThrow();
     });
 
-    it('should throw MigrationError when stack policy has wrong effect', async () => {
+    it('should throw StackPolicyError when stack policy has wrong effect', async () => {
       jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
         mock: {
           awscloudformation: {
@@ -842,7 +842,7 @@ describe('AmplifyGen2MigrationValidations', () => {
       });
 
       await expect(validations.validateLockStatus()).rejects.toMatchObject({
-        name: 'MigrationError',
+        name: 'StackPolicyError',
         message: 'Stack policy does not match expected lock policy',
         resolution: 'Run the lock command to set the correct stack policy.',
       });
@@ -873,7 +873,7 @@ describe('AmplifyGen2MigrationValidations', () => {
       });
 
       await expect(validations.validateLockStatus()).rejects.toMatchObject({
-        name: 'MigrationError',
+        name: 'StackPolicyError',
         message: 'Stack policy does not match expected lock policy',
         resolution: 'Run the lock command to set the correct stack policy.',
       });

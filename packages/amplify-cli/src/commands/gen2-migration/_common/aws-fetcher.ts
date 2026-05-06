@@ -24,8 +24,8 @@ import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
 import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
-import { AwsClients } from './aws-clients';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { AwsClients } from './aws-clients';
 
 /**
  * Encapsulates all AWS SDK calls needed during Gen1 app introspection.
@@ -46,7 +46,10 @@ export class AwsFetcher {
   public async fetchUserPool(userPoolId: string): Promise<UserPoolType> {
     const { UserPool } = await this.clients.cognitoIdentityProvider.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
     if (!UserPool) {
-      throw new Error(`User pool '${userPoolId}' not found`);
+      throw new AmplifyError('UserPoolNotFoundError', {
+        message: `User pool '${userPoolId}' not found`,
+        resolution: 'Verify the Cognito User Pool exists and the CLI has the correct AWS credentials and region configured.',
+      });
     }
     return UserPool;
   }
@@ -189,7 +192,10 @@ export class AwsFetcher {
     const { items } = await this.clients.apiGateway.send(new GetResourcesCommand({ restApiId }));
     const root = items?.find((r) => r.path === '/');
     if (!root?.id) {
-      throw new Error(`Root resource not found for REST API '${restApiId}'`);
+      throw new AmplifyError('RestApiResourceNotFoundError', {
+        message: `Root resource not found for REST API '${restApiId}'`,
+        resolution: 'Verify the API Gateway REST API exists and the CLI has the correct AWS credentials and region configured.',
+      });
     }
     return root.id;
   }

@@ -2,6 +2,7 @@ import { ReferenceAuthGenerator } from '../../../../../../commands/gen2-migratio
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -29,10 +30,11 @@ function writtenFile(suffix: string): string {
 describe('ReferenceAuthGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('generates reference auth resource.ts and backend.ts', async () => {
@@ -56,7 +58,7 @@ describe('ReferenceAuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchGroupsByUserPoolId').mockResolvedValue(undefined);
 
-    const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 

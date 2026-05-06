@@ -6,6 +6,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
 import { S3Renderer, AccessPatterns, Permission, FunctionAccess, StorageTriggers } from './s3.renderer';
+import { SpinningLogger } from '../../../_common/spinning-logger';
 
 /**
  * CLI v1 permission types from cli-inputs.json.
@@ -35,13 +36,21 @@ export class S3Generator implements Planner {
   private readonly renderer: S3Renderer;
   private readonly functionAccess: FunctionAccess[] = [];
   private readonly triggers: StorageTriggers = {};
+  private readonly logger: SpinningLogger;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    outputDir: string,
+    resource: DiscoveredResource,
+    logger: SpinningLogger,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.resource = resource;
     this.renderer = new S3Renderer();
+    this.logger = logger;
   }
 
   /**
@@ -62,6 +71,7 @@ export class S3Generator implements Planner {
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const bucketName = this.gen1App.resourceMetaOutput(this.resource, 'BucketName');
 
+    this.logger.debug(`Fetching S3 bucket config '${bucketName}'`);
     const [accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketAccelerate(bucketName),
       this.gen1App.aws.fetchBucketVersioning(bucketName),
@@ -76,6 +86,7 @@ export class S3Generator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/storage/resource.ts'],
         execute: async () => {
+          this.logger.info('Rendering storage/resource.ts');
           const nodes = this.renderer.render({
             name: bucketName,
             access: this.buildAccessPatterns(),

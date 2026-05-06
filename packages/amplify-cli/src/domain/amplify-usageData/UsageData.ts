@@ -226,6 +226,14 @@ export class UsageData implements IUsageData {
       Object.fromEntries(this.codePathDurations),
       this.flow.getFlowReport() as IFlowReport,
     );
+
+    if (payload.input?.command === 'gen2-migration' && this.input.subCommands && this.input.subCommands.length === 1) {
+      // hack to record sub-commands since gen2-migration commands are not
+      // implemented as plugins. without this, all subcommands would report 'core'.
+      payload.input.plugin = this.input.subCommands[0];
+      payload.flowReport.input.plugin = this.input.subCommands[0];
+    }
+
     payload.pushNormalizationFactor = this.pushNormalizationFactor;
     await this.send(payload);
 

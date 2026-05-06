@@ -1,3 +1,4 @@
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 import { AnalyticsKinesisGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/analytics/kinesis.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { createGen1App } from '../../_helpers/create-gen1-app';
@@ -24,10 +25,11 @@ function writtenFile(suffix: string): string {
 describe('AnalyticsKinesisGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('throws when resourceMeta is missing', async () => {
@@ -40,12 +42,18 @@ describe('AnalyticsKinesisGenerator', () => {
     jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
     (gen1App.clients as any).cloudFormation = { send: jest.fn() };
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'analytics',
-      resourceName: 'myKinesis',
-      service: 'Kinesis',
-      key: 'analytics:Kinesis',
-    });
+    const generator = new AnalyticsKinesisGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'analytics',
+        resourceName: 'myKinesis',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      },
+      logger,
+    );
 
     await expect(generator.plan()).rejects.toThrow();
   });
@@ -77,12 +85,18 @@ describe('AnalyticsKinesisGenerator', () => {
       }),
     };
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'analytics',
-      resourceName: 'todoKinesis',
-      service: 'Kinesis',
-      key: 'analytics:Kinesis',
-    });
+    const generator = new AnalyticsKinesisGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'analytics',
+        resourceName: 'todoKinesis',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[1].execute();
 
@@ -153,12 +167,18 @@ describe('AnalyticsKinesisGenerator', () => {
       }),
     };
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'analytics',
-      resourceName: 'myStream',
-      service: 'Kinesis',
-      key: 'analytics:Kinesis',
-    });
+    const generator = new AnalyticsKinesisGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'analytics',
+        resourceName: 'myStream',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[1].execute();
 
@@ -229,12 +249,18 @@ describe('AnalyticsKinesisGenerator', () => {
       }),
     };
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'analytics',
-      resourceName: 'todoKinesis',
-      service: 'Kinesis',
-      key: 'analytics:Kinesis',
-    });
+    const generator = new AnalyticsKinesisGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'analytics',
+        resourceName: 'todoKinesis',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -282,12 +308,18 @@ describe('AnalyticsKinesisGenerator', () => {
 
     const { transmute } = require('cdk-from-cfn');
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
-      category: 'analytics',
-      resourceName: 'todoKinesis',
-      service: 'Kinesis',
-      key: 'analytics:Kinesis',
-    });
+    const generator = new AnalyticsKinesisGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'analytics',
+        resourceName: 'todoKinesis',
+        service: 'Kinesis',
+        key: 'analytics:Kinesis',
+      },
+      logger,
+    );
     const ops = await generator.plan();
     await ops[0].execute();
 

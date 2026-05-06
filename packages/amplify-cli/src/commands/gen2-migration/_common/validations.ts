@@ -28,7 +28,7 @@ export class AmplifyGen2MigrationValidations {
   public async validateDrift(): Promise<void> {
     const result = await new AmplifyDriftDetector(this.context, this.logger).detect();
     if (result.code !== 0) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('DriftDetectedError', {
         message: result.report?.trim() ?? 'Drift detected',
         resolution: 'Inspect the drift report above and resolve the drift',
       });
@@ -40,7 +40,7 @@ export class AmplifyGen2MigrationValidations {
 
     const { stdout: statusOutput } = await execa('git', ['status', '--porcelain']);
     if (statusOutput.trim()) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('UncommittedChangesError', {
         message: 'Working directory has uncommitted changes',
         resolution: 'Commit or stash your changes before proceeding with migration.',
       });
@@ -154,7 +154,7 @@ export class AmplifyGen2MigrationValidations {
     );
 
     if (!StackPolicyBody) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackPolicyError', {
         message: 'Stack is not locked',
         resolution: 'Run the lock command before proceeding with migration.',
       });
@@ -166,7 +166,7 @@ export class AmplifyGen2MigrationValidations {
     );
 
     if (!hasLockStatement) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError('StackPolicyError', {
         message: 'Stack policy does not match expected lock policy',
         resolution: 'Run the lock command to set the correct stack policy.',
       });
