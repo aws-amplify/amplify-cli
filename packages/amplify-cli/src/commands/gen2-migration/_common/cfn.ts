@@ -325,7 +325,12 @@ export class Cfn {
 
   /**
    * Imports existing physical resources into a stack via CreateChangeSet(IMPORT).
-   * The template must include resource definitions matching the physical state.
+   *
+   * templateAdditions: what the imported resources should look like in the
+   * stack's template — merged into the current template by logical ID.
+   *
+   * resourcesToImport: which physical resources to adopt, keyed by the same
+   * logical IDs as templateAdditions.
    */
   public async importResources(params: {
     readonly stackName: string;
