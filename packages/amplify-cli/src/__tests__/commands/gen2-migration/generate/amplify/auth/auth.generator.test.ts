@@ -1846,7 +1846,7 @@ describe('AuthGenerator', () => {
             providerSetupPropertyValue.node &&
             providerSetupPropertyValue.node.id.toLowerCase().endsWith('idp')
           ) {
-            userPoolClient.node.addDependency(providerSetupPropertyValue);
+            nativeUserPoolClient.node.addDependency(providerSetupPropertyValue);
           }
         });
         for (const cfnResource of backend.auth.stack.node
