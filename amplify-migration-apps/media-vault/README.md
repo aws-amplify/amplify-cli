@@ -439,8 +439,12 @@ until you add it. There are three places to update:
 
 2. **Google developer console** — in _Clients_ → _GoogleWebClient1_ →
    _Authorized JavaScript origins_ and _Authorized redirect URIs_, add the
-   Gen2 Cognito domain (found in `amplify_outputs.json` under
-   `auth.oauth.domain` after the Gen2 deploy):
+   Gen2 Cognito domain. To find it: open the
+   [Cognito console](https://console.aws.amazon.com/cognito/), select your
+   user pool, and note the domain under _App integration_ → _Domain_.
+
+   ![](./images/cognito-domain-prefix.png)
+
    - `https://<gen2-cognito-domain>/`
    - `https://<gen2-cognito-domain>/oauth2/idpresponse/`
 
@@ -448,6 +452,9 @@ until you add it. There are three places to update:
    data from users with Facebook Login_ → _Settings_ → _Valid OAuth Redirect
    URIs_, add:
    - `https://<gen2-cognito-domain>/oauth2/idpresponse/`
+
+   (If you haven't already noted the Gen2 Cognito domain, see step 2 for how
+   to find it in the Cognito console.)
 
 After both the code push and the dev-console updates, verify Hosted UI
 sign-in works on the Gen2 branch before proceeding.
