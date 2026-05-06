@@ -252,8 +252,7 @@ export class AuthRenderer {
 
     defineAuthProperties.push(this.createLogInWithPropertyAssignment(options, loginFlags));
 
-    const clientAttributeNames = AuthRenderer.collectClientAttributeNames(options.userPoolClient);
-    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes, clientAttributeNames);
+    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes);
     const customAttributes = AuthRenderer.deriveCustomUserAttributes(options.userPool.SchemaAttributes);
     const hasStandard = Object.keys(standardAttributes).length > 0;
     const hasCustom = Object.keys(customAttributes).length > 0;
@@ -405,18 +404,15 @@ export class AuthRenderer {
    */
   private static deriveStandardUserAttributes(
     schema?: readonly SchemaAttributeType[],
-    clientAttributeNames?: ReadonlySet<string>,
   ): Record<string, { readonly required?: boolean; readonly mutable?: boolean }> {
     if (!schema) return {};
     const result: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> = {};
     for (const attribute of schema) {
       if (!attribute.Name || !(attribute.Name in MAPPED_USER_ATTRIBUTE_NAME)) continue;
-      if (attribute.Required || clientAttributeNames?.has(attribute.Name)) {
-        result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
-          ...(attribute.Required ? { required: true } : {}),
-          mutable: attribute.Mutable,
-        };
-      }
+      result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
+        required: attribute.Required,
+        mutable: attribute.Mutable,
+      };
     }
     return result;
   }
@@ -1032,7 +1028,7 @@ export class AuthRenderer {
       imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
     }
 
-    if (options.userPoolClient?.ReadAttributes?.length || options.userPoolClient?.WriteAttributes?.length) {
+    if (options.nativeClient?.ReadAttributes?.length || options.nativeClient?.WriteAttributes?.length) {
       if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
       imports['aws-cdk-lib/aws-cognito'].add('ClientAttributes');
     }
