@@ -294,7 +294,7 @@ export class Cfn {
   public async orphan(params: {
     readonly stackName: string;
     readonly logicalIds: string[];
-    readonly resource?: DiscoveredResource;
+    readonly resource: DiscoveredResource;
   }): Promise<void> {
     const { stackName, logicalIds, resource } = params;
     const displayName = extractStackNameFromId(stackName);
