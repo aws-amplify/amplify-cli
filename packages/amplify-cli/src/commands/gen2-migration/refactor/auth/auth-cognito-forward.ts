@@ -194,12 +194,13 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const baseOps = await super.move(blueprint);
 
     const gen2StackId = blueprint.targetStackId;
-    const template = await this.cfn.fetchTemplate(gen2StackId);
-    const gen2StackName = extractStackNameFromId(gen2StackId);
-    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
-
     const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(gen2StackId);
+
     if (socialAuthConfig) {
+      const template = await this.cfn.fetchTemplate(gen2StackId);
+      const gen2StackName = extractStackNameFromId(gen2StackId);
+      const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
+
       if (!domainLogicalId) {
         throw new AmplifyError('MigrationError', {
           message: `Gen2 template '${gen2StackName}' has no UserPoolDomain resource for social auth import.`,
