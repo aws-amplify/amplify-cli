@@ -15,7 +15,6 @@ import {
   IDENTITY_POOL_TYPE,
   IDENTITY_POOL_ROLE_ATTACHMENT_TYPE,
   buildImportSpec,
-  extractImportLogicalIds,
   extractSocialAuthLogicalIds,
   renderImportTable,
 } from './auth-cognito-forward';
@@ -55,9 +54,10 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
 
     const gen2StackId = blueprint.sourceStackId;
     const template = await this.cfn.fetchTemplate(gen2StackId);
-    const socialProvidersResourceIds = extractSocialAuthLogicalIds(template);
+    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
+    const socialProvidersResourceIds = [...(domainLogicalId ? [domainLogicalId] : []), ...idpLogicalIds.values()];
 
-    if (socialProvidersResourceIds) {
+    if (socialProvidersResourceIds.length > 0) {
       const gen2StackName = extractStackNameFromId(gen2StackId);
       baseOps.push({
         resource: this.resource,
@@ -94,10 +94,7 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const baseOps = await super.afterMove(gen2StackId);
 
     const template = await this.cfn.fetchTemplate(gen2StackId);
-    const importTargets = extractImportLogicalIds(template);
-    if (!importTargets) return baseOps;
-
-    const { domainLogicalId, idpLogicalIds } = importTargets;
+    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
     const gen2StackName = extractStackNameFromId(gen2StackId);
 
     // The Gen2-original UserPool sits in the holding stack at plan time
@@ -112,6 +109,12 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     // so the call reads the pool inside holdingStackName directly.
     const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(holdingStackName);
     if (!socialAuthConfig) return baseOps;
+
+    if (!domainLogicalId) {
+      throw new AmplifyError('MigrationError', {
+        message: `Gen2 template '${gen2StackName}' has no UserPoolDomain resource for social auth import.`,
+      });
+    }
 
     const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);
 

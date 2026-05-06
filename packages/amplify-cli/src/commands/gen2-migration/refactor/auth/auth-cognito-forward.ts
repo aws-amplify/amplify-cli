@@ -93,38 +93,25 @@ export function buildImportSpec(
 }
 
 /**
- * Returns the logical IDs of UserPoolDomain and UserPoolIdentityProvider
- * resources in the template, or undefined when the template has none
+ * Returns the logical IDs of the Gen2 social-auth resources in the
+ * template: the UserPoolDomain logical ID (if present) and a
+ * providerName → UserPoolIdentityProvider logical ID map (possibly
+ * empty). Callers decide how to handle partial state.
  */
-export function extractSocialAuthLogicalIds(template: CFNTemplate): string[] | undefined {
-  const ids = Object.entries(template.Resources)
-    .filter(([, r]) => r.Type === USER_POOL_DOMAIN_TYPE || r.Type === USER_POOL_IDENTITY_PROVIDER_TYPE)
-    .map(([id]) => id);
-  return ids.length > 0 ? ids : undefined;
-}
-
-/**
- * Extracts the Gen2-original logical IDs to import physical resources
- * under: UserPoolDomain logical ID and `providerName → logicalId` map
- */
-export function extractImportLogicalIds(
-  template: CFNTemplate,
-): { readonly domainLogicalId: string; readonly idpLogicalIds: Map<string, string> } | undefined {
+export function extractSocialAuthLogicalIds(template: CFNTemplate): {
+  readonly domainLogicalId: string | undefined;
+  readonly idpLogicalIds: Map<string, string>;
+} {
   const idpLogicalIds = new Map<string, string>();
   let domainLogicalId: string | undefined;
-
   for (const [logicalId, resource] of Object.entries(template.Resources)) {
     if (resource.Type === USER_POOL_DOMAIN_TYPE) {
       domainLogicalId = logicalId;
     } else if (resource.Type === USER_POOL_IDENTITY_PROVIDER_TYPE) {
       const providerName = resource.Properties.ProviderName as string;
-      if (providerName) {
-        idpLogicalIds.set(providerName, logicalId);
-      }
+      if (providerName) idpLogicalIds.set(providerName, logicalId);
     }
   }
-
-  if (!domainLogicalId || idpLogicalIds.size === 0) return undefined;
   return { domainLogicalId, idpLogicalIds };
 }
 
@@ -168,9 +155,10 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const baseOps = await super.beforeMove(gen2StackId);
 
     const template = await this.cfn.fetchTemplate(gen2StackId);
-    const socialProvidersResourceIds = extractSocialAuthLogicalIds(template);
+    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
+    const socialProvidersResourceIds = [...(domainLogicalId ? [domainLogicalId] : []), ...idpLogicalIds.values()];
 
-    if (socialProvidersResourceIds) {
+    if (socialProvidersResourceIds.length > 0) {
       const gen2StackName = extractStackNameFromId(gen2StackId);
       baseOps.push({
         resource: this.resource,
@@ -207,20 +195,18 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     const gen2StackId = blueprint.targetStackId;
     const template = await this.cfn.fetchTemplate(gen2StackId);
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
 
     const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(gen2StackId);
     if (socialAuthConfig) {
-      const importTargets = extractImportLogicalIds(template);
-      if (!importTargets) {
+      if (!domainLogicalId) {
         throw new AmplifyError('MigrationError', {
-          message: `Unable to determine logical IDs for social auth import`,
+          message: `Gen2 template '${gen2StackName}' has no UserPoolDomain resource for social auth import.`,
         });
       }
 
-      const { domainLogicalId, idpLogicalIds } = importTargets;
-
       const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);
-      const gen2StackName = extractStackNameFromId(gen2StackId);
 
       baseOps.push({
         resource: this.resource,
