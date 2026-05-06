@@ -28,8 +28,10 @@ interface MigrationConfig {
   /**
    * Per-step configuration overrides.
    */
-  readonly lock?: StepConfig;
-  readonly refactor?: RefactorConfig;
+  readonly lockForward?: StepConfig;
+  readonly lockRollback?: StepConfig;
+  readonly refactorForward?: StepConfig;
+  readonly refactorRollback?: StepConfig;
 }
 
 interface StepConfig {
@@ -37,17 +39,11 @@ interface StepConfig {
    * Pass --skip-validations to the step.
    */
   readonly skipValidations?: boolean;
-}
 
-interface RefactorConfig {
   /**
-   * Skip the refactor step entirely (e.g., when a sub-feature breaks refactoring).
+   * Skip the step entirely.
    */
   readonly skip?: boolean;
-  /**
-   * Pass --skip-validations to the refactor step.
-   */
-  readonly skipValidations?: boolean;
 }
 
 /**
@@ -68,7 +64,7 @@ export class App {
    * Whether the refactor step should be skipped entirely for this app.
    */
   public get skipRefactor(): boolean {
-    return this.migrationConfig.refactor?.skip === true;
+    return this.migrationConfig.refactorForward?.skip === true;
   }
   private readonly amplifyPath: string;
   private readonly credentials: CredentialManager;
@@ -222,7 +218,7 @@ export class App {
    */
   public async push(): Promise<void> {
     await this.refreshCredentials();
-    await this.runAmplify(['push', '--yes', '--debug']);
+    await this.runAmplify(['push', '--force', '--yes', '--debug']);
   }
 
   /**
@@ -255,7 +251,7 @@ export class App {
   public async migrate(): Promise<void> {
     await this.deploy();
     await this.assess();
-    await this.lock();
+    await this.lockForward();
 
     await this.testGen1();
 
@@ -294,7 +290,7 @@ export class App {
 
     await this.git.checkout(this.gen1BranchName, false);
     await this.pull();
-    await this.refactor(gen2StackName);
+    await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
     console.log('');
@@ -315,6 +311,13 @@ export class App {
     await this.testGen2();
 
     await this.testShared();
+
+    await this.refactorRollback(gen2StackName);
+    await this.lockRollback();
+
+    await this.push();
+
+    await this.testGen1();
   }
 
   /**
@@ -328,9 +331,24 @@ export class App {
   /**
    * Run `amplify gen2-migration lock`.
    */
-  public async lock(): Promise<void> {
+  public async lockForward(): Promise<void> {
     await this.refreshCredentials();
-    const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
+    const extraArgs = [];
+    if (this.migrationConfig.lockForward?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+    await this.runMigrationStep('lock', extraArgs);
+  }
+
+  /**
+   * Run `amplify gen2-migration lock --rollback`.
+   */
+  public async lockRollback(): Promise<void> {
+    await this.refreshCredentials();
+    const extraArgs = ['--rollback'];
+    if (this.migrationConfig.lockRollback?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
     await this.runMigrationStep('lock', extraArgs);
   }
 
@@ -346,10 +364,22 @@ export class App {
   /**
    * Run `amplify gen2-migration refactor`.
    */
-  public async refactor(gen2StackName: string): Promise<void> {
+  public async refactorForward(gen2StackName: string): Promise<void> {
     await this.refreshCredentials();
     const extraArgs = ['--to', gen2StackName];
-    if (this.migrationConfig.refactor?.skipValidations) {
+    if (this.migrationConfig.refactorForward?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+    await this.runMigrationStep('refactor', extraArgs);
+  }
+
+  /**
+   * Run `amplify gen2-migration refactor --rollback`.
+   */
+  public async refactorRollback(gen2StackName: string): Promise<void> {
+    await this.refreshCredentials();
+    const extraArgs = ['--to', gen2StackName, '--rollback'];
+    if (this.migrationConfig.refactorRollback?.skipValidations) {
       extraArgs.push('--skip-validations');
     }
     await this.runMigrationStep('refactor', extraArgs);
