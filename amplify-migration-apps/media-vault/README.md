@@ -486,3 +486,39 @@ git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
+
+## Rolling back the refactor
+
+`refactor --rollback` moves the stateful resources (Cognito User Pool,
+S3 bucket, DynamoDB tables, User Pool Groups) back from the Gen2 stack to
+the Gen1 stack.
+
+**1. Run the rollback from `main`:**
+
+```console
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-stack-name> --rollback
+```
+
+Use the same `<gen2-stack-name>` you passed to the forward refactor.
+
+**2. Undo the `postRefactor()` edit on `gen2-main`:**
+
+```console
+git checkout gen2-main
+```
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
+- postRefactor();
++ // postRefactor();
+```
+
+```console
+git add .
+git commit -m "chore: undo post refactor for rollback"
+git push origin gen2-main
+```
+
+Wait for the deployment to finish.
