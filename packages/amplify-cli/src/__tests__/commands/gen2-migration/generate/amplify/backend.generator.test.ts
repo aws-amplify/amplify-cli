@@ -2,11 +2,13 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import { BackendGenerator } from '../../../../../commands/gen2-migration/generate/amplify/backend.generator';
+import { SpinningLogger } from '../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
 describe('BackendGenerator', () => {
   let outputDir: string;
+  const logger = new SpinningLogger('test');
 
   beforeEach(async () => {
     outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'backend-gen-test-'));
@@ -17,7 +19,7 @@ describe('BackendGenerator', () => {
   });
 
   it('writes empty backend.ts with no contributions', async () => {
-    const gen = new BackendGenerator(outputDir);
+    const gen = new BackendGenerator(outputDir, logger);
     const ops = await gen.plan();
     await ops[0].execute();
 
@@ -41,7 +43,7 @@ describe('BackendGenerator', () => {
   });
 
   it('writes backend.ts with multiple namespace imports and entries in insertion order', async () => {
-    const gen = new BackendGenerator(outputDir);
+    const gen = new BackendGenerator(outputDir, logger);
     gen.addNamespaceImport('storage', './storage/resource');
     gen.addNamespaceImport('auth', './auth/resource');
     gen.addDefineBackendEntry('storage', 'storage', 'storage');
@@ -80,7 +82,7 @@ describe('BackendGenerator', () => {
   });
 
   it('writes backend.ts with post-define calls and post-refactor calls', async () => {
-    const gen = new BackendGenerator(outputDir);
+    const gen = new BackendGenerator(outputDir, logger);
     gen.addNamespaceImport('data', './data/resource');
     gen.addDefineBackendEntry('data', 'data', 'data');
     gen.addPostDefineBackendCall('myVar', 'data.someValue');

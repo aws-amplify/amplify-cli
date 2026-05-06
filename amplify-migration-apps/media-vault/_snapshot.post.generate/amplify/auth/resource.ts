@@ -104,7 +104,7 @@ export function applyEscapeHatches(backend: Backend) {
     backend.auth.resources.cfnResources.cfnUserPoolClient;
   cfnUserPoolClient.allowedOAuthFlows = ['code'];
   const userPool = backend.auth.resources.userPool;
-  const userPoolClient = userPool.addClient('NativeAppClient', {
+  const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
     refreshTokenValidity: Duration.days(30),
     enableTokenRevocation: true,
     enablePropagateAdditionalUserContextData: false,
@@ -134,6 +134,15 @@ export function applyEscapeHatches(backend: Backend) {
     disableOAuth: false,
     generateSecret: false,
   });
+  const cognitoProviders =
+    backend.auth.resources.cfnResources.cfnIdentityPool
+      .cognitoIdentityProviders;
+  if (cognitoProviders && Array.isArray(cognitoProviders)) {
+    cognitoProviders.push({
+      clientId: nativeUserPoolClient.userPoolClientId,
+      providerName: `cognito-idp.${backend.auth.stack.region}.amazonaws.com/${userPool.userPoolId}`,
+    });
+  }
   const providerSetupResult = (
     backend.auth.stack.node.children.find(
       (child) => child.node.id === 'amplifyAuth'

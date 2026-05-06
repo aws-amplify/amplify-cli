@@ -3,6 +3,7 @@ import { BackendGenerator } from '../../../../../../commands/gen2-migration/gene
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 import { createGen1App } from '../../_helpers/create-gen1-app';
+import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
 
 jest.unmock('fs-extra');
 
@@ -30,10 +31,11 @@ function writtenFile(suffix: string): string {
 describe('AuthGenerator', () => {
   let backendGenerator: BackendGenerator;
   const outputDir = '/fake/output';
+  const logger = new SpinningLogger('test');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    backendGenerator = new BackendGenerator(outputDir);
+    backendGenerator = new BackendGenerator(outputDir, logger);
   });
 
   it('throws when user pool is not found', async () => {
@@ -53,7 +55,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
   });
 
@@ -74,7 +76,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -83,13 +85,13 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -107,6 +109,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -173,7 +189,7 @@ describe('AuthGenerator', () => {
       SchemaAttributes: [],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -182,12 +198,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -205,6 +221,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -249,7 +279,7 @@ describe('AuthGenerator', () => {
       SchemaAttributes: [],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -258,12 +288,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -284,6 +314,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -324,7 +368,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([
       { GroupName: 'admin', Precedence: 1 },
@@ -337,12 +381,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -361,6 +405,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -406,7 +464,7 @@ describe('AuthGenerator', () => {
       ],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -415,12 +473,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -448,6 +506,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -497,7 +569,7 @@ describe('AuthGenerator', () => {
       ],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -506,12 +578,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -537,6 +609,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -580,7 +666,7 @@ describe('AuthGenerator', () => {
       MfaConfiguration: 'ON',
       SoftwareTokenMfaConfiguration: { Enabled: true },
     });
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -589,12 +675,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -614,6 +700,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -657,7 +757,7 @@ describe('AuthGenerator', () => {
       MfaConfiguration: 'OPTIONAL',
       SoftwareTokenMfaConfiguration: { Enabled: true },
     });
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -666,13 +766,13 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -692,6 +792,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -732,7 +846,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -741,7 +855,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addTrigger({ event: 'preSignUp', resourceName: 'preSignUpFn' });
     generator.addTrigger({ event: 'postConfirmation', resourceName: 'postConfirmFn' });
 
@@ -752,7 +866,7 @@ describe('AuthGenerator', () => {
       "import { defineAuth } from '@aws-amplify/backend';
       import { preSignUpFn } from '../function/preSignUpFn/resource';
       import { postConfirmFn } from '../function/postConfirmFn/resource';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -774,6 +888,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -812,7 +940,7 @@ describe('AuthGenerator', () => {
         },
       },
     });
-    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [], Domain: 'testapp-abc123' });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -828,13 +956,12 @@ describe('AuthGenerator', () => {
       LogoutURLs: ['https://example.com/logout'],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth, secret } from '@aws-amplify/backend';
       import { CfnResource, Duration } from 'aws-cdk-lib';
-      import { CfnUserPoolDomain } from 'aws-cdk-lib/aws-cognito';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -862,7 +989,7 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
             // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
@@ -871,6 +998,15 @@ describe('AuthGenerator', () => {
           disableOAuth: true,
           generateSecret: false,
         });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -889,13 +1025,6 @@ describe('AuthGenerator', () => {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
           (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
         }
-      }
-
-      export function postRefactor(backend: Backend) {
-        const cfnUserPoolDomain = backend.auth.resources.userPool.node.findChild(
-          'UserPoolDomain'
-        ).node.defaultChild as CfnUserPoolDomain;
-        cfnUserPoolDomain.domain = 'testapp-abc123';
       }
       "
     `);
@@ -937,7 +1066,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: [],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -975,10 +1104,19 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           disableOAuth: true,
           generateSecret: false,
         });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1052,7 +1190,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: ['https://example.com/logout'],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1120,7 +1258,7 @@ describe('AuthGenerator', () => {
           passwordPolicy: {},
         };
         const userPool = backend.auth.resources.userPool;
-        userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
             // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
@@ -1129,6 +1267,15 @@ describe('AuthGenerator', () => {
           disableOAuth: true,
           generateSecret: false,
         });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1169,7 +1316,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1178,7 +1325,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({
       resourceName: 'adminFunc',
       permissions: { manageUsers: true, listUsers: true },
@@ -1190,7 +1337,7 @@ describe('AuthGenerator', () => {
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
       import { adminFunc } from '../function/adminFunc/resource';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -1212,6 +1359,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1252,7 +1413,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1261,7 +1422,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({ resourceName: 'func1', permissions: { createUser: true } });
     generator.addFunctionAuthAccess({ resourceName: 'func2', permissions: { deleteUser: true, getUser: true } });
 
@@ -1272,7 +1433,7 @@ describe('AuthGenerator', () => {
       "import { defineAuth } from '@aws-amplify/backend';
       import { func1 } from '../function/func1/resource';
       import { func2 } from '../function/func2/resource';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -1295,6 +1456,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1335,7 +1510,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1344,7 +1519,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({ resourceName: 'noAccessFunc', permissions: {} });
 
     const ops = await generator.plan();
@@ -1372,7 +1547,7 @@ describe('AuthGenerator', () => {
     });
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1381,12 +1556,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: false,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -1406,6 +1581,20 @@ describe('AuthGenerator', () => {
         };
         const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
         cfnIdentityPool.allowUnauthenticatedIdentities = false;
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1459,7 +1648,7 @@ describe('AuthGenerator', () => {
       LogoutURLs: ['https://example.com/logout'],
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1486,7 +1675,7 @@ describe('AuthGenerator', () => {
           backend.auth.resources.cfnResources.cfnUserPoolClient;
         cfnUserPoolClient.allowedOAuthFlows = ['code', 'implicit'];
         const userPool = backend.auth.resources.userPool;
-        userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
             // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
@@ -1500,6 +1689,15 @@ describe('AuthGenerator', () => {
           disableOAuth: false,
           generateSecret: false,
         });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1568,7 +1766,7 @@ describe('AuthGenerator', () => {
       });
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -1607,7 +1805,7 @@ describe('AuthGenerator', () => {
         const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
         cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders');
         const userPool = backend.auth.resources.userPool;
-        const userPoolClient = userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           refreshTokenValidity: Duration.days(30),
           enableTokenRevocation: true,
           supportedIdentityProviders: [
@@ -1628,6 +1826,15 @@ describe('AuthGenerator', () => {
           disableOAuth: false,
           generateSecret: false,
         });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         const providerSetupResult = (
           backend.auth.stack.node.children.find(
             (child) => child.node.id === 'amplifyAuth'
@@ -1693,7 +1900,7 @@ describe('AuthGenerator', () => {
       },
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1702,12 +1909,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -1731,6 +1938,20 @@ describe('AuthGenerator', () => {
             requireSymbols: false,
           },
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1774,7 +1995,7 @@ describe('AuthGenerator', () => {
       AliasAttributes: ['email', 'preferred_username'],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
     jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
     jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
@@ -1783,12 +2004,12 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: true,
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
       "import { defineAuth } from '@aws-amplify/backend';
-      import { CfnResource } from 'aws-cdk-lib';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
       import type { Backend } from '../backend';
 
       export const auth = defineAuth({
@@ -1807,6 +2028,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(

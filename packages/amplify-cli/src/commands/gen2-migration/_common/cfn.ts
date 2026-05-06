@@ -32,6 +32,7 @@ import { extractStackNameFromId } from './utils';
 import { SpinningLogger } from './spinning-logger';
 import { cfnChangesetConsoleUrl } from '../../drift/services/drift-formatter';
 import chalk from 'chalk';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DiscoveredResource } from './gen1-app';
@@ -39,7 +40,7 @@ import { DiscoveredResource } from './gen1-app';
 const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
-export const OUTPUT_DIRECTORY = '.gen2-migration/refactor.operations';
+export const REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY = '.amplify/gen2-migration/refactor.operations';
 
 const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -64,8 +65,8 @@ export class Cfn {
   private readonly updateStackClaims = new Set<string>();
 
   constructor(private readonly client: CloudFormationClient, private readonly logger: SpinningLogger) {
-    if (!fs.existsSync(OUTPUT_DIRECTORY)) {
-      fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
+    if (!fs.existsSync(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY)) {
+      fs.mkdirSync(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, { recursive: true });
     }
   }
 
@@ -135,12 +136,12 @@ export class Cfn {
     if (!targetStack && !targetStackName.endsWith(HOLDING_STACK_NAME_SUFFIX)) {
       // only holding stacks may be absent because they don't exist prior
       // to refactor.
-      throw new AmplifyError('MigrationError', { message: `Target stack ${targetStackName} does not exist` });
+      throw new AmplifyError('StackNotFoundError', { message: `Target stack ${targetStackName} does not exist` });
     }
 
     if (!sourceStack) {
       // should never happen
-      throw new AmplifyError('MigrationError', { message: `Source stack ${sourceStackName} does not exist` });
+      throw new AmplifyError('StackNotFoundError', { message: `Source stack ${sourceStackName} does not exist` });
     }
 
     const sourceTemplate = await this.fetchTemplate(sourceStackId);
@@ -150,7 +151,7 @@ export class Cfn {
     for (const mapping of resourceMappings) {
       if (mapping.Destination!.LogicalResourceId! in targetTemplate.Resources) {
         // our refactoring is expected to move resources into vacancies, not override
-        throw new AmplifyError('MigrationError', {
+        throw new AmplifyError('ResourceMappingError', {
           message: `Unable to create stack refactor. Resource ${
             mapping.Destination!.LogicalResourceId
           } already exists in stack ${targetStackName}`,
@@ -599,30 +600,36 @@ interface WriteOrphanSnapshotInput {
 
 function writeImportSnapshot(input: WriteImportSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`), formatTemplateBody(input.templateBody));
-  fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`),
+    formatTemplateBody(input.templateBody),
+  );
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
     JSON.stringify(input.parameters, null, 2) + '\n',
   );
-  fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.resources.json`),
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.resources.json`),
     JSON.stringify(input.resourcesToImport, null, 2) + '\n',
   );
 }
 
 function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`), formatTemplateBody(input.templateBody));
-  fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`),
+    formatTemplateBody(input.templateBody),
+  );
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
     JSON.stringify(input.parameters, null, 2) + '\n',
   );
 }
 
 function writeOrphanSnapshot(input: WriteOrphanSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
-  fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.logicalIds.json`),
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.logicalIds.json`),
     JSON.stringify(input.logicalIds, null, 2) + '\n',
   );
 }
@@ -633,11 +640,29 @@ function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
   const sourceStackName = extractStackNameFromId(source.StackName!);
   const targetStackName = extractStackNameFromId(target.StackName!);
   const description = `refactor.__from__.${sourceStackName}.__to__.${targetStackName}`;
-  const basePath = path.join(OUTPUT_DIRECTORY, description);
-  fs.writeFileSync(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
-  fs.writeFileSync(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
-  fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `${description}.mappings.json`),
+  const basePath = path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, description);
+  writeRefactorSnapshotFile(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
+  writeRefactorSnapshotFile(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${description}.mappings.json`),
     JSON.stringify(input.ResourceMappings ?? [], null, 2) + '\n',
   );
+}
+
+const FILENAME_MAPPING_FILE = 'filename-mapping.json';
+
+/**
+ * Writes content to a file whose name is a 10-character hash of the original filename.
+ * Records the hash→original mapping in a separate JSON file that is updated on each call.
+ */
+function writeRefactorSnapshotFile(filename: string, content: string): void {
+  const hash = crypto.createHash('sha256').update(filename).digest('hex').slice(0, 10);
+  const hashedFilename = `${hash}.json`;
+
+  fs.writeFileSync(path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, hashedFilename), content);
+
+  const mappingPath = path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, FILENAME_MAPPING_FILE);
+  const mapping: Record<string, string> = fs.existsSync(mappingPath) ? JSON.parse(fs.readFileSync(mappingPath, 'utf-8')) : {};
+  mapping[hash] = path.basename(filename);
+  fs.writeFileSync(mappingPath, JSON.stringify(mapping, null, 2) + '\n');
 }

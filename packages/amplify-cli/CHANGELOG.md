@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.3.0...@aws-amplify/cli-internal@14.4.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* **cli:** `amplify gen2-migration generate` fails on published package ([#14845](https://github.com/aws-amplify/amplify-cli/issues/14845)) ([b490ca3](https://github.com/aws-amplify/amplify-cli/commit/b490ca31634487e9665bea63207bad9df8a9ce35))
+* **cli:** `gen2-migration refactor` creates snapshot filenames that are too long for windows machines ([#14844](https://github.com/aws-amplify/amplify-cli/issues/14844)) ([9d47852](https://github.com/aws-amplify/amplify-cli/commit/9d478527a6c86eaa15fa32e97a250b31c5030833))
+* remove unconditional quickstart block ([#14837](https://github.com/aws-amplify/amplify-cli/issues/14837)) ([412db64](https://github.com/aws-amplify/amplify-cli/commit/412db649c4affdace43656eaa6d60043686515da))
+* write deprecation warning to stderr to avoid breaking E2E tests ([#14836](https://github.com/aws-amplify/amplify-cli/issues/14836)) ([629480f](https://github.com/aws-amplify/amplify-cli/commit/629480f1678612c3d22ea842a2114a9ba09b16d9))
+
+
+### Features
+
+* bump version ([#14838](https://github.com/aws-amplify/amplify-cli/issues/14838)) ([0363a26](https://github.com/aws-amplify/amplify-cli/commit/0363a26e55df110065a9f7f989320a497d8e4fdd))
+* **cli:** `gen2-migration` sub-command ([#14823](https://github.com/aws-amplify/amplify-cli/issues/14823)) ([bf7b7b2](https://github.com/aws-amplify/amplify-cli/commit/bf7b7b25f2999a17278447052f588023295f80e6))
+* **cli:** detect conflict resolution (DataStore) in gen2-migration assess ([#14832](https://github.com/aws-amplify/amplify-cli/issues/14832)) ([5f93417](https://github.com/aws-amplify/amplify-cli/commit/5f93417a84347d68fe72480f727084910e9e2b61))
+* **cli:** developer preview footer for `gen2-migration` commands ([#14831](https://github.com/aws-amplify/amplify-cli/issues/14831)) ([22216a3](https://github.com/aws-amplify/amplify-cli/commit/22216a348252c2e74cd50a35ee4f7a3052893a9f))
+* **cli:** drift detection + gen2-migration common ([#14819](https://github.com/aws-amplify/amplify-cli/issues/14819)) ([9a4ddb8](https://github.com/aws-amplify/amplify-cli/commit/9a4ddb8cc81bc1dbfa624ecbeef0aee8105965b0))
+
+
+
+
+
 # [14.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.2.5...@aws-amplify/cli-internal@14.3.0) (2026-03-20)
 
 

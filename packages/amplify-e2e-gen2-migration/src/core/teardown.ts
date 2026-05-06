@@ -24,19 +24,6 @@ const DELETE_WAIT_SECONDS = 300;
 /** Seconds between polls when waiting for stack deletion. */
 const DELETE_POLL_INTERVAL_SECONDS = 10;
 
-// these will have removal policy of retain because the migration tool
-// sets it.
-export const REFACTORED_RESOURCES = [
-  'AWS::Cognito::UserPool',
-  'AWS::Cognito::IdentityPool',
-  'AWS::Cognito::UserPoolClient',
-  'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolGroup',
-  'AWS::DynamoDB::Table',
-  'AWS::S3::Bucket',
-  'AWS::Kinesis::Stream',
-];
-
 /**
  * Deletes all AWS resources deployed by an `App` instance.
  *
@@ -183,10 +170,6 @@ export class Teardown {
 
       let modified = false;
       for (const [logicalId, resource] of Object.entries(resources)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        if (!REFACTORED_RESOURCES.includes((resource as any).Type)) {
-          continue;
-        }
         if (resource.DeletionPolicy && resource.DeletionPolicy !== 'Delete') {
           this.logger.info(`Updating ${logicalId}.DeletionPolicy: ${resource.DeletionPolicy} -> Delete`);
           resource.DeletionPolicy = 'Delete';

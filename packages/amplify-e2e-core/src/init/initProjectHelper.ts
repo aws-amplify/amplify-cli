@@ -9,6 +9,12 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+import { AmplifyClient, CreateAppCommand, CreateBackendEnvironmentCommand, paginateListApps } from '@aws-sdk/client-amplify';
+
+/**
+ * Name of the app that should exist in our accounts to satisfy the new customer restriction.
+ */
+export const GEN1_PLACEHOLDER_APP_NAME = 'gen1-placeholder-do-not-delete';
 
 const defaultSettings = {
   name: EOL,
@@ -156,7 +162,6 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
   if (providerConfigSpecified) {
-    console.log('initJSProjectWithProfile: provider config specified: ', s.providerConfig);
     cliArgs.push('--providers', JSON.stringify(s.providerConfig));
   }
 
@@ -167,14 +172,12 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   const binaryPath = getCLIPath(s.testingWithLatestCodebase);
-  console.log(`Running ${binaryPath} with args: '${cliArgs.join(' ')}'`);
   const chain = spawn(binaryPath, cliArgs, {
     cwd,
     stripColors: true,
     env,
     disableCIDetection: s.disableCIDetection,
   });
-  console.log(`Spawned ${binaryPath} with args: '${cliArgs.join(' ')}'`);
 
   if (s.includeGen2RecommendationPrompt) {
     chain
@@ -208,7 +211,6 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
 
   if (!providerConfigSpecified) {
     const profileIndex = getProfileIndex(s.profileName);
-    console.log(`profile index: ${profileIndex}, profile name: ${s.profileName}`);
 
     chain
       .wait('Using default provider  awscloudformation')
@@ -219,7 +221,6 @@ export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Pa
     if (profileIndex > 0) {
       chain.sendKeyDown(profileIndex);
     }
-
     chain.sendCarriageReturn();
   }
 
@@ -678,4 +679,29 @@ export function initHeadless(cwd: string, envName?: string, appId?: string): Pro
   }
 
   return spawn(getCLIPath(), cliArgs, { cwd, stripColors: true }).runAsync();
+}
+
+/**
+ * Ensure a placeholder Amplify app with a backend environment exists so that
+ * the Gen1 new-customer restriction (`isExistingGen1Customer`) passes.
+ * No-ops only if the specific placeholder app already exists.
+ */
+export async function ensureGen1PlaceholderApp(client: AmplifyClient): Promise<void> {
+  for await (const page of paginateListApps({ client }, {})) {
+    if (page.apps?.some((a) => a.name === GEN1_PLACEHOLDER_APP_NAME)) {
+      return;
+    }
+  }
+
+  const createResponse = await client.send(new CreateAppCommand({ name: GEN1_PLACEHOLDER_APP_NAME }));
+  const appId = createResponse.app?.appId;
+  if (!appId) {
+    throw new Error('Failed to create placeholder Amplify app — no appId returned');
+  }
+  await client.send(
+    new CreateBackendEnvironmentCommand({
+      appId,
+      environmentName: 'main',
+    }),
+  );
 }

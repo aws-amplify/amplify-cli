@@ -239,7 +239,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
           case GEN1_NATIVE_APP_CLIENT:
             return targetId.includes(GEN2_NATIVE_APP_CLIENT);
           default:
-            throw new AmplifyError('MigrationError', {
+            throw new AmplifyError('ResourceMappingError', {
               message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
             });
         }

@@ -259,8 +259,9 @@ The e2e workflow includes these build types:
 2. **Check pre-commit hooks** - they run tests automatically
 3. **Monitor resource usage** - e2e tests create real AWS resources
 4. **Clean up resources** - use cleanup scripts periodically
-5. **Check credentials** - most failures are due to expired credentials
-6. **Read the logs** - build logs contain detailed error information
+5. **Ensure Gen1 placeholder app** - if `amplify init` fails with a Gen1 new-customer restriction error in a fresh account, run `yarn ensure-gen1-placeholder-apps` from `packages/amplify-e2e-tests` (requires org root account credentials) to create the placeholder app in all accounts and regions
+6. **Check credentials** - most failures are due to expired credentials
+7. **Read the logs** - build logs contain detailed error information
 
 ## Troubleshooting
 
@@ -283,6 +284,18 @@ Check if this is a pre-existing issue by testing on the base branch. Coverage ca
 ### "Linting errors"
 
 Run `yarn lint-fix` to auto-fix some issues. Others require manual fixes.
+
+### "posix_spawnp failed" when running gen2-migration E2Es
+
+If you see an error like `Error: Execution failed: posix_spawnp failed` originating from `node-pty`, the `spawn-helper` binary shipped with `node-pty` lost its execute permission (common after a fresh `yarn install`).
+
+**Fix:**
+
+```bash
+chmod +x node_modules/node-pty/prebuilds/darwin-arm64/spawn-helper
+```
+
+Run this from the repository root.
 
 ## Related Documentation
 

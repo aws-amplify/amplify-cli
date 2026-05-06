@@ -28,7 +28,7 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
 
   for (const { ParameterKey, ParameterValue } of parameters) {
     if (!ParameterKey) {
-      throw new AmplifyError('MissingExpectedParameterError', {
+      throw new AmplifyError('CFNParameterError', {
         message: 'Encountered a stack parameter with no ParameterKey',
       });
     }
