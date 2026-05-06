@@ -194,7 +194,8 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const baseOps = await super.move(blueprint);
 
     const gen2StackId = blueprint.targetStackId;
-    const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(gen2StackId);
+    const gen1UserPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
+    const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(gen1UserPoolId);
 
     if (socialAuthConfig) {
       const template = await this.cfn.fetchTemplate(gen2StackId);

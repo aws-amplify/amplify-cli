@@ -87,13 +87,9 @@ export class StackFacade {
 
   /**
    * Returns the social auth config (domain + IDP summaries) for the
-   * UserPool in the given stack, or undefined if the pool has no
-   * domain or no IDPs (non-social-auth app).
+   * given UserPool, or undefined if the pool has no domain or no IDPs.
    */
-  public async fetchSocialAuthConfig(stackId: string): Promise<SocialAuthConfig | undefined> {
-    const userPoolId = await this.fetchUserPoolId(stackId);
-    if (!userPoolId) return undefined;
-
+  public async fetchSocialAuthConfig(userPoolId: string): Promise<SocialAuthConfig | undefined> {
     const pool = await this.clients.cognitoIdentityProvider.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
     const domain = pool?.UserPool?.Domain;
     if (!domain) return undefined;

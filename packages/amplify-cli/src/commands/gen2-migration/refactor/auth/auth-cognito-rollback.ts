@@ -98,7 +98,9 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
 
-    const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(holdingStackName);
+    const holdingUserPoolId = await this.gen2Branch.fetchUserPoolId(holdingStackName);
+    if (!holdingUserPoolId) return baseOps;
+    const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(holdingUserPoolId);
 
     if (socialAuthConfig) {
       const template = await this.cfn.fetchTemplate(gen2StackId);
