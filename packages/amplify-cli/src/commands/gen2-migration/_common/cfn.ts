@@ -345,7 +345,7 @@ export class Cfn {
   }): Promise<void> {
     const { stackName, templateAdditions, resourcesToImport, resource } = params;
     const displayName = extractStackNameFromId(stackName);
-    const changeSetName = `import-resources-${Date.now()}`;
+    const changeSetName = `gen2-migration-import-${Date.now()}`;
 
     const templateBody = await this.fetchTemplate(stackName);
     for (const [logicalId, r] of Object.entries(templateAdditions)) {
