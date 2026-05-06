@@ -1491,7 +1491,6 @@ describe('AuthGenerator', () => {
               clientCredentials: false,
             },
           },
-          // flows: ['code', 'implicit'],
           disableOAuth: false,
           generateSecret: false,
         });
@@ -1618,7 +1617,6 @@ describe('AuthGenerator', () => {
             },
             scopes: [OAuthScope.OPENID, OAuthScope.EMAIL],
           },
-          // flows: ['code'],
           disableOAuth: false,
           generateSecret: false,
         });
@@ -1636,7 +1634,6 @@ describe('AuthGenerator', () => {
             userPoolClient.node.addDependency(providerSetupPropertyValue);
           }
         });
-        // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(

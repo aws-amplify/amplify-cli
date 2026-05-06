@@ -1310,18 +1310,7 @@ export class AuthRenderer {
     }
 
     const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;
-    if (userPoolClient.AllowedOAuthFlows?.length) {
-      const commentedFlows = factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue());
-      ts.addSyntheticLeadingComment(
-        commentedFlows,
-        ts.SyntaxKind.SingleLineCommentTrivia,
-        ` flows: ['${userPoolClient.AllowedOAuthFlows.join("', '")}'],`,
-        true,
-      );
-      clientProps.push(commentedFlows);
-    } else {
-      clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
-    }
+    clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
     clientProps.push(
       factory.createPropertyAssignment('generateSecret', userPoolClient.ClientSecret ? factory.createTrue() : factory.createFalse()),
     );
@@ -1349,7 +1338,7 @@ export class AuthRenderer {
     return statements;
   }
 
-  /** Builds the providerSetupResult code and commented tryRemoveChild. */
+  /** Builds the providerSetupResult code. */
   private buildProviderSetupStatements(): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
@@ -1500,21 +1489,6 @@ export class AuthRenderer {
       ),
     );
     statements.push(forEachStatement);
-
-    const commentedStatement = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(
-            factory.createIdentifier('// backend.auth.resources.userPool'),
-            factory.createIdentifier('node'),
-          ),
-          factory.createIdentifier('tryRemoveChild'),
-        ),
-        undefined,
-        [factory.createStringLiteral('UserPoolDomain')],
-      ),
-    );
-    statements.push(commentedStatement);
 
     return statements;
   }
