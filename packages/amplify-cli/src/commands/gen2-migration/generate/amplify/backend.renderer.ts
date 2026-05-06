@@ -37,19 +37,10 @@ export interface EscapeHatchCall {
 }
 
 /**
- * A named import: `import { a, b } from 'source';`
- */
-export interface NamedImport {
-  readonly source: string;
-  readonly identifiers: readonly string[];
-}
-
-/**
  * Options for rendering the backend.ts file.
  */
 export interface BackendRenderOptions {
   readonly namespaceImports: readonly NamespaceImport[];
-  readonly namedImports: readonly NamedImport[];
   readonly defineBackendEntries: readonly DefineBackendEntry[];
   readonly postDefineBackendCalls: readonly PostDefineBackendCall[];
   readonly postDefineBackendStatements: readonly string[];
@@ -71,10 +62,6 @@ export class BackendRenderer {
     // 1. Namespace imports
     for (const imp of options.namespaceImports) {
       nodes.push(this.renderNamespaceImport(imp.alias, imp.source));
-    }
-    // 1b. Named imports
-    for (const imp of options.namedImports) {
-      nodes.push(TS.namedImport(imp.source, ...imp.identifiers));
     }
     nodes.push(this.renderDefineBackendImport());
     nodes.push(TS.namedImport('aws-cdk-lib', 'Tags'));

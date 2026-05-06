@@ -7,7 +7,6 @@ import {
   BackendRenderer,
   BackendRenderOptions,
   NamespaceImport,
-  NamedImport,
   DefineBackendEntry,
   PostDefineBackendCall,
   EscapeHatchCall,
@@ -21,7 +20,6 @@ import { SpinningLogger } from '../../_common/spinning-logger';
  */
 export class BackendGenerator implements Planner {
   private readonly namespaceImports: NamespaceImport[] = [];
-  private readonly namedImports = new Map<string, Set<string>>();
   private readonly defineBackendEntries: DefineBackendEntry[] = [];
   private readonly applyEscapeHatchesCalls: EscapeHatchCall[] = [];
   private readonly postRefactorCalls: string[] = [];
@@ -93,14 +91,8 @@ export class BackendGenerator implements Planner {
         validate: () => undefined,
         describe: async () => ['Generate amplify/backend.ts'],
         execute: async () => {
-          const namedImportsList: NamedImport[] = [];
-          for (const [source, ids] of this.namedImports) {
-            namedImportsList.push({ source, identifiers: [...ids] });
-          }
-
           const options: BackendRenderOptions = {
             namespaceImports: this.namespaceImports,
-            namedImports: namedImportsList,
             defineBackendEntries: this.defineBackendEntries,
             postDefineBackendCalls: this.postDefineBackendCalls,
             postDefineBackendStatements: this.postDefineBackendStatements,
