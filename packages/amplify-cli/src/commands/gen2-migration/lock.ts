@@ -6,6 +6,7 @@ import {
   DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetStackPolicyCommand,
+  paginateListStackResources,
   SetStackPolicyCommand,
   StackResource,
 } from '@aws-sdk/client-cloudformation';
@@ -17,6 +18,8 @@ import { Cfn } from './_common/cfn';
 import { RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
+import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
+import chalk from 'chalk';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -505,5 +508,116 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
     return stackId;
+  }
+
+  /**
+   * Walks the Gen1 stack hierarchy top-down (pre-order). Each stack appears
+   * before all of its descendants. Used by the retain-everything flow so we
+   * update each stack before any of its descendants can carry direct-edit
+   * drift that would be clobbered by CloudFormation's parent-driven
+   * reconciliation on subsequent parent updates.
+   */
+  private async walkStackHierarchy(stackId: string): Promise<string[]> {
+    const result: string[] = [stackId];
+
+    const pages = paginateListStackResources({ client: this.gen1App.clients.cloudFormation }, { StackName: stackId });
+
+    for await (const page of pages) {
+      for (const resource of page.StackResourceSummaries ?? []) {
+        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
+          const children = await this.walkStackHierarchy(resource.PhysicalResourceId);
+          result.push(...children);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Changeset whitelist for the retain-everything flow. Accepts `Modify`
+   * actions whose every `Details` entry is one of:
+   *
+   * - Static `DirectModification` targeting `DeletionPolicy` or
+   *   `UpdateReplacePolicy` with `AfterValue: 'Retain'`. Produced by our
+   *   template mutation on every resource.
+   * - Static `DirectModification` targeting
+   *   `Properties.DeletionProtectionEnabled` on an `AWS::DynamoDB::Table`
+   *   with `AfterValue: 'true'`. Produced by our template mutation on
+   *   DynamoDB tables.
+   * - Dynamic `Automatic` re-evaluation on an
+   *   `AWS::CloudFormation::Stack` reference entry. CloudFormation emits
+   *   these on every parent update — see
+   *   https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChangeDetail.html.
+   * - Dynamic `ResourceAttribute` re-evaluation on an `AWS::IAM::Policy`
+   *   whose `CausingEntity` matches `*Table.(Arn|StreamArn)`. These
+   *   cascade from DynamoDB retain edits and are harmless — mirrors
+   *   `isExpectedLockDrift`'s IAM policy cascade acceptance.
+   *
+   * Every change must contain at least one real retain edit. A change
+   * made up purely of Dynamic re-evaluations indicates we're about to
+   * execute a parent update whose only effect is reconciling children —
+   * the failure mode that clobbers retained state via TemplateURL
+   * re-fetch.
+   */
+  private isAllowedRetainEverythingChangeset(changeSet: DescribeChangeSetOutput): boolean {
+    const changes = changeSet.Changes ?? [];
+    if (changes.length === 0) return true;
+
+    for (const change of changes) {
+      const rc = change.ResourceChange;
+      if (!rc) return false;
+      if (rc.Action !== 'Modify') return false;
+      if (rc.Replacement === 'True') return false;
+
+      const details = rc.Details ?? [];
+      if (details.length === 0) return false;
+
+      let sawRetainEdit = false;
+
+      for (const detail of details) {
+        const attr = detail.Target?.Attribute;
+        const name = detail.Target?.Name;
+        const after = detail.Target?.AfterValue;
+
+        if ((attr === 'DeletionPolicy' || attr === 'UpdateReplacePolicy') && after === 'Retain') {
+          sawRetainEdit = true;
+          continue;
+        }
+
+        const isDynamoDeletionProtection =
+          rc.ResourceType === DYNAMO_RESOURCE_TYPE &&
+          attr === 'Properties' &&
+          name === DYNAMO_DELETION_PROTECTION_PROPERTY &&
+          after === 'true';
+        if (isDynamoDeletionProtection) {
+          sawRetainEdit = true;
+          continue;
+        }
+
+        const isDynamicNestedStackReEvaluation =
+          rc.ResourceType === 'AWS::CloudFormation::Stack' &&
+          attr === 'Properties' &&
+          detail.Target?.RequiresRecreation === 'Never' &&
+          detail.Evaluation === 'Dynamic' &&
+          detail.ChangeSource === 'Automatic';
+        if (isDynamicNestedStackReEvaluation) continue;
+
+        const isDynamoIamPolicyCascade =
+          rc.ResourceType === 'AWS::IAM::Policy' &&
+          attr === 'Properties' &&
+          detail.Target?.RequiresRecreation === 'Never' &&
+          detail.Evaluation === 'Dynamic' &&
+          detail.ChangeSource === 'ResourceAttribute' &&
+          /Table\.(Arn|StreamArn)$/.test(detail.CausingEntity ?? '');
+        if (isDynamoIamPolicyCascade) continue;
+
+        return false;
+      }
+
+      if (!sawRetainEdit) return false;
+    }
+
+    return true;
   }
 }
