@@ -312,9 +312,16 @@ export class App {
 
     await this.testShared();
 
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
     await this.refactorRollback(gen2StackName);
-    await this.lockRollback();
 
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
+    await this.lockRollback();
     await this.push();
 
     await this.testGen1();
