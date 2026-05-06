@@ -4,8 +4,12 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref",
-    "ParameterValue": "amplify-mediavault2604261-amplifyAuthauthenticatedU-jQA6OQUFPNZP"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource62A468BEOutputsamplifymediavaulte2esandbox6b70779011dataamplifyDataAmplifyTableManagerTab6769CA1B",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault2605060-TableManagerCustomProvid-DjrgoGUQIcZ3"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref",
+    "ParameterValue": "us-east-1:997e5d38-0bb1-4b0f-826d-391f051f4a86"
   },
   {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
@@ -16,8 +20,8 @@
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource49379BFFOutputsamplifymediavaulte2esandbox0cf7d7875edataamplifyDataAmplifyTableManagerTab604615FB",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault2604261-TableManagerCustomProvid-H3vYsZA5Hw3A"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPINONEDS974EC080Name",
+    "ParameterValue": "NONE_DS"
   },
   {
     "ParameterKey": "DynamoDBBillingMode",
@@ -28,19 +32,15 @@
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPINONEDS8F079C24Name",
-    "ParameterValue": "NONE_DS"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef",
+    "ParameterValue": "amplify-mediavault2605060-amplifyAuthauthenticatedU-Ku1OGzzQy9Cw"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref",
-    "ParameterValue": "amplify-mediavault2604261-amplifyAuthunauthenticate-FebAhXFwzu3H"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef",
+    "ParameterValue": "amplify-mediavault2605060-amplifyAuthunauthenticate-JhcoGUsezYtG"
   },
   {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId",
-    "ParameterValue": "xc54wskwirbthaeghdgjpesz6a"
-  },
-  {
-    "ParameterKey": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref",
-    "ParameterValue": "us-east-1:a57e7d41-b0af-461c-b4b2-d4b94738131b"
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId",
+    "ParameterValue": "7kc2hgcgend5blba74lbxge6xi"
   }
 ]

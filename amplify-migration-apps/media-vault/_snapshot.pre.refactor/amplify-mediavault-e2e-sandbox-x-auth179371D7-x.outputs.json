@@ -1,42 +1,42 @@
 [
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthaddusertogroupgen2xlambda60A31462Ref",
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthAdminGroupRole4D5390EERef",
+    "OutputValue": "amplify-mediavault2605060-amplifyAuthAdminGroupRole-iOTEqEq5fw07"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref",
+    "OutputValue": "us-east-1:997e5d38-0bb1-4b0f-826d-391f051f4a86"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthUserPoolUserPoolDomain8DF6501ARef",
+    "OutputValue": "1ed3cc2194c7d22df739"
+  },
+  {
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authaddusertogroupgen2xlambda5223B9A7Ref",
     "OutputValue": "addusertogroup-gen2-x"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPool9CA29B1CRef",
-    "OutputValue": "us-east-1_spBDDdG7A"
-  },
-  {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref",
-    "OutputValue": "us-east-1:a57e7d41-b0af-461c-b4b2-d4b94738131b"
-  },
-  {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthremoveuserfromgroupgen2xlambda6FBE6A59Ref",
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authremoveuserfromgroupgen2xlambdaDDC868F7Ref",
     "OutputValue": "removeuserfromgroup-gen2-x"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref",
-    "OutputValue": "amplify-mediavault2604261-amplifyAuthauthenticatedU-jQA6OQUFPNZP"
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef",
+    "OutputValue": "amplify-mediavault2605060-amplifyAuthauthenticatedU-Ku1OGzzQy9Cw"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPoolUserPoolDomainAB8DA532Ref",
-    "OutputValue": "06f0141b48a2dc6a8774"
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef",
+    "OutputValue": "amplify-mediavault2605060-amplifyAuthunauthenticate-JhcoGUsezYtG"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthBasicGroupRole8EA02FC2Ref",
-    "OutputValue": "amplify-mediavault2604261-amplifyAuthBasicGroupRole-STSyqPxGII0r"
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthBasicGroupRole81614997Ref",
+    "OutputValue": "amplify-mediavault2605060-amplifyAuthBasicGroupRole-c3pZ129t27RM"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthUserPoolAppClientB71E35F4Ref",
-    "OutputValue": "4h4k61fjnrv1nvlrlgfkbphpht"
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthUserPoolAppClient21E4AC33Ref",
+    "OutputValue": "677nscabbh621gp444ua04986b"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref",
-    "OutputValue": "amplify-mediavault2604261-amplifyAuthunauthenticate-FebAhXFwzu3H"
-  },
-  {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthAdminGroupRole6D09A9FERef",
-    "OutputValue": "amplify-mediavault2604261-amplifyAuthAdminGroupRole-y4agGM7PWXBC"
+    "OutputKey": "amplifymediavaulte2esandbox6b70779011authamplifyAuthUserPool69494C3CRef",
+    "OutputValue": "us-east-1_wweHbdVgp"
   }
 ]

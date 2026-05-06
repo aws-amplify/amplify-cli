@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+                            "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Note-2qw2onva3jdgzkuotin7obfk6q-x"
+                          "tableName": "Note-mjkacbjok5c33i3fd4qemq6pyq-x"
                         }
                       ]
                     }
@@ -161,7 +161,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+                            "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
                           },
                           "envName": "NONE"
                         }
@@ -171,7 +171,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Note-2qw2onva3jdgzkuotin7obfk6q-x"
+                          "tableName": "Note-mjkacbjok5c33i3fd4qemq6pyq-x"
                         }
                       ]
                     }
@@ -463,7 +463,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNyw6CMBBFv4V9GXlE92Li0hj4ADKUkQyUNmGKxDT8uwF0dc7NWdwMsnMKSYSLxLodYsMNhAeJp7byqAeFi9SBcYRQOkPq9rI7n86w/mzzsFUZHJsWIdxnqz07u7W/r0ryGkXIC1w3KMmhmPVAvkChVZUkbp40qb1WHju23X72C6uyriXo5fTOMkgvkES9MMfTbD2PBOXBL8qRVQjPAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWOQQ6CMBBFz+K+jFr0AGLi0hg4ABnakVSgTZhWYpre3RR09f7PW/wvQZ4lHHa4cKH0UIymg3gn9qQbj2oQuHAbDU4QazeSuD7tyocbjfrkuqUkRpw6jRBvwSpvnM3un5PgskVm8gyXDMElVEEN5CtkSqImdmFWJFbbeOyN7dexn0jCOk3w4v1bnuCYL7/YmGIO1puJoN74BYdF9SPPAAAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
@@ -738,12 +738,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId": {
+    "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifymediavaulte2esandbox0cf7d7875edataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent0F7F4D1FArn": {
+    "amplifymediavaulte2esandbox6b70779011dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent83333F7CArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

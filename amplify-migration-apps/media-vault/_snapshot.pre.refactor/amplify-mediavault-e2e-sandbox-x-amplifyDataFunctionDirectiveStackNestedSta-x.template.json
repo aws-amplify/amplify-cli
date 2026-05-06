@@ -278,7 +278,7 @@
     }
   },
   "Resources": {
-    "ThumbnailgenGen2EciqzovhljLambdaDataSourceServiceRole0F85BC9C": {
+    "ThumbnailgenGen2PpgbpjaqatLambdaDataSourceServiceRole6E85600C": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -311,10 +311,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/ThumbnailgenGen2EciqzovhljLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/ThumbnailgenGen2PpgbpjaqatLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "ThumbnailgenGen2EciqzovhljLambdaDataSourceServiceRoleDefaultPolicyC22DF86D": {
+    "ThumbnailgenGen2PpgbpjaqatLambdaDataSourceServiceRoleDefaultPolicyDBBAA988": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -364,24 +364,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ThumbnailgenGen2EciqzovhljLambdaDataSourceServiceRoleDefaultPolicyC22DF86D",
+        "PolicyName": "ThumbnailgenGen2PpgbpjaqatLambdaDataSourceServiceRoleDefaultPolicyDBBAA988",
         "Roles": [
           {
-            "Ref": "ThumbnailgenGen2EciqzovhljLambdaDataSourceServiceRole0F85BC9C"
+            "Ref": "ThumbnailgenGen2PpgbpjaqatLambdaDataSourceServiceRole6E85600C"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/ThumbnailgenGen2EciqzovhljLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/ThumbnailgenGen2PpgbpjaqatLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "ThumbnailgenGen2EciqzovhljLambdaDataSource": {
+    "ThumbnailgenGen2PpgbpjaqatLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -399,10 +399,10 @@
             ]
           }
         },
-        "Name": "ThumbnailgenGen2EciqzovhljLambdaDataSource",
+        "Name": "ThumbnailgenGen2PpgbpjaqatLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ThumbnailgenGen2EciqzovhljLambdaDataSourceServiceRole0F85BC9C",
+            "ThumbnailgenGen2PpgbpjaqatLambdaDataSourceServiceRole6E85600C",
             "Arn"
           ]
         },
@@ -411,44 +411,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/ThumbnailgenGen2EciqzovhljLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/ThumbnailgenGen2PpgbpjaqatLambdaDataSource/Resource"
       }
     },
-    "InvokeThumbnailgenGen2EciqzovhljLambdaDataSourceInvokeThumbnailgenGen2EciqzovhljLambdaDataSourceAppSyncFunctionD51FC05B": {
+    "InvokeThumbnailgenGen2PpgbpjaqatLambdaDataSourceInvokeThumbnailgenGen2PpgbpjaqatLambdaDataSourceAppSyncFunctionEC2F0DCB": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ThumbnailgenGen2EciqzovhljLambdaDataSource",
+            "ThumbnailgenGen2PpgbpjaqatLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeThumbnailgenGen2EciqzovhljLambdaDataSource",
+        "Name": "InvokeThumbnailgenGen2PpgbpjaqatLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/555bf1cc4cbfb80cbd4cccf512cd6b29ee1345ab6a7a6e63c0cf8d5e63fb9542.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77c2d6da586b04b6c65cdf777baa5c4c359d3b51522192e83be14e54153bc1f4.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "ThumbnailgenGen2EciqzovhljLambdaDataSource"
+        "ThumbnailgenGen2PpgbpjaqatLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeThumbnailgenGen2EciqzovhljLambdaDataSource/InvokeThumbnailgenGen2EciqzovhljLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeThumbnailgenGen2PpgbpjaqatLambdaDataSource/InvokeThumbnailgenGen2PpgbpjaqatLambdaDataSource.AppSyncFunction"
       }
     },
     "QuerygenerateThumbnailResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "FieldName": "generateThumbnail",
         "Kind": "PIPELINE",
@@ -462,7 +462,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeThumbnailgenGen2EciqzovhljLambdaDataSourceInvokeThumbnailgenGen2EciqzovhljLambdaDataSourceAppSyncFunctionD51FC05B",
+                "InvokeThumbnailgenGen2PpgbpjaqatLambdaDataSourceInvokeThumbnailgenGen2PpgbpjaqatLambdaDataSourceAppSyncFunctionEC2F0DCB",
                 "FunctionId"
               ]
             }
@@ -478,7 +478,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -486,11 +486,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -507,7 +507,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/queryGenerateThumbnailResolver"
       }
     },
-    "AddusertogroupGen2EciqzovhljLambdaDataSourceServiceRoleD162FC96": {
+    "AddusertogroupGen2PpgbpjaqatLambdaDataSourceServiceRole5BA45FC2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -540,10 +540,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/AddusertogroupGen2EciqzovhljLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/AddusertogroupGen2PpgbpjaqatLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "AddusertogroupGen2EciqzovhljLambdaDataSourceServiceRoleDefaultPolicyD0CA701E": {
+    "AddusertogroupGen2PpgbpjaqatLambdaDataSourceServiceRoleDefaultPolicyBB856E3A": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -593,24 +593,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "AddusertogroupGen2EciqzovhljLambdaDataSourceServiceRoleDefaultPolicyD0CA701E",
+        "PolicyName": "AddusertogroupGen2PpgbpjaqatLambdaDataSourceServiceRoleDefaultPolicyBB856E3A",
         "Roles": [
           {
-            "Ref": "AddusertogroupGen2EciqzovhljLambdaDataSourceServiceRoleD162FC96"
+            "Ref": "AddusertogroupGen2PpgbpjaqatLambdaDataSourceServiceRole5BA45FC2"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/AddusertogroupGen2EciqzovhljLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/AddusertogroupGen2PpgbpjaqatLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "AddusertogroupGen2EciqzovhljLambdaDataSource": {
+    "AddusertogroupGen2PpgbpjaqatLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -628,10 +628,10 @@
             ]
           }
         },
-        "Name": "AddusertogroupGen2EciqzovhljLambdaDataSource",
+        "Name": "AddusertogroupGen2PpgbpjaqatLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "AddusertogroupGen2EciqzovhljLambdaDataSourceServiceRoleD162FC96",
+            "AddusertogroupGen2PpgbpjaqatLambdaDataSourceServiceRole5BA45FC2",
             "Arn"
           ]
         },
@@ -640,44 +640,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/AddusertogroupGen2EciqzovhljLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/AddusertogroupGen2PpgbpjaqatLambdaDataSource/Resource"
       }
     },
-    "InvokeAddusertogroupGen2EciqzovhljLambdaDataSourceInvokeAddusertogroupGen2EciqzovhljLambdaDataSourceAppSyncFunction60B5242C": {
+    "InvokeAddusertogroupGen2PpgbpjaqatLambdaDataSourceInvokeAddusertogroupGen2PpgbpjaqatLambdaDataSourceAppSyncFunction8AF4C638": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "AddusertogroupGen2EciqzovhljLambdaDataSource",
+            "AddusertogroupGen2PpgbpjaqatLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeAddusertogroupGen2EciqzovhljLambdaDataSource",
+        "Name": "InvokeAddusertogroupGen2PpgbpjaqatLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e66c70d139dc9e239cc7e93bfd3374f216009f1e123437ea264c4a405e41849.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b262c184cf9ac2c1c0dc3e655499f9b6722dbf9488a19dfaa93262608576b17.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "AddusertogroupGen2EciqzovhljLambdaDataSource"
+        "AddusertogroupGen2PpgbpjaqatLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeAddusertogroupGen2EciqzovhljLambdaDataSource/InvokeAddusertogroupGen2EciqzovhljLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeAddusertogroupGen2PpgbpjaqatLambdaDataSource/InvokeAddusertogroupGen2PpgbpjaqatLambdaDataSource.AppSyncFunction"
       }
     },
     "QueryaddUserToGroupResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "FieldName": "addUserToGroup",
         "Kind": "PIPELINE",
@@ -691,7 +691,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeAddusertogroupGen2EciqzovhljLambdaDataSourceInvokeAddusertogroupGen2EciqzovhljLambdaDataSourceAppSyncFunction60B5242C",
+                "InvokeAddusertogroupGen2PpgbpjaqatLambdaDataSourceInvokeAddusertogroupGen2PpgbpjaqatLambdaDataSourceAppSyncFunction8AF4C638",
                 "FunctionId"
               ]
             }
@@ -707,7 +707,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -715,11 +715,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -736,7 +736,7 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/queryAddUserToGroupResolver"
       }
     },
-    "RemoveuserfromgroupGen2EciqzovhljLambdaDataSourceServiceRoleC00C5107": {
+    "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceServiceRoleA1B2D24D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -769,10 +769,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/RemoveuserfromgroupGen2EciqzovhljLambdaDataSource/ServiceRole/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource/ServiceRole/Resource"
       }
     },
-    "RemoveuserfromgroupGen2EciqzovhljLambdaDataSourceServiceRoleDefaultPolicy16BEBD0A": {
+    "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceServiceRoleDefaultPolicy5E038234": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -822,24 +822,24 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "RemoveuserfromgroupGen2EciqzovhljLambdaDataSourceServiceRoleDefaultPolicy16BEBD0A",
+        "PolicyName": "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceServiceRoleDefaultPolicy5E038234",
         "Roles": [
           {
-            "Ref": "RemoveuserfromgroupGen2EciqzovhljLambdaDataSourceServiceRoleC00C5107"
+            "Ref": "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceServiceRoleA1B2D24D"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/RemoveuserfromgroupGen2EciqzovhljLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
       }
     },
-    "RemoveuserfromgroupGen2EciqzovhljLambdaDataSource": {
+    "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "LambdaConfig": {
           "LambdaFunctionArn": {
@@ -857,10 +857,10 @@
             ]
           }
         },
-        "Name": "RemoveuserfromgroupGen2EciqzovhljLambdaDataSource",
+        "Name": "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "RemoveuserfromgroupGen2EciqzovhljLambdaDataSourceServiceRoleC00C5107",
+            "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceServiceRoleA1B2D24D",
             "Arn"
           ]
         },
@@ -869,44 +869,44 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/RemoveuserfromgroupGen2EciqzovhljLambdaDataSource/Resource"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource/Resource"
       }
     },
-    "InvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSourceInvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSourceAppSyncFunction213FB130": {
+    "InvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceInvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceAppSyncFunction4305C590": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "RemoveuserfromgroupGen2EciqzovhljLambdaDataSource",
+            "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "InvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSource",
+        "Name": "InvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/062f1ad551353082f961f26b4ed7e314072feb25d5a2b7bc321bc0b3788959d0.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d90965bec89695fe4a7b8468bfdf54f7c2ed6f81c6e3d759d5fcc3c88c94b864.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
         }
       },
       "DependsOn": [
-        "RemoveuserfromgroupGen2EciqzovhljLambdaDataSource"
+        "RemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSource/InvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSource.AppSyncFunction"
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/InvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource/InvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSource.AppSyncFunction"
       }
     },
     "QueryremoveUserFromGroupResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "FieldName": "removeUserFromGroup",
         "Kind": "PIPELINE",
@@ -920,7 +920,7 @@
             },
             {
               "Fn::GetAtt": [
-                "InvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSourceInvokeRemoveuserfromgroupGen2EciqzovhljLambdaDataSourceAppSyncFunction213FB130",
+                "InvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceInvokeRemoveuserfromgroupGen2PpgbpjaqatLambdaDataSourceAppSyncFunction4305C590",
                 "FunctionId"
               ]
             }
@@ -936,7 +936,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
               {
@@ -944,11 +944,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref"
+                "Ref": "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
             ]
@@ -969,10 +969,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPINONEDS8F079C24Name"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPINONEDS974EC080Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryGenerateThumbnailAuthFN",
@@ -991,10 +991,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPINONEDS8F079C24Name"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPINONEDS974EC080Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryAddUserToGroupAuthFN",
@@ -1013,10 +1013,10 @@
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPINONEDS8F079C24Name"
+          "Ref": "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPINONEDS974EC080Name"
         },
         "FunctionVersion": "2018-05-29",
         "Name": "QueryRemoveUserFromGroupAuthFN",
@@ -1034,7 +1034,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQW/CMAyFfwv31IMidh+ddpqmqf0ByCRuZZo6qE5AqOp/RwnaYafP79nvyTXUhx1sN3jXyrqx8nyG5Yc0kusi2tE0vTRBHEcOYvCup8XjdHYIX0lsNo+oZPB61YdYWL7L8hMjdiHNlnL+v/rLNUF6HtKMpbnppSUN/kbzahgnWNrgy33hb/BsH1m+ptXo/oSqFBU+Mozu4ZjsSDH/s5pidhEHlmE1EhzBRd9udQ27d9huLspczUkiTwTti08+4WmmCwEAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WP0W7CMAxFv2XvqdnK9gGjE08ITe0HIJO4lWnqoDoBoar/PiWIhz0d32tfy66h/qrh/Q3vWlk3Vp7PsBxJI7kuoh1N00sTxHHkIAbvelo8TmeHsE9is7lDJYPXqz7EwnIozR+M2IU0W8r5/+qVa4L0PKQZy+aml5Y0+BvNq2GcYGmDL/OFv8GzfWT5rFaj2xOqUlT4zjC6hV2yI8V8z2qK2UUcWIbVSHAEF93c6k/4yO9elLmak0SeCNon/wA88K/xCwEAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
@@ -1043,19 +1043,19 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPIE6ADA1FFApiId": {
+    "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPI19E9E83CApiId": {
       "Type": "String"
     },
-    "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthauthenticatedUserRoleFB702AC1Ref": {
+    "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthauthenticatedUserRole2B75598FRef": {
       "Type": "String"
     },
-    "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthunauthenticatedUserRoleBC818269Ref": {
+    "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthunauthenticatedUserRoleCDCA9F9ARef": {
       "Type": "String"
     },
-    "referencetoamplifymediavaulte2esandbox0cf7d7875eauthNestedStackauthNestedStackResource69C4C4EBOutputsamplifymediavaulte2esandbox0cf7d7875eauthamplifyAuthIdentityPoolC6A93644Ref": {
+    "referencetoamplifymediavaulte2esandbox6b70779011authNestedStackauthNestedStackResource6C12E807Outputsamplifymediavaulte2esandbox6b70779011authamplifyAuthIdentityPoolDF434D04Ref": {
       "Type": "String"
     },
-    "referencetoamplifymediavaulte2esandbox0cf7d7875edataamplifyDataGraphQLAPINONEDS8F079C24Name": {
+    "referencetoamplifymediavaulte2esandbox6b70779011dataamplifyDataGraphQLAPINONEDS974EC080Name": {
       "Type": "String"
     }
   }

@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAttNoteTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Note-2qw2onva3jdgzkuotin7obfk6q-x/stream/2026-04-26T23:15:18.695",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Note-mjkacbjok5c33i3fd4qemq6pyq-x/stream/2026-05-06T04:52:25.834",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "xc54wskwirbthaeghdgjpesz6a:GetAtt:NoteTable:StreamArn"
+    "ExportName": "7kc2hgcgend5blba74lbxge6xi:GetAtt:NoteTable:StreamArn"
   },
   {
     "OutputKey": "GetAttNoteTableName",
-    "OutputValue": "Note-2qw2onva3jdgzkuotin7obfk6q-x",
+    "OutputValue": "Note-mjkacbjok5c33i3fd4qemq6pyq-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "xc54wskwirbthaeghdgjpesz6a:GetAtt:NoteTable:Name"
+    "ExportName": "7kc2hgcgend5blba74lbxge6xi:GetAtt:NoteTable:Name"
   }
 ]

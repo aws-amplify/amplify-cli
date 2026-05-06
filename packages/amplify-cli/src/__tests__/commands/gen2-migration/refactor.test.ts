@@ -23,6 +23,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
     waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
     waitUntilStackCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
     waitUntilStackDeleteComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackImportComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
     waitUntilStackRefactorCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
     waitUntilStackRefactorExecuteComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
     waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
@@ -82,6 +83,10 @@ test('imported-resources snapshot', async () => {
 
 test('store-locator snapshot', async () => {
   await testSnapshot('store-locator');
+});
+
+test('media-vault snapshot', async () => {
+  await testSnapshot('media-vault');
 });
 
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {

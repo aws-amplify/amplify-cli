@@ -512,8 +512,8 @@
       "DependsOn": [
         "HostedUICustomResourceLogPolicy"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "HostedUIProvidersCustomResource": {
       "Type": "AWS::Lambda::Function",
@@ -661,8 +661,8 @@
       "DependsOn": [
         "HostedUIProvidersCustomResourceLogPolicy"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "IdentityPool": {
       "Type": "AWS::Cognito::IdentityPool",
