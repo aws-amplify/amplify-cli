@@ -18,8 +18,13 @@ for architecture and design decisions:
 | Doc                                                                               | Covers                                                           |
 | --------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `docs/packages/amplify-cli/src/commands/gen2-migration.md`                        | Architecture, CLI interface, Plan lifecycle, subcommand design   |
+| `docs/packages/amplify-cli/src/commands/gen2-migration/assess.md`                 | Assessment, resource discovery, support levels                   |
+| `docs/packages/amplify-cli/src/commands/gen2-migration/lock.md`                   | Lock step, drift detection, deletion protection                  |
+| `docs/packages/amplify-cli/src/commands/gen2-migration/generate.md`               | Code generation pipeline, directory structure, generators        |
+| `docs/packages/amplify-cli/src/commands/gen2-migration/refactor.md`               | CloudFormation stack refactoring, category refactorers           |
 | `packages/amplify-e2e-gen2-migration/README.md`                                   | E2E automation system, CLI options, migration workflow steps     |
 | `packages/amplify-cli/src/__tests__/commands/gen2-migration/_framework/README.md` | Test framework, mock clients, snapshot comparison, customization |
+| `amplify-migration-apps/README.md`                                                | App structure, hooks, snapshots, adding/modifying apps           |
 | https://docs.amplify.aws/gen1/react/tools/cli/                                    | Amplify Gen1 CLI documentation                                   |
 | https://docs.amplify.aws/react/build-a-backend/                                   | Amplify Gen2 backend documentation                               |
 
@@ -36,30 +41,6 @@ with a specific combination of Amplify categories and configurations. See
 `amplify-migration-apps/README.md` for the full structure and conventions.
 
 ### E2E System
-
-#### Phases
-
-The E2E runs the following phases in order:
-
-1. Gen1 init/push
-2. Gen1 tests
-3. Capture `pre.generate` snapshot
-4. Assess
-5. Lock
-6. Generate
-7. Capture `post.generate` snapshot
-8. Post-generate script
-9. Sandbox deploy
-10. Post-sandbox script
-11. Gen1 tests + Gen2 tests (pre-refactor)
-12. Capture `pre.refactor` snapshot
-13. Refactor
-14. Capture `post.refactor` snapshot
-15. Gen1 tests + Gen2 tests (post-refactor)
-16. Post-refactor script
-17. Sandbox redeploy
-18. Gen1 tests + Gen2 tests (final)
-19. Shared data tests
 
 #### App directory
 
@@ -106,86 +87,3 @@ CLI, so stale builds will mask your fix.
 #### Idempotency
 
 The E2E is idempotent — previous runs won't interfere with the next one.
-
-## Development Loop
-
-Run these steps sequentially — do not stop and wait for user input between steps. Keep
-going until the loop is complete. Do not skip any step.
-
-#### 1. Research
-
-Read the relevant Context above for the area you're touching.
-
-#### 2. Find a test app
-
-Read each app's `_snapshot.pre.generate/` files to determine whether an existing app
-covers the scenario. If no existing app exercises the affected code path, follow the
-[Adding an App](../amplify-migration-apps/README.md#adding-an-app) or
-[Modifying an App](../amplify-migration-apps/README.md#modifying-an-app) instructions
-before proceeding.
-
-> **Note:** The `_snapshot.pre.generate/` directory may be newer than the other snapshot
-> directories. This happens when the user has recaptured the input snapshot (e.g., after
-> changing the Gen1 app configuration) but hasn't regenerated the remaining snapshots yet
-> because the bug still needs to be fixed first. Don't treat a mismatch between
-> `_snapshot.pre.generate/` and the other snapshots as an error.
-
-#### 3. Add frontend tests
-
-If the change is observable from the app's frontend (e.g., an auth flow, an API query,
-a storage operation), add or update a test in the app's `tests/` directory that exercises
-the behavior. These tests run against deployed stacks at multiple points during the E2E
-(pre-refactor, post-refactor, final Gen2). See existing app tests for the pattern
-(e.g., `amplify-migration-apps/project-boards/tests/`).
-
-#### 4. Validate tests against Gen1
-
-Run `npm run deploy` in the app directory. This deploys the Gen1 backend and runs the
-frontend tests against it. Tests must pass here if they cover pre-existing Gen1 behavior —
-if they don't, the test itself is wrong. Tests that cover Gen2-only behavior can be skipped
-at this stage.
-
-#### 5. Reproduce and RCA (bug fixes)
-
-For bug fixes, reproduce the bug by running the E2E without `UPDATE_SNAPSHOTS`:
-
-```bash
-cd amplify-migration-apps/<app-name>
-npm run test:e2e
-```
-
-Analyze the failure and write the root cause analysis to an `rca.md` file in the app
-directory. Compare with similar apps that have the same category but don't exhibit the
-bug — understanding why it manifests in one app and not another is often the key to the
-root cause (e.g., a post-generate script or `resourceGroupName` override may mask the
-issue in other apps).
-
-> **Note:** For new features, skip this step.
-
-#### 6. Commit
-
-Commit the frontend tests, `rca.md`, and any app changes. This is a restore point — if
-later steps go sideways, you can come back to this state.
-
-#### 7. Implement
-
-Make the code change in `packages/amplify-cli/src/commands/gen2-migration/`.
-
-#### 8. Run E2E
-
-Run the E2E on the affected app to validate the change and regenerate snapshots. If it
-fails, fix the issue and rerun until it passes:
-
-```bash
-cd amplify-migration-apps/<app-name>
-UPDATE_SNAPSHOTS=1 npm run test:e2e
-```
-
-#### 9. Unit tests
-
-Run `yarn build && yarn test` in `packages/amplify-cli/` to verify nothing else broke.
-If tests fail at this point, only test code changes should be needed — the production
-code was already validated by the E2E run.
-
-> **Note:** If you added a new app, you'll need to add snapshot test entries. See
-> [Snapshot Testing](../amplify-migration-apps/README.md#snapshot-testing) for details.
