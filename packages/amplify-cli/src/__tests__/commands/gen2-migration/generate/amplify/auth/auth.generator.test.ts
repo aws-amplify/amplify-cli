@@ -2051,7 +2051,7 @@ describe('AuthGenerator', () => {
       AllowUnauthenticatedIdentities: false,
     });
     jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockImplementation((_poolId: string, clientId: string) => {
-      if (clientId === 'webclient123') return Promise.resolve(undefined);
+      if (clientId === 'webclient123') return Promise.resolve({});
       return Promise.resolve({
         RefreshTokenValidity: 30,
         EnableTokenRevocation: true,
@@ -2060,7 +2060,7 @@ describe('AuthGenerator', () => {
       });
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     const ops = await generator.plan();
     await ops[0].execute();
     expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
@@ -2079,9 +2079,11 @@ describe('AuthGenerator', () => {
             mutable: true,
           },
           birthdate: {
+            required: false,
             mutable: true,
           },
           address: {
+            required: false,
             mutable: true,
           },
         },
@@ -2099,7 +2101,7 @@ describe('AuthGenerator', () => {
         const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
         cfnIdentityPool.allowUnauthenticatedIdentities = false;
         const userPool = backend.auth.resources.userPool;
-        userPool.addClient('NativeAppClient', {
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           refreshTokenValidity: Duration.days(30),
           enableTokenRevocation: true,
           disableOAuth: true,
@@ -2113,6 +2115,15 @@ describe('AuthGenerator', () => {
             email: true,
           }),
         });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(

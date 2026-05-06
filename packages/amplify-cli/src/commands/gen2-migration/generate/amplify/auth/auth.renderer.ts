@@ -418,18 +418,6 @@ export class AuthRenderer {
   }
 
   /**
-   * Collects all attribute names referenced in the app client's
-   * ReadAttributes and WriteAttributes lists.
-   */
-  private static collectClientAttributeNames(client?: UserPoolClientType): ReadonlySet<string> | undefined {
-    if (!client?.ReadAttributes?.length && !client?.WriteAttributes?.length) return undefined;
-    const names = new Set<string>();
-    for (const attr of client?.ReadAttributes ?? []) names.add(attr);
-    for (const attr of client?.WriteAttributes ?? []) names.add(attr);
-    return names;
-  }
-
-  /**
    * Extracts custom user attributes from schema.
    */
   private static deriveCustomUserAttributes(schema?: readonly SchemaAttributeType[]): Record<
