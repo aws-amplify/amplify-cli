@@ -36,10 +36,15 @@ export class Teardown {
   private readonly clientConfig: { credentials: ReturnType<typeof fromIni> };
   private readonly errors: string[] = [];
 
-  constructor(deploymentName: string, profile: string) {
+  /**
+   * @param deploymentName The deployment name prefix used to discover stacks.
+   * @param clientConfig   SDK client config with a credentials provider.
+   *                       Typically obtained from `App.getClientConfig()`.
+   */
+  constructor(deploymentName: string, clientConfig: { credentials: ReturnType<typeof fromIni> }) {
     this.deploymentName = deploymentName;
     this.logger = new Logger(`teardown-${deploymentName}`);
-    this.clientConfig = { credentials: fromIni({ profile }) };
+    this.clientConfig = clientConfig;
   }
 
   /**

@@ -79,7 +79,7 @@ async function main(): Promise<void> {
   } finally {
     if (argv.teardown) {
       await app.refreshCredentials();
-      await new Teardown(app.deploymentName, app.profile).clean();
+      await new Teardown(app.deploymentName, app.getClientConfig()).clean();
     }
   }
 }
