@@ -55,9 +55,9 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const gen2StackId = blueprint.sourceStackId;
     const template = await this.cfn.fetchTemplate(gen2StackId);
     const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
-    const socialProvidersResourceIds = [...(domainLogicalId ? [domainLogicalId] : []), ...idpLogicalIds.values()];
 
-    if (socialProvidersResourceIds.length > 0) {
+    if (domainLogicalId || idpLogicalIds.size > 0) {
+      const socialProvidersResourceIds = [...(domainLogicalId ? [domainLogicalId] : []), ...idpLogicalIds.values()];
       const gen2StackName = extractStackNameFromId(gen2StackId);
       baseOps.push({
         resource: this.resource,
