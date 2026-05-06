@@ -139,6 +139,7 @@ export class App {
    */
   public async init(): Promise<void> {
     await this.refreshCredentials();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await ensureGen1PlaceholderApp(new AmplifyClient(this.getClientConfig()));
     this.logger.info('amplify init started');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
@@ -502,7 +503,14 @@ export class App {
    * credential signal — sub-processes resolve it via the shared AWS config.
    */
   public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, AWS_PROFILE: this.profile, ...extra };
+    const env: NodeJS.ProcessEnv = { ...process.env, AWS_PROFILE: this.profile, ...extra };
+    // Remove credential env vars so subprocesses use only the profile.
+    // Without this, the AWS CLI and CDK prefer env var credentials over
+    // the profile, causing operations to run in the wrong account.
+    delete env.AWS_ACCESS_KEY_ID;
+    delete env.AWS_SECRET_ACCESS_KEY;
+    delete env.AWS_SESSION_TOKEN;
+    return env;
   }
 
   /**

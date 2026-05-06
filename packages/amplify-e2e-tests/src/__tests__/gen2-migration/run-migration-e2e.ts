@@ -93,7 +93,12 @@ export async function runMigrationE2E(appName: string): Promise<void> {
       app.updateSnapshots();
     }
   } finally {
-    await app.refreshCredentials();
-    await new Teardown(app.deploymentName, app.profile).clean();
+    try {
+      await app.refreshCredentials();
+      await new Teardown(app.deploymentName, app.profile).clean();
+    } catch (teardownError) {
+      // Teardown failures should not mask a successful migration.
+      console.error('Teardown failed (non-fatal):', (teardownError as Error).message);
+    }
   }
 }
