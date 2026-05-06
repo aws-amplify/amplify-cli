@@ -35,7 +35,7 @@
   },
   {
     "OutputKey": "StackId",
-    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/afb43f90-41ce-11f1-b9ce-125296d170c9",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-x-x/8a0a70b0-47ec-11f1-b60b-1276e3a31c71",
     "Description": "CloudFormation provider root stack name",
     "ExportName": "amplify-moodboard-x-x-StackId"
   }
