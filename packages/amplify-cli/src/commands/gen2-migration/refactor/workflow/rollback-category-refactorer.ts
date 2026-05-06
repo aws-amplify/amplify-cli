@@ -6,7 +6,7 @@ import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-par
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
-import { CategoryRefactorer, ResolvedStack, filterResourcesByTypes } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
 import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../../_common/cfn';
 
 /**
@@ -127,7 +127,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);
     const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
-    const resources = filterResourcesByTypes(holdingStackTemplate, this.resourceTypes());
+    const resources = this.filterResourcesByType(holdingStackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${holdingStackName}`);
 
     const resourceMappings: ResourceMapping[] = [];

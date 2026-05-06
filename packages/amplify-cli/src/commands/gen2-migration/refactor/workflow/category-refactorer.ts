@@ -81,8 +81,8 @@ export abstract class CategoryRefactorer implements Planner {
     const source = await this.resolveSource(sourceStackId);
     const target = await this.resolveTarget(destStackId);
 
-    const sourceResources = filterResourcesByTypes(source.resolvedTemplate, this.resourceTypes());
-    const targetResources = filterResourcesByTypes(target.resolvedTemplate, this.resourceTypes());
+    const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
+    const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
     const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, source.resolvedTemplate, [...sourceResources.keys()]);
     const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, target.resolvedTemplate, [...targetResources.keys()]);
@@ -290,6 +290,14 @@ export abstract class CategoryRefactorer implements Planner {
   }
 
   /**
+   * Returns the resources in `template` whose Type is in this.resourceTypes().
+   */
+  protected filterResourcesByType(template: CFNTemplate): Map<string, CFNResource> {
+    const types = this.resourceTypes();
+    return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
+  }
+
+  /**
    * Renders a CLI table of move mappings.
    */
   protected renderMappingTable(mappings: readonly ResourceMapping[]): string {
@@ -351,13 +359,6 @@ export abstract class CategoryRefactorer implements Planner {
       execute: async () => {},
     };
   }
-}
-
-/**
- * Returns the template's resources whose Type is in `types`, keyed by logical ID.
- */
-export function filterResourcesByTypes(template: CFNTemplate, types: readonly string[]): Map<string, CFNResource> {
-  return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
 }
 
 /**

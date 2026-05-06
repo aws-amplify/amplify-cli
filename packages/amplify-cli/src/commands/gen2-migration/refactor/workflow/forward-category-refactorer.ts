@@ -7,7 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
-import { CategoryRefactorer, ResolvedStack, filterResourcesByTypes } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -152,7 +152,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     this.debug(`Locating holding stack: ${holdingStackName}`);
     const holdingStack = await this.cfn.findStack(holdingStackName);
 
-    const resources = filterResourcesByTypes(gen2StackTemplate, this.resourceTypes());
+    const resources = this.filterResourcesByType(gen2StackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${gen2StackName}`);
 
     const holdingStackTemplate = holdingStack ? await this.cfn.fetchTemplate(holdingStackName) : undefined;
