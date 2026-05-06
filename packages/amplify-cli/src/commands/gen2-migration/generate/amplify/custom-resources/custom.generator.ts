@@ -7,7 +7,6 @@ import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
-import { SpinningLogger } from '../../../_common/spinning-logger';
 
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
@@ -51,20 +50,17 @@ export class CustomResourceGenerator implements Planner {
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
-  private readonly logger: SpinningLogger;
 
   public constructor(
     backendGenerator: BackendGenerator,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
-    logger: SpinningLogger,
   ) {
     this.backendGenerator = backendGenerator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
     this.resourceName = resourceName;
-    this.logger = logger;
   }
 
   /**
@@ -81,8 +77,6 @@ export class CustomResourceGenerator implements Planner {
         validate: () => undefined,
         describe: async () => [`Migrate amplify/custom/${this.resourceName}/resource.ts`],
         execute: async () => {
-          this.logger.info(`Migrating custom/${this.resourceName}/resource.ts`);
-
           // Copy resource directory (excluding filtered files)
           await fs.mkdir(destResourcePath, { recursive: true });
           await fs.cp(sourceResourcePath, destResourcePath, {
