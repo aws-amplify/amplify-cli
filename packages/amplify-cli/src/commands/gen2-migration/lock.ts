@@ -163,6 +163,19 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
+    // ============================================================
+    // Retain every resource in every stack (top-down). Must run
+    // before the lock deny statement is set; otherwise the deny
+    // would block these updates.
+    // ============================================================
+
+    const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
+    this.logger.info(`Discovered ${stackIds.length} stacks`);
+    const stackContext = await this.classifyStacks();
+    for (const stackId of stackIds) {
+      operations.push(this.buildRetainOperation(stackId, stackContext.get(stackId)));
+    }
+
     operations.push({
       validate: () => undefined,
       describe: async () => {
@@ -521,6 +534,23 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
     return stackId;
+  }
+
+  /**
+   * Stub — filled out in the next commit. Returns an
+   * `AmplifyMigrationOperation` that, when executed, applies retain to
+   * every resource in the stack identified by `stackId`. The `ctx` (when
+   * provided) preserves lock's existing `Resource: cat/name (service)`
+   * grouping in `Plan.describe` and nested spinner labels during execute.
+   */
+  private buildRetainOperation(stackId: string, _ctx?: StackContext): AmplifyMigrationOperation {
+    const stackName = extractStackNameFromId(stackId);
+    return {
+      describe: async () => [`Set Retain policies on resources in '${stackName}'`],
+      validate: () => undefined,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
   }
 
   /**
