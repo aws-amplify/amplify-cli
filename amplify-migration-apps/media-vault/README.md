@@ -443,7 +443,7 @@ until you add it. There are three places to update:
    [Cognito console](https://console.aws.amazon.com/cognito/), select your
    user pool, and note the domain under _App integration_ → _Domain_.
 
-   ![](./images/cognito-domain-prefix.png)
+   ![](./images/cognito-domain.png)
 
    - `https://<gen2-cognito-domain>/`
    - `https://<gen2-cognito-domain>/oauth2/idpresponse/`
