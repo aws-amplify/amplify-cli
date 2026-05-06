@@ -1,0 +1,26 @@
+## [Start] Custom init slot - Auto-prefix board name with time-of-day emoji. **
+## This runs after init.1 (which sets id, createdAt, updatedAt).
+## We read the hour from createdAt and prepend a matching emoji to the board name.
+
+#set( $createdAt = $ctx.stash.defaultValues.createdAt )
+#set( $hour = $util.parseInt($util.time.parseISO8601ToEpochMilliSeconds($createdAt)) )
+## Convert epoch millis to approximate hour (UTC)
+#set( $hourOfDay = $hour / 3600000 % 24 )
+
+#if( $hourOfDay >= 5 && $hourOfDay < 12 )
+  #set( $emoji = "🌅" )
+#elseif( $hourOfDay >= 12 && $hourOfDay < 18 )
+  #set( $emoji = "☀️" )
+#else
+  #set( $emoji = "🌙" )
+#end
+
+## Prepend the emoji to the board name
+#set( $inputName = $util.defaultIfNull($ctx.args.input.name, "") )
+$util.qr($ctx.stash.defaultValues.put("name", "${emoji} ${inputName}"))
+
+$util.toJson({
+  "version": "2018-05-29",
+  "payload": {}
+})
+## [End] Custom init slot - Auto-prefix board name with time-of-day emoji. **

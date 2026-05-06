@@ -1,8 +1,201 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { newLineIdentifier, TS } from '../../ts';
+import { ClassifiedVtlFiles, ParsedExtended } from './data.generator';
 
 const factory = ts.factory;
+
+// ── Resolver Utility Types ─────────────────────────────────────────────
+
+/** A grouped extended resolver pair (req + res for same slot/order). */
+export interface ExtendedResolverFile {
+  readonly typeName: string;
+  readonly fieldName: string;
+  readonly slot: string;
+  readonly order: number;
+  readonly reqFile?: string;
+  readonly resFile?: string;
+}
+
+/** A splice operation to insert a function at a pipeline index. */
+export interface SpliceEntry {
+  readonly resolverFile: ExtendedResolverFile;
+  readonly spliceIndex: number;
+}
+
+/** Pipeline splice result for a single typeName.fieldName. */
+export interface PipelineSpliceResult {
+  readonly typeName: string;
+  readonly fieldName: string;
+  readonly entries: readonly SpliceEntry[];
+}
+
+// ── Slot Constants ─────────────────────────────────────────────────────
+
+/** Union of all valid slots across all operation types. */
+export const ALL_SLOTS: readonly string[] = [
+  'init',
+  'preAuth',
+  'auth',
+  'postAuth',
+  'preDataLoad',
+  'postDataLoad',
+  'preUpdate',
+  'postUpdate',
+  'preSubscribe',
+  'finish',
+];
+
+/**
+ * Maps each slot to its base pipeline index for the 3-function pipeline
+ * shape (Query, Subscription, delete-Mutation): [auth0, postAuth0, DataResolverFn].
+ */
+export const PIPELINE_3_SLOT_MAP: Readonly<Record<string, number>> = {
+  init: 0,
+  preAuth: 0,
+  auth: 1,
+  postAuth: 2,
+  preDataLoad: 2,
+  postDataLoad: 3,
+  preUpdate: 2,
+  postUpdate: 3,
+  preSubscribe: 2,
+  finish: 3,
+};
+
+/**
+ * Maps each slot to its base pipeline index for the 4-function pipeline
+ * shape (create/update Mutation): [init0, auth0, postAuth0, DataResolverFn].
+ */
+export const PIPELINE_4_SLOT_MAP: Readonly<Record<string, number>> = {
+  init: 1,
+  preAuth: 1,
+  auth: 2,
+  postAuth: 3,
+  preUpdate: 3,
+  postUpdate: 4,
+  finish: 4,
+};
+
+// ── Resolver Utility Functions ─────────────────────────────────────────
+
+/** Canonical slot execution order used for sorting. */
+const SLOT_ORDER: Readonly<Record<string, number>> = Object.fromEntries(ALL_SLOTS.map((slot, i) => [slot, i]));
+
+/**
+ * Groups ParsedExtended entries by typeName.fieldName, sorts by slot
+ * pipeline execution order then numeric order, and pairs req/res templates.
+ */
+export function groupExtendedResolverFiles(extended: readonly ParsedExtended[]): Map<string, ExtendedResolverFile[]> {
+  // Collect entries by field key.
+  const byField = new Map<string, ParsedExtended[]>();
+  for (const entry of extended) {
+    const key = `${entry.typeName}.${entry.fieldName}`;
+    const list = byField.get(key);
+    if (list) {
+      list.push(entry);
+    } else {
+      byField.set(key, [entry]);
+    }
+  }
+
+  const result = new Map<string, ExtendedResolverFile[]>();
+
+  for (const [key, entries] of byField) {
+    // Sort by slot pipeline order, then by numeric order within the same slot.
+    entries.sort((a, b) => {
+      const slotDiff = (SLOT_ORDER[a.slot] ?? 0) - (SLOT_ORDER[b.slot] ?? 0);
+      if (slotDiff !== 0) return slotDiff;
+      return a.order - b.order;
+    });
+
+    // Pair req/res templates for the same slot+order.
+    const pairMap = new Map<string, { reqFile?: string; resFile?: string }>();
+    const pairOrder: string[] = [];
+
+    for (const entry of entries) {
+      const pairKey = `${entry.slot}.${entry.order}`;
+      let pair = pairMap.get(pairKey);
+      if (!pair) {
+        pair = {};
+        pairMap.set(pairKey, pair);
+        pairOrder.push(pairKey);
+      }
+      if (entry.templateType === 'req') {
+        pair.reqFile = entry.filename;
+      } else {
+        pair.resFile = entry.filename;
+      }
+    }
+
+    // Build resolver files in sorted order.
+    const resolverFiles: ExtendedResolverFile[] = [];
+    for (const pairKey of pairOrder) {
+      const pair = pairMap.get(pairKey)!;
+      const [slot, orderStr] = pairKey.split('.');
+      // Use the first entry's typeName/fieldName (all entries in this key share them).
+      const sample = entries[0];
+      resolverFiles.push({
+        typeName: sample.typeName,
+        fieldName: sample.fieldName,
+        slot,
+        order: Number(orderStr),
+        reqFile: pair.reqFile,
+        resFile: pair.resFile,
+      });
+    }
+
+    result.set(key, resolverFiles);
+  }
+
+  return result;
+}
+
+/**
+ * Selects the pipeline slot map based on typeName and fieldName.
+ *
+ * Query, Subscription, and delete-Mutation use the 3-function pipeline.
+ * Other Mutations and custom types use the 4-function pipeline.
+ */
+function selectSlotMap(typeName: string, fieldName: string): Readonly<Record<string, number>> {
+  if (typeName === 'Query' || typeName === 'Subscription') {
+    return PIPELINE_3_SLOT_MAP;
+  }
+  if (typeName === 'Mutation' && fieldName.startsWith('delete')) {
+    return PIPELINE_3_SLOT_MAP;
+  }
+  return PIPELINE_4_SLOT_MAP;
+}
+
+/**
+ * Computes splice indexes for a set of grouped extended resolvers for a single field.
+ *
+ * Each entry's spliceIndex = baseSlotMap[slot] + runningOffset, where
+ * runningOffset increments by 1 for each preceding entry.
+ */
+export function computeSpliceIndexes(
+  typeName: string,
+  fieldName: string,
+  resolverFiles: readonly ExtendedResolverFile[],
+): PipelineSpliceResult {
+  const slotMap = selectSlotMap(typeName, fieldName);
+  const entries: SpliceEntry[] = [];
+  let runningOffset = 0;
+
+  for (const resolverFile of resolverFiles) {
+    const baseIndex = slotMap[resolverFile.slot];
+    if (baseIndex === undefined) {
+      throw new Error(`Unknown slot '${resolverFile.slot}' for ${typeName}.${fieldName}`);
+    }
+    entries.push({
+      resolverFile,
+      spliceIndex: baseIndex + runningOffset,
+    });
+    runningOffset++;
+  }
+
+  return { typeName, fieldName, entries };
+}
 
 /**
  * Options for rendering a defineData() resource file.
@@ -15,6 +208,7 @@ export interface DataRenderOptions {
   readonly graphqlApi: GraphqlApi;
   readonly hasAuth?: boolean;
   readonly apiId?: string;
+  readonly classifiedResolvers?: ClassifiedVtlFiles;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -126,6 +320,33 @@ export class DataRenderer {
     if (iamGrantStatements.length > 0) {
       additionalImports.push(TS.namedImport('aws-cdk-lib', 'aws_iam'));
       escapeHatchStatements.push(...iamGrantStatements);
+    }
+
+    // Resolver escape hatch statements
+    const classified = opts.classifiedResolvers;
+    if (classified) {
+      const hasOverrides = classified.overrides.length > 0;
+      const hasExtended = classified.extended.length > 0;
+
+      if (hasOverrides || hasExtended) {
+        // Common imports and declarations
+        additionalImports.push(TS.namedImport('path', 'join', 'dirname'));
+        additionalImports.push(TS.namedImport('url', 'fileURLToPath'));
+        escapeHatchStatements.push(TS.declareConst('__dirname', factory.createIdentifier('dirname(fileURLToPath(import.meta.url))')));
+        escapeHatchStatements.push(TS.declareConst('resolversDir', factory.createIdentifier('join(__dirname, "resolvers")')));
+      }
+
+      if (hasOverrides) {
+        additionalImports.push(TS.namedImport('fs', 'readdirSync'));
+        additionalImports.push(TS.namespaceImport('assets', 'aws-cdk-lib/aws-s3-assets'));
+        escapeHatchStatements.push(...this.buildOverrideResolverStatements());
+      }
+
+      if (hasExtended) {
+        additionalImports.push(TS.namedImport('aws-cdk-lib', 'aws_appsync'));
+        additionalImports.push(TS.namedImport('aws-cdk-lib/aws-appsync', 'CfnResolver'));
+        escapeHatchStatements.push(...this.buildExtendedResolverStatements(classified));
+      }
     }
 
     if (escapeHatchStatements.length === 0) return { func: undefined, additionalImports: [] };
@@ -449,5 +670,376 @@ export class DataRenderer {
         ),
       ),
     ];
+  }
+
+  /** Builds override resolver statements for the applyEscapeHatches function. */
+  private buildOverrideResolverStatements(): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // const overiddenResolverFiles = readdirSync(resolversDir).filter(...)
+    const filterCallback = factory.createArrowFunction(
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'f')],
+      undefined,
+      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      factory.createBinaryExpression(
+        factory.createParenthesizedExpression(
+          factory.createBinaryExpression(
+            factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('f'), 'endsWith'), undefined, [
+              factory.createStringLiteral('.req.vtl'),
+            ]),
+            ts.SyntaxKind.BarBarToken,
+            factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('f'), 'endsWith'), undefined, [
+              factory.createStringLiteral('.res.vtl'),
+            ]),
+          ),
+        ),
+        ts.SyntaxKind.AmpersandAmpersandToken,
+        factory.createBinaryExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('f'), 'split'), undefined, [
+              factory.createStringLiteral('.'),
+            ]),
+            'length',
+          ),
+          ts.SyntaxKind.EqualsEqualsEqualsToken,
+          factory.createNumericLiteral(4),
+        ),
+      ),
+    );
+
+    statements.push(
+      TS.declareConst(
+        'overiddenResolverFiles',
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(factory.createIdentifier('readdirSync'), undefined, [factory.createIdentifier('resolversDir')]),
+            'filter',
+          ),
+          undefined,
+          [filterCallback],
+        ),
+      ),
+    );
+
+    // for-of loop over overiddenResolverFiles
+    const loopBody = this.buildOverrideLoopBody();
+    statements.push(
+      factory.createForOfStatement(
+        undefined,
+        factory.createVariableDeclarationList([factory.createVariableDeclaration('file')], ts.NodeFlags.Const),
+        factory.createIdentifier('overiddenResolverFiles'),
+        factory.createBlock(loopBody, true),
+      ),
+    );
+
+    return statements;
+  }
+
+  /** Builds the body statements for the override resolver for-of loop. */
+  private buildOverrideLoopBody(): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // const [typeName, fieldName, templateType] = file.split(".");
+    statements.push(
+      factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              factory.createArrayBindingPattern([
+                factory.createBindingElement(undefined, undefined, 'typeName'),
+                factory.createBindingElement(undefined, undefined, 'fieldName'),
+                factory.createBindingElement(undefined, undefined, 'templateType'),
+              ]),
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('file'), 'split'), undefined, [
+                factory.createStringLiteral('.'),
+              ]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      ),
+    );
+
+    // const capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+    statements.push(
+      TS.declareConst(
+        'capitalizedFieldName',
+        factory.createBinaryExpression(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('fieldName'), 'charAt'),
+                undefined,
+                [factory.createNumericLiteral(0)],
+              ),
+              'toUpperCase',
+            ),
+            undefined,
+            [],
+          ),
+          ts.SyntaxKind.PlusToken,
+          factory.createCallExpression(factory.createPropertyAccessExpression(factory.createIdentifier('fieldName'), 'slice'), undefined, [
+            factory.createNumericLiteral(1),
+          ]),
+        ),
+      ),
+    );
+
+    // const functionId = `${typeName}${capitalizedFieldName}DataResolverFn`;
+    statements.push(
+      TS.declareConst(
+        'functionId',
+        factory.createTemplateExpression(factory.createTemplateHead(''), [
+          factory.createTemplateSpan(factory.createIdentifier('typeName'), factory.createTemplateMiddle('')),
+          factory.createTemplateSpan(factory.createIdentifier('capitalizedFieldName'), factory.createTemplateTail('DataResolverFn')),
+        ]),
+      ),
+    );
+
+    // const fn = backend.data.resources.cfnResources.cfnFunctionConfigurations[functionId];
+    statements.push(
+      TS.declareConst(
+        'fn',
+        factory.createElementAccessExpression(
+          TS.propAccess('backend', 'data', 'resources', 'cfnResources', 'cfnFunctionConfigurations') as ts.Expression,
+          factory.createIdentifier('functionId'),
+        ),
+      ),
+    );
+
+    // const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, { path: join(resolversDir, file) });
+    statements.push(
+      TS.declareConst(
+        'vtlTemplate',
+        factory.createNewExpression(TS.propAccess('assets', 'Asset') as ts.Expression, undefined, [
+          TS.propAccess('backend', 'data') as ts.Expression,
+          factory.createTemplateExpression(factory.createTemplateHead('VTLTemplate-'), [
+            factory.createTemplateSpan(factory.createIdentifier('file'), factory.createTemplateTail('')),
+          ]),
+          factory.createObjectLiteralExpression(
+            [
+              factory.createPropertyAssignment(
+                'path',
+                factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+                  factory.createIdentifier('resolversDir'),
+                  factory.createIdentifier('file'),
+                ]),
+              ),
+            ],
+            false,
+          ),
+        ]),
+      ),
+    );
+
+    // if (templateType === "req") { ... } else { ... }
+    const s3ObjectUrl = TS.propAccess('vtlTemplate', 's3ObjectUrl') as ts.Expression;
+    statements.push(
+      factory.createIfStatement(
+        factory.createBinaryExpression(
+          factory.createIdentifier('templateType'),
+          ts.SyntaxKind.EqualsEqualsEqualsToken,
+          factory.createStringLiteral('req'),
+        ),
+        factory.createBlock(
+          [
+            factory.createExpressionStatement(
+              factory.createAssignment(
+                factory.createPropertyAccessExpression(factory.createIdentifier('fn'), 'requestMappingTemplateS3Location'),
+                s3ObjectUrl,
+              ),
+            ),
+          ],
+          true,
+        ),
+        factory.createBlock(
+          [
+            factory.createExpressionStatement(
+              factory.createAssignment(
+                factory.createPropertyAccessExpression(factory.createIdentifier('fn'), 'responseMappingTemplateS3Location'),
+                s3ObjectUrl,
+              ),
+            ),
+          ],
+          true,
+        ),
+      ),
+    );
+
+    return statements;
+  }
+
+  /** Builds extended resolver statements for the applyEscapeHatches function. */
+  private buildExtendedResolverStatements(classified: ClassifiedVtlFiles): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+
+    // noneDataSource declaration
+    const noneDataSourceStmt = ts.addSyntheticLeadingComment(
+      this.renderNoneDataSource(),
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ' extending resolvers',
+      true,
+    );
+    statements.push(noneDataSourceStmt);
+
+    const grouped = groupExtendedResolverFiles(classified.extended);
+
+    for (const [key, resolverFiles] of grouped) {
+      const [typeName, fieldName] = key.split('.');
+
+      // Render AppsyncFunction constructs for each extended resolver file
+      for (const resolverFile of resolverFiles) {
+        statements.push(this.renderAppsyncFunction(resolverFile));
+      }
+
+      // Compute splice indexes and render splice statements
+      const spliceResult = computeSpliceIndexes(typeName, fieldName, resolverFiles);
+      statements.push(...this.renderSpliceStatements(spliceResult));
+    }
+
+    return statements;
+  }
+
+  /** Renders `const noneDataSource = backend.data.resources.graphqlApi.addNoneDataSource("none");` */
+  public renderNoneDataSource(): ts.Statement {
+    return TS.declareConst(
+      'noneDataSource',
+      factory.createCallExpression(
+        TS.propAccess('backend', 'data', 'resources', 'graphqlApi', 'addNoneDataSource') as ts.PropertyAccessExpression,
+        undefined,
+        [factory.createStringLiteral('none')],
+      ),
+    );
+  }
+
+  /** Renders an `AppsyncFunction` construct for a given extended resolver file. */
+  public renderAppsyncFunction(resolverFile: ExtendedResolverFile): ts.Statement {
+    const constructName = `${resolverFile.typeName}${resolverFile.fieldName}${resolverFile.slot}${resolverFile.order}`;
+
+    const requestMapping = resolverFile.reqFile
+      ? factory.createCallExpression(
+          TS.propAccess('aws_appsync', 'MappingTemplate', 'fromFile') as ts.PropertyAccessExpression,
+          undefined,
+          [
+            factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+              factory.createIdentifier('resolversDir'),
+              factory.createStringLiteral(resolverFile.reqFile),
+            ]),
+          ],
+        )
+      : factory.createCallExpression(
+          TS.propAccess('aws_appsync', 'MappingTemplate', 'fromString') as ts.PropertyAccessExpression,
+          undefined,
+          [factory.createStringLiteral('$util.toJson({})')],
+        );
+
+    const responseMapping = resolverFile.resFile
+      ? factory.createCallExpression(
+          TS.propAccess('aws_appsync', 'MappingTemplate', 'fromFile') as ts.PropertyAccessExpression,
+          undefined,
+          [
+            factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+              factory.createIdentifier('resolversDir'),
+              factory.createStringLiteral(resolverFile.resFile),
+            ]),
+          ],
+        )
+      : factory.createCallExpression(
+          TS.propAccess('aws_appsync', 'MappingTemplate', 'fromString') as ts.PropertyAccessExpression,
+          undefined,
+          [factory.createStringLiteral('$util.toJson($ctx.prev.result)')],
+        );
+
+    const properties: ts.PropertyAssignment[] = [
+      factory.createPropertyAssignment('name', factory.createStringLiteral(constructName)),
+      factory.createPropertyAssignment('api', TS.propAccess('backend', 'data', 'resources', 'graphqlApi') as ts.PropertyAccessExpression),
+      factory.createPropertyAssignment('dataSource', factory.createIdentifier('noneDataSource')),
+      factory.createPropertyAssignment('requestMappingTemplate', requestMapping),
+      factory.createPropertyAssignment('responseMappingTemplate', responseMapping),
+    ];
+
+    const newExpr = factory.createNewExpression(TS.propAccess('aws_appsync', 'AppsyncFunction') as ts.PropertyAccessExpression, undefined, [
+      TS.propAccess('backend', 'data', 'stack') as ts.Expression,
+      factory.createStringLiteral(constructName),
+      factory.createObjectLiteralExpression(properties, true),
+    ]);
+
+    return TS.declareConst(constructName, newExpr);
+  }
+
+  /** Renders splice statements inserting extended functions into a pipeline resolver. */
+  public renderSpliceStatements(spliceResult: PipelineSpliceResult): ts.Statement[] {
+    const statements: ts.Statement[] = [];
+    const capitalizedFieldName = spliceResult.fieldName.charAt(0).toUpperCase() + spliceResult.fieldName.slice(1);
+    const resolverVarName = `${spliceResult.typeName.toLowerCase()}${capitalizedFieldName}Resolver`;
+    const pipelineFunctionsVarName = resolverVarName.replace('Resolver', '') + 'PipelineFunctions';
+
+    // const <resolverVarName> = backend.data.resources.cfnResources.cfnResolvers["TypeName.fieldName"] as CfnResolver;
+    const resolverLookup = factory.createElementAccessExpression(
+      TS.propAccess('backend', 'data', 'resources', 'cfnResources', 'cfnResolvers') as ts.Expression,
+      factory.createStringLiteral(`${spliceResult.typeName}.${spliceResult.fieldName}`),
+    );
+    statements.push(
+      TS.declareConst(resolverVarName, factory.createAsExpression(resolverLookup, factory.createTypeReferenceNode('CfnResolver'))),
+    );
+
+    // const <pipelineFunctionsVarName> = (<resolverVarName>.pipelineConfig as CfnResolver.PipelineConfigProperty).functions || [];
+    const pipelineConfigAccess = factory.createPropertyAccessExpression(
+      factory.createIdentifier(resolverVarName),
+      factory.createIdentifier('pipelineConfig'),
+    );
+    const castPipelineConfig = factory.createParenthesizedExpression(
+      factory.createAsExpression(
+        pipelineConfigAccess,
+        factory.createTypeReferenceNode(
+          factory.createQualifiedName(factory.createIdentifier('CfnResolver'), factory.createIdentifier('PipelineConfigProperty')),
+        ),
+      ),
+    );
+    const functionsAccess = factory.createPropertyAccessExpression(castPipelineConfig, factory.createIdentifier('functions'));
+    const functionsOrEmpty = factory.createBinaryExpression(
+      functionsAccess,
+      ts.SyntaxKind.BarBarToken,
+      factory.createArrayLiteralExpression([]),
+    );
+    statements.push(TS.declareConst(pipelineFunctionsVarName, functionsOrEmpty));
+
+    // For each splice entry: <pipelineFunctionsVarName>.splice(spliceIndex, 0, <constructName>.functionId);
+    for (const entry of spliceResult.entries) {
+      const constructName = `${entry.resolverFile.typeName}${entry.resolverFile.fieldName}${entry.resolverFile.slot}${entry.resolverFile.order}`;
+      statements.push(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(pipelineFunctionsVarName), factory.createIdentifier('splice')),
+            undefined,
+            [
+              factory.createNumericLiteral(entry.spliceIndex),
+              factory.createNumericLiteral(0),
+              factory.createPropertyAccessExpression(factory.createIdentifier(constructName), factory.createIdentifier('functionId')),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // <resolverVarName>.pipelineConfig = { functions: <pipelineFunctionsVarName> };
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createAssignment(
+          factory.createPropertyAccessExpression(factory.createIdentifier(resolverVarName), factory.createIdentifier('pipelineConfig')),
+          factory.createObjectLiteralExpression(
+            [factory.createPropertyAssignment(factory.createIdentifier('functions'), factory.createIdentifier(pipelineFunctionsVarName))],
+            false,
+          ),
+        ),
+      ),
+    );
+
+    return statements;
   }
 }

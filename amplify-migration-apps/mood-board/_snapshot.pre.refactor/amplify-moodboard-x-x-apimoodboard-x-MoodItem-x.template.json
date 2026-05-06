@@ -549,7 +549,7 @@
               {
                 "Ref": "MoodItemTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -650,7 +650,7 @@
               {
                 "Ref": "MoodItemTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -817,7 +817,7 @@
               {
                 "Ref": "MoodItemTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1005,7 +1005,7 @@
               {
                 "Ref": "MoodItemTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1157,7 +1157,7 @@
               {
                 "Ref": "MoodItemTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1278,7 +1278,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1324,7 +1324,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1370,7 +1370,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1471,7 +1471,7 @@
               {
                 "Ref": "MoodItemTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:5becba09-c1de-4903-abea-a5508ffba824\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"moodboardKinesisTrigger-x\"]))\n$util.toJson({})"
             ]
           ]
         },

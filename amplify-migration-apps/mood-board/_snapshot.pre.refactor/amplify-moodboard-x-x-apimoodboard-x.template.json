@@ -128,7 +128,7 @@
           ]
         },
         "Description": "moodBoard API Key",
-        "Expires": 1808785201
+        "Expires": 1809457727
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -258,6 +258,12 @@
             "Fn::GetAtt": [
               "MoodItem",
               "Outputs.transformerrootstackMoodItemQuerygetMoodItempostAuth0FunctionQuerygetMoodItempostAuth0FunctionAppSyncFunctionA2A15C1FFunctionId"
+            ]
+          },
+          "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": {
+            "Fn::GetAtt": [
+              "GraphQLAPINONEDS95A13CF0",
+              "Name"
             ]
           },
           "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMutationcreateMoodIteminit0FunctionMutationcreateMoodIteminit0FunctionAppSyncFunctionA7648B0CFunctionId": {
@@ -678,5 +684,5 @@
       }
     }
   },
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
 }
