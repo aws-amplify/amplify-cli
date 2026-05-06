@@ -62,7 +62,7 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
       baseOps.push({
         resource: this.resource,
         validate: () => ({
-          description: `Deletion Protection: ${gen2StackName}`,
+          description: `Deletion Protection (social auth): ${gen2StackName}`,
           run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
         }),
         describe: async () => [
