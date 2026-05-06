@@ -89,6 +89,22 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       validate: () => undefined,
       execute: async () => {
         const template = await cfn.fetchTemplate(stackId);
+
+        // Idempotence guard: if every non-nested resource already has retain,
+        // skip the whole CFN round-trip. This keeps reruns safe — without it,
+        // an already-retained parent stack could produce a changeset that
+        // contains only Dynamic/Automatic re-evaluation entries on nested
+        // children, which would clobber the children's retain state on execute.
+        const needsChange = Object.entries(template.Resources).some(([, r]) => {
+          if (r.Type === 'AWS::CloudFormation::Stack') return false;
+          return r.DeletionPolicy !== 'Retain' || r.UpdateReplacePolicy !== 'Retain';
+        });
+
+        if (!needsChange) {
+          this.logger.info(`${stackName} — no retain changes needed`);
+          return;
+        }
+
         for (const [logicalId, resource] of Object.entries(template.Resources)) {
           // Skip AWS::CloudFormation::Stack references. Adding Retain policies to them
           // would be ineffective anyway because CloudFormation reconciles nested stacks
