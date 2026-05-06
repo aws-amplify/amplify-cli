@@ -21,6 +21,19 @@ import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/det
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 import chalk from 'chalk';
 
+/**
+ * Context attached to a stack when the classifier can associate it with a
+ * `DiscoveredResource`. Consumed by `buildRetainOperation` to preserve
+ * resource-level `Plan.describe` grouping and nested spinner labels.
+ */
+interface StackContext {
+  readonly resource: DiscoveredResource;
+  /** Set on AppSync model nested stacks (Board, Todo, MoodItem, ...). */
+  readonly modelName?: string;
+  /** Set on AppSync infrastructure sub-stacks (ConnectionStack, FunctionDirectiveStack, CustomResourcesjson). */
+  readonly subStackLabel?: string;
+}
+
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
 const DYNAMO_DELETION_PROTECTION_PROPERTY = 'DeletionProtectionEnabled';
@@ -506,6 +519,83 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       throw new AmplifyError('MigrationError', {
         message: `Unable to find nested stack logical id prefix: ${logicalIdPrefix}`,
       });
+    }
+    return stackId;
+  }
+
+  /**
+   * Builds a `Map<stackId, StackContext>` that associates each discoverable
+   * nested stack with the `DiscoveredResource` it belongs to, so the
+   * retain-everything flow can preserve resource-level `Plan.describe`
+   * grouping and nested `logger.push` labels.
+   *
+   * Stacks not present in the map (typically: root) fall through to the
+   * default `Project` group with stack-name-only labels.
+   *
+   * Failures to locate a specific nested stack (e.g., resource in
+   * amplify-meta but never pushed) are logged at debug level and skipped;
+   * classification never fails lock.
+   */
+  private async classifyStacks(): Promise<Map<string, StackContext>> {
+    const context = new Map<string, StackContext>();
+    const rootNestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
+
+    for (const resource of this.gen1App.discover()) {
+      switch (resource.key) {
+        case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+        case 'analytics:Kinesis':
+        case 'function:Lambda':
+        case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection': {
+          const stackId = this.tryFindNestedStack(rootNestedStacks, `${resource.category}${resource.resourceName}`);
+          if (stackId) context.set(stackId, { resource });
+          break;
+        }
+        case 'api:AppSync': {
+          const apiStackId = this.tryFindNestedStack(rootNestedStacks, `api${resource.resourceName}`);
+          if (!apiStackId) break;
+          context.set(apiStackId, { resource });
+
+          const apiNestedStacks = await this.listNestedStack(apiStackId);
+          const modelNames = new Set((await this.dynamoTableNames()).map((t) => t.split('-')[0]));
+
+          for (const child of apiNestedStacks) {
+            const logicalId = child.LogicalResourceId;
+            const childStackId = child.PhysicalResourceId;
+            if (!logicalId || !childStackId) continue;
+
+            if (modelNames.has(logicalId)) {
+              context.set(childStackId, { resource, modelName: logicalId });
+            } else if (logicalId === 'ConnectionStack' || logicalId === 'FunctionDirectiveStack' || logicalId === 'CustomResourcesjson') {
+              context.set(childStackId, { resource, subStackLabel: logicalId });
+            }
+          }
+          break;
+        }
+        case 'UNKNOWN':
+          break;
+      }
+    }
+
+    return context;
+  }
+
+  /**
+   * Non-throwing variant of `findNestedStack`. Returns `undefined` when the
+   * requested logical-id prefix isn't found in the provided nested-stack
+   * list, instead of throwing `MigrationError`. Used by `classifyStacks`
+   * so a missing nested stack (resource recorded in meta but never pushed)
+   * doesn't fail lock.
+   */
+  private tryFindNestedStack(nestedStacks: StackResource[], logicalIdPrefix: string): string | undefined {
+    const stackId = nestedStacks.find((s) => s.LogicalResourceId?.startsWith(logicalIdPrefix))?.PhysicalResourceId;
+    if (!stackId) {
+      this.logger.debug(`classifyStacks: no nested stack found for logical-id prefix '${logicalIdPrefix}'`);
     }
     return stackId;
   }
