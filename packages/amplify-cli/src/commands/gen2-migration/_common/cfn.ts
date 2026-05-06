@@ -93,8 +93,9 @@ export class Cfn {
     readonly parameters: Parameter[];
     readonly templateBody: CFNTemplate;
     readonly resource?: DiscoveredResource;
+    readonly snapshotPrefix?: string;
   }): Promise<void> {
-    const { stackName, parameters, templateBody, resource } = params;
+    const { stackName, parameters, templateBody, resource, snapshotPrefix } = params;
     try {
       const input: UpdateStackCommandInput = {
         TemplateBody: JSON.stringify(templateBody),
@@ -102,7 +103,7 @@ export class Cfn {
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
       };
-      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters });
+      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters, prefix: snapshotPrefix ?? 'update' });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
@@ -277,6 +278,7 @@ export class Cfn {
         stackName: changeSet.StackName!,
         templateBody: JSON.stringify(templateBody),
         parameters: changeSet.Parameters ?? [],
+        prefix: 'update',
       });
     }
 
@@ -320,6 +322,7 @@ export class Cfn {
       templateBody: template,
       parameters: stack.Parameters ?? [],
       resource,
+      snapshotPrefix: 'orphan',
     });
   }
 
@@ -352,6 +355,7 @@ export class Cfn {
       templateBody: JSON.stringify(templateBody),
       parameters: [],
       resourcesToImport,
+      prefix: 'import',
     });
 
     this.info(`Creating import changeset for ${displayName} (${resourcesToImport.length} resource(s))`, resource);
@@ -578,6 +582,7 @@ interface WriteUpdateSnapshotInput {
   readonly stackName: string;
   readonly templateBody: string;
   readonly parameters: Parameter[];
+  readonly prefix: string;
 }
 
 interface WriteImportSnapshotInput extends WriteUpdateSnapshotInput {
@@ -586,18 +591,24 @@ interface WriteImportSnapshotInput extends WriteUpdateSnapshotInput {
 
 function writeImportSnapshot(input: WriteImportSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `import.${stackName}.template.json`), formatTemplateBody(input.templateBody));
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `import.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2) + '\n');
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`), formatTemplateBody(input.templateBody));
   fs.writeFileSync(
-    path.join(OUTPUT_DIRECTORY, `import.${stackName}.resources.json`),
+    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
+    JSON.stringify(input.parameters, null, 2) + '\n',
+  );
+  fs.writeFileSync(
+    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.resources.json`),
     JSON.stringify(input.resourcesToImport, null, 2) + '\n',
   );
 }
 
 function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.template.json`), formatTemplateBody(input.templateBody));
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2) + '\n');
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`), formatTemplateBody(input.templateBody));
+  fs.writeFileSync(
+    path.join(OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
+    JSON.stringify(input.parameters, null, 2) + '\n',
+  );
 }
 
 function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
