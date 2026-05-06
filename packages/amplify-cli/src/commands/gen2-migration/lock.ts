@@ -15,7 +15,6 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
-import { RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
@@ -200,52 +199,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    // ============================================================
-    // Resource Specific Operations
-    // ============================================================
-
-    const nestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
-
-    for (const resource of this.gen1App.discover()) {
-      this.logger.push(`${resource.category}/${resource.resourceName} (${resource.service})`);
-      switch (resource.key) {
-        case 'api:AppSync': {
-          const apiStackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
-          const apiNestedStacks = await this.listNestedStack(apiStackId);
-          for (const tableName of await this.dynamoTableNames()) {
-            const modelName = tableName.split('-')[0];
-            this.logger.push(modelName);
-            const tableStackId = this.findNestedStack(apiNestedStacks, modelName);
-            operations.push(...(await this.retainResource(resource, tableStackId)));
-            this.logger.pop();
-          }
-          break;
-        }
-        case 'auth:Cognito':
-        case 'auth:Cognito-UserPool-Groups':
-        case 'storage:S3':
-        case 'storage:DynamoDB':
-        case 'analytics:Kinesis': {
-          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
-          operations.push(...(await this.retainResource(resource, stackId)));
-          break;
-        }
-
-        case 'api:API Gateway':
-        case 'geo:Map':
-        case 'geo:PlaceIndex':
-        case 'geo:GeofenceCollection':
-        case 'function:Lambda': {
-          break;
-        }
-
-        // unsupported/unknown resources - skip them.
-        case 'UNKNOWN':
-          break;
-      }
-      this.logger.pop();
-    }
-
     return new Plan({
       operations,
       logger: this.logger,
@@ -409,104 +362,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
     }
     return this._dynamoTableNames;
-  }
-
-  private async retainResource(appResource: DiscoveredResource, stackId: string): Promise<AmplifyMigrationOperation[]> {
-    const operations: AmplifyMigrationOperation[] = [];
-
-    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
-
-    const stackName = extractStackNameFromId(stackId);
-    const template = await cfn.fetchTemplate(stackId);
-
-    for (const resource of Object.values(template.Resources)) {
-      if (RESOURCES_TO_RETAIN.includes(resource.Type)) {
-        resource.DeletionPolicy = 'Retain';
-        resource.UpdateReplacePolicy = 'Retain';
-      }
-      if (resource.Type === DYNAMO_RESOURCE_TYPE) {
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
-        resource.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] = true;
-      }
-    }
-
-    const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
-    const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
-      ParameterKey: p.ParameterKey,
-      UsePreviousValue: true,
-    }));
-
-    this.logger.push(`${stackName} (Create ChangeSet)`);
-    const changeSet = await cfn.createChangeSet({
-      stackName: stackId,
-      templateBody: template,
-      parameters,
-    });
-    this.logger.pop();
-
-    if (!changeSet) {
-      return [];
-    }
-
-    const report = cfn.renderChangeSet(changeSet);
-    const valid = this.validateRetainChangeset(changeSet);
-
-    operations.push({
-      resource: appResource,
-      describe: async () => [
-        `Set Retain policies on stateful resources and/or enable DynamoDB deletion protection in '${stackName}'\n\n${report}\n`,
-      ],
-      validate: () => ({
-        description: `Stack Unchanged: ${stackName}`,
-        run: async () => ({ valid, report }),
-      }),
-      execute: async () => {
-        await cfn.executeChangeSet({
-          changeSet: changeSet,
-          templateBody: template,
-          resource: appResource,
-          captureSnapshot: false,
-        });
-      },
-    });
-
-    return operations;
-  }
-
-  private validateRetainChangeset(changeSet: DescribeChangeSetOutput): boolean {
-    const changes = changeSet.Changes ?? [];
-    if (changes.length === 0) return false;
-
-    for (const change of changes) {
-      const rc = change.ResourceChange;
-      if (!rc || rc.Action !== 'Modify') return false;
-
-      const details = rc.Details ?? [];
-      if (details.length === 0) return false;
-
-      for (const detail of details) {
-        const attr = detail.Target?.Attribute;
-        const name = detail.Target?.Name;
-        const after = detail.Target?.AfterValue;
-
-        if ((attr === 'DeletionPolicy' || attr === 'UpdateReplacePolicy') && after === 'Retain') {
-          continue;
-        }
-
-        if (
-          change.ResourceChange?.ResourceType === DYNAMO_RESOURCE_TYPE &&
-          attr === 'Properties' &&
-          name === DYNAMO_DELETION_PROTECTION_PROPERTY &&
-          after === 'true'
-        ) {
-          continue;
-        }
-
-        return false;
-      }
-    }
-
-    return true;
   }
 
   private async fetchExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
