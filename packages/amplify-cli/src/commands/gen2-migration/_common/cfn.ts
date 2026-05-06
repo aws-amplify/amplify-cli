@@ -331,7 +331,7 @@ export class Cfn {
     readonly stackName: string;
     readonly templateAdditions: Record<string, CFNResource>;
     readonly resourcesToImport: ResourceToImport[];
-    readonly resource?: DiscoveredResource;
+    readonly resource: DiscoveredResource;
   }): Promise<void> {
     const { stackName, templateAdditions, resourcesToImport, resource } = params;
     const displayName = extractStackNameFromId(stackName);
