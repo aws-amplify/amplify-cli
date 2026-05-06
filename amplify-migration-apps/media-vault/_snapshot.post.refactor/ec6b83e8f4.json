@@ -306,7 +306,7 @@
         },
         "PolicyName": "addusertogroupgen2xlambdaServiceRoleDefaultPolicy1AE57101",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "Metadata": {
@@ -340,7 +340,7 @@
         "FunctionName": "addusertogroup-gen2-x",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41",
+        "Role": "arn:aws:iam::123456789012:role/amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -433,7 +433,7 @@
         },
         "PolicyName": "addusertogroupgen2xlambdaUnmappedCognitoActionsPolicy34B37B11",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -471,7 +471,7 @@
         },
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -498,7 +498,7 @@
         },
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -527,7 +527,7 @@
         },
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -554,7 +554,7 @@
         },
         "PolicyName": "userpoolAccess4A84025C3",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -578,7 +578,7 @@
         },
         "PolicyName": "userpoolAccess585E2FB32",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -602,7 +602,7 @@
         },
         "PolicyName": "userpoolAccess600DA4CB0",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -626,7 +626,7 @@
         },
         "PolicyName": "userpoolAccess76F9C91C1",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -650,7 +650,7 @@
         },
         "PolicyName": "userpoolAccess85C1BE724",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -674,7 +674,7 @@
         },
         "PolicyName": "userpoolAccess919BF17A1",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -698,7 +698,7 @@
         },
         "PolicyName": "userpoolAccess103DE3A3DA",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -722,7 +722,7 @@
         },
         "PolicyName": "userpoolAccess114E9EE2D5",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -746,7 +746,7 @@
         },
         "PolicyName": "userpoolAccess1268A998CE",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -770,7 +770,7 @@
         },
         "PolicyName": "userpoolAccess13BB9602E6",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -794,7 +794,7 @@
         },
         "PolicyName": "userpoolAccess140CE1F2B0",
         "Roles": [
-          "amplify-mediavault2605061-addusertogroupgen2obqtiay-ufrr4gGbPn41"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/addusertogroupgen2xlambdaServiceRole41C37E61"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -887,7 +887,7 @@
         },
         "PolicyName": "removeuserfromgroupgen2xlambdaServiceRoleDefaultPolicy138B514D",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "Metadata": {
@@ -921,7 +921,7 @@
         "FunctionName": "removeuserfromgroup-gen2-x",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK",
+        "Role": "arn:aws:iam::123456789012:role/amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -1014,7 +1014,7 @@
         },
         "PolicyName": "removeuserfromgroupgen2xlambdaUnmappedCognitoActionsPolicy64860212",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1052,7 +1052,7 @@
         },
         "PolicyName": "userpoolAccess1530C05CCB",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1079,7 +1079,7 @@
         },
         "PolicyName": "userpoolAccess1676F22644",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1108,7 +1108,7 @@
         },
         "PolicyName": "userpoolAccess17CAC1A603",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1135,7 +1135,7 @@
         },
         "PolicyName": "userpoolAccess182B4CED9F",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1159,7 +1159,7 @@
         },
         "PolicyName": "userpoolAccess1965647B18",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1183,7 +1183,7 @@
         },
         "PolicyName": "userpoolAccess20B9A60CFD",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1207,7 +1207,7 @@
         },
         "PolicyName": "userpoolAccess2154951E65",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1231,7 +1231,7 @@
         },
         "PolicyName": "userpoolAccess226D8BB3D4",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1255,7 +1255,7 @@
         },
         "PolicyName": "userpoolAccess2366748829",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1279,7 +1279,7 @@
         },
         "PolicyName": "userpoolAccess24A4C85FAA",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1303,7 +1303,7 @@
         },
         "PolicyName": "userpoolAccess259B337A7D",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1327,7 +1327,7 @@
         },
         "PolicyName": "userpoolAccess264D4C93F1",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1351,7 +1351,7 @@
         },
         "PolicyName": "userpoolAccess277181B29F",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1375,7 +1375,7 @@
         },
         "PolicyName": "userpoolAccess2829A79171",
         "Roles": [
-          "amplify-mediavault2605061-removeuserfromgroupgen2ob-AaxycorHT7xK"
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/removeuserfromgroupgen2xlambdaServiceRole09D306F3"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -1393,6 +1393,221 @@
         "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
+    },
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationSubject": "Your verification code",
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": "8",
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "mediavault1f08412d_userpool_1f08412d",
+              "-",
+              "x"
+            ]
+          ]
+        },
+        "UsernameAttributes": [
+          "email",
+          "phone_number"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "ClientName": "mediav1f08412d_app_clientWeb",
+        "LogoutURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "RefreshTokenValidity": "30",
+        "SupportedIdentityProviders": [
+          "Facebook",
+          "Google",
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_10XCh2HEz"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "ClientName": "mediav1f08412d_app_client",
+        "GenerateSecret": "false",
+        "LogoutURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "RefreshTokenValidity": "30",
+        "SupportedIdentityProviders": [
+          "Facebook",
+          "Google",
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_10XCh2HEz"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": "true",
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "10vqik6og26c12g7jg7lait0n7",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_10XCh2HEz"
+                }
+              ]
+            }
+          },
+          {
+            "ClientId": "72t1gaoqrfgs2pe9bvf723v6s9",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_10XCh2HEz"
+                }
+              ]
+            }
+          }
+        ],
+        "IdentityPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "mediavault1f08412d_identitypool_1f08412d__",
+              "x"
+            ]
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad",
+        "RoleMappings": {
+          "UserPoolClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${userPool}:${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "userPool": "us-east-1_10XCh2HEz",
+                  "client": "10vqik6og26c12g7jg7lait0n7"
+                }
+              ]
+            },
+            "Type": "Token"
+          },
+          "UserPoolWebClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${userPool}:${webClient}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "userPool": "us-east-1_10XCh2HEz",
+                  "webClient": "72t1gaoqrfgs2pe9bvf723v6s9"
+                }
+              ]
+            },
+            "Type": "Token"
+          }
+        },
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-unauthRole",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authRole"
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     }
   },
   "Conditions": {

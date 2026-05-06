@@ -138,8 +138,8 @@
         ],
         "PreventUserExistenceErrors": "ENABLED",
         "SupportedIdentityProviders": [
-          "Google",
-          "Facebook",
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/amplifyAuthGoogleIdPA9736819",
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/amplifyAuthFacebookIDP7CB5B5CC",
           "COGNITO"
         ],
         "UserPoolId": "us-east-1_DVpEoOThJ"
@@ -172,7 +172,7 @@
             }
           },
           {
-            "ClientId": "rt0ofebrt6ieo6fbaunk8ni7b",
+            "ClientId": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/amplifyAuthUserPoolNativeAppClient79534448",
             "ProviderName": {
               "Fn::Join": [
                 "",
