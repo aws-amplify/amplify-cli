@@ -1,8 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
 import { execSync } from 'child_process';
-import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
-import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
-import { fromContainerMetadata } from '@aws-sdk/credential-providers';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { App, Teardown } from '@aws-amplify/amplify-e2e-gen2-migration';
 
 /**
@@ -12,59 +10,23 @@ import { App, Teardown } from '@aws-amplify/amplify-e2e-gen2-migration';
 export const MIGRATION_TEST_TIMEOUT_MS = 2 * 60 * 60 * 1000;
 
 /**
- * Select a random child account using fresh container credentials.
+ * Resolve the child account ID from the current STS caller identity.
  *
- * Uses the CodeBuild container role (via IMDS/ECS metadata) to assume
- * TEST_ACCOUNT_ROLE, then lists org accounts and picks one at random.
- * This avoids depending on the shell-level env var credentials which
- * may have expired by the time the test starts.
+ * The shell-level `setAwsAccountCredentials` has already assumed into a
+ * child account and set AWS_ACCESS_KEY_ID/SECRET/TOKEN in the env.
+ * `configure_tests.ts` wrote those same credentials to the
+ * `amplify-integ-test-user` profile that `amplify init`/`push` use.
+ *
+ * We must use the SAME account for the Gen2 sandbox, so we read the
+ * account ID from the current env var credentials rather than picking
+ * a random one.
  */
-async function selectChildAccount(): Promise<string> {
-  const containerCreds = fromContainerMetadata();
-  const sts = new STSClient({ credentials: containerCreds });
-
-  // Assume parent account role
-  const parentRole = process.env.TEST_ACCOUNT_ROLE;
-  if (!parentRole) {
-    throw new Error('TEST_ACCOUNT_ROLE must be set');
-  }
-  const assumeResult = await sts.send(
-    new AssumeRoleCommand({
-      RoleArn: parentRole,
-      RoleSessionName: `gen2-mig-select-${Date.now()}`,
-      DurationSeconds: 900,
-    }),
-  );
-  const parentCreds = assumeResult.Credentials;
-
-  // List child accounts from the parent
-  const orgClient = new OrganizationsClient({
-    credentials: {
-      accessKeyId: parentCreds.AccessKeyId,
-      secretAccessKey: parentCreds.SecretAccessKey,
-      sessionToken: parentCreds.SessionToken,
-    },
-  });
-  const parentAccountId = (
-    await new STSClient({
-      credentials: {
-        accessKeyId: parentCreds.AccessKeyId,
-        secretAccessKey: parentCreds.SecretAccessKey,
-        sessionToken: parentCreds.SessionToken,
-      },
-    }).send(new GetCallerIdentityCommand({}))
-  ).Account;
-
-  const { Accounts } = await orgClient.send(new ListAccountsCommand({}));
-  const childAccounts = (Accounts ?? []).map((a) => a.Id).filter((id): id is string => !!id && id !== parentAccountId);
-
-  if (childAccounts.length === 0) {
-    throw new Error('No child accounts found');
-  }
-
-  const picked = childAccounts[Math.floor(Math.random() * childAccounts.length)];
-  console.log(`Selected child account: ${picked}`);
-  return picked;
+async function resolveChildAccountId(): Promise<string> {
+  const sts = new STSClient({});
+  const response = await sts.send(new GetCallerIdentityCommand({}));
+  const accountId = response.Account;
+  console.log(`Selected child account: ${accountId}`);
+  return accountId;
 }
 
 /**
@@ -75,8 +37,9 @@ async function selectChildAccount(): Promise<string> {
  * in CI mode (two-hop assume-role from container credentials).
  */
 export async function runMigrationE2E(appName: string): Promise<void> {
-  // Select a child account using fresh container credentials.
-  const childAccountId = await selectChildAccount();
+  // Resolve the child account from the shell-level credentials.
+  // This must be the same account that amplify init/push deploy to.
+  const childAccountId = await resolveChildAccountId();
   process.env.CHILD_ACCOUNT_ID = childAccountId;
 
   // Configure git identity — the migration workflow makes commits.
