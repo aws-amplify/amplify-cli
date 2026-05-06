@@ -1,8 +1,8 @@
-import { AuthCognitoForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
+import { AuthCognitoForwardRefactorer, buildImportSpec } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
 import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_common/cfn-template';
 import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
 import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
-import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
+import { SocialAuthConfig, StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -248,5 +248,18 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings — UserPoolClient 
     expect(map.get('UserPoolClientWeb')).toBe('amplifyAuthUserPoolAppClient1234ABCD');
     expect(map.get('UserPoolClient')).toBe('amplifyAuthUserPoolNativeAppClient1234ABCD');
     expect(map.get('UserPool')).toBe('amplifyAuthUserPool1234ABCD');
+  });
+});
+
+describe('buildImportSpec', () => {
+  test('throws when Gen1 pool has an IDP that has no matching logical ID in Gen2 template', () => {
+    const config: SocialAuthConfig = {
+      userPoolId: 'us-east-1_TEST',
+      domain: 'test-domain',
+      providers: [{ providerName: 'UnknownProvider', providerType: 'OIDC' }],
+    };
+    expect(() => buildImportSpec(config, 'domainLogicalId', new Map())).toThrow(
+      /Identity provider 'UnknownProvider'.*no matching UserPoolIdentityProvider/,
+    );
   });
 });
