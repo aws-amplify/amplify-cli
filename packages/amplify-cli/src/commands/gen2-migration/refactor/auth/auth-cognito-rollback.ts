@@ -93,13 +93,7 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   protected override async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     const baseOps = await super.afterMove(gen2StackId);
 
-    const template = await this.cfn.fetchTemplate(gen2StackId);
-    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
     const gen2StackName = extractStackNameFromId(gen2StackId);
-
-    // The Gen2-original UserPool sits in the holding stack at plan time
-    // (super.afterMove() restores it to Gen2 only at execute time), so we
-    // read the pool ID from there.
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
@@ -110,6 +104,8 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(holdingStackName);
     if (!socialAuthConfig) return baseOps;
 
+    const template = await this.cfn.fetchTemplate(gen2StackId);
+    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
     if (!domainLogicalId) {
       throw new AmplifyError('MigrationError', {
         message: `Gen2 template '${gen2StackName}' has no UserPoolDomain resource for social auth import.`,
