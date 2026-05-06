@@ -130,6 +130,24 @@ export function renderImportTable(resourcesToImport: ResourceToImport[], gen2Sta
 }
 
 /**
+ * Renders the describe-table for the orphan operation: one row per
+ * resource being removed from the stack, showing its logical ID
+ * and CFN type.
+ */
+export function renderOrphanTable(logicalIds: string[], template: CFNTemplate, stackName: string, variant: 'forward' | 'rollback'): string {
+  const table = new CLITable({ head: ['Logical ID', 'Type'], style: { head: [] } });
+  for (const id of logicalIds) {
+    const type = template.Resources[id]?.Type ?? '— (not in template)';
+    table.push([id, type]);
+  }
+  const header =
+    variant === 'forward'
+      ? `Orphan ${logicalIds.length} social auth resource(s) from '${stackName}'`
+      : `Orphan ${logicalIds.length} imported social auth resource(s) from '${stackName}'`;
+  return `${header}\n\n${table.toString()}`;
+}
+
+/**
  * Forward refactorer for the auth:Cognito resource.
  *
  * Moves main auth resources from Gen1 to Gen2 via the holding stack.
@@ -166,11 +184,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
           description: `Deletion Protection (social auth): ${gen2StackName}`,
           run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
         }),
-        describe: async () => [
-          `Orphan ${socialProvidersResourceIds.length} social auth resource(s) from '${gen2StackName}': ${socialProvidersResourceIds.join(
-            ', ',
-          )}`,
-        ],
+        describe: async () => [renderOrphanTable(socialProvidersResourceIds, template, gen2StackName, 'forward')],
         execute: () =>
           this.cfn.orphan({
             stackName: gen2StackId,

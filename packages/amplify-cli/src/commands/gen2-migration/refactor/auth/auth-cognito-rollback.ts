@@ -17,6 +17,7 @@ import {
   buildImportSpec,
   extractSocialAuthLogicalIds,
   renderImportTable,
+  renderOrphanTable,
 } from './auth-cognito-forward';
 
 /**
@@ -65,11 +66,7 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
           description: `Deletion Protection (social auth): ${gen2StackName}`,
           run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
         }),
-        describe: async () => [
-          `Orphan ${
-            socialProvidersResourceIds.length
-          } imported social auth resource(s) from '${gen2StackName}': ${socialProvidersResourceIds.join(', ')}`,
-        ],
+        describe: async () => [renderOrphanTable(socialProvidersResourceIds, template, gen2StackName, 'rollback')],
         execute: () =>
           this.cfn.orphan({
             stackName: gen2StackId,
