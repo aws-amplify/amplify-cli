@@ -568,7 +568,18 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       describe: async () => [`Set Retain policies on resources in '${stackName}'${describeSuffix}`],
       validate: () => undefined,
       execute: async () => {
-        const pushedLabels: number = this.pushContextLabels(ctx);
+        let pushed = 0;
+        if (ctx) {
+          this.logger.push(`${ctx.resource.category}/${ctx.resource.resourceName} (${ctx.resource.service})`);
+          pushed++;
+          if (ctx.modelName) {
+            this.logger.push(ctx.modelName);
+            pushed++;
+          } else if (ctx.subStackLabel) {
+            this.logger.push(ctx.subStackLabel);
+            pushed++;
+          }
+        }
         try {
           const template = await cfn.fetchTemplate(stackId);
 
@@ -625,29 +636,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
             captureSnapshot: false,
           });
         } finally {
-          for (let i = 0; i < pushedLabels; i++) this.logger.pop();
+          for (let i = 0; i < pushed; i++) this.logger.pop();
         }
       },
     };
-  }
-
-  /**
-   * Pushes the nested spinner labels derived from `ctx` (category/name,
-   * then modelName or subStackLabel if present). Returns the number of
-   * labels pushed so the caller can pop them in a `finally` block.
-   */
-  private pushContextLabels(ctx?: StackContext): number {
-    if (!ctx) return 0;
-    this.logger.push(`${ctx.resource.category}/${ctx.resource.resourceName} (${ctx.resource.service})`);
-    let count = 1;
-    if (ctx.modelName) {
-      this.logger.push(ctx.modelName);
-      count++;
-    } else if (ctx.subStackLabel) {
-      this.logger.push(ctx.subStackLabel);
-      count++;
-    }
-    return count;
   }
 
   /**
@@ -679,13 +671,12 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         case 'geo:Map':
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection': {
-          const stackId = this.tryFindNestedStack(rootNestedStacks, `${resource.category}${resource.resourceName}`);
-          if (stackId) context.set(stackId, { resource });
+          const stackId = this.findNestedStack(rootNestedStacks, `${resource.category}${resource.resourceName}`);
+          context.set(stackId, { resource });
           break;
         }
         case 'api:AppSync': {
-          const apiStackId = this.tryFindNestedStack(rootNestedStacks, `api${resource.resourceName}`);
-          if (!apiStackId) break;
+          const apiStackId = this.findNestedStack(rootNestedStacks, `api${resource.resourceName}`);
           context.set(apiStackId, { resource });
 
           const apiNestedStacks = await this.listNestedStack(apiStackId);
@@ -710,21 +701,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
 
     return context;
-  }
-
-  /**
-   * Non-throwing variant of `findNestedStack`. Returns `undefined` when the
-   * requested logical-id prefix isn't found in the provided nested-stack
-   * list, instead of throwing `MigrationError`. Used by `classifyStacks`
-   * so a missing nested stack (resource recorded in meta but never pushed)
-   * doesn't fail lock.
-   */
-  private tryFindNestedStack(nestedStacks: StackResource[], logicalIdPrefix: string): string | undefined {
-    const stackId = nestedStacks.find((s) => s.LogicalResourceId?.startsWith(logicalIdPrefix))?.PhysicalResourceId;
-    if (!stackId) {
-      this.logger.debug(`classifyStacks: no nested stack found for logical-id prefix '${logicalIdPrefix}'`);
-    }
-    return stackId;
   }
 
   /**
