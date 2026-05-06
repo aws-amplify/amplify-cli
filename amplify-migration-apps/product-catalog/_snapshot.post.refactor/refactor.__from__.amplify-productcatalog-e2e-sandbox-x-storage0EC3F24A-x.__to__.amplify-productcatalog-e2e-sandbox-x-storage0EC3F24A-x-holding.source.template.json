@@ -245,9 +245,7 @@
         },
         "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "Roles": [
-          {
-            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-          }
+          "amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x/BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
         ]
       },
       "UpdateReplacePolicy": "Delete",

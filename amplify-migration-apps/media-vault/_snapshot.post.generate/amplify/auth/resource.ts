@@ -90,10 +90,10 @@ export function applyEscapeHatches(backend: Backend) {
   cfnUserPool.policies = {
     passwordPolicy: {
       minimumLength: 8,
-      requireUppercase: false,
       requireLowercase: false,
       requireNumbers: false,
       requireSymbols: false,
+      requireUppercase: false,
       temporaryPasswordValidityDays: 7,
     },
   };
@@ -109,9 +109,9 @@ export function applyEscapeHatches(backend: Backend) {
     enablePropagateAdditionalUserContextData: false,
     authSessionValidity: Duration.minutes(3),
     supportedIdentityProviders: [
+      UserPoolClientIdentityProvider.COGNITO,
       UserPoolClientIdentityProvider.FACEBOOK,
       UserPoolClientIdentityProvider.GOOGLE,
-      UserPoolClientIdentityProvider.COGNITO,
     ],
     oAuth: {
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
@@ -122,11 +122,11 @@ export function applyEscapeHatches(backend: Backend) {
         clientCredentials: false,
       },
       scopes: [
-        OAuthScope.PHONE,
+        OAuthScope.COGNITO_ADMIN,
         OAuthScope.EMAIL,
         OAuthScope.OPENID,
+        OAuthScope.PHONE,
         OAuthScope.PROFILE,
-        OAuthScope.COGNITO_ADMIN,
       ],
     },
     // flows: ['code'],
@@ -172,5 +172,5 @@ export function postRefactor(backend: Backend) {
   const cfnUserPoolDomain = backend.auth.resources.userPool.node.findChild(
     'UserPoolDomain'
   ).node.defaultChild as CfnUserPoolDomain;
-  cfnUserPoolDomain.domain = 'mediavault1f08412d-1f08412d';
+  cfnUserPoolDomain.domain = 'mediavault1f08412d-1f08412d-x';
 }

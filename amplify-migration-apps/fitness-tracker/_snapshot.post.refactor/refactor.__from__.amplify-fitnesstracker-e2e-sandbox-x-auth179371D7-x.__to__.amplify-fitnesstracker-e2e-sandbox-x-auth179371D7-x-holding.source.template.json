@@ -248,9 +248,7 @@
         },
         "PolicyName": "admingen2xlambdaServiceRoleDefaultPolicy2CF92985",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "Metadata": {
@@ -337,9 +335,7 @@
         },
         "PolicyName": "admingen2xlambdaUnmappedCognitoActionsPolicy8795C481",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -363,9 +359,7 @@
         },
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -389,9 +383,7 @@
         },
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -415,9 +407,7 @@
         },
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -441,9 +431,7 @@
         },
         "PolicyName": "userpoolAccess4A84025C3",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -467,9 +455,7 @@
         },
         "PolicyName": "userpoolAccess585E2FB32",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -493,9 +479,7 @@
         },
         "PolicyName": "userpoolAccess600DA4CB0",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -519,9 +503,7 @@
         },
         "PolicyName": "userpoolAccess76F9C91C1",
         "Roles": [
-          {
-            "Ref": "admingen2xlambdaServiceRole7FB23D2F"
-          }
+          "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x/admingen2xlambdaServiceRole7FB23D2F"
         ]
       },
       "UpdateReplacePolicy": "Delete",

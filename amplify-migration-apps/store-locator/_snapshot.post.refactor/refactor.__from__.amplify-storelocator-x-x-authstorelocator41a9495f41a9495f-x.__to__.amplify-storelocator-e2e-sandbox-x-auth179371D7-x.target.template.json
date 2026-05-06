@@ -231,9 +231,7 @@
         },
         "PolicyName": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleDefaultPolicy3A77EB14",
         "Roles": [
-          {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
-          }
+          "amplify-storelocator-e2e-sandbox-x-auth179371D7-x/storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
         ]
       },
       "Metadata": {
@@ -327,9 +325,7 @@
         },
         "PolicyName": "userpoolAccess13FEE5419",
         "Roles": [
-          {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
-          }
+          "amplify-storelocator-e2e-sandbox-x-auth179371D7-x/storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -353,9 +349,7 @@
         },
         "PolicyName": "userpoolAccess268F187DB",
         "Roles": [
-          {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
-          }
+          "amplify-storelocator-e2e-sandbox-x-auth179371D7-x/storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -379,9 +373,7 @@
         },
         "PolicyName": "userpoolAccess3956C62F8",
         "Roles": [
-          {
-            "Ref": "storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
-          }
+          "amplify-storelocator-e2e-sandbox-x-auth179371D7-x/storelocator41a9495f41a9495fPostConfirmationgen2xlambdaServiceRoleCDBF9865"
         ]
       },
       "UpdateReplacePolicy": "Delete",
