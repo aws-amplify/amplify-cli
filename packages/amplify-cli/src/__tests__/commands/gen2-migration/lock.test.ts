@@ -23,6 +23,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => ({
   ...jest.requireActual('@aws-sdk/client-cloudformation'),
   waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({}),
   waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({}),
+  paginateListStackResources: jest.fn(),
 }));
 jest.mock('@aws-sdk/client-dynamodb', () => ({
   ...jest.requireActual('@aws-sdk/client-dynamodb'),
@@ -86,10 +87,18 @@ describe('AmplifyMigrationLockStep', () => {
     jest.clearAllMocks();
   });
 
-  const modelTemplate = { Resources: { TodoTable: { Type: 'AWS::DynamoDB::Table', Properties: {} } } };
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const paginateListStackResources = require('@aws-sdk/client-cloudformation').paginateListStackResources as jest.Mock;
 
   /** Mocks the forward() planning phase only (nested stack discovery + changeset creation for 2 model tables). */
   function setupForwardPlanningMocks() {
+    // walkStackHierarchy on root returns no nested children — the retain-
+    // everything loop produces a single op on root only.
+    paginateListStackResources.mockReturnValueOnce({
+      [Symbol.asyncIterator]: async function* () {
+        yield { StackResourceSummaries: [] };
+      },
+    });
     mockCfnSend.mockResolvedValueOnce({
       StackResources: [
         {
@@ -113,16 +122,20 @@ describe('AmplifyMigrationLockStep', () => {
         },
       ],
     });
-    for (let i = 1; i <= 2; i++) {
-      mockCfnSend.mockResolvedValueOnce({ TemplateBody: JSON.stringify(modelTemplate) });
-      mockCfnSend.mockResolvedValueOnce({ Stacks: [{ Parameters: [{ ParameterKey: 'env', ParameterValue: 'testEnv' }] }] });
-      mockCfnSend.mockResolvedValueOnce({});
-      mockCfnSend.mockResolvedValueOnce({
-        StackName: 'model-stack-' + i,
-        ChangeSetName: 'cs',
-        Changes: [{ ResourceChange: { Action: 'Modify', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } }],
-      });
-    }
+    // Root retain op execute: GetTemplate returns a template already-retained,
+    // so the idempotence guard short-circuits and no further CFN calls fire.
+    mockCfnSend.mockResolvedValueOnce({
+      TemplateBody: JSON.stringify({
+        Resources: {
+          RootIamRole: {
+            Type: 'AWS::IAM::Role',
+            Properties: {},
+            DeletionPolicy: 'Retain',
+            UpdateReplacePolicy: 'Retain',
+          },
+        },
+      }),
+    });
   }
 
   describe('forward stack policy merge', () => {
@@ -658,6 +671,206 @@ describe('AmplifyMigrationLockStep', () => {
       const valid = await plan.validate();
 
       expect(valid).toBe(true);
+    });
+  });
+
+  describe('forward retain-everything', () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { CreateChangeSetCommand, ExecuteChangeSetCommand } = require('@aws-sdk/client-cloudformation');
+
+    function walkRootOnly() {
+      paginateListStackResources.mockReturnValueOnce({
+        [Symbol.asyncIterator]: async function* () {
+          yield { StackResourceSummaries: [] };
+        },
+      });
+    }
+
+    function mockEmptyClassifyStacks() {
+      mockCfnSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::CloudFormation::Stack',
+            LogicalResourceId: 'apitestApp',
+            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/api-stack/abc',
+          },
+        ],
+      });
+      mockCfnSend.mockResolvedValueOnce({ StackResources: [] });
+    }
+
+    function mockRetainExecute(template: Record<string, unknown>, changes: Array<{ ResourceChange: Record<string, unknown> }>): void {
+      mockCfnSend.mockResolvedValueOnce({ TemplateBody: JSON.stringify(template) });
+      mockCfnSend.mockResolvedValueOnce({ Stacks: [{ Parameters: [{ ParameterKey: 'env', ParameterValue: 'testEnv' }] }] });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockCfnSend.mockResolvedValueOnce({
+        StackName: 'test-root-stack',
+        ChangeSetName: 'cs',
+        ChangeSetId: 'arn:aws:cloudformation:us-east-1:123:changeSet/cs/xyz',
+        StackId: 'arn:aws:cloudformation:us-east-1:123:stack/test-root-stack/def',
+        Changes: changes,
+      });
+      mockCfnSend.mockResolvedValueOnce({});
+    }
+
+    it('mutates every resource to add retain and sets DeletionProtectionEnabled on DynamoDB tables', async () => {
+      walkRootOnly();
+      mockEmptyClassifyStacks();
+      mockRetainExecute(
+        { Resources: { Bucket: { Type: 'AWS::S3::Bucket', Properties: {} }, Table: { Type: 'AWS::DynamoDB::Table', Properties: {} } } },
+        [
+          { ResourceChange: { Action: 'Modify', Details: [{ Target: { Attribute: 'DeletionPolicy', AfterValue: 'Retain' } }] } },
+          { ResourceChange: { Action: 'Modify', Details: [{ Target: { Attribute: 'UpdateReplacePolicy', AfterValue: 'Retain' } }] } },
+          {
+            ResourceChange: {
+              Action: 'Modify',
+              ResourceType: 'AWS::DynamoDB::Table',
+              Details: [{ Target: { Attribute: 'Properties', Name: 'DeletionProtectionEnabled', AfterValue: 'true' } }],
+            },
+          },
+        ],
+      );
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await plan.execute();
+
+      const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      expect(createCall).toBeDefined();
+      const submitted = JSON.parse(createCall![0].input.TemplateBody);
+      expect(submitted.Resources.Bucket.DeletionPolicy).toBe('Retain');
+      expect(submitted.Resources.Bucket.UpdateReplacePolicy).toBe('Retain');
+      expect(submitted.Resources.Table.DeletionPolicy).toBe('Retain');
+      expect(submitted.Resources.Table.UpdateReplacePolicy).toBe('Retain');
+      expect(submitted.Resources.Table.Properties.DeletionProtectionEnabled).toBe(true);
+    });
+
+    it('also mutates AWS::CloudFormation::Stack child-reference entries', async () => {
+      walkRootOnly();
+      mockEmptyClassifyStacks();
+      mockRetainExecute(
+        {
+          Resources: {
+            Bucket: { Type: 'AWS::S3::Bucket', Properties: {} },
+            NestedAuth: { Type: 'AWS::CloudFormation::Stack', Properties: { TemplateURL: 'https://s3/x.yaml' } },
+          },
+        },
+        [{ ResourceChange: { Action: 'Modify', Details: [{ Target: { Attribute: 'DeletionPolicy', AfterValue: 'Retain' } }] } }],
+      );
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await plan.execute();
+
+      const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      const submitted = JSON.parse(createCall![0].input.TemplateBody);
+      expect(submitted.Resources.NestedAuth.DeletionPolicy).toBe('Retain');
+      expect(submitted.Resources.NestedAuth.UpdateReplacePolicy).toBe('Retain');
+    });
+
+    it('forwards existing parameters as UsePreviousValue', async () => {
+      walkRootOnly();
+      mockEmptyClassifyStacks();
+      mockCfnSend.mockResolvedValueOnce({
+        TemplateBody: JSON.stringify({ Resources: { R: { Type: 'AWS::S3::Bucket', Properties: {} } } }),
+      });
+      mockCfnSend.mockResolvedValueOnce({
+        Stacks: [
+          {
+            Parameters: [
+              { ParameterKey: 'env', ParameterValue: 'dev' },
+              { ParameterKey: 'appId', ParameterValue: 'abc' },
+            ],
+          },
+        ],
+      });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockCfnSend.mockResolvedValueOnce({
+        StackName: 'test-root-stack',
+        ChangeSetName: 'cs',
+        Changes: [{ ResourceChange: { Action: 'Modify', Details: [{ Target: { Attribute: 'DeletionPolicy', AfterValue: 'Retain' } }] } }],
+      });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await plan.execute();
+
+      const createCall = mockCfnSend.mock.calls.find(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      expect(createCall![0].input.Parameters).toEqual([
+        { ParameterKey: 'env', UsePreviousValue: true },
+        { ParameterKey: 'appId', UsePreviousValue: true },
+      ]);
+    });
+
+    it('skips CreateChangeSet when the template is already fully retained (idempotence)', async () => {
+      walkRootOnly();
+      mockEmptyClassifyStacks();
+      mockCfnSend.mockResolvedValueOnce({
+        TemplateBody: JSON.stringify({
+          Resources: {
+            R: { Type: 'AWS::IAM::Role', Properties: {}, DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' },
+          },
+        }),
+      });
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await plan.execute();
+
+      const createCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      expect(createCalls).toHaveLength(0);
+    });
+
+    it('rejects a changeset with an Add action', async () => {
+      walkRootOnly();
+      mockEmptyClassifyStacks();
+      mockRetainExecute({ Resources: { R: { Type: 'AWS::S3::Bucket', Properties: {} } } }, [
+        { ResourceChange: { Action: 'Add', LogicalResourceId: 'NewRes' } },
+      ]);
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await expect(plan.execute()).rejects.toThrow(/contains unexpected changes/);
+
+      const executes = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof ExecuteChangeSetCommand);
+      expect(executes).toHaveLength(0);
+    });
+
+    it('rejects a changeset with only Dynamic/Automatic nested-stack re-evaluations (no real retain edit)', async () => {
+      walkRootOnly();
+      mockEmptyClassifyStacks();
+      mockRetainExecute({ Resources: { R: { Type: 'AWS::S3::Bucket', Properties: {} } } }, [
+        {
+          ResourceChange: {
+            Action: 'Modify',
+            ResourceType: 'AWS::CloudFormation::Stack',
+            Details: [
+              {
+                Target: { Attribute: 'Properties', RequiresRecreation: 'Never' },
+                Evaluation: 'Dynamic',
+                ChangeSource: 'Automatic',
+              },
+            ],
+          },
+        },
+      ]);
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await expect(plan.execute()).rejects.toThrow(/contains unexpected changes/);
     });
   });
 });
