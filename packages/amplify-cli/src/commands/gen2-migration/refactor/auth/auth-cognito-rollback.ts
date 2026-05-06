@@ -99,30 +99,31 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     if (!holdingStack) return baseOps;
 
     const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(holdingStackName);
-    if (!socialAuthConfig) return baseOps;
 
-    const template = await this.cfn.fetchTemplate(gen2StackId);
-    const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
-    if (!domainLogicalId) {
-      throw new AmplifyError('MigrationError', {
-        message: `Gen2 template '${gen2StackName}' has no UserPoolDomain resource for social auth import.`,
+    if (socialAuthConfig) {
+      const template = await this.cfn.fetchTemplate(gen2StackId);
+      const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
+      if (!domainLogicalId) {
+        throw new AmplifyError('MigrationError', {
+          message: `Gen2 template '${gen2StackName}' has no UserPoolDomain resource for social auth import.`,
+        });
+      }
+
+      const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);
+
+      baseOps.push({
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => [renderImportTable(resourcesToImport, gen2StackName)],
+        execute: () =>
+          this.cfn.importResources({
+            stackName: gen2StackId,
+            templateAdditions,
+            resourcesToImport,
+            resource: this.resource,
+          }),
       });
     }
-
-    const { resourcesToImport, templateAdditions } = buildImportSpec(socialAuthConfig, domainLogicalId, idpLogicalIds);
-
-    baseOps.push({
-      resource: this.resource,
-      validate: () => undefined,
-      describe: async () => [renderImportTable(resourcesToImport, gen2StackName)],
-      execute: () =>
-        this.cfn.importResources({
-          stackName: gen2StackId,
-          templateAdditions,
-          resourcesToImport,
-          resource: this.resource,
-        }),
-    });
 
     return baseOps;
   }
