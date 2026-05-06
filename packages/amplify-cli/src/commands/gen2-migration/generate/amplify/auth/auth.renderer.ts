@@ -399,7 +399,8 @@ export class AuthRenderer {
   }
 
   /**
-   * Extracts standard user attributes from schema, keeping only required ones.
+   * Extracts standard user attributes from schema, keeping required ones
+   * and any that appear in the app client read/write attribute lists.
    */
   private static deriveStandardUserAttributes(
     schema?: readonly SchemaAttributeType[],
@@ -407,12 +408,11 @@ export class AuthRenderer {
     if (!schema) return {};
     const result: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> = {};
     for (const attribute of schema) {
-      if (attribute.Name && attribute.Name in MAPPED_USER_ATTRIBUTE_NAME && attribute.Required) {
-        result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
-          required: attribute.Required,
-          mutable: attribute.Mutable,
-        };
-      }
+      if (!attribute.Name || !(attribute.Name in MAPPED_USER_ATTRIBUTE_NAME)) continue;
+      result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
+        required: attribute.Required,
+        mutable: attribute.Mutable,
+      };
     }
     return result;
   }
@@ -1016,6 +1016,11 @@ export class AuthRenderer {
       imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
     }
 
+    if (options.nativeClient?.ReadAttributes?.length || options.nativeClient?.WriteAttributes?.length) {
+      if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
+      imports['aws-cdk-lib/aws-cognito'].add('ClientAttributes');
+    }
+
     return imports;
   }
 
@@ -1207,6 +1212,18 @@ export class AuthRenderer {
       factory.createPropertyAssignment('generateSecret', userPoolClient.ClientSecret ? factory.createTrue() : factory.createFalse()),
     );
 
+    if (userPoolClient.ReadAttributes?.length) {
+      clientProps.push(
+        factory.createPropertyAssignment('readAttributes', AuthRenderer.buildClientAttributesExpression(userPoolClient.ReadAttributes)),
+      );
+    }
+
+    if (userPoolClient.WriteAttributes?.length) {
+      clientProps.push(
+        factory.createPropertyAssignment('writeAttributes', AuthRenderer.buildClientAttributesExpression(userPoolClient.WriteAttributes)),
+      );
+    }
+
     const addClientCall = factory.createCallExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
       undefined,
@@ -1296,6 +1313,45 @@ export class AuthRenderer {
     statements.push(ifStatement);
 
     return statements;
+  }
+
+  /**
+   * Builds a `new ClientAttributes().withStandardAttributes({...}).withCustomAttributes(...)` expression
+   * from a list of Cognito attribute names (e.g. `['email', 'birthdate', 'custom:foo']`).
+   */
+  private static buildClientAttributesExpression(attributes: readonly string[]): ts.Expression {
+    const standardProps: ts.PropertyAssignment[] = [];
+    const customNames: string[] = [];
+
+    for (const attr of attributes) {
+      if (attr.startsWith('custom:')) {
+        customNames.push(attr);
+      } else if (attr in MAPPED_USER_ATTRIBUTE_NAME) {
+        standardProps.push(
+          factory.createPropertyAssignment(factory.createIdentifier(MAPPED_USER_ATTRIBUTE_NAME[attr]), factory.createTrue()),
+        );
+      }
+    }
+
+    let expr: ts.Expression = factory.createNewExpression(factory.createIdentifier('ClientAttributes'), undefined, []);
+
+    if (standardProps.length > 0) {
+      expr = factory.createCallExpression(
+        factory.createPropertyAccessExpression(expr, factory.createIdentifier('withStandardAttributes')),
+        undefined,
+        [factory.createObjectLiteralExpression(standardProps, true)],
+      );
+    }
+
+    if (customNames.length > 0) {
+      expr = factory.createCallExpression(
+        factory.createPropertyAccessExpression(expr, factory.createIdentifier('withCustomAttributes')),
+        undefined,
+        customNames.map((name) => factory.createStringLiteral(name)),
+      );
+    }
+
+    return expr;
   }
 
   /** Builds the providerSetupResult code and commented tryRemoveChild. */
