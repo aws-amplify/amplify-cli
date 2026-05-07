@@ -406,9 +406,15 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           });
 
           for (const logicalId of Object.keys(localTemplate.Resources)) {
-            const deployedResource = deployedTemplate.Resources[logicalId];
-            if (!deployedResource) {
-              missingResources.push([logicalId, localTemplate.Resources[logicalId].Type]);
+            const localResource = localTemplate.Resources[logicalId];
+            if (localResource.Condition) {
+              // skip conditional resources since refactor resolves
+              // conditions so these resource may intentionally be missing
+              // from the deployed template.
+              continue;
+            }
+            if (!deployedTemplate.Resources[logicalId]) {
+              missingResources.push([logicalId, localResource.Type]);
             }
           }
 

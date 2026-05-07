@@ -1,17 +1,7 @@
-import fs from 'fs-extra';
-import path from 'path';
-import os from 'os';
-import crypto from 'crypto';
-import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { Logger } from './logger';
-import { mergeManagedSection } from './ini-merge';
-
-/**
- * Duration for assumed-role sessions. One hour strikes a balance between
- * STS call cost and headroom for any single step (all steps are well under
- * an hour individually).
- */
-const SESSION_DURATION_SECONDS = 3600;
+import fs from 'fs-extra';
+import { refreshCredentials } from '@aws-amplify/amplify-e2e-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Owns the AWS credential lifecycle for a single migration run.
@@ -41,21 +31,27 @@ const SESSION_DURATION_SECONDS = 3600;
 export class CredentialManager {
   private readonly callerProfile: string | undefined;
   private readonly roleArn: string | undefined;
-  private readonly region: string;
   private readonly logger: Logger;
   private readonly generatedProfile: string;
 
   constructor(callerProfile: string | undefined, region: string, generatedProfile: string, logger: Logger) {
     this.callerProfile = callerProfile;
     this.roleArn = callerProfile ? undefined : process.env.TEST_ACCOUNT_ROLE;
-    this.region = region;
     this.generatedProfile = generatedProfile;
     this.logger = logger;
-  }
 
-  /** Whether this manager operates in role mode (CI). */
-  private get isRoleMode(): boolean {
-    return this.roleArn !== undefined;
+    this.logger.info(`Using profile: ${this.profile}`);
+
+    if (this.roleArn) {
+      process.env.AWS_SHARED_CREDENTIALS_FILE = `${pathManager.getAWSCredentialsFilePath()}.${generatedProfile}`;
+      process.env.AWS_CONFIG_FILE = `${pathManager.getAWSConfigFilePath()}.${generatedProfile}`;
+
+      fs.writeFileSync(process.env.AWS_SHARED_CREDENTIALS_FILE, '');
+      fs.writeFileSync(process.env.AWS_CONFIG_FILE, [`[profile ${generatedProfile}]`, `region=${region}`, ''].join('\n'));
+
+      this.logger.info(`AWS_SHARED_CREDENTIALS_FILE: ${process.env.AWS_SHARED_CREDENTIALS_FILE}`);
+      this.logger.info(`AWS_CONFIG_FILE: ${process.env.AWS_CONFIG_FILE}`);
+    }
   }
 
   /**
@@ -76,110 +72,13 @@ export class CredentialManager {
    * the same on-disk state as a single call.
    */
   public async refresh(): Promise<void> {
-    if (!this.isRoleMode) {
+    if (!this.roleArn) {
       return;
     }
     this.logger.info('Refreshing credentials...');
-    const sts = new STSClient({});
-    const assumed = await sts.send(
-      new AssumeRoleCommand({
-        RoleArn: this.roleArn,
-        RoleSessionName: `gen2-migration-e2e-${Date.now()}`,
-        DurationSeconds: SESSION_DURATION_SECONDS,
-      }),
-    );
-    const creds = assumed.Credentials;
-    if (!creds?.AccessKeyId || !creds?.SecretAccessKey || !creds?.SessionToken) {
-      throw new Error('STS AssumeRole returned incomplete credentials');
-    }
-
-    this.writeCredentialsFile(creds.AccessKeyId, creds.SecretAccessKey, creds.SessionToken);
-
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await refreshCredentials(this.roleArn, this.profile);
     this.logger.info('Credentials refreshed');
-  }
-
-  private writeCredentialsFile(accessKeyId: string, secretAccessKey: string, sessionToken: string): void {
-    const awsDir = path.join(os.homedir(), '.aws');
-    fs.mkdirSync(awsDir, { recursive: true });
-
-    const credsFile = path.join(awsDir, 'credentials');
-    const configFile = path.join(awsDir, 'config');
-
-    const credsMerge = prepareMerge(credsFile, this.generatedProfile, {
-      aws_access_key_id: accessKeyId,
-      aws_secret_access_key: secretAccessKey,
-      aws_session_token: sessionToken,
-    });
-    const configMerge = prepareMerge(configFile, `profile ${this.generatedProfile}`, {
-      region: this.region,
-      output: 'json',
-    });
-
-    atomicWriteFile(credsFile, credsMerge.content, credsMerge.mode);
-    atomicWriteFile(configFile, configMerge.content, configMerge.mode);
-  }
-}
-
-/**
- * Read the target file (if present), merge the managed section into its
- * contents, and compute the mode to write with. A missing file yields
- * empty existing bytes and the default mode `0o600`; existing files
- * preserve their current POSIX mode so writes never widen (or tighten)
- * what the caller chose.
- */
-function prepareMerge(filePath: string, header: string, values: Record<string, string>): { content: string; mode: number } {
-  const { existing, existingMode } = readExistingFile(filePath);
-  const content = mergeManagedSection(existing, header, values);
-  const mode = existingMode ?? 0o600;
-  return { content, mode };
-}
-
-/**
- * Read an existing INI file's bytes and POSIX mode, or return empty bytes
- * and no mode if the file does not exist. Wraps read failures as
- * `Failed to read <path>: <cause>` preserving the underlying error as
- * `{ cause }`.
- */
-function readExistingFile(filePath: string): { existing: string; existingMode: number | undefined } {
-  if (!fs.existsSync(filePath)) {
-    return { existing: '', existingMode: undefined };
-  }
-  try {
-    const existing = fs.readFileSync(filePath, 'utf-8');
-    // eslint-disable-next-line no-bitwise
-    const existingMode = fs.statSync(filePath).mode & 0o777;
-    return { existing, existingMode };
-  } catch (cause: unknown) {
-    const message = cause instanceof Error ? cause.message : String(cause);
-    throw new Error(`Failed to read ${filePath}: ${message}`, { cause });
-  }
-}
-
-/**
- * Write `content` to `filePath` atomically by writing to a unique temp
- * file in the same directory and renaming into place. The rename is
- * atomic on POSIX same-filesystem, so a failure at any step leaves the
- * original `filePath` bytes untouched. On failure the temp file is
- * best-effort removed and the error is rethrown as
- * `Failed to write <path>: <cause>` with the underlying error as `{ cause }`.
- *
- * The `mode` argument is applied to the temp file on creation via
- * `writeFileSync`'s `mode` option; the subsequent rename preserves those
- * bits on the target inode.
- */
-function atomicWriteFile(filePath: string, content: string, mode: number): void {
-  const tmp = `${filePath}.${process.pid}.${crypto.randomBytes(8).toString('hex')}.tmp`;
-  try {
-    fs.writeFileSync(tmp, content, { encoding: 'utf-8', mode });
-    fs.renameSync(tmp, filePath);
-  } catch (cause: unknown) {
-    // Best-effort temp-file cleanup: skip if the write failed before the
-    // temp file was created, or if something else already removed it.
-    if (fs.existsSync(tmp)) {
-      fs.unlinkSync(tmp);
-    }
-    const message = cause instanceof Error ? cause.message : String(cause);
-    throw new Error(`Failed to write ${filePath}: ${message}`, { cause });
   }
 }
 

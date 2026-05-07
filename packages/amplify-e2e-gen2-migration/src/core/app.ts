@@ -96,6 +96,7 @@ export class App {
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
     const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
+
     this.credentials = new CredentialManager(profile, region, generatedProfile, this.logger);
 
     // temporary directory to store snapshot of each step

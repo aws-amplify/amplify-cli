@@ -5,7 +5,7 @@ import * as ini from 'ini';
 import * as fs from 'fs-extra';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
-const refreshCredentials = async (roleArn: string) => {
+export const refreshCredentials = async (roleArn: string, profile?: string) => {
   const client = new STSClient({
     // Use CodeBuild role to assume test account role. I.e. don't read credentials from process.env
     credentials: fromContainerMetadata(),
@@ -18,7 +18,7 @@ const refreshCredentials = async (roleArn: string) => {
   });
   const response = await client.send(command);
 
-  const profileName = TEST_PROFILE_NAME;
+  const profileName = profile ?? TEST_PROFILE_NAME;
   const credentialsContents = ini.parse((await fs.readFile(pathManager.getAWSCredentialsFilePath())).toString());
   credentialsContents[profileName] = credentialsContents[profileName] || {};
   credentialsContents[profileName].aws_access_key_id = response.Credentials.AccessKeyId;
@@ -30,9 +30,9 @@ const refreshCredentials = async (roleArn: string) => {
   await fs.writeFile(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 };
 
-const tryRefreshCredentials = async (roleArn: string) => {
+export const tryRefreshCredentials = async (roleArn: string, profile?: string) => {
   try {
-    await refreshCredentials(roleArn);
+    await refreshCredentials(roleArn, profile);
     console.log('Test profile credentials refreshed');
   } catch (e) {
     console.error('Test profile credentials request failed');

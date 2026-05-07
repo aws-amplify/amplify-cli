@@ -393,7 +393,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-core@4.5.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
+"@aws-amplify/amplify-cli-core@4.5.0, @aws-amplify/amplify-cli-core@workspace:^, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core"
   dependencies:
@@ -589,6 +589,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration"
   dependencies:
+    "@aws-amplify/amplify-cli-core": "workspace:^"
     "@aws-amplify/amplify-e2e-core": "workspace:^"
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-cloudformation": ^3.919.0

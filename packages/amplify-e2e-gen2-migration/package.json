@@ -14,6 +14,7 @@
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
+    "@aws-amplify/amplify-cli-core": "workspace:^",
     "@aws-amplify/amplify-e2e-core": "workspace:^",
     "@aws-sdk/client-amplify": "^3.919.0",
     "@aws-sdk/client-cloudformation": "^3.919.0",
