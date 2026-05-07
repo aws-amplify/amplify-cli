@@ -102,6 +102,9 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
    * Associates each nested stack with its Amplify `DiscoveredResource`. Stacks
    * not classified fall through to the default `Project` group.
    *
+   * Purely for UX — the returned map drives `Plan.describe` grouping and the
+   * execute-time spinner labels. Has no effect on the retain logic itself.
+   *
    * For AppSync: the api-stack is tagged with the api resource, per-model
    * nested stacks carry `modelName`, and ConnectionStack/FunctionDirectiveStack/
    * CustomResourcesjson carry `subStackLabel`.
