@@ -60,6 +60,10 @@ test('mood-board snapshot', async () => {
   await testSnapshot('mood-board');
 });
 
+test('finance-tracker snapshot', async () => {
+  await testSnapshot('finance-tracker');
+});
+
 test('store-locator snapshot', async () => {
   await testSnapshot('store-locator');
 });

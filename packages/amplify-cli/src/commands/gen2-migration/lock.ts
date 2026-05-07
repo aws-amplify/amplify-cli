@@ -146,7 +146,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         case 'geo:Map':
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection':
-        case 'function:Lambda': {
+        case 'function:Lambda':
+        case 'custom:customCDK': {
           break;
         }
 
@@ -254,6 +255,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection':
         case 'function:Lambda':
+        case 'custom:customCDK':
         case 'UNKNOWN':
           // untouched during refactor - skip them.
           break;

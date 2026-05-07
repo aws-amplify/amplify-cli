@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "AuthRoleName",
+    "OutputValue": "amplify-financetracker-x-x-authRole"
+  },
+  {
+    "OutputKey": "UnauthRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-financetracker-x-x-unauthRole"
+  },
+  {
+    "OutputKey": "AuthRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-financetracker-x-x-authRole"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1",
+    "Description": "CloudFormation provider root stack Region",
+    "ExportName": "amplify-financetracker-x-x-Region"
+  },
+  {
+    "OutputKey": "DeploymentBucketName",
+    "OutputValue": "amplify-financetracker-x-x-deployment",
+    "Description": "CloudFormation provider root stack deployment bucket name",
+    "ExportName": "amplify-financetracker-x-x-DeploymentBucketName"
+  },
+  {
+    "OutputKey": "UnauthRoleName",
+    "OutputValue": "amplify-financetracker-x-x-unauthRole"
+  },
+  {
+    "OutputKey": "StackName",
+    "OutputValue": "amplify-financetracker-x-x",
+    "Description": "CloudFormation provider root stack ID",
+    "ExportName": "amplify-financetracker-x-x-StackName"
+  },
+  {
+    "OutputKey": "StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-financetracker-x-x/b5b77e20-3f49-11f1-aca5-1262955767e1",
+    "Description": "CloudFormation provider root stack name",
+    "ExportName": "amplify-financetracker-x-x-StackId"
+  }
+]

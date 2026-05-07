@@ -82,6 +82,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         // the assessment validation will surface these to the user
         // and require confirmation of missing capabilities.
         case 'geo:GeofenceCollection':
+        case 'custom:customCDK':
         case 'UNKNOWN':
           break;
       }
@@ -171,6 +172,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         // the assessment validation will surface these to the user
         // and require confirmation of missing capabilities.
         case 'geo:GeofenceCollection':
+        case 'custom:customCDK':
         case 'UNKNOWN':
           break;
       }

@@ -32,6 +32,7 @@ interface MigrationConfig {
   readonly lockRollback?: StepConfig;
   readonly refactorForward?: StepConfig;
   readonly refactorRollback?: StepConfig;
+  readonly generate?: StepConfig;
 }
 
 interface StepConfig {
@@ -364,7 +365,8 @@ export class App {
    */
   public async generate(): Promise<void> {
     await this.refreshCredentials();
-    await this.runMigrationStep('generate');
+    const extraArgs = this.migrationConfig.generate?.skipValidations ? ['--skip-validations'] : [];
+    await this.runMigrationStep('generate', extraArgs);
     this.removeGitignoreLine('amplify_outputs*');
   }
 
