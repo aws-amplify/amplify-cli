@@ -240,7 +240,7 @@ Where `<step>` is one of:
 | `pre.generate`   | Copies the Gen1 app's `amplify/`, `.gitignore`, and `package.json`          | `deployed-app-path`                    |
 | `post.generate`  | Copies the Gen2 output (`amplify/`, `.gitignore`, `amplify.yml`)            | `deployed-app-path`                    |
 | `pre.refactor`   | Downloads Gen1 and Gen2 CloudFormation templates from deployed stacks       | `gen2-stack-name`                      |
-| `post.refactor`  | Copies the refactor operations from `.gen2-migration/refactor.operations`   | `deployed-app-path`                    |
+| `post.refactor`  | Copies the refactor operations from `.amplify/gen2-migration/refactor.operations` | `deployed-app-path`                    |
 
 Examples:
 
