@@ -46,7 +46,7 @@ through the holding stack alongside the 4 core resources:
 1. **Orphaned Fn::GetAtt references**: IDP resources have `Fn::GetAtt` references to
    `AmplifySecretFetcherResource` (stays in Gen2). Moving IDPs to the holding stack
    breaks these references — `Template error: instance of Fn::GetAtt references
-   undefined resource`.
+undefined resource`.
 
 2. **StackRefactor API property validation**: Replacing orphaned `Fn::GetAtt` with
    placeholder strings passes structural validation but fails because the StackRefactor
@@ -91,11 +91,11 @@ eligible for import.
 
 Experimentally verified against a test UserPool:
 
-| Resource | CFN CREATE Result |
-|----------|-------------------|
-| `UserPoolIdentityProvider` (Google) | `HandlerErrorCode: AlreadyExists` |
-| `UserPoolIdentityProvider` (Facebook) | `HandlerErrorCode: AlreadyExists` |
-| `UserPoolDomain` (different prefix) | `HandlerErrorCode: InvalidRequest` |
+| Resource                              | CFN CREATE Result                  |
+| ------------------------------------- | ---------------------------------- |
+| `UserPoolIdentityProvider` (Google)   | `HandlerErrorCode: AlreadyExists`  |
+| `UserPoolIdentityProvider` (Facebook) | `HandlerErrorCode: AlreadyExists`  |
+| `UserPoolDomain` (different prefix)   | `HandlerErrorCode: InvalidRequest` |
 
 Both test stacks reached `ROLLBACK_COMPLETE`. Failed CREATE attempts did not damage
 existing physical resources.
@@ -105,6 +105,7 @@ existing physical resources.
 Verified in two phases:
 
 **Raw CFN API import**:
+
 - `CreateChangeSet(ChangeSetType=IMPORT)` succeeded for all three resource types
 - Stack reached `IMPORT_COMPLETE`, all resources `UPDATE_COMPLETE`
 - Non-destructive: `CreationDate` and `LastModifiedDate` unchanged
@@ -113,6 +114,7 @@ Verified in two phases:
   details and attribute mappings are not validated
 
 **CDK import + deploy**:
+
 - `cdk import --resource-mapping --force` succeeded (fully non-interactive)
 - `cdk deploy` succeeded — only `CDKMetadata` created, imported resources untouched
 - `cdk diff` post-deploy: zero differences
@@ -120,11 +122,11 @@ Verified in two phases:
 
 ### Key finding: StackRefactor vs CFN Import
 
-| | StackRefactor API | CFN Import |
-|---|---|---|
+|                     | StackRefactor API                          | CFN Import                              |
+| ------------------- | ------------------------------------------ | --------------------------------------- |
 | Property validation | Validates template values match live state | Does NOT validate — values are metadata |
-| Identity mechanism | Logical ID matching across stacks | ResourceIdentifier tuple |
-| Use case | Moving resources between stacks | Adopting existing physical resources |
+| Identity mechanism  | Logical ID matching across stacks          | ResourceIdentifier tuple                |
+| Use case            | Moving resources between stacks            | Adopting existing physical resources    |
 
 ## Decision
 
@@ -138,10 +140,10 @@ Only 4 core types move through the holding stack via the standard refactor flow:
 
 ```typescript
 export const RESOURCE_TYPES = [
-  USER_POOL_TYPE,           // AWS::Cognito::UserPool
-  USER_POOL_CLIENT_TYPE,    // AWS::Cognito::UserPoolClient
-  IDENTITY_POOL_TYPE,       // AWS::Cognito::IdentityPool
-  IDENTITY_POOL_ROLE_ATTACHMENT_TYPE,  // AWS::Cognito::IdentityPoolRoleAttachment
+  USER_POOL_TYPE, // AWS::Cognito::UserPool
+  USER_POOL_CLIENT_TYPE, // AWS::Cognito::UserPoolClient
+  IDENTITY_POOL_TYPE, // AWS::Cognito::IdentityPool
+  IDENTITY_POOL_ROLE_ATTACHMENT_TYPE, // AWS::Cognito::IdentityPoolRoleAttachment
 ];
 ```
 
@@ -180,9 +182,9 @@ deploy regenerates real values from `AmplifySecretFetcherResource`.
 
 **Import identifiers:**
 
-| Resource Type | Identifier Keys |
-|---------------|-----------------|
-| `AWS::Cognito::UserPoolDomain` | `{UserPoolId, Domain}` |
+| Resource Type                            | Identifier Keys              |
+| ---------------------------------------- | ---------------------------- |
+| `AWS::Cognito::UserPoolDomain`           | `{UserPoolId, Domain}`       |
 | `AWS::Cognito::UserPoolIdentityProvider` | `{UserPoolId, ProviderName}` |
 
 #### Orphan Mechanics
@@ -273,6 +275,7 @@ This preserves the Gen1 domain prefix after import, so subsequent deploys see ze
 ### Additional Fixes
 
 #### Output resolver (`cfn-output-resolver.ts`)
+
 - **Ref fallback to PhysicalResourceId**: Intra-stack Refs not exposed as stack Outputs
   now resolve via `DescribeStackResources`
 - **Skip Custom:: resources in GetAtt**: Custom resource GetAtt attributes come from
@@ -282,6 +285,7 @@ This preserves the Gen1 domain prefix after import, so subsequent deploys see ze
   returned directly instead of being wrapped
 
 #### Generate fixes (`auth.renderer.ts`)
+
 - Fixed `authorized_scopes` → `authorize_scopes` (Cognito API field name)
 - Stopped filtering provider scopes against a hardcoded allowlist
 - Preserves custom attribute mappings alongside standard ones
@@ -290,6 +294,7 @@ This preserves the Gen1 domain prefix after import, so subsequent deploys see ze
 - Fixed cfnIdentityPool to declare exactly once
 
 #### Dead code removal
+
 - Deleted `oauth-values-retriever.ts` — real OAuth secrets are not needed during refactor
 - Removed `resolveOAuthParameters` hook from `ForwardCategoryRefactorer`
 
@@ -330,12 +335,12 @@ This preserves the Gen1 domain prefix after import, so subsequent deploys see ze
 
 ### Comparison
 
-| | Case 1: Do Nothing | Case 2: Override | Case 3: Orphan + Import |
-|---|---|---|---|
-| Code complexity | None | Minimal | High |
-| Refactor succeeds | Yes | Yes | Yes |
-| Auth works post-refactor | Yes | Yes | Yes |
-| Next deploy succeeds | **No** | **No** (without manual deletion) | **Yes** |
-| Auth downtime | None during refactor, blocked on deploy | Minutes (IDP deletion gap) | **None** |
-| Domain preserved | Orphaned | Changed (breaks redirect URIs) | **Yes** |
-| Rollback complexity | Simple | Simple | Higher (mitigated by Retain) |
+|                          | Case 1: Do Nothing                      | Case 2: Override                 | Case 3: Orphan + Import      |
+| ------------------------ | --------------------------------------- | -------------------------------- | ---------------------------- |
+| Code complexity          | None                                    | Minimal                          | High                         |
+| Refactor succeeds        | Yes                                     | Yes                              | Yes                          |
+| Auth works post-refactor | Yes                                     | Yes                              | Yes                          |
+| Next deploy succeeds     | **No**                                  | **No** (without manual deletion) | **Yes**                      |
+| Auth downtime            | None during refactor, blocked on deploy | Minutes (IDP deletion gap)       | **None**                     |
+| Domain preserved         | Orphaned                                | Changed (breaks redirect URIs)   | **Yes**                      |
+| Rollback complexity      | Simple                                  | Simple                           | Higher (mitigated by Retain) |
