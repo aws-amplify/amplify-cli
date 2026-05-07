@@ -38,8 +38,9 @@ export const auth = defineAuth({
           },
         },
       },
-      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
     },
   },
@@ -115,8 +116,9 @@ export function applyEscapeHatches(backend: Backend) {
       UserPoolClientIdentityProvider.COGNITO,
     ],
     oAuth: {
-      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
       flows: {
         authorizationCodeGrant: true,

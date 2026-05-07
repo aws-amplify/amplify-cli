@@ -854,12 +854,17 @@ export class AuthRenderer {
           factory.createArrayLiteralExpression(callbackUrls?.map((url) => factory.createStringLiteral(url))),
         ),
         ts.SyntaxKind.SingleLineCommentTrivia,
-        ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.',
+        ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
         true,
       ),
-      factory.createPropertyAssignment(
-        factory.createIdentifier('logoutUrls'),
-        factory.createArrayLiteralExpression(logoutUrls?.map((url) => factory.createStringLiteral(url))),
+      ts.addSyntheticLeadingComment(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('logoutUrls'),
+          factory.createArrayLiteralExpression(logoutUrls?.map((url) => factory.createStringLiteral(url))),
+        ),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
+        true,
       ),
     ];
 
@@ -1270,7 +1275,7 @@ export class AuthRenderer {
               factory.createArrayLiteralExpression(userPoolClient.CallbackURLs.map((url) => factory.createStringLiteral(url))),
             ),
             ts.SyntaxKind.SingleLineCommentTrivia,
-            ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) after the gen2-main branch is deployed.',
+            ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
             true,
           ),
         );
@@ -1278,9 +1283,14 @@ export class AuthRenderer {
 
       if (userPoolClient.LogoutURLs?.length) {
         oAuthProps.push(
-          factory.createPropertyAssignment(
-            'logoutUrls',
-            factory.createArrayLiteralExpression(userPoolClient.LogoutURLs.map((url) => factory.createStringLiteral(url))),
+          ts.addSyntheticLeadingComment(
+            factory.createPropertyAssignment(
+              'logoutUrls',
+              factory.createArrayLiteralExpression(userPoolClient.LogoutURLs.map((url) => factory.createStringLiteral(url))),
+            ),
+            ts.SyntaxKind.SingleLineCommentTrivia,
+            ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
+            true,
           ),
         );
       }
