@@ -85,6 +85,7 @@
   "l_js_frontend_config",
   "l_migrate_backend_only",
   "l_migrate_discussions",
+  "l_migrate_finance_tracker",
   "l_migrate_fitness_tracker",
   "l_migrate_media_vault",
   "l_migrate_mood_board",
