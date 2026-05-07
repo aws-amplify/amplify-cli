@@ -542,15 +542,7 @@ export class App {
    * credential signal — sub-processes resolve it via the shared AWS config.
    */
   public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    const envCopy = { ...process.env };
-
-    // we are always passing AWS_PROFILE so these should not be needed
-    // and in fact trigger a "Multiple credential sources detected" warning from the SDK
-    delete envCopy.AWS_ACCESS_KEY_ID;
-    delete envCopy.AWS_SECRET_ACCESS_KEY;
-    delete envCopy.AWS_SESSION_TOKEN;
-
-    return { ...envCopy, AWS_PROFILE: this.profile, ...extra };
+    return { ...process.env, AWS_PROFILE: this.profile, ...extra };
   }
 
   /**
