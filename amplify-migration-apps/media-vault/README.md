@@ -325,8 +325,8 @@ Next, accept all default values and follow the getting started wizard to connect
 
 
 Wait for the deployment to finish successfully. Now you need to setup social provider identities for the Cognito user pool.
-
-Run `amplify status` to retrieve the Hosted UI Endpoint. 
+First. Run `amplify status` to retrieve the `Hosted UI Endpoint`. 
+The `Hosted UI Endpoint` looks like: `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
 
 **Facebook**
 
@@ -338,7 +338,7 @@ Run `amplify status` to retrieve the Hosted UI Endpoint.
 
 
 2. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Settings → \_Valid OAuth Redirect URIs_.
-Add the Hosted UI Endpoint url. It should look like: 
+Add the Hosted UI Endpoint url with oauth2/idpresponse/ appended:
    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
 
 3. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Permissions and features → \_email_ → _Add_.
@@ -355,17 +355,16 @@ Add the Hosted UI Endpoint url. It should look like:
    - Note the `Client ID` and `Client Secret` values, they will be needed later on.
 
 2. Navigate to _Clients_ → _GoogleWebClient1_ → _Authorized JavaScript origins_.
-Add the Hosted UI Endpoint url. It should look like: 
-   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
+Add the Hosted UI Endpoint url:
+   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com`
 
 3. Navigate to _Clients_ → _GoogleWebClient1_ → _Authorized redirect URIs_.
-Add the Hosted UI Endpoint url.
-
+Add the Hosted UI Endpoint url with oauth2/idpresponse/ appended:
    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
 
 ## Migrating to Gen2
 
-> Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
+> Based on https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/
 
 First, install the experimental CLI package that provides the new commands:
 
@@ -432,31 +431,30 @@ from your Gen1 app — the new `gen2-main.<gen2-appId>.amplifyapp.com` URL is
 until you add it. There are three places to update:
 
 1. **`amplify/auth/resource.ts`** — add the Gen2 hosting URL to both
-   `externalProviders.callbackUrls`/`logoutUrls` (top-level) and to the
-   `oAuth.callbackUrls`/`logoutUrls` inside `applyEscapeHatches`. Look for
+   `externalProviders.callbackUrls`/`logoutUrls` and to the
+   `oAuth.callbackUrls`/`logoutUrls` inside `applyEscapeHatches` in `amplify/auth/resource.ts`. Look for
    the `// Add the Gen2 Amplify Hosting URL ...` comment the generator emits.
    Commit and push to redeploy.
 
-2. **Google developer console** — in _Clients_ → _GoogleWebClient1_ →
-   _Authorized JavaScript origins_ and _Authorized redirect URIs_, add the
-   Gen2 Cognito domain. To find it: open the
+2. **Find the new gen-2 cognito domain** —
+   Open
    [Cognito console](https://console.aws.amazon.com/cognito/), select your
    user pool, and note the domain under _App integration_ → _Domain_.
 
    ![](./images/cognito-domain.png)
+2. **Google developer console** — in _Clients_ → _GoogleWebClient1_ →
+   _Authorized JavaScript origins_ and _Authorized redirect URIs_, add the
+   Gen2 Cognito domain.
 
-   - `https://<gen2-cognito-domain>/`
-   - `https://<gen2-cognito-domain>/oauth2/idpresponse/`
+   - `https://<gen2-cognito-domain>` for _Authorized JavaScript origins_
+   - `https://<gen2-cognito-domain>/oauth2/idpresponse/` for _Authorized redirect URIs_
 
 3. **Facebook developer console** — in _Use Cases_ → _Authenticate and request
    data from users with Facebook Login_ → _Settings_ → _Valid OAuth Redirect
    URIs_, add:
    - `https://<gen2-cognito-domain>/oauth2/idpresponse/`
 
-   (If you haven't already noted the Gen2 Cognito domain, see step 2 for how
-   to find it in the Cognito console.)
-
-After both the code push and the dev-console updates, verify Hosted UI
+Verify Hosted UI
 sign-in works on the Gen2 branch before proceeding.
 
 Next, locate the root stack of the Gen2 branch:
