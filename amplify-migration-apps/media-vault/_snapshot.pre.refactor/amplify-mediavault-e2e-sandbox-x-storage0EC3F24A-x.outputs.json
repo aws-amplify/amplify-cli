@@ -1,10 +1,10 @@
 [
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875estoragemediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucket82823F5FRef",
-    "OutputValue": "amplify-mediavault2604261-mediavaultb574f210f1634e-dthxpuwpikzn"
+    "OutputKey": "amplifymediavaulte2esandbox0d6352a7e6storagethumbnailgengen2xlambda42494D1FRef",
+    "OutputValue": "thumbnailgen-gen2-x"
   },
   {
-    "OutputKey": "amplifymediavaulte2esandbox0cf7d7875estoragethumbnailgengen2xlambdaF0D2F172Ref",
-    "OutputValue": "thumbnailgen-gen2-x"
+    "OutputKey": "amplifymediavaulte2esandbox0d6352a7e6storagemediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucketD010D711Ref",
+    "OutputValue": "amplify-mediavault2605061-mediavaultb574f210f1634e-kjdk0mevynvh"
   }
 ]

@@ -127,8 +127,6 @@ const appleTeamID = 'SIWA_TEAM_ID';
 const oidcClientID = 'OIDC_CLIENT_ID';
 const oidcClientSecret = 'OIDC_CLIENT_SECRET';
 
-const VALID_SCOPES: readonly string[] = ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'];
-
 const MAPPED_USER_ATTRIBUTE_NAME: Record<string, string> = {
   address: 'address',
   birthdate: 'birthdate',
@@ -185,6 +183,7 @@ export class AuthRenderer {
     const additionalImportDeclarations = this.renderCdkImports(options);
     const backendTypeImport = this.renderBackendTypeImport();
     const applyEscapeHatchesDeclarations = this.renderApplyEscapeHatches(options);
+    const postRefactorDeclaration = options.userPool.Domain ? this.renderPostRefactor(options) : undefined;
 
     const allNodes: ts.Node[] = [];
     let foundFirstNonImport = false;
@@ -211,6 +210,10 @@ export class AuthRenderer {
 
     allNodes.push(newLineIdentifier);
     allNodes.push(applyEscapeHatchesDeclarations);
+    if (postRefactorDeclaration) {
+      allNodes.push(newLineIdentifier);
+      allNodes.push(postRefactorDeclaration);
+    }
 
     return factory.createNodeArray(allNodes as ts.Statement[]);
   }
@@ -231,6 +234,10 @@ export class AuthRenderer {
   private renderApplyEscapeHatches(options: AuthRenderOptions): ts.FunctionDeclaration {
     const escapeHatchStatements = this.buildEscapeHatchStatements(options);
     return TS.exportedFunction('applyEscapeHatches', escapeHatchStatements);
+  }
+
+  private renderPostRefactor(options: AuthRenderOptions): ts.FunctionDeclaration {
+    return TS.exportedFunction('postRefactor', this.buildDomainOverrideStatements(options.userPool.Domain));
   }
 
   private renderStandardAuth(options: AuthRenderOptions, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
@@ -318,12 +325,12 @@ export class AuthRenderer {
   private static deriveExternalProviders(details?: readonly IdentityProviderType[]): {
     readonly oidcProviders: readonly OidcProviderConfig[];
     readonly samlProvider: SamlProviderConfig | undefined;
-    readonly attributeMappings: Readonly<Record<string, Record<string, string>>>;
+    readonly attributeMappings: Readonly<Record<string, { standard: Record<string, string>; custom: Record<string, string> }>>;
     readonly providerScopes: Readonly<Record<string, readonly string[]>>;
   } {
     const oidcProviders: OidcProviderConfig[] = [];
     let samlProvider: SamlProviderConfig | undefined;
-    const attributeMappings: Record<string, Record<string, string>> = {};
+    const attributeMappings: Record<string, { standard: Record<string, string>; custom: Record<string, string> }> = {};
     const providerScopes: Record<string, string[]> = {};
 
     if (!details) {
@@ -339,21 +346,23 @@ export class AuthRenderer {
           authorize_url && token_url && attributes_url && jwks_uri
             ? { authorization: authorize_url, token: token_url, userInfo: attributes_url, jwksUri: jwks_uri }
             : undefined;
+        const oidcMapping = AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined;
         oidcProviders.push({
           issuerUrl: oidc_issuer,
           name: ProviderName,
           endpoints,
-          attributeMapping: AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined,
+          attributeMapping: oidcMapping ? { ...oidcMapping.standard, ...oidcMapping.custom } : undefined,
         });
       } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
         const { metadataURL, metadataContent } = ProviderDetails;
+        const samlMapping = AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined;
         samlProvider = {
           metadata: {
             metadataContent: metadataURL || metadataContent,
             metadataType: metadataURL ? ('URL' as const) : ('FILE' as const),
           },
           name: ProviderName,
-          attributeMapping: AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined,
+          attributeMapping: samlMapping ? { ...samlMapping.standard, ...samlMapping.custom } : undefined,
         };
       } else {
         if (AttributeMapping) {
@@ -367,9 +376,7 @@ export class AuthRenderer {
         if (ProviderDetails) {
           const scopes = AuthRenderer.deriveProviderSpecificScopes(ProviderDetails);
           if (scopes.length > 0) {
-            const mapped = scopes
-              .map((scope) => (scope === 'public_profile' ? 'profile' : scope))
-              .filter((scope) => VALID_SCOPES.includes(scope));
+            const mapped = scopes.filter((scope) => scope.length > 0);
             if (mapped.length > 0 && ProviderType) {
               providerScopes[ProviderType] = mapped;
             }
@@ -508,7 +515,7 @@ export class AuthRenderer {
    * Extracts provider-specific scopes from provider details.
    */
   private static deriveProviderSpecificScopes(providerDetails: Record<string, string>): string[] {
-    const scopeFields = ['authorized_scopes', 'scope', 'scopes'];
+    const scopeFields = ['authorize_scopes', 'authorized_scopes', 'scope', 'scopes'];
     for (const field of scopeFields) {
       if (providerDetails[field]) {
         return providerDetails[field].split(/[\s,]+/).filter((scope) => scope.length > 0);
@@ -520,12 +527,22 @@ export class AuthRenderer {
   /**
    * Filters attribute mappings to only known standard attributes.
    */
-  private static filterAttributeMapping(attributeMapping: Record<string, string>): Record<string, string> {
-    return Object.fromEntries(
-      Object.entries(attributeMapping)
-        .filter(([key]) => Object.keys(MAPPED_USER_ATTRIBUTE_NAME).includes(key))
-        .map(([key, value]) => [MAPPED_USER_ATTRIBUTE_NAME[key], value]),
-    );
+  private static filterAttributeMapping(attributeMapping: Record<string, string>): {
+    standard: Record<string, string>;
+    custom: Record<string, string>;
+  } {
+    const standard: Record<string, string> = {};
+    const custom: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(attributeMapping)) {
+      if (key in MAPPED_USER_ATTRIBUTE_NAME) {
+        standard[MAPPED_USER_ATTRIBUTE_NAME[key]] = value;
+      } else {
+        custom[key] = value;
+      }
+    }
+
+    return { standard, custom };
   }
 
   // ── AST rendering helpers ────────────────────────────────────────
@@ -720,7 +737,7 @@ export class AuthRenderer {
     externalProviders: {
       readonly oidcProviders: readonly OidcProviderConfig[];
       readonly samlProvider: SamlProviderConfig | undefined;
-      readonly attributeMappings: Readonly<Record<string, Record<string, string>>>;
+      readonly attributeMappings: Readonly<Record<string, { standard: Record<string, string>; custom: Record<string, string> }>>;
       readonly providerScopes: Readonly<Record<string, readonly string[]>>;
     },
     callbackUrls?: readonly string[],
@@ -835,13 +852,23 @@ export class AuthRenderer {
 
     const properties = [
       ...providerAssignments,
-      factory.createPropertyAssignment(
-        factory.createIdentifier('callbackUrls'),
-        factory.createArrayLiteralExpression(callbackUrls?.map((url) => factory.createStringLiteral(url))),
+      ts.addSyntheticLeadingComment(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('callbackUrls'),
+          factory.createArrayLiteralExpression(callbackUrls?.map((url) => factory.createStringLiteral(url))),
+        ),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
+        true,
       ),
-      factory.createPropertyAssignment(
-        factory.createIdentifier('logoutUrls'),
-        factory.createArrayLiteralExpression(logoutUrls?.map((url) => factory.createStringLiteral(url))),
+      ts.addSyntheticLeadingComment(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('logoutUrls'),
+          factory.createArrayLiteralExpression(logoutUrls?.map((url) => factory.createStringLiteral(url))),
+        ),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
+        true,
       ),
     ];
 
@@ -911,7 +938,7 @@ export class AuthRenderer {
 
   private static createProviderConfig(
     config: Record<string, string>,
-    attributeMapping: Record<string, string> | undefined,
+    attributeMapping: { standard: Record<string, string>; custom: Record<string, string> } | undefined,
   ): ts.ObjectLiteralElementLike[] {
     const properties: ts.ObjectLiteralElementLike[] = [];
 
@@ -937,9 +964,22 @@ export class AuthRenderer {
     if (attributeMapping) {
       const mappingProperties: ts.ObjectLiteralElementLike[] = [];
 
-      Object.entries(attributeMapping).forEach(([key, value]) =>
+      Object.entries(attributeMapping.standard).forEach(([key, value]) =>
         mappingProperties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))),
       );
+
+      if (Object.keys(attributeMapping.custom).length > 0) {
+        const customProperties: ts.ObjectLiteralElementLike[] = [];
+        Object.entries(attributeMapping.custom).forEach(([key, value]) =>
+          customProperties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))),
+        );
+        mappingProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('custom'),
+            factory.createObjectLiteralExpression(customProperties, true),
+          ),
+        );
+      }
 
       properties.push(
         factory.createPropertyAssignment(
@@ -955,7 +995,7 @@ export class AuthRenderer {
   private static createProviderPropertyAssignment(
     name: string,
     config: Record<string, string>,
-    attributeMapping: Record<string, string> | undefined,
+    attributeMapping: { standard: Record<string, string>; custom: Record<string, string> } | undefined,
   ): PropertyAssignment {
     return factory.createPropertyAssignment(
       factory.createIdentifier(name),
@@ -985,14 +1025,47 @@ export class AuthRenderer {
   private buildEscapeHatchStatements(options: AuthRenderOptions): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
+    const hasIdentityProviders = AuthRenderer.hasIdentityProviders(options.nativeClient);
+
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
     if (Object.keys(userPoolOverrides).length > 0) {
       statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides));
     }
 
-    if (options.identityPool?.AllowUnauthenticatedIdentities === false) {
+    // Declare cfnIdentityPool once when any IdentityPool escape hatch is needed
+    // (either disabling unauth identities or removing the hard-coded
+    // SupportedLoginProviders on regenerate). Defining the const twice would
+    // produce invalid TypeScript.
+    const needsCfnIdentityPool = options.identityPool?.AllowUnauthenticatedIdentities === false || hasIdentityProviders;
+    if (needsCfnIdentityPool) {
       statements.push(TS.constFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool'));
+    }
+
+    if (options.identityPool?.AllowUnauthenticatedIdentities === false) {
       statements.push(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
+    }
+
+    if (hasIdentityProviders) {
+      // cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders')
+      //
+      // Gen1 generates SupportedLoginProviders on the IdentityPool from the
+      // social IDP config at deploy time (Lambda-backed custom resource).
+      // Gen2 handles social auth via the UserPool's IDP resources, not
+      // SupportedLoginProviders. After refactor, leaving the Gen1 property
+      // in place would trigger drift; removing it via CDK property deletion
+      // override is how Gen2 communicates "don't manage this property."
+      statements.push(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('cfnIdentityPool'),
+              factory.createIdentifier('addPropertyDeletionOverride'),
+            ),
+            undefined,
+            [factory.createStringLiteral('SupportedLoginProviders')],
+          ),
+        ),
+      );
     }
 
     if (options.webClient.AllowedOAuthFlows) {
@@ -1001,9 +1074,50 @@ export class AuthRenderer {
     }
 
     statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient));
+
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
 
     return statements;
+  }
+
+  /**
+   * Overrides the UserPoolDomain's domain property to the Gen1 domain prefix,
+   * preventing CFN from replacing it on the next deploy after the refactor has
+   * imported the Gen1 physical domain under the Gen2 logical ID.
+   */
+  private buildDomainOverrideStatements(gen1Domain?: string): ts.Statement[] {
+    if (!gen1Domain) return [];
+
+    // const cfnUserPoolDomain = backend.auth.resources.userPool.node
+    //   .findChild("UserPoolDomain").node.defaultChild as CfnUserPoolDomain;
+    const domainExpr = factory.createAsExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('userPool'),
+                ),
+                factory.createIdentifier('node'),
+              ),
+              factory.createIdentifier('findChild'),
+            ),
+            undefined,
+            [factory.createStringLiteral('UserPoolDomain')],
+          ),
+          factory.createIdentifier('node'),
+        ),
+        factory.createIdentifier('defaultChild'),
+      ),
+      factory.createTypeReferenceNode('CfnUserPoolDomain'),
+    );
+
+    return [TS.declareConst('cfnUserPoolDomain', domainExpr), TS.assignProp('cfnUserPoolDomain', 'domain', gen1Domain)];
   }
 
   /** Builds additional imports needed for the applyEscapeHatches function. */
@@ -1012,18 +1126,23 @@ export class AuthRenderer {
 
     if (!imports['aws-cdk-lib']) imports['aws-cdk-lib'] = new Set();
     imports['aws-cdk-lib'].add('CfnResource');
+    imports['aws-cdk-lib'].add('Duration');
 
-    if (options.nativeClient) {
-      imports['aws-cdk-lib'].add('Duration');
-    }
-
-    if (options.nativeClient.SupportedIdentityProviders && options.nativeClient.SupportedIdentityProviders.length > 0) {
+    if (AuthRenderer.hasIdentityProviders(options.nativeClient)) {
       if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
       imports['aws-cdk-lib/aws-cognito'].add('OAuthScope');
       imports['aws-cdk-lib/aws-cognito'].add('UserPoolClientIdentityProvider');
     }
 
-    if (options.nativeClient?.ReadAttributes?.length || options.nativeClient?.WriteAttributes?.length) {
+    // CfnUserPoolDomain is the only symbol postRefactor() needs. Import whenever
+    // a domain is present, independent of social providers — a hosted UI domain
+    // can exist without IDPs.
+    if (options.userPool.Domain) {
+      if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
+      imports['aws-cdk-lib/aws-cognito'].add('CfnUserPoolDomain');
+    }
+
+    if (options.nativeClient.ReadAttributes?.length || options.nativeClient.WriteAttributes?.length) {
       if (!imports['aws-cdk-lib/aws-cognito']) imports['aws-cdk-lib/aws-cognito'] = new Set();
       imports['aws-cdk-lib/aws-cognito'].add('ClientAttributes');
     }
@@ -1067,6 +1186,7 @@ export class AuthRenderer {
 
   private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType): ts.Statement[] {
     const statements: ts.Statement[] = [];
+    const hasIdentityProviders = AuthRenderer.hasIdentityProviders(userPoolClient);
 
     statements.push(TS.constFromBackend('userPool', 'auth', 'resources', 'userPool'));
 
@@ -1116,8 +1236,7 @@ export class AuthRenderer {
       );
     }
 
-    const supportedIdentityProviders = userPoolClient.SupportedIdentityProviders ?? [];
-    if (supportedIdentityProviders.length > 0) {
+    if (hasIdentityProviders) {
       const providerMap: Record<string, string> = {
         COGNITO: 'COGNITO',
         Facebook: 'FACEBOOK',
@@ -1125,7 +1244,7 @@ export class AuthRenderer {
         LoginWithAmazon: 'AMAZON',
         SignInWithApple: 'APPLE',
       };
-      const providerElements = supportedIdentityProviders.map((provider) => {
+      const providerElements = userPoolClient.SupportedIdentityProviders!.map((provider) => {
         const mapped = providerMap[provider] ?? provider.toUpperCase();
         return factory.createPropertyAccessExpression(
           factory.createIdentifier('UserPoolClientIdentityProvider'),
@@ -1147,18 +1266,28 @@ export class AuthRenderer {
 
       if (userPoolClient.CallbackURLs?.length) {
         oAuthProps.push(
-          factory.createPropertyAssignment(
-            'callbackUrls',
-            factory.createArrayLiteralExpression(userPoolClient.CallbackURLs.map((url) => factory.createStringLiteral(url))),
+          ts.addSyntheticLeadingComment(
+            factory.createPropertyAssignment(
+              'callbackUrls',
+              factory.createArrayLiteralExpression(userPoolClient.CallbackURLs.map((url) => factory.createStringLiteral(url))),
+            ),
+            ts.SyntaxKind.SingleLineCommentTrivia,
+            ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
+            true,
           ),
         );
       }
 
       if (userPoolClient.LogoutURLs?.length) {
         oAuthProps.push(
-          factory.createPropertyAssignment(
-            'logoutUrls',
-            factory.createArrayLiteralExpression(userPoolClient.LogoutURLs.map((url) => factory.createStringLiteral(url))),
+          ts.addSyntheticLeadingComment(
+            factory.createPropertyAssignment(
+              'logoutUrls',
+              factory.createArrayLiteralExpression(userPoolClient.LogoutURLs.map((url) => factory.createStringLiteral(url))),
+            ),
+            ts.SyntaxKind.SingleLineCommentTrivia,
+            ' Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.',
+            true,
           ),
         );
       }
@@ -1203,18 +1332,7 @@ export class AuthRenderer {
     }
 
     const hasOAuth = (userPoolClient.AllowedOAuthFlows?.length ?? 0) > 0;
-    if (userPoolClient.AllowedOAuthFlows?.length) {
-      const commentedFlows = factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue());
-      ts.addSyntheticLeadingComment(
-        commentedFlows,
-        ts.SyntaxKind.SingleLineCommentTrivia,
-        ` flows: ['${userPoolClient.AllowedOAuthFlows.join("', '")}'],`,
-        true,
-      );
-      clientProps.push(commentedFlows);
-    } else {
-      clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
-    }
+    clientProps.push(factory.createPropertyAssignment('disableOAuth', hasOAuth ? factory.createFalse() : factory.createTrue()));
     clientProps.push(
       factory.createPropertyAssignment('generateSecret', userPoolClient.ClientSecret ? factory.createTrue() : factory.createFalse()),
     );
@@ -1250,11 +1368,15 @@ export class AuthRenderer {
 
     statements.push(...this.buildCognitoProvidersPushStatements(clientVarName));
 
-    if (supportedIdentityProviders.length > 0) {
+    if (hasIdentityProviders) {
       statements.push(...this.buildProviderSetupStatements());
     }
 
     return statements;
+  }
+
+  private static hasIdentityProviders(userPoolClient: UserPoolClientType): boolean {
+    return (userPoolClient.SupportedIdentityProviders?.length ?? 0) > 0;
   }
 
   /**
@@ -1361,7 +1483,7 @@ export class AuthRenderer {
     return expr;
   }
 
-  /** Builds the providerSetupResult code and commented tryRemoveChild. */
+  /** Builds the providerSetupResult code. */
   private buildProviderSetupStatements(): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
@@ -1512,21 +1634,6 @@ export class AuthRenderer {
       ),
     );
     statements.push(forEachStatement);
-
-    const commentedStatement = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(
-            factory.createIdentifier('// backend.auth.resources.userPool'),
-            factory.createIdentifier('node'),
-          ),
-          factory.createIdentifier('tryRemoveChild'),
-        ),
-        undefined,
-        [factory.createStringLiteral('UserPoolDomain')],
-      ),
-    );
-    statements.push(commentedStatement);
 
     return statements;
   }

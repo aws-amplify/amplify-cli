@@ -2,7 +2,7 @@ import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
-import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
+import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
@@ -60,7 +60,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
     const outputs = description.Outputs ?? [];
 
     const withParams = resolveParameters(originalTemplate, parameters);
@@ -84,7 +84,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
 
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }

@@ -10,7 +10,7 @@
  * 4. Convert thumbnailgen function from CommonJS to ESM
  * 5. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 6. Add resourceGroupName to function resource.ts files
- * 7. Monkey-patch auth resource so secret() uses local plaintext values
+ * 7. Monkey-patch auth resource so secret() uses local plaintext values (skipped when SKIP_AUTH_SECRET_PATCH=1 — use this when deploying from your own machine with real secrets configured in Parameter Store / Secrets Manager)
  */
 
 import { execSync } from 'child_process';
@@ -124,7 +124,9 @@ export async function postGenerate(appPath: string): Promise<void> {
   await addResourceGroupName(appPath, 'function/thumbnailgen', 'storage');
   await addResourceGroupName(appPath, 'function/addusertogroup', 'auth');
   await addResourceGroupName(appPath, 'function/removeuserfromgroup', 'auth');
-  await monkeyPatchAuthSecret(appPath);
+  if (!process.env.SKIP_AUTH_SECRET_PATCH) {
+    await monkeyPatchAuthSecret(appPath);
+  }
 }
 
 async function main(): Promise<void> {

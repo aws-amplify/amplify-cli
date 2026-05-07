@@ -5,6 +5,7 @@ import { CfnResource, Duration } from 'aws-cdk-lib';
 import {
   OAuthScope,
   UserPoolClientIdentityProvider,
+  CfnUserPoolDomain,
 } from 'aws-cdk-lib/aws-cognito';
 import type { Backend } from '../backend';
 
@@ -18,18 +19,28 @@ export const auth = defineAuth({
       google: {
         clientId: secret('GOOGLE_CLIENT_ID'),
         clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+        scopes: ['openid', 'email', 'profile'],
         attributeMapping: {
           email: 'email',
+          custom: {
+            username: 'sub',
+          },
         },
       },
       facebook: {
         clientId: secret('FACEBOOK_CLIENT_ID'),
         clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
+        scopes: ['email', 'public_profile'],
         attributeMapping: {
           email: 'email',
+          custom: {
+            username: 'id',
+          },
         },
       },
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
     },
   },
@@ -88,6 +99,8 @@ export function applyEscapeHatches(backend: Backend) {
       temporaryPasswordValidityDays: 7,
     },
   };
+  const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+  cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders');
   const cfnUserPoolClient =
     backend.auth.resources.cfnResources.cfnUserPoolClient;
   cfnUserPoolClient.allowedOAuthFlows = ['code'];
@@ -103,7 +116,9 @@ export function applyEscapeHatches(backend: Backend) {
       UserPoolClientIdentityProvider.COGNITO,
     ],
     oAuth: {
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       callbackUrls: ['https://main.mediavault.amplifyapp.com/'],
+      // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
       flows: {
         authorizationCodeGrant: true,
@@ -118,7 +133,6 @@ export function applyEscapeHatches(backend: Backend) {
         OAuthScope.COGNITO_ADMIN,
       ],
     },
-    // flows: ['code'],
     disableOAuth: false,
     generateSecret: false,
   });
@@ -145,7 +159,6 @@ export function applyEscapeHatches(backend: Backend) {
       nativeUserPoolClient.node.addDependency(providerSetupPropertyValue);
     }
   });
-  // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
   for (const cfnResource of backend.auth.stack.node
     .findAll()
     .filter(
@@ -157,9 +170,18 @@ export function applyEscapeHatches(backend: Backend) {
           'AWS::Cognito::UserPoolClient',
           'AWS::Cognito::IdentityPoolRoleAttachment',
           'AWS::Cognito::UserPoolGroup',
+          'AWS::Cognito::UserPoolDomain',
+          'AWS::Cognito::UserPoolIdentityProvider',
         ].includes(c.cfnResourceType)
     )) {
     (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
     (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
   }
+}
+
+export function postRefactor(backend: Backend) {
+  const cfnUserPoolDomain = backend.auth.resources.userPool.node.findChild(
+    'UserPoolDomain'
+  ).node.defaultChild as CfnUserPoolDomain;
+  cfnUserPoolDomain.domain = 'mediavault1f08412d-1f08412d-x';
 }

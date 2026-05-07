@@ -43,7 +43,18 @@ export const AUTH_RESOURCES_TO_RETAIN = [
   'AWS::Cognito::UserPoolClient',
   'AWS::Cognito::IdentityPoolRoleAttachment',
   'AWS::Cognito::UserPoolGroup',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolIdentityProvider',
 ];
+
+/**
+ * Logical IDs of Gen1 HostedUI Lambda-backed custom resources. These manage
+ * the UserPoolDomain and UserPoolIdentityProvider physical resources; their
+ * Delete handlers would destroy those physical resources when the Gen1 auth
+ * stack is decommissioned after a successful refactor. Lock sets Retain on
+ * them by logical ID rather than resource type (Custom::LambdaCallout)
+ */
+export const AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN = ['HostedUICustomResourceInputs', 'HostedUIProvidersCustomResourceInputs'];
 
 export const STORAGE_S3_RESOURCES_TO_RETAIN = [
   'AWS::S3::Bucket',

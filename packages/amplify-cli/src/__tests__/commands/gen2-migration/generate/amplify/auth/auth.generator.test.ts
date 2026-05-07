@@ -134,6 +134,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -244,6 +246,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -335,6 +339,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -424,6 +430,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -523,6 +531,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -624,6 +634,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -713,6 +725,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -803,6 +817,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -897,6 +913,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -954,7 +972,9 @@ describe('AuthGenerator', () => {
               clientId: secret('GOOGLE_CLIENT_ID'),
               clientSecret: secret('GOOGLE_CLIENT_SECRET'),
             },
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['https://example.com/logout'],
           },
         },
@@ -972,7 +992,9 @@ describe('AuthGenerator', () => {
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['https://example.com/logout'],
           },
           disableOAuth: true,
@@ -998,6 +1020,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1065,7 +1089,9 @@ describe('AuthGenerator', () => {
                 givenName: 'given_name',
               },
             },
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: [],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: [],
           },
         },
@@ -1105,6 +1131,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1216,7 +1244,9 @@ describe('AuthGenerator', () => {
                 },
               },
             ],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['https://example.com/logout'],
           },
         },
@@ -1234,7 +1264,9 @@ describe('AuthGenerator', () => {
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['https://example.com/logout'],
           },
           disableOAuth: true,
@@ -1260,6 +1292,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1355,6 +1389,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1450,6 +1486,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1573,6 +1611,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1642,7 +1682,9 @@ describe('AuthGenerator', () => {
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['https://example.com/logout'],
             flows: {
               authorizationCodeGrant: true,
@@ -1650,7 +1692,6 @@ describe('AuthGenerator', () => {
               clientCredentials: false,
             },
           },
-          // flows: ['code', 'implicit'],
           disableOAuth: false,
           generateSecret: false,
         });
@@ -1674,6 +1715,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1749,7 +1792,9 @@ describe('AuthGenerator', () => {
               clientId: secret('GOOGLE_CLIENT_ID'),
               clientSecret: secret('GOOGLE_CLIENT_SECRET'),
             },
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['https://example.com/callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['https://example.com/logout'],
           },
         },
@@ -1764,6 +1809,8 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+        cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders');
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           refreshTokenValidity: Duration.days(30),
@@ -1773,7 +1820,9 @@ describe('AuthGenerator', () => {
             UserPoolClientIdentityProvider.GOOGLE,
           ],
           oAuth: {
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             callbackUrls: ['myapp://callback'],
+            // Add the Gen2 Amplify Hosting URL (e.g. https://<branch>.<gen2-appId>.amplifyapp.com/) to the following array after the gen2-main branch is deployed.
             logoutUrls: ['myapp://logout'],
             flows: {
               authorizationCodeGrant: true,
@@ -1782,7 +1831,6 @@ describe('AuthGenerator', () => {
             },
             scopes: [OAuthScope.OPENID, OAuthScope.EMAIL],
           },
-          // flows: ['code'],
           disableOAuth: false,
           generateSecret: false,
         });
@@ -1809,7 +1857,6 @@ describe('AuthGenerator', () => {
             nativeUserPoolClient.node.addDependency(providerSetupPropertyValue);
           }
         });
-        // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
         for (const cfnResource of backend.auth.stack.node
           .findAll()
           .filter(
@@ -1821,6 +1868,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -1922,6 +1971,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -2010,6 +2061,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
@@ -2131,6 +2184,8 @@ describe('AuthGenerator', () => {
                 'AWS::Cognito::UserPoolClient',
                 'AWS::Cognito::IdentityPoolRoleAttachment',
                 'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
               ].includes(c.cfnResourceType)
           )) {
           (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
