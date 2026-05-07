@@ -585,7 +585,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration":
+"@aws-amplify/amplify-e2e-gen2-migration@workspace:^, @aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration"
   dependencies:
@@ -622,7 +622,7 @@ __metadata:
     uuid: ^9.0.1
     yargs: ^17.7.2
   bin:
-    amplify-migrate: dist/cli.js
+    amplify-migrate: lib/cli.js
   languageName: unknown
   linkType: soft
 
@@ -15961,6 +15961,7 @@ __metadata:
     "@aws-amplify/amplify-category-auth": 3.7.27
     "@aws-amplify/amplify-cli-core": 4.5.0
     "@aws-amplify/amplify-e2e-core": 5.7.12
+    "@aws-amplify/amplify-e2e-gen2-migration": "workspace:^"
     "@aws-amplify/amplify-opensearch-simulator": 1.7.25
     "@aws-amplify/graphql-transformer-core": ^2.11.3
     "@aws-sdk/client-amplify": ^3.919.0

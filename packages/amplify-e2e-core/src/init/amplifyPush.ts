@@ -128,7 +128,7 @@ export function cancelIterativeAmplifyPush(
     .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
     .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
     .sendCtrlC()
-    .runAsync((err: Error) => err.message === 'Process exited with non zero exit code 130');
+    .runAsync((err: Error) => err.message.startsWith('Process exited with non zero exit code 130'));
 }
 
 /**

@@ -72,7 +72,7 @@ describe('amplify add hosting', () => {
       resetBuildCommand(projRoot, currentBuildCommand);
     }
     expect(error).toBeDefined();
-    expect(error.message).toEqual('Process exited with non zero exit code 1');
+    expect(error.message).toContain('Process exited with non zero exit code 1');
   });
 });
 

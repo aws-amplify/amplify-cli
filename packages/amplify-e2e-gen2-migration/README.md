@@ -26,7 +26,12 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 
 ### Credential Refresh
 
-Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `TEST_ACCOUNT_ROLE` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
+Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. In CI, `CredentialManager` performs a two-hop assume-role chain on each `refresh()` call:
+
+1. CodeBuild container credentials (long-lived) → assume `TEST_ACCOUNT_ROLE` (parent account, 1hr)
+2. Parent account credentials → assume `OrganizationAccountAccessRole` in `CHILD_ACCOUNT_ID` (1hr)
+
+Because each `refresh()` starts from the long-lived CodeBuild container credentials, the resulting sessions are always fresh regardless of total migration duration. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
 
 ## Migration Workflow
 

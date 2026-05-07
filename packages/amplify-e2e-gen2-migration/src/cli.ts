@@ -82,7 +82,7 @@ async function main(): Promise<void> {
     if (argv.teardown) {
       app.logger.info(`Initiating teardown`);
       await app.refreshCredentials();
-      await new Teardown(app.deploymentName, app.profile).clean();
+      await new Teardown(app.deploymentName, app.getClientConfig()).clean();
     }
   }
 }
