@@ -6,7 +6,6 @@ import {
   DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetStackPolicyCommand,
-  paginateListStackResources,
   SetStackPolicyCommand,
   StackResource,
 } from '@aws-sdk/client-cloudformation';
@@ -15,23 +14,9 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
+import { RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
-import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
-import chalk from 'chalk';
-
-/**
- * Context attached to a stack when the classifier can associate it with a
- * `DiscoveredResource`. Consumed by `buildRetainOperation` to preserve
- * resource-level `Plan.describe` grouping and nested spinner labels.
- */
-interface StackContext {
-  readonly resource: DiscoveredResource;
-  /** Set on AppSync model nested stacks (Board, Todo, MoodItem, ...). */
-  readonly modelName?: string;
-  /** Set on AppSync infrastructure sub-stacks (ConnectionStack, FunctionDirectiveStack, CustomResourcesjson). */
-  readonly subStackLabel?: string;
-}
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -63,50 +48,28 @@ const ALLOW_ALL_POLICY = {
 };
 
 /**
- * Identifies changeset changes that are expected drift from the lock step.
+ * Identifies changeset changes that are expected DeletionPolicy drift from the lock step.
  *
- * The lock step applies four kinds of drift-visible edits during forward:
- * - `DeletionPolicy: Retain` on every resource.
- * - `UpdateReplacePolicy: Retain` on every resource.
- * - `Properties.DeletionProtectionEnabled: true` on every
- *   `AWS::DynamoDB::Table` resource.
- * - Cascading IAM policy re-evaluations triggered by resource-attribute
- *   references in retained resources (e.g., an IAM policy's
- *   `PolicyDocument` contains `Fn::GetAtt: [TodoTable, Arn]`, and the
- *   retain edit on TodoTable causes CloudFormation to re-evaluate the
- *   policy's Properties). Shape: Properties-only scope, every Details
- *   entry is `Dynamic` / `ResourceAttribute` / `RequiresRecreation: Never`.
+ * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as:
+ * 1. Direct DeletionPolicy changes — Modify with Scope exactly `['DeletionPolicy']`
+ * 2. Cascading IAM Policy changes — CFN flags IAM policies that reference the modified
+ *    table's attributes (e.g., `TodoTable.Arn` in PolicyDocument) as Dynamic re-evaluations.
+ *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`,
+ *    `RequiresRecreation: Never`, and `CausingEntity` matching `*Table.Arn` or
+ *    `*Table.StreamArn` — they are harmless re-evaluations, not actual changes.
  *
- * For lock rollback to determine whether the environment is safe to
- * revert, these expected changes must be filtered out so only real drift
- * blocks the rollback.
+ * For lock rollback to determine whether the environment is safe to revert, these expected
+ * changes must be filtered out so only real drift blocks the rollback.
  */
 const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
   if (change.Action !== 'Modify') return false;
 
-  // DeletionPolicy / UpdateReplacePolicy changes on a resource. Accepts any
-  // subset of `[DeletionPolicy, UpdateReplacePolicy]` as the scope.
-  if (change.Scope?.length && change.Scope.every((s) => s === 'DeletionPolicy' || s === 'UpdateReplacePolicy')) {
-    return true;
-  }
+  // Direct DeletionPolicy change on a resource
+  if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
 
-  // DynamoDB DeletionProtectionEnabled turn-on.
-  if (
-    change.ResourceType === 'AWS::DynamoDB::Table' &&
-    change.Scope?.length === 1 &&
-    change.Scope[0] === 'Properties' &&
-    change.Details?.length
-  ) {
-    const onlyDeletionProtection = change.Details.every(
-      (d) => d.Target?.Name === 'DeletionProtectionEnabled' && d.Target?.AfterValue === 'true',
-    );
-    if (onlyDeletionProtection) return true;
-  }
-
-  // Cascading IAM policy re-evaluation triggered by an attribute reference on
-  // any retained resource. Must be Properties-only scope and every Details
-  // entry must be a harmless Dynamic/ResourceAttribute re-evaluation with
-  // RequiresRecreation: Never.
+  // Cascading IAM Policy change caused by DeletionPolicy modification on a referenced resource.
+  // Must be: Properties-only scope, all Details are Dynamic ResourceAttribute re-evaluations
+  // with CausingEntity referencing a table attribute (e.g., TodoTable.Arn, TodoTable.StreamArn).
   if (
     change.ResourceType === 'AWS::IAM::Policy' &&
     change.Scope?.length === 1 &&
@@ -114,7 +77,11 @@ const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
     change.Details?.length
   ) {
     return change.Details.every(
-      (d) => d.ChangeSource === 'ResourceAttribute' && d.Evaluation === 'Dynamic' && d.Target?.RequiresRecreation === 'Never',
+      (d) =>
+        d.ChangeSource === 'ResourceAttribute' &&
+        d.Evaluation === 'Dynamic' &&
+        d.Target?.RequiresRecreation === 'Never' &&
+        /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? ''),
     );
   }
 
@@ -180,19 +147,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    // ============================================================
-    // Retain every resource in every stack (top-down). Must run
-    // before the lock deny statement is set; otherwise the deny
-    // would block these updates.
-    // ============================================================
-
-    const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
-    this.logger.info(`Discovered ${stackIds.length} stacks`);
-    const stackContext = await this.classifyStacks();
-    for (const stackId of stackIds) {
-      operations.push(this.buildRetainOperation(stackId, stackContext.get(stackId)));
-    }
-
     operations.push({
       validate: () => undefined,
       describe: async () => {
@@ -216,6 +170,52 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         this.logger.info(`Successfully added lock statement to stack policy on '${this.gen1App.rootStackName}'`);
       },
     });
+
+    // ============================================================
+    // Resource Specific Operations
+    // ============================================================
+
+    const nestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
+
+    for (const resource of this.gen1App.discover()) {
+      this.logger.push(`${resource.category}/${resource.resourceName} (${resource.service})`);
+      switch (resource.key) {
+        case 'api:AppSync': {
+          const apiStackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const apiNestedStacks = await this.listNestedStack(apiStackId);
+          for (const tableName of await this.dynamoTableNames()) {
+            const modelName = tableName.split('-')[0];
+            this.logger.push(modelName);
+            const tableStackId = this.findNestedStack(apiNestedStacks, modelName);
+            operations.push(...(await this.retainResource(resource, tableStackId)));
+            this.logger.pop();
+          }
+          break;
+        }
+        case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+        case 'analytics:Kinesis': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          operations.push(...(await this.retainResource(resource, stackId)));
+          break;
+        }
+
+        case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
+        case 'function:Lambda': {
+          break;
+        }
+
+        // unsupported/unknown resources - skip them.
+        case 'UNKNOWN':
+          break;
+      }
+      this.logger.pop();
+    }
 
     return new Plan({
       operations,
@@ -382,6 +382,104 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     return this._dynamoTableNames;
   }
 
+  private async retainResource(appResource: DiscoveredResource, stackId: string): Promise<AmplifyMigrationOperation[]> {
+    const operations: AmplifyMigrationOperation[] = [];
+
+    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+
+    const stackName = extractStackNameFromId(stackId);
+    const template = await cfn.fetchTemplate(stackId);
+
+    for (const resource of Object.values(template.Resources)) {
+      if (RESOURCES_TO_RETAIN.includes(resource.Type)) {
+        resource.DeletionPolicy = 'Retain';
+        resource.UpdateReplacePolicy = 'Retain';
+      }
+      if (resource.Type === DYNAMO_RESOURCE_TYPE) {
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
+        resource.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] = true;
+      }
+    }
+
+    const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
+    const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
+      ParameterKey: p.ParameterKey,
+      UsePreviousValue: true,
+    }));
+
+    this.logger.push(`${stackName} (Create ChangeSet)`);
+    const changeSet = await cfn.createChangeSet({
+      stackName: stackId,
+      templateBody: template,
+      parameters,
+    });
+    this.logger.pop();
+
+    if (!changeSet) {
+      return [];
+    }
+
+    const report = cfn.renderChangeSet(changeSet);
+    const valid = this.validateRetainChangeset(changeSet);
+
+    operations.push({
+      resource: appResource,
+      describe: async () => [
+        `Set Retain policies on stateful resources and/or enable DynamoDB deletion protection in '${stackName}'\n\n${report}\n`,
+      ],
+      validate: () => ({
+        description: `Stack Unchanged: ${stackName}`,
+        run: async () => ({ valid, report }),
+      }),
+      execute: async () => {
+        await cfn.executeChangeSet({
+          changeSet: changeSet,
+          templateBody: template,
+          resource: appResource,
+          captureSnapshot: false,
+        });
+      },
+    });
+
+    return operations;
+  }
+
+  private validateRetainChangeset(changeSet: DescribeChangeSetOutput): boolean {
+    const changes = changeSet.Changes ?? [];
+    if (changes.length === 0) return false;
+
+    for (const change of changes) {
+      const rc = change.ResourceChange;
+      if (!rc || rc.Action !== 'Modify') return false;
+
+      const details = rc.Details ?? [];
+      if (details.length === 0) return false;
+
+      for (const detail of details) {
+        const attr = detail.Target?.Attribute;
+        const name = detail.Target?.Name;
+        const after = detail.Target?.AfterValue;
+
+        if ((attr === 'DeletionPolicy' || attr === 'UpdateReplacePolicy') && after === 'Retain') {
+          continue;
+        }
+
+        if (
+          change.ResourceChange?.ResourceType === DYNAMO_RESOURCE_TYPE &&
+          attr === 'Properties' &&
+          name === DYNAMO_DELETION_PROTECTION_PROPERTY &&
+          after === 'true'
+        ) {
+          continue;
+        }
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private async fetchExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
     const response = await this.gen1App.clients.cloudFormation.send(
       new GetStackPolicyCommand({
@@ -407,283 +505,5 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
     return stackId;
-  }
-
-  /**
-   * Returns an `AmplifyMigrationOperation` that, on execute, applies
-   * retain to every resource in the stack identified by `stackId` using
-   * the proven lazy flow: fetch template → mutate → createChangeSet →
-   * validate → executeChangeSet, all back-to-back on one stack. No window
-   * for the changeset to go OBSOLETE via a parent update in between.
-   *
-   * When `ctx` is provided the operation carries its `resource:` so
-   * `Plan.describe` groups it under
-   * `Resource: <category>/<name> (<service>)`. During execute, the
-   * matching `logger.push` labels appear on the spinner:
-   * `category/name (service)` → optional `modelName` or
-   * `subStackLabel` → `stackName (Create ChangeSet)`.
-   *
-   * Idempotent on reruns: if every resource already has retain (and
-   * every DynamoDB table has `DeletionProtectionEnabled === true`), the
-   * whole CFN round-trip is skipped. This keeps the flow safe to re-run
-   * and also avoids emitting a changeset whose only content would be
-   * Dynamic/Automatic nested-stack re-evaluations, which would clobber
-   * retained state via TemplateURL reconciliation.
-   */
-  private buildRetainOperation(stackId: string, ctx?: StackContext): AmplifyMigrationOperation {
-    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
-    const stackName = extractStackNameFromId(stackId);
-
-    const describeSuffix = ctx?.modelName ? ` (model: ${ctx.modelName})` : ctx?.subStackLabel ? ` (${ctx.subStackLabel})` : '';
-
-    return {
-      resource: ctx?.resource,
-      describe: async () => [`Set Retain policies on resources in '${stackName}'${describeSuffix}`],
-      validate: () => undefined,
-      execute: async () => {
-        let pushed = 0;
-        if (ctx) {
-          this.logger.push(`${ctx.resource.category}/${ctx.resource.resourceName} (${ctx.resource.service})`);
-          pushed++;
-          if (ctx.modelName) {
-            this.logger.push(ctx.modelName);
-            pushed++;
-          } else if (ctx.subStackLabel) {
-            this.logger.push(ctx.subStackLabel);
-            pushed++;
-          }
-        }
-        try {
-          const template = await cfn.fetchTemplate(stackId);
-
-          const needsChange = Object.values(template.Resources).some((r) => {
-            if (r.DeletionPolicy !== 'Retain' || r.UpdateReplacePolicy !== 'Retain') return true;
-            if (r.Type === DYNAMO_RESOURCE_TYPE && r.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] !== true) return true;
-            return false;
-          });
-
-          if (!needsChange) {
-            this.logger.info(`${stackName} — no retain changes needed`);
-            return;
-          }
-
-          for (const resource of Object.values(template.Resources)) {
-            resource.DeletionPolicy = 'Retain';
-            resource.UpdateReplacePolicy = 'Retain';
-            if (resource.Type === DYNAMO_RESOURCE_TYPE) {
-              // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
-              resource.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] = true;
-            }
-          }
-
-          const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
-          const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
-            ParameterKey: p.ParameterKey,
-            UsePreviousValue: true,
-          }));
-
-          this.logger.push(`${stackName} (Create ChangeSet)`);
-          const changeset = await cfn.createChangeSet({ stackName: stackId, parameters, templateBody: template });
-          this.logger.pop();
-
-          if (!changeset) {
-            this.logger.info(`${stackName} — no retain changes needed`);
-            return;
-          }
-
-          if (!this.isAllowedRetainEverythingChangeset(changeset)) {
-            throw new AmplifyError('MigrationError', {
-              message: `Retain changeset for ${stackName} contains unexpected changes`,
-              resolution: cfn.renderChangeSet(changeset),
-            });
-          }
-
-          const url = cfnChangesetConsoleUrl(changeset.ChangeSetId ?? '', changeset.StackId);
-          if (url) {
-            this.logger.info(`Changeset URL: ${chalk.dim(url)}`);
-          }
-
-          await cfn.executeChangeSet({
-            changeSet: changeset,
-            templateBody: template,
-            captureSnapshot: false,
-          });
-        } finally {
-          for (let i = 0; i < pushed; i++) this.logger.pop();
-        }
-      },
-    };
-  }
-
-  /**
-   * Builds a `Map<stackId, StackContext>` that associates each discoverable
-   * nested stack with the `DiscoveredResource` it belongs to, so the
-   * retain-everything flow can preserve resource-level `Plan.describe`
-   * grouping and nested `logger.push` labels.
-   *
-   * Stacks not present in the map (typically: root) fall through to the
-   * default `Project` group with stack-name-only labels.
-   *
-   * Failures to locate a specific nested stack (e.g., resource in
-   * amplify-meta but never pushed) are logged at debug level and skipped;
-   * classification never fails lock.
-   */
-  private async classifyStacks(): Promise<Map<string, StackContext>> {
-    const context = new Map<string, StackContext>();
-    const rootNestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
-
-    for (const resource of this.gen1App.discover()) {
-      switch (resource.key) {
-        case 'auth:Cognito':
-        case 'auth:Cognito-UserPool-Groups':
-        case 'storage:S3':
-        case 'storage:DynamoDB':
-        case 'analytics:Kinesis':
-        case 'function:Lambda':
-        case 'api:API Gateway':
-        case 'geo:Map':
-        case 'geo:PlaceIndex':
-        case 'geo:GeofenceCollection': {
-          const stackId = this.findNestedStack(rootNestedStacks, `${resource.category}${resource.resourceName}`);
-          context.set(stackId, { resource });
-          break;
-        }
-        case 'api:AppSync': {
-          const apiStackId = this.findNestedStack(rootNestedStacks, `api${resource.resourceName}`);
-          context.set(apiStackId, { resource });
-
-          const apiNestedStacks = await this.listNestedStack(apiStackId);
-          const modelNames = new Set((await this.dynamoTableNames()).map((t) => t.split('-')[0]));
-
-          for (const child of apiNestedStacks) {
-            const logicalId = child.LogicalResourceId;
-            const childStackId = child.PhysicalResourceId;
-            if (!logicalId || !childStackId) continue;
-
-            if (modelNames.has(logicalId)) {
-              context.set(childStackId, { resource, modelName: logicalId });
-            } else if (logicalId === 'ConnectionStack' || logicalId === 'FunctionDirectiveStack' || logicalId === 'CustomResourcesjson') {
-              context.set(childStackId, { resource, subStackLabel: logicalId });
-            }
-          }
-          break;
-        }
-        case 'UNKNOWN':
-          break;
-      }
-    }
-
-    return context;
-  }
-
-  /**
-   * Walks the Gen1 stack hierarchy top-down (pre-order). Each stack appears
-   * before all of its descendants. Used by the retain-everything flow so we
-   * update each stack before any of its descendants can carry direct-edit
-   * drift that would be clobbered by CloudFormation's parent-driven
-   * reconciliation on subsequent parent updates.
-   */
-  private async walkStackHierarchy(stackId: string): Promise<string[]> {
-    const result: string[] = [stackId];
-
-    const pages = paginateListStackResources({ client: this.gen1App.clients.cloudFormation }, { StackName: stackId });
-
-    for await (const page of pages) {
-      for (const resource of page.StackResourceSummaries ?? []) {
-        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
-          const children = await this.walkStackHierarchy(resource.PhysicalResourceId);
-          result.push(...children);
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Changeset whitelist for the retain-everything flow. Accepts `Modify`
-   * actions whose every `Details` entry is one of:
-   *
-   * - Static `DirectModification` targeting `DeletionPolicy` or
-   *   `UpdateReplacePolicy` with `AfterValue: 'Retain'`. Produced by our
-   *   template mutation on every resource.
-   * - Static `DirectModification` targeting
-   *   `Properties.DeletionProtectionEnabled` on an `AWS::DynamoDB::Table`
-   *   with `AfterValue: 'true'`. Produced by our template mutation on
-   *   DynamoDB tables.
-   * - Dynamic `Automatic` re-evaluation on an
-   *   `AWS::CloudFormation::Stack` reference entry. CloudFormation emits
-   *   these on every parent update — see
-   *   https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChangeDetail.html.
-   * - Dynamic `ResourceAttribute` re-evaluation on an `AWS::IAM::Policy`
-   *   whose `CausingEntity` matches `*Table.(Arn|StreamArn)`. These
-   *   cascade from DynamoDB retain edits and are harmless — mirrors
-   *   `isExpectedLockDrift`'s IAM policy cascade acceptance.
-   *
-   * Every change must contain at least one real retain edit. A change
-   * made up purely of Dynamic re-evaluations indicates we're about to
-   * execute a parent update whose only effect is reconciling children —
-   * the failure mode that clobbers retained state via TemplateURL
-   * re-fetch.
-   */
-  private isAllowedRetainEverythingChangeset(changeSet: DescribeChangeSetOutput): boolean {
-    const changes = changeSet.Changes ?? [];
-    if (changes.length === 0) return true;
-
-    for (const change of changes) {
-      const rc = change.ResourceChange;
-      if (!rc) return false;
-      if (rc.Action !== 'Modify') return false;
-      if (rc.Replacement === 'True') return false;
-
-      const details = rc.Details ?? [];
-      if (details.length === 0) return false;
-
-      let sawRetainEdit = false;
-
-      for (const detail of details) {
-        const attr = detail.Target?.Attribute;
-        const name = detail.Target?.Name;
-        const after = detail.Target?.AfterValue;
-
-        if ((attr === 'DeletionPolicy' || attr === 'UpdateReplacePolicy') && after === 'Retain') {
-          sawRetainEdit = true;
-          continue;
-        }
-
-        const isDynamoDeletionProtection =
-          rc.ResourceType === DYNAMO_RESOURCE_TYPE &&
-          attr === 'Properties' &&
-          name === DYNAMO_DELETION_PROTECTION_PROPERTY &&
-          after === 'true';
-        if (isDynamoDeletionProtection) {
-          sawRetainEdit = true;
-          continue;
-        }
-
-        const isDynamicNestedStackReEvaluation =
-          rc.ResourceType === 'AWS::CloudFormation::Stack' &&
-          attr === 'Properties' &&
-          detail.Target?.RequiresRecreation === 'Never' &&
-          detail.Evaluation === 'Dynamic' &&
-          detail.ChangeSource === 'Automatic';
-        if (isDynamicNestedStackReEvaluation) continue;
-
-        const isDynamoIamPolicyCascade =
-          rc.ResourceType === 'AWS::IAM::Policy' &&
-          attr === 'Properties' &&
-          detail.Target?.RequiresRecreation === 'Never' &&
-          detail.Evaluation === 'Dynamic' &&
-          detail.ChangeSource === 'ResourceAttribute' &&
-          /Table\.(Arn|StreamArn)$/.test(detail.CausingEntity ?? '');
-        if (isDynamoIamPolicyCascade) continue;
-
-        return false;
-      }
-
-      if (!sawRetainEdit) return false;
-    }
-
-    return true;
   }
 }
