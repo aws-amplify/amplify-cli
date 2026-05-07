@@ -46,7 +46,7 @@ interface StackContext {
  * Once applied, deleting the root stack manually cascades delete through the
  * tree and every retained resource survives as an orphan resource.
  */
-export class AmplifyMigrationRetain2Step extends AmplifyMigrationStep {
+export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[] | undefined;
 
   public async forward(): Promise<Plan> {
@@ -72,7 +72,7 @@ export class AmplifyMigrationRetain2Step extends AmplifyMigrationStep {
 
   public rollback(): Promise<Plan> {
     throw new AmplifyFault('NotImplementedFault', {
-      message: 'Rollback is not supported for the retain2 step',
+      message: 'Rollback is not supported for the retain step',
       resolution: 'Retain only marks resources with DeletionPolicy: Retain. To undo, manually update the CloudFormation templates.',
     });
   }

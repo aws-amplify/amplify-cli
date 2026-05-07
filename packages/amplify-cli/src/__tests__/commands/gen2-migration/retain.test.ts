@@ -1,4 +1,4 @@
-import { AmplifyMigrationRetain2Step } from '../../../commands/gen2-migration/retain2';
+import { AmplifyMigrationRetainStep } from '../../../commands/gen2-migration/retain';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
   ExecuteChangeSetCommand,
@@ -51,8 +51,8 @@ function mockStackHierarchy(hierarchy: Record<string, string[]>) {
   }));
 }
 
-describe('AmplifyMigrationRetain2Step', () => {
-  let retainStep: AmplifyMigrationRetain2Step;
+describe('AmplifyMigrationRetainStep', () => {
+  let retainStep: AmplifyMigrationRetainStep;
   let mockCfnSend: jest.Mock;
   let mockLogger: SpinningLogger;
 
@@ -80,7 +80,7 @@ describe('AmplifyMigrationRetain2Step', () => {
     jest.spyOn(mockLogger, 'succeed').mockImplementation(() => {});
     jest.spyOn(mockLogger, 'push').mockImplementation(() => {});
     jest.spyOn(mockLogger, 'pop').mockImplementation(() => {});
-    retainStep = new AmplifyMigrationRetain2Step(
+    retainStep = new AmplifyMigrationRetainStep(
       mockLogger,
       {
         appId: 'test-app-id',

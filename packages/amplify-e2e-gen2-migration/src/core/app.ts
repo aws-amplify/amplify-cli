@@ -316,7 +316,7 @@ export class App {
 
     await this.testShared();
 
-    await this.retain2();
+    await this.retain();
 
     await this.testGen1();
     await this.testGen2();
@@ -361,11 +361,11 @@ export class App {
   }
 
   /**
-   * Run `amplify gen2-migration retain2`.
+   * Run `amplify gen2-migration retain`.
    */
-  public async retain2(): Promise<void> {
+  public async retain(): Promise<void> {
     await this.refreshCredentials();
-    await this.runMigrationStep('retain2');
+    await this.runMigrationStep('retain');
   }
 
   /**

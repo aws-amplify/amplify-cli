@@ -10,7 +10,7 @@ import { AmplifyMigrationAssessor } from './gen2-migration/assess';
 import { Gen1App } from './gen2-migration/_common/gen1-app';
 import { Plan } from './gen2-migration/_common/plan';
 import { AmplifyGen2MigrationValidations } from './gen2-migration/_common/validations';
-import { AmplifyMigrationRetain2Step } from './gen2-migration/retain2';
+import { AmplifyMigrationRetainStep } from './gen2-migration/retain';
 
 const STEPS = {
   lock: {
@@ -26,9 +26,9 @@ const STEPS = {
     // eslint-disable-next-line spellcheck/spell-checker
     description: 'Moves stateful resources from your Gen1 CloudFormation stacks to your Gen2 stacks',
   },
-  retain2: {
-    class: AmplifyMigrationRetain2Step,
-    description: 'Experimental: apply retain to every resource in every Gen1 leaf stack (no root/intermediate updates)',
+  retain: {
+    class: AmplifyMigrationRetainStep,
+    description: 'Apply retain to every resource in every Gen1 stack below the root',
   },
 };
 
