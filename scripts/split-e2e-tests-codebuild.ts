@@ -292,11 +292,8 @@ const splitTestsV3 = (
         identifier,
       };
       formattedJob.env.variables = {};
-      if (!isMigration && job.tests.length === 1) {
+      if (isMigration || job.tests.length === 1) {
         formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
-      }
-      if (isMigration) {
-        formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_LARGE';
       }
       formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
       if (job.region) {
@@ -343,8 +340,6 @@ const splitTestsV3 = (
 function main(): void {
   const configBase: any = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
-  const e2eTestDir = join(REPO_ROOT, 'packages', 'amplify-e2e-tests');
-
   const splitE2ETests = splitTestsV3(
     {
       identifier: 'run_e2e_tests_linux',
@@ -361,32 +356,12 @@ function main(): void {
       },
       'depend-on': ['build_windows', 'upb'],
     },
-    e2eTestDir,
+    join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
-    (tests) => tests.filter((t) => !t.includes('gen2-migration/')),
+    undefined,
   );
 
-  // Gen2 migration tests run through the same Jest/buildspec pipeline
-  // but are split as solo jobs (isMigration=true) and Linux-only.
-  const splitGen2MigrationTests = splitTestsV3(
-    {
-      identifier: 'run_e2e_tests_linux_gen2_migration',
-      buildspec: 'codebuild_specs/run_e2e_tests_linux.yml',
-      env: {},
-      'depend-on': ['upb'],
-    },
-    {
-      identifier: 'unused_windows',
-      buildspec: 'codebuild_specs/run_e2e_tests_windows.yml',
-      env: {},
-      'depend-on': [],
-    },
-    e2eTestDir,
-    true,
-    (tests) => tests.filter((t) => t.includes('gen2-migration/') && t.endsWith('.test.ts')),
-  );
-
-  let allBuilds = [...splitE2ETests, ...splitGen2MigrationTests];
+  let allBuilds = [...splitE2ETests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
