@@ -1,8 +1,8 @@
-import { Output, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
-import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
+import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
@@ -93,7 +93,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
     const outputs = description.Outputs ?? [];
 
     const stackName = extractStackNameFromId(stackId);
@@ -109,9 +109,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const withDeps = resolveDependencies(withOutputs);
     const resolved = resolveConditions(withDeps, parameters);
 
-    const updatedParameters = await this.resolveOAuthParameters(parameters, outputs);
-
-    return { stackId, resolvedTemplate: resolved, parameters: updatedParameters };
+    return { stackId, resolvedTemplate: resolved, parameters };
   }
 
   /**
@@ -122,7 +120,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const stack = await facade.fetchStack(stackId);
-    const parameters = stack.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, stack.Parameters ?? []);
     const outputs = stack.Outputs ?? [];
 
     const stackName = extractStackNameFromId(stackId);
@@ -215,13 +213,5 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected async afterMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     return [];
-  }
-
-  /**
-   * Hook for OAuth parameter resolution. Override in auth category.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async resolveOAuthParameters(parameters: Parameter[], _outputs: Output[]): Promise<Parameter[]> {
-    return parameters;
   }
 }

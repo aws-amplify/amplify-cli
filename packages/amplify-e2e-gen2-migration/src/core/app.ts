@@ -140,6 +140,7 @@ export class App {
    */
   public async init(): Promise<void> {
     await this.refreshCredentials();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await ensureGen1PlaceholderApp(new AmplifyClient(this.getClientConfig()));
     this.logger.info('amplify init started');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');

@@ -154,8 +154,8 @@ describe('AuthCognitoRollbackRefactorer.targetLogicalId', () => {
     );
   });
 
-  it('maps UserPoolDomain to UserPoolDomain', () => {
-    expect(refactorer.testTargetLogicalId('amplifyAuthUserPoolDomain1234', 'AWS::Cognito::UserPoolDomain')).toBe('UserPoolDomain');
+  it('returns undefined for UserPoolDomain (orphan + import, not refactor move)', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthUserPoolDomain1234', 'AWS::Cognito::UserPoolDomain')).toBeUndefined();
   });
 
   it('maps NativeAppClient to UserPoolClient', () => {

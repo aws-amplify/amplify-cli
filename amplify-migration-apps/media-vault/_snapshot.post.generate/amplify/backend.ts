@@ -26,6 +26,7 @@ addusertogroup.applyEscapeHatches(backend);
 removeuserfromgroup.applyEscapeHatches(backend);
 
 export function postRefactor() {
+  auth.postRefactor(backend);
   storage.postRefactor(backend);
   Tags.of(backend.stack).add('gen2-migration/post-refactor', 'true');
 }
