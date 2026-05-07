@@ -26,7 +26,7 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 
 ### Credential Refresh
 
-Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `TEST_ACCOUNT_ROLE` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
+Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `TEST_ACCOUNT_ROLE` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `retain`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
 
 ## Migration Workflow
 
@@ -56,6 +56,9 @@ The CLI executes the following steps for a given app:
 22. Run `test:gen1` and `test:gen2` — validate both stacks
 23. Redeploy Gen2 sandbox to pick up post-refactor changes
 24. Run `test:gen1` and `test:gen2` — final validation
+25. Run shared data tests
+26. `amplify gen2-migration retain` — apply retain policies to every resource below root
+27. Run `test:gen1` and `test:gen2` — post-retain validation
 
 Test scripts run at multiple points to verify that both stacks remain functional throughout the migration.
 
