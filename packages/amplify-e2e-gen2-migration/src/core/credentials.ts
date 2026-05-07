@@ -2,6 +2,7 @@ import { Logger } from './logger';
 import fs from 'fs-extra';
 import { refreshCredentials } from '@aws-amplify/amplify-e2e-core';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
+import * as path from 'path';
 
 /**
  * Owns the AWS credential lifecycle for a single migration run.
@@ -43,11 +44,13 @@ export class CredentialManager {
     this.logger.info(`Using profile: ${this.profile}`);
 
     if (this.roleArn) {
+      // create the initial file contents since the refresh function
+      // needs them to exist.
       process.env.AWS_SHARED_CREDENTIALS_FILE = `${pathManager.getAWSCredentialsFilePath()}.${generatedProfile}`;
       process.env.AWS_CONFIG_FILE = `${pathManager.getAWSConfigFilePath()}.${generatedProfile}`;
 
-      fs.writeFileSync(process.env.AWS_SHARED_CREDENTIALS_FILE, '');
-      fs.writeFileSync(process.env.AWS_CONFIG_FILE, [`[profile ${generatedProfile}]`, `region=${region}`, ''].join('\n'));
+      touchFileSync(process.env.AWS_SHARED_CREDENTIALS_FILE, '');
+      touchFileSync(process.env.AWS_CONFIG_FILE, [`[profile ${generatedProfile}]`, `region=${region}`, ''].join('\n'));
 
       this.logger.info(`AWS_SHARED_CREDENTIALS_FILE: ${process.env.AWS_SHARED_CREDENTIALS_FILE}`);
       this.logger.info(`AWS_CONFIG_FILE: ${process.env.AWS_CONFIG_FILE}`);
@@ -103,4 +106,9 @@ export function resolveProfile(profile: string | undefined): string | undefined 
     return undefined;
   }
   throw new Error('Either --profile or the TEST_ACCOUNT_ROLE env var must be set');
+}
+
+function touchFileSync(fp: string, contents: string): void {
+  fs.mkdirSync(path.dirname(fp), { recursive: true });
+  fs.writeFileSync(fp, contents);
 }
