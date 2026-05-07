@@ -590,7 +590,11 @@ describe('AmplifyMigrationLockStep', () => {
       expect(valid).toBe(true);
     });
 
-    it('should fail validation when IAM Policy cascading change is from a non-table resource', async () => {
+    it('should pass validation when IAM Policy cascading change is from a non-table retained resource', async () => {
+      // Lock now retains every resource (not just stateful DynamoDB tables), so
+      // IAM policy cascades from any retained resource are expected drift, not
+      // real drift. Prior to the retain-everything expansion, only Table.Arn /
+      // Table.StreamArn CausingEntity values were accepted.
       mockDetectTemplateDrift.mockResolvedValueOnce({
         changes: [
           {
@@ -614,7 +618,71 @@ describe('AmplifyMigrationLockStep', () => {
       const plan = await lockStep.rollback();
       const valid = await plan.validate();
 
-      expect(valid).toBe(false);
+      expect(valid).toBe(true);
+    });
+
+    it('should pass validation when UpdateReplacePolicy-only drift exists', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyTable',
+            ResourceType: 'AWS::DynamoDB::Table',
+            Scope: ['UpdateReplacePolicy'],
+            Replacement: 'False',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(true);
+    });
+
+    it('should pass validation when both DeletionPolicy and UpdateReplacePolicy drift in the same change', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyBucket',
+            ResourceType: 'AWS::S3::Bucket',
+            Scope: ['DeletionPolicy', 'UpdateReplacePolicy'],
+            Replacement: 'False',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(true);
+    });
+
+    it('should pass validation when DynamoDB DeletionProtectionEnabled is the only drift', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyTable',
+            ResourceType: 'AWS::DynamoDB::Table',
+            Scope: ['Properties'],
+            Details: [
+              {
+                Target: { Attribute: 'Properties', Name: 'DeletionProtectionEnabled', AfterValue: 'true' },
+              },
+            ],
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(true);
     });
 
     it('should fail validation when a nested stack is added (Add action on CloudFormation::Stack)', async () => {

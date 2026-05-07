@@ -63,28 +63,50 @@ const ALLOW_ALL_POLICY = {
 };
 
 /**
- * Identifies changeset changes that are expected DeletionPolicy drift from the lock step.
+ * Identifies changeset changes that are expected drift from the lock step.
  *
- * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as:
- * 1. Direct DeletionPolicy changes — Modify with Scope exactly `['DeletionPolicy']`
- * 2. Cascading IAM Policy changes — CFN flags IAM policies that reference the modified
- *    table's attributes (e.g., `TodoTable.Arn` in PolicyDocument) as Dynamic re-evaluations.
- *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`,
- *    `RequiresRecreation: Never`, and `CausingEntity` matching `*Table.Arn` or
- *    `*Table.StreamArn` — they are harmless re-evaluations, not actual changes.
+ * The lock step applies four kinds of drift-visible edits during forward:
+ * - `DeletionPolicy: Retain` on every resource.
+ * - `UpdateReplacePolicy: Retain` on every resource.
+ * - `Properties.DeletionProtectionEnabled: true` on every
+ *   `AWS::DynamoDB::Table` resource.
+ * - Cascading IAM policy re-evaluations triggered by resource-attribute
+ *   references in retained resources (e.g., an IAM policy's
+ *   `PolicyDocument` contains `Fn::GetAtt: [TodoTable, Arn]`, and the
+ *   retain edit on TodoTable causes CloudFormation to re-evaluate the
+ *   policy's Properties). Shape: Properties-only scope, every Details
+ *   entry is `Dynamic` / `ResourceAttribute` / `RequiresRecreation: Never`.
  *
- * For lock rollback to determine whether the environment is safe to revert, these expected
- * changes must be filtered out so only real drift blocks the rollback.
+ * For lock rollback to determine whether the environment is safe to
+ * revert, these expected changes must be filtered out so only real drift
+ * blocks the rollback.
  */
 const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
   if (change.Action !== 'Modify') return false;
 
-  // Direct DeletionPolicy change on a resource
-  if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
+  // DeletionPolicy / UpdateReplacePolicy changes on a resource. Accepts any
+  // subset of `[DeletionPolicy, UpdateReplacePolicy]` as the scope.
+  if (change.Scope?.length && change.Scope.every((s) => s === 'DeletionPolicy' || s === 'UpdateReplacePolicy')) {
+    return true;
+  }
 
-  // Cascading IAM Policy change caused by DeletionPolicy modification on a referenced resource.
-  // Must be: Properties-only scope, all Details are Dynamic ResourceAttribute re-evaluations
-  // with CausingEntity referencing a table attribute (e.g., TodoTable.Arn, TodoTable.StreamArn).
+  // DynamoDB DeletionProtectionEnabled turn-on.
+  if (
+    change.ResourceType === 'AWS::DynamoDB::Table' &&
+    change.Scope?.length === 1 &&
+    change.Scope[0] === 'Properties' &&
+    change.Details?.length
+  ) {
+    const onlyDeletionProtection = change.Details.every(
+      (d) => d.Target?.Name === 'DeletionProtectionEnabled' && d.Target?.AfterValue === 'true',
+    );
+    if (onlyDeletionProtection) return true;
+  }
+
+  // Cascading IAM policy re-evaluation triggered by an attribute reference on
+  // any retained resource. Must be Properties-only scope and every Details
+  // entry must be a harmless Dynamic/ResourceAttribute re-evaluation with
+  // RequiresRecreation: Never.
   if (
     change.ResourceType === 'AWS::IAM::Policy' &&
     change.Scope?.length === 1 &&
@@ -92,11 +114,7 @@ const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
     change.Details?.length
   ) {
     return change.Details.every(
-      (d) =>
-        d.ChangeSource === 'ResourceAttribute' &&
-        d.Evaluation === 'Dynamic' &&
-        d.Target?.RequiresRecreation === 'Never' &&
-        /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? ''),
+      (d) => d.ChangeSource === 'ResourceAttribute' && d.Evaluation === 'Dynamic' && d.Target?.RequiresRecreation === 'Never',
     );
   }
 
