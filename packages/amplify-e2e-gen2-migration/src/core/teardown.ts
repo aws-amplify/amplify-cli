@@ -38,7 +38,7 @@ export class Teardown {
 
   constructor(deploymentName: string, profile: string) {
     this.deploymentName = deploymentName;
-    this.logger = new Logger(`teardown-${deploymentName}`);
+    this.logger = new Logger(`${deploymentName}.teardown`);
     this.clientConfig = { credentials: fromIni({ profile }) };
   }
 

@@ -218,7 +218,6 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
-    await this.refreshCredentials();
     await this.runAmplify(['push', '--force', '--yes', '--debug']);
   }
 
@@ -407,6 +406,7 @@ export class App {
       reject: false,
       stdio: 'inherit',
       env: this.getEnv({ AWS_BRANCH: this.gen2BranchName }),
+      extendEnv: false,
     });
 
     if (result.exitCode !== 0) {
@@ -539,7 +539,15 @@ export class App {
    * credential signal — sub-processes resolve it via the shared AWS config.
    */
   public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, AWS_PROFILE: this.profile, ...extra };
+    const envCopy = { ...process.env };
+
+    // we are always passing AWS_PROFILE so these should not be needed
+    // and in fact trigger a "Multiple credential sources detected" warning from the SDK
+    delete envCopy.AWS_ACCESS_KEY_ID;
+    delete envCopy.AWS_SECRET_ACCESS_KEY;
+    delete envCopy.AWS_SESSION_TOKEN;
+
+    return { ...envCopy, AWS_PROFILE: this.profile, ...extra };
   }
 
   /**
@@ -573,6 +581,7 @@ export class App {
   }
 
   private async runAmplify(args: string[], options?: { stdio?: 'inherit' }): Promise<void> {
+    await this.refreshCredentials();
     const originalCwd = process.cwd();
     process.chdir(this.targetAppPath);
     try {
@@ -587,6 +596,7 @@ export class App {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
         env: this.getEnv(),
+        extendEnv: false,
       });
       if (result.exitCode !== 0) {
         throw new Error(`${command} failed with exit code ${result.exitCode}`);
@@ -612,6 +622,7 @@ export class App {
       stdio: 'inherit',
       reject: false,
       env: this.getEnv(),
+      extendEnv: false,
     });
 
     if (result.exitCode !== 0) {
@@ -626,11 +637,13 @@ export class App {
    * Silently skips if the script is not defined.
    */
   private async runNpmScript(scriptName: string, extraEnv?: Record<string, string>): Promise<void> {
+    await this.refreshCredentials();
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
       env: this.getEnv({ GEN1_ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv }),
+      extendEnv: false,
     });
 
     if (result.exitCode !== 0) {
@@ -657,7 +670,7 @@ export class App {
         '--output',
         'text',
       ],
-      { reject: false, env: this.getEnv() },
+      { reject: false, env: this.getEnv(), extendEnv: false },
     );
 
     if (result.exitCode !== 0) {

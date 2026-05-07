@@ -1,5 +1,5 @@
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
-import { fromContainerMetadata } from '@aws-sdk/credential-providers';
+// import { fromContainerMetadata } from '@aws-sdk/credential-providers';
 import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 import * as ini from 'ini';
 import * as fs from 'fs-extra';
@@ -8,13 +8,17 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 export const refreshCredentials = async (roleArn: string, profile?: string) => {
   const client = new STSClient({
     // Use CodeBuild role to assume test account role. I.e. don't read credentials from process.env
-    credentials: fromContainerMetadata(),
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID_ORIG,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_ORIG,
+      sessionToken: process.env.AWS_SESSION_TOKEN_ORIG,
+    },
   });
   const sessionName = `testSession${generateRandomShortId()}`;
   const command = new AssumeRoleCommand({
     RoleArn: roleArn,
     RoleSessionName: sessionName,
-    DurationSeconds: 3600,
+    DurationSeconds: 900,
   });
   const response = await client.send(command);
 

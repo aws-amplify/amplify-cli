@@ -78,10 +78,10 @@ export class CredentialManager {
     if (!this.roleArn) {
       return;
     }
-    this.logger.info('Refreshing credentials...');
+    this.logger.info(`Refreshing credentials for profile ${this.profile}...`);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await refreshCredentials(this.roleArn, this.profile);
-    this.logger.info('Credentials refreshed');
+    this.logger.info(`Credentials for profile ${this.profile} refreshed`);
   }
 }
 

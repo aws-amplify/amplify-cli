@@ -75,9 +75,12 @@ async function main(): Promise<void> {
   } catch (error) {
     console.log();
     (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)}\n\n(App path: ${app.targetAppPath})\n`;
+    console.log((error as Error).stack);
+    console.log();
     throw error;
   } finally {
     if (argv.teardown) {
+      app.logger.info(`Initiating teardown`);
       await app.refreshCredentials();
       await new Teardown(app.deploymentName, app.profile).clean();
     }
