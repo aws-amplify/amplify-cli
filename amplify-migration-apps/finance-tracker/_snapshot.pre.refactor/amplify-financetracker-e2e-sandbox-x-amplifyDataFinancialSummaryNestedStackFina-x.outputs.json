@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "GetAttFinancialSummaryTableName",
+    "OutputValue": "FinancialSummary-adetddan7nd55gwre37yyck3vu-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "iltux4eqlfcblbluzjzhytjruu:GetAtt:FinancialSummaryTable:Name"
+  },
+  {
+    "OutputKey": "GetAttFinancialSummaryTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/FinancialSummary-adetddan7nd55gwre37yyck3vu-x/stream/2026-04-23T19:25:17.489",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "iltux4eqlfcblbluzjzhytjruu:GetAtt:FinancialSummaryTable:StreamArn"
+  }
+]

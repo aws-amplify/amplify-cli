@@ -25,6 +25,7 @@ import { GeoGenerator } from './generate/amplify/geo/geo.generator';
 import { GeoMapGenerator } from './generate/amplify/geo/map.generator';
 import { GeoPlaceIndexGenerator } from './generate/amplify/geo/place-index.generator';
 import { GeoGeofenceCollectionGenerator } from './generate/amplify/geo/geofence-collection.generator';
+import { CustomResourceGenerator } from './generate/amplify/custom-resources/custom.generator';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -151,6 +152,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           functionGenerators.push(funcGen);
           break;
         }
+
+        case 'custom:customCDK':
+          generators.push(
+            new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, resource.resourceName, this.logger),
+          );
+          break;
 
         // unsupported/unknown resources - skip them.
         // the assessment validation will surface these to the user

@@ -210,7 +210,7 @@ class MyStack extends cdk.Stack {
 `;
       const output = transformOnly(code);
 
-      expect(output).toContain('backend: any');
+      expect(output).toContain('backend: Backend');
     });
   });
 
