@@ -60,6 +60,14 @@ const DISABLE_COVERAGE = [
   'src/__tests__/datastore-modelgen.test.ts',
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
+  'src/__tests__/gen2-migration/migrate-backend-only.test.ts',
+  'src/__tests__/gen2-migration/migrate-discussions.test.ts',
+  'src/__tests__/gen2-migration/migrate-fitness-tracker.test.ts',
+  'src/__tests__/gen2-migration/migrate-media-vault.test.ts',
+  'src/__tests__/gen2-migration/migrate-mood-board.test.ts',
+  'src/__tests__/gen2-migration/migrate-product-catalog.test.ts',
+  'src/__tests__/gen2-migration/migrate-project-boards.test.ts',
+  'src/__tests__/gen2-migration/migrate-store-locator.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
@@ -128,6 +136,15 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/pinpoint/javascript-analytics-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/javascript-notifications-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
+    // gen2-migration tests are not supported on Windows
+    'src/__tests__/gen2-migration/migrate-backend-only.test.ts',
+    'src/__tests__/gen2-migration/migrate-discussions.test.ts',
+    'src/__tests__/gen2-migration/migrate-fitness-tracker.test.ts',
+    'src/__tests__/gen2-migration/migrate-media-vault.test.ts',
+    'src/__tests__/gen2-migration/migrate-mood-board.test.ts',
+    'src/__tests__/gen2-migration/migrate-product-catalog.test.ts',
+    'src/__tests__/gen2-migration/migrate-project-boards.test.ts',
+    'src/__tests__/gen2-migration/migrate-store-locator.test.ts',
   ],
 };
 export function loadConfigBase() {
@@ -284,7 +301,10 @@ const splitTestsV3 = (
         identifier,
       };
       formattedJob.env.variables = {};
-      if (isMigration || job.tests.length === 1) {
+      const isGen2Migration = job.tests.some((t) => t.includes('gen2-migration'));
+      if (isGen2Migration) {
+        formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_LARGE';
+      } else if (isMigration || job.tests.length === 1) {
         formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
       }
       formattedJob.env.variables.TEST_SUITE = job.tests.join('|');

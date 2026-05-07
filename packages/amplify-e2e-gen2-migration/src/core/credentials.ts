@@ -3,15 +3,15 @@ import path from 'path';
 import os from 'os';
 import crypto from 'crypto';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
+import { fromContainerMetadata } from '@aws-sdk/credential-providers';
 import { Logger } from './logger';
 import { mergeManagedSection } from './ini-merge';
 
-/**
- * Duration for assumed-role sessions. One hour strikes a balance between
- * STS call cost and headroom for any single step (all steps are well under
- * an hour individually).
- */
+/** Duration for assumed-role sessions (1 hour — STS maximum for chained roles). */
 const SESSION_DURATION_SECONDS = 3600;
+
+/** Role name used by AWS Organizations for cross-account access. */
+const CHILD_ACCOUNT_ROLE_NAME = 'OrganizationAccountAccessRole';
 
 /**
  * Owns the AWS credential lifecycle for a single migration run.
@@ -25,42 +25,48 @@ const SESSION_DURATION_SECONDS = 3600;
  * The caller-supplied profile is already present in `~/.aws/credentials`.
  * `refresh()` is a no-op.
  *
- * ## Role mode (`callerProfile` is undefined, `TEST_ACCOUNT_ROLE` is set)
+ * ## CI mode (`callerProfile` is undefined)
  *
- * `refresh()` assumes the role from `TEST_ACCOUNT_ROLE` via STS and merges
- * the returned credentials into `~/.aws/credentials` (and region into
- * `~/.aws/config`) under a generated profile name. Any pre-existing
- * profiles in those files are preserved — the managed section is added if
- * absent or replaced in place if already present.
+ * Requires `TEST_ACCOUNT_ROLE` (parent-account role ARN) and
+ * `CHILD_ACCOUNT_ID` (target child-account ID) in the environment.
  *
- * `refresh()` is idempotent across repeat calls with the same generated
- * profile name: calling it many times produces the same on-disk state as
- * calling it once. It must be called before each long-running step so
- * session tokens don't expire mid-operation.
+ * `refresh()` performs a two-hop assume-role chain:
+ *
+ *   CodeBuild container creds (long-lived)
+ *     → assume `TEST_ACCOUNT_ROLE` (parent account, 1hr session)
+ *       → assume `OrganizationAccountAccessRole` in `CHILD_ACCOUNT_ID` (1hr session)
+ *
+ * The final child-account credentials are written into
+ * `~/.aws/credentials` under a generated profile name. Because each
+ * `refresh()` call re-assumes both roles from the CodeBuild base
+ * credentials, sessions never expire mid-migration — callers just need
+ * to call `refresh()` before each long-running step.
  */
 export class CredentialManager {
   private readonly callerProfile: string | undefined;
-  private readonly roleArn: string | undefined;
+  private readonly parentRoleArn: string | undefined;
+  private readonly childAccountId: string | undefined;
   private readonly region: string;
   private readonly logger: Logger;
   private readonly generatedProfile: string;
 
   constructor(callerProfile: string | undefined, region: string, generatedProfile: string, logger: Logger) {
     this.callerProfile = callerProfile;
-    this.roleArn = callerProfile ? undefined : process.env.TEST_ACCOUNT_ROLE;
+    this.parentRoleArn = callerProfile ? undefined : process.env.TEST_ACCOUNT_ROLE;
+    this.childAccountId = callerProfile ? undefined : process.env.CHILD_ACCOUNT_ID;
     this.region = region;
     this.generatedProfile = generatedProfile;
     this.logger = logger;
   }
 
-  /** Whether this manager operates in role mode (CI). */
-  private get isRoleMode(): boolean {
-    return this.roleArn !== undefined;
+  /** Whether this manager operates in CI mode. */
+  private get isCIMode(): boolean {
+    return this.callerProfile === undefined;
   }
 
   /**
-   * Name of the AWS profile that `amplify init` should use. In profile mode,
-   * this is the caller-supplied profile. In role mode, it's the generated
+   * Name of the AWS profile that subprocesses should use. In profile mode,
+   * this is the caller-supplied profile. In CI mode, it's the generated
    * profile merged into `~/.aws/credentials` by `refresh()`.
    */
   public get profile(): string {
@@ -68,33 +74,73 @@ export class CredentialManager {
   }
 
   /**
-   * Refresh credentials if in role mode by assuming the role and merging
-   * the managed profile into the shared credentials and config files.
-   * No-op in profile mode — the caller's long-lived profile handles auth.
+   * Refresh credentials via the two-hop assume-role chain and write the
+   * result into the named profile. No-op in profile mode.
    *
-   * Idempotent: repeated calls with the same generated profile name produce
-   * the same on-disk state as a single call.
+   * Each call starts from the CodeBuild container credentials (resolved
+   * via the default provider chain with env vars cleared), so the
+   * resulting sessions are always fresh regardless of how long the
+   * migration has been running.
    */
   public async refresh(): Promise<void> {
-    if (!this.isRoleMode) {
+    if (!this.isCIMode) {
       return;
     }
-    this.logger.info('Refreshing credentials...');
-    const sts = new STSClient({});
-    const assumed = await sts.send(
+    if (!this.parentRoleArn) {
+      throw new Error('TEST_ACCOUNT_ROLE must be set in CI mode');
+    }
+    if (!this.childAccountId) {
+      throw new Error('CHILD_ACCOUNT_ID must be set in CI mode');
+    }
+
+    this.logger.info('Refreshing credentials (two-hop assume-role)...');
+
+    // Hop 1: CodeBuild container creds → parent account
+    // Explicitly use container metadata credentials so that any
+    // AWS_ACCESS_KEY_ID/SECRET/TOKEN env vars (e.g. child account
+    // creds set by the E2E shell wrapper) are bypassed.
+    const parentSts = new STSClient({
+      region: this.region,
+      credentials: fromContainerMetadata(),
+    });
+    const parentResult = await parentSts.send(
       new AssumeRoleCommand({
-        RoleArn: this.roleArn,
-        RoleSessionName: `gen2-migration-e2e-${Date.now()}`,
+        RoleArn: this.parentRoleArn,
+        RoleSessionName: `gen2-mig-parent-${Date.now()}`,
         DurationSeconds: SESSION_DURATION_SECONDS,
       }),
     );
-    const creds = assumed.Credentials;
-    if (!creds?.AccessKeyId || !creds?.SecretAccessKey || !creds?.SessionToken) {
-      throw new Error('STS AssumeRole returned incomplete credentials');
+    const parentCreds = parentResult.Credentials;
+
+    if (!parentCreds?.AccessKeyId || !parentCreds?.SecretAccessKey || !parentCreds?.SessionToken) {
+      throw new Error('Failed to assume TEST_ACCOUNT_ROLE — STS returned incomplete credentials');
     }
+    this.logger.info('Hop 1 complete: assumed parent account role');
 
-    this.writeCredentialsFile(creds.AccessKeyId, creds.SecretAccessKey, creds.SessionToken);
+    // Hop 2: parent account creds → child account
+    const childSts = new STSClient({
+      credentials: {
+        accessKeyId: parentCreds.AccessKeyId,
+        secretAccessKey: parentCreds.SecretAccessKey,
+        sessionToken: parentCreds.SessionToken,
+      },
+      region: this.region,
+    });
+    const childRoleArn = `arn:aws:iam::${this.childAccountId}:role/${CHILD_ACCOUNT_ROLE_NAME}`;
+    const childResult = await childSts.send(
+      new AssumeRoleCommand({
+        RoleArn: childRoleArn,
+        RoleSessionName: `gen2-mig-child-${Date.now()}`,
+        DurationSeconds: SESSION_DURATION_SECONDS,
+      }),
+    );
+    const childCreds = childResult.Credentials;
+    if (!childCreds?.AccessKeyId || !childCreds?.SecretAccessKey || !childCreds?.SessionToken) {
+      throw new Error(`Failed to assume child account role in ${this.childAccountId} — STS returned incomplete credentials`);
+    }
+    this.logger.info(`Hop 2 complete: assumed child account role in ${this.childAccountId}`);
 
+    this.writeCredentialsFile(childCreds.AccessKeyId, childCreds.SecretAccessKey, childCreds.SessionToken);
     this.logger.info('Credentials refreshed');
   }
 
@@ -187,21 +233,24 @@ function atomicWriteFile(filePath: string, content: string, mode: number): void 
  * Resolve the AWS profile from CLI flags and environment.
  *
  * Rules:
- *   1. `--profile` + `TEST_ACCOUNT_ROLE` → error (conflicting credential sources)
- *   2. `--profile` without `TEST_ACCOUNT_ROLE` → profile mode (local dev)
- *   3. No `--profile` + `TEST_ACCOUNT_ROLE` → role mode (CI)
+ *   1. `--profile` + CI env vars → error (conflicting credential sources)
+ *   2. `--profile` alone → profile mode (local dev)
+ *   3. `TEST_ACCOUNT_ROLE` + `CHILD_ACCOUNT_ID` → CI mode
  *   4. Neither → error
  */
 export function resolveProfile(profile: string | undefined): string | undefined {
-  const hasTestAccountRole = !!process.env.TEST_ACCOUNT_ROLE;
-  if (profile && hasTestAccountRole) {
-    throw new Error('--profile cannot be used when TEST_ACCOUNT_ROLE is set');
+  const hasCICredentials = !!process.env.TEST_ACCOUNT_ROLE && !!process.env.CHILD_ACCOUNT_ID;
+  if (profile && hasCICredentials) {
+    throw new Error('--profile cannot be used when TEST_ACCOUNT_ROLE and CHILD_ACCOUNT_ID are set');
   }
   if (profile) {
     return profile;
   }
-  if (hasTestAccountRole) {
+  if (hasCICredentials) {
     return undefined;
   }
-  throw new Error('Either --profile or the TEST_ACCOUNT_ROLE env var must be set');
+  if (process.env.TEST_ACCOUNT_ROLE && !process.env.CHILD_ACCOUNT_ID) {
+    throw new Error('CHILD_ACCOUNT_ID must be set when TEST_ACCOUNT_ROLE is set');
+  }
+  throw new Error('Either --profile or TEST_ACCOUNT_ROLE + CHILD_ACCOUNT_ID env vars must be set');
 }

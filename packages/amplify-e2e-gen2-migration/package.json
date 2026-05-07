@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.1",
   "description": "Migration automation system for AWS Amplify Gen1 to Gen2",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "bin": {
-    "amplify-migrate": "dist/cli.js"
+    "amplify-migrate": "lib/cli.js"
   },
   "scripts": {
     "build": "tsc",

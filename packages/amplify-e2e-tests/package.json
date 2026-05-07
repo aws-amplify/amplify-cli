@@ -29,6 +29,7 @@
     "@aws-amplify/amplify-category-auth": "3.7.27",
     "@aws-amplify/amplify-cli-core": "4.5.0",
     "@aws-amplify/amplify-e2e-core": "5.7.12",
+    "@aws-amplify/amplify-e2e-gen2-migration": "workspace:^",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.25",
     "@aws-amplify/graphql-transformer-core": "^2.11.3",
     "@aws-sdk/client-amplify": "^3.919.0",

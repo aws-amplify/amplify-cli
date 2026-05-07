@@ -50,10 +50,12 @@ import {
   waitUntilBucketNotExists,
 } from '@aws-sdk/client-s3';
 import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
-import { GEN1_PLACEHOLDER_APP_NAME } from '@aws-amplify/amplify-e2e-core';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
+
+/** Inlined from @aws-amplify/amplify-e2e-core to avoid requiring a workspace build. */
+const GEN1_PLACEHOLDER_APP_NAME = 'gen1-placeholder-do-not-delete';
 
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-1',

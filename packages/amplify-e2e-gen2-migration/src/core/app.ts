@@ -364,6 +364,7 @@ export class App {
    */
   public async deployGen2Sandbox(): Promise<string> {
     await this.refreshCredentials();
+    await this.bootstrapCDK();
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
@@ -504,7 +505,14 @@ export class App {
    * credential signal — sub-processes resolve it via the shared AWS config.
    */
   public getEnv(extra?: Record<string, string>): NodeJS.ProcessEnv {
-    return { ...process.env, AWS_PROFILE: this.profile, ...extra };
+    const env: NodeJS.ProcessEnv = { ...process.env, AWS_PROFILE: this.profile, ...extra };
+    // Remove credential env vars so subprocesses use only the profile.
+    // Without this, the AWS CLI and CDK prefer env var credentials over
+    // the profile, causing operations to run in the wrong account.
+    delete env.AWS_ACCESS_KEY_ID;
+    delete env.AWS_SECRET_ACCESS_KEY;
+    delete env.AWS_SESSION_TOKEN;
+    return env;
   }
 
   /**
@@ -520,6 +528,29 @@ export class App {
   // Private Helpers
   // ============================================================
 
+  /**
+   * Bootstrap CDK in the target account/region. Idempotent — succeeds
+   * silently if the CDKToolkit stack already exists.
+   */
+  private async bootstrapCDK(): Promise<void> {
+    const region = process.env.CLI_REGION ?? 'us-east-1';
+    this.logger.info(`Bootstrapping CDK for region ${region}...`);
+
+    const identity = await execa('aws', ['sts', 'get-caller-identity', '--query', 'Account', '--output', 'text'], {
+      env: this.getEnv(),
+    });
+    const accountId = identity.stdout.trim();
+
+    const result = await execa('npx', ['cdk', 'bootstrap', `aws://${accountId}/${region}`], {
+      cwd: this.targetAppPath,
+      reject: false,
+      stdio: 'inherit',
+      env: this.getEnv(),
+    });
+    if (result.exitCode !== 0) {
+      this.logger.info('CDK bootstrap may already exist or failed, continuing...');
+    }
+  }
   private removeGitignoreLine(line: string): void {
     const gitignorePath = path.join(this.targetAppPath, '.gitignore');
     if (!fs.existsSync(gitignorePath)) return;
