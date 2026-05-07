@@ -2038,8 +2038,9 @@ describe('AuthGenerator', () => {
     jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
       SchemaAttributes: [
         { Name: 'email', Required: true, Mutable: true },
+        { Name: 'address', Required: true, Mutable: false },
         { Name: 'birthdate', Required: false, Mutable: true },
-        { Name: 'address', Required: false, Mutable: true },
+        { Name: 'given_name', Required: false, Mutable: false },
       ],
     });
     jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
@@ -2050,14 +2051,11 @@ describe('AuthGenerator', () => {
       IdentityPoolName: 'test-pool',
       AllowUnauthenticatedIdentities: false,
     });
-    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockImplementation((_poolId: string, clientId: string) => {
-      if (clientId === 'webclient123') return Promise.resolve({});
-      return Promise.resolve({
-        RefreshTokenValidity: 30,
-        EnableTokenRevocation: true,
-        ReadAttributes: ['birthdate', 'email'],
-        WriteAttributes: ['address', 'email'],
-      });
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
+      RefreshTokenValidity: 30,
+      EnableTokenRevocation: true,
+      ReadAttributes: ['birthdate', 'email', 'given_name', 'address'],
+      WriteAttributes: ['address', 'email'],
     });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
@@ -2078,13 +2076,9 @@ describe('AuthGenerator', () => {
             required: true,
             mutable: true,
           },
-          birthdate: {
-            required: false,
-            mutable: true,
-          },
           address: {
-            required: false,
-            mutable: true,
+            required: true,
+            mutable: false,
           },
         },
         multifactor: {
@@ -2109,6 +2103,8 @@ describe('AuthGenerator', () => {
           readAttributes: new ClientAttributes().withStandardAttributes({
             birthdate: true,
             email: true,
+            givenName: true,
+            address: true,
           }),
           writeAttributes: new ClientAttributes().withStandardAttributes({
             address: true,

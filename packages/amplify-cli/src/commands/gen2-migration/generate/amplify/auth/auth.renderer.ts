@@ -408,7 +408,14 @@ export class AuthRenderer {
     if (!schema) return {};
     const result: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> = {};
     for (const attribute of schema) {
+      // skip if the attribute is not a standard one (i,e custom)
       if (!attribute.Name || !(attribute.Name in MAPPED_USER_ATTRIBUTE_NAME)) continue;
+
+      // optional attributes are skipped because this gen2 property (userAttributes)
+      // only maps to the required attributes.
+      // https://github.com/aws-amplify/amplify-backend/blob/757e2ce01616ad0c24547c541f1be4d389fd408b/packages/auth-construct/src/types.ts#L599-L602
+      if (!attribute.Required) continue;
+
       result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
         required: attribute.Required,
         mutable: attribute.Mutable,
