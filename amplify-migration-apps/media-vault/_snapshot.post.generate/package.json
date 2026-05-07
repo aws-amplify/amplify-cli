@@ -43,7 +43,6 @@
     "@aws-amplify/backend": "^1.18.0",
     "@aws-amplify/backend-cli": "^1.8.0",
     "@aws-amplify/backend-data": "^1.6.2",
-    "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
     "@eslint/js": "^9.39.1",
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^29.5.14",

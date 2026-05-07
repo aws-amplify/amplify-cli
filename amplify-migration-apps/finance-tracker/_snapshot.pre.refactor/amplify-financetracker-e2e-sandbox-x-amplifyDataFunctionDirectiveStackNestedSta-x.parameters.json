@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref",
+    "ParameterValue": "amplify-financetra2604231-amplifyAuthauthenticatedU-mtMR6VW2YKH5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref",
+    "ParameterValue": "us-east-1:ccae5924-7e98-4b8f-bf21-ac09c945a04b"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPINONEDSD3B1847BName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId",
+    "ParameterValue": "iltux4eqlfcblbluzjzhytjruu"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref",
+    "ParameterValue": "amplify-financetra2604231-amplifyAuthunauthenticate-rSgiGOevcLBc"
+  }
+]

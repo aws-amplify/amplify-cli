@@ -73,6 +73,17 @@ export class AmplifyHelperTransformer {
               if (moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
                 return undefined;
               }
+              // Transform CDK v1 scoped imports (@aws-cdk/aws-xxx) to CDK v2 (aws-cdk-lib/aws-xxx)
+              if (moduleSpecifier.text.startsWith('@aws-cdk/')) {
+                const v2Module = moduleSpecifier.text.replace('@aws-cdk/', 'aws-cdk-lib/');
+                return ts.factory.updateImportDeclaration(
+                  node,
+                  node.modifiers,
+                  node.importClause,
+                  ts.factory.createStringLiteral(v2Module),
+                  node.assertClause,
+                );
+              }
             }
           }
 
@@ -182,6 +193,13 @@ export class AmplifyHelperTransformer {
               ts.isIdentifier(declaration.initializer.expression) &&
               removedModuleIdentifiers.has(declaration.initializer.expression.text)
             ) {
+              // Track the variable name as a dependency variable so that
+              // cdk.Fn.ref(retVal.api.xxx.attribute) and retVal.api.xxx.attribute
+              // property access chains are transformed to Gen2 equivalents.
+              if (ts.isIdentifier(declaration.name)) {
+                dependencyVariables.add(declaration.name.text);
+                hasDependencies = true;
+              }
               return undefined;
             }
 
@@ -323,7 +341,7 @@ export class AmplifyHelperTransformer {
                 undefined,
                 'backend',
                 undefined,
-                ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+                ts.factory.createTypeReferenceNode('Backend', undefined),
                 undefined,
               );
               baseParams.push(backendParam);
@@ -346,18 +364,6 @@ export class AmplifyHelperTransformer {
 
     const result = ts.transform(sourceFile, [transformer]);
     return result.transformed[0] as ts.SourceFile;
-  }
-
-  /**
-   * Parses, transforms, and prints a cdk-stack.ts file in one call.
-   * Combines createSourceFile → transform → addBranchNameVariable → print.
-   */
-  public static transformAndPrint(filePath: string, content: string, projectName?: string): string {
-    const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
-    const transformed = AmplifyHelperTransformer.transform(sourceFile, projectName);
-    const withBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformed, projectName);
-    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-    return printer.printFile(withBranchName);
   }
 
   /**

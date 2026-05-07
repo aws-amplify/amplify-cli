@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "MonthlyReportTopicArn",
+    "OutputValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-MonthlyReportTopic8D223100-riowtcOhtvf1",
+    "Description": "SNS Topic ARN for monthly reports",
+    "ExportName": "financetracker-MonthlyReportTopicArn-x"
+  },
+  {
+    "OutputKey": "BudgetAlertTopicArn",
+    "OutputValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-BudgetAlertTopicF20DF526-R5tDxQli7ASH",
+    "Description": "SNS Topic ARN for budget alerts",
+    "ExportName": "financetracker-BudgetAlertTopicArn-x"
+  }
+]
