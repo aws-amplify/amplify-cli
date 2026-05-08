@@ -37,6 +37,14 @@ async function resolveChildAccountId(): Promise<string> {
  * in CI mode (two-hop assume-role from container credentials).
  */
 export async function runMigrationE2E(appName: string): Promise<void> {
+  // the default jest console logger adds a noisy call-site logging
+  // statement. in our case since we wrap console.log with a Logger, all these
+  // call-sites are the same and are not helpful.
+  // restore the standard console logger so the output looks like a regular process
+  // execution.
+  const { Console } = require('console');
+  global.console = new Console(process.stdout, process.stderr);
+
   // Resolve the child account from the shell-level credentials.
   // This must be the same account that amplify init/push deploy to.
   const childAccountId = await resolveChildAccountId();
