@@ -329,23 +329,11 @@ export class App {
 
     // twice for idempotancy. print a banner so its easier to distinguish
     // the different runs in the logs.
-    console.log(`
-╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║                 Forward Refactor (1)                       ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
-`);
+    printBanner('Forward Refactor (1)');
 
     await this.refactorForward(gen2StackName);
 
-    console.log(`
-╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║                 Forward Refactor (2)                       ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
-`);
+    printBanner('Forward Refactor (2)');
     await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
@@ -386,24 +374,10 @@ export class App {
 
     // twice for idempotancy. print a banner so its easier to distinguish
     // the different runs in the logs.
-    // twice for idempotancy. print a banner so its easier to distinguish
-    // the different runs in the logs.
-    console.log(`
-╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║                 Rollback Refactor (1)                      ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
-`);
+    printBanner('Rollback Refactor (1)');
     await this.refactorRollback(gen2StackName);
 
-    console.log(`
-╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║                 Rollback Refactor (2)                      ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
-`);
+    printBanner('Rollback Refactor (2)');
     await this.refactorRollback(gen2StackName);
 
     await this.testGen1();
@@ -812,6 +786,28 @@ export class App {
     this.logger.info(`Gen2 stack name: ${rootStacks[0]}`);
     return rootStacks[0];
   }
+}
+
+/**
+ * Prints a centered banner to stdout for visual separation in logs.
+ *
+ * ╔════════════════════════════════════════════════════════════╗
+ * ║                                                            ║
+ * ║                          {text}                            ║
+ * ║                                                            ║
+ * ╚════════════════════════════════════════════════════════════╝
+ *
+ */
+function printBanner(text: string): void {
+  const width = 60;
+  const innerWidth = width - 2;
+  const padding = Math.max(0, innerWidth - text.length);
+  const leftPad = Math.floor(padding / 2);
+  const rightPad = padding - leftPad;
+  const border = '═'.repeat(width);
+  const emptyLine = `║${' '.repeat(innerWidth)}║`;
+  const textLine = `║${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}║`;
+  console.log(`\n╔${border}╗\n${emptyLine}\n${textLine}\n${emptyLine}\n╚${border}╝\n`);
 }
 
 /**
