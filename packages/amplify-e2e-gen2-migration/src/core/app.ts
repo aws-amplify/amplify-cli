@@ -19,6 +19,7 @@ import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
+import type { AwsCredentialIdentity } from '@aws-sdk/types';
 
 const REPO_ROOT_DIR = process.env.CODEBUILD_SRC_DIR ?? path.join(__dirname, '..', '..', '..', '..');
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
@@ -534,8 +535,8 @@ export class App {
    * Refresh credentials. Call before any AWS operation in role mode so the
    * underlying profile doesn't expire mid-step. No-op in profile mode.
    */
-  public async refreshCredentials(): Promise<void> {
-    await this.credentials.refresh();
+  public async refreshCredentials(): Promise<AwsCredentialIdentity | undefined> {
+    return await this.credentials.refresh();
   }
 
   /**

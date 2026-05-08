@@ -12,8 +12,8 @@ import {
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 import { S3Client, paginateListObjectsV2, DeleteObjectsCommand } from '@aws-sdk/client-s3';
-import { fromIni } from '@aws-sdk/credential-providers';
 import { Logger } from './logger';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 
 /** Maximum number of discover-and-delete passes for stuck stacks. */
 const MAX_DELETE_PASSES = 5;
@@ -33,7 +33,7 @@ const DELETE_POLL_INTERVAL_SECONDS = 10;
 export class Teardown {
   private readonly deploymentName: string;
   private readonly logger: Logger;
-  private readonly clientConfig: { credentials: ReturnType<typeof fromIni> };
+  private readonly clientConfig: { credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider };
   private readonly errors: string[] = [];
 
   /**
@@ -41,7 +41,7 @@ export class Teardown {
    * @param clientConfig   SDK client config with a credentials provider.
    *                       Typically obtained from `App.getClientConfig()`.
    */
-  constructor(deploymentName: string, clientConfig: { credentials: ReturnType<typeof fromIni> }) {
+  constructor(deploymentName: string, clientConfig: { credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider }) {
     this.deploymentName = deploymentName;
     this.logger = new Logger(`teardown-${deploymentName}`);
     this.clientConfig = clientConfig;

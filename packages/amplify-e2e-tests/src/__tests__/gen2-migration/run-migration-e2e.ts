@@ -55,13 +55,19 @@ export async function runMigrationE2E(appName: string): Promise<void> {
     if (process.env.UPDATE_SNAPSHOTS === '1') {
       app.updateSnapshots();
     }
+    app.logger.info(`Execution completed successfully (${app.targetAppPath})`);
+  } catch (error) {
+    console.log();
+    (error as Error).message = `Execution failed: ${(error as Error).message}\n\n(App path: ${app.targetAppPath})\n`;
+    console.log((error as Error).stack);
+    console.log();
+    throw error;
   } finally {
-    try {
-      await app.refreshCredentials();
-      await new Teardown(app.deploymentName, app.getClientConfig()).clean();
-    } catch (teardownError) {
-      // Teardown failures should not mask a successful migration.
-      console.error('Teardown failed (non-fatal):', (teardownError as Error).message);
+    const creds = await app.refreshCredentials();
+    if (creds) {
+
     }
+    const teardown = new Teardown(app.deploymentName, creds ? { credentials: creds } : app.getClientConfig());
+    await teardown.clean();
   }
 }

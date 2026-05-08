@@ -6,6 +6,7 @@ import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { fromContainerMetadata } from '@aws-sdk/credential-providers';
 import { Logger } from './logger';
 import { mergeManagedSection } from './ini-merge';
+import type { AwsCredentialIdentity } from '@aws-sdk/types';
 
 /** Duration for assumed-role sessions (1 hour — STS maximum for chained roles). */
 const SESSION_DURATION_SECONDS = 3600;
@@ -82,9 +83,9 @@ export class CredentialManager {
    * resulting sessions are always fresh regardless of how long the
    * migration has been running.
    */
-  public async refresh(): Promise<void> {
+  public async refresh(): Promise<AwsCredentialIdentity | undefined> {
     if (!this.isCIMode) {
-      return;
+      return undefined;
     }
     if (!this.parentRoleArn) {
       throw new Error('TEST_ACCOUNT_ROLE must be set in CI mode');
@@ -142,6 +143,8 @@ export class CredentialManager {
 
     this.writeCredentialsFile(childCreds.AccessKeyId, childCreds.SecretAccessKey, childCreds.SessionToken);
     this.logger.info('Credentials refreshed');
+
+    return { accessKeyId: childCreds.AccessKeyId, secretAccessKey: childCreds.SecretAccessKey, sessionToken: childCreds.SessionToken };
   }
 
   private writeCredentialsFile(accessKeyId: string, secretAccessKey: string, sessionToken: string): void {
