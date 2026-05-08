@@ -368,6 +368,7 @@ export class App {
 
     await this.testShared();
 
+    await this.git.checkout(this.gen1BranchName, false);
     await this.retain();
 
     await this.testGen1();
