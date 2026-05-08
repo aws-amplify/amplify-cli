@@ -317,6 +317,11 @@ export class App {
     await this.testGen2();
 
     await this.testShared();
+
+    await this.retain();
+
+    await this.testGen1();
+    await this.testGen2();
   }
 
   /**
@@ -356,6 +361,14 @@ export class App {
       extraArgs.push('--skip-validations');
     }
     await this.runMigrationStep('refactor', extraArgs);
+  }
+
+  /**
+   * Run `amplify gen2-migration retain`.
+   */
+  public async retain(): Promise<void> {
+    await this.refreshCredentials();
+    await this.runMigrationStep('retain');
   }
 
   /**

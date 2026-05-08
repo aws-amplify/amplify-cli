@@ -61,6 +61,9 @@ The CLI executes the following steps for a given app:
 22. Run `test:gen1` and `test:gen2` — validate both stacks
 23. Redeploy Gen2 sandbox to pick up post-refactor changes
 24. Run `test:gen1` and `test:gen2` — final validation
+25. Run shared data tests
+26. `amplify gen2-migration retain` — apply retain policies to every resource below root
+27. Run `test:gen1` and `test:gen2` — post-retain validation
 
 Test scripts run at multiple points to verify that both stacks remain functional throughout the migration.
 

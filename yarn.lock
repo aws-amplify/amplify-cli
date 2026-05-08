@@ -1246,7 +1246,6 @@ __metadata:
     aws-cdk-lib: ~2.189.1
     aws-sdk-client-mock: ^4.1.0
     aws-sdk-client-mock-jest: ^4.1.0
-    bottleneck: 2.19.5
     cdk-from-cfn: ^0.291.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
