@@ -327,8 +327,25 @@ export class App {
     await this.git.checkout(this.gen1BranchName, false);
     await this.pull();
 
-    // twice for idempotancy
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+    console.log(`
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║                 Forward Refactor (1)                       ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+`);
+
     await this.refactorForward(gen2StackName);
+
+    console.log(`
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║                 Forward Refactor (2)                       ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+`);
     await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
@@ -351,6 +368,11 @@ export class App {
 
     await this.testShared();
 
+    await this.retain();
+
+    await this.testGen1();
+    await this.testGen2();
+
     return gen2StackName;
   }
 
@@ -361,8 +383,26 @@ export class App {
     await this.git.checkout(this.gen1BranchName, false);
     await this.pull();
 
-    // twice for idempotancy
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+    console.log(`
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║                 Rollback Refactor (1)                      ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+`);
     await this.refactorRollback(gen2StackName);
+
+    console.log(`
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║                 Rollback Refactor (2)                      ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+`);
     await this.refactorRollback(gen2StackName);
 
     await this.testGen1();
@@ -440,6 +480,14 @@ export class App {
       extraArgs.push('--skip-validations');
     }
     await this.runMigrationStep('refactor', extraArgs);
+  }
+
+  /**
+   * Run `amplify gen2-migration retain`.
+   */
+  public async retain(): Promise<void> {
+    await this.refreshCredentials();
+    await this.runMigrationStep('retain');
   }
 
   /**
