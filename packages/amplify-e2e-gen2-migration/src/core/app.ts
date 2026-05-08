@@ -587,7 +587,7 @@ export class App {
       env: this.getEnv(),
     });
     if (result.exitCode !== 0) {
-      this.logger.info('CDK bootstrap may already exist or failed, continuing...');
+      throw new Error(`'cdk bootstrap' failed. See above logs for details.`);
     }
   }
   private removeGitignoreLine(line: string): void {

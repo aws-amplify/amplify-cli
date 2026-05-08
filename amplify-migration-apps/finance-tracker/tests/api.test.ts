@@ -28,25 +28,37 @@ afterAll(async () => {
   await signOut();
 });
 
+async function createTestTransaction(overrides: Record<string, any> = {}) {
+  const input = {
+    description: `Test transaction - ${Date.now()}`,
+    amount: 85.50,
+    type: TransactionType.EXPENSE,
+    category: 'Food',
+    date: new Date().toISOString(),
+    ...overrides,
+  };
+  const result = await authClient().graphql({ query: createTransaction, variables: { input } });
+  return (result as any).data.createTransaction;
+}
+
+async function createTestSummary(overrides: Record<string, any> = {}) {
+  const input = {
+    totalIncome: 5000.00,
+    totalExpenses: 3200.00,
+    balance: 1800.00,
+    month: '2026-04',
+    ...overrides,
+  };
+  const result = await authClient().graphql({ query: createFinancialSummary, variables: { input } });
+  return (result as any).data.createFinancialSummary;
+}
+
 describe('Transaction', () => {
-  let transactionId: string;
-
   it('creates a transaction with correct fields', async () => {
-    const input = {
-      description: `Grocery shopping - ${Date.now()}`,
-      amount: 85.50,
-      type: TransactionType.EXPENSE,
-      category: 'Food',
-      date: new Date().toISOString(),
-    };
-
-    const result = await authClient().graphql({ query: createTransaction, variables: { input } });
-    const txn = (result as any).data.createTransaction;
-    transactionId = txn.id;
+    const txn = await createTestTransaction({ description: `Grocery shopping - ${Date.now()}` });
 
     expect(typeof txn.id).toBe('string');
     expect(txn.id.length).toBeGreaterThan(0);
-    expect(txn.description).toBe(input.description);
     expect(txn.amount).toBe(85.50);
     expect(txn.type).toBe(TransactionType.EXPENSE);
     expect(txn.category).toBe('Food');
@@ -55,29 +67,35 @@ describe('Transaction', () => {
   });
 
   it('reads a transaction by id', async () => {
-    const result = await publicClient().graphql({ query: getTransaction, variables: { id: transactionId } });
-    const txn = (result as any).data.getTransaction;
+    const txn = await createTestTransaction();
 
-    expect(txn).not.toBeNull();
-    expect(txn.id).toBe(transactionId);
-    expect(txn.category).toBe('Food');
+    const result = await publicClient().graphql({ query: getTransaction, variables: { id: txn.id } });
+    const fetched = (result as any).data.getTransaction;
+
+    expect(fetched).not.toBeNull();
+    expect(fetched.id).toBe(txn.id);
+    expect(fetched.category).toBe('Food');
   });
 
   it('updates a transaction and persists changes', async () => {
+    const txn = await createTestTransaction();
     const updatedDesc = `Updated grocery - ${Date.now()}`;
+
     await authClient().graphql({
       query: updateTransaction,
-      variables: { input: { id: transactionId, description: updatedDesc, amount: 92.00 } },
+      variables: { input: { id: txn.id, description: updatedDesc, amount: 92.00 } },
     });
 
-    const result = await publicClient().graphql({ query: getTransaction, variables: { id: transactionId } });
-    const txn = (result as any).data.getTransaction;
+    const result = await publicClient().graphql({ query: getTransaction, variables: { id: txn.id } });
+    const fetched = (result as any).data.getTransaction;
 
-    expect(txn.description).toBe(updatedDesc);
-    expect(txn.amount).toBe(92.00);
+    expect(fetched.description).toBe(updatedDesc);
+    expect(fetched.amount).toBe(92.00);
   });
 
   it('lists transactions', async () => {
+    await createTestTransaction();
+
     const result = await publicClient().graphql({ query: listTransactions });
     const items = (result as any).data.listTransactions.items;
 
@@ -86,27 +104,18 @@ describe('Transaction', () => {
   });
 
   it('deletes a transaction', async () => {
-    await authClient().graphql({ query: deleteTransaction, variables: { input: { id: transactionId } } });
+    const txn = await createTestTransaction();
 
-    const result = await publicClient().graphql({ query: getTransaction, variables: { id: transactionId } });
+    await authClient().graphql({ query: deleteTransaction, variables: { input: { id: txn.id } } });
+
+    const result = await publicClient().graphql({ query: getTransaction, variables: { id: txn.id } });
     expect((result as any).data.getTransaction).toBeNull();
   });
 });
 
 describe('FinancialSummary', () => {
-  let summaryId: string;
-
   it('creates a financial summary', async () => {
-    const input = {
-      totalIncome: 5000.00,
-      totalExpenses: 3200.00,
-      balance: 1800.00,
-      month: '2026-04',
-    };
-
-    const result = await authClient().graphql({ query: createFinancialSummary, variables: { input } });
-    const summary = (result as any).data.createFinancialSummary;
-    summaryId = summary.id;
+    const summary = await createTestSummary();
 
     expect(typeof summary.id).toBe('string');
     expect(summary.totalIncome).toBe(5000.00);
@@ -117,15 +126,19 @@ describe('FinancialSummary', () => {
   });
 
   it('reads a financial summary by id', async () => {
-    const result = await publicClient().graphql({ query: getFinancialSummary, variables: { id: summaryId } });
-    const summary = (result as any).data.getFinancialSummary;
+    const summary = await createTestSummary();
 
-    expect(summary).not.toBeNull();
-    expect(summary.id).toBe(summaryId);
-    expect(summary.month).toBe('2026-04');
+    const result = await publicClient().graphql({ query: getFinancialSummary, variables: { id: summary.id } });
+    const fetched = (result as any).data.getFinancialSummary;
+
+    expect(fetched).not.toBeNull();
+    expect(fetched.id).toBe(summary.id);
+    expect(fetched.month).toBe('2026-04');
   });
 
   it('lists financial summaries', async () => {
+    await createTestSummary();
+
     const result = await publicClient().graphql({ query: listFinancialSummaries });
     const items = (result as any).data.listFinancialSummaries.items;
 
@@ -134,26 +147,22 @@ describe('FinancialSummary', () => {
   });
 
   it('deletes a financial summary', async () => {
-    await authClient().graphql({ query: deleteFinancialSummary, variables: { input: { id: summaryId } } });
+    const summary = await createTestSummary();
 
-    const result = await publicClient().graphql({ query: getFinancialSummary, variables: { id: summaryId } });
+    await authClient().graphql({ query: deleteFinancialSummary, variables: { input: { id: summary.id } } });
+
+    const result = await publicClient().graphql({ query: getFinancialSummary, variables: { id: summary.id } });
     expect((result as any).data.getFinancialSummary).toBeNull();
   });
 });
 
 describe('Lambda-backed operations', () => {
   it('calculateFinancialSummary returns numeric fields', async () => {
-    await authClient().graphql({
-      query: createTransaction,
-      variables: {
-        input: {
-          description: `Summary test income - ${Date.now()}`,
-          amount: 1000.00,
-          type: TransactionType.INCOME,
-          category: 'Salary',
-          date: new Date().toISOString(),
-        },
-      },
+    await createTestTransaction({
+      description: `Summary test income - ${Date.now()}`,
+      amount: 1000.00,
+      type: TransactionType.INCOME,
+      category: 'Salary',
     });
 
     const result = await publicClient().graphql({ query: calculateFinancialSummary });
@@ -198,17 +207,10 @@ describe('Custom VTL resolver', () => {
   it('getTransactionsByCategory returns filtered transactions', async () => {
     const category = `TestCategory-${Date.now()}`;
 
-    await authClient().graphql({
-      query: createTransaction,
-      variables: {
-        input: {
-          description: `Category filter test - ${Date.now()}`,
-          amount: 42.00,
-          type: TransactionType.EXPENSE,
-          category,
-          date: new Date().toISOString(),
-        },
-      },
+    await createTestTransaction({
+      description: `Category filter test - ${Date.now()}`,
+      amount: 42.00,
+      category,
     });
 
     const result = await publicClient().graphql({
