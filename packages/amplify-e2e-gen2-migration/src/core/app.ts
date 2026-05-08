@@ -236,9 +236,23 @@ export class App {
   public async e2e(options: E2EOptions): Promise<void> {
     this.logger.info(`Started e2e execution`);
     try {
+      printBanner(`Starting Migration`);
       const gen2StackName = await this.migrate();
+
+      printBanner(`Starting Rollback`);
       await this.rollback(gen2StackName);
-      this.logger.info(`Migration completed successfully (${this.targetAppPath})`);
+
+      printBanner(`Starting Forward`);
+      await this.forward(gen2StackName);
+
+      printBanner(`Starting Retain`);
+      await this.git.checkout(this.gen1BranchName, false);
+      await this.retain();
+
+      await this.testGen1();
+      await this.testGen2();
+
+      this.logger.info(`Execution completed successfully (${this.targetAppPath})`);
       if (process.env.UPDATE_SNAPSHOTS === '1') {
         this.updateSnapshots();
       }
@@ -330,7 +344,6 @@ export class App {
     // twice for idempotancy. print a banner so its easier to distinguish
     // the different runs in the logs.
     printBanner('Forward Refactor (1)');
-
     await this.refactorForward(gen2StackName);
 
     printBanner('Forward Refactor (2)');
@@ -356,17 +369,36 @@ export class App {
 
     await this.testShared();
 
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.retain();
-
-    await this.testGen1();
-    await this.testGen2();
-
     return gen2StackName;
   }
 
   /**
-   * Rollback an already migrated app.
+   * Run forward operations on an already migrated app.
+   */
+  public async forward(gen2StackName: string): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
+    await this.lockForward();
+
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+    printBanner('Forward Refactor (1)');
+    await this.refactorForward(gen2StackName);
+
+    printBanner('Forward Refactor (2)');
+    await this.refactorForward(gen2StackName);
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.testShared();
+  }
+
+  /**
+   * Run rollback operations on an already migrated app.
    */
   public async rollback(gen2StackName: string): Promise<void> {
     await this.git.checkout(this.gen1BranchName, false);
@@ -799,12 +831,11 @@ export class App {
  *
  */
 function printBanner(text: string): void {
-  const width = 60;
-  const innerWidth = width - 2;
+  const innerWidth = 60;
   const padding = Math.max(0, innerWidth - text.length);
   const leftPad = Math.floor(padding / 2);
   const rightPad = padding - leftPad;
-  const border = '═'.repeat(width);
+  const border = '═'.repeat(innerWidth);
   const emptyLine = `║${' '.repeat(innerWidth)}║`;
   const textLine = `║${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}║`;
   console.log(`\n╔${border}╗\n${emptyLine}\n${textLine}\n${emptyLine}\n╚${border}╝\n`);
