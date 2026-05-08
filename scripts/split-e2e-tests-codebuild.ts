@@ -137,6 +137,16 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/pinpoint/javascript-analytics-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/javascript-notifications-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
+    // gen2-migration tests dont currently work on windows because of 'Could not resolve credentials using profile'.
+    // need to dive deeper to figure it out.
+    'src/__tests__/gen2-migration/migrate-backend-only.test.ts',
+    'src/__tests__/gen2-migration/migrate-discussions.test.ts',
+    'src/__tests__/gen2-migration/migrate-fitness-tracker.test.ts',
+    'src/__tests__/gen2-migration/migrate-media-vault.test.ts',
+    'src/__tests__/gen2-migration/migrate-mood-board.test.ts',
+    'src/__tests__/gen2-migration/migrate-product-catalog.test.ts',
+    'src/__tests__/gen2-migration/migrate-project-boards.test.ts',
+    'src/__tests__/gen2-migration/migrate-store-locator.test.ts',
   ],
 };
 export function loadConfigBase() {
