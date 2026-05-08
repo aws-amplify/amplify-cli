@@ -73,3 +73,13 @@ There are two scenarios when this approach can cause trouble:
 2. In the middle of execution, the test is interrupted by Ctrl+C, then the hidden config and credential files are not renamed back.
 
 So, You should NOT run multiple tests in parallel locally with the `init-special-case` test included. And, if you use Ctrl+C to interrupt the `init-special-case` test, you need to go to the `~/.aws/c` folder and rename the config and credential files to their original names.
+
+## Gen2 Migration E2E Tests
+
+The tests under `src/__tests__/gen2-migration/` exercise the full Gen1-to-Gen2 migration workflow for each sample app. They delegate entirely to the `@aws-amplify/amplify-e2e-gen2-migration` package — each test file simply calls `runMigrationE2E('<app-name>')` which constructs an `App` instance and runs the complete lifecycle in-process.
+
+Each test passes `teardown: true`, so all deployed resources (Gen1 stacks, Gen2 sandbox stacks, Amplify apps) are cleaned up automatically at the end of the run, regardless of success or failure.
+
+### Known Flaky Test
+
+The `mood-board` test is flaky due to a race condition in its Kinesis-backed frontend test (write/read timing). If it fails, retry the test — the underlying migration logic is correct.

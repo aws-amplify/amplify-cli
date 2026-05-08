@@ -20,6 +20,7 @@ import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
 import type { AwsCredentialIdentity } from '@aws-sdk/types';
+import { Teardown } from './teardown';
 
 const REPO_ROOT_DIR = process.env.CODEBUILD_SRC_DIR ?? path.join(__dirname, '..', '..', '..', '..');
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
@@ -47,6 +48,10 @@ interface StepConfig {
    * Skip the step entirely.
    */
   readonly skip?: boolean;
+}
+
+interface E2EOptions {
+  readonly teardown: boolean;
 }
 
 /**
@@ -226,6 +231,33 @@ export class App {
   }
 
   /**
+   * Run a full E2E migration test on this app.
+   */
+  public async e2e(options: E2EOptions): Promise<void> {
+    this.logger.info(`Started e2e execution`);
+    try {
+      const gen2StackName = await this.migrate();
+      await this.rollback(gen2StackName);
+      this.logger.info(`Migration completed successfully (${this.targetAppPath})`);
+      if (process.env.UPDATE_SNAPSHOTS === '1') {
+        this.updateSnapshots();
+      }
+    } catch (error) {
+      console.log();
+      (error as Error).message = `Migration failed: ${(error as Error).message}\n\n(App path: ${this.targetAppPath})\n`;
+      console.log((error as Error).stack);
+      console.log();
+      throw error;
+    } finally {
+      if (options.teardown) {
+        await this.refreshCredentials();
+        const teardown = new Teardown(this.deploymentName, this.getClientConfig());
+        await teardown.clean();
+      }
+    }
+  }
+
+  /**
    * Runs all steps to fully deploy the Gen1 app.
    */
   public async deploy(): Promise<void> {
@@ -252,7 +284,7 @@ export class App {
   /**
    * Runs the full migration workflow
    */
-  public async migrate(): Promise<void> {
+  public async migrate(): Promise<string> {
     await this.deploy();
     await this.assess();
     await this.lockForward();
@@ -289,11 +321,14 @@ export class App {
 
     if (this.skipRefactor) {
       this.logger.info('Skipping refactor (configured in migration/config.json)');
-      return;
+      return gen2StackName;
     }
 
     await this.git.checkout(this.gen1BranchName, false);
     await this.pull();
+
+    // twice for idempotancy
+    await this.refactorForward(gen2StackName);
     await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
@@ -316,8 +351,18 @@ export class App {
 
     await this.testShared();
 
+    return gen2StackName;
+  }
+
+  /**
+   * Rollback an already migrated app.
+   */
+  public async rollback(gen2StackName: string): Promise<void> {
     await this.git.checkout(this.gen1BranchName, false);
     await this.pull();
+
+    // twice for idempotancy
+    await this.refactorRollback(gen2StackName);
     await this.refactorRollback(gen2StackName);
 
     await this.testGen1();

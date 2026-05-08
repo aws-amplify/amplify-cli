@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { execSync } from 'child_process';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { App, Teardown } from '@aws-amplify/amplify-e2e-gen2-migration';
+import { App } from '@aws-amplify/amplify-e2e-gen2-migration';
 
 /**
  * Jest timeout for migration tests (2 hours). Migration runs involve
@@ -50,21 +50,5 @@ export async function runMigrationE2E(appName: string): Promise<void> {
   // CredentialManager. The CredentialManager uses fromContainerMetadata()
   // explicitly, so it works even with child account creds in process.env.
   const app = new App(appName, undefined);
-  try {
-    await app.migrate();
-    if (process.env.UPDATE_SNAPSHOTS === '1') {
-      app.updateSnapshots();
-    }
-    app.logger.info(`Execution completed successfully (${app.targetAppPath})`);
-  } catch (error) {
-    console.log();
-    (error as Error).message = `Execution failed: ${(error as Error).message}\n\n(App path: ${app.targetAppPath})\n`;
-    console.log((error as Error).stack);
-    console.log();
-    throw error;
-  } finally {
-    await app.refreshCredentials();
-    const teardown = new Teardown(app.deploymentName, app.getClientConfig());
-    await teardown.clean();
-  }
+  await app.e2e({ teardown: true });
 }
