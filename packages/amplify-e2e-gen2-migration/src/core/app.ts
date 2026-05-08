@@ -561,7 +561,7 @@ export class App {
    * chain, which may prefer container/IMDS credentials in CI environments.
    */
   public getClientConfig(): { credentials: ReturnType<typeof fromIni> } {
-    return { credentials: fromIni({ profile: this.profile }) };
+    return { credentials: fromIni({ profile: this.profile, ignoreCache: true }) };
   }
 
   // ============================================================
