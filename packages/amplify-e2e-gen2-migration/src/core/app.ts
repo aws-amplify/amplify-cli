@@ -20,9 +20,10 @@ import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
 
+const REPO_ROOT_DIR = process.env.CODEBUILD_SRC_DIR ?? path.join(__dirname, '..', '..', '..', '..');
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'snapshots');
-const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
+const MIGRATION_APPS_DIR = path.join(REPO_ROOT_DIR, 'amplify-migration-apps');
 
 interface MigrationConfig {
   /**
