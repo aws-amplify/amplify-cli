@@ -65,7 +65,9 @@ export async function runMigrationE2E(appName: string): Promise<void> {
   } finally {
     const creds = await app.refreshCredentials();
     if (creds) {
-
+      app.logger.info(`Initiating teardown with direct credentials`);
+    } else {
+      app.logger.info(`Initiating teardown with profile credentials (${app.profile})`);
     }
     const teardown = new Teardown(app.deploymentName, creds ? { credentials: creds } : app.getClientConfig());
     await teardown.clean();
