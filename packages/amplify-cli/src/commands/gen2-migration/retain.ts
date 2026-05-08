@@ -4,36 +4,15 @@ import { AmplifyMigrationOperation } from './_common/operation';
 import {
   DescribeChangeSetOutput,
   DescribeStackResourcesCommand,
-  DescribeStacksCommand,
   paginateListStackResources,
   StackResource,
 } from '@aws-sdk/client-cloudformation';
-import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
 import { AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { cfnChangesetConsoleUrl } from '../drift/services/drift-formatter';
 import chalk from 'chalk';
-
-/**
- * Stack context used by `Plan.describe` and the execute-time spinner to
- * group operations by the `DiscoveredResource` they belong to.
- */
-interface StackContext {
-  readonly resource: DiscoveredResource;
-
-  /**
-   * Name of the AppSync `@model` type owning this stack.
-   * Present for per-model nested stacks like Board, Todo, MoodItem.
-   */
-  readonly modelName?: string;
-
-  /**
-   * Logical id of the AppSync infrastructure sub-stack.
-   */
-  readonly subStackLabel?: string;
-}
 
 /**
  * Applies `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain` to every
@@ -47,15 +26,13 @@ interface StackContext {
  * tree and every retained resource survives as an orphan resource.
  */
 export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
-  private _dynamoTableNames: string[] | undefined;
-
   public async forward(): Promise<Plan> {
     const stackIds = await this.walkStackHierarchy(this.gen1App.rootStackName);
     this.logger.info(`Discovered ${stackIds.length} stacks below root`);
 
-    const stackContext = await this.classifyStacks();
+    const stackToResource = await this.classifyStacks();
     const operations: AmplifyMigrationOperation[] = stackIds.map((stackId) =>
-      this.buildRetainOperation(stackId, stackContext.get(stackId)),
+      this.buildRetainOperation(stackId, stackToResource.get(stackId)),
     );
 
     return new Plan({
@@ -105,14 +82,13 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
    * Purely for UX — the returned map drives `Plan.describe` grouping and the
    * execute-time spinner labels. Has no effect on the retain logic itself.
    *
-   * For AppSync: the api-stack is tagged with the api resource, per-model
-   * nested stacks carry `modelName`, and ConnectionStack/FunctionDirectiveStack/
-   * CustomResourcesjson carry `subStackLabel`.
+   * For AppSync, the api-stack and all of its nested children inherit the api
+   * resource.
    */
-  private async classifyStacks(): Promise<Map<string, StackContext>> {
-    const context = new Map<string, StackContext>();
+  private async classifyStacks(): Promise<Map<string, DiscoveredResource>> {
+    const stackToResource = new Map<string, DiscoveredResource>();
     const discovered = this.gen1App.discover();
-    if (discovered.length === 0) return context;
+    if (discovered.length === 0) return stackToResource;
 
     const rootNestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
 
@@ -129,25 +105,17 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection': {
           const stackId = this.findNestedStack(rootNestedStacks, `${resource.category}${resource.resourceName}`);
-          context.set(stackId, { resource });
+          stackToResource.set(stackId, resource);
           break;
         }
         case 'api:AppSync': {
           const apiStackId = this.findNestedStack(rootNestedStacks, `api${resource.resourceName}`);
-          context.set(apiStackId, { resource });
+          stackToResource.set(apiStackId, resource);
 
           const apiNestedStacks = await this.listNestedStack(apiStackId);
-          const modelNames = new Set((await this.dynamoTableNames()).map((t) => t.split('-')[0]));
-
           for (const child of apiNestedStacks) {
-            const logicalId = child.LogicalResourceId;
-            const childStackId = child.PhysicalResourceId;
-            if (!logicalId || !childStackId) continue;
-
-            if (modelNames.has(logicalId)) {
-              context.set(childStackId, { resource, modelName: logicalId });
-            } else if (logicalId === 'ConnectionStack' || logicalId === 'FunctionDirectiveStack' || logicalId === 'CustomResourcesjson') {
-              context.set(childStackId, { resource, subStackLabel: logicalId });
+            if (child.PhysicalResourceId) {
+              stackToResource.set(child.PhysicalResourceId, resource);
             }
           }
           break;
@@ -157,7 +125,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       }
     }
 
-    return context;
+    return stackToResource;
   }
 
   /**
@@ -166,35 +134,25 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
    * executeChangeSet round-trip. Skips the round-trip when the template is
    * already fully retained.
    */
-  private buildRetainOperation(stackId: string, ctx?: StackContext): AmplifyMigrationOperation {
+  private buildRetainOperation(stackId: string, resource?: DiscoveredResource): AmplifyMigrationOperation {
     const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
     const stackName = extractStackNameFromId(stackId);
 
-    const describeSuffix = ctx?.modelName ? ` (model: ${ctx.modelName})` : ctx?.subStackLabel ? ` (${ctx.subStackLabel})` : '';
-
     return {
-      resource: ctx?.resource,
-      describe: async () => [`Set Retain policies on resources in '${stackName}'${describeSuffix}`],
+      resource,
+      describe: async () => [`Set Retain policies on resources in '${stackName}'`],
       validate: () => undefined,
       execute: async () => {
-        let pushed = 0;
-        if (ctx) {
-          this.logger.push(`${ctx.resource.category}/${ctx.resource.resourceName} (${ctx.resource.service})`);
-          pushed++;
-          if (ctx.modelName) {
-            this.logger.push(ctx.modelName);
-            pushed++;
-          } else if (ctx.subStackLabel) {
-            this.logger.push(ctx.subStackLabel);
-            pushed++;
-          }
+        const pushed = resource !== undefined;
+        if (resource) {
+          this.logger.push(`${resource.category}/${resource.resourceName} (${resource.service})`);
         }
         try {
           const template = await cfn.fetchTemplate(stackId);
 
           const targetEntries = Object.values(template.Resources).filter((r) => r.Type !== 'AWS::CloudFormation::Stack');
           if (targetEntries.length === 0) {
-            this.logger.info(`${stackName} — no non-nested-stack resources to retain`);
+            this.logger.info(`${stackName} — no resources to retain`);
             return;
           }
 
@@ -204,13 +162,13 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
             return;
           }
 
-          for (const resource of targetEntries) {
-            resource.DeletionPolicy = 'Retain';
-            resource.UpdateReplacePolicy = 'Retain';
+          for (const r of targetEntries) {
+            r.DeletionPolicy = 'Retain';
+            r.UpdateReplacePolicy = 'Retain';
           }
 
-          const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
-          const parameters = (describeResponse.Stacks?.[0].Parameters ?? []).map((p) => ({
+          const stack = await cfn.describeStack(stackId);
+          const parameters = (stack.Parameters ?? []).map((p) => ({
             ParameterKey: p.ParameterKey,
             UsePreviousValue: true,
           }));
@@ -242,14 +200,14 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
             captureSnapshot: false,
           });
         } finally {
-          for (let i = 0; i < pushed; i++) this.logger.pop();
+          if (pushed) this.logger.pop();
         }
       },
     };
   }
 
   /**
-   * Whitelists a retain-only changeset.
+   * Allow-lists a retain-only changeset.
    *
    * Accepts two kinds of changes:
    * - Direct `DeletionPolicy` or `UpdateReplacePolicy` edits targeting `Retain`.
@@ -310,34 +268,5 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
       });
     }
     return stackId;
-  }
-
-  /** Returns the AppSync API id from amplify-meta.json, or undefined if the project has no GraphQL API. */
-  private async findGraphQLApiId(): Promise<string | undefined> {
-    const graphQL = this.gen1App.discover().find((r) => r.category === 'api' && r.service === 'AppSync');
-    if (!graphQL) return undefined;
-    return this.gen1App.resourceMetaOutput(graphQL, 'GraphQLAPIIdOutput');
-  }
-
-  /** Lists DynamoDB tables whose names contain `-<apiId>-<env>` — i.e., the per-model tables of this API. */
-  private async fetchGraphQLModelTables(graphQLApiId: string): Promise<string[]> {
-    const tables: string[] = [];
-    for await (const page of paginateListTables({ client: this.gen1App.clients.dynamoDB }, {})) {
-      for (const tableName of page.TableNames ?? []) {
-        if (tableName.includes(`-${graphQLApiId}-${this.gen1App.envName}`)) {
-          tables.push(tableName);
-        }
-      }
-    }
-    return tables;
-  }
-
-  /** Cached accessor for model table names — the set of @model types in the AppSync schema. */
-  private async dynamoTableNames(): Promise<string[]> {
-    if (!this._dynamoTableNames) {
-      const graphQLApiId = await this.findGraphQLApiId();
-      this._dynamoTableNames = graphQLApiId ? await this.fetchGraphQLModelTables(graphQLApiId) : [];
-    }
-    return this._dynamoTableNames;
   }
 }

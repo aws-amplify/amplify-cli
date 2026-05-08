@@ -7,7 +7,7 @@ The retain subcommand applies `DeletionPolicy: Retain` and `UpdateReplacePolicy:
 - Walks the Gen1 stack hierarchy pre-order (parent before children) starting from the root's children; root is excluded.
 - For each stack, fetches the template lazily at execute time (not at plan time) and skips the CFN round-trip entirely when every resource already has retain.
 - Applies retain to every resource **except** `AWS::CloudFormation::Stack` references. Leaving nested-stack references untouched keeps the parent changeset strictly additive on non-stack attributes and avoids forcing CFN to rewrite child `Properties`.
-- Creates a CloudFormation changeset per stack and validates it against a whitelist before executing.
+- Creates a CloudFormation changeset per stack and validates it against an allow list before executing.
 - Rollback is not supported (`NotImplementedFault`). To undo, edit the CloudFormation templates directly.
 
 ## Architecture
@@ -18,8 +18,8 @@ flowchart TD
     STEP --> WALK["walkStackHierarchy(rootStackId)"]
     WALK -->|"pre-order DFS, excluding root"| IDS["stackIds[]"]
     STEP --> CLASSIFY["classifyStacks()"]
-    CLASSIFY -->|"Map<stackId, StackContext>"| CTX["context"]
-    IDS --> BUILDOP["buildRetainOperation(stackId, ctx)"]
+    CLASSIFY -->|"Map<stackId, DiscoveredResource>"| CTX["context"]
+    IDS --> BUILDOP["buildRetainOperation(stackId, resource)"]
     CTX --> BUILDOP
     BUILDOP -->|"per-stack AmplifyMigrationOperation"| PLAN["Plan"]
     PLAN -->|"execute()"| EXEC["For each stack: fetchTemplate → mutate → createChangeSet → validate → executeChangeSet"]
@@ -37,9 +37,9 @@ Recursive pre-order DFS over `AWS::CloudFormation::Stack` resource entries. Retu
 
 ### `classifyStacks`
 
-Builds `Map<stackId, StackContext>` that associates each nested stack with its Amplify `DiscoveredResource`. Used purely for UX: `Plan.describe` groups operations under `Resource: <category>/<name> (<service>)` headers, and the execute-time spinner carries matching context labels.
+Builds `Map<stackId, DiscoveredResource>` that associates each nested stack with its Amplify `DiscoveredResource`. Used purely for UX: `Plan.describe` groups operations under `Resource: <category>/<name> (<service>)` headers, and the execute-time spinner carries matching labels.
 
-For AppSync, the api-stack is tagged with the api resource, per-model nested stacks carry `modelName`, and the three infrastructure sub-stacks (`ConnectionStack`, `FunctionDirectiveStack`, `CustomResourcesjson`) carry `subStackLabel`.
+For AppSync, the api-stack and every one of its nested children (per-model stacks, ConnectionStack, FunctionDirectiveStack, CustomResourcesjson) share the same api resource.
 
 Stacks not classified fall through to the default `Project` group with stack-name-only labels.
 
@@ -51,7 +51,7 @@ Idempotent on reruns: if every target resource already has retain, the whole CFN
 
 ### `isAllowedRetainChangeset`
 
-Whitelists a retain-only changeset. Accepts two kinds of changes:
+Allow-lists a retain-only changeset. Accepts two kinds of changes:
 
 - Direct `DeletionPolicy` or `UpdateReplacePolicy` edits targeting `Retain`.
 - CFN's own no-op Automatic/Dynamic re-evaluations on `AWS::CloudFormation::Stack` references, emitted on every parent update. These are bookkeeping — they don't trigger child reconciliation because no `Properties` value actually changed.
