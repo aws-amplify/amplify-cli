@@ -60,17 +60,34 @@ caller's working directory.
 ### `migration/config.json`
 
 Configuration file read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime.
-Currently supports:
+Each key corresponds to a migration step and accepts a `StepConfig` object:
 
 ```json
 {
-  "lock": { "skipValidations": true }
+  "lockForward": { "skipValidations": true },
+  "lockRollback": { "skipValidations": false },
+  "refactorForward": { "skip": true },
+  "refactorRollback": { "skipValidations": true },
+  "generate": { "skipValidations": true }
 }
 ```
 
-- `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
+| Field              | Type         | Description                                                  |
+| ------------------ | ------------ | ------------------------------------------------------------ |
+| `lockForward`      | `StepConfig` | Config for `gen2-migration lock`.                            |
+| `lockRollback`     | `StepConfig` | Config for `gen2-migration lock --rollback`.                 |
+| `refactorForward`  | `StepConfig` | Config for `gen2-migration refactor`.                        |
+| `refactorRollback` | `StepConfig` | Config for `gen2-migration refactor --rollback`.             |
+| `generate`         | `StepConfig` | Config for `gen2-migration generate`.                        |
 
-If the file does not exist, defaults are used (no skip-validations).
+`StepConfig` fields:
+
+| Field              | Type      | Description                                        |
+| ------------------ | --------- | -------------------------------------------------- |
+| `skipValidations`  | `boolean` | Pass `--skip-validations` to the step.             |
+| `skip`             | `boolean` | Skip the step entirely.                            |
+
+If the file does not exist, defaults are used (no skips, no skip-validations).
 
 ### `tests/`
 
