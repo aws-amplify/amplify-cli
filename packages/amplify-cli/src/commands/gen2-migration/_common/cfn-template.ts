@@ -60,6 +60,8 @@ export interface CFNTemplate {
   Resources: Record<string, CFNResource>;
   // Optional because CDK omits Outputs when a stack has no cross-stack references.
   Outputs?: Record<string, CFNOutput>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Metadata?: Record<string, any>;
 }
 
 export enum CFNStackStatus {

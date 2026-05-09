@@ -51,6 +51,7 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
 
 export const HOLDING_STACK_NAME_SUFFIX = '-holding';
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
+export const HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY = 'ForwardMappings';
 export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
@@ -121,7 +122,11 @@ export class Cfn {
    * Creates and executes a CloudFormation stack refactor.
    * Throws on failure.
    */
-  public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
+  public async refactor(
+    resourceMappings: ResourceMapping[],
+    resource?: DiscoveredResource,
+    pre?: (targetTemplate: CFNTemplate) => Promise<void>,
+  ): Promise<void> {
     const sourceStackId = resourceMappings[0].Source!.StackName!;
     const targetStackId = resourceMappings[0].Destination!.StackName!;
 
@@ -151,7 +156,7 @@ export class Cfn {
     for (const mapping of resourceMappings) {
       if (mapping.Destination!.LogicalResourceId! in targetTemplate.Resources) {
         // our refactoring is expected to move resources into vacancies, not override
-        throw new AmplifyError('ResourceMappingError', {
+        throw new AmplifyError('MigrationError', {
           message: `Unable to create stack refactor. Resource ${
             mapping.Destination!.LogicalResourceId
           } already exists in stack ${targetStackName}`,
@@ -174,6 +179,10 @@ export class Cfn {
         resource,
       });
       this.info(`Finished adding placeholder to source stack '${sourceStackName}'`);
+    }
+
+    if (pre) {
+      await pre(targetTemplate);
     }
 
     const input: CreateStackRefactorCommandInput = {

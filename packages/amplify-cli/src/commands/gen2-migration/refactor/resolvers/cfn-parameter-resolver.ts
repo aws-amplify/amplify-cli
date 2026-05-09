@@ -54,20 +54,3 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
     return undefined;
   }) as CFNTemplate;
 }
-
-/**
- * Replaces NoEcho parameters with UsePreviousValue to prevent DescribeStacks'
- * masked "****" values from flowing back into CreateChangeSet / UpdateStack,
- * where they would re-resolve {Ref}s to the literal "****"
- */
-export function resolveNoEchoParameters(template: CFNTemplate, parameters: Parameter[]): Parameter[] {
-  const paramDefinitions = template.Parameters ?? {};
-  return parameters.map((param) => {
-    if (!param.ParameterKey) return param;
-    const paramDef = paramDefinitions[param.ParameterKey];
-    if (paramDef?.NoEcho) {
-      return { ParameterKey: param.ParameterKey, UsePreviousValue: true };
-    }
-    return param;
-  });
-}

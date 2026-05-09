@@ -1,4 +1,4 @@
-import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { DescribeChangeSetOutput, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { Planner } from '../../_common/planner';
@@ -65,12 +65,12 @@ export abstract class CategoryRefactorer implements Planner {
 
     const resourceSpec = `${this.resource.category}/${this.resource.resourceName} (${this.resource.service})`;
     if (!sourceStackId) {
-      throw new AmplifyError('ResourceMappingError', {
+      throw new AmplifyError('MigrationError', {
         message: `Unable to find source stack for resource: ${resourceSpec}`,
       });
     }
     if (!destStackId) {
-      throw new AmplifyError('ResourceMappingError', {
+      throw new AmplifyError('MigrationError', {
         message: `Unable to find target stack for resource: ${resourceSpec}`,
       });
     }
@@ -78,14 +78,16 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceStatusOp = this.buildStackStatusValidation(sourceStackId);
     const destStatusOp = this.buildStackStatusValidation(destStackId);
 
+    this.logger.push(`${extractStackNameFromId(sourceStackId)} (Resolving)`);
     const source = await this.resolveSource(sourceStackId);
+    this.logger.pop();
+
+    this.logger.push(`${extractStackNameFromId(destStackId)} (Resolving)`);
     const target = await this.resolveTarget(destStackId);
+    this.logger.pop();
 
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
-
-    const sourceDeletionPolicyOps = this.buildRemovalPolicyValidation(sourceStackId, source.resolvedTemplate, [...sourceResources.keys()]);
-    const targetDeletionPolicyOps = this.buildRemovalPolicyValidation(destStackId, target.resolvedTemplate, [...targetResources.keys()]);
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
@@ -93,15 +95,13 @@ export abstract class CategoryRefactorer implements Planner {
 
     const updateSourceOps = await this.updateSource(source);
     const updateTargetOps = await this.updateTarget(target);
-    const beforeMoveOps = await this.beforeMove(blueprint.targetStackId);
+    const beforeMoveOps = await this.beforeMove(blueprint);
     const moveOps = await this.move(blueprint);
-    const afterMoveOps = await this.afterMove(blueprint.sourceStackId);
+    const afterMoveOps = await this.afterMove(blueprint);
 
     const operations = [
       sourceStatusOp,
       destStatusOp,
-      sourceDeletionPolicyOps,
-      targetDeletionPolicyOps,
       ...updateSourceOps,
       ...updateTargetOps,
       ...beforeMoveOps,
@@ -138,14 +138,14 @@ export abstract class CategoryRefactorer implements Planner {
    * Forward: moves Gen2 resources to holding stack.
    * Rollback: no-op.
    */
-  protected abstract beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]>;
+  protected abstract beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
   /**
    * Post-move operations.
    * Forward: empty.
    * Rollback: restores holding stack resources into Gen2.
    */
-  protected abstract afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]>;
+  protected abstract afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
   // -- Shared workflow (concrete) --
 
@@ -158,38 +158,22 @@ export abstract class CategoryRefactorer implements Planner {
     this.cfn.claimUpdate(source.stackId);
 
     const sourceStackName = extractStackNameFromId(source.stackId);
-
-    this.logger.push(sourceStackName);
-    const changeSet = await this.cfn.createChangeSet({
-      stackName: source.stackId,
-      parameters: source.parameters,
-      templateBody: source.resolvedTemplate,
-    });
-    this.logger.pop();
-
-    if (!changeSet) {
-      return [];
-    }
-
-    const report = this.cfn.renderChangeSet(changeSet);
-
-    // resolving references to their concrete value should
-    // not result in any actual change.
-    const valid = (changeSet.Changes ?? []).length === 0;
-
+    const change = await this.createChangeSetReport(source);
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Stack Unchanged: ${sourceStackName}`,
-          run: async () => ({ valid, report }),
+          description: `Ensure no unexpected changes to ${sourceStackName}`,
+          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
         }),
         describe: async () => {
-          const header = `Prepare source '${sourceStackName}' for resource move (replace inter-resource references with concrete values)`;
-          return [valid ? header : `${header}\n\n${report.trimStart()}`];
+          if (!change) return [];
+          const header = `Update source stack '${sourceStackName}' with resolved references`;
+          return [change.report ? `${header}\n\n${change.report.trimStart()}` : `${header} (empty change-set)`];
         },
         execute: async () => {
-          await this.cfn.executeChangeSet({ changeSet, templateBody: source.resolvedTemplate, resource: this.resource });
+          if (!change) return;
+          await this.cfn.executeChangeSet({ changeSet: change.changeSet, templateBody: source.resolvedTemplate, resource: this.resource });
         },
       },
     ];
@@ -204,41 +188,47 @@ export abstract class CategoryRefactorer implements Planner {
     this.cfn.claimUpdate(target.stackId);
 
     const targetStackName = extractStackNameFromId(target.stackId);
-
-    this.logger.push(targetStackName);
-    const changeSet = await this.cfn.createChangeSet({
-      stackName: target.stackId,
-      parameters: target.parameters,
-      templateBody: target.resolvedTemplate,
-    });
-    this.logger.pop();
-
-    if (!changeSet) {
-      return [];
-    }
-
-    const report = this.cfn.renderChangeSet(changeSet);
-
-    // resolving references to their concrete value should
-    // not result in any actual change.
-    const valid = (changeSet.Changes ?? []).length === 0;
-
+    const change = await this.createChangeSetReport(target);
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Stack Unchanged: ${targetStackName}`,
-          run: async () => ({ valid, report }),
+          description: `Ensure no unexpected changes to ${targetStackName}`,
+          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
         }),
         describe: async () => {
-          const header = `Prepare target '${targetStackName}' for resource move (replace inter-resource references with concrete values)`;
-          return [valid ? header : `${header}\n\n${report.trimStart()}`];
+          if (!change) return [];
+          const header = `Update target stack '${targetStackName}' with resolved references`;
+          return [change.report ? `${header}\n\n${change.report.trimStart()}` : `${header} (empty change-set)`];
         },
         execute: async () => {
-          await this.cfn.executeChangeSet({ changeSet, templateBody: target.resolvedTemplate, resource: this.resource });
+          if (!change) return;
+          await this.cfn.executeChangeSet({ changeSet: change.changeSet, templateBody: target.resolvedTemplate, resource: this.resource });
         },
       },
     ];
+  }
+
+  /**
+   * Creates a change set for the given stack and returns the described change set with a formatted report.
+   */
+  protected async createChangeSetReport(
+    stack: ResolvedStack,
+  ): Promise<{ readonly report: string | undefined; readonly changeSet: DescribeChangeSetOutput } | undefined> {
+    const stackName = extractStackNameFromId(stack.stackId);
+    this.logger.push(`${stackName} (Creating ChangeSet)`);
+    try {
+      const changeSet = await this.cfn.createChangeSet({
+        stackName: stack.stackId,
+        parameters: stack.parameters,
+        templateBody: stack.resolvedTemplate,
+      });
+      if (!changeSet) return undefined;
+      const report = this.cfn.renderChangeSet(changeSet);
+      return { report, changeSet };
+    } finally {
+      this.logger.pop();
+    }
   }
 
   /**
@@ -258,7 +248,7 @@ export abstract class CategoryRefactorer implements Planner {
         validate: () => undefined,
         describe: async () => {
           const header = `Move ${blueprint.mappings.length} resource(s) from '${sourceStackName}' to '${targetStackName}'`;
-          const table = this.renderMappingTable(blueprint.mappings);
+          const table = await this.renderMappingTable(blueprint.mappings);
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
@@ -266,6 +256,14 @@ export abstract class CategoryRefactorer implements Planner {
         },
       },
     ];
+  }
+
+  /**
+   * Filters resources from a template by the category's resource types.
+   */
+  protected filterResourcesByType(template: CFNTemplate): Map<string, CFNResource> {
+    const types = this.resourceTypes();
+    return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
   }
 
   /**
@@ -290,23 +288,22 @@ export abstract class CategoryRefactorer implements Planner {
   }
 
   /**
-   * Returns the resources in `template` whose Type is in this.resourceTypes().
-   */
-  protected filterResourcesByType(template: CFNTemplate): Map<string, CFNResource> {
-    const types = this.resourceTypes();
-    return new Map(Object.entries(template.Resources).filter(([, resource]) => types.includes(resource.Type)));
-  }
-
-  /**
    * Renders a CLI table of move mappings.
    */
-  protected renderMappingTable(mappings: readonly ResourceMapping[]): string {
+  protected async renderMappingTable(mappings: readonly ResourceMapping[]): Promise<string> {
     const table = new CLITable({
-      head: ['Source Logical ID', 'Target Logical ID'],
+      head: ['Type', 'Source Logical ID', 'Target Logical ID'],
       style: { head: [] },
     });
+
+    const sourceResources = await this.gen2Branch.fetchStackResources(mappings[0].Source!.StackName!);
+
+    function findResourceType(logicalId: string) {
+      return sourceResources.find((r) => r.LogicalResourceId === logicalId)?.ResourceType;
+    }
+
     for (const m of mappings) {
-      table.push([m.Source!.LogicalResourceId, m.Destination!.LogicalResourceId]);
+      table.push([findResourceType(m.Source!.LogicalResourceId!), m.Source!.LogicalResourceId, m.Destination!.LogicalResourceId]);
     }
     return `${table.toString()}`;
   }
@@ -317,20 +314,6 @@ export abstract class CategoryRefactorer implements Planner {
 
   protected debug(message: string) {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
-  }
-
-  private buildRemovalPolicyValidation(stackId: string, template: CFNTemplate, logicalIds: string[]): AmplifyMigrationOperation {
-    const stackName = extractStackNameFromId(stackId);
-    return {
-      resource: this.resource,
-      describe: async () => [],
-      validate: () => ({
-        description: `Deletion Protection: ${stackName}`,
-        run: async () => checkRetainPolicies(template, logicalIds),
-      }),
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    };
   }
 
   /**
@@ -359,26 +342,4 @@ export abstract class CategoryRefactorer implements Planner {
       execute: async () => {},
     };
   }
-}
-
-/**
- * Verifies that every resource at `logicalIds` in `template` has both
- * DeletionPolicy: Retain and UpdateReplacePolicy: Retain. Missing logical
- * IDs are skipped. Returns a ValidationResult with a CLI-table report when
- * any checked resource is not set to Retain.
- */
-export function checkRetainPolicies(template: CFNTemplate, logicalIds: readonly string[]): ValidationResult {
-  const table = new CLITable({
-    head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
-    style: { head: [] },
-  });
-  let valid = true;
-  for (const id of logicalIds) {
-    const resource = template.Resources[id];
-    if (!resource) continue;
-    valid = valid && resource.DeletionPolicy === 'Retain' && resource.UpdateReplacePolicy === 'Retain';
-    table.push([id, resource.Type, resource.DeletionPolicy ?? '— (not set)', resource.UpdateReplacePolicy ?? '— (not set)']);
-  }
-  if (valid) return { valid: true };
-  return { valid: false, report: `Following resources are not set to Retain:\n\n${table.toString()}` };
 }

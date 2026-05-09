@@ -1,7 +1,7 @@
 import { ResourceToImport } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-refactorer';
+import { RefactorBlueprint } from '../workflow/category-refactorer';
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
 import { extractStackNameFromId } from '../../_common/utils';
@@ -170,9 +170,10 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
    * (DeletionPolicy: Retain, set by generate's escape hatches, ensures
    * the physical Cognito resources survive)
    */
-  protected override async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const baseOps = await super.beforeMove(gen2StackId);
+  protected override async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const baseOps = await super.beforeMove(blueprint);
 
+    const gen2StackId = blueprint.targetStackId;
     const template = await this.cfn.fetchTemplate(gen2StackId);
     const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
 
@@ -181,10 +182,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
       const gen2StackName = extractStackNameFromId(gen2StackId);
       baseOps.push({
         resource: this.resource,
-        validate: () => ({
-          description: `Deletion Protection (social auth): ${gen2StackName}`,
-          run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
-        }),
+        validate: () => undefined,
         describe: async () => [renderOrphanTable(socialProvidersResourceIds, template, gen2StackName, 'forward')],
         execute: () =>
           this.cfn.orphan({
@@ -242,26 +240,38 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     return baseOps;
   }
 
-  protected override match(sourceId: string, sourceResource: CFNResource, targetId: string, targetResource: CFNResource): boolean {
-    if (sourceResource.Type !== targetResource.Type) {
-      return false;
+  protected override async gen2LogicalId(
+    sourceId: string,
+    sourceResource: CFNResource,
+    targetResources: Map<string, CFNResource>,
+  ): Promise<string> {
+    if (sourceResource.Type !== USER_POOL_CLIENT_TYPE) {
+      return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
-    switch (sourceResource.Type) {
-      case USER_POOL_CLIENT_TYPE: {
-        switch (sourceId) {
-          case GEN1_WEB_CLIENT:
-            return targetId.includes(GEN2_WEB_CLIENT);
-          case GEN1_NATIVE_APP_CLIENT:
-            return targetId.includes(GEN2_NATIVE_APP_CLIENT);
-          default:
-            throw new AmplifyError('ResourceMappingError', {
-              message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
-            });
-        }
+    let candidates: string[];
+    const targetResourceIds = Array.from(targetResources.keys());
+
+    switch (sourceId) {
+      case GEN1_WEB_CLIENT: {
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT));
+        break;
+      }
+      case GEN1_NATIVE_APP_CLIENT: {
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT));
+        break;
       }
       default:
-        return true;
+        throw new AmplifyError('MigrationError', {
+          message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
+        });
     }
+
+    if (candidates.length !== 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to map Gen1 resource ${sourceId} (${sourceResource.Type}) to Gen2 resource`,
+      });
+    }
+    return candidates[0];
   }
 
   protected async fetchSourceStackId(): Promise<string | undefined> {

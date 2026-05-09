@@ -21,6 +21,8 @@ import { Cfn } from './_common/cfn';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './assess';
+import { CustomCDKRollbackRefactorer } from './refactor/custom/custom-cdk-rollback';
+import { CustomCDKForwardRefactorer } from './refactor/custom/custom-cdk-forward';
 
 const GUIDE_LINK = 'https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/#step-8-post-refactor-critical';
 
@@ -36,12 +38,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = this.gen1App.discover();
 
     for (const resource of discovered) {
-      // skip resources the assessment did not mark as supported.
-      // these will show up as validation errors the user has to acknowledge.
-      if (assessment.of(resource, 'refactor').level !== 'supported') {
-        continue;
-      }
-
       switch (resource.key) {
         case 'auth:Cognito': {
           const isReferenceAuth = discovered
@@ -69,6 +65,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
+        case 'custom:customCDK':
+          refactorers.push(new CustomCDKForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
+          break;
 
         // stateless resources — nothing to refactor
         case 'function:Lambda':
@@ -82,7 +81,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         // the assessment validation will surface these to the user
         // and require confirmation of missing capabilities.
         case 'geo:GeofenceCollection':
-        case 'custom:customCDK':
         case 'UNKNOWN':
           break;
       }
@@ -123,12 +121,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = this.gen1App.discover();
 
     for (const resource of discovered) {
-      // skip resources the assessment did not mark as supported.
-      // these will show up as validation errors the user has to acknowledge.
-      if (assessment.of(resource, 'refactor').level !== 'supported') {
-        continue;
-      }
-
       switch (resource.key) {
         case 'auth:Cognito': {
           // Imported auth resources have no CloudFormation stack to move — skip.
@@ -159,6 +151,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
             new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
+        case 'custom:customCDK':
+          refactorers.push(new CustomCDKRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
+          break;
 
         // stateless resources — nothing to refactor
         case 'function:Lambda':
@@ -172,7 +167,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         // the assessment validation will surface these to the user
         // and require confirmation of missing capabilities.
         case 'geo:GeofenceCollection':
-        case 'custom:customCDK':
         case 'UNKNOWN':
           break;
       }

@@ -146,6 +146,19 @@ export class SpinningLogger {
     this.spinner.start(this.buildSpinnerText());
   }
 
+  public pause(): void {
+    if (this.spinnerActive && !this.debugMode) {
+      this.spinner.stop();
+    }
+  }
+
+  public resume(): void {
+    if (!this.debugMode) {
+      this.spinnerActive = true;
+      this.spinner.start(this.buildSpinnerText());
+    }
+  }
+
   private buildSpinnerText(): string {
     return this.segments.join(SpinningLogger.SEPARATOR);
   }
