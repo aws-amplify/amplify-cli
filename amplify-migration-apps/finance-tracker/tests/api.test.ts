@@ -215,7 +215,7 @@ describe('Custom VTL resolver', () => {
 
     const result = await publicClient().graphql({
       query: getTransactionsByCategory,
-      variables: { category, limit: 10 },
+      variables: { category, limit: 1000 },
     });
     const connection = (result as any).data.getTransactionsByCategory;
 
