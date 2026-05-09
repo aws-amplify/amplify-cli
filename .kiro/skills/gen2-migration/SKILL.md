@@ -60,6 +60,8 @@ The E2E runs the following phases in order:
 17. Sandbox redeploy
 18. Gen1 tests + Gen2 tests (final)
 19. Shared data tests
+20. Retain
+21. Gen1 tests + Gen2 tests (post-retain)
 
 #### App directory
 

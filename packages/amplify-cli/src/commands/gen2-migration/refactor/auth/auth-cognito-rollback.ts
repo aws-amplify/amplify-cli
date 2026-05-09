@@ -1,6 +1,6 @@
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationOperation } from '../../_common/operation';
-import { RefactorBlueprint } from '../workflow/category-refactorer';
+import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-refactorer';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { extractStackNameFromId } from '../../_common/utils';
 import { RESOURCE_TYPES, buildImportSpec, extractSocialAuthLogicalIds, renderImportTable, renderOrphanTable } from './auth-cognito-forward';
@@ -39,16 +39,25 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const baseOps = await super.move(blueprint);
 
     const gen2StackId = blueprint.sourceStackId;
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+    const holdingStackName = this.getHoldingStackName(gen2StackName);
+    const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (!holdingStack) return baseOps;
+
     const template = await this.cfn.fetchTemplate(gen2StackId);
     const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
 
     if (domainLogicalId || idpLogicalIds.size > 0) {
       const socialProvidersResourceIds = [...(domainLogicalId ? [domainLogicalId] : []), ...idpLogicalIds.values()];
       const gen2StackName = extractStackNameFromId(gen2StackId);
+      const description = await renderOrphanTable(this.gen2Branch, socialProvidersResourceIds, template, gen2StackName, 'rollback');
       baseOps.push({
         resource: this.resource,
-        validate: () => undefined,
-        describe: async () => [renderOrphanTable(socialProvidersResourceIds, template, gen2StackName, 'rollback')],
+        validate: () => ({
+          description: `Deletion Protection (social auth): ${gen2StackName}`,
+          run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
+        }),
+        describe: async () => [description],
         execute: () =>
           this.cfn.orphan({
             stackName: gen2StackId,

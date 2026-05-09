@@ -1,11 +1,11 @@
 import { ResourceToImport } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { RefactorBlueprint } from '../workflow/category-refactorer';
+import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-refactorer';
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
 import { extractStackNameFromId } from '../../_common/utils';
-import { SocialAuthConfig } from '../stack-facade';
+import { SocialAuthConfig, StackFacade } from '../stack-facade';
 import CLITable from 'cli-table3';
 
 export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
@@ -135,11 +135,28 @@ export function renderImportTable(resourcesToImport: ResourceToImport[], gen2Sta
  * resource being removed from the stack, showing its logical ID
  * and CFN type.
  */
-export function renderOrphanTable(logicalIds: string[], template: CFNTemplate, stackName: string, variant: 'forward' | 'rollback'): string {
-  const table = new CLITable({ head: ['Logical ID', 'Type'], style: { head: [] } });
+export async function renderOrphanTable(
+  stackFacade: StackFacade,
+  logicalIds: string[],
+  template: CFNTemplate,
+  stackName: string,
+  variant: 'forward' | 'rollback',
+): Promise<string> {
+  const deployedResources = await stackFacade.fetchStackResources(stackName);
+
+  const userPool = deployedResources.find((r) => r.ResourceType === USER_POOL_TYPE);
+  if (!userPool) {
+    throw new AmplifyError('MigrationError', { message: `Unable to find user pool in stack ${stackName}` });
+  }
+
+  const table = new CLITable({ head: ['PhysicalId', 'Logical ID', 'Type'], style: { head: [] } });
   for (const id of logicalIds) {
-    const type = template.Resources[id]?.Type ?? '— (not in template)';
-    table.push([id, type]);
+    const deployedResource = deployedResources.find((r) => r.LogicalResourceId === id);
+    const templateResource = template.Resources[id];
+    if (!deployedResource || !templateResource) {
+      throw new AmplifyError('MigrationError', { message: `Unable to find resource with id ${id} in stack ${stackName}` });
+    }
+    table.push([`${userPool.PhysicalResourceId}/${deployedResource.PhysicalResourceId}`, id, templateResource.Type]);
   }
   const header =
     variant === 'forward'
@@ -174,16 +191,25 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const baseOps = await super.beforeMove(blueprint);
 
     const gen2StackId = blueprint.targetStackId;
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+    const holdingStackName = this.getHoldingStackName(gen2StackName);
+    const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (holdingStack) return baseOps;
+
     const template = await this.cfn.fetchTemplate(gen2StackId);
     const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
 
     if (domainLogicalId || idpLogicalIds.size > 0) {
       const socialProvidersResourceIds = [...(domainLogicalId ? [domainLogicalId] : []), ...idpLogicalIds.values()];
       const gen2StackName = extractStackNameFromId(gen2StackId);
+      const description = await renderOrphanTable(this.gen2Branch, socialProvidersResourceIds, template, gen2StackName, 'forward');
       baseOps.push({
         resource: this.resource,
-        validate: () => undefined,
-        describe: async () => [renderOrphanTable(socialProvidersResourceIds, template, gen2StackName, 'forward')],
+        validate: () => ({
+          description: `Deletion Protection (social auth): ${gen2StackName}`,
+          run: async () => checkRetainPolicies(template, socialProvidersResourceIds),
+        }),
+        describe: async () => [description],
         execute: () =>
           this.cfn.orphan({
             stackName: gen2StackId,
@@ -207,6 +233,11 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const baseOps = await super.move(blueprint);
 
     const gen2StackId = blueprint.targetStackId;
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+    const holdingStackName = this.getHoldingStackName(gen2StackName);
+    const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (holdingStack) return baseOps;
+
     const gen1UserPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
     const socialAuthConfig = await this.gen2Branch.fetchSocialAuthConfig(gen1UserPoolId);
 

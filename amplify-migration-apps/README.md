@@ -27,7 +27,8 @@ Each app directory follows this layout:
 │   ├── config.json                   # E2E system configuration (optional)
 │   ├── post-generate.ts              # Fixups after gen2-migration generate
 │   ├── post-push.ts                  # Fixups after amplify push (optional)
-│   └── post-refactor.ts              # Fixups after gen2-migration refactor
+│   ├── post-refactor.ts              # Fixups after gen2-migration refactor
+│   └── post-rollback.ts             # Reverses post-refactor fixups after rollback (optional)
 ├── tests/                            # Jest test suites for validating deployed stacks
 │   ├── signup.ts                     # Cognito user provisioning (app-specific)
 │   ├── jest.setup.ts                 # Jest setup (retry config)
@@ -60,17 +61,34 @@ caller's working directory.
 ### `migration/config.json`
 
 Configuration file read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime.
-Currently supports:
+Each key corresponds to a migration step and accepts a `StepConfig` object:
 
 ```json
 {
-  "lock": { "skipValidations": true }
+  "lockForward": { "skipValidations": true },
+  "lockRollback": { "skipValidations": false },
+  "refactorForward": { "skip": true },
+  "refactorRollback": { "skipValidations": true },
+  "generate": { "skipValidations": true }
 }
 ```
 
-- `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
+| Field              | Type         | Description                                                  |
+| ------------------ | ------------ | ------------------------------------------------------------ |
+| `lockForward`      | `StepConfig` | Config for `gen2-migration lock`.                            |
+| `lockRollback`     | `StepConfig` | Config for `gen2-migration lock --rollback`.                 |
+| `refactorForward`  | `StepConfig` | Config for `gen2-migration refactor`.                        |
+| `refactorRollback` | `StepConfig` | Config for `gen2-migration refactor --rollback`.             |
+| `generate`         | `StepConfig` | Config for `gen2-migration generate`.                        |
 
-If the file does not exist, defaults are used (no skip-validations).
+`StepConfig` fields:
+
+| Field              | Type      | Description                                        |
+| ------------------ | --------- | -------------------------------------------------- |
+| `skipValidations`  | `boolean` | Pass `--skip-validations` to the step.             |
+| `skip`             | `boolean` | Skip the step entirely.                            |
+
+If the file does not exist, defaults are used (no skips, no skip-validations).
 
 ### `tests/`
 
@@ -103,6 +121,18 @@ If a script does not exist for an app, the E2E system silently skips the step.
 
 > Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
 > for them yet.
+
+### `migration/post-rollback.ts`
+
+Optional script that reverses the fixups applied by `post-refactor.ts` after a
+`gen2-migration refactor --rollback`. For example, if `post-refactor.ts` uncomments
+a function call in `amplify/backend.ts`, `post-rollback.ts` comments it back.
+
+```typescript
+export async function postRollback(appPath: string): Promise<void>;
+```
+
+If a script does not exist for an app, the E2E system silently skips the step.
 
 ### `migration/pre-push.ts` and `migration/post-sandbox.ts`
 

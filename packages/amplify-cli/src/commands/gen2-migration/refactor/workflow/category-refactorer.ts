@@ -343,3 +343,25 @@ export abstract class CategoryRefactorer implements Planner {
     };
   }
 }
+
+/**
+ * Verifies that every resource at `logicalIds` in `template` has both
+ * DeletionPolicy: Retain and UpdateReplacePolicy: Retain. Missing logical
+ * IDs are skipped. Returns a ValidationResult with a CLI-table report when
+ * any checked resource is not set to Retain.
+ */
+export function checkRetainPolicies(template: CFNTemplate, logicalIds: readonly string[]): ValidationResult {
+  const table = new CLITable({
+    head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
+    style: { head: [] },
+  });
+  let valid = true;
+  for (const id of logicalIds) {
+    const resource = template.Resources[id];
+    if (!resource) continue;
+    valid = valid && resource.DeletionPolicy === 'Retain' && resource.UpdateReplacePolicy === 'Retain';
+    table.push([id, resource.Type, resource.DeletionPolicy ?? '— (not set)', resource.UpdateReplacePolicy ?? '— (not set)']);
+  }
+  if (valid) return { valid: true };
+  return { valid: false, report: `Following resources are not set to Retain:\n\n${table.toString()}` };
+}

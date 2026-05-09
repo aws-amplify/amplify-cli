@@ -1,28 +1,12 @@
 import { AmplifyDriftDetector } from '../../drift';
-import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
-import {
-  DescribeChangeSetOutput,
-  DescribeStacksCommand,
-  ListStackResourcesCommand,
-  GetStackPolicyCommand,
-  GetTemplateCommand,
-} from '@aws-sdk/client-cloudformation';
-import { STATEFUL_RESOURCES } from './resource-types';
-import CLITable from 'cli-table3';
-import Bottleneck from 'bottleneck';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { DescribeStacksCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import execa from 'execa';
 import { SpinningLogger } from './spinning-logger';
 import chalk from 'chalk';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { extractCategory } from './categories';
 import { Gen1App } from './gen1-app';
 
 export class AmplifyGen2MigrationValidations {
-  private readonly limiter = new Bottleneck({
-    maxConcurrent: 3,
-    minTime: 50,
-  });
-
   public constructor(private readonly logger: SpinningLogger, private readonly gen1App: Gen1App, private readonly context: $TSContext) {}
 
   public async validateDrift(): Promise<void> {
@@ -71,82 +55,6 @@ export class AmplifyGen2MigrationValidations {
     }
   }
 
-  public async validateDeploymentVersion(): Promise<void> {
-    this.logger.warn('Not implemented');
-  }
-
-  public async validateIsolatedEnvironment(): Promise<void> {
-    this.logger.warn('Not implemented');
-  }
-
-  // eslint-disable-next-line spellcheck/spell-checker
-  public async validateStatefulResources(changeSet: DescribeChangeSetOutput, excludeDeploymentBucket = false): Promise<void> {
-    if (!changeSet.Changes) return;
-
-    const deploymentBucketName = excludeDeploymentBucket
-      ? stateManager.getTeamProviderInfo()[this.gen1App.envName].awscloudformation.DeploymentBucketName
-      : undefined;
-
-    this.logger.info('Scanning for stateful resources...');
-
-    const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
-    for (const change of changeSet.Changes) {
-      if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
-        if (
-          deploymentBucketName &&
-          change.ResourceChange.ResourceType === 'AWS::S3::Bucket' &&
-          change.ResourceChange.PhysicalResourceId === deploymentBucketName
-        ) {
-          continue;
-        }
-
-        if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
-          const category = extractCategory(change.ResourceChange.LogicalResourceId || '');
-          this.logger.info(`Scanning '${category}'...`);
-          const nestedResources = await this.getStatefulResources(
-            change.ResourceChange.PhysicalResourceId,
-            change.ResourceChange.LogicalResourceId,
-          );
-          statefulRemoves.push(...nestedResources);
-        } else if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
-          const category = extractCategory(change.ResourceChange.LogicalResourceId || '');
-          const physicalId = change.ResourceChange.PhysicalResourceId || 'N/A';
-          this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
-          statefulRemoves.push({
-            category,
-            resourceType: change.ResourceChange.ResourceType,
-            physicalId,
-          });
-        }
-      }
-    }
-
-    if (statefulRemoves.length > 0) {
-      const table = new CLITable({
-        head: ['Category', 'Resource Type', 'Physical ID'],
-        style: { head: ['red'] },
-      });
-
-      statefulRemoves.forEach((resource) => {
-        table.push([resource.category, resource.resourceType, resource.physicalId]);
-      });
-
-      this.logger.info('Stateful resources scheduled for deletion');
-      printer.blankLine();
-      printer.info(table.toString());
-      printer.blankLine();
-
-      throw new AmplifyError('DestructiveMigrationError', {
-        message: 'Decommission will delete stateful resources.',
-        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
-      });
-    }
-  }
-
-  public async validateIngressTraffic(): Promise<void> {
-    this.logger.warn('Not implemented');
-  }
-
   public async validateLockStatus(): Promise<void> {
     this.logger.debug(`Inspecting stack policy for ${this.gen1App.rootStackName}`);
     const { StackPolicyBody } = await this.gen1App.clients.cloudFormation.send(
@@ -173,60 +81,5 @@ export class AmplifyGen2MigrationValidations {
     }
 
     this.logger.debug(chalk.green(`Stack ${this.gen1App.rootStackName} is locked ✔`));
-  }
-
-  private async getStatefulResources(
-    stackName: string,
-    parentLogicalId?: string,
-  ): Promise<Array<{ category: string; resourceType: string; physicalId: string }>> {
-    const statefulResources: Array<{ category: string; resourceType: string; physicalId: string }> = [];
-    const parentCategory = parentLogicalId ? extractCategory(parentLogicalId) : undefined;
-
-    let nextToken: string | undefined;
-    const nestedStackTasks: Array<{ physicalId: string; logicalId: string | undefined }> = [];
-
-    do {
-      const response = await this.gen1App.clients.cloudFormation.send(
-        new ListStackResourcesCommand({ StackName: stackName, NextToken: nextToken }),
-      );
-      nextToken = response.NextToken;
-
-      for (const resource of response.StackResourceSummaries ?? []) {
-        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
-          nestedStackTasks.push({
-            physicalId: resource.PhysicalResourceId,
-            logicalId: resource.LogicalResourceId,
-          });
-        } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
-          if (resource.ResourceType === 'AWS::DynamoDB::Table') {
-            const templateResponse = await this.gen1App.clients.cloudFormation.send(new GetTemplateCommand({ StackName: stackName }));
-            const template = JSON.parse(templateResponse.TemplateBody!);
-            if (template.Resources[resource.LogicalResourceId!].DeletionPolicy === 'Retain') {
-              continue;
-            }
-          }
-          const category = parentCategory || extractCategory(resource.LogicalResourceId || '');
-          const physicalId = resource.PhysicalResourceId || 'N/A';
-          this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
-          statefulResources.push({
-            category,
-            resourceType: resource.ResourceType,
-            physicalId,
-          });
-        }
-      }
-    } while (nextToken);
-
-    const nestedResults = await Promise.all(
-      nestedStackTasks.map((task) =>
-        this.limiter.schedule(() => {
-          const category = extractCategory(task.logicalId || '');
-          return this.getStatefulResources(task.physicalId, category !== 'other' ? task.logicalId : parentLogicalId);
-        }),
-      ),
-    );
-
-    nestedResults.forEach((nested) => statefulResources.push(...nested));
-    return statefulResources;
   }
 }

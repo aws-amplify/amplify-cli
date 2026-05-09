@@ -61,7 +61,7 @@ export class CredentialManager {
   }
 
   /** Whether this manager operates in CI mode. */
-  private get isCIMode(): boolean {
+  public get isCIMode(): boolean {
     return this.callerProfile === undefined;
   }
 

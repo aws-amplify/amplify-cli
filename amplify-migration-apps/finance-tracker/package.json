@@ -15,6 +15,7 @@
     "pre-push": "npx tsx migration/pre-push.ts",
     "post-generate": "npx tsx migration/post-generate.ts",
     "post-refactor": "true",
+    "post-rollback": "true",
     "post-sandbox": "true",
     "pre-sandbox": "true",
     "post-push": "true",
