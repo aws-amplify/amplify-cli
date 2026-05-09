@@ -61,11 +61,17 @@ describe('PostConfirmation trigger', () => {
     const username = `testuser-${randomBytes(4).toString('hex')}@test.example.com`;
     const password = `Test${randomBytes(4).toString('hex')}!Aa1`;
 
-    await signUp({
-      username,
-      password,
-      options: { userAttributes: { email: username } },
-    });
+    try {
+      await signUp({
+        username,
+        password,
+        options: { userAttributes: { email: username } },
+      });
+    } catch (err: any) {
+      // Ignore daily email limit errors — we don't need the verification email to actually send.
+      const isEmailLimitError = err.name === 'LimitExceededException' && err.message?.includes('Exceeded daily email limit');
+      if (!isEmailLimitError) throw err;
+    }
 
     try {
       await cognito.send(new AdminConfirmSignUpCommand({

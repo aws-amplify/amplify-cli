@@ -55,6 +55,10 @@ interface E2EOptions {
   readonly teardown: boolean;
 }
 
+interface ForwardOptions {
+  readonly lock: boolean;
+}
+
 /**
  * Represents a migration app deployed to a temporary directory.
  * Exposes all lifecycle operations as public methods.
@@ -237,36 +241,23 @@ export class App {
   public async e2e(options: E2EOptions): Promise<void> {
     this.logger.info(`Started e2e execution`);
     try {
-      printBanner(`Migrate`);
+      printPhaseBanner(`Phase 1 | Migration`);
       const gen2StackName = await this.migrate();
 
-      printBanner(`Rollback`);
-      await this.git.checkout(this.gen1BranchName, false);
-      await this.pull();
-      await this.refactorRollback(gen2StackName);
-      await this.lockRollback();
-      await this.push();
-      // TODO checkout to gen2
-      // TODO comment postRefactor function
-      // TODO deploy gen2
-      // TODO test gen2
+      printPhaseBanner(`Phase 2 | Post Migration | Rollback`);
+      await this.rollback(gen2StackName);
 
-      await this.testGen1();
+      printPhaseBanner(`Phase 3 | Post Migration | Forward`);
+      // lock: true because we rolled back
+      await this.forward(gen2StackName, { lock: true });
 
-      printBanner(`Forward`);
-      await this.git.checkout(this.gen1BranchName, false);
-      await this.pull();
-      await this.lockForward();
-      await this.refactorForward(gen2StackName);
-
-      await this.testGen1();
-
-      printBanner(`Retain`);
+      printPhaseBanner(`Phase 4 | Post Migration | Retain`);
       await this.git.checkout(this.gen1BranchName, false);
       await this.pull();
       await this.retain();
 
       await this.testGen1();
+      await this.testGen2();
 
       this.logger.info(`Execution completed successfully (${this.targetAppPath})`);
       if (process.env.UPDATE_SNAPSHOTS === '1') {
@@ -285,6 +276,53 @@ export class App {
         await teardown.clean();
       }
     }
+  }
+
+  public async rollback(gen2StackName: string): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
+    await this.refactorRollback(gen2StackName);
+    await this.lockRollback();
+    await this.push();
+
+    await this.testGen1();
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.postRollback();
+    await this.git.diff();
+    await this.git.commit('chore: post rollback');
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+  }
+
+  public async forward(gen2StackName: string, options: ForwardOptions): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
+    if (options.lock) {
+      await this.lockForward();
+    }
+    await this.refactorForward(gen2StackName);
+
+    this.logger.info(`Capturing post.refactor snapshot`);
+    console.log('');
+    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.postRefactor();
+    await this.git.diff();
+    await this.git.commit('chore: post refactor');
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.testShared();
   }
 
   /**
@@ -354,30 +392,8 @@ export class App {
       return gen2StackName;
     }
 
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.pull();
-
-    await this.refactorForward(gen2StackName);
-
-    this.logger.info(`Capturing post.refactor snapshot`);
-    console.log('');
-    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
-    console.log('');
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.git.checkout(this.gen2BranchName, false);
-    await this.postRefactor();
-    await this.git.diff();
-    await this.git.commit('chore: post refactor');
-
-    await this.deployGen2Sandbox();
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.testShared();
+    // lock: false because we already executed lock
+    await this.forward(gen2StackName, { lock: false });
 
     return gen2StackName;
   }
@@ -437,10 +453,10 @@ export class App {
     // twice for idempotancy. print a banner so its easier to distinguish
     // the different runs in the logs.
 
-    printBanner('Forward Refactor (1)');
+    printStepBanner('Forward Refactor (1)');
     await this.runMigrationStep('refactor', extraArgs);
 
-    printBanner('Forward Refactor (2)');
+    printStepBanner('Forward Refactor (2)');
     await this.runMigrationStep('refactor', extraArgs);
   }
 
@@ -457,10 +473,10 @@ export class App {
     // twice for idempotancy. print a banner so its easier to distinguish
     // the different runs in the logs.
 
-    printBanner('Rollback Refactor (1)');
+    printStepBanner('Rollback Refactor (1)');
     await this.runMigrationStep('refactor', extraArgs);
 
-    printBanner('Rollback Refactor (2)');
+    printStepBanner('Rollback Refactor (2)');
     await this.runMigrationStep('refactor', extraArgs);
   }
 
@@ -565,6 +581,13 @@ export class App {
    */
   public async postRefactor(): Promise<void> {
     await this.runNpmScript('post-refactor');
+  }
+
+  /**
+   * Run the post-rollback script.
+   */
+  public async postRollback(): Promise<void> {
+    await this.runNpmScript('post-rollback');
   }
 
   /**
@@ -722,8 +745,11 @@ export class App {
     // just to have shorter log lines that fit the laptop screen
     const commandToLog = command.replace(this.amplifyPath, path.basename(this.amplifyPath));
 
+    // in CodeBuild we log debug since the cost of a retry is high.
+    const isDebug = !!process.env.CODEBUILD_SRC_DIR;
+
     this.logger.info(`(→) ${commandToLog}`);
-    const result = await execa(this.amplifyPath, args, {
+    const result = await execa(this.amplifyPath, isDebug ? [...args, '--debug'] : args, {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
@@ -799,24 +825,41 @@ export class App {
 }
 
 /**
- * Prints a centered banner to stdout for visual separation in logs.
+ * Prints a centered emphasized phase banner to stdout for visual separation in logs.
  *
  * ╔════════════════════════════════════════════════════════════╗
  * ║                                                            ║
- * ║                          {text}                            ║
+ * ║                           ${text}                          ║
  * ║                                                            ║
  * ╚════════════════════════════════════════════════════════════╝
  *
  */
-function printBanner(text: string): void {
+function printPhaseBanner(text: string): void {
   const innerWidth = 60;
   const padding = Math.max(0, innerWidth - text.length);
   const leftPad = Math.floor(padding / 2);
   const rightPad = padding - leftPad;
-  const border = '═'.repeat(innerWidth);
-  const emptyLine = `║${' '.repeat(innerWidth)}║`;
-  const textLine = `║${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}║`;
-  console.log(`\n╔${border}╗\n${emptyLine}\n${textLine}\n${emptyLine}\n╚${border}╝\n`);
+  const border = '\u2550'.repeat(innerWidth);
+  const emptyLine = `\u2551${' '.repeat(innerWidth)}\u2551`;
+  const textLine = `\u2551${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}\u2551`;
+  console.log(`\n\u2554${border}\u2557\n${emptyLine}\n${textLine}\n${emptyLine}\n\u255A${border}\u255D\n`);
+}
+
+/**
+ * Prints a smaller step banner for sub-steps within a phase.
+ *
+ * +---------------------------+
+ * |          {text}           |
+ * +---------------------------+
+ */
+function printStepBanner(text: string): void {
+  const innerWidth = 40;
+  const padding = Math.max(0, innerWidth - text.length);
+  const leftPad = Math.floor(padding / 2);
+  const rightPad = padding - leftPad;
+  const border = '-'.repeat(innerWidth);
+  const textLine = `|${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}|`;
+  console.log(`\n+${border}+\n${textLine}\n+${border}+\n`);
 }
 
 /**
