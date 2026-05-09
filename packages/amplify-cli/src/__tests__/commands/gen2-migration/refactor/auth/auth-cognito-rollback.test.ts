@@ -15,6 +15,11 @@ import {
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
+import {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolCommand,
+  ListIdentityProvidersCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
 import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 
 const ts = new Date();
@@ -174,5 +179,213 @@ describe('AuthCognitoRollbackRefactorer.targetLogicalId', () => {
 
   it('returns undefined for unknown resource type', () => {
     expect(refactorer.testTargetLogicalId('SomeResource', 'AWS::Lambda::Function')).toBeUndefined();
+  });
+});
+
+describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
+  let cfnMock: ReturnType<typeof mockClient>;
+  let cognitoMock: ReturnType<typeof mockClient>;
+
+  const gen2AuthTemplateWithSocialAuth: CFNTemplate = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Description: 'gen2 auth',
+    Resources: {
+      amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+      amplifyAuthUserPoolAppClient12345678: { Type: 'AWS::Cognito::UserPoolClient', Properties: {} },
+      amplifyAuthUserPoolDomain12345678: {
+        Type: 'AWS::Cognito::UserPoolDomain',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
+        Properties: { Domain: 'test-domain', UserPoolId: 'us-east-1_TEST' },
+      },
+      amplifyAuthUserPoolIdentityProviderGoogle12345678: {
+        Type: 'AWS::Cognito::UserPoolIdentityProvider',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
+        Properties: { ProviderName: 'Google', ProviderType: 'Google', UserPoolId: 'us-east-1_TEST' },
+      },
+    },
+    Outputs: {},
+  };
+
+  beforeEach(() => {
+    cfnMock = mockClient(CloudFormationClient);
+    cognitoMock = mockClient(CognitoIdentityProviderClient);
+  });
+
+  afterEach(() => {
+    cfnMock.restore();
+    cognitoMock.restore();
+  });
+
+  function setupRollbackMocks(holdingStackExists: boolean) {
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResources: [
+        {
+          LogicalResourceId: 'authStack',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          PhysicalResourceId: 'gen2-auth',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+      ],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResources: [
+        {
+          LogicalResourceId: 'authtestMain',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          PhysicalResourceId: 'gen1-auth',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+      ],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({
+      StackResources: [
+        {
+          LogicalResourceId: 'amplifyAuthUserPool12345678',
+          ResourceType: 'AWS::Cognito::UserPool',
+          PhysicalResourceId: 'us-east-1_TEST',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+        {
+          LogicalResourceId: 'amplifyAuthUserPoolAppClient12345678',
+          ResourceType: 'AWS::Cognito::UserPoolClient',
+          PhysicalResourceId: 'client-id',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+        {
+          LogicalResourceId: 'amplifyAuthUserPoolDomain12345678',
+          ResourceType: 'AWS::Cognito::UserPoolDomain',
+          PhysicalResourceId: 'test-domain',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+        {
+          LogicalResourceId: 'amplifyAuthUserPoolIdentityProviderGoogle12345678',
+          ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
+          PhysicalResourceId: 'Google',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+      ],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResources: [] });
+
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth' }).resolves({
+      Stacks: [{ StackName: 'gen2-auth', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-auth' }).resolves({
+      Stacks: [
+        {
+          StackName: 'gen1-auth',
+          StackStatus: rs,
+          CreationTime: ts,
+          Description: gen1AuthTemplate.Description,
+          Parameters: [],
+          Outputs: [],
+        },
+      ],
+    });
+
+    if (holdingStackExists) {
+      cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-holding' }).resolves({
+        Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: rs, CreationTime: ts }],
+      });
+      // holding stack has a user pool
+      cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({
+        StackResources: [
+          {
+            LogicalResourceId: 'amplifyAuthUserPool12345678',
+            ResourceType: 'AWS::Cognito::UserPool',
+            PhysicalResourceId: 'us-east-1_HOLDING',
+            Timestamp: ts,
+            ResourceStatus: rs,
+          },
+        ],
+      });
+      cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-holding' }).resolves({
+        TemplateBody: JSON.stringify({
+          AWSTemplateFormatVersion: '2010-09-09',
+          Resources: {
+            amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+          },
+          Outputs: {},
+        }),
+      });
+    }
+
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplateWithSocialAuth) });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth' }).resolves({ TemplateBody: JSON.stringify(gen1AuthTemplate) });
+
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
+  }
+
+  function createRollbackRefactorer() {
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    return new AuthCognitoRollbackRefactorer(
+      new StackFacade(clients, 'gen1-root'),
+      new StackFacade(clients, 'gen2-root'),
+      { region: 'us-east-1', clients } as unknown as Gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      new Cfn(new CloudFormationClient({}), noOpLogger()),
+    );
+  }
+
+  it('move includes orphan when holding stack exists', async () => {
+    setupRollbackMocks(true);
+    const refactorer = createRollbackRefactorer();
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    expect(descriptions.some((d) => d.includes('Orphan'))).toBe(true);
+  });
+
+  it('move skips orphan when no holding stack', async () => {
+    setupRollbackMocks(false);
+    const refactorer = createRollbackRefactorer();
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    expect(descriptions.some((d) => d.includes('Orphan'))).toBe(false);
+  });
+
+  it('afterMove includes import when holding stack exists', async () => {
+    setupRollbackMocks(true);
+
+    cognitoMock.on(DescribeUserPoolCommand).resolves({
+      UserPool: { Id: 'us-east-1_HOLDING', Domain: 'test-domain' },
+    });
+    cognitoMock.on(ListIdentityProvidersCommand).resolves({
+      Providers: [{ ProviderName: 'Google', ProviderType: 'Google' }],
+    });
+
+    const refactorer = createRollbackRefactorer();
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    expect(descriptions.some((d) => d.includes('Import social auth'))).toBe(true);
+  });
+
+  it('afterMove skips import when no holding stack', async () => {
+    setupRollbackMocks(false);
+    const refactorer = createRollbackRefactorer();
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    expect(descriptions.some((d) => d.includes('Import social auth'))).toBe(false);
   });
 });
