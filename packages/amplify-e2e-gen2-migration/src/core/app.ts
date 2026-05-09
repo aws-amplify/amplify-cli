@@ -244,12 +244,14 @@ export class App {
       printPhaseBanner(`Phase 1 | Migration`);
       const gen2StackName = await this.migrate();
 
-      printPhaseBanner(`Phase 2 | Post Migration | Rollback`);
-      await this.rollback(gen2StackName);
+      if (!this.skipRefactor) {
+        printPhaseBanner(`Phase 2 | Post Migration | Rollback`);
+        await this.rollback(gen2StackName);
 
-      printPhaseBanner(`Phase 3 | Post Migration | Forward`);
-      // lock: true because we rolled back
-      await this.forward(gen2StackName, { lock: true });
+        printPhaseBanner(`Phase 3 | Post Migration | Forward`);
+        // lock: true because we rolled back
+        await this.forward(gen2StackName, { lock: true });
+      }
 
       printPhaseBanner(`Phase 4 | Post Migration | Retain`);
       await this.git.checkout(this.gen1BranchName, false);
