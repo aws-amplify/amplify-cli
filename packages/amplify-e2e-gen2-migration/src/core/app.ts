@@ -237,21 +237,36 @@ export class App {
   public async e2e(options: E2EOptions): Promise<void> {
     this.logger.info(`Started e2e execution`);
     try {
-      printBanner(`Starting Migration`);
+      printBanner(`Migrate`);
       const gen2StackName = await this.migrate();
 
-      printBanner(`Starting Rollback`);
-      await this.rollback(gen2StackName);
-
-      printBanner(`Starting Forward`);
-      await this.forward(gen2StackName);
-
-      printBanner(`Starting Retain`);
+      printBanner(`Rollback`);
       await this.git.checkout(this.gen1BranchName, false);
+      await this.pull();
+      await this.refactorRollback(gen2StackName);
+      await this.lockRollback();
+      await this.push();
+      // TODO checkout to gen2
+      // TODO comment postRefactor function
+      // TODO deploy gen2
+      // TODO test gen2
+
+      await this.testGen1();
+
+      printBanner(`Forward`);
+      await this.git.checkout(this.gen1BranchName, false);
+      await this.pull();
+      await this.lockForward();
+      await this.refactorForward(gen2StackName);
+
+      await this.testGen1();
+
+      printBanner(`Retain`);
+      await this.git.checkout(this.gen1BranchName, false);
+      await this.pull();
       await this.retain();
 
       await this.testGen1();
-      await this.testGen2();
 
       this.logger.info(`Execution completed successfully (${this.targetAppPath})`);
       if (process.env.UPDATE_SNAPSHOTS === '1') {
@@ -342,12 +357,6 @@ export class App {
     await this.git.checkout(this.gen1BranchName, false);
     await this.pull();
 
-    // twice for idempotancy. print a banner so its easier to distinguish
-    // the different runs in the logs.
-    printBanner('Forward Refactor (1)');
-    await this.refactorForward(gen2StackName);
-
-    printBanner('Forward Refactor (2)');
     await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
@@ -371,57 +380,6 @@ export class App {
     await this.testShared();
 
     return gen2StackName;
-  }
-
-  /**
-   * Run forward operations on an already migrated app.
-   */
-  public async forward(gen2StackName: string): Promise<void> {
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.pull();
-    await this.lockForward();
-
-    // twice for idempotancy. print a banner so its easier to distinguish
-    // the different runs in the logs.
-    printBanner('Forward Refactor (1)');
-    await this.refactorForward(gen2StackName);
-
-    printBanner('Forward Refactor (2)');
-    await this.refactorForward(gen2StackName);
-
-    await this.git.checkout(this.gen2BranchName, false);
-    await this.deployGen2Sandbox();
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.testShared();
-  }
-
-  /**
-   * Run rollback operations on an already migrated app.
-   */
-  public async rollback(gen2StackName: string): Promise<void> {
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.pull();
-
-    // twice for idempotancy. print a banner so its easier to distinguish
-    // the different runs in the logs.
-    printBanner('Rollback Refactor (1)');
-    await this.refactorRollback(gen2StackName);
-
-    printBanner('Rollback Refactor (2)');
-    await this.refactorRollback(gen2StackName);
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.pull();
-    await this.lockRollback();
-    await this.push();
-
-    await this.testGen1();
   }
 
   /**
@@ -475,6 +433,14 @@ export class App {
     if (this.migrationConfig.refactorForward?.skipValidations) {
       extraArgs.push('--skip-validations');
     }
+
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+
+    printBanner('Forward Refactor (1)');
+    await this.runMigrationStep('refactor', extraArgs);
+
+    printBanner('Forward Refactor (2)');
     await this.runMigrationStep('refactor', extraArgs);
   }
 
@@ -487,6 +453,14 @@ export class App {
     if (this.migrationConfig.refactorRollback?.skipValidations) {
       extraArgs.push('--skip-validations');
     }
+
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+
+    printBanner('Rollback Refactor (1)');
+    await this.runMigrationStep('refactor', extraArgs);
+
+    printBanner('Rollback Refactor (2)');
     await this.runMigrationStep('refactor', extraArgs);
   }
 
