@@ -17,6 +17,7 @@ import { sanitize } from './sanitize';
 import { normalize } from './normalize';
 import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
 import type { AwsCredentialIdentity } from '@aws-sdk/types';
@@ -676,16 +677,19 @@ export class App {
     const region = process.env.CLI_REGION ?? 'us-east-1';
     this.logger.info(`Bootstrapping CDK for region ${region}...`);
 
-    const identity = await execa('aws', ['sts', 'get-caller-identity', '--query', 'Account', '--output', 'text'], {
-      env: this.getEnv(),
-    });
-    const accountId = identity.stdout.trim();
+    const stsClient = new STSClient({ ...this.getClientConfig(), region });
+    const identity = await stsClient.send(new GetCallerIdentityCommand({}));
+    const accountId = identity.Account;
+    if (!accountId) {
+      throw new Error('Unable to determine AWS account ID from STS.');
+    }
 
     const result = await execa('npx', ['cdk', 'bootstrap', `aws://${accountId}/${region}`], {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
       env: this.getEnv(),
+      extendEnv: false,
     });
     if (result.exitCode !== 0) {
       throw new Error(`'cdk bootstrap' failed. See above logs for details.`);

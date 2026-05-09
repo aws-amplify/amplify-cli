@@ -4,10 +4,10 @@ import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { App } from '@aws-amplify/amplify-e2e-gen2-migration';
 
 /**
- * Jest timeout for migration tests (2 hours). Migration runs involve
- * full Gen1 push + Gen2 sandbox deploy and can take 30–90 minutes.
+ * Jest timeout for migration tests (3 hours). Migration runs involve
+ * full Gen1 push + Refactor + Gen2 sandbox deploy several times.
  */
-export const MIGRATION_TEST_TIMEOUT_MS = 2 * 60 * 60 * 1000;
+export const MIGRATION_TEST_TIMEOUT_MS = 3 * 60 * 60 * 1000;
 
 /**
  * Resolve the child account ID from the current STS caller identity.
