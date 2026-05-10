@@ -8,6 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
 import { SpinningLogger } from '../../../_common/spinning-logger';
+import { STATEFUL_RESOURCES } from '../../../_common/resource-types';
 
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
@@ -287,7 +288,8 @@ async function renameCdkStackToConstruct(destResourcePath: string): Promise<void
 }
 
 /**
- * Generates a resource.ts wrapper that exports a defineXxx(backend) function.
+ * Generates a resource.ts wrapper that exports a defineXxx(backend) function
+ * with stateful resource retention policies.
  */
 async function generateResourceWrapper(
   destResourcePath: string,
@@ -296,19 +298,44 @@ async function generateResourceWrapper(
   dependencies: string[],
 ): Promise<void> {
   const defineFnName = `define${constructClassName}`;
-  const args = [`backend.createStack('${resourceName}')`, `'${resourceName}'`];
+  const stackName = `custom${resourceName}`;
+  const args = [`backend.createStack('${stackName}')`, `'${resourceName}'`];
 
   // Pass backend when the resource has dependencies on other categories
   if (dependencies.length > 0) {
     args.push('backend');
   }
 
+  const statefulResourcesArray = Array.from(STATEFUL_RESOURCES)
+    .map((r) => `  '${r}',`)
+    .join('\n');
+
   const content = [
+    "import { CfnResource } from 'aws-cdk-lib';",
     "import type { Backend } from '../../backend';",
     `import { ${constructClassName} } from './construct';`,
     '',
+    'export const STATEFUL_RESOURCES = [',
+    statefulResourcesArray,
+    '];',
+    '',
     `export function ${defineFnName}(backend: Backend) {`,
-    `  return new ${constructClassName}(${args.join(', ')});`,
+    `  const construct = new ${constructClassName}(${args.join(', ')});`,
+    '',
+    '  for (const cfnResource of construct.node',
+    '    .findAll()',
+    '    .filter(',
+    '      (c) =>',
+    '        CfnResource.isCfnResource(c) &&',
+    '        STATEFUL_RESOURCES.includes(',
+    '          c.cfnResourceType',
+    '        )',
+    '    )) {',
+    "    (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');",
+    "    (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');",
+    '  }',
+    '',
+    '  return construct;',
     '}',
     '',
   ].join('\n');
