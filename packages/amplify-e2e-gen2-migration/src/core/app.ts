@@ -232,7 +232,7 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
-    await this.runAmplify(['push', '--force', '--yes', '--debug']);
+    await this.runAmplify(['push', '--force', '--yes']);
   }
 
   /**
