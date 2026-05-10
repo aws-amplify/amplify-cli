@@ -168,7 +168,7 @@ describe('auth', () => {
       });
       const created = (createResult as any).data.createNote;
 
-      const listResult = await auth().graphql({ query: listNotes });
+      const listResult = await auth().graphql({ query: listNotes, variables: { limit: 1000 } });
       const items = (listResult as any).data.listNotes.items;
 
       expect(Array.isArray(items)).toBe(true);

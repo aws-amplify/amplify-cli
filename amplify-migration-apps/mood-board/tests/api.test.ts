@@ -99,7 +99,7 @@ describe('guest', () => {
       });
       const created = (createResult as any).data.createBoard;
 
-      const listResult = await guest().graphql({ query: listBoards });
+      const listResult = await guest().graphql({ query: listBoards, variables: { limit: 1000 } });
       const items = (listResult as any).data.listBoards.items;
 
       expect(Array.isArray(items)).toBe(true);
@@ -204,7 +204,7 @@ describe('guest', () => {
       });
       const created = (createResult as any).data.createMoodItem;
 
-      const listResult = await guest().graphql({ query: listMoodItems });
+      const listResult = await guest().graphql({ query: listMoodItems, variables: { limit: 1000 } });
       const items = (listResult as any).data.listMoodItems.items;
 
       expect(Array.isArray(items)).toBe(true);

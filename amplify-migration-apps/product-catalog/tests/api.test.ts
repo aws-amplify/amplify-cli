@@ -146,7 +146,7 @@ describe('iam', () => {
       });
       const created = (createResult as any).data.createProduct;
 
-      const result = await iam().graphql({ query: listProducts });
+      const result = await iam().graphql({ query: listProducts, variables: { limit: 1000 } });
       const items = (result as any).data.listProducts.items;
 
       expect(Array.isArray(items)).toBe(true);
@@ -219,7 +219,7 @@ describe('iam', () => {
         variables: { input: { id: listUserId, email: `list${Date.now()}@example.com`, name: 'List User', role: UserRole.VIEWER } },
       });
 
-      const result = await iam().graphql({ query: listUsers });
+      const result = await iam().graphql({ query: listUsers, variables: { limit: 1000 } });
       const items = (result as any).data.listUsers.items;
 
       expect(Array.isArray(items)).toBe(true);
@@ -331,7 +331,7 @@ describe('iam', () => {
       });
       const created = (createResult as any).data.createComment;
 
-      const result = await iam().graphql({ query: listComments });
+      const result = await iam().graphql({ query: listComments, variables: { limit: 1000 } });
       const items = (result as any).data.listComments.items;
 
       expect(Array.isArray(items)).toBe(true);

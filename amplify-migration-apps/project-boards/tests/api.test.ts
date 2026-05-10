@@ -196,7 +196,7 @@ describe('auth', () => {
       });
       const created = (createResult as any).data.createProject;
 
-      const listResult = await auth().graphql({ query: listProjects });
+      const listResult = await auth().graphql({ query: listProjects, variables: { limit: 1000 } });
       const items = (listResult as any).data.listProjects.items;
 
       expect(Array.isArray(items)).toBe(true);
@@ -294,7 +294,7 @@ describe('auth', () => {
       });
       const created = (createResult as any).data.createTodo;
 
-      const listResult = await auth().graphql({ query: listTodos });
+      const listResult = await auth().graphql({ query: listTodos, variables: { limit: 1000 } });
       const items = (listResult as any).data.listTodos.items;
 
       expect(Array.isArray(items)).toBe(true);

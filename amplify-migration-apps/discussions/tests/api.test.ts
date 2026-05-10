@@ -116,7 +116,7 @@ describe('Topic', () => {
     });
     const created = (createResult as any).data.createTopic;
 
-    const listResult = await client().graphql({ query: listTopics });
+    const listResult = await client().graphql({ query: listTopics, variables: { limit: 1000 } });
     const items = (listResult as any).data.listTopics.items;
 
     expect(Array.isArray(items)).toBe(true);
@@ -226,7 +226,7 @@ describe('Post', () => {
     });
     const created = (createResult as any).data.createPost;
 
-    const listResult = await client().graphql({ query: listPosts });
+    const listResult = await client().graphql({ query: listPosts, variables: { limit: 1000 } });
     const items = (listResult as any).data.listPosts.items;
 
     expect(Array.isArray(items)).toBe(true);
@@ -342,7 +342,7 @@ describe('Comment', () => {
     });
     const created = (createResult as any).data.createComment;
 
-    const listResult = await client().graphql({ query: listComments });
+    const listResult = await client().graphql({ query: listComments, variables: { limit: 1000 } });
     const items = (listResult as any).data.listComments.items;
 
     expect(Array.isArray(items)).toBe(true);
