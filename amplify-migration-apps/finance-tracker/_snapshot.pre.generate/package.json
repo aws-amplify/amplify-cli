@@ -15,15 +15,14 @@
     "pre-push": "npx tsx migration/pre-push.ts",
     "post-generate": "npx tsx migration/post-generate.ts",
     "post-refactor": "true",
-    "post-rollback": "true",
     "post-sandbox": "true",
     "pre-sandbox": "true",
     "post-push": "true",
     "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
     "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
-    "test:shared": "true",
-    "test:e2e": "cd ../../packages/amplify-e2e-gen2-migration && npx tsx src/cli.ts --app finance-tracker --profile ${AWS_PROFILE:-default}",
-    "deploy": "cd ../../packages/amplify-e2e-gen2-migration && npx tsx src/cli.ts --app finance-tracker --step deploy --profile ${AWS_PROFILE:-default}"
+    "test:shared-data": "true",
+    "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app finance-tracker --profile ${AWS_PROFILE:-default}",
+    "deploy": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app finance-tracker --step deploy --profile ${AWS_PROFILE:-default}"
   },
   "dependencies": {
     "aws-amplify": "^6.0.0",

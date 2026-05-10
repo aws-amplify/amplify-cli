@@ -12,7 +12,7 @@
         "DisplayName": "Fin Tracker Budget Alerts"
       }
     },
-    "BudgetAlertTopicexamplegmailcom89E63D0F": {
+    "BudgetAlertTopicsanjanaravikumarazgmailcom9C5B945F": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Endpoint": "example@gmail.com",
@@ -28,7 +28,7 @@
         "DisplayName": "Finance Tracker Monthly Reports"
       }
     },
-    "MonthlyReportTopicexamplegmailcom814724C3": {
+    "MonthlyReportTopicsanjanaravikumarazgmailcomFBA75CE0": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Endpoint": "example@gmail.com",
@@ -37,16 +37,6 @@
           "Ref": "MonthlyReportTopic8D223100"
         }
       }
-    },
-    "Queue11B0C5920": {
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "Queue26CB7866F": {
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     }
   },
   "Outputs": {
@@ -88,5 +78,6 @@
         }
       }
     }
-  }
+  },
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"custom-customCDK\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
 }
