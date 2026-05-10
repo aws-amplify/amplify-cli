@@ -8,8 +8,8 @@ import { extractStackNameFromId } from '../../_common/utils';
 import { SocialAuthConfig, StackFacade } from '../stack-facade';
 import CLITable from 'cli-table3';
 
-export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
-export const GEN1_WEB_CLIENT = 'UserPoolClientWeb';
+export const GEN1_NATIVE_APP_CLIENT_LOGICAL_ID = 'UserPoolClient';
+export const GEN1_WEB_CLIENT_LOGICAL_ID = 'UserPoolClientWeb';
 
 export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 export const GEN2_WEB_CLIENT = 'UserPoolAppClient';
@@ -187,10 +187,9 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
    * (DeletionPolicy: Retain, set by generate's escape hatches, ensures
    * the physical Cognito resources survive)
    */
-  protected override async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    const baseOps = await super.beforeMove(blueprint);
+  protected override async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+    const baseOps = await super.beforeMove(gen2StackId);
 
-    const gen2StackId = blueprint.targetStackId;
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
@@ -271,24 +270,20 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     return baseOps;
   }
 
-  protected override async gen2LogicalId(
-    sourceId: string,
-    sourceResource: CFNResource,
-    targetResources: Map<string, CFNResource>,
-  ): Promise<string> {
+  protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {
     if (sourceResource.Type !== USER_POOL_CLIENT_TYPE) {
       return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
     let candidates: string[];
-    const targetResourceIds = Array.from(targetResources.keys());
+    const targetResourceIds = targetResources.keys();
 
     switch (sourceId) {
-      case GEN1_WEB_CLIENT: {
-        candidates = targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT));
+      case GEN1_WEB_CLIENT_LOGICAL_ID: {
+        candidates = Array.from(targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT)));
         break;
       }
-      case GEN1_NATIVE_APP_CLIENT: {
-        candidates = targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT));
+      case GEN1_NATIVE_APP_CLIENT_LOGICAL_ID: {
+        candidates = Array.from(targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT)));
         break;
       }
       default:

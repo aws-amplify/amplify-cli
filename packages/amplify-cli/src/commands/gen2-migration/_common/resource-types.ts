@@ -32,6 +32,7 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::SDB::Domain',
   'AWS::SQS::Queue',
   'AWS::SecretsManager::Secret',
+  'AWS::Kinesis::Stream',
   'AWS::Cognito::UserPoolGroup',
   'AWS::Cognito::IdentityPool',
 ]);

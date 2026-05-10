@@ -78,8 +78,13 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceStatusOp = this.buildStackStatusValidation(sourceStackId);
     const destStatusOp = this.buildStackStatusValidation(destStackId);
 
+    this.logger.push(`${extractStackNameFromId(sourceStackId)} (Resolving)`);
     const source = await this.resolveSource(sourceStackId);
+    this.logger.pop();
+
+    this.logger.push(`${extractStackNameFromId(destStackId)} (Resolving)`);
     const target = await this.resolveTarget(destStackId);
+    this.logger.pop();
 
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);

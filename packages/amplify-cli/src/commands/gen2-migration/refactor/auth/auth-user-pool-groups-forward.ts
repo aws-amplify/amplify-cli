@@ -7,8 +7,9 @@ export const USER_POOL_GROUP_TYPE = 'AWS::Cognito::UserPoolGroup';
 export const RESOURCE_TYPES = [USER_POOL_GROUP_TYPE];
 
 /**
- * Forward refactorer for the auth:Cognito-UserPool-Groups resource.
- * Moves user pool groups from Gen1 to Gen2.
+ * Forward refactorer for the auth:UserPoolGroups resource.
+ *
+ * Moves user pool groups auth resources from Gen1 to Gen2.
  */
 export class AuthUserPoolGroupsForwardRefactorer extends ForwardCategoryRefactorer {
   protected resourceTypes(): string[] {
@@ -20,6 +21,7 @@ export class AuthUserPoolGroupsForwardRefactorer extends ForwardCategoryRefactor
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
+    // in gen2 all auth resources are in a single auth nested stack
     return this.findNestedStack(this.gen2Branch, 'auth');
   }
 
@@ -27,10 +29,14 @@ export class AuthUserPoolGroupsForwardRefactorer extends ForwardCategoryRefactor
     if (sourceResource.Type !== USER_POOL_GROUP_TYPE) {
       return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
-    const candidates = Array.from(targetResources.keys()).filter(
-      (r) =>
-        targetResources.get(r)!.Type === sourceResource.Type &&
-        sourceResource.Properties['GroupName'] === targetResources.get(r)!.Properties['GroupName'],
+    const candidates = Array.from(
+      targetResources
+        .keys()
+        .filter(
+          (r) =>
+            targetResources.get(r).Type === sourceResource.Type &&
+            sourceResource.Properties['GroupName'] === targetResources.get(r).Properties['GroupName'],
+        ),
     );
     if (candidates.length !== 1) {
       throw new AmplifyError('MigrationError', {

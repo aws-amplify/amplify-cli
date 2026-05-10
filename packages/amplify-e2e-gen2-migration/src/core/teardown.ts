@@ -191,7 +191,7 @@ export class Teardown {
         UsePreviousValue: true,
       }));
 
-      this.logger.info(`Updating DeletionPolicy of resources in stack ${stackName} to 'Delete'`);
+      this.logger.info(`Updating DeletionPolicy of stateful resources in stack ${stackName} to 'Delete'`);
       await cfnClient.send(
         new UpdateStackCommand({
           StackName: stackName,
