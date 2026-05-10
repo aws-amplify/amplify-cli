@@ -3,6 +3,7 @@ import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-ref
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { extractStackNameFromId } from '../../_common/utils';
 import { buildImportSpec, extractSocialAuthLogicalIds, renderImportTable, renderOrphanTable, RESOURCE_TYPES } from './auth-cognito-forward';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Rollback refactorer for the auth:Cognito resource.
@@ -77,8 +78,10 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
    * under the Gen2 logical IDs. Runs after super.afterMove() so the UserPool
    * is back in Gen2 when the import references it.
    */
-  protected override async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const baseOps = await super.afterMove(gen2StackId);
+  protected override async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const baseOps = await super.afterMove(blueprint);
+
+    const gen2StackId = blueprint.sourceStackId;
 
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);

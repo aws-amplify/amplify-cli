@@ -45,7 +45,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   }
 
   protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {
-    const candidates = Array.from(targetResources.keys().filter((r) => targetResources.get(r).Type === sourceResource.Type));
+    const candidates: string[] = Array.from(targetResources.keys()).filter((r) => targetResources.get(r)?.Type === sourceResource.Type);
     if (candidates.length !== 1) {
       throw new AmplifyError('MigrationError', {
         message: `Unable to map Gen1 resource ${sourceId} (${sourceResource.Type}) to Gen2 resource`,

@@ -29,14 +29,10 @@ export class AuthUserPoolGroupsForwardRefactorer extends ForwardCategoryRefactor
     if (sourceResource.Type !== USER_POOL_GROUP_TYPE) {
       return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
-    const candidates = Array.from(
-      targetResources
-        .keys()
-        .filter(
-          (r) =>
-            targetResources.get(r).Type === sourceResource.Type &&
-            sourceResource.Properties['GroupName'] === targetResources.get(r).Properties['GroupName'],
-        ),
+    const candidates = Array.from(targetResources.keys()).filter(
+      (r) =>
+        targetResources.get(r)?.Type === sourceResource.Type &&
+        sourceResource.Properties['GroupName'] === targetResources.get(r)?.Properties['GroupName'],
     );
     if (candidates.length !== 1) {
       throw new AmplifyError('MigrationError', {

@@ -187,8 +187,10 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
    * (DeletionPolicy: Retain, set by generate's escape hatches, ensures
    * the physical Cognito resources survive)
    */
-  protected override async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const baseOps = await super.beforeMove(gen2StackId);
+  protected override async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const baseOps = await super.beforeMove(blueprint);
+
+    const gen2StackId = blueprint.targetStackId;
 
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
@@ -275,15 +277,15 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
       return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
     let candidates: string[];
-    const targetResourceIds = targetResources.keys();
+    const targetResourceIds = Array.from(targetResources.keys());
 
     switch (sourceId) {
       case GEN1_WEB_CLIENT_LOGICAL_ID: {
-        candidates = Array.from(targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT)));
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT));
         break;
       }
       case GEN1_NATIVE_APP_CLIENT_LOGICAL_ID: {
-        candidates = Array.from(targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT)));
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT));
         break;
       }
       default:

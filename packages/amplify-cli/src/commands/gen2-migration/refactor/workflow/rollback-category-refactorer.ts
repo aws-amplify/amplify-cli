@@ -34,11 +34,16 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       return [];
     }
 
-    const holdingStackTemplate = await this.cfn.fetchTemplate(holdingStack.StackName);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const holdingStackTemplate = await this.cfn.fetchTemplate(holdingStack.StackName!);
     const forwardMappings = (holdingStackTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
 
     function findGen1LogicalId(gen2LogicalId: string) {
-      return forwardMappings.find((m) => m.Destination.LogicalResourceId === gen2LogicalId).Source.LogicalResourceId;
+      const mapping = forwardMappings.find((m) => m.Destination?.LogicalResourceId === gen2LogicalId);
+      if (!mapping) {
+        throw new AmplifyError('ResourceMappingError', { message: `Unable to find forward mapping for resource ${gen2LogicalId}` });
+      }
+      return mapping.Source?.LogicalResourceId;
     }
 
     const mappings: ResourceMapping[] = [];

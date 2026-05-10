@@ -21,10 +21,6 @@ import {
 } from '@aws-sdk/client-cloudformation';
 
 class TestRollbackRefactorer extends RollbackCategoryRefactorer {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected targetLogicalId(_sourceId: string, _sourceResource: CFNResource): string | undefined {
-    return 'S3Bucket';
-  }
   protected async fetchSourceStackId() {
     return 'gen2-stack-id';
   }
@@ -137,10 +133,6 @@ class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {
       null as unknown as Cfn,
     );
     this.ids = ids;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected targetLogicalId(sourceId: string, _sourceResource: CFNResource): string | undefined {
-    return this.ids.get(sourceId);
   }
   protected async fetchSourceStackId() {
     return 'gen2-stack';
