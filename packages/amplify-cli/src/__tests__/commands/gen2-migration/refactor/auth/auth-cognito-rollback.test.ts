@@ -126,6 +126,62 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
   });
 });
 
+describe('AuthCognitoRollbackRefactorer.targetLogicalId', () => {
+  function createRefactorer() {
+    return new (class extends AuthCognitoRollbackRefactorer {
+      public testTargetLogicalId(sourceId: string, type: string): string | undefined {
+        return this.targetLogicalId(sourceId, { Type: type, Properties: {} });
+      }
+    })(
+      null as any,
+      null as any,
+      { region: 'us-east-1' } as unknown as Gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      null as unknown as Cfn,
+    );
+  }
+
+  const refactorer = createRefactorer();
+
+  it('maps UserPool to UserPool', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthUserPool1234', 'AWS::Cognito::UserPool')).toBe('UserPool');
+  });
+
+  it('maps IdentityPool to IdentityPool', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthIdentityPool1234', 'AWS::Cognito::IdentityPool')).toBe('IdentityPool');
+  });
+
+  it('maps IdentityPoolRoleAttachment to IdentityPoolRoleMap', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthIdentityPoolRoleAttachment1234', 'AWS::Cognito::IdentityPoolRoleAttachment')).toBe(
+      'IdentityPoolRoleMap',
+    );
+  });
+
+  it('returns undefined for UserPoolDomain (orphan + import, not refactor move)', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthUserPoolDomain1234', 'AWS::Cognito::UserPoolDomain')).toBeUndefined();
+  });
+
+  it('maps NativeAppClient to UserPoolClient', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthUserPoolNativeAppClient1234', 'AWS::Cognito::UserPoolClient')).toBe('UserPoolClient');
+  });
+
+  it('maps AppClient (web) to UserPoolClientWeb', () => {
+    expect(refactorer.testTargetLogicalId('amplifyAuthUserPoolAppClient1234', 'AWS::Cognito::UserPoolClient')).toBe('UserPoolClientWeb');
+  });
+
+  it('throws for unrecognized UserPoolClient logical ID', () => {
+    expect(() => refactorer.testTargetLogicalId('SomeRandomClient', 'AWS::Cognito::UserPoolClient')).toThrow(
+      'Unable to determine Gen1 logical ID',
+    );
+  });
+
+  it('returns undefined for unknown resource type', () => {
+    expect(refactorer.testTargetLogicalId('SomeResource', 'AWS::Lambda::Function')).toBeUndefined();
+  });
+});
+
 describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
   let cfnMock: ReturnType<typeof mockClient>;
   let cognitoMock: ReturnType<typeof mockClient>;
