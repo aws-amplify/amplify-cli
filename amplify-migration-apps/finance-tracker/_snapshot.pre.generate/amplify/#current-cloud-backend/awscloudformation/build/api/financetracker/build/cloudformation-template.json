@@ -127,7 +127,7 @@
             "ApiId"
           ]
         },
-        "Expires": 1777576997
+        "Expires": 1779022384
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -578,7 +578,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:9c7ebdb2-57df-4b19-95ae-4f621dcfe3e4\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -675,7 +675,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:9c7ebdb2-57df-4b19-95ae-4f621dcfe3e4\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -772,7 +772,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:9c7ebdb2-57df-4b19-95ae-4f621dcfe3e4\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -869,7 +869,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:9c7ebdb2-57df-4b19-95ae-4f621dcfe3e4\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -966,7 +966,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:9c7ebdb2-57df-4b19-95ae-4f621dcfe3e4\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1063,7 +1063,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:9c7ebdb2-57df-4b19-95ae-4f621dcfe3e4\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1192,5 +1192,5 @@
       }
     }
   },
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
 }

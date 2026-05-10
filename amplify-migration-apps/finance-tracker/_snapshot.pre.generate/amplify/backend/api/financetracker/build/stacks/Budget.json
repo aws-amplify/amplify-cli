@@ -458,7 +458,7 @@
               {
                 "Ref": "BudgetTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -553,7 +553,7 @@
               {
                 "Ref": "BudgetTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -684,7 +684,7 @@
               {
                 "Ref": "BudgetTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -836,7 +836,7 @@
               {
                 "Ref": "BudgetTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -985,7 +985,7 @@
               {
                 "Ref": "BudgetTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1022,7 +1022,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1059,7 +1059,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1096,7 +1096,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1127,7 +1127,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:84d04a8c-d959-47e8-b551-000ad7a8cef2\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:0366b3dc-9d08-4dec-904d-04114f9a54f0\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"financetracker-x\"]))\n$util.toJson({})"
             ]
           ]
         },

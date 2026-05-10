@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
 import { Construct } from 'constructs';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 
 export class cdkStack extends cdk.Stack {
@@ -41,6 +42,9 @@ export class cdkStack extends cdk.Stack {
     this.monthlyReportTopic.addSubscription(
       new subscriptions.EmailSubscription('example@gmail.com')
     );
+
+    new sqs.Queue(this, 'Queue1');
+    new sqs.Queue(this, 'Queue2');
 
     new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
       value: this.monthlyReportTopic.topicArn,

@@ -56,19 +56,18 @@ export function resolveOutputs(params: {
     // {"Fn::GetAtt": ["LogicalId", "AttrName"]} → resolve via GetAtt-based outputs + ARN builder
     if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
       const [logicalId, attrName] = node['Fn::GetAtt'] as [string, string];
-      if (typeof logicalId === 'string' && typeof attrName === 'string') {
-        const outputValue = getAttLookup.get(logicalId);
-        if (outputValue !== undefined && attrName === 'Arn') {
-          // getAttLookup stores runtime output values. When the output is a
-          // GetAtt...Arn, the runtime value is already the full ARN. Passing
-          // it through buildArn() would nest the ARN inside another ARN
-          // (e.g. arn:.../userpool/arn:.../userpool/poolId).
-          if (outputValue.startsWith('arn:')) return outputValue;
-          const resourceType = templateResources[logicalId]?.Type;
-          if (resourceType) {
-            const arn = buildArn(resourceType, outputValue, region, accountId);
-            if (arn) return arn;
-          }
+      // const physicalId = stackResources.find((r) => r.LogicalResourceId === node.Ref)?.PhysicalResourceId;
+      const outputValue = getAttLookup.get(logicalId);
+      if (outputValue !== undefined && attrName === 'Arn') {
+        // getAttLookup stores runtime output values. When the output is a
+        // GetAtt...Arn, the runtime value is already the full ARN. Passing
+        // it through buildArn() would nest the ARN inside another ARN
+        // (e.g. arn:.../userpool/arn:.../userpool/poolId).
+        if (outputValue.startsWith('arn:')) return outputValue;
+        const resourceType = templateResources[logicalId]?.Type;
+        if (resourceType) {
+          const arn = buildArn(resourceType, outputValue, region, accountId);
+          if (arn) return arn;
         }
       }
     }

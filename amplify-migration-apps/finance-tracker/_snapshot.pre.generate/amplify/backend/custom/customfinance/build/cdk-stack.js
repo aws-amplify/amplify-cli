@@ -27,6 +27,7 @@ exports.cdkStack = void 0;
 const cdk = __importStar(require("aws-cdk-lib"));
 const AmplifyHelpers = __importStar(require("@aws-amplify/cli-extensibility-helper"));
 const sns = __importStar(require("aws-cdk-lib/aws-sns"));
+const sqs = __importStar(require("aws-cdk-lib/aws-sqs"));
 const subscriptions = __importStar(require("aws-cdk-lib/aws-sns-subscriptions"));
 class cdkStack extends cdk.Stack {
     constructor(scope, id, props, amplifyResourceProps) {
@@ -51,6 +52,8 @@ class cdkStack extends cdk.Stack {
             displayName: 'Finance Tracker Monthly Reports',
         });
         this.monthlyReportTopic.addSubscription(new subscriptions.EmailSubscription('example@gmail.com'));
+        new sqs.Queue(this, 'Queue1');
+        new sqs.Queue(this, 'Queue2');
         new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
             value: this.monthlyReportTopic.topicArn,
             description: 'SNS Topic ARN for monthly reports',

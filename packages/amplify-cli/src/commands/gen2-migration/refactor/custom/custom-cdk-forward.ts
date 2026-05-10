@@ -19,7 +19,7 @@ export class CustomCDKForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen2Branch, `custom${this.resource.resourceName}`);
+    return this.findNestedStack(this.gen2Branch, `${this.resource.resourceName}`);
   }
 
   protected resourceTypes(): string[] {
