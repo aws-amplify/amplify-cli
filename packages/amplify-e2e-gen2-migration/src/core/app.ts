@@ -742,13 +742,6 @@ export class App {
     const startTime = Date.now();
 
     const args = ['gen2-migration', step, '--yes', ...extraArgs];
-
-    // in CodeBuild we log debug since the cost of a retry is high.
-    const isDebug = !!process.env.CODEBUILD_SRC_DIR;
-    if (isDebug) {
-      args.push('--debug');
-    }
-
     const command = `${this.amplifyPath} ${args.join(' ')}`;
 
     // just to have shorter log lines that fit the laptop screen
