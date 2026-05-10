@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import CLITable from 'cli-table3';
 import { DiscoveredResource } from '../_common/gen1-app';
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 const GUIDE_LINK = 'https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/';
 
 /**
@@ -108,7 +109,9 @@ export class Assessment {
       (ra) => ra.resource.category === resource.category && ra.resource.resourceName === resource.resourceName,
     );
     if (!entry) {
-      return { level: 'not-applicable' };
+      throw new AmplifyFault('ResourceAssessmentNotFoundFault', {
+        message: `No assessment recorded for resource '${resource.category}/${resource.resourceName}'`,
+      });
     }
     switch (step) {
       case 'generate':
