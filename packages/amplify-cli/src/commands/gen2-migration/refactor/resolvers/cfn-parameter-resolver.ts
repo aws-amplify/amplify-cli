@@ -13,7 +13,7 @@ import { walkCfnTree } from './cfn-tree-walker';
  *
  * Operates on the entire template (Resources, Outputs, Conditions, etc.).
  */
-export function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): CFNTemplate {
+export async function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): Promise<CFNTemplate> {
   if (!parameters.length && !stackName) return template;
 
   const paramDefinitions = template.Parameters ?? {};
@@ -46,13 +46,15 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
 
   if (paramMap.size === 0) return template;
 
-  return walkCfnTree(template, (node) => {
+  const walked = await walkCfnTree(template, async (node) => {
     if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
       const value = paramMap.get(node.Ref);
       if (value !== undefined) return value;
     }
     return undefined;
-  }) as CFNTemplate;
+  });
+
+  return walked as CFNTemplate;
 }
 
 /**

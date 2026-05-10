@@ -491,12 +491,6 @@ export class Cfn {
     const changes = changeSet.Changes ?? [];
     if (changes.length === 0) return 'No changes';
 
-    const truncate = (value: string | undefined): string => {
-      if (!value) return '';
-      const max = 60;
-      return value.length > max ? `${value.slice(0, max - 1)}…` : value;
-    };
-
     const colorAction = (action: string): string => {
       if (action === 'Add') return chalk.green(action);
       if (action === 'Remove') return chalk.red(action);
@@ -560,8 +554,8 @@ export class Cfn {
 
       details.forEach((detail, i) => {
         const path = paths[i];
-        const before = truncate(detail.Target.BeforeValue);
-        const after = truncate(detail.Target.AfterValue);
+        const before = detail.Target.BeforeValue;
+        const after = detail.Target.AfterValue;
         const paddedPath = path.padEnd(pathWidth);
 
         if (before && after) {

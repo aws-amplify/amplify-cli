@@ -76,14 +76,13 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
     const outputs = description.Outputs ?? [];
 
-    const withParams = resolveParameters(originalTemplate, parameters);
+    const withParams = await resolveParameters(originalTemplate, parameters);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withOutputs = resolveOutputs({
+    const withOutputs = await resolveOutputs({
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.gen1App.region,
-      accountId: this.accountId,
+      cloudControl: this.gen1App.clients.cloudControl,
     });
     const resolved = resolveDependencies(withOutputs);
 

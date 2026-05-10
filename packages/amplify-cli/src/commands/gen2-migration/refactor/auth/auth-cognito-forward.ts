@@ -11,8 +11,8 @@ import CLITable from 'cli-table3';
 export const GEN1_NATIVE_APP_CLIENT_LOGICAL_ID = 'UserPoolClient';
 export const GEN1_WEB_CLIENT_LOGICAL_ID = 'UserPoolClientWeb';
 
-export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
-export const GEN2_WEB_CLIENT = 'UserPoolAppClient';
+export const GEN2_NATIVE_APP_CLIENT_LOGICAL_ID = 'UserPoolNativeAppClient';
+export const GEN2_WEB_CLIENT_LOGICAL_ID = 'UserPoolAppClient';
 
 export const USER_POOL_CLIENT_TYPE = 'AWS::Cognito::UserPoolClient';
 export const USER_POOL_TYPE = 'AWS::Cognito::UserPool';
@@ -281,11 +281,11 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
 
     switch (sourceId) {
       case GEN1_WEB_CLIENT_LOGICAL_ID: {
-        candidates = targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT));
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT_LOGICAL_ID));
         break;
       }
       case GEN1_NATIVE_APP_CLIENT_LOGICAL_ID: {
-        candidates = targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT));
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT_LOGICAL_ID));
         break;
       }
       default:

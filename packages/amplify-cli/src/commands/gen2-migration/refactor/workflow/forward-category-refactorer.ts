@@ -66,14 +66,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const outputs = description.Outputs ?? [];
 
     const stackName = extractStackNameFromId(stackId);
-    const withParams = resolveParameters(originalTemplate, parameters, stackName);
+    const withParams = await resolveParameters(originalTemplate, parameters, stackName);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withOutputs = resolveOutputs({
+    const withOutputs = await resolveOutputs({
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.gen1App.region,
-      accountId: this.accountId,
+      cloudControl: this.gen1App.clients.cloudControl,
     });
     const withDeps = resolveDependencies(withOutputs);
     const resolved = resolveConditions(withDeps, parameters);
@@ -94,14 +93,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     const stackName = extractStackNameFromId(stackId);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withParams = resolveParameters(originalTemplate, parameters, stackName);
+    const withParams = await resolveParameters(originalTemplate, parameters, stackName);
     const withDeps = resolveDependencies(withParams);
-    const resolved = resolveOutputs({
+    const resolved = await resolveOutputs({
       template: withDeps,
       stackOutputs: outputs,
       stackResources,
-      region: this.gen1App.region,
-      accountId: this.accountId,
+      cloudControl: this.gen1App.clients.cloudControl,
     });
 
     return { stackId, resolvedTemplate: resolved, parameters };
