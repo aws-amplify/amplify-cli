@@ -122,7 +122,11 @@ export class Cfn {
    * Creates and executes a CloudFormation stack refactor.
    * Throws on failure.
    */
-  public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
+  public async refactor(
+    resourceMappings: ResourceMapping[],
+    resource?: DiscoveredResource,
+    pre?: (targetTemplate: CFNTemplate) => Promise<void>,
+  ): Promise<void> {
     const sourceStackId = resourceMappings[0].Source!.StackName!;
     const targetStackId = resourceMappings[0].Destination!.StackName!;
 
@@ -177,13 +181,8 @@ export class Cfn {
       this.info(`Finished adding placeholder to source stack '${sourceStackName}'`);
     }
 
-    if (targetStackName.endsWith(HOLDING_STACK_NAME_SUFFIX)) {
-      // store the forward mappings so we can retrieve them during rollback.
-      // this logic should be moved to the caller. append to existing since
-      // two source stacks can map to a single target (e.g cognito user pools).
-      const forwardMappings = (targetTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
-      forwardMappings.push(...resourceMappings);
-      targetTemplate.Metadata = { [HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY]: forwardMappings };
+    if (pre) {
+      await pre(targetTemplate);
     }
 
     const input: CreateStackRefactorCommandInput = {

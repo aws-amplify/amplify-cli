@@ -1,6 +1,5 @@
-import { CFNResource } from '../../_common/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-import { ANALYTICS_RESOURCE_TYPES, KINESIS_STREAM_TYPE } from './analytics-forward';
+import { ANALYTICS_RESOURCE_TYPES } from './analytics-forward';
 
 /**
  * Rollback refactorer for the analytics category (Kinesis).
@@ -18,14 +17,5 @@ export class AnalyticsKinesisRollbackRefactorer extends RollbackCategoryRefactor
 
   protected resourceTypes(): string[] {
     return ANALYTICS_RESOURCE_TYPES;
-  }
-
-  protected gen1LogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
-    switch (sourceResource.Type) {
-      case KINESIS_STREAM_TYPE:
-        return 'KinesisStream';
-      default:
-        return undefined;
-    }
   }
 }
