@@ -306,8 +306,6 @@ export class App {
       await this.lockForward();
     }
 
-    throw new Error('Stopping before forward refacotr');
-
     await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
