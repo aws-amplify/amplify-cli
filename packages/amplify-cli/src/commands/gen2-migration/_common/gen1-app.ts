@@ -140,6 +140,12 @@ export class Gen1App {
       ? JSON.parse(await fs.readFile(additionalStatefulResourceTypesPath, { encoding: 'utf-8' }))
       : undefined;
 
+    if (additionalStatefulResourceTypes && !Array.isArray(additionalStatefulResourceTypes)) {
+      throw new AmplifyError('InputValidationError', {
+        message: `Invalid file structure: ${additionalStatefulResourceTypesPath}. Must be a JSON array.`,
+      });
+    }
+
     const ccbDir = await Gen1App.downloadCloudBackend(clients.s3, cfnProvider.DeploymentBucketName);
     return new Gen1App({ ccbDir, clients, envName, app: app.app!, additionalStatefulResourceTypes });
   }
