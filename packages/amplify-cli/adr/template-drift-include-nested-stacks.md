@@ -1,8 +1,8 @@
 # ADR: Template Drift Detection with IncludeNestedStacks
 
-## Status
-
-Proposed
+> **Status:** Accepted
+> **Created:** 2026-04-21
+> **Current docs:** [lock.md](../../../docs/packages/amplify-cli/src/commands/gen2-migration/lock.md)
 
 ## Context
 

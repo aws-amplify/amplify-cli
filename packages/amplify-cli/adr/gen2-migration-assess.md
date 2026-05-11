@@ -1,8 +1,8 @@
 # ADR: `gen2-migration assess` Command
 
-## Status
-
-Proposed
+> **Status:** Accepted (with deviations)
+> **Created:** 2026-03-16
+> **Current docs:** [assess.md](../../../docs/packages/amplify-cli/src/commands/gen2-migration/assess.md)
 
 ## Context
 
