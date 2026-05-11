@@ -8,7 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
 import { SpinningLogger } from '../../../_common/spinning-logger';
-import { STATEFUL_RESOURCES } from '../../../_common/resource-types';
+import { Gen1App } from '../../../_common/gen1-app';
 
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
@@ -53,8 +53,10 @@ export class CustomResourceGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resourceName: string;
   private readonly logger: SpinningLogger;
+  private readonly gen1App: Gen1App;
 
   public constructor(
+    gen1App: Gen1App,
     backendGenerator: BackendGenerator,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
@@ -66,6 +68,7 @@ export class CustomResourceGenerator implements Planner {
     this.outputDir = outputDir;
     this.resourceName = resourceName;
     this.logger = logger;
+    this.gen1App = gen1App;
   }
 
   /**
@@ -111,7 +114,7 @@ export class CustomResourceGenerator implements Planner {
           await transformResource(destResourcePath, projectName, this.resourceName, constructClassName, dependencies);
           await removeBuildArtifacts(destResourcePath);
           await renameCdkStackToConstruct(destResourcePath);
-          await generateResourceWrapper(destResourcePath, this.resourceName, constructClassName, dependencies);
+          await generateResourceWrapper(this.gen1App, destResourcePath, this.resourceName, constructClassName, dependencies);
 
           await this.mergeDependencies(sourceResourcePath);
           this.contributeToBackend(constructClassName);
@@ -292,6 +295,7 @@ async function renameCdkStackToConstruct(destResourcePath: string): Promise<void
  * with stateful resource retention policies.
  */
 async function generateResourceWrapper(
+  gen1App: Gen1App,
   destResourcePath: string,
   resourceName: string,
   constructClassName: string,
@@ -306,9 +310,7 @@ async function generateResourceWrapper(
     args.push('backend');
   }
 
-  const statefulResourcesArray = Array.from(STATEFUL_RESOURCES)
-    .map((r) => `  '${r}',`)
-    .join('\n');
+  const statefulResourcesArray = gen1App.statefulResourceTypes.map((r) => `  '${r}',`).join('\n');
 
   const content = [
     "import { CfnResource } from 'aws-cdk-lib';",

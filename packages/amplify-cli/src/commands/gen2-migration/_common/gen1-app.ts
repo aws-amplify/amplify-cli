@@ -10,12 +10,14 @@ import { AwsClients } from './aws-clients';
 import { AwsFetcher } from './aws-fetcher';
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { App, GetAppCommand } from '@aws-sdk/client-amplify';
+import { DEFAULT_STATEFUL_RESOURCES } from './resource-types';
 
 interface Gen1AppProps {
   readonly ccbDir: string;
   readonly clients: AwsClients;
   readonly app: App;
   readonly envName: string;
+  readonly additionalStatefulResourceTypes?: string[];
 }
 
 /**
@@ -81,6 +83,7 @@ export class Gen1App {
   public readonly aws: AwsFetcher;
   public readonly ccbDir: string;
   public readonly rootStackName: string;
+  public readonly statefulResourceTypes: string[];
 
   // eslint-disable-next-line @typescript-eslint/naming-convention -- private backing field for meta()
   private readonly _meta: $TSMeta;
@@ -95,9 +98,13 @@ export class Gen1App {
     this._meta = JSONUtilities.readJson<$TSMeta>(path.join(this.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;
     this.rootStackName = this._meta.providers.awscloudformation.StackName;
     this.region = this._meta.providers.awscloudformation.Region;
+    this.statefulResourceTypes = [...Array.from(DEFAULT_STATEFUL_RESOURCES)];
+    if (props.additionalStatefulResourceTypes) {
+      this.statefulResourceTypes.push(...props.additionalStatefulResourceTypes);
+    }
   }
 
-  public static async create(context: $TSContext): Promise<Gen1App> {
+  public static async create(context: $TSContext, additionalStatefulResourceTypesPath?: string): Promise<Gen1App> {
     const clients = await AwsClients.create(context);
 
     const tpiRelPath = `./${path.relative(process.cwd(), pathManager.getTeamProviderInfoFilePath())}`;
@@ -129,8 +136,12 @@ export class Gen1App {
       });
     }
 
+    const additionalStatefulResourceTypes = additionalStatefulResourceTypesPath
+      ? JSON.parse(await fs.readFile(additionalStatefulResourceTypesPath, { encoding: 'utf-8' }))
+      : undefined;
+
     const ccbDir = await Gen1App.downloadCloudBackend(clients.s3, cfnProvider.DeploymentBucketName);
-    return new Gen1App({ ccbDir, clients, envName, app: app.app! });
+    return new Gen1App({ ccbDir, clients, envName, app: app.app!, additionalStatefulResourceTypes });
   }
 
   /**

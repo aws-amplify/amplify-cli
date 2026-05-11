@@ -14,7 +14,7 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
-import { AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN, RESOURCES_TO_RETAIN } from './_common/resource-types';
+import { AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNTemplate } from './_common/cfn-template';
 import CLITable from 'cli-table3';
@@ -339,7 +339,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const template = await cfn.fetchTemplate(stackId);
 
     for (const [logicalId, resource] of Object.entries(template.Resources)) {
-      if (RESOURCES_TO_RETAIN.includes(resource.Type)) {
+      if (this.gen1App.statefulResourceTypes.includes(resource.Type)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }

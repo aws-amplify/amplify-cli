@@ -1,11 +1,8 @@
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../_common/cfn-template';
-import { STATEFUL_RESOURCES } from '../../_common/resource-types';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { extractStackNameFromId } from '../../_common/utils';
-
-export const CUSTOM_RESOURCE_TYPES = Array.from(STATEFUL_RESOURCES);
 
 const CHOICE_SEPERATOR = ' ';
 
@@ -23,7 +20,8 @@ export class CustomCDKForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   protected resourceTypes(): string[] {
-    return CUSTOM_RESOURCE_TYPES;
+    // custom resources may contain all possible types of stateful resources.
+    return this.gen1App.statefulResourceTypes;
   }
 
   protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {

@@ -3,7 +3,7 @@
  * Deletion of these resources may result in permanent data loss.
  */
 
-export const STATEFUL_RESOURCES = new Set([
+export const DEFAULT_STATEFUL_RESOURCES = new Set([
   'AWS::Backup::BackupVault',
   'AWS::Cognito::UserPool',
   'AWS::DocDB::DBCluster',
@@ -68,11 +68,3 @@ export const STORAGE_S3_RESOURCES_TO_RETAIN = [
 export const STORAGE_DYNAMO_RESOURCES_TO_RETAIN = ['AWS::DynamoDB::Table'];
 
 export const ANALYTICS_RESOURCES_TO_RETAIN = ['AWS::Kinesis::Stream'];
-
-export const RESOURCES_TO_RETAIN = [
-  ...AUTH_RESOURCES_TO_RETAIN,
-  ...STORAGE_S3_RESOURCES_TO_RETAIN,
-  ...STORAGE_DYNAMO_RESOURCES_TO_RETAIN,
-  ...ANALYTICS_RESOURCES_TO_RETAIN,
-  ...Array.from(STATEFUL_RESOURCES),
-];

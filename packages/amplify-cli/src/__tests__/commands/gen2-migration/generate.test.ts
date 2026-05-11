@@ -101,6 +101,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/_common/gen1-app';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
+import { DEFAULT_STATEFUL_RESOURCES } from '../../../commands/gen2-migration/_common/resource-types';
 
 /** Creates a minimal mock Gen1App for unit tests. */
 function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
@@ -113,6 +114,7 @@ function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
     discover: () => [],
     meta: () => undefined,
     fileExists: () => false,
+    statefulResourceTypes: [...Array.from(DEFAULT_STATEFUL_RESOURCES)],
     ...overrides,
   } as unknown as Gen1App;
 }

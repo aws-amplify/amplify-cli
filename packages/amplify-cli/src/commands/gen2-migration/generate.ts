@@ -155,7 +155,14 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
         case 'custom:customCDK':
           generators.push(
-            new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, resource.resourceName, this.logger),
+            new CustomResourceGenerator(
+              this.gen1App,
+              backendGenerator,
+              packageJsonGenerator,
+              outputDir,
+              resource.resourceName,
+              this.logger,
+            ),
           );
           break;
 

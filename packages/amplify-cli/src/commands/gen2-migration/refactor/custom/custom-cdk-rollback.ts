@@ -1,5 +1,4 @@
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-import { CUSTOM_RESOURCE_TYPES } from './custom-cdk-forward';
 
 /**
  * Rollback refactorer for custom CDK resources.
@@ -15,6 +14,7 @@ export class CustomCDKRollbackRefactorer extends RollbackCategoryRefactorer {
   }
 
   protected resourceTypes(): string[] {
-    return CUSTOM_RESOURCE_TYPES;
+    // custom resources may contain all possible types of stateful resources.
+    return this.gen1App.statefulResourceTypes;
   }
 }
