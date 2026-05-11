@@ -46,7 +46,7 @@ export const run = async (context: $TSContext) => {
   const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
   const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
   const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
-  const additionalStatefulResources = (context.input.options ?? {})['additional-stateful-resource-types'];
+  const additionalStatefulResources = (context.parameters.options ?? {})['additional-stateful-resource-types'];
 
   if (skipValidations && validationsOnly) {
     throw new AmplifyError('InputValidationError', {

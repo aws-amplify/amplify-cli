@@ -750,7 +750,8 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'gen2-migration',
     commandDescription: 'Migrates your Gen1 Amplify project to Gen2',
-    commandUsage: 'amplify gen2-migration <subcommand> [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+    commandUsage:
+      'amplify gen2-migration <subcommand> [--skip-validations] [--validations-only] [--rollback] [--no-rollback] [--additional-stateful-resource-types <path>]',
     commandFlags: [
       {
         short: '',
@@ -771,6 +772,11 @@ export const commandsInfo: Array<CommandInfo> = [
         short: '',
         long: 'no-rollback',
         flagDescription: 'Disable automatic rollback on failure',
+      },
+      {
+        short: '',
+        long: 'additional-stateful-resource-types',
+        flagDescription: 'Path to a JSON file containing additional CloudFormation resource types to treat as stateful',
       },
     ],
     subCommands: [
