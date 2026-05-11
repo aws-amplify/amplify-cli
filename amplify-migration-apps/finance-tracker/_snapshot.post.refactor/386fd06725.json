@@ -1,22 +1,10 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
   "Resources": {
-    "customresolverTransactionsByCategoryDSRole14A3510C": {
-      "Type": "AWS::IAM::Role",
+    "customfinanceBudgetAlertTopic1D98F61E": {
+      "Type": "AWS::SNS::Topic",
       "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "appsync.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "RoleName": "TransByCatDSRole-gen2-x",
+        "DisplayName": "Fin Tracker Budget Alerts",
         "Tags": [
           {
             "Key": "amplify:deployment-type",
@@ -25,151 +13,221 @@
           {
             "Key": "created-by",
             "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customresolver/customresolver/TransactionsByCategoryDSRole/Resource"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/BudgetAlertTopic/Resource"
       }
     },
-    "customresolverTransactionsByCategoryDSRoleDefaultPolicyB206EA72": {
-      "Type": "AWS::IAM::Policy",
+    "customfinanceBudgetAlertTopicexamplegmailcom8B32A49D": {
+      "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "PolicyDocument": {
+        "Endpoint": "example@gmail.com",
+        "Protocol": "email",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/BudgetAlertTopic/example@gmail.com/Resource"
+      }
+    },
+    "customfinanceMonthlyReportTopic558EAC22": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Finance Tracker Monthly Reports",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/MonthlyReportTopic/Resource"
+      }
+    },
+    "customfinanceMonthlyReportTopicexamplegmailcom8B7B0C41": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "example@gmail.com",
+        "Protocol": "email",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/MonthlyReportTopic/example@gmail.com/Resource"
+      }
+    },
+    "customfinanceQueuesFunctionServiceRole33EC0D02": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "dynamodb:Query",
-                "dynamodb:Scan",
-                "dynamodb:GetItem"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*"
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "customresolverTransactionsByCategoryDSRoleDefaultPolicyB206EA72",
-        "Roles": [
+        "ManagedPolicyArns": [
           {
-            "Ref": "customresolverTransactionsByCategoryDSRole14A3510C"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customresolver/customresolver/TransactionsByCategoryDSRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/QueuesFunction/ServiceRole/Resource"
       }
     },
-    "customresolverTransactionsByCategoryDS5A80352D": {
-      "Type": "AWS::AppSync::DataSource",
+    "customfinanceQueuesFunction4E6FDAC0": {
+      "Type": "AWS::Lambda::Function",
       "Properties": {
-        "ApiId": {
-          "Ref": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId"
+        "Code": {
+          "ZipFile": "\n        exports.handler = async (event) => {\n          return { statusCode: 200, body: JSON.stringify({ message: 'Hello World!' }) };\n        };\n      "
         },
-        "DynamoDBConfig": {
-          "AwsRegion": {
-            "Ref": "AWS::Region"
-          },
-          "TableName": {
-            "Fn::Select": [
-              1,
-              {
-                "Fn::Split": [
-                  "/",
-                  {
-                    "Fn::Select": [
-                      5,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Ref": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28OutputsB17630B2"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+        "Environment": {
+          "Variables": {
+            "QUEUE1_NAME": "amplify-financetracker-e2e-sandbo-customfinanceQueue1ABF38704-WWyRISEcoQBA"
           }
         },
-        "Name": "TransactionsByCategoryDataSource",
-        "ServiceRoleArn": {
-          "Fn::GetAtt": [
-            "customresolverTransactionsByCategoryDSRole14A3510C",
-            "Arn"
-          ]
-        },
-        "Type": "AMAZON_DYNAMODB"
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::123456789012:role/amplify-financetra2605101-customfinanceQueuesFuncti-epvzLeubxcNI",
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customresolver/customresolver/TransactionsByCategoryDS"
-      }
-    },
-    "customresolverGetTransactionsByCategoryResolverF0745C21": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Ref": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId"
-        },
-        "DataSourceName": {
-          "Fn::GetAtt": [
-            "customresolverTransactionsByCategoryDS5A80352D",
-            "Name"
-          ]
-        },
-        "FieldName": "getTransactionsByCategory",
-        "RequestMappingTemplate": "\n## Custom VTL resolver for getTransactionsByCategory\n#set($limit = $util.defaultIfNull($ctx.args.limit, 20))\n{\n  \"version\": \"2018-05-29\",\n  \"operation\": \"Scan\",\n  \"filter\": {\n    \"expression\": \"category = :category\",\n    \"expressionValues\": {\n      \":category\": $util.dynamodb.toDynamoDBJson($ctx.args.category)\n    }\n  },\n  \"limit\": $limit\n}",
-        "ResponseMappingTemplate": "\n## Return the results as a TransactionConnection\n{\n  \"items\": $util.toJson($ctx.result.items),\n  \"nextToken\": $util.toJson($ctx.result.nextToken)\n}",
-        "TypeName": "Query"
-      },
-      "DependsOn": [
-        "customresolverTransactionsByCategoryDS5A80352D"
-      ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customresolver/customresolver/GetTransactionsByCategoryResolver"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/QueuesFunction/Resource"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWOQQqDMBBFz9J9MpVAT2DXbdEDyDQZIRoTcRJFQu5eUlfvv8WDr0A9GmhueLDUZpbOfiG/iCOZPqKeBR48ZIsL5C44Eu3o//wEZ/VZ9VpF4Lry6TXkdvRPjNiHtOkrIA5up62Uau8U1xSL8MEQTHzfVQOqXpjYWrklH+1C0F38AW5ausWfAAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LzQrCMBCEn8V7utqIvoDgUbH1LmkSYfuT1G7WHkLeXdJS8DTfzPBJkKcjlDs1U6FNV/TYQLxZCtbUQelOqJlekRxBfPoRtbi83Qo1N6QnHAN6l9f/ngR9COKDLdv8LZBEr4bGKIhXdnrTNk4C1QCx8v1i5Ewp053DyCEJ542FlvZfKaE8w2HXEmIxsQs4WKjW/AFVLwq0zwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customresolver/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
   },
   "Outputs": {
-    "customresolverResolverArn614A0647": {
-      "Description": "ARN of the custom getTransactionsByCategory resolver",
-      "Value": {
-        "Fn::GetAtt": [
-          "customresolverGetTransactionsByCategoryResolverF0745C21",
-          "ResolverArn"
-        ]
+    "customfinanceBudgetAlertTopicArnB3C2C0AB": {
+      "Description": "SNS Topic ARN for budget alerts",
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl",
+      "Export": {
+        "Name": "financetracker-BudgetAlertTopicArn-gen2-x"
       }
     },
-    "customresolverDataSourceName1BC154AE": {
-      "Description": "Name of the custom DynamoDB data source",
-      "Value": {
-        "Fn::GetAtt": [
-          "customresolverTransactionsByCategoryDS5A80352D",
-          "Name"
-        ]
+    "customfinanceMonthlyReportTopicArn3264B244": {
+      "Description": "SNS Topic ARN for monthly reports",
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i",
+      "Export": {
+        "Name": "financetracker-MonthlyReportTopicArn-gen2-x"
       }
+    },
+    "customfinanceQueue1Name6E5FDCF7": {
+      "Value": "amplify-financetracker-e2e-sandbo-customfinanceQueue1ABF38704-WWyRISEcoQBA"
+    },
+    "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceBudgetAlertTopicF3AC188DRef": {
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl"
+    },
+    "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceMonthlyReportTopicDA4ABB2FRef": {
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i"
     }
   },
   "Conditions": {
@@ -436,14 +494,6 @@
           ]
         }
       ]
-    }
-  },
-  "Parameters": {
-    "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId": {
-      "Type": "String"
-    },
-    "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28OutputsB17630B2": {
-      "Type": "String"
     }
   }
 }

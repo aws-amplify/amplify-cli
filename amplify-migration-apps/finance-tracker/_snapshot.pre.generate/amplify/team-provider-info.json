@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-financetracker-x-x-deployment",
       "UnauthRoleName": "amplify-financetracker-x-x-unauthRole",
       "StackName": "amplify-financetracker-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-financetracker-x-x/b5b77e20-3f49-11f1-aca5-1262955767e1",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-financetracker-x-x/f9f58d00-4cca-11f1-a0e0-127b2d3cf8f1",
       "AmplifyAppId": "financetracker"
     },
     "categories": {

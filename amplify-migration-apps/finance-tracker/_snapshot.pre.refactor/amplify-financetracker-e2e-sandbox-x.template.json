@@ -74,7 +74,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolBB38D142Ref"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPool3103AD1ARef"
         ]
       }
     },
@@ -82,7 +82,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolAppClient639403C3Ref"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPoolAppClientB938D093Ref"
         ]
       }
     },
@@ -90,7 +90,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
         ]
       }
     },
@@ -148,7 +148,7 @@
       "Value": {
         "Fn::GetAtt": [
           "auth179371D7",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolAppClient639403C3Ref"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPoolAppClientB938D093Ref"
         ]
       }
     },
@@ -159,7 +159,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
         ]
       }
     },
@@ -167,7 +167,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860GraphQLUrl"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315GraphQLUrl"
         ]
       }
     },
@@ -200,7 +200,7 @@
                             {
                               "Fn::GetAtt": [
                                 "data7552DF31",
-                                "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBB20EBAE4DestinationBucketArn"
+                                "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB5BF8DAEEDestinationBucketArn"
                               ]
                             }
                           ]
@@ -220,7 +220,7 @@
       "Value": {
         "Fn::GetAtt": [
           "data7552DF31",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPIDefaultApiKey9BC4ED8AApiKey"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIDefaultApiKey4E94CD7BApiKey"
         ]
       }
     },
@@ -236,7 +236,7 @@
             {
               "Fn::GetAtt": [
                 "function1351588B",
-                "Outputs.amplifyfinancetrackere2esandbox9663a3a206functionfinancetrackergen2xlambdaE4871E89Ref"
+                "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bfunctionfinancetrackergen2xlambda8397A727Ref"
               ]
             },
             "\"]"
@@ -253,7 +253,7 @@
       "Value": {
         "Fn::GetAtt": [
           "storage0EC3F24A",
-          "Outputs.amplifyfinancetrackere2esandbox9663a3a206storagefinancetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket902C094CRef"
+          "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bstoragefinancetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket5558CA55Ref"
         ]
       }
     },
@@ -266,7 +266,7 @@
             {
               "Fn::GetAtt": [
                 "storage0EC3F24A",
-                "Outputs.amplifyfinancetrackere2esandbox9663a3a206storagefinancetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket902C094CRef"
+                "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bstoragefinancetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket5558CA55Ref"
               ]
             },
             "\\\",\\\"storageRegion\\\":\\\"",
@@ -309,7 +309,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/70fb11acd40d2bf3286b3ba8ddcc39c80fabe789aced316a9a38bb7c428359da.json"
+              "/d5101622807b2ab059271f080b7f9e98d5f883d31c429f0487a509cec94bf034.json"
             ]
           ]
         }
@@ -318,7 +318,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth.NestedStack/auth.NestedStackResource",
-        "aws:asset:path": "amplifyfinancetrackere2esandbox9663a3a206authBE0A6716.nested.template.json",
+        "aws:asset:path": "amplifyfinancetrackere2esandbox2ecf3e941bauth3608ACAC.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -326,28 +326,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolBB38D142Ref": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPool3103AD1ARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolBB38D142Ref"
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPool3103AD1ARef"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref"
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref"
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef": {
             "Fn::GetAtt": [
               "auth179371D7",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref"
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
             ]
           }
         },
@@ -377,7 +377,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/47d550cb9b558327dd49191a63dea7d6f5e07e5b211ef7246e9d941ca730cc6f.json"
+              "/403bd1e4fd0bb1f775690a0672184cbcf51de802e399bd9b58726fbb82bb6bd3.json"
             ]
           ]
         }
@@ -386,63 +386,7 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data.NestedStack/data.NestedStackResource",
-        "aws:asset:path": "amplifyfinancetrackere2esandbox9663a3a206data5E56D996.nested.template.json",
-        "aws:asset:property": "TemplateURL"
-      }
-    },
-    "storage0EC3F24A": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "Parameters": {
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref": {
-            "Fn::GetAtt": [
-              "auth179371D7",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref"
-            ]
-          },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref": {
-            "Fn::GetAtt": [
-              "auth179371D7",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref"
-            ]
-          }
-        },
-        "Tags": [
-          {
-            "Key": "amplify:deployment-type",
-            "Value": "sandbox"
-          },
-          {
-            "Key": "created-by",
-            "Value": "amplify"
-          }
-        ],
-        "TemplateURL": {
-          "Fn::Join": [
-            "",
-            [
-              "https://s3.",
-              {
-                "Ref": "AWS::Region"
-              },
-              ".",
-              {
-                "Ref": "AWS::URLSuffix"
-              },
-              "/",
-              {
-                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-              },
-              "/ad55ff4b813ba7f827f69c9b3e6ff214896b827e7c2296cb1b38b01f4d0362b4.json"
-            ]
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage.NestedStack/storage.NestedStackResource",
-        "aws:asset:path": "amplifyfinancetrackere2esandbox9663a3a206storage3321E23B.nested.template.json",
+        "aws:asset:path": "amplifyfinancetrackere2esandbox2ecf3e941bdata90A8025B.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
@@ -450,28 +394,28 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28OutputsB17630B2": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857OutputsC7E647D6": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionTransactionTable42B70DA2TableArn"
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionTransactionTable251AF238TableArn"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206customfinanceNestedStackcustomfinanceNestedStackResourceFDC4BF76Outputsamplifyfinancetrackere2esandbox9663a3a206customfinanceBudgetAlertTopicF822F6FBRef": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceNestedStackcustomcustomfinanceNestedStackResource0661268DOutputsamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceBudgetAlertTopicF3AC188DRef": {
             "Fn::GetAtt": [
-              "customfinanceBBD6722F",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206customfinanceBudgetAlertTopicF822F6FBRef"
+              "customcustomfinanceAA361EE7",
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceBudgetAlertTopicF3AC188DRef"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206customfinanceNestedStackcustomfinanceNestedStackResourceFDC4BF76Outputsamplifyfinancetrackere2esandbox9663a3a206customfinanceMonthlyReportTopic795F5FD4Ref": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceNestedStackcustomcustomfinanceNestedStackResource0661268DOutputsamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceMonthlyReportTopicDA4ABB2FRef": {
             "Fn::GetAtt": [
-              "customfinanceBBD6722F",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206customfinanceMonthlyReportTopic795F5FD4Ref"
+              "customcustomfinanceAA361EE7",
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceMonthlyReportTopicDA4ABB2FRef"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId": {
             "Fn::GetAtt": [
               "data7552DF31",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId"
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
             ]
           }
         },
@@ -501,7 +445,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/86621839ec5d56329d5f98997307a94873d4e2b6483ae479c1e3bf8307e34232.json"
+              "/dc3c9584371ad7a95dcf25fd63780a90b3027b5a2188673e49f94bcf83e5bbb1.json"
             ]
           ]
         }
@@ -510,66 +454,24 @@
       "DeletionPolicy": "Delete",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/function.NestedStack/function.NestedStackResource",
-        "aws:asset:path": "amplifyfinancetrackere2esandbox9663a3a206functionE452A796.nested.template.json",
+        "aws:asset:path": "amplifyfinancetrackere2esandbox2ecf3e941bfunctionEC3AE3E2.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
-    "customfinanceBBD6722F": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "amplify:deployment-type",
-            "Value": "sandbox"
-          },
-          {
-            "Key": "created-by",
-            "Value": "amplify"
-          }
-        ],
-        "TemplateURL": {
-          "Fn::Join": [
-            "",
-            [
-              "https://s3.",
-              {
-                "Ref": "AWS::Region"
-              },
-              ".",
-              {
-                "Ref": "AWS::URLSuffix"
-              },
-              "/",
-              {
-                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-              },
-              "/fc85d5de20e6d04fb512a559bc4af00b13e6afc306f2ddf1f0b891e0c2b1e5c3.json"
-            ]
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customfinance.NestedStack/customfinance.NestedStackResource",
-        "aws:asset:path": "amplifyfinancetrackere2esandbox9663a3a206customfinance4D1AD3A1.nested.template.json",
-        "aws:asset:property": "TemplateURL"
-      }
-    },
-    "customresolver37EB1DEE": {
+    "storage0EC3F24A": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Parameters": {
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef": {
             "Fn::GetAtt": [
-              "data7552DF31",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId"
+              "auth179371D7",
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
             ]
           },
-          "referencetoamplifyfinancetrackere2esandbox9663a3a206dataNestedStackdataNestedStackResource956A4541Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28OutputsB17630B2": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref": {
             "Fn::GetAtt": [
-              "data7552DF31",
-              "Outputs.amplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionNestedStackTransactionNestedStackResourceE5410A28Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataTransactionTransactionTable42B70DA2TableArn"
+              "auth179371D7",
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
             ]
           }
         },
@@ -599,7 +501,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/1844a53dd73b22e55a2e3e804e39e30669a2c3d8a3efc1ca63f7c994143a85f2.json"
+              "/3f528beb9e86387645efb8ec0aca2bb0cc7f38a6de6b2ee260c2c8605e888267.json"
             ]
           ]
         }
@@ -607,15 +509,113 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customresolver.NestedStack/customresolver.NestedStackResource",
-        "aws:asset:path": "amplifyfinancetrackere2esandbox9663a3a206customresolver470E3FDD.nested.template.json",
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage.NestedStack/storage.NestedStackResource",
+        "aws:asset:path": "amplifyfinancetrackere2esandbox2ecf3e941bstorage6571B0EE.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "customcustomfinanceAA361EE7": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/42da65d7318daa9ad368d780804ee4019ee4a7ca5d23e9f815f4ebe7a5caa3a6.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance.NestedStack/customcustomfinance.NestedStackResource",
+        "aws:asset:path": "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceA2132734.nested.template.json",
+        "aws:asset:property": "TemplateURL"
+      }
+    },
+    "customcustomresolver9A523377": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "Parameters": {
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId": {
+            "Fn::GetAtt": [
+              "data7552DF31",
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+            ]
+          },
+          "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857OutputsC7E647D6": {
+            "Fn::GetAtt": [
+              "data7552DF31",
+              "Outputs.amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionTransactionTable251AF238TableArn"
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+              },
+              "/f2a267305b2b8d55ee7a7232ac00ebd47123914f2f9afda85cbe00fb3877db87.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomresolver.NestedStack/customcustomresolver.NestedStackResource",
+        "aws:asset:path": "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomresolver6F13F99D.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzI10DNQTCwv1k1OydbNyUzSqw4uSUzO1nFOy/MvLSkoLQGxwEK1Onn5Kal6WcX6ZUYGekYgfVnFmZm6RaV5JZm5qXpBEBoAh6iAllQAAAA="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzI11jNUTCwv1k1OydbNyUzSqw4uSUzO1nFOy/MvLSkoLQGxwEK1Onn5Kal6WcX6ZUZGeoZmegaKWcWZmbpFpXklmbmpekEQGgAcxIMXVAAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/CDKMetadata/Default"

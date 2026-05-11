@@ -4,6 +4,10 @@
     "ParameterValue": "5"
   },
   {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPool3103AD1ARef",
+    "ParameterValue": "us-east-1_Do724qq9c"
+  },
+  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
@@ -12,27 +16,23 @@
     "ParameterValue": "false"
   },
   {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef",
+    "ParameterValue": "us-east-1:c545b731-c650-4ff3-b2f6-1d78d98b925e"
+  },
+  {
     "ParameterKey": "DynamoDBBillingMode",
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref",
-    "ParameterValue": "amplify-financetra2604231-amplifyAuthauthenticatedU-mtMR6VW2YKH5"
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref",
+    "ParameterValue": "amplify-financetra2605101-amplifyAuthauthenticatedU-PdzEwCYD3yi2"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref",
-    "ParameterValue": "us-east-1:ccae5924-7e98-4b8f-bf21-ac09c945a04b"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolBB38D142Ref",
-    "ParameterValue": "us-east-1_Qrh9UxVmy"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref",
-    "ParameterValue": "amplify-financetra2604231-amplifyAuthunauthenticate-rSgiGOevcLBc"
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef",
+    "ParameterValue": "amplify-financetra2605101-amplifyAuthunauthenticate-7zLAZsqRcPdQ"
   }
 ]

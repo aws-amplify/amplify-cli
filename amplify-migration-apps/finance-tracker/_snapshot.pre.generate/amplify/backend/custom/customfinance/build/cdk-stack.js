@@ -28,6 +28,8 @@ const cdk = __importStar(require("aws-cdk-lib"));
 const AmplifyHelpers = __importStar(require("@aws-amplify/cli-extensibility-helper"));
 const sns = __importStar(require("aws-cdk-lib/aws-sns"));
 const subscriptions = __importStar(require("aws-cdk-lib/aws-sns-subscriptions"));
+const sqs = __importStar(require("aws-cdk-lib/aws-sqs"));
+const lambda = __importStar(require("aws-cdk-lib/aws-lambda"));
 class cdkStack extends cdk.Stack {
     constructor(scope, id, props, amplifyResourceProps) {
         super(scope, id, props);
@@ -51,10 +53,28 @@ class cdkStack extends cdk.Stack {
             displayName: 'Finance Tracker Monthly Reports',
         });
         this.monthlyReportTopic.addSubscription(new subscriptions.EmailSubscription('example@gmail.com'));
+        const queue1 = new sqs.Queue(this, 'Queue1');
         new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
             value: this.monthlyReportTopic.topicArn,
             description: 'SNS Topic ARN for monthly reports',
             exportName: `${amplifyProjectInfo.projectName}-MonthlyReportTopicArn-${cdk.Fn.ref('env')}`,
+        });
+        // create references to the refactored queue to ensure pre-refactor resolution
+        // works in this case.
+        new lambda.Function(this, 'QueuesFunction', {
+            runtime: lambda.Runtime.NODEJS_18_X,
+            handler: 'index.handler',
+            code: lambda.Code.fromInline(`
+        exports.handler = async (event) => {
+          return { statusCode: 200, body: JSON.stringify({ message: 'Hello World!' }) };
+        };
+      `),
+            environment: {
+                'QUEUE1_NAME': queue1.queueName,
+            }
+        });
+        new cdk.CfnOutput(this, 'Queue1Name', {
+            value: queue1.queueName,
         });
         cdk.Tags.of(this).add('Project', 'FinanceTracker');
         cdk.Tags.of(this).add('Environment', cdk.Fn.ref('env'));

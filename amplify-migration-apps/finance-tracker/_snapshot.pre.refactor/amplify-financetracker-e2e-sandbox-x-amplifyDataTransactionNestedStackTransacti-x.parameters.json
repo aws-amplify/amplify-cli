@@ -4,6 +4,10 @@
     "ParameterValue": "5"
   },
   {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceDBEE4862Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerTab0A2F1D43",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-financetra2605101-TableManagerCustomProvid-aOtcqjjo27iB"
+  },
+  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
@@ -12,35 +16,31 @@
     "ParameterValue": "false"
   },
   {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef",
+    "ParameterValue": "us-east-1:c545b731-c650-4ff3-b2f6-1d78d98b925e"
+  },
+  {
     "ParameterKey": "DynamoDBBillingMode",
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref",
-    "ParameterValue": "amplify-financetra2604231-amplifyAuthauthenticatedU-mtMR6VW2YKH5"
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref",
+    "ParameterValue": "amplify-financetra2605101-amplifyAuthauthenticatedU-PdzEwCYD3yi2"
   },
   {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPINONEDSD3B1847BName",
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId",
+    "ParameterValue": "cqtbb2d36zbalo5egilazvdefi"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName",
     "ParameterValue": "NONE_DS"
   },
   {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref",
-    "ParameterValue": "us-east-1:ccae5924-7e98-4b8f-bf21-ac09c945a04b"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataGraphQLAPI1D168860ApiId",
-    "ParameterValue": "iltux4eqlfcblbluzjzhytjruu"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceCDE2B074Outputsamplifyfinancetrackere2esandbox9663a3a206dataamplifyDataAmplifyTableManagerTab0795D5C3",
-    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-financetra2604231-TableManagerCustomProvid-bzPcdg49TDmM"
-  },
-  {
-    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref",
-    "ParameterValue": "amplify-financetra2604231-amplifyAuthunauthenticate-rSgiGOevcLBc"
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef",
+    "ParameterValue": "amplify-financetra2605101-amplifyAuthunauthenticate-7zLAZsqRcPdQ"
   }
 ]

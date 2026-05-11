@@ -45,7 +45,6 @@ export class cdkStack extends cdk.Stack {
     );
 
     const queue1 = new sqs.Queue(this, 'Queue1');
-    const queue2 = new sqs.Queue(this, 'Queue2');
 
     new cdk.CfnOutput(this, 'MonthlyReportTopicArn', {
       value: this.monthlyReportTopic.topicArn,
@@ -65,14 +64,10 @@ export class cdkStack extends cdk.Stack {
       `),
       environment: {
         'QUEUE1_NAME': queue1.queueName,
-        'QUEUE2_NAME': queue2.queueName,
       }
     });
     new cdk.CfnOutput(this, 'Queue1Name', {
       value: queue1.queueName,
-    });
-    new cdk.CfnOutput(this, 'Queue2Name', {
-      value: queue2.queueName,
     });
 
     cdk.Tags.of(this).add('Project', 'FinanceTracker');

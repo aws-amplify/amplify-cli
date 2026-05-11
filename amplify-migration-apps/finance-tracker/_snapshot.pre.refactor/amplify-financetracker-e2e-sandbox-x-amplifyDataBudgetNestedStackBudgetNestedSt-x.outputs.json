@@ -1,14 +1,14 @@
 [
   {
     "OutputKey": "GetAttBudgetTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Budget-adetddan7nd55gwre37yyck3vu-x/stream/2026-04-23T19:25:17.433",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Budget-advknbihlbchtlonmy35v53toa-x/stream/2026-05-10T23:53:30.304",
     "Description": "Your DynamoDB table StreamArn.",
-    "ExportName": "iltux4eqlfcblbluzjzhytjruu:GetAtt:BudgetTable:StreamArn"
+    "ExportName": "cqtbb2d36zbalo5egilazvdefi:GetAtt:BudgetTable:StreamArn"
   },
   {
     "OutputKey": "GetAttBudgetTableName",
-    "OutputValue": "Budget-adetddan7nd55gwre37yyck3vu-x",
+    "OutputValue": "Budget-advknbihlbchtlonmy35v53toa-x",
     "Description": "Your DynamoDB table name.",
-    "ExportName": "iltux4eqlfcblbluzjzhytjruu:GetAtt:BudgetTable:Name"
+    "ExportName": "cqtbb2d36zbalo5egilazvdefi:GetAtt:BudgetTable:Name"
   }
 ]

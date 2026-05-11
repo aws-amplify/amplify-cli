@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "webClientId",
-    "OutputValue": "d3i0osngdk8t7lnvejisior6i"
+    "OutputValue": "2l1dhna5tv910dt62g3jpmjnaa"
   },
   {
     "OutputKey": "socialProviders",
@@ -13,7 +13,7 @@
   },
   {
     "OutputKey": "bucketName",
-    "OutputValue": "amplify-financetra2604231-financetrackera14ace1bd4-m1gc0b4dylcm"
+    "OutputValue": "amplify-financetra2605101-financetrackera14ace1bd4-uwiukujsjabc"
   },
   {
     "OutputKey": "signupAttributes",
@@ -21,7 +21,7 @@
   },
   {
     "OutputKey": "oauthClientId",
-    "OutputValue": "d3i0osngdk8t7lnvejisior6i"
+    "OutputValue": "2l1dhna5tv910dt62g3jpmjnaa"
   },
   {
     "OutputKey": "allowUnauthenticatedIdentities",
@@ -77,11 +77,11 @@
   },
   {
     "OutputKey": "awsAppsyncApiEndpoint",
-    "OutputValue": "https://fssl5qlw4vhrjopsneyjxxv7ey.appsync-api.us-east-1.amazonaws.com/graphql"
+    "OutputValue": "https://3yl3wmf67ffsnhkabznrobnjle.appsync-api.us-east-1.amazonaws.com/graphql"
   },
   {
     "OutputKey": "awsAppsyncApiId",
-    "OutputValue": "iltux4eqlfcblbluzjzhytjruu"
+    "OutputValue": "cqtbb2d36zbalo5egilazvdefi"
   },
   {
     "OutputKey": "authRegion",
@@ -89,11 +89,11 @@
   },
   {
     "OutputKey": "buckets",
-    "OutputValue": "[\"{\\\"name\\\":\\\"financetrackera14ace1bd4be4b579cb608d44266aea7x-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-financetra2604231-financetrackera14ace1bd4-m1gc0b4dylcm\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+    "OutputValue": "[\"{\\\"name\\\":\\\"financetrackera14ace1bd4be4b579cb608d44266aea7x-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-financetra2605101-financetrackera14ace1bd4-uwiukujsjabc\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
   },
   {
     "OutputKey": "amplifyApiModelSchemaS3Uri",
-    "OutputValue": "s3://amplify-financetra2604231-amplifydataamplifycodege-ywo1kf4bexqa/model-schema.graphql"
+    "OutputValue": "s3://amplify-financetra2605101-amplifydataamplifycodege-miug1d9inwzh/model-schema.graphql"
   },
   {
     "OutputKey": "groups",
@@ -125,11 +125,11 @@
   },
   {
     "OutputKey": "userPoolId",
-    "OutputValue": "us-east-1_Qrh9UxVmy"
+    "OutputValue": "us-east-1_Do724qq9c"
   },
   {
     "OutputKey": "identityPoolId",
-    "OutputValue": "us-east-1:ccae5924-7e98-4b8f-bf21-ac09c945a04b"
+    "OutputValue": "us-east-1:c545b731-c650-4ff3-b2f6-1d78d98b925e"
   },
   {
     "OutputKey": "verificationMechanisms",

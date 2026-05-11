@@ -9,5 +9,5 @@
         ]
     },
     "S3DeploymentBucket": "amplify-financetracker-x-x-deployment",
-    "S3DeploymentRootKey": "amplify-appsync-files/4dd0c50fb66651ae78c4cfbe5407c48414980f33"
+    "S3DeploymentRootKey": "amplify-appsync-files/a4cb1f0ff73cb98bbf900bb096b1f227a7c26dc0"
 }
