@@ -9,12 +9,12 @@ export const financetracker = defineFunction({
   timeoutSeconds: 25,
   memoryMB: 128,
   environment: {
+    ENV: `${branchName}`,
+    REGION: 'us-east-1',
     BUDGET_ALERT_TOPIC_ARN:
       'arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-BudgetAlertTopicF20DF526-DFMxF2RX1UKQ',
     MONTHLY_REPORT_TOPIC_ARN:
       'arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-MonthlyReportTopic8D223100-nR4J630BiqQZ',
-    ENV: `${branchName}`,
-    REGION: 'us-east-1',
   },
   runtime: 22,
 });

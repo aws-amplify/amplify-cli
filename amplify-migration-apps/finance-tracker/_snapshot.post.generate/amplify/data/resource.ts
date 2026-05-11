@@ -72,8 +72,7 @@ export const data = defineData({
       modelNameToTableNameMapping: {
         Transaction: 'Transaction-advknbihlbchtlonmy35v53toa-x',
         Budget: 'Budget-advknbihlbchtlonmy35v53toa-x',
-        FinancialSummary:
-          'FinancialSummary-advknbihlbchtlonmy35v53toa-x',
+        FinancialSummary: 'FinancialSummary-advknbihlbchtlonmy35v53toa-x',
       },
     },
   ],

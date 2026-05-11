@@ -22,8 +22,7 @@ export const storage = defineStorage({
 
 export function postRefactor(backend: Backend) {
   const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-  s3Bucket.bucketName =
-    'financetrackera14ace1bd4be4b579cb608d44266aea7x-x';
+  s3Bucket.bucketName = 'financetrackera14ace1bd4be4b579cb608d44266aea7x-x';
 }
 
 export function applyEscapeHatches(backend: Backend) {

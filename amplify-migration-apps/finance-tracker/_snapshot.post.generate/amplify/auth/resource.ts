@@ -26,10 +26,10 @@ export function applyEscapeHatches(backend: Backend) {
   cfnUserPool.policies = {
     passwordPolicy: {
       minimumLength: 8,
+      requireUppercase: false,
       requireLowercase: false,
       requireNumbers: false,
       requireSymbols: false,
-      requireUppercase: false,
       temporaryPasswordValidityDays: 7,
     },
   };
