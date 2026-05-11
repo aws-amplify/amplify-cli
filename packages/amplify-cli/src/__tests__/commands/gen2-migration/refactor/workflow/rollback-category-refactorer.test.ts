@@ -91,7 +91,11 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
+    const operations = await (refactorer as any).afterMove({
+      sourceStackId: 'gen2-stack-id',
+      targetStackId: 'gen1-stack-id',
+      mappings: [],
+    });
 
     // 1 operation: move resources from holding stack back to Gen2
     expect(operations).toHaveLength(1);
@@ -114,15 +118,34 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
+    const operations = await (refactorer as any).afterMove({
+      sourceStackId: 'gen2-stack-id',
+      targetStackId: 'gen1-stack-id',
+      mappings: [],
+    });
     expect(operations).toHaveLength(0);
   });
 });
 
 class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {
   private readonly ids: ReadonlyMap<string, string>;
+  private readonly holdingMappings: ResourceMapping[];
 
   constructor(ids: ReadonlyMap<string, string>) {
+    const cfnMockObj = {
+      findStack: jest.fn().mockResolvedValue({ StackName: 'gen2-stack-holding', StackStatus: 'UPDATE_COMPLETE' }),
+      fetchTemplate: jest.fn().mockImplementation(() => {
+        const forwardMappings: ResourceMapping[] = Array.from(ids.entries()).map(([gen2Id, gen1Id]) => ({
+          Source: { StackName: 'gen1-stack', LogicalResourceId: gen1Id },
+          Destination: { StackName: 'gen2-stack', LogicalResourceId: gen2Id },
+        }));
+        return Promise.resolve({
+          AWSTemplateFormatVersion: '2010-09-09',
+          Resources: {},
+          Metadata: { ForwardMappings: forwardMappings },
+        });
+      }),
+    } as unknown as Cfn;
     super(
       null as any,
       null as any,
@@ -130,9 +153,13 @@ class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
-      null as unknown as Cfn,
+      cfnMockObj,
     );
     this.ids = ids;
+    this.holdingMappings = Array.from(ids.entries()).map(([gen2Id, gen1Id]) => ({
+      Source: { StackName: 'gen1-stack', LogicalResourceId: gen1Id },
+      Destination: { StackName: 'gen2-stack', LogicalResourceId: gen2Id },
+    }));
   }
   protected async fetchSourceStackId() {
     return 'gen2-stack';
@@ -178,7 +205,7 @@ describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based
   it('throws for resource with no known Gen1 logical ID', async () => {
     const refactorer = new TestRollbackMappingRefactorer(new Map());
     await expect(refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map())).rejects.toThrow(
-      'Unable to determine target id of resource amplifyTopic',
+      'Unable to find forward mapping for resource amplifyTopic',
     );
   });
 

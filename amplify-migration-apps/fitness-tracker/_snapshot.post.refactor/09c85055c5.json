@@ -732,7 +732,7 @@
         "Description": "override success",
         "GroupName": "Admin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_meUfbq8Lb-AdminGroupRole",
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-authuserPoolGroups-x/AdminGroupRole",
         "UserPoolId": "us-east-1_meUfbq8Lb"
       },
       "DeletionPolicy": "Retain",

@@ -52,6 +52,33 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
   function setupBasicMocks() {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
+    // Holding stack for rollback buildResourceMappings
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-holding' }).resolves({
+      Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({ StackResources: [] });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-holding' }).resolves({
+      TemplateBody: JSON.stringify({
+        AWSTemplateFormatVersion: '2010-09-09',
+        Resources: {
+          amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+        },
+        Metadata: {
+          ForwardMappings: [
+            {
+              Source: { StackName: 'gen1-auth', LogicalResourceId: 'UserPool' },
+              Destination: { StackName: 'gen2-auth', LogicalResourceId: 'amplifyAuthUserPool12345678' },
+            },
+            {
+              Source: { StackName: 'gen1-auth', LogicalResourceId: 'UserPoolClient' },
+              Destination: { StackName: 'gen2-auth', LogicalResourceId: 'amplifyAuthUserPoolAppClient12345678' },
+            },
+          ],
+        },
+        Outputs: {},
+      }),
+    });
+
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
       StackResources: [
         {
@@ -258,6 +285,18 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
           AWSTemplateFormatVersion: '2010-09-09',
           Resources: {
             amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+          },
+          Metadata: {
+            ForwardMappings: [
+              {
+                Source: { StackName: 'gen1-auth', LogicalResourceId: 'UserPool' },
+                Destination: { StackName: 'gen2-auth', LogicalResourceId: 'amplifyAuthUserPool12345678' },
+              },
+              {
+                Source: { StackName: 'gen1-auth', LogicalResourceId: 'UserPoolClient' },
+                Destination: { StackName: 'gen2-auth', LogicalResourceId: 'amplifyAuthUserPoolAppClient12345678' },
+              },
+            ],
           },
           Outputs: {},
         }),

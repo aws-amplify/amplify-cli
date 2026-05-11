@@ -68,7 +68,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).beforeMove('gen2-stack');
+    const operations = await (refactorer as any).beforeMove({ sourceStackId: 'gen1-stack', targetStackId: 'gen2-stack', mappings: [] });
     expect(operations).toHaveLength(0);
   });
 
@@ -95,7 +95,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).beforeMove('gen2-stack');
+    const operations = await (refactorer as any).beforeMove({ sourceStackId: 'gen1-stack', targetStackId: 'gen2-stack', mappings: [] });
     expect(operations).toHaveLength(1);
     expect(await operations[0].describe()).toEqual([expect.stringContaining('holding')]);
   });
@@ -134,7 +134,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).beforeMove('gen2-stack');
+    const operations = await (refactorer as any).beforeMove({ sourceStackId: 'gen1-stack', targetStackId: 'gen2-stack', mappings: [] });
     expect(operations).toHaveLength(2);
     await operations[0].execute();
 
@@ -206,7 +206,7 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
   it('throws when no types match', async () => {
     await expect(
       refactorer.testBuildResourceMappings(new Map([['Stream', r('AWS::Kinesis::Stream')]]), new Map([['Bucket', r('AWS::S3::Bucket')]])),
-    ).rejects.toThrow("Source resource 'Stream' (AWS::Kinesis::Stream) has no corresponding target resource");
+    ).rejects.toThrow('Unable to map Gen1 resource Stream (AWS::Kinesis::Stream) to Gen2 resource');
   });
 
   it('throws when source resource has multiple matching target resources', async () => {
@@ -218,7 +218,7 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
           ['Bucket2', r('AWS::S3::Bucket')],
         ]),
       ),
-    ).rejects.toThrow("Source resource 'S3Bucket' (AWS::S3::Bucket) has multiple corresponding target resources");
+    ).rejects.toThrow('Unable to map Gen1 resource S3Bucket (AWS::S3::Bucket) to Gen2 resource');
   });
 
   it('returns empty mappings when source is empty', async () => {
@@ -235,7 +235,7 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
         ]),
         new Map([['GenBucket', r('AWS::S3::Bucket')]]),
       ),
-    ).rejects.toThrow('has no corresponding target resource');
+    ).rejects.toThrow('Unable to map Gen1 resource');
   });
 
   it('throws when both sides have multiple resources of the same type', async () => {
@@ -250,6 +250,6 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
           ['GenBucket2', r('AWS::S3::Bucket')],
         ]),
       ),
-    ).rejects.toThrow('has multiple corresponding target resources');
+    ).rejects.toThrow('Unable to map Gen1 resource');
   });
 });

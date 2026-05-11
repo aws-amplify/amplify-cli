@@ -621,7 +621,7 @@
         "Description": "override success",
         "GroupName": "storeLocatorAdmin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_bXsy5KSVZ-storeLocatorAdminGroupRole",
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authuserPoolGroups-x/storeLocatorAdminGroupRole",
         "UserPoolId": "us-east-1_bXsy5KSVZ"
       },
       "DeletionPolicy": "Retain",
