@@ -35,9 +35,8 @@ export class CustomCDKForwardRefactorer extends ForwardCategoryRefactorer {
       return candidates[0];
     }
 
-    // multiple candidates found - prompt the user. note that we only do this
-    // for custom resources since we have no way of knowing which resource should
-    // map to which.
+    // if we got here then this.fetchDestStackId() already returned a stack id once before.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const gen2StackId = (await this.fetchDestStackId())!;
     const gen2Resources = await this.gen2Branch.fetchStackResources(gen2StackId);
 
@@ -51,7 +50,10 @@ export class CustomCDKForwardRefactorer extends ForwardCategoryRefactorer {
       return physicalId;
     }
 
-    const choices = Array.from(targetResources.keys()).map((r) => `${r}${CHOICE_SEPERATOR}(${gen2PhysicalResourceId(r)})`);
+    // multiple candidates found - prompt the user. note that we only do this
+    // for custom resources since we have no way of knowing which resource should
+    // map to which.
+    const choices = candidates.map((c) => `${c}${CHOICE_SEPERATOR}(${gen2PhysicalResourceId(c)})`);
 
     this.logger.pause();
     const selection = await prompter.pick<'one', string>(
