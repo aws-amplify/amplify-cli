@@ -1,8 +1,6 @@
 # Refactor Command — Guideline Violations
 
-> **Status:** Accepted (with deviations)
 > **Created:** 2026-03-16
-> **Current docs:** [refactor.md](../../../docs/packages/amplify-cli/src/commands/gen2-migration/refactor.md)
 
 This document maps issues in `packages/amplify-cli/src/commands/gen2-migration/refactor`
 to the guidelines in `CODING_GUIDELINES.md`.

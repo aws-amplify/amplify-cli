@@ -1,8 +1,6 @@
 # ADR: Unified Validation Model for gen2-migration
 
-> **Status:** Accepted (with deviations)
 > **Created:** 2026-03-19
-> **Current docs:** [gen2-migration.md](../../../docs/packages/amplify-cli/src/commands/gen2-migration.md)
 
 ## Context
 

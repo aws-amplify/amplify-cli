@@ -1,10 +1,6 @@
 # ADR: Migrate Gen1 apps to Gen2
 
-> **Status:** Superseded
 > **Created:** 2025-10-07
-> **Current docs:** [gen2-migration.md](../../../docs/packages/amplify-cli/src/commands/gen2-migration.md)
->
-> The `amplify migration start/clone/cleanup/decommission-gen1` command scheme described below was rethought during implementation. The shipped design uses `amplify gen2-migration {assess,lock,generate,refactor}`. This document is preserved as a record of the early design thinking.
 
 As we kick-off work on the migration project, define the overall flow our customers will follow.
 

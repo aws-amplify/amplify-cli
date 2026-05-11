@@ -1,8 +1,6 @@
 # Generate Command — Guideline Violations
 
-> **Status:** Accepted (with deviations)
 > **Created:** 2026-03-13
-> **Current docs:** [generate.md](../../../docs/packages/amplify-cli/src/commands/gen2-migration/generate.md)
 
 This document maps issues in `packages/amplify-cli/src/commands/gen2-migration/generate`
 to the guidelines in `CODING_GUIDELINES.md`.
