@@ -384,6 +384,18 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
         Resources: {
           amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
         },
+        Metadata: {
+          ForwardMappings: [
+            {
+              Source: { StackName: 'gen1-auth', LogicalResourceId: 'UserPool' },
+              Destination: { StackName: 'gen2-auth', LogicalResourceId: 'amplifyAuthUserPool12345678' },
+            },
+            {
+              Source: { StackName: 'gen1-auth', LogicalResourceId: 'UserPoolClient' },
+              Destination: { StackName: 'gen2-auth', LogicalResourceId: 'amplifyAuthUserPoolAppClient12345678' },
+            },
+          ],
+        },
         Outputs: {},
       }),
     });

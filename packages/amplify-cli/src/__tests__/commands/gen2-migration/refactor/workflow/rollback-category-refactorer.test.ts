@@ -144,7 +144,9 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    await expect((refactorer as any).afterMove('gen2-auth-stack-id')).rejects.toMatchObject({
+    await expect(
+      (refactorer as any).afterMove({ sourceStackId: 'gen2-auth-stack-id', targetStackId: 'gen1-stack-id', mappings: [] }),
+    ).rejects.toMatchObject({
       name: 'StackStateError',
       message: expect.stringContaining('ROLLBACK_COMPLETE'),
     });

@@ -160,7 +160,9 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       cfn,
     );
 
-    await expect((refactorer as any).beforeMove('gen2-stack')).rejects.toMatchObject({
+    await expect(
+      (refactorer as any).beforeMove({ sourceStackId: 'gen1-stack', targetStackId: 'gen2-stack', mappings: [] }),
+    ).rejects.toMatchObject({
       name: 'StackStateError',
       message: expect.stringContaining('ROLLBACK_COMPLETE'),
     });
