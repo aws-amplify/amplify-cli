@@ -31,8 +31,13 @@ export const STATEFUL_RESOURCES = [
   'AWS::SDB::Domain',
   'AWS::SQS::Queue',
   'AWS::SecretsManager::Secret',
-  'AWS::Cognito::UserPoolGroup',
   'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolGroup',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolIdentityProvider',
+  'Custom::S3AutoDeleteObjects',
 ];
 
 export function defineCustomfinance(backend: Backend) {
