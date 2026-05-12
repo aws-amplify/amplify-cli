@@ -193,6 +193,11 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (holdingStack && holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+      });
+    }
     if (holdingStack) return baseOps;
 
     const template = await this.cfn.fetchTemplate(gen2StackId);
@@ -235,6 +240,11 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (holdingStack && holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+      });
+    }
     if (holdingStack) return baseOps;
 
     const gen1UserPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');

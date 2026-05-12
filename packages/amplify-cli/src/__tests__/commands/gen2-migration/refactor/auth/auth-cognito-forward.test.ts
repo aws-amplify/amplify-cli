@@ -376,7 +376,7 @@ describe('AuthCognitoForwardRefactorer — holding stack behavior', () => {
 
     if (holdingStackExists) {
       cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-stack-holding' }).resolves({
-        Stacks: [{ StackName: 'gen2-auth-stack-holding', StackStatus: rs, CreationTime: ts }],
+        Stacks: [{ StackName: 'gen2-auth-stack-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
       });
       cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack-holding' }).resolves({
         TemplateBody: JSON.stringify({
@@ -474,5 +474,20 @@ describe('AuthCognitoForwardRefactorer — holding stack behavior', () => {
 
     // Should contain import operation
     expect(descriptions.some((d) => d.includes('Import social auth'))).toBe(true);
+  });
+
+  it('throws StackStateError when holding stack is in unexpected state', async () => {
+    setupSocialAuthMocks(false);
+    // Override the holding stack mock to return an unexpected status
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-stack-holding' }).resolves({
+      Stacks: [{ StackName: 'gen2-auth-stack-holding', StackStatus: 'ROLLBACK_COMPLETE', CreationTime: ts }],
+    });
+
+    const refactorer = createForwardRefactorer();
+
+    await expect(refactorer.plan()).rejects.toMatchObject({
+      name: 'StackStateError',
+      message: expect.stringContaining('ROLLBACK_COMPLETE'),
+    });
   });
 });
