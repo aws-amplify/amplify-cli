@@ -305,7 +305,6 @@ export class App {
     if (options.lock) {
       await this.lockForward();
     }
-
     await this.refactorForward(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
