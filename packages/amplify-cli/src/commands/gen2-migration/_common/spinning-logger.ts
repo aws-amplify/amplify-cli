@@ -148,12 +148,15 @@ export class SpinningLogger {
 
   public pause() {
     if (this.spinnerActive && !this.debugMode) {
+      this.spinnerActive = false;
       this.spinner.stop();
     }
   }
 
   public resume() {
-    this.spinner.start(this.buildSpinnerText());
+    if (!this.spinnerActive && !this.debugMode) {
+      this.spinner.start(this.buildSpinnerText());
+    }
   }
 
   /**
