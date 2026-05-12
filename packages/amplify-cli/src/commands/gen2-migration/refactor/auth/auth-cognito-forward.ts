@@ -192,19 +192,6 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const baseOps = await super.beforeMove(blueprint);
 
     const gen2StackId = blueprint.targetStackId;
-
-    const gen2StackName = extractStackNameFromId(gen2StackId);
-    const holdingStackName = this.getHoldingStackName(gen2StackName);
-    const holdingStack = await this.cfn.findStack(holdingStackName);
-    if (holdingStack && !VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
-      throw new AmplifyError('StackStateError', {
-        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
-          ', ',
-        )})`,
-      });
-    }
-    if (holdingStack) return baseOps;
-
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
