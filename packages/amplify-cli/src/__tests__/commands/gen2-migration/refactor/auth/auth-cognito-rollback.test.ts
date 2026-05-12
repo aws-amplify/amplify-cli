@@ -266,7 +266,7 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
 
     if (holdingStackExists) {
       cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-holding' }).resolves({
-        Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: rs, CreationTime: ts }],
+        Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
       });
       // holding stack has a user pool
       cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({
@@ -370,5 +370,29 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     expect(descriptions.some((d) => d.includes('Import social auth'))).toBe(false);
+  });
+
+  it('throws StackStateError when holding stack is in unexpected state', async () => {
+    setupRollbackMocks(false);
+    // Override the holding stack mock to return an unexpected status
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-holding' }).resolves({
+      Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: 'ROLLBACK_COMPLETE', CreationTime: ts }],
+    });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-holding' }).resolves({
+      TemplateBody: JSON.stringify({
+        AWSTemplateFormatVersion: '2010-09-09',
+        Resources: {
+          amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+        },
+        Outputs: {},
+      }),
+    });
+
+    const refactorer = createRollbackRefactorer();
+
+    await expect(refactorer.plan()).rejects.toMatchObject({
+      name: 'StackStateError',
+      message: expect.stringContaining('ROLLBACK_COMPLETE'),
+    });
   });
 });

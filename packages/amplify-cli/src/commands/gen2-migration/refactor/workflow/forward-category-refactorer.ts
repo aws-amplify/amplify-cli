@@ -118,6 +118,16 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     this.debug(`Locating holding stack: ${holdingStackName}`);
     const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (
+      holdingStack &&
+      holdingStack.StackStatus !== 'UPDATE_COMPLETE' &&
+      holdingStack.StackStatus !== 'REVIEW_IN_PROGRESS' &&
+      holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE'
+    ) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE, UPDATE_ROLLBACK_COMPLETE, or REVIEW_IN_PROGRESS)`,
+      });
+    }
 
     const resources = this.filterResourcesByType(gen2StackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${gen2StackName}`);

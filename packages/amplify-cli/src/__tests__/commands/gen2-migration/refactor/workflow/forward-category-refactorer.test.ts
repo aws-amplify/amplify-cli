@@ -140,6 +140,31 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
 
     expect(cfnMock.commandCalls(DeleteStackCommand).length).toBeGreaterThan(0);
   });
+
+  it('throws StackStateError when holding stack is in unexpected state', async () => {
+    cfnMock.on(DescribeStacksCommand).resolves({
+      Stacks: [{ StackName: 'holding', StackStatus: 'ROLLBACK_COMPLETE', CreationTime: new Date() }],
+    });
+    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_WITH_BUCKET });
+
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const refactorer = new TestForwardRefactorer(
+      new StackFacade(clients, 'g1'),
+      new StackFacade(clients, 'g2'),
+      { region: 'us-east-1', clients } as unknown as Gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
+      cfn,
+    );
+
+    await expect((refactorer as any).beforeMove('gen2-stack')).rejects.toMatchObject({
+      name: 'StackStateError',
+      message: expect.stringContaining('ROLLBACK_COMPLETE'),
+    });
+  });
 });
 
 import { CFNResource } from '../../../../../commands/gen2-migration/_common/cfn-template';

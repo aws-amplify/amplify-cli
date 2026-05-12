@@ -125,6 +125,30 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
     });
     expect(operations).toHaveLength(0);
   });
+
+  it('throws StackStateError when holding stack is in unexpected state', async () => {
+    cfnMock.on(DescribeStacksCommand).resolves({
+      Stacks: [{ StackName: 'holding', StackStatus: 'ROLLBACK_COMPLETE', CreationTime: new Date() }],
+    });
+
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const refactorer = new TestRollbackRefactorer(
+      new StackFacade(clients, 'gen1-root'),
+      new StackFacade(clients, 'gen2-root'),
+      { region: 'us-east-1', clients } as unknown as Gen1App,
+      '123456789',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' },
+      cfn,
+    );
+
+    await expect((refactorer as any).afterMove('gen2-auth-stack-id')).rejects.toMatchObject({
+      name: 'StackStateError',
+      message: expect.stringContaining('ROLLBACK_COMPLETE'),
+    });
+  });
 });
 
 class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {

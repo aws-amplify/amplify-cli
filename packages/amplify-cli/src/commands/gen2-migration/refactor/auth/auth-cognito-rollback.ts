@@ -44,6 +44,12 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
 
+    if (holdingStack && holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+      });
+    }
+
     const template = await this.cfn.fetchTemplate(gen2StackId);
     const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
 
@@ -87,6 +93,12 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
+
+    if (holdingStack && holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+      });
+    }
 
     const holdingUserPoolId = await this.gen2Branch.fetchUserPoolId(holdingStackName);
     if (!holdingUserPoolId) return baseOps;

@@ -137,6 +137,12 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       ];
     }
 
+    if (holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+      });
+    }
+
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);
     const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
     const resources = this.filterResourcesByType(holdingStackTemplate);
