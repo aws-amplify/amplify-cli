@@ -7,7 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
 import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
-import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../../_common/cfn';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID, VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -123,6 +123,14 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           },
         },
       ];
+    }
+
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
     }
 
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);

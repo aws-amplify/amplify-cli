@@ -4,6 +4,7 @@ import { AmplifyMigrationOperation } from '../../_common/operation';
 import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-refactorer';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { extractStackNameFromId } from '../../_common/utils';
+import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 import {
   RESOURCE_TYPES,
   GEN1_NATIVE_APP_CLIENT,
@@ -59,6 +60,14 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
 
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
+    }
+
     const template = await this.cfn.fetchTemplate(gen2StackId);
     const { domainLogicalId, idpLogicalIds } = extractSocialAuthLogicalIds(template);
 
@@ -100,6 +109,14 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
+
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
+    }
 
     const holdingUserPoolId = await this.gen2Branch.fetchUserPoolId(holdingStackName);
     if (!holdingUserPoolId) return baseOps;

@@ -5,6 +5,7 @@ import { checkRetainPolicies, RefactorBlueprint } from '../workflow/category-ref
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
 import { extractStackNameFromId } from '../../_common/utils';
+import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 import { SocialAuthConfig, StackFacade } from '../stack-facade';
 import CLITable from 'cli-table3';
 
@@ -193,6 +194,13 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (holdingStack && !VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
+    }
     if (holdingStack) return baseOps;
 
     const template = await this.cfn.fetchTemplate(gen2StackId);
@@ -235,6 +243,13 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (holdingStack && !VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
+    }
     if (holdingStack) return baseOps;
 
     const gen1UserPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
