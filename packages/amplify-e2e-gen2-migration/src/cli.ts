@@ -4,7 +4,6 @@
 import * as yargs from 'yargs';
 import chalk from 'chalk';
 import { App } from './core/app';
-import { Teardown } from './core/teardown';
 import { resolveProfile } from './core/credentials';
 
 async function main(): Promise<void> {
@@ -53,34 +52,22 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const step = argv.step ?? 'migrate';
+  const step = argv.step ?? 'e2e';
 
   const profile = resolveProfile(argv.profile);
   const app = new App(argv.app, profile, argv.verbose);
-  try {
-    switch (step) {
-      case 'deploy':
-        await app.deploy();
-        break;
-      case 'migrate':
-        await app.migrate();
-        break;
-      default:
-        throw new Error(`Unrecognized step: ${step}`);
-    }
-    if (process.env.UPDATE_SNAPSHOTS === '1') {
-      app.updateSnapshots();
-    }
-    app.logger.info(`Execution completed successfully (${app.targetAppPath})`);
-  } catch (error) {
-    console.log();
-    (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)}\n\n(App path: ${app.targetAppPath})\n`;
-    throw error;
-  } finally {
-    if (argv.teardown) {
-      await app.refreshCredentials();
-      await new Teardown(app.deploymentName, app.getClientConfig()).clean();
-    }
+  switch (step) {
+    case 'deploy':
+      await app.deploy();
+      break;
+    case 'migrate':
+      await app.migrate();
+      break;
+    case 'e2e':
+      await app.e2e({ teardown: argv.teardown ?? false });
+      break;
+    default:
+      throw new Error(`Unrecognized step: ${step}`);
   }
 }
 

@@ -7,6 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
+import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
 
 /**
@@ -151,6 +152,17 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     this.debug(`Locating holding stack: ${holdingStackName}`);
     const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (
+      holdingStack &&
+      holdingStack.StackStatus !== 'REVIEW_IN_PROGRESS' &&
+      !VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)
+    ) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
+    }
 
     const resources = this.filterResourcesByType(gen2StackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${gen2StackName}`);

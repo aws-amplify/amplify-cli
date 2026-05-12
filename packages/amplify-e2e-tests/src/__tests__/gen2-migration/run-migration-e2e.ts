@@ -1,13 +1,13 @@
 /* eslint-disable spellcheck/spell-checker */
 import { execSync } from 'child_process';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { App, Teardown } from '@aws-amplify/amplify-e2e-gen2-migration';
+import { App } from '@aws-amplify/amplify-e2e-gen2-migration';
 
 /**
- * Jest timeout for migration tests (2 hours). Migration runs involve
- * full Gen1 push + Gen2 sandbox deploy and can take 30–90 minutes.
+ * Jest timeout for migration tests (3 hours). Migration runs involve
+ * full Gen1 push + Refactor + Gen2 sandbox deploy several times.
  */
-export const MIGRATION_TEST_TIMEOUT_MS = 2 * 60 * 60 * 1000;
+export const MIGRATION_TEST_TIMEOUT_MS = 3 * 60 * 60 * 1000;
 
 /**
  * Resolve the child account ID from the current STS caller identity.
@@ -37,6 +37,14 @@ async function resolveChildAccountId(): Promise<string> {
  * in CI mode (two-hop assume-role from container credentials).
  */
 export async function runMigrationE2E(appName: string): Promise<void> {
+  // the default jest console logger adds a noisy call-site logging
+  // statement. in our case since we wrap console.log with a Logger, all these
+  // call-sites are the same and are not helpful.
+  // restore the standard console logger so the output looks like a regular process
+  // execution.
+  const { Console } = require('console');
+  global.console = new Console(process.stdout, process.stderr);
+
   // Resolve the child account from the shell-level credentials.
   // This must be the same account that amplify init/push deploy to.
   const childAccountId = await resolveChildAccountId();
@@ -50,18 +58,5 @@ export async function runMigrationE2E(appName: string): Promise<void> {
   // CredentialManager. The CredentialManager uses fromContainerMetadata()
   // explicitly, so it works even with child account creds in process.env.
   const app = new App(appName, undefined);
-  try {
-    await app.migrate();
-    if (process.env.UPDATE_SNAPSHOTS === '1') {
-      app.updateSnapshots();
-    }
-  } finally {
-    try {
-      await app.refreshCredentials();
-      await new Teardown(app.deploymentName, app.getClientConfig()).clean();
-    } catch (teardownError) {
-      // Teardown failures should not mask a successful migration.
-      console.error('Teardown failed (non-fatal):', (teardownError as Error).message);
-    }
-  }
+  await app.e2e({ teardown: true });
 }

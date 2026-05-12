@@ -120,6 +120,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
           }
           break;
         }
+        case 'custom:customCDK':
         case 'UNKNOWN':
           break;
       }

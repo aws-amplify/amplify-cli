@@ -16,7 +16,8 @@ import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
 import { AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN, RESOURCES_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift/detect-template-drift';
+import { CFNTemplate } from './_common/cfn-template';
+import CLITable from 'cli-table3';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -46,67 +47,6 @@ const ALLOW_ALL_POLICY = {
     },
   ],
 };
-
-/**
- * Identifies changeset changes that are expected DeletionPolicy drift from the lock step.
- *
- * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as:
- * 1. Direct DeletionPolicy changes — Modify with Scope exactly `['DeletionPolicy']`
- * 2. Cascading IAM Policy changes — CFN flags IAM policies that reference the modified
- *    table's attributes (e.g., `TodoTable.Arn` in PolicyDocument) as Dynamic re-evaluations.
- *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`,
- *    `RequiresRecreation: Never`, and `CausingEntity` matching `*Table.Arn` or
- *    `*Table.StreamArn` — they are harmless re-evaluations, not actual changes.
- *
- * For lock rollback to determine whether the environment is safe to revert, these expected
- * changes must be filtered out so only real drift blocks the rollback.
- */
-const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
-  if (change.Action !== 'Modify') return false;
-
-  // Direct DeletionPolicy change on a resource
-  if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
-
-  // Cascading IAM Policy change caused by DeletionPolicy modification on a referenced resource.
-  // Must be: Properties-only scope, all Details are Dynamic ResourceAttribute re-evaluations
-  // with CausingEntity referencing a table attribute (e.g., TodoTable.Arn, TodoTable.StreamArn).
-  if (
-    change.ResourceType === 'AWS::IAM::Policy' &&
-    change.Scope?.length === 1 &&
-    change.Scope[0] === 'Properties' &&
-    change.Details?.length
-  ) {
-    return change.Details.every(
-      (d) =>
-        d.ChangeSource === 'ResourceAttribute' &&
-        d.Evaluation === 'Dynamic' &&
-        d.Target?.RequiresRecreation === 'Never' &&
-        /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? ''),
-    );
-  }
-
-  return false;
-};
-
-/**
- * Recursively walks the change tree to find any leaf resource changes that are
- * not expected lock drift. AWS::CloudFormation::Stack entries are structural
- * wrappers — their nestedChanges contain the actual resource-level changes.
- */
-function hasRealDrift(changes: ResourceChangeWithNested[]): boolean {
-  for (const change of changes) {
-    if (change.nestedChanges?.length) {
-      if (hasRealDrift(change.nestedChanges)) return true;
-    } else if (change.ResourceType !== 'AWS::CloudFormation::Stack') {
-      if (!isExpectedLockDrift(change)) return true;
-    } else if (change.Action !== 'Modify') {
-      // Add/Remove on a CloudFormation::Stack without nestedChanges is real drift —
-      // an entire nested stack was added or deleted outside Amplify.
-      return true;
-    }
-  }
-  return false;
-}
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[] | undefined;
@@ -232,13 +172,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async rollback(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    operations.push({
-      describe: async () => [],
-      validate: () => ({ description: 'Drift', run: () => this.validateLockRollbackDrift() }),
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    });
-
     // ============================================================
     // Project Level Operations
     // ============================================================
@@ -281,6 +214,54 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
+    // ============================================================
+    // Resource Specific Operations
+    // ============================================================
+
+    const nestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
+    for (const resource of this.gen1App.discover()) {
+      switch (resource.key) {
+        case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const template = this.gen1App.json(`auth/${resource.resourceName}/build/${resource.resourceName}-cloudformation-template.json`);
+          operations.push(await this.validateRefactorRollbackStackIntegrity(resource, template, stackId));
+          break;
+        }
+        case 'storage:S3': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const template = this.gen1App.json(`storage/${resource.resourceName}/build/cloudformation-template.json`);
+          operations.push(await this.validateRefactorRollbackStackIntegrity(resource, template, stackId));
+          break;
+        }
+        case 'storage:DynamoDB': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const template = this.gen1App.json(
+            `storage/${resource.resourceName}/build/${resource.resourceName}-cloudformation-template.json`,
+          );
+          operations.push(await this.validateRefactorRollbackStackIntegrity(resource, template, stackId));
+          break;
+        }
+        case 'analytics:Kinesis': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const template = this.gen1App.json(`analytics/${resource.resourceName}/kinesis-cloudformation-template.json`);
+          operations.push(await this.validateRefactorRollbackStackIntegrity(resource, template, stackId));
+          break;
+        }
+
+        case 'api:AppSync':
+        case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
+        case 'function:Lambda':
+        case 'custom:customCDK':
+        case 'UNKNOWN':
+          // untouched during refactor - skip them.
+          break;
+      }
+    }
+
     return new Plan({
       operations,
       logger: this.logger,
@@ -307,45 +288,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };
-    }
-  }
-
-  /**
-   * Validates that the environment is safe for lock rollback by running template drift
-   * detection and filtering out expected DeletionPolicy changes from the lock step.
-   *
-   * If only DeletionPolicy drift remains (from the lock step adding Retain), rollback
-   * is safe. If any real drift exists, rollback must be blocked — the environment is
-   * in an inconsistent state.
-   */
-  private async validateLockRollbackDrift(): Promise<ValidationResult> {
-    try {
-      const driftResults = await detectTemplateDrift(this.gen1App.rootStackName, this.logger, this.gen1App.clients.cloudFormation);
-
-      if (driftResults.skipped) {
-        return { valid: false, report: `Template drift detection was skipped: ${driftResults.skipReason}` };
-      }
-
-      if (driftResults.incompleteStacks?.length) {
-        return {
-          valid: false,
-          report: `Could not verify all stacks for drift: ${driftResults.incompleteStacks.join(', ')}`,
-        };
-      }
-
-      // Check incompleteStacks before hasRealDrift — incomplete stacks mean we can't
-      // trust that the absence of real drift is accurate.
-      if (hasRealDrift(driftResults.changes)) {
-        return {
-          valid: false,
-          report: 'Template drift detected beyond expected DeletionPolicy changes',
-        };
-      }
-
-      return { valid: true };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      return { valid: false, report: e?.message ?? String(e) };
     }
   }
 
@@ -448,6 +390,51 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     return operations;
+  }
+
+  private async validateRefactorRollbackStackIntegrity(
+    resource: DiscoveredResource,
+    localTemplate: CFNTemplate,
+    stackId: string,
+  ): Promise<AmplifyMigrationOperation> {
+    const stackName = extractStackNameFromId(stackId);
+
+    return {
+      resource,
+      validate: () => ({
+        description: `Stack Integrity: ${stackName}`,
+        run: async () => {
+          const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+          const deployedTemplate = await cfn.fetchTemplate(stackId);
+
+          const missingResources = new CLITable({
+            head: ['Logical ID', 'Type'],
+            style: { head: [] },
+          });
+
+          for (const logicalId of Object.keys(localTemplate.Resources)) {
+            const localResource = localTemplate.Resources[logicalId];
+            if (localResource.Condition) {
+              // skip conditional resources since refactor resolves
+              // conditions so these resource may intentionally be missing
+              // from the deployed template.
+              continue;
+            }
+            if (!deployedTemplate.Resources[logicalId]) {
+              missingResources.push([logicalId, localResource.Type]);
+            }
+          }
+
+          return {
+            valid: missingResources.length === 0,
+            report: `Following resources are missing. Did you forget to run 'amplify gen2-migration refactor --rollback'?\n\n${missingResources.toString()}`,
+          };
+        },
+      }),
+      describe: async () => [],
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
   }
 
   private validateRetainChangeset(changeSet: DescribeChangeSetOutput): boolean {

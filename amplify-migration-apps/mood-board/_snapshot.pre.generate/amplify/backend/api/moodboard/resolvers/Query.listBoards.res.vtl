@@ -5,8 +5,8 @@
 
 ## Add a pin emoji prefix to each board name so it's visible on the frontend
 #foreach( $item in $ctx.result.items )
-  #if( !$item.name.startsWith("📌 ") )
-    $util.qr($item.put("name", "📌 $item.name"))
+  #if( !$item.name.startsWith("(new!)") )
+    $util.qr($item.put("name", "(new!) $item.name"))
   #end
 #end
 

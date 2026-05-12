@@ -1,4 +1,3 @@
 {
-  "refactor": { "skip": true },
   "generate": { "skipValidations": true }
 }

@@ -17,20 +17,26 @@ import { sanitize } from './sanitize';
 import { normalize } from './normalize';
 import { CredentialManager } from './credentials';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
+import type { AwsCredentialIdentity } from '@aws-sdk/types';
+import { Teardown } from './teardown';
 
+const REPO_ROOT_DIR = process.env.CODEBUILD_SRC_DIR ?? path.join(__dirname, '..', '..', '..', '..');
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-e2e-gen2-migration', 'snapshots');
-const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
+const MIGRATION_APPS_DIR = path.join(REPO_ROOT_DIR, 'amplify-migration-apps');
 
 interface MigrationConfig {
   /**
    * Per-step configuration overrides.
    */
-  readonly lock?: StepConfig;
+  readonly lockForward?: StepConfig;
+  readonly lockRollback?: StepConfig;
+  readonly refactorForward?: StepConfig;
+  readonly refactorRollback?: StepConfig;
   readonly generate?: StepConfig;
-  readonly refactor?: RefactorConfig;
 }
 
 interface StepConfig {
@@ -38,17 +44,19 @@ interface StepConfig {
    * Pass --skip-validations to the step.
    */
   readonly skipValidations?: boolean;
-}
 
-interface RefactorConfig {
   /**
-   * Skip the refactor step entirely (e.g., when a sub-feature breaks refactoring).
+   * Skip the step entirely.
    */
   readonly skip?: boolean;
-  /**
-   * Pass --skip-validations to the refactor step.
-   */
-  readonly skipValidations?: boolean;
+}
+
+interface E2EOptions {
+  readonly teardown: boolean;
+}
+
+interface ForwardOptions {
+  readonly lock: boolean;
 }
 
 /**
@@ -69,7 +77,7 @@ export class App {
    * Whether the refactor step should be skipped entirely for this app.
    */
   public get skipRefactor(): boolean {
-    return this.migrationConfig.refactor?.skip === true;
+    return this.migrationConfig.refactorForward?.skip === true;
   }
   private readonly amplifyPath: string;
   private readonly credentials: CredentialManager;
@@ -101,6 +109,7 @@ export class App {
 
     const region = process.env.CLI_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
     const generatedProfile = `amplify-migration-e2e-${this.deploymentName}`;
+
     this.credentials = new CredentialManager(profile, region, generatedProfile, this.logger);
 
     // temporary directory to store snapshot of each step
@@ -223,8 +232,99 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
-    await this.refreshCredentials();
-    await this.runAmplify(['push', '--yes', '--debug']);
+    await this.runAmplify(['push', '--force', '--yes']);
+  }
+
+  /**
+   * Run a full E2E migration test on this app.
+   */
+  public async e2e(options: E2EOptions): Promise<void> {
+    this.logger.info(`Started e2e execution`);
+    try {
+      printPhaseBanner(`Phase 1 | Migration`);
+      const gen2StackName = await this.migrate();
+
+      if (!this.skipRefactor) {
+        printPhaseBanner(`Phase 2 | Post Migration | Rollback`);
+        await this.rollback(gen2StackName);
+
+        printPhaseBanner(`Phase 3 | Post Migration | Forward`);
+        // lock: true because we rolled back
+        await this.forward(gen2StackName, { lock: true });
+      }
+
+      printPhaseBanner(`Phase 4 | Post Migration | Retain`);
+      await this.git.checkout(this.gen1BranchName, false);
+      await this.pull();
+      await this.retain();
+
+      await this.testGen1();
+      await this.testGen2();
+
+      this.logger.info(`Execution completed successfully (${this.targetAppPath})`);
+      if (process.env.UPDATE_SNAPSHOTS === '1') {
+        this.updateSnapshots();
+      }
+    } catch (error) {
+      console.log();
+      (error as Error).message = `Migration failed: ${(error as Error).message}\n\n(App path: ${this.targetAppPath})\n`;
+      console.log((error as Error).stack);
+      console.log();
+      throw error;
+    } finally {
+      if (options.teardown) {
+        await this.refreshCredentials();
+        const teardown = new Teardown(this.deploymentName, this.getClientConfig());
+        await teardown.clean();
+      }
+    }
+  }
+
+  public async rollback(gen2StackName: string): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
+    await this.refactorRollback(gen2StackName);
+    await this.lockRollback();
+    await this.push();
+
+    await this.testGen1();
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.postRollback();
+    await this.git.diff();
+    await this.git.commit('chore: post rollback');
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+  }
+
+  public async forward(gen2StackName: string, options: ForwardOptions): Promise<void> {
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.pull();
+    if (options.lock) {
+      await this.lockForward();
+    }
+    await this.refactorForward(gen2StackName);
+
+    this.logger.info(`Capturing post.refactor snapshot`);
+    console.log('');
+    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.postRefactor();
+    await this.git.diff();
+    await this.git.commit('chore: post refactor');
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.testShared();
   }
 
   /**
@@ -254,10 +354,10 @@ export class App {
   /**
    * Runs the full migration workflow
    */
-  public async migrate(): Promise<void> {
+  public async migrate(): Promise<string> {
     await this.deploy();
     await this.assess();
-    await this.lock();
+    await this.lockForward();
 
     await this.testGen1();
 
@@ -291,37 +391,13 @@ export class App {
 
     if (this.skipRefactor) {
       this.logger.info('Skipping refactor (configured in migration/config.json)');
-      return;
+      return gen2StackName;
     }
 
-    await this.git.checkout(this.gen1BranchName, false);
-    await this.pull();
-    await this.refactor(gen2StackName);
+    // lock: false because we already executed lock
+    await this.forward(gen2StackName, { lock: false });
 
-    this.logger.info(`Capturing post.refactor snapshot`);
-    console.log('');
-    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
-    console.log('');
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.git.checkout(this.gen2BranchName, false);
-    await this.postRefactor();
-    await this.git.diff();
-    await this.git.commit('chore: post refactor');
-
-    await this.deployGen2Sandbox();
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.testShared();
-
-    await this.retain();
-
-    await this.testGen1();
-    await this.testGen2();
+    return gen2StackName;
   }
 
   /**
@@ -335,9 +411,24 @@ export class App {
   /**
    * Run `amplify gen2-migration lock`.
    */
-  public async lock(): Promise<void> {
+  public async lockForward(): Promise<void> {
     await this.refreshCredentials();
-    const extraArgs = this.migrationConfig.lock?.skipValidations ? ['--skip-validations'] : [];
+    const extraArgs: string[] = [];
+    if (this.migrationConfig.lockForward?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+    await this.runMigrationStep('lock', extraArgs);
+  }
+
+  /**
+   * Run `amplify gen2-migration lock --rollback`.
+   */
+  public async lockRollback(): Promise<void> {
+    await this.refreshCredentials();
+    const extraArgs = ['--rollback'];
+    if (this.migrationConfig.lockRollback?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
     await this.runMigrationStep('lock', extraArgs);
   }
 
@@ -354,12 +445,40 @@ export class App {
   /**
    * Run `amplify gen2-migration refactor`.
    */
-  public async refactor(gen2StackName: string): Promise<void> {
+  public async refactorForward(gen2StackName: string): Promise<void> {
     await this.refreshCredentials();
     const extraArgs = ['--to', gen2StackName];
-    if (this.migrationConfig.refactor?.skipValidations) {
+    if (this.migrationConfig.refactorForward?.skipValidations) {
       extraArgs.push('--skip-validations');
     }
+
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+
+    printStepBanner('Forward Refactor (1)');
+    await this.runMigrationStep('refactor', extraArgs);
+
+    printStepBanner('Forward Refactor (2)');
+    await this.runMigrationStep('refactor', extraArgs);
+  }
+
+  /**
+   * Run `amplify gen2-migration refactor --rollback`.
+   */
+  public async refactorRollback(gen2StackName: string): Promise<void> {
+    await this.refreshCredentials();
+    const extraArgs = ['--to', gen2StackName, '--rollback'];
+    if (this.migrationConfig.refactorRollback?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+
+    // twice for idempotancy. print a banner so its easier to distinguish
+    // the different runs in the logs.
+
+    printStepBanner('Rollback Refactor (1)');
+    await this.runMigrationStep('refactor', extraArgs);
+
+    printStepBanner('Rollback Refactor (2)');
     await this.runMigrationStep('refactor', extraArgs);
   }
 
@@ -386,6 +505,7 @@ export class App {
       reject: false,
       stdio: 'inherit',
       env: this.getEnv({ AWS_BRANCH: this.gen2BranchName }),
+      extendEnv: false,
     });
 
     if (result.exitCode !== 0) {
@@ -466,6 +586,13 @@ export class App {
   }
 
   /**
+   * Run the post-rollback script.
+   */
+  public async postRollback(): Promise<void> {
+    await this.runNpmScript('post-rollback');
+  }
+
+  /**
    * Run the post-sandbox script with the Gen2 root stack name.
    */
   public async postSandbox(gen2StackName: string): Promise<void> {
@@ -508,8 +635,8 @@ export class App {
    * Refresh credentials. Call before any AWS operation in role mode so the
    * underlying profile doesn't expire mid-step. No-op in profile mode.
    */
-  public async refreshCredentials(): Promise<void> {
-    await this.credentials.refresh();
+  public async refreshCredentials(): Promise<AwsCredentialIdentity | undefined> {
+    return await this.credentials.refresh();
   }
 
   /**
@@ -534,7 +661,7 @@ export class App {
    * chain, which may prefer container/IMDS credentials in CI environments.
    */
   public getClientConfig(): { credentials: ReturnType<typeof fromIni> } {
-    return { credentials: fromIni({ profile: this.profile }) };
+    return { credentials: fromIni({ profile: this.profile, ignoreCache: true }) };
   }
 
   // ============================================================
@@ -549,19 +676,22 @@ export class App {
     const region = process.env.CLI_REGION ?? 'us-east-1';
     this.logger.info(`Bootstrapping CDK for region ${region}...`);
 
-    const identity = await execa('aws', ['sts', 'get-caller-identity', '--query', 'Account', '--output', 'text'], {
-      env: this.getEnv(),
-    });
-    const accountId = identity.stdout.trim();
+    const stsClient = new STSClient({ ...this.getClientConfig(), region });
+    const identity = await stsClient.send(new GetCallerIdentityCommand({}));
+    const accountId = identity.Account;
+    if (!accountId) {
+      throw new Error('Unable to determine AWS account ID from STS.');
+    }
 
     const result = await execa('npx', ['cdk', 'bootstrap', `aws://${accountId}/${region}`], {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
       env: this.getEnv(),
+      extendEnv: false,
     });
     if (result.exitCode !== 0) {
-      this.logger.info('CDK bootstrap may already exist or failed, continuing...');
+      throw new Error(`'cdk bootstrap' failed. See above logs for details.`);
     }
   }
   private removeGitignoreLine(line: string): void {
@@ -582,6 +712,7 @@ export class App {
   }
 
   private async runAmplify(args: string[], options?: { stdio?: 'inherit' }): Promise<void> {
+    await this.refreshCredentials();
     const originalCwd = process.cwd();
     process.chdir(this.targetAppPath);
     try {
@@ -596,6 +727,7 @@ export class App {
         cwd: this.targetAppPath,
         stdio: options?.stdio,
         env: this.getEnv(),
+        extendEnv: false,
       });
       if (result.exitCode !== 0) {
         throw new Error(`${command} failed with exit code ${result.exitCode}`);
@@ -621,6 +753,7 @@ export class App {
       stdio: 'inherit',
       reject: false,
       env: this.getEnv(),
+      extendEnv: false,
     });
 
     if (result.exitCode !== 0) {
@@ -635,11 +768,13 @@ export class App {
    * Silently skips if the script is not defined.
    */
   private async runNpmScript(scriptName: string, extraEnv?: Record<string, string>): Promise<void> {
+    await this.refreshCredentials();
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
       env: this.getEnv({ GEN1_ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv }),
+      extendEnv: false,
     });
 
     if (result.exitCode !== 0) {
@@ -666,7 +801,7 @@ export class App {
         '--output',
         'text',
       ],
-      { reject: false, env: this.getEnv() },
+      { reject: false, env: this.getEnv(), extendEnv: false },
     );
 
     if (result.exitCode !== 0) {
@@ -686,6 +821,44 @@ export class App {
     this.logger.info(`Gen2 stack name: ${rootStacks[0]}`);
     return rootStacks[0];
   }
+}
+
+/**
+ * Prints a centered emphasized phase banner to stdout for visual separation in logs.
+ *
+ * ╔════════════════════════════════════════════════════════════╗
+ * ║                                                            ║
+ * ║                           ${text}                          ║
+ * ║                                                            ║
+ * ╚════════════════════════════════════════════════════════════╝
+ *
+ */
+function printPhaseBanner(text: string): void {
+  const innerWidth = 60;
+  const padding = Math.max(0, innerWidth - text.length);
+  const leftPad = Math.floor(padding / 2);
+  const rightPad = padding - leftPad;
+  const border = '\u2550'.repeat(innerWidth);
+  const emptyLine = `\u2551${' '.repeat(innerWidth)}\u2551`;
+  const textLine = `\u2551${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}\u2551`;
+  console.log(`\n\u2554${border}\u2557\n${emptyLine}\n${textLine}\n${emptyLine}\n\u255A${border}\u255D\n`);
+}
+
+/**
+ * Prints a smaller step banner for sub-steps within a phase.
+ *
+ * +---------------------------+
+ * |          {text}           |
+ * +---------------------------+
+ */
+function printStepBanner(text: string): void {
+  const innerWidth = 40;
+  const padding = Math.max(0, innerWidth - text.length);
+  const leftPad = Math.floor(padding / 2);
+  const rightPad = padding - leftPad;
+  const border = '-'.repeat(innerWidth);
+  const textLine = `|${' '.repeat(leftPad)}${text}${' '.repeat(rightPad)}|`;
+  console.log(`\n+${border}+\n${textLine}\n+${border}+\n`);
 }
 
 /**

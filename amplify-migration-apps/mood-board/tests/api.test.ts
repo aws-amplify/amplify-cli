@@ -38,7 +38,7 @@ describe('guest', () => {
 
       expect(typeof board.id).toBe('string');
       expect(board.id.length).toBeGreaterThan(0);
-      expect(board.name).toMatch(new RegExp(`^[🌅☀️🌙] ${name} \\(new!\\)$`));
+      expect(board.name).toEqual(`${name} (new!)`);
       expect(board.createdAt).toBeDefined();
       expect(board.updatedAt).toBeDefined();
     });
@@ -99,14 +99,14 @@ describe('guest', () => {
       });
       const created = (createResult as any).data.createBoard;
 
-      const listResult = await guest().graphql({ query: listBoards });
+      const listResult = await guest().graphql({ query: listBoards, variables: { limit: 1000 } });
       const items = (listResult as any).data.listBoards.items;
 
       expect(Array.isArray(items)).toBe(true);
       expect(items.length).toBeGreaterThanOrEqual(1);
       const found = items.find((b: any) => b.id === created.id);
       expect(found).toBeDefined();
-      expect(found.name).toBe(`📌 ${name}`);
+      expect(found.name).toBe(`(new!) ${name}`);
     });
   });
 
@@ -204,7 +204,7 @@ describe('guest', () => {
       });
       const created = (createResult as any).data.createMoodItem;
 
-      const listResult = await guest().graphql({ query: listMoodItems });
+      const listResult = await guest().graphql({ query: listMoodItems, variables: { limit: 1000 } });
       const items = (listResult as any).data.listMoodItems.items;
 
       expect(Array.isArray(items)).toBe(true);
