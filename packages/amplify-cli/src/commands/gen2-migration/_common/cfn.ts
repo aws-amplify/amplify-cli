@@ -50,6 +50,14 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
 };
 
 export const HOLDING_STACK_NAME_SUFFIX = '-holding';
+
+/**
+ * Valid CloudFormation stack statuses for a holding stack.
+ * UPDATE_COMPLETE: normal state after successful refactor.
+ * UPDATE_ROLLBACK_COMPLETE: stack rolled back a failed update but is still usable.
+ * CREATE_COMPLETE: initial state when the stack was just created.
+ */
+export const VALID_HOLDING_STACK_STATUSES = ['UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE', 'CREATE_COMPLETE'];
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY = 'ForwardMappings';
 export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };

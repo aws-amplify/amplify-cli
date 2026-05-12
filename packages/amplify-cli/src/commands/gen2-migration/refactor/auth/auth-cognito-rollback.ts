@@ -4,6 +4,7 @@ import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refact
 import { extractStackNameFromId } from '../../_common/utils';
 import { buildImportSpec, extractSocialAuthLogicalIds, renderImportTable, renderOrphanTable, RESOURCE_TYPES } from './auth-cognito-forward';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 
 /**
  * Rollback refactorer for the auth:Cognito resource.
@@ -44,9 +45,11 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
 
-    if (holdingStack && holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
       throw new AmplifyError('StackStateError', {
-        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
       });
     }
 
@@ -94,9 +97,11 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return baseOps;
 
-    if (holdingStack && holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
       throw new AmplifyError('StackStateError', {
-        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
       });
     }
 

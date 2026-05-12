@@ -7,7 +7,11 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
 import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
-import { HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY, MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../../_common/cfn';
+import {
+  HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY,
+  MIGRATION_PLACEHOLDER_LOGICAL_ID,
+  VALID_HOLDING_STACK_STATUSES,
+} from '../../_common/cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -137,9 +141,11 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       ];
     }
 
-    if (holdingStack.StackStatus !== 'UPDATE_COMPLETE' && holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE') {
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
       throw new AmplifyError('StackStateError', {
-        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE or UPDATE_ROLLBACK_COMPLETE)`,
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
       });
     }
 

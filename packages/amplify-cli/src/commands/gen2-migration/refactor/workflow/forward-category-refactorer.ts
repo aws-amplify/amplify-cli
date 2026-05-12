@@ -7,6 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
+import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
 import { HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY } from '../../_common/cfn';
 
@@ -120,12 +121,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (
       holdingStack &&
-      holdingStack.StackStatus !== 'UPDATE_COMPLETE' &&
       holdingStack.StackStatus !== 'REVIEW_IN_PROGRESS' &&
-      holdingStack.StackStatus !== 'UPDATE_ROLLBACK_COMPLETE'
+      !VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)
     ) {
       throw new AmplifyError('StackStateError', {
-        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected UPDATE_COMPLETE, UPDATE_ROLLBACK_COMPLETE, or REVIEW_IN_PROGRESS)`,
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
       });
     }
 
