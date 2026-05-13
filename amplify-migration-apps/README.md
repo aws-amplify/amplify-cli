@@ -91,15 +91,15 @@ Contains E2E configuration and lifecycle hook scripts for the app.
 
 If the file does not exist, defaults are used (no skips, no skip-validations).
 
-**Hook scripts** — optional TypeScript files that apply app-specific fixups the migration CLI cannot automate. Each accepts `appPath` as a CLI argument. If a script does not exist, the E2E system silently skips it.
+**Hook npm scripts** — every app's `package.json` must define these 7 scripts. The E2E invokes them by name (`npm run <hook>`) at lifecycle points; the script's implementation is up to the app. Use `"true"` to no-op, or `"npx tsx migration/<hook>.ts"` to run a TypeScript hook file under `migration/`. Hook TS files accept `appPath` as a CLI argument.
 
-- `pre-push.ts` — before `amplify push` (after init + configure)
-- `post-push.ts` — after `amplify push`
-- `post-generate.ts` — after `gen2-migration generate` + `npm install`
-- `pre-sandbox.ts` — before `npx ampx sandbox --once`
-- `post-sandbox.ts` — after the first Gen2 sandbox deploy
-- `post-refactor.ts` — after `gen2-migration refactor`
-- `post-rollback.ts` — after `gen2-migration refactor --rollback` (reverses `post-refactor.ts` fixups)
+- `pre-push` — before `amplify push` (after init + configure)
+- `post-push` — after `amplify push`
+- `post-generate` — after `gen2-migration generate` + `npm install`
+- `pre-sandbox` — before `npx ampx sandbox --once`
+- `post-sandbox` — after the first Gen2 sandbox deploy
+- `post-refactor` — after `gen2-migration refactor`
+- `post-rollback` — after `gen2-migration refactor --rollback` (reverses `post-refactor` fixups)
 
 **Test npm scripts** — defined in the app's `package.json`, invoked by the E2E at validation points:
 
