@@ -70,6 +70,32 @@ describe('AmplifyMigrationLockStep', () => {
           appSync: { send: jest.fn() },
           dynamoDB: { send: jest.fn() },
         },
+        aws: {
+          listNestedStacks: jest.fn().mockImplementation((stackName: string) => {
+            if (stackName === 'test-root-stack') {
+              return [
+                {
+                  LogicalResourceId: 'apitestApp',
+                  PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/api-stack/abc',
+                  ResourceType: 'AWS::CloudFormation::Stack',
+                },
+              ];
+            }
+            // api nested stack → model table stacks
+            return [
+              {
+                LogicalResourceId: 'Table1',
+                PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/model-stack-1/def',
+                ResourceType: 'AWS::CloudFormation::Stack',
+              },
+              {
+                LogicalResourceId: 'Table2',
+                PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/model-stack-2/ghi',
+                ResourceType: 'AWS::CloudFormation::Stack',
+              },
+            ];
+          }),
+        },
       } as unknown as Gen1App,
       {} as $TSContext,
       {
@@ -87,29 +113,6 @@ describe('AmplifyMigrationLockStep', () => {
 
   /** Mocks the forward() planning phase only (nested stack discovery + changeset creation for 2 model tables). */
   function setupForwardPlanningMocks() {
-    mockCfnSend.mockResolvedValueOnce({
-      StackResources: [
-        {
-          ResourceType: 'AWS::CloudFormation::Stack',
-          LogicalResourceId: 'apitestApp',
-          PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/api-stack/abc',
-        },
-      ],
-    });
-    mockCfnSend.mockResolvedValueOnce({
-      StackResources: [
-        {
-          ResourceType: 'AWS::CloudFormation::Stack',
-          LogicalResourceId: 'Table1',
-          PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/model-stack-1/def',
-        },
-        {
-          ResourceType: 'AWS::CloudFormation::Stack',
-          LogicalResourceId: 'Table2',
-          PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/model-stack-2/ghi',
-        },
-      ],
-    });
     for (let i = 1; i <= 2; i++) {
       mockCfnSend.mockResolvedValueOnce({ TemplateBody: JSON.stringify(modelTemplate) });
       mockCfnSend.mockResolvedValueOnce({ Stacks: [{ Parameters: [{ ParameterKey: 'env', ParameterValue: 'testEnv' }] }] });
@@ -197,13 +200,7 @@ describe('AmplifyMigrationLockStep', () => {
   });
 
   describe('rollback stack policy removal', () => {
-    /** Mocks the listNestedStack call that rollback now performs. */
-    function setupRollbackNestedStackMock() {
-      mockCfnSend.mockResolvedValueOnce({ StackResources: [] });
-    }
-
     it('should remove lock statement and preserve customer statements', async () => {
-      setupRollbackNestedStackMock();
       const policy = {
         Statement: [
           { Effect: 'Deny', Action: 'Update:Replace', Principal: '*', Resource: 'LogicalResourceId/MyDB' },
@@ -227,7 +224,6 @@ describe('AmplifyMigrationLockStep', () => {
     });
 
     it('should set allow-all when lock statement was the only one', async () => {
-      setupRollbackNestedStackMock();
       const policy = { Statement: [{ Effect: 'Deny', Action: 'Update:*', Principal: '*', Resource: '*' }] };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(policy) }).mockResolvedValueOnce({});
       mockAmplifySend
@@ -244,7 +240,6 @@ describe('AmplifyMigrationLockStep', () => {
     });
 
     it('should skip SetStackPolicy when no existing policy (lock not found)', async () => {
-      setupRollbackNestedStackMock();
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
       mockAmplifySend
         .mockResolvedValueOnce({ app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv' } } })
@@ -255,7 +250,6 @@ describe('AmplifyMigrationLockStep', () => {
     });
 
     it('should skip SetStackPolicy when lock statement is not found', async () => {
-      setupRollbackNestedStackMock();
       const policy = { Statement: [{ Effect: 'Deny', Action: 'Update:Replace', Principal: '*', Resource: 'LogicalResourceId/MyDB' }] };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(policy) });
       mockAmplifySend
@@ -269,7 +263,6 @@ describe('AmplifyMigrationLockStep', () => {
 
   describe('rollback env var removal', () => {
     it('should remove GEN2_MIGRATION_ENVIRONMENT_NAME and preserve other env vars', async () => {
-      mockCfnSend.mockResolvedValueOnce({ StackResources: [] });
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
       mockAmplifySend
         .mockResolvedValueOnce({ app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv', OTHER: 'keep' } } })
@@ -308,6 +301,15 @@ describe('AmplifyMigrationLockStep', () => {
             appSync: { send: jest.fn() },
             dynamoDB: { send: jest.fn() },
           },
+          aws: {
+            listNestedStacks: jest.fn().mockResolvedValue([
+              {
+                LogicalResourceId: 'storagemyTable',
+                PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/storage-stack/abc',
+                ResourceType: 'AWS::CloudFormation::Stack',
+              },
+            ]),
+          },
         } as unknown as Gen1App,
         {} as $TSContext,
         {
@@ -318,16 +320,6 @@ describe('AmplifyMigrationLockStep', () => {
     });
 
     it('should pass validation when all local resources exist in deployed template', async () => {
-      // listNestedStack
-      mockCfnSend.mockResolvedValueOnce({
-        StackResources: [
-          {
-            ResourceType: 'AWS::CloudFormation::Stack',
-            LogicalResourceId: 'storagemyTable',
-            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/storage-stack/abc',
-          },
-        ],
-      });
       // fetchTemplate for the nested stack
       mockCfnSend.mockResolvedValueOnce({
         TemplateBody: JSON.stringify({
@@ -345,16 +337,6 @@ describe('AmplifyMigrationLockStep', () => {
     });
 
     it('should fail validation when a resource is missing from the deployed template', async () => {
-      // listNestedStack
-      mockCfnSend.mockResolvedValueOnce({
-        StackResources: [
-          {
-            ResourceType: 'AWS::CloudFormation::Stack',
-            LogicalResourceId: 'storagemyTable',
-            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/storage-stack/abc',
-          },
-        ],
-      });
       // fetchTemplate - missing TablePolicy
       mockCfnSend.mockResolvedValueOnce({
         TemplateBody: JSON.stringify({

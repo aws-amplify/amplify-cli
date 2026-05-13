@@ -1,12 +1,7 @@
 import { Plan } from './_common/plan';
 import { AmplifyMigrationStep } from './_common/step';
 import { AmplifyMigrationOperation } from './_common/operation';
-import {
-  DescribeChangeSetOutput,
-  DescribeStackResourcesCommand,
-  paginateListStackResources,
-  StackResource,
-} from '@aws-sdk/client-cloudformation';
+import { DescribeChangeSetOutput, paginateListStackResources, StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import { DiscoveredResource } from './_common/gen1-app';
 import { Cfn } from './_common/cfn';
 import { extractStackNameFromId } from './_common/utils';
@@ -255,13 +250,12 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
   // ============================================================
 
   /** Returns root's direct nested-stack children. */
-  private async listNestedStack(rootStack: string): Promise<StackResource[]> {
-    const response = await this.gen1App.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: rootStack }));
-    return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
+  private async listNestedStack(rootStack: string): Promise<StackResourceSummary[]> {
+    return this.gen1App.aws.listNestedStacks(rootStack);
   }
 
   /** Returns the stack id whose logical id starts with the given prefix; throws if none found. */
-  private findNestedStack(nestedStacks: StackResource[], logicalIdPrefix: string): string {
+  private findNestedStack(nestedStacks: StackResourceSummary[], logicalIdPrefix: string): string {
     const stackId = nestedStacks.find((s) => s.LogicalResourceId?.startsWith(logicalIdPrefix))?.PhysicalResourceId;
     if (!stackId) {
       throw new AmplifyError('MigrationError', {

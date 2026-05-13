@@ -8,7 +8,7 @@ import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,
   DescribeStacksCommand,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
   CreateStackRefactorCommand,
   DescribeStackRefactorCommand,
   ExecuteStackRefactorCommand,
@@ -79,7 +79,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       .on(DescribeStackRefactorCommand)
       .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
-    cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand).resolves({ StackResourceSummaries: [] });
     cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_WITH_BUCKET });
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
@@ -112,7 +112,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       .on(DescribeStackRefactorCommand)
       .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
-    cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand).resolves({ StackResourceSummaries: [] });
     cfnMock.on(GetTemplateCommand).callsFake(async (input: { StackName?: string }) => {
       // REVIEW_IN_PROGRESS holding stack has no resources of interest
       if (input.StackName?.endsWith('-holding')) {

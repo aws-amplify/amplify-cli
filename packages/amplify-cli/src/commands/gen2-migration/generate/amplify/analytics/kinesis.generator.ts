@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import * as cdkFromCfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
-import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
@@ -118,10 +118,7 @@ export class AnalyticsKinesisGenerator implements Planner {
 
   private async fetchNestedStackParameters(logicalId: string): Promise<Parameter[]> {
     this.logger.debug(`Fetching nested stack parameters for '${logicalId}'`);
-    const resourcesResponse = await this.gen1App.clients.cloudFormation.send(
-      new DescribeStackResourcesCommand({ StackName: this.gen1App.rootStackName, LogicalResourceId: logicalId }),
-    );
-    const nestedStackName = resourcesResponse.StackResources?.[0]?.PhysicalResourceId;
+    const nestedStackName = await this.gen1App.aws.findResourcePhysicalId(this.gen1App.rootStackName, logicalId);
     if (!nestedStackName) {
       throw new AmplifyError('NestedStackNotFoundError', {
         message: `Nested stack not found for logical ID '${logicalId}' in stack '${this.gen1App.rootStackName}'`,

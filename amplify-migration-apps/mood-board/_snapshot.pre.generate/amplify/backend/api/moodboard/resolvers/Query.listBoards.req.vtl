@@ -1,10 +1,6 @@
 ## [Start] Custom List Request - Override to cap results at 50. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 50) )
-## Cap the limit at 50 to keep the board list manageable
-#if( $limit > 50 )
-  #set( $limit = 50 )
-#end
 #set( $ListRequest = {
   "version": "2018-05-29",
   "limit": $limit

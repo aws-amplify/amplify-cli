@@ -3,11 +3,10 @@ import { AmplifyMigrationOperation, ValidationResult } from './_common/operation
 import { Plan } from './_common/plan';
 import {
   DescribeChangeSetOutput,
-  DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetStackPolicyCommand,
   SetStackPolicyCommand,
-  StackResource,
+  StackResourceSummary,
 } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { paginateListTables } from '@aws-sdk/client-dynamodb';
@@ -490,12 +489,11 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     return { Statement: [] };
   }
 
-  private async listNestedStack(rootStack: string): Promise<StackResource[]> {
-    const response = await this.gen1App.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: rootStack }));
-    return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
+  private async listNestedStack(rootStack: string): Promise<StackResourceSummary[]> {
+    return this.gen1App.aws.listNestedStacks(rootStack);
   }
 
-  private findNestedStack(nestedStacks: StackResource[], logicalIdPrefix: string) {
+  private findNestedStack(nestedStacks: StackResourceSummary[], logicalIdPrefix: string) {
     const stackId = nestedStacks.find((s) => s.LogicalResourceId?.startsWith(logicalIdPrefix))?.PhysicalResourceId;
     if (!stackId) {
       throw new AmplifyError('NestedStackNotFoundError', {

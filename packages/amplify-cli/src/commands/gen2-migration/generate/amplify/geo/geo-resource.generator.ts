@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { resolveConditions } from '../../../refactor/resolvers/cfn-condition-resolver';
-import { DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import { DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
@@ -153,12 +153,9 @@ export abstract class GeoResourceGenerator implements Planner {
   }
 
   private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
-    const cfnClient = this.gen1App.clients.cloudFormation;
     const rootStackName = this.gen1App.rootStackName;
-    if (!cfnClient || !rootStackName) return undefined;
-
-    const response = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: rootStackName, LogicalResourceId: logicalId }));
-    return response.StackResources?.[0]?.PhysicalResourceId;
+    if (!rootStackName) return undefined;
+    return this.gen1App.aws.findResourcePhysicalId(rootStackName, logicalId);
   }
 
   private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {

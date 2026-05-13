@@ -12,7 +12,7 @@ import {
   CloudFormationClient,
   GetTemplateCommand,
   DescribeStacksCommand,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
   ResourceStatus,
   StackStatus,
   CreateChangeSetCommand,
@@ -27,7 +27,7 @@ const nestedStack = (logicalId: string, physicalId: string) => ({
   LogicalResourceId: logicalId,
   ResourceType: 'AWS::CloudFormation::Stack',
   PhysicalResourceId: physicalId,
-  Timestamp: ts,
+  LastUpdatedTimestamp: ts,
   ResourceStatus: rs,
 });
 
@@ -46,14 +46,14 @@ const gen2StorageTemplate: CFNTemplate = {
 };
 
 function setupStorageMocks(cfnMock: ReturnType<typeof mockClient>) {
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-    StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+    StackResourceSummaries: [nestedStack('storageavatars', 'gen1-storage-stack')],
   });
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-    StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+    StackResourceSummaries: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
   });
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResourceSummaries: [] });
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResourceSummaries: [] });
   cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-storage-stack' }).resolves({
     Stacks: [{ StackName: 'gen1-storage-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
   });
@@ -86,8 +86,8 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
   afterEach(() => cfnMock.restore());
 
   it('throws when both stacks are absent (Path A)', async () => {
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResourceSummaries: [] });
 
     const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     await expect(
@@ -109,10 +109,10 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
   });
 
   it('throws when source exists but destination does not (Path B)', async () => {
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storageavatars', 'gen1-storage-stack')],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResourceSummaries: [] });
 
     const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     await expect(
@@ -134,9 +134,9 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
   });
 
   it('throws when destination exists but source does not (Path B reversed)', async () => {
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen2StorageTemplate) });
 
@@ -231,15 +231,15 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
     // Gen2 nested stacks (source for rollback)
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
     // Gen1 nested stacks (destination for rollback)
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storageavatars', 'gen1-storage-stack')],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResourceSummaries: [] });
 
     // Gen2 storage stack description + template (source for rollback)
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-storage-stack' }).resolves({
@@ -298,14 +298,14 @@ describe('Analytics wiring tests', () => {
   };
 
   function setupAnalyticsMocks(mock: ReturnType<typeof mockClient>) {
-    mock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('analyticsGen1', 'gen1-analytics-stack')],
+    mock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [nestedStack('analyticsGen1', 'gen1-analytics-stack')],
     });
-    mock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('analyticsGen2', 'gen2-analytics-stack')],
+    mock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [nestedStack('analyticsGen2', 'gen2-analytics-stack')],
     });
-    mock.on(DescribeStackResourcesCommand, { StackName: 'gen1-analytics-stack' }).resolves({ StackResources: [] });
-    mock.on(DescribeStackResourcesCommand, { StackName: 'gen2-analytics-stack' }).resolves({ StackResources: [] });
+    mock.on(ListStackResourcesCommand, { StackName: 'gen1-analytics-stack' }).resolves({ StackResourceSummaries: [] });
+    mock.on(ListStackResourcesCommand, { StackName: 'gen2-analytics-stack' }).resolves({ StackResourceSummaries: [] });
     mock.on(DescribeStacksCommand, { StackName: 'gen1-analytics-stack' }).resolves({
       Stacks: [{ StackName: 'gen1-analytics-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
     });
@@ -377,14 +377,14 @@ describe('stack status validation', () => {
   afterEach(() => cfnMock.restore());
 
   function setupWithStatuses(sourceStatus: StackStatus, destStatus: StackStatus) {
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storageavatars', 'gen1-storage-stack')],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResourceSummaries: [] });
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-storage-stack' }).resolves({
       Stacks: [{ StackName: 'gen1-storage-stack', StackStatus: sourceStatus, CreationTime: ts, Parameters: [], Outputs: [] }],
     });
@@ -504,14 +504,14 @@ describe('deletion policy validation', () => {
       Outputs: {},
     };
 
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storageavatars', 'gen1-storage-stack')],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResourceSummaries: [] });
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-storage-stack' }).resolves({
       Stacks: [{ StackName: 'gen1-storage-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
     });

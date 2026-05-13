@@ -10,7 +10,7 @@ import {
   CloudFormationClient,
   GetTemplateCommand,
   DescribeStacksCommand,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
   UpdateStackCommand,
   CreateStackRefactorCommand,
   DescribeStackRefactorCommand,
@@ -76,7 +76,7 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE,
     });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
-    cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand).resolves({ StackResourceSummaries: [] });
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});

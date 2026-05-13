@@ -40,6 +40,7 @@ describe('AnalyticsKinesisGenerator', () => {
       },
     });
     jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
+    jest.spyOn(gen1App.aws, 'findResourcePhysicalId').mockResolvedValue('nested-stack-id');
     (gen1App.clients as any).cloudFormation = { send: jest.fn() };
 
     const generator = new AnalyticsKinesisGenerator(
@@ -73,6 +74,7 @@ describe('AnalyticsKinesisGenerator', () => {
       },
     });
     jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
+    jest.spyOn(gen1App.aws, 'findResourcePhysicalId').mockResolvedValue('nested-stack-id');
     (gen1App.clients as any).cloudFormation = {
       send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
         if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
@@ -155,6 +157,7 @@ describe('AnalyticsKinesisGenerator', () => {
       },
     });
     jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
+    jest.spyOn(gen1App.aws, 'findResourcePhysicalId').mockResolvedValue('nested-stack-id');
     (gen1App.clients as any).cloudFormation = {
       send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
         if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
@@ -237,6 +240,7 @@ describe('AnalyticsKinesisGenerator', () => {
       },
     });
     jest.spyOn(gen1App, 'json').mockReturnValue({ Parameters: {}, Resources: {}, Conditions: {} });
+    jest.spyOn(gen1App.aws, 'findResourcePhysicalId').mockResolvedValue('nested-stack-id');
     (gen1App.clients as any).cloudFormation = {
       send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
         if (cmd.constructor.name === 'DescribeStackResourcesCommand') {
@@ -294,6 +298,7 @@ describe('AnalyticsKinesisGenerator', () => {
       },
       Conditions: {},
     });
+    jest.spyOn(gen1App.aws, 'findResourcePhysicalId').mockResolvedValue('nested-stack-id');
     (gen1App.clients as any).cloudFormation = {
       send: jest.fn().mockImplementation((cmd: { constructor: { name: string } }) => {
         if (cmd.constructor.name === 'DescribeStackResourcesCommand') {

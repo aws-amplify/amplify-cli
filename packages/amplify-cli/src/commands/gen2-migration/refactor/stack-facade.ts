@@ -1,9 +1,9 @@
 import {
-  DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetTemplateCommand,
+  paginateListStackResources,
   Stack,
-  StackResource,
+  StackResourceSummary,
 } from '@aws-sdk/client-cloudformation';
 import { DescribeUserPoolCommand, ListIdentityProvidersCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
@@ -33,9 +33,17 @@ export class StackFacade {
   /**
    * Lists nested stacks under the root stack.
    */
-  public async fetchNestedStacks(): Promise<StackResource[]> {
-    const response = await this.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: this.rootStackName }));
-    return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
+  public async fetchNestedStacks(): Promise<StackResourceSummary[]> {
+    const results: StackResourceSummary[] = [];
+    const paginator = paginateListStackResources({ client: this.clients.cloudFormation }, { StackName: this.rootStackName });
+    for await (const page of paginator) {
+      for (const resource of page.StackResourceSummaries ?? []) {
+        if (resource.ResourceType === 'AWS::CloudFormation::Stack') {
+          results.push(resource);
+        }
+      }
+    }
+    return results;
   }
 
   /**
@@ -64,9 +72,13 @@ export class StackFacade {
   /**
    * Lists resources in a stack.
    */
-  public async fetchStackResources(stackId: string): Promise<StackResource[]> {
-    const response = await this.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: stackId }));
-    return response.StackResources ?? [];
+  public async fetchStackResources(stackId: string): Promise<StackResourceSummary[]> {
+    const results: StackResourceSummary[] = [];
+    const paginator = paginateListStackResources({ client: this.clients.cloudFormation }, { StackName: stackId });
+    for await (const page of paginator) {
+      results.push(...(page.StackResourceSummaries ?? []));
+    }
+    return results;
   }
 
   /**

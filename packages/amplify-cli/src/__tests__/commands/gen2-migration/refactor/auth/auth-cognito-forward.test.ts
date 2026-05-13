@@ -9,7 +9,7 @@ import {
   CloudFormationClient,
   GetTemplateCommand,
   DescribeStacksCommand,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
   ResourceStatus,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
@@ -51,25 +51,25 @@ function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
       LogicalResourceId: 'authtestStack',
       ResourceType: 'AWS::CloudFormation::Stack',
       PhysicalResourceId: 'gen1-auth-stack',
-      Timestamp: ts,
+      LastUpdatedTimestamp: ts,
       ResourceStatus: rs,
     },
   ];
 
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResources: gen1NestedStacks });
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-    StackResources: [
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResourceSummaries: gen1NestedStacks });
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+    StackResourceSummaries: [
       {
         LogicalResourceId: 'authStack',
         ResourceType: 'AWS::CloudFormation::Stack',
         PhysicalResourceId: 'gen2-auth-stack',
-        Timestamp: ts,
+        LastUpdatedTimestamp: ts,
         ResourceStatus: rs,
       },
     ],
   });
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth-stack' }).resolves({ StackResources: [] });
-  cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-stack' }).resolves({ StackResources: [] });
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-auth-stack' }).resolves({ StackResourceSummaries: [] });
+  cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth-stack' }).resolves({ StackResourceSummaries: [] });
 
   cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-auth-stack' }).resolves({
     Stacks: [
@@ -145,18 +145,18 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
   });
 
   it('throws when auth exists in source but not destination', async () => {
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authtestStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth-stack',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResourceSummaries: [] });
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-auth-stack' }).resolves({
       Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: rs, CreationTime: ts, Description: gen1AuthTemplate.Description }],
     });
@@ -309,50 +309,50 @@ describe('AuthCognitoForwardRefactorer — holding stack behavior', () => {
   function setupSocialAuthMocks(holdingStackExists: boolean) {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authtestStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth-stack',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen2-auth-stack',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth-stack' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-stack' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-auth-stack' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth-stack' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'amplifyAuthUserPool12345678',
           ResourceType: 'AWS::Cognito::UserPool',
           PhysicalResourceId: 'us-east-1_TEST',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolDomain12345678',
           ResourceType: 'AWS::Cognito::UserPoolDomain',
           PhysicalResourceId: 'test-domain',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolIdentityProviderGoogle12345678',
           ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
           PhysicalResourceId: 'Google',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
