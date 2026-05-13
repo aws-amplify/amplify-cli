@@ -39,12 +39,17 @@ Because each `refresh()` starts from the long-lived CodeBuild container credenti
 ```
 src/
 ├── cli.ts                          # CLI entry point and migration workflow orchestration
+├── index.ts                        # Public exports (App, Teardown)
 └── core/
     ├── app.ts                      # App class — owns the full lifecycle of a migration app
+    ├── credentials.ts              # CredentialManager — two-hop assume-role + refresh
     ├── git.ts                      # Git operations (init, commit, checkout)
+    ├── ini-merge.ts                # Merges credentials into ~/.aws/credentials
+    ├── logger.ts                   # Logging with file output
     ├── normalize.ts                # Normalizes run-specific values in snapshot files
     ├── sanitize.ts                 # Sanitizes sensitive values in snapshot files
-    └── logger.ts                   # Logging with file output
+    ├── snapshot.ts                 # Snapshot capture + post-processing
+    └── teardown.ts                 # Teardown class — cleans up deployed resources
 ```
 
 ## Snapshot Post-Processing
