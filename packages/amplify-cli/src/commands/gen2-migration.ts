@@ -66,7 +66,7 @@ export const run = async (context: $TSContext) => {
 
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
-    const assessor = new AmplifyMigrationAssessor(gen1App);
+    const assessor = new AmplifyMigrationAssessor(gen1App, logger);
     assessor.run();
     return;
   }

@@ -80,6 +80,7 @@
     "@aws-sdk/client-ssm": "^3.919.0",
     "@aws-sdk/client-sts": "^3.919.0",
     "@smithy/node-http-handler": "^4.4.3",
+    "@smithy/util-retry": "^4.2.0",
     "amplify-codegen": "^4.10.3",
     "amplify-dotnet-function-runtime-provider": "2.1.8",
     "amplify-go-function-runtime-provider": "2.3.55",

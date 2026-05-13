@@ -15,6 +15,7 @@ import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
 import { ProxyAgent } from 'proxy-agent';
 import { CloudControlClient } from '@aws-sdk/client-cloudcontrol';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 
 export const proxyAgent = () => {
   let httpAgent;
@@ -79,6 +80,8 @@ export class AwsClients {
     const config: ClientConfig = {
       ...cred,
       customUserAgent: provider.formUserAgentParam(context, 'gen2-migration'),
+      // https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html
+      retryStrategy: new ConfiguredRetryStrategy(10, (attempt) => 1000 * 2 ** attempt),
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),
