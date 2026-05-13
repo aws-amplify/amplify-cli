@@ -1,42 +1,3 @@
-/**
- * AWS CloudFormation resource types that contain stateful data.
- * Deletion of these resources may result in permanent data loss.
- */
-
-export const STATEFUL_RESOURCES = new Set([
-  'AWS::Backup::BackupVault',
-  'AWS::Cognito::UserPool',
-  'AWS::DocDB::DBCluster',
-  'AWS::DocDB::DBInstance',
-  'AWS::DynamoDB::GlobalTable',
-  'AWS::DynamoDB::Table',
-  'AWS::EC2::Volume',
-  'AWS::EFS::FileSystem',
-  'AWS::EMR::Cluster',
-  'AWS::ElastiCache::CacheCluster',
-  'AWS::ElastiCache::ReplicationGroup',
-  'AWS::Elasticsearch::Domain',
-  'AWS::FSx::FileSystem',
-  'AWS::KMS::Key',
-  'AWS::Kinesis::Stream',
-  'AWS::Logs::LogGroup',
-  'AWS::Neptune::DBCluster',
-  'AWS::Neptune::DBInstance',
-  'AWS::OpenSearchService::Domain',
-  'AWS::Organizations::Account',
-  'AWS::QLDB::Ledger',
-  'AWS::RDS::DBCluster',
-  'AWS::RDS::DBInstance',
-  'AWS::Redshift::Cluster',
-  'AWS::S3::Bucket',
-  'AWS::SDB::Domain',
-  'AWS::SQS::Queue',
-  'AWS::SecretsManager::Secret',
-  'AWS::Kinesis::Stream',
-  'AWS::Cognito::UserPoolGroup',
-  'AWS::Cognito::IdentityPool',
-]);
-
 export const AUTH_RESOURCES_TO_RETAIN = [
   'AWS::Cognito::UserPool',
   'AWS::Cognito::IdentityPool',
@@ -70,9 +31,43 @@ export const STORAGE_DYNAMO_RESOURCES_TO_RETAIN = ['AWS::DynamoDB::Table'];
 
 export const ANALYTICS_RESOURCES_TO_RETAIN = ['AWS::Kinesis::Stream'];
 
-export const RESOURCES_TO_RETAIN = [
+/**
+ * AWS CloudFormation resource types that contain stateful data.
+ * Deletion of these resources may result in permanent data loss.
+ * @see https://github.com/cdklabs/awscdk-service-spec/blob/main/sources/StatefulResources/StatefulResources.json
+ */
+
+export const DEFAULT_STATEFUL_RESOURCES = new Set([
+  'AWS::Backup::BackupVault',
+  'AWS::Cognito::UserPool',
+  'AWS::DocDB::DBCluster',
+  'AWS::DocDB::DBInstance',
+  'AWS::DynamoDB::GlobalTable',
+  'AWS::DynamoDB::Table',
+  'AWS::EC2::Volume',
+  'AWS::EFS::FileSystem',
+  'AWS::EMR::Cluster',
+  'AWS::ElastiCache::CacheCluster',
+  'AWS::ElastiCache::ReplicationGroup',
+  'AWS::Elasticsearch::Domain',
+  'AWS::FSx::FileSystem',
+  'AWS::KMS::Key',
+  'AWS::Kinesis::Stream',
+  'AWS::Logs::LogGroup',
+  'AWS::Neptune::DBCluster',
+  'AWS::Neptune::DBInstance',
+  'AWS::OpenSearchService::Domain',
+  'AWS::Organizations::Account',
+  'AWS::QLDB::Ledger',
+  'AWS::RDS::DBCluster',
+  'AWS::RDS::DBInstance',
+  'AWS::Redshift::Cluster',
+  'AWS::S3::Bucket',
+  'AWS::SDB::Domain',
+  'AWS::SQS::Queue',
+  'AWS::SecretsManager::Secret',
   ...AUTH_RESOURCES_TO_RETAIN,
   ...STORAGE_S3_RESOURCES_TO_RETAIN,
   ...STORAGE_DYNAMO_RESOURCES_TO_RETAIN,
   ...ANALYTICS_RESOURCES_TO_RETAIN,
-];
+]);

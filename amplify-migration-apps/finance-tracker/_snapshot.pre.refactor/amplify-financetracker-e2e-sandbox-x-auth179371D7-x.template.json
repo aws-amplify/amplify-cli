@@ -62,8 +62,8 @@
           "SmsMessage": "The verification code to your new account is {####}"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
       }
@@ -87,8 +87,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
@@ -123,8 +123,8 @@
           "Ref": "amplifyAuthUserPool4BA7F805"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
@@ -137,6 +137,26 @@
           {
             "ClientId": {
               "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
+            },
+            "ProviderName": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  {
+                    "Ref": "amplifyAuthUserPool4BA7F805"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "ClientId": {
+              "Ref": "amplifyAuthUserPoolNativeAppClient79534448"
             },
             "ProviderName": {
               "Fn::Join": [
@@ -171,8 +191,8 @@
         ],
         "SupportedLoginProviders": {}
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
       }
@@ -319,8 +339,8 @@
         "amplifyAuthIdentityPool3FDE84CC",
         "amplifyAuthUserPoolAppClient2626C6F8"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
@@ -328,7 +348,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/01OSwrCMBA9i/t0LAEPIF25Eal0LTEZddp0As1okZC7S5BqV+8PT4Pe1VBvzBwr64bK0xXSEaOgO4uxgzJzvCQb7kwSIHURp1MIXjU3/vGFNJ6QZR39nYNDFpL3Ml7rNnjcixj7GJElKzIjpGKWYsGcs+LgEPq4fekadHncR6JqerLQiNB+8QN0Aq1CzgAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dLURvUtPXkQqniUmq26bbqBZLRLy71Kk6mlm3sxo0OsVVIUZY2ldV3q6QNpjFHRHMbZTZoznZMONSQKkU8ThEIJX9ZW/fja1J2T5r35k55CF5DWf/3MTPG5FjL33yJIVmR7SBKfhpDlnxcEhtHHx1BqqDSyLNhKVw4OFeoTmo2+AHwwNzgAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/auth/CDKMetadata/Default"
@@ -603,27 +623,27 @@
     }
   },
   "Outputs": {
-    "amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolBB38D142Ref": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPool3103AD1ARef": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthUserPoolAppClient639403C3Ref": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPoolAppClientB938D093Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthIdentityPool377D30A7Ref": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

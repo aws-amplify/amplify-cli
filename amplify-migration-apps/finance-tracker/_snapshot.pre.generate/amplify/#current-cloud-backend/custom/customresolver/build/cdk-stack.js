@@ -86,7 +86,8 @@ class cdkStack extends cdk.Stack {
       ":category": $util.dynamodb.toDynamoDBJson($ctx.args.category)
     }
   },
-  "limit": $limit
+  "limit": $limit,
+  "consistentRead": true
 }`;
         // Response mapping template
         const responseTemplate = `

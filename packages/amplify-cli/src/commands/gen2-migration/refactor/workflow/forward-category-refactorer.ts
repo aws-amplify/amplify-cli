@@ -1,6 +1,6 @@
 import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource } from '../../_common/cfn-template';
+import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
 import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
@@ -8,7 +8,8 @@ import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
 import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
-import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
+import { HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY } from '../../_common/cfn';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -29,61 +30,29 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     sourceStackId: string,
     targetStackId: string,
   ): Promise<ResourceMapping[]> {
-    const usedTargetIds = new Set<string>();
+    // clone since we are mutating
+    const clonedTargetResources = new Map(Array.from(targetResources.entries()).map(([k, v]) => [k, structuredClone(v)]));
     const mappings: ResourceMapping[] = [];
     for (const [sourceId, sourceResource] of sourceResources) {
-      const targetId = this.findMatchingTarget(sourceId, sourceResource, targetResources, usedTargetIds, targetStackId);
-      usedTargetIds.add(targetId);
+      const targetId = await this.gen2LogicalId(sourceId, sourceResource, clonedTargetResources);
       mappings.push({
         Source: { StackName: extractStackNameFromId(sourceStackId), LogicalResourceId: sourceId },
         Destination: { StackName: extractStackNameFromId(targetStackId), LogicalResourceId: targetId },
       });
+      // delete so that subsequent resources cannot mistakenly reuse it
+      clonedTargetResources.delete(targetId);
     }
     return mappings;
   }
 
-  /**
-   * Finds exactly one matching target for a source resource.
-   * Throws if zero or multiple matches are found.
-   */
-  private findMatchingTarget(
-    sourceId: string,
-    sourceResource: CFNResource,
-    targetResources: Map<string, CFNResource>,
-    usedTargetIds: Set<string>,
-    targetStackId: string,
-  ): string {
-    const matched: string[] = [];
-    for (const [targetId, targetResource] of targetResources) {
-      if (usedTargetIds.has(targetId)) continue;
-      if (this.match(sourceId, sourceResource, targetId, targetResource)) {
-        matched.push(targetId);
-      }
-    }
-    if (matched.length === 0) {
-      throw new AmplifyError('ResourceMappingError', {
-        message: `Source resource '${sourceId}' (${
-          sourceResource.Type
-        }) has no corresponding target resource in stack: ${extractStackNameFromId(targetStackId)}`,
+  protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {
+    const candidates: string[] = Array.from(targetResources.keys()).filter((r) => targetResources.get(r)?.Type === sourceResource.Type);
+    if (candidates.length !== 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to map Gen1 resource ${sourceId} (${sourceResource.Type}) to Gen2 resource`,
       });
     }
-    if (matched.length > 1) {
-      throw new AmplifyError('ResourceMappingError', {
-        message: `Source resource '${sourceId}' (${
-          sourceResource.Type
-        }) has multiple corresponding target resources in stack: ${extractStackNameFromId(targetStackId)}`,
-      });
-    }
-    return matched[0];
-  }
-
-  /**
-   * Returns true if a source resource corresponds to a target resource.
-   * Default: matches by type. Override for disambiguation (e.g., UserPoolClient).
-   */
-  protected match(_sourceId: string, sourceResource: CFNResource, _targetId: string, targetResource: CFNResource): boolean {
-    // default matching - assumes one resource per type in source/target
-    return sourceResource.Type === targetResource.Type;
+    return candidates[0];
   }
 
   /**
@@ -98,14 +67,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const outputs = description.Outputs ?? [];
 
     const stackName = extractStackNameFromId(stackId);
-    const withParams = resolveParameters(originalTemplate, parameters, stackName);
+    const withParams = await resolveParameters(originalTemplate, parameters, stackName);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withOutputs = resolveOutputs({
+    const withOutputs = await resolveOutputs({
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.gen1App.region,
-      accountId: this.accountId,
+      cloudControl: this.gen1App.clients.cloudControl,
     });
     const withDeps = resolveDependencies(withOutputs);
     const resolved = resolveConditions(withDeps, parameters);
@@ -126,14 +94,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     const stackName = extractStackNameFromId(stackId);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withParams = resolveParameters(originalTemplate, parameters, stackName);
+    const withParams = await resolveParameters(originalTemplate, parameters, stackName);
     const withDeps = resolveDependencies(withParams);
-    const resolved = resolveOutputs({
+    const resolved = await resolveOutputs({
       template: withDeps,
       stackOutputs: outputs,
       stackResources,
-      region: this.gen1App.region,
-      accountId: this.accountId,
+      cloudControl: this.gen1App.clients.cloudControl,
     });
 
     return { stackId, resolvedTemplate: resolved, parameters };
@@ -143,8 +110,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Moves Gen2 resources to a holding stack before the main refactor.
    * Templates are fetched fresh at execution time.
    */
-  protected async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackName = extractStackNameFromId(gen2StackId);
+  protected async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(blueprint.targetStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
     this.debug(`Fetching template of gen2 stack: ${gen2StackName}`);
@@ -211,7 +178,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
-          await this.cfn.refactor(resourceMappings, this.resource);
+          await this.cfn.refactor(resourceMappings, this.resource, async (targetTemplate: CFNTemplate) => {
+            // store the blueprint mappings in the holding stack so we can retrieve them during rollback and auto map
+            // back to gen1 logical ids. append to existing since two source stacks can map to a single target (e.g cognito user pools).
+            const forwardMappings = (targetTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
+            forwardMappings.push(...blueprint.mappings);
+            targetTemplate.Metadata = { [HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY]: forwardMappings };
+          });
         },
       });
     }
@@ -223,7 +196,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Forward: no post-move operations. Holding stack survives for rollback.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async afterMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+  protected async afterMove(_blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 }

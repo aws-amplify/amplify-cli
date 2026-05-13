@@ -46,6 +46,7 @@ export const run = async (context: $TSContext) => {
   const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
   const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
   const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
+  const additionalStatefulResources = (context.parameters.options ?? {})['additional-stateful-resource-types'];
 
   if (skipValidations && validationsOnly) {
     throw new AmplifyError('InputValidationError', {
@@ -59,7 +60,7 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  const gen1App = await Gen1App.create(context);
+  const gen1App = await Gen1App.create(context, additionalStatefulResources);
 
   const logger = new SpinningLogger(`${stepName}] [${gen1App.appName}/${gen1App.envName}`, { debug: isDebug });
 

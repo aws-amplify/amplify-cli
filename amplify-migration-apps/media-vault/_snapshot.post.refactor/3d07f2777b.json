@@ -1620,7 +1620,7 @@
         "Description": "override success",
         "GroupName": "Admin",
         "Precedence": 1,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-AdminGroupRole",
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authuserPoolGroups-x/AdminGroupRole",
         "UserPoolId": "us-east-1_10XCh2HEz"
       },
       "DeletionPolicy": "Retain",
@@ -1632,7 +1632,7 @@
         "Description": "override success",
         "GroupName": "Basic",
         "Precedence": 2,
-        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-BasicGroupRole",
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authuserPoolGroups-x/BasicGroupRole",
         "UserPoolId": "us-east-1_10XCh2HEz"
       },
       "DeletionPolicy": "Retain",

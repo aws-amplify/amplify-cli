@@ -10,6 +10,7 @@ import { AppSyncMock } from './clients/appsync';
 import { S3Mock } from './clients/s3';
 import { DynamoDBMock } from './clients/dynamodb';
 import { STSMock } from './clients/sts';
+import { CloudControlMock } from './clients/cloudcontrol';
 
 /**
  * Orchestrates mock AWS SDK clients for all services the migration codegen calls.
@@ -47,6 +48,7 @@ export class MockClients {
   public readonly s3: S3Mock;
   public readonly dynamodb: DynamoDBMock;
   public readonly sts: STSMock;
+  public readonly cloudcontrol: CloudControlMock;
 
   /**
    * Creates mock clients lazily for all supported AWS services.
@@ -65,5 +67,6 @@ export class MockClients {
     this.s3 = new S3Mock(app);
     this.dynamodb = new DynamoDBMock(app);
     this.sts = new STSMock(app);
+    this.cloudcontrol = new CloudControlMock(app);
   }
 }

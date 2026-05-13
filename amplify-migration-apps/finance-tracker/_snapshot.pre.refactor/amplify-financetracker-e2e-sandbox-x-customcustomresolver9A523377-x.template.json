@@ -1,0 +1,449 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Resources": {
+    "customresolverTransactionsByCategoryDSRole14A3510C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "RoleName": "TransByCatDSRole-gen2-x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomresolver/customresolver/TransactionsByCategoryDSRole/Resource"
+      }
+    },
+    "customresolverTransactionsByCategoryDSRoleDefaultPolicyB206EA72": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:GetItem"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "customresolverTransactionsByCategoryDSRoleDefaultPolicyB206EA72",
+        "Roles": [
+          {
+            "Ref": "customresolverTransactionsByCategoryDSRole14A3510C"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomresolver/customresolver/TransactionsByCategoryDSRole/DefaultPolicy/Resource"
+      }
+    },
+    "customresolverTransactionsByCategoryDS5A80352D": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857OutputsC7E647D6"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "Name": "TransactionsByCategoryDataSource",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "customresolverTransactionsByCategoryDSRole14A3510C",
+            "Arn"
+          ]
+        },
+        "Type": "AMAZON_DYNAMODB"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomresolver/customresolver/TransactionsByCategoryDS"
+      }
+    },
+    "customresolverGetTransactionsByCategoryResolverF0745C21": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "customresolverTransactionsByCategoryDS5A80352D",
+            "Name"
+          ]
+        },
+        "FieldName": "getTransactionsByCategory",
+        "RequestMappingTemplate": "\n## Custom VTL resolver for getTransactionsByCategory\n#set($limit = $util.defaultIfNull($ctx.args.limit, 20))\n{\n  \"version\": \"2018-05-29\",\n  \"operation\": \"Scan\",\n  \"filter\": {\n    \"expression\": \"category = :category\",\n    \"expressionValues\": {\n      \":category\": $util.dynamodb.toDynamoDBJson($ctx.args.category)\n    }\n  },\n  \"limit\": $limit,\n  \"consistentRead\": true\n}",
+        "ResponseMappingTemplate": "\n## Return the results as a TransactionConnection\n{\n  \"items\": $util.toJson($ctx.result.items),\n  \"nextToken\": $util.toJson($ctx.result.nextToken)\n}",
+        "TypeName": "Query"
+      },
+      "DependsOn": [
+        "customresolverTransactionsByCategoryDS5A80352D"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomresolver/customresolver/GetTransactionsByCategoryResolver"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWLQQ6DIBAA3+Idt5Wm/YA9t0Yf0GxxTVAE4oLGEP7eWE8zcxgJ8n6DqsCNS9VPpdFfSC/iQH0XUE0CN/4kjTOk1hkS9WD/bJzRaj/ytCzQe96tglQP9okBOxcXdQ7Ezqy05HzUOwYfQxbW9QQjX1YpoXrAtRhZ63KJNuiZoD35A1FLl8WfAAAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomresolver/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "customresolverResolverArn614A0647": {
+      "Description": "ARN of the custom getTransactionsByCategory resolver",
+      "Value": {
+        "Fn::GetAtt": [
+          "customresolverGetTransactionsByCategoryResolverF0745C21",
+          "ResolverArn"
+        ]
+      }
+    },
+    "customresolverDataSourceName1BC154AE": {
+      "Description": "Name of the custom DynamoDB data source",
+      "Value": {
+        "Fn::GetAtt": [
+          "customresolverTransactionsByCategoryDS5A80352D",
+          "Name"
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857OutputsC7E647D6": {
+      "Type": "String"
+    }
+  }
+}

@@ -14,6 +14,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
 import { ProxyAgent } from 'proxy-agent';
+import { CloudControlClient } from '@aws-sdk/client-cloudcontrol';
 
 export const proxyAgent = () => {
   let httpAgent;
@@ -35,6 +36,7 @@ export class AwsClients {
   public readonly amplify: AmplifyClient;
   public readonly appSync: AppSyncClient;
   public readonly cloudFormation: CloudFormationClient;
+  public readonly cloudControl: CloudControlClient;
   public readonly cognitoIdentityProvider: CognitoIdentityProviderClient;
   public readonly cognitoIdentity: CognitoIdentityClient;
   public readonly s3: S3Client;
@@ -49,6 +51,7 @@ export class AwsClients {
     this.amplify = new AmplifyClient(config);
     this.appSync = new AppSyncClient(config);
     this.cloudFormation = new CloudFormationClient(config);
+    this.cloudControl = new CloudControlClient(config);
     this.cognitoIdentityProvider = new CognitoIdentityProviderClient(config);
     this.cognitoIdentity = new CognitoIdentityClient(config);
     this.s3 = new S3Client(config as S3ClientConfig);

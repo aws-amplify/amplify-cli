@@ -2,6 +2,8 @@ import { CustomResourceGenerator } from '../../../../../../commands/gen2-migrati
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import { Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
+import { DEFAULT_STATEFUL_RESOURCES } from '../../../../../../commands/gen2-migration/_common/resource-types';
 
 jest.unmock('fs-extra');
 
@@ -59,6 +61,7 @@ describe('CustomResourceGenerator', () => {
   let packageJsonGenerator: RootPackageJsonGenerator;
   const outputDir = '/fake/output';
   const logger = new SpinningLogger('test');
+  const gen1App = { statefulResourceTypes: [...Array.from(DEFAULT_STATEFUL_RESOURCES)] } as unknown as Gen1App;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -68,7 +71,7 @@ describe('CustomResourceGenerator', () => {
   });
 
   it('returns one operation describing the custom resource', async () => {
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -77,7 +80,7 @@ describe('CustomResourceGenerator', () => {
   });
 
   it('copies resource directory and transforms cdk-stack.ts', async () => {
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -93,7 +96,7 @@ describe('CustomResourceGenerator', () => {
     const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
     const addPostDefineStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
 
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -102,7 +105,7 @@ describe('CustomResourceGenerator', () => {
   });
 
   it('removes build artifacts', async () => {
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -116,7 +119,7 @@ describe('CustomResourceGenerator', () => {
     const addDependencySpy = jest.spyOn(packageJsonGenerator, 'addDependency');
     const addDevDependencySpy = jest.spyOn(packageJsonGenerator, 'addDevDependency');
 
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -142,7 +145,7 @@ describe('CustomResourceGenerator', () => {
     const addDependencySpy = jest.spyOn(packageJsonGenerator, 'addDependency');
     const addDevDependencySpy = jest.spyOn(packageJsonGenerator, 'addDevDependency');
 
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -153,7 +156,7 @@ describe('CustomResourceGenerator', () => {
   it('throws when cdk-stack.ts cannot be read', async () => {
     mockReadFile.mockRejectedValue(new Error('ENOENT: no such file'));
 
-    const generator = new CustomResourceGenerator(backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
     const ops = await generator.plan();
     await expect(ops[0].execute()).rejects.toThrow();
   });

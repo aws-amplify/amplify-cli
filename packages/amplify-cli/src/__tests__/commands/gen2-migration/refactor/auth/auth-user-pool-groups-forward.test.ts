@@ -50,7 +50,7 @@ describe('AuthUserPoolGroupsForwardRefactorer.buildResourceMappings — GroupNam
         new Map([['AdminGroup', r('AWS::Cognito::UserPoolGroup', { GroupName: 'Admin' })]]),
         new Map([['amplifyAuthEditorGroup1234', r('AWS::Cognito::UserPoolGroup', { GroupName: 'Editor' })]]),
       ),
-    ).rejects.toThrow('has no corresponding target resource');
+    ).rejects.toThrow('Unable to map Gen1 resource');
   });
 
   it('matches multiple groups independently', async () => {

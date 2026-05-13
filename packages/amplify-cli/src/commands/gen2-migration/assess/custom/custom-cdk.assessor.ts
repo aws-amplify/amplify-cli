@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment, supported, notApplicable } from '../assessment';
+import { Assessment, supported } from '../assessment';
 import { DiscoveredResource } from '../../_common/gen1-app';
 
 /**
@@ -11,6 +11,6 @@ export class CustomCdkAssessor implements Assessor {
 
   /** Records resource-level support for this custom CDK resource. */
   public record(assessment: Assessment): void {
-    assessment.recordResource({ resource: this.resource, generate: supported(), refactor: notApplicable() });
+    assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
   }
 }

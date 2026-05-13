@@ -1,13 +1,13 @@
 [
   {
     "OutputKey": "GraphQLAPIIdOutput",
-    "OutputValue": "adetddan7nd55gwre37yyck3vu",
+    "OutputValue": "advknbihlbchtlonmy35v53toa",
     "Description": "Your GraphQL API ID.",
     "ExportName": "amplify-financetracker-x-x-apifinancetracker-x:GraphQLApiId"
   },
   {
     "OutputKey": "GraphQLAPIEndpointOutput",
-    "OutputValue": "https://qcluzgdzhff3rdbn5r5dg2mnla.appsync-api.us-east-1.amazonaws.com/graphql",
+    "OutputValue": "https://6fwd3ldthnh73gyh4m2hplxwpa.appsync-api.us-east-1.amazonaws.com/graphql",
     "Description": "Your GraphQL API endpoint.",
     "ExportName": "amplify-financetracker-x-x-apifinancetracker-x:GraphQLApiEndpoint"
   },

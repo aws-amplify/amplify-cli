@@ -9,11 +9,11 @@ import { VALID_HOLDING_STACK_STATUSES } from '../../_common/cfn';
 import { SocialAuthConfig, StackFacade } from '../stack-facade';
 import CLITable from 'cli-table3';
 
-export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
-export const GEN1_WEB_CLIENT = 'UserPoolClientWeb';
+export const GEN1_NATIVE_APP_CLIENT_LOGICAL_ID = 'UserPoolClient';
+export const GEN1_WEB_CLIENT_LOGICAL_ID = 'UserPoolClientWeb';
 
-export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
-export const GEN2_WEB_CLIENT = 'UserPoolAppClient';
+export const GEN2_NATIVE_APP_CLIENT_LOGICAL_ID = 'UserPoolNativeAppClient';
+export const GEN2_WEB_CLIENT_LOGICAL_ID = 'UserPoolAppClient';
 
 export const USER_POOL_CLIENT_TYPE = 'AWS::Cognito::UserPoolClient';
 export const USER_POOL_TYPE = 'AWS::Cognito::UserPool';
@@ -188,9 +188,10 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
    * (DeletionPolicy: Retain, set by generate's escape hatches, ensures
    * the physical Cognito resources survive)
    */
-  protected override async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const baseOps = await super.beforeMove(gen2StackId);
+  protected override async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const baseOps = await super.beforeMove(blueprint);
 
+    const gen2StackId = blueprint.targetStackId;
     const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
     const holdingStack = await this.cfn.findStack(holdingStackName);
@@ -285,26 +286,34 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     return baseOps;
   }
 
-  protected override match(sourceId: string, sourceResource: CFNResource, targetId: string, targetResource: CFNResource): boolean {
-    if (sourceResource.Type !== targetResource.Type) {
-      return false;
+  protected async gen2LogicalId(sourceId: string, sourceResource: CFNResource, targetResources: Map<string, CFNResource>): Promise<string> {
+    if (sourceResource.Type !== USER_POOL_CLIENT_TYPE) {
+      return await super.gen2LogicalId(sourceId, sourceResource, targetResources);
     }
-    switch (sourceResource.Type) {
-      case USER_POOL_CLIENT_TYPE: {
-        switch (sourceId) {
-          case GEN1_WEB_CLIENT:
-            return targetId.includes(GEN2_WEB_CLIENT);
-          case GEN1_NATIVE_APP_CLIENT:
-            return targetId.includes(GEN2_NATIVE_APP_CLIENT);
-          default:
-            throw new AmplifyError('ResourceMappingError', {
-              message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
-            });
-        }
+    let candidates: string[];
+    const targetResourceIds = Array.from(targetResources.keys());
+
+    switch (sourceId) {
+      case GEN1_WEB_CLIENT_LOGICAL_ID: {
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_WEB_CLIENT_LOGICAL_ID));
+        break;
+      }
+      case GEN1_NATIVE_APP_CLIENT_LOGICAL_ID: {
+        candidates = targetResourceIds.filter((r) => r.includes(GEN2_NATIVE_APP_CLIENT_LOGICAL_ID));
+        break;
       }
       default:
-        return true;
+        throw new AmplifyError('MigrationError', {
+          message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
+        });
     }
+
+    if (candidates.length !== 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to map Gen1 resource ${sourceId} (${sourceResource.Type}) to Gen2 resource`,
+      });
+    }
+    return candidates[0];
   }
 
   protected async fetchSourceStackId(): Promise<string | undefined> {

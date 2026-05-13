@@ -6,7 +6,7 @@
   },
   {
     "OutputKey": "ResolverArn",
-    "OutputValue": "arn:aws:appsync:us-east-1:123456789012:apis/adetddan7nd55gwre37yyck3vu/types/Query/resolvers/getTransactionsByCategory",
+    "OutputValue": "arn:aws:appsync:us-east-1:123456789012:apis/advknbihlbchtlonmy35v53toa/types/Query/resolvers/getTransactionsByCategory",
     "Description": "ARN of the custom getTransactionsByCategory resolver"
   }
 ]

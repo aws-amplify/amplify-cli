@@ -8,6 +8,7 @@ import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
 import { SpinningLogger } from '../../../_common/spinning-logger';
+import { Gen1App } from '../../../_common/gen1-app';
 
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
@@ -52,8 +53,10 @@ export class CustomResourceGenerator implements Planner {
   private readonly outputDir: string;
   private readonly resourceName: string;
   private readonly logger: SpinningLogger;
+  private readonly gen1App: Gen1App;
 
   public constructor(
+    gen1App: Gen1App,
     backendGenerator: BackendGenerator,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
@@ -65,6 +68,7 @@ export class CustomResourceGenerator implements Planner {
     this.outputDir = outputDir;
     this.resourceName = resourceName;
     this.logger = logger;
+    this.gen1App = gen1App;
   }
 
   /**
@@ -110,7 +114,7 @@ export class CustomResourceGenerator implements Planner {
           await transformResource(destResourcePath, projectName, this.resourceName, constructClassName, dependencies);
           await removeBuildArtifacts(destResourcePath);
           await renameCdkStackToConstruct(destResourcePath);
-          await generateResourceWrapper(destResourcePath, this.resourceName, constructClassName, dependencies);
+          await generateResourceWrapper(this.gen1App, destResourcePath, this.resourceName, constructClassName, dependencies);
 
           await this.mergeDependencies(sourceResourcePath);
           this.contributeToBackend(constructClassName);
@@ -287,28 +291,53 @@ async function renameCdkStackToConstruct(destResourcePath: string): Promise<void
 }
 
 /**
- * Generates a resource.ts wrapper that exports a defineXxx(backend) function.
+ * Generates a resource.ts wrapper that exports a defineXxx(backend) function
+ * with stateful resource retention policies.
  */
 async function generateResourceWrapper(
+  gen1App: Gen1App,
   destResourcePath: string,
   resourceName: string,
   constructClassName: string,
   dependencies: string[],
 ): Promise<void> {
   const defineFnName = `define${constructClassName}`;
-  const args = [`backend.createStack('${resourceName}')`, `'${resourceName}'`];
+  const stackName = `custom${resourceName}`;
+  const args = [`backend.createStack('${stackName}')`, `'${resourceName}'`];
 
   // Pass backend when the resource has dependencies on other categories
   if (dependencies.length > 0) {
     args.push('backend');
   }
 
+  const statefulResourcesArray = gen1App.statefulResourceTypes.map((r) => `  '${r}',`).join('\n');
+
   const content = [
+    "import { CfnResource } from 'aws-cdk-lib';",
     "import type { Backend } from '../../backend';",
     `import { ${constructClassName} } from './construct';`,
     '',
+    'export const STATEFUL_RESOURCES = [',
+    statefulResourcesArray,
+    '];',
+    '',
     `export function ${defineFnName}(backend: Backend) {`,
-    `  return new ${constructClassName}(${args.join(', ')});`,
+    `  const construct = new ${constructClassName}(${args.join(', ')});`,
+    '',
+    '  for (const cfnResource of construct.node',
+    '    .findAll()',
+    '    .filter(',
+    '      (c) =>',
+    '        CfnResource.isCfnResource(c) &&',
+    '        STATEFUL_RESOURCES.includes(',
+    '          c.cfnResourceType',
+    '        )',
+    '    )) {',
+    "    (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');",
+    "    (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');",
+    '  }',
+    '',
+    '  return construct;',
     '}',
     '',
   ].join('\n');

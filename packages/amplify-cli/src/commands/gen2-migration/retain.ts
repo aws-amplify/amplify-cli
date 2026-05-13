@@ -103,6 +103,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
         case 'geo:Map':
         case 'geo:PlaceIndex':
+        case 'custom:customCDK':
         case 'geo:GeofenceCollection': {
           const stackId = this.findNestedStack(rootNestedStacks, `${resource.category}${resource.resourceName}`);
           stackToResource.set(stackId, resource);
@@ -120,7 +121,6 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
           }
           break;
         }
-        case 'custom:customCDK':
         case 'UNKNOWN':
           break;
       }

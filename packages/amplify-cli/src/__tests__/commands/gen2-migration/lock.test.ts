@@ -5,6 +5,7 @@ import { UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
 import { Gen1App } from '../../../commands/gen2-migration/_common/gen1-app';
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_common/validations';
+import { DEFAULT_STATEFUL_RESOURCES } from '../../../commands/gen2-migration/_common/resource-types';
 
 jest.mock('@aws-sdk/client-appsync', () => ({
   ...jest.requireActual('@aws-sdk/client-appsync'),
@@ -60,6 +61,7 @@ describe('AmplifyMigrationLockStep', () => {
         rootStackName: 'test-root-stack',
         region: 'us-east-1',
         envName: 'testEnv',
+        statefulResourceTypes: [...Array.from(DEFAULT_STATEFUL_RESOURCES)],
         discover: () => [{ category: 'api', service: 'AppSync', resourceName: 'testApp', key: 'api:AppSync' as const }],
         resourceMetaOutput: () => 'test-api-id',
         clients: {

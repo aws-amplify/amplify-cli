@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as e2esnap from '../packages/amplify-e2e-gen2-migration/src/core/snapshot';
 import * as e2esani from '../packages/amplify-e2e-gen2-migration/src/core/sanitize';
+import * as e2enorm from '../packages/amplify-e2e-gen2-migration/src/core/normalize'
 
 const STEPS = ['pre.generate', 'post.generate', 'pre.refactor', 'post.refactor'] as const;
 type Step = (typeof STEPS)[number];
@@ -53,6 +54,7 @@ async function main(): Promise<void> {
   }
 
   e2esani.sanitize(appDir, sourceAppPath);
+  e2enorm.normalize(appDir, sourceAppPath)
 }
 
 main().catch((err) => {

@@ -14,7 +14,7 @@ import { paginateListTables } from '@aws-sdk/client-dynamodb';
 import { DiscoveredResource } from './_common/gen1-app';
 import { extractStackNameFromId } from './_common/utils';
 import { Cfn } from './_common/cfn';
-import { AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN, RESOURCES_TO_RETAIN } from './_common/resource-types';
+import { AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN } from './_common/resource-types';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNTemplate } from './_common/cfn-template';
 import CLITable from 'cli-table3';
@@ -136,20 +136,20 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         case 'auth:Cognito-UserPool-Groups':
         case 'storage:S3':
         case 'storage:DynamoDB':
+        case 'custom:customCDK':
         case 'analytics:Kinesis': {
           const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
           operations.push(...(await this.retainResource(resource, stackId)));
           break;
         }
 
+        // resources we don't refactor, skip them.
         case 'api:API Gateway':
         case 'geo:Map':
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection':
         case 'function:Lambda':
-        case 'custom:customCDK': {
           break;
-        }
 
         // unsupported/unknown resources - skip them.
         case 'UNKNOWN':
@@ -248,6 +248,12 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           operations.push(await this.validateRefactorRollbackStackIntegrity(resource, template, stackId));
           break;
         }
+        case 'custom:customCDK': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const template = this.gen1App.json(`custom/${resource.resourceName}/build/${resource.resourceName}-cloudformation-template.json`);
+          operations.push(await this.validateRefactorRollbackStackIntegrity(resource, template, stackId));
+          break;
+        }
 
         case 'api:AppSync':
         case 'api:API Gateway':
@@ -255,7 +261,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection':
         case 'function:Lambda':
-        case 'custom:customCDK':
         case 'UNKNOWN':
           // untouched during refactor - skip them.
           break;
@@ -334,7 +339,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const template = await cfn.fetchTemplate(stackId);
 
     for (const [logicalId, resource] of Object.entries(template.Resources)) {
-      if (RESOURCES_TO_RETAIN.includes(resource.Type)) {
+      if (this.gen1App.statefulResourceTypes.includes(resource.Type)) {
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }

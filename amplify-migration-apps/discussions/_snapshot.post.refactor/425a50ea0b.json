@@ -132,7 +132,7 @@
         "SmsAuthenticationMessage": "Your authentication code is {####}",
         "SmsConfiguration": {
           "ExternalId": "discusc578c16e_role_external_id",
-          "SnsCallerArn": "arn:aws:iam::123456789012:role/snsc578c16ex-x"
+          "SnsCallerArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-authdiscussionsc578c16ec578c16e-x/SNSRole"
         },
         "SmsVerificationMessage": "Your verification code is {####}",
         "UserAttributeUpdateSettings": {

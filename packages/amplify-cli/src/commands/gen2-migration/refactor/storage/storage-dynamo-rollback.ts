@@ -1,4 +1,3 @@
-import { CFNResource } from '../../_common/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { DYNAMO_TABLE_TYPE } from './storage-dynamo-forward';
 
@@ -18,14 +17,5 @@ export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer 
 
   protected resourceTypes(): string[] {
     return [DYNAMO_TABLE_TYPE];
-  }
-
-  protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
-    switch (sourceResource.Type) {
-      case DYNAMO_TABLE_TYPE:
-        return 'DynamoDBTable';
-      default:
-        return undefined;
-    }
   }
 }

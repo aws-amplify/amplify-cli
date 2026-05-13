@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB": {
+    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -59,17 +59,17 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/financetrackera14ace1bd4be4b579cb608d44266aea7x-gen2-x/Bucket/Resource"
       }
     },
-    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketPolicy8E870F18": {
+    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketPolicy7C9607EE": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB"
+          "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
         },
         "PolicyDocument": {
           "Statement": [
@@ -87,7 +87,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                     "Arn"
                   ]
                 },
@@ -97,7 +97,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -126,7 +126,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                     "Arn"
                   ]
                 },
@@ -136,7 +136,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -156,7 +156,7 @@
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/financetrackera14ace1bd4be4b579cb608d44266aea7x-gen2-x/Bucket/Policy/Resource"
       }
     },
-    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketAutoDeleteObjectsCustomResource6F25D99C": {
+    "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketAutoDeleteObjectsCustomResource8BAB9534": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": {
@@ -166,14 +166,14 @@
           ]
         },
         "BucketName": {
-          "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB"
+          "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
         }
       },
       "DependsOn": [
-        "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketPolicy8E870F18"
+        "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketPolicy7C9607EE"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/financetrackera14ace1bd4be4b579cb608d44266aea7x-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
       }
@@ -230,7 +230,7 @@
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB"
+                "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
               },
               " S3 bucket."
             ]
@@ -248,26 +248,26 @@
         "aws:asset:property": "Code"
       }
     },
-    "FINANCETRACKERA14ACE1BD4BE4B579CB608D44266AEA7919A7GEN2KKRJKNGBOQBUCKETNAMEParameter11BD537A": {
+    "FINANCETRACKERA14ACE1BD4BE4B579CB608D44266AEA7FF993GEN2SETJIPAVFVBUCKETNAMEParameter56B621CD": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/financetracker/e2e-sandbox-x/FINANCETRACKERA_14_ACE_1_BD_4_BE_4_B_579_CB_608_D_44266_AEA_7919_A_7_GEN_2_KKRJKNGBOQ_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/financetracker/e2e-sandbox-x/FINANCETRACKERA_14_ACE_1_BD_4_BE_4_B_579_CB_608_D_44266_AEA_7_FF_993_GEN_2_SETJIPAVFV_BUCKET_NAME",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
         "Value": {
-          "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB"
+          "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
         }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/FINANCETRACKERA_14_ACE_1_BD_4_BE_4_B_579_CB_608_D_44266_AEA_7919_A_7_GEN_2_KKRJKNGBOQ_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/FINANCETRACKERA_14_ACE_1_BD_4_BE_4_B_579_CB_608_D_44266_AEA_7_FF_993_GEN_2_SETJIPAVFV_BUCKET_NAMEParameter/Resource"
       }
     },
-    "amplifyfinancetrackere2esandbox9663a3a206storageAccess3F45D1FCC": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bstorageAccess34D5873DB": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -281,7 +281,7 @@
                   [
                     {
                       "Fn::GetAtt": [
-                        "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                        "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                         "Arn"
                       ]
                     },
@@ -303,7 +303,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                  "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                   "Arn"
                 ]
               }
@@ -311,10 +311,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifyfinancetrackere2esandbox9663a3a206storageAccess3F45D1FCC",
+        "PolicyName": "amplifyfinancetrackere2esandbox2ecf3e941bstorageAccess34D5873DB",
         "Roles": [
           {
-            "Ref": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref"
+            "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
           }
         ]
       },
@@ -324,7 +324,7 @@
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/amplify-financetracker-e2e-sandbox-x--storageAccess3/Resource"
       }
     },
-    "amplifyfinancetrackere2esandbox9663a3a206storageAccess4AB6EEBEC": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bstorageAccess45868F8A3": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -339,7 +339,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -353,7 +353,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -367,7 +367,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -387,7 +387,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -401,7 +401,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -415,7 +415,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -442,7 +442,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                  "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                   "Arn"
                 ]
               }
@@ -457,7 +457,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -471,7 +471,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -485,7 +485,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB",
+                          "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65",
                           "Arn"
                         ]
                       },
@@ -498,10 +498,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifyfinancetrackere2esandbox9663a3a206storageAccess4AB6EEBEC",
+        "PolicyName": "amplifyfinancetrackere2esandbox2ecf3e941bstorageAccess45868F8A3",
         "Roles": [
           {
-            "Ref": "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref"
+            "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
           }
         ]
       },
@@ -514,7 +514,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VQTUvEMBD9LfacjqWLF2+761nL9igi2XQs0zYJZCa7Ssh/l27A6tHTvMf7gmmhfWigudNXrs0w1wudIT0jCw69aDMrfeX3xDtIh2hmFHX8cAW9psrSJ7nqsfodXv28g5vEUKz7KP4JFxR8OU9ohKv8porU+YXM19Za+D+6S6AXLWjR3aqzYraQegnkxk4HbVEwrBs/JCvSFtK2XlDO6hhZvD0h+xgMrtKG/0hd8BcaMBw0o9ozo/SiR3JjVs4PCBPfX9oG2vW7ExPVITohi3Aq9xtDJzdGegEAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNy07DMBBFv6VZOwNNBAt2fawhapYIIdcZokliW/JMWpDlf0epJQJLVnNH5z4qqB5q2G70lUvTjeVEZ4jPyIJdK9qMSl/5PXINcT+bEUUdPlxWr7Gw9EmueCp+hxc/13BDDNm6m8UfcULBl/OARrhIbyqjxk9kvtbW/P+jOwda0YIW3a06KWYLsZVArm900BYFw7Lx8yRF2kJc17NKSR1mFm9PyH4OBhe06j+oCf5CHYa9ZlQ7ZpRWdE+uT8r5DmHgu0tVwfYR7jcDE5VhdkIW4ZTvN+RqyQh6AQAA"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/storage/CDKMetadata/Default"
@@ -789,17 +789,17 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthunauthenticatedUserRoleF67C9A23Ref": {
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef": {
       "Type": "String"
     },
-    "referencetoamplifyfinancetrackere2esandbox9663a3a206authNestedStackauthNestedStackResource2157E4C1Outputsamplifyfinancetrackere2esandbox9663a3a206authamplifyAuthauthenticatedUserRole20A0EAC9Ref": {
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifyfinancetrackere2esandbox9663a3a206storagefinancetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket902C094CRef": {
+    "amplifyfinancetrackere2esandbox2ecf3e941bstoragefinancetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket5558CA55Ref": {
       "Value": {
-        "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucket044586FB"
+        "Ref": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
       }
     }
   }

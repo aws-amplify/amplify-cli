@@ -5,6 +5,8 @@
  * No logic — just shapes.
  */
 
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+
 export interface CFNOutput {
   readonly Description?: string;
   Value: string | object;
@@ -60,6 +62,9 @@ export interface CFNTemplate {
   Resources: Record<string, CFNResource>;
   // Optional because CDK omits Outputs when a stack has no cross-stack references.
   Outputs?: Record<string, CFNOutput>;
+
+  // Optional because not all templates have metadata.
+  Metadata?: Record<string, $TSAny>;
 }
 
 export enum CFNStackStatus {

@@ -12,22 +12,23 @@
  * A visitor receives an object node and returns a replacement value,
  * or undefined to indicate "no replacement — keep recursing."
  */
-export type CfnTreeVisitor = (node: Readonly<Record<string, unknown>>) => unknown | undefined;
+export type CfnTreeVisitor = (node: Readonly<Record<string, unknown>>) => Promise<unknown | undefined>;
 
 /**
  * Recursively walks a JSON value, applying the visitor to each object node.
  */
-export function walkCfnTree(node: unknown, visitor: CfnTreeVisitor): unknown {
+export async function walkCfnTree(node: unknown, visitor: CfnTreeVisitor): Promise<unknown> {
   if (Array.isArray(node)) {
-    return node.map((item) => walkCfnTree(item, visitor));
+    return Promise.all(node.map((item) => walkCfnTree(item, visitor)));
   }
   if (node === null || typeof node !== 'object') {
     return node;
   }
   const record = node as Record<string, unknown>;
-  const replacement = visitor(record);
+  const replacement = await visitor(record);
   if (replacement !== undefined) {
     return replacement;
   }
-  return Object.fromEntries(Object.entries(record).map(([key, value]) => [key, walkCfnTree(value, visitor)]));
+  const entries = await Promise.all(Object.entries(record).map(async ([key, value]) => [key, await walkCfnTree(value, visitor)] as const));
+  return Object.fromEntries(entries);
 }

@@ -59,6 +59,7 @@ export const HOLDING_STACK_NAME_SUFFIX = '-holding';
  */
 export const VALID_HOLDING_STACK_STATUSES = ['UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE', 'CREATE_COMPLETE'];
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
+export const HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY = 'ForwardMappings';
 export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
@@ -129,7 +130,11 @@ export class Cfn {
    * Creates and executes a CloudFormation stack refactor.
    * Throws on failure.
    */
-  public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
+  public async refactor(
+    resourceMappings: ResourceMapping[],
+    resource?: DiscoveredResource,
+    pre?: (targetTemplate: CFNTemplate) => Promise<void>,
+  ): Promise<void> {
     const sourceStackId = resourceMappings[0].Source!.StackName!;
     const targetStackId = resourceMappings[0].Destination!.StackName!;
 
@@ -182,6 +187,10 @@ export class Cfn {
         resource,
       });
       this.info(`Finished adding placeholder to source stack '${sourceStackName}'`);
+    }
+
+    if (pre) {
+      await pre(targetTemplate);
     }
 
     const input: CreateStackRefactorCommandInput = {
@@ -490,12 +499,6 @@ export class Cfn {
     const changes = changeSet.Changes ?? [];
     if (changes.length === 0) return 'No changes';
 
-    const truncate = (value: string | undefined): string => {
-      if (!value) return '';
-      const max = 60;
-      return value.length > max ? `${value.slice(0, max - 1)}…` : value;
-    };
-
     const colorAction = (action: string): string => {
       if (action === 'Add') return chalk.green(action);
       if (action === 'Remove') return chalk.red(action);
@@ -559,8 +562,8 @@ export class Cfn {
 
       details.forEach((detail, i) => {
         const path = paths[i];
-        const before = truncate(detail.Target.BeforeValue);
-        const after = truncate(detail.Target.AfterValue);
+        const before = detail.Target.BeforeValue;
+        const after = detail.Target.AfterValue;
         const paddedPath = path.padEnd(pathWidth);
 
         if (before && after) {
