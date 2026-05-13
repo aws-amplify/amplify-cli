@@ -58,10 +58,11 @@ and a `configure.sh` script that copies them into the Gen1 `amplify/` directory 
 The configure script uses `$BASH_SOURCE`-relative paths so it works regardless of the
 caller's working directory.
 
-### `migration/config.json`
+### `migration/`
 
-Configuration file read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime.
-Each key corresponds to a migration step and accepts a `StepConfig` object:
+Contains E2E configuration and lifecycle hook scripts for the app.
+
+**`config.json`** — read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime. Each key corresponds to a migration step and accepts a `StepConfig` object:
 
 ```json
 {
@@ -83,70 +84,30 @@ Each key corresponds to a migration step and accepts a `StepConfig` object:
 
 `StepConfig` fields:
 
-| Field              | Type      | Description                                        |
-| ------------------ | --------- | -------------------------------------------------- |
-| `skipValidations`  | `boolean` | Pass `--skip-validations` to the step.             |
-| `skip`             | `boolean` | Skip the step entirely.                            |
+| Field             | Type      | Description                            |
+| ----------------- | --------- | -------------------------------------- |
+| `skipValidations` | `boolean` | Pass `--skip-validations` to the step. |
+| `skip`            | `boolean` | Skip the step entirely.                |
 
 If the file does not exist, defaults are used (no skips, no skip-validations).
 
-### `tests/`
+**Hook npm scripts** — every app's `package.json` must define these 7 scripts. The E2E invokes them by name (`npm run <hook>`) at lifecycle points; the script's implementation is up to the app. Use `"true"` to no-op, or `"npx tsx migration/<hook>.ts"` to run a TypeScript hook file under `migration/`. Hook TS files accept `appPath` as a CLI argument.
 
-Jest test suites that validate a deployed stack. Each app has its own `jest.config.js` and
-test files under `tests/`. The config path is controlled by the `APP_CONFIG_PATH` environment
-variable, which the `test:gen1` and `test:gen2` npm scripts set to the appropriate file
-(`src/amplifyconfiguration.json` for Gen1, `amplify_outputs.json` for Gen2).
+- `pre-push` — before `amplify push` (after init + configure)
+- `post-push` — after `amplify push`
+- `post-generate` — after `gen2-migration generate` + `npm install`
+- `pre-sandbox` — before `npx ampx sandbox --once`
+- `post-sandbox` — after the first Gen2 sandbox deploy
+- `post-refactor` — after `gen2-migration refactor`
+- `post-rollback` — after `gen2-migration refactor --rollback` (reverses `post-refactor` fixups)
 
-Each app has its own `tests/signup.ts` that handles Cognito user provisioning via
-`AdminCreateUser` + `AdminSetUserPassword`, tailored to the app's specific auth
-configuration (email vs phone sign-in, user pool groups, etc.).
+**Test npm scripts** — defined in the app's `package.json`, invoked by the E2E at validation points:
 
-### `migration/post-generate.ts` and `migration/post-refactor.ts`
+- `test:gen1` — Jest tests against the Gen1 config
+- `test:gen2` — Jest tests against the Gen2 config
+- `test:shared` — Jest tests validating stateful resources are shared between Gen1 and Gen2
 
-Optional scripts that apply app-specific fixups the migration CLI cannot automate. Examples:
-
-- Converting CommonJS Lambda functions to ESM syntax
-- Updating frontend imports from `aws-exports` to `amplify_outputs.json`
-- Setting `branchName` to `sandbox` for DynamoDB table mappings
-- Uncommenting resource names to preserve original Gen1 names after refactor
-
-Both scripts export a function and accept `appPath` as a CLI argument:
-
-```typescript
-export async function postGenerate(appPath: string): Promise<void>;
-export async function postRefactor(appPath: string): Promise<void>;
-```
-
-If a script does not exist for an app, the E2E system silently skips the step.
-
-> Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
-> for them yet.
-
-### `migration/post-rollback.ts`
-
-Optional script that reverses the fixups applied by `post-refactor.ts` after a
-`gen2-migration refactor --rollback`. For example, if `post-refactor.ts` uncomments
-a function call in `amplify/backend.ts`, `post-rollback.ts` comments it back.
-
-```typescript
-export async function postRollback(appPath: string): Promise<void>;
-```
-
-If a script does not exist for an app, the E2E system silently skips the step.
-
-### `migration/pre-push.ts` and `migration/post-sandbox.ts`
-
-Optional scripts for additional lifecycle hooks:
-
-- `pre-push.ts` — runs before `amplify push`. Use for fixups that require the Amplify
-  app to be initialized but not yet deployed (e.g., substituting the real Amplify app ID
-  into configuration files).
-- `post-sandbox.ts` — runs after the first `npx ampx sandbox --once` deploy. Use for
-  fixups that require the Gen2 stack to exist (e.g., writing secrets to SSM Parameter
-  Store using the deployed stack name).
-
-Both accept `appPath` as a CLI argument. If a script does not exist for an app, the
-E2E system silently skips the step.
+Set any script to `"true"` in `package.json` to no-op.
 
 ### `_snapshot.pre.generate/`
 
@@ -213,9 +174,20 @@ Stack names follow Amplify naming conventions:
 ### `_snapshot.post.refactor/`
 
 The expected refactor operations — the CloudFormation API calls the migration tool would make
-to move resources from Gen1 stacks to Gen2 stacks. Contains two types of files:
+to move resources from Gen1 stacks to Gen2 stacks. Files use hashed filenames (10-char hex)
+to avoid Windows MAX_PATH limits. A `filename-mapping.json` maps each hash to its logical name.
 
-`update.*` files represent `UpdateStack` calls that prepare stacks before or after a refactor:
+```
+_snapshot.post.refactor/
+├── filename-mapping.json               # Maps hashed filenames → logical names
+├── 809e6c5310.json                     # e.g. update.<gen1-auth-stack>.template.json
+├── 3b1a56c1ce.json                     # e.g. update.<gen1-auth-stack>.parameters.json
+├── ...
+```
+
+The `filename-mapping.json` values follow two naming conventions:
+
+**`update.*`** — `UpdateStack` calls that prepare stacks before a refactor:
 
 ```
 update.<stack-name>.template.json      # Modified template for the stack
@@ -226,7 +198,7 @@ Comparing `update.<stack-name>.template.json` against `_snapshot.pre.refactor/<s
 shows the changeset applied during the update — what was added, removed, or modified in the template
 as part of the refactor resolution.
 
-`refactor.*` files represent `CreateStackRefactor` calls that move resources between stacks:
+**`refactor.*`** — `CreateStackRefactor` calls that move resources between stacks:
 
 ```
 refactor.__from__.<source-stack>.__to__.<target-stack>.source.template.json
@@ -267,16 +239,6 @@ npx tsx ../sanitize.ts
 
 Order matters — normalize first, then sanitize.
 
-## Typechecking
-
-Each app has a `typecheck` script that runs `tsc --noEmit` against the generated Gen2 code
-in `_snapshot.post.generate/amplify/` to verify the snapshot's TypeScript compiles cleanly.
-
-```console
-cd amplify-migration-apps/<app-name>
-npm run typecheck
-```
-
 ## Snapshot Capture Tool
 
 The [`snapshot.ts`](./snapshot.ts) script at the root of this directory captures snapshot
@@ -294,7 +256,7 @@ Where `<step>` is one of:
 | `pre.generate`   | Copies the Gen1 app's `amplify/`, `.gitignore`, and `package.json`          | `deployed-app-path`                    |
 | `post.generate`  | Copies the Gen2 output (`amplify/`, `.gitignore`, `amplify.yml`)            | `deployed-app-path`                    |
 | `pre.refactor`   | Downloads Gen1 and Gen2 CloudFormation templates from deployed stacks       | `gen2-stack-name`                      |
-| `post.refactor`  | Copies the refactor operations from `.gen2-migration/refactor.operations`   | `deployed-app-path`                    |
+| `post.refactor`  | Copies the refactor operations from `.amplify/gen2-migration/refactor.operations` | `deployed-app-path`                    |
 
 Examples:
 
@@ -395,7 +357,7 @@ test('<app-name> snapshot', async () => {
 ### Adding a Snapshot Test | `refactor`
 
 To add a snapshot test that validates the `gen2-migration refactor` command for a new app,
-add a new test to [`refactor.test.ts`](../packages/amplify-cli/src/__tests__/commands/gen2-migration/refactor/refactor.test.ts):
+add a new test to [`refactor.test.ts`](../packages/amplify-cli/src/__tests__/commands/gen2-migration/refactor.test.ts):
 
 ```typescript
 test('<app-name> snapshot', async () => {
@@ -443,6 +405,25 @@ Always review the diff after updating to make sure the changes are intentional.
 > When updating snapshots, the first run with `--updateSnapshot` will still report a failure
 > because it detects the diff before writing the updated files. Run the tests a second time
 > (without `--updateSnapshot`) to verify the snapshots are now correct.
+
+### Full Snapshot Update Workflow
+
+When you run the E2E with `UPDATE_SNAPSHOTS=1`, it updates the app's `_snapshot.*` directories
+on disk. However, the unit tests in `packages/amplify-cli` also compare against those same
+snapshot files. You must update both to stay in sync:
+
+```console
+# 1. Run E2E to capture new snapshots from a real deployment
+cd amplify-migration-apps/<app-name>
+UPDATE_SNAPSHOTS=1 npm run test:e2e
+
+# 2. Update unit test snapshots to match
+cd packages/amplify-cli
+npx jest --no-coverage src/__tests__/commands/gen2-migration/generate.test.ts --updateSnapshot
+npx jest --no-coverage src/__tests__/commands/gen2-migration/refactor.test.ts --updateSnapshot
+```
+
+If you skip step 2, the unit tests will fail because they produce slightly different output than the actual E2E run (mock SDK responses vs real AWS responses).
 
 ## Integration Testing (E2E)
 

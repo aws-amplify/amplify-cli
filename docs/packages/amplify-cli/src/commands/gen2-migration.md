@@ -10,7 +10,7 @@ through the complete migration process:
 4. Refactoring CloudFormation stacks to move stateful resources,
 5. Retaining every resource below root so the user can safely delete the Gen1 root stack.
 
-The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps return a `Plan` object that drives a unified `describe → validate → execute` lifecycle. The `Plan` encapsulates operations and renders validation reports, operations summaries, and implications — the top-level dispatcher orchestrates all steps uniformly without knowing their internals.
+The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps return a `Plan` object that drives a unified `validate → describe → execute` lifecycle. The `Plan` encapsulates operations and renders validation reports, operations summaries, and implications — the top-level dispatcher orchestrates all steps uniformly without knowing their internals.
 
 ## Key Responsibilities
 
@@ -30,7 +30,7 @@ Creates a `Gen1App` facade that encapsulates all Gen1 app state — AWS clients,
 
 ```ts
 const gen1App = await Gen1App.create(context);
-const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context);
+const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context, validations);
 ```
 
 ### Subcommand Dispatching
@@ -52,6 +52,7 @@ with `--no-rollback`.
 Detailed documentation for subcommands is available in:
 
 - [assess.md](./gen2-migration/assess.md) - Migration readiness assessment
+- [lock.md](./gen2-migration/lock.md) - Environment locking and deletion protection
 - [generate.md](./gen2-migration/generate.md) - Code generation pipeline for transforming Gen1 configs to Gen2 TypeScript
 - [refactor.md](./gen2-migration/refactor.md) - CloudFormation stack refactoring for moving stateful resources
 - [retain.md](./gen2-migration/retain.md) - Apply retain policies below root so Gen1 can be deleted safely
@@ -62,9 +63,9 @@ Each step extends `AmplifyMigrationStep` and returns a `Plan` from `forward()` o
 
 ### `Plan`
 
-[`src/commands/gen2-migration/_plan.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_plan.ts)
+[`src/commands/gen2-migration/_common/plan.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_common/plan.ts)
 
-Encapsulates a list of `AmplifyMigrationOperation` objects and drives the describe/validate/execute lifecycle. Constructed with `PlanProps`: operations, a logger, a title, and optional implications.
+Encapsulates a list of `AmplifyMigrationOperation` objects and drives the validate/describe/execute lifecycle. Constructed with `PlanProps`: operations, a logger, a title, and optional implications.
 
 - `validate()` — runs each operation's validation with spinner context, renders a "Failed Validations Report" (description in red + report text) for any failures, then renders a pass/fail summary table. Returns `boolean` (`true` if all passed).
 - `describe()` — renders the operations summary and implications
@@ -110,19 +111,19 @@ flowchart LR
 
 ### `AmplifyMigrationStep`
 
-[`src/commands/gen2-migration/_step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_step.ts)
+[`src/commands/gen2-migration/_common/step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_common/step.ts)
 
-Abstract base class that defines the lifecycle contract for all migration steps. Constructor takes `(logger, gen1App, context)` — the `Gen1App` facade provides all app state. Each step returns a `Plan` from `forward()` and `rollback()`.
+Abstract base class that defines the lifecycle contract for all migration steps. Constructor takes `(logger, gen1App, context, validations)` — the `Gen1App` facade provides all app state, and `AmplifyGen2MigrationValidations` provides shared validation logic. Each step returns a `Plan` from `forward()` and `rollback()`.
 
 ### `AmplifyMigrationOperation`
 
-[`src/commands/gen2-migration/_operation.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_operation.ts)
+[`src/commands/gen2-migration/_common/operation.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_common/operation.ts)
 
 Atomic operation with `describe()`, `validate()`, and `execute()` methods. The `validate()` method returns a `Validation` object (with a `description` string and a `run()` callback that produces a `ValidationResult`) or `undefined` if the operation has no validation. The `ValidationResult` includes a `valid` boolean and an optional `report` string — when validation fails, the report is displayed to the user as part of the "Failed Validations Report" section.
 
 ### `SpinningLogger`
 
-[`src/commands/gen2-migration/_spinning-logger.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_spinning-logger.ts)
+[`src/commands/gen2-migration/_common/spinning-logger.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_common/spinning-logger.ts)
 
 Logger that manages a spinner in normal mode and falls back to plain text output in debug mode. Consumers use `info`/`debug`/`warn` for messages and `push`/`pop` to manage hierarchical spinner context. Used by `Plan` to show progress during validation and execution.
 
@@ -134,16 +135,13 @@ amplify gen2-migration <step> [options]
 
 ### Subcommands
 
-| Subcommand | Description                                                                                                                     | Implementation                                          | Status          |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------- |
-| `assess`   | Assess migration readiness for the Gen1 environment                                                                             | `assess.ts` → `AmplifyMigrationAssessor`                | Implemented     |
-| `clone`    | Clone environment for migration                                                                                                 | `clone.ts` → `AmplifyMigrationCloneStep`                | NOT IMPLEMENTED |
-| `lock`     | Lock environment, apply `DeletionPolicy: Retain` to every resource in every Gen1 stack, and enable DynamoDB deletion protection | `lock.ts` → `AmplifyMigrationLockStep`                  | Implemented     |
-| `generate` | Generate Gen2 backend code from Gen1 configuration                                                                              | `generate.ts` → `AmplifyMigrationGenerateStep`          | Implemented     |
-| `refactor` | Move stateful resources from Gen1 to Gen2 stacks                                                                                | `refactor/refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented     |
-| `retain`   | Apply retain policies to every resource in every Gen1 stack below root                                                          | `retain.ts` → `AmplifyMigrationRetainStep`              | Implemented     |
-| `shift`    | Shift traffic to Gen2                                                                                                           | `shift.ts` → `AmplifyMigrationShiftStep`                | NOT IMPLEMENTED |
-| `cleanup`  | Clean up migration artifacts                                                                                                    | `cleanup.ts` → `AmplifyMigrationCleanupStep`            | NOT IMPLEMENTED |
+| Subcommand | Description                                                                                                                     | Implementation                                 | Status      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
+| `assess`   | Assess migration readiness for the Gen1 environment                                                                             | `assess.ts` → `AmplifyMigrationAssessor`       | Implemented |
+| `lock`     | Lock environment, apply `DeletionPolicy: Retain` to every resource in every Gen1 stack, and enable DynamoDB deletion protection | `lock.ts` → `AmplifyMigrationLockStep`         | Implemented |
+| `generate` | Generate Gen2 backend code from Gen1 configuration                                                                              | `generate.ts` → `AmplifyMigrationGenerateStep` | Implemented |
+| `refactor` | Move stateful resources from Gen1 to Gen2 stacks                                                                                | `refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented |
+| `retain`   | Apply retain policies to every resource in every Gen1 stack below root                                                          | `retain.ts` → `AmplifyMigrationRetainStep`     | Implemented |
 
 ### Global Options
 
@@ -159,26 +157,26 @@ amplify gen2-migration <step> [options]
 **Important considerations:**
 
 - The step execution order matters: lock → generate → refactor → retain. Each step validates prerequisites from previous steps.
-- The `clone`, `shift`, and `cleanup` steps are NOT IMPLEMENTED—they throw 'Method not implemented' errors.
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
-- Stateful resources (defined in `STATEFUL_RESOURCES` set) require special handling—the module prevents their deletion and enables deletion protection.
-- The refactor step uses interactive prompts to let users select which categories to migrate.
-- Because rollback functionality is still in development, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
-- Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full describe/validate/execute lifecycle — the dispatcher doesn't manage operations directly.
+- Stateful resources (defined in the `DEFAULT_STATEFUL_RESOURCES` set in `_common/resource-types.ts`, exposed via `Gen1App.statefulResourceTypes`) require special handling — the lock step applies `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain` to them.
+- Because rollback functionality is still in development for refactor, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
+- Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full validate/describe/execute lifecycle — the dispatcher doesn't manage operations directly.
 - Validations are embedded in operations via `validate()`. When a validation fails, its `report` field is displayed in a "Failed Validations Report" section before the summary table.
-- `SpinningLogger` is the only logger class — the deprecated `Logger` subclass has been removed. Import directly from `_spinning-logger.ts`.
+- `SpinningLogger` is the only logger class — the deprecated `Logger` subclass has been removed. Import directly from `_common/spinning-logger.ts`.
 - Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
 - The `--rollback` flag explicitly executes rollback operations for a step.
 - `Gen1App` is the single facade for all Gen1 app state. It is created once in the dispatcher via `Gen1App.create(context)` and passed to all steps. Steps access `gen1App.appId`, `gen1App.region`, `gen1App.envName`, etc. instead of individual constructor params.
 - `AwsClients` has a private constructor — use `AwsClients.create(context)` in production. Tests bypass this with `new (AwsClients as any)(...)`.
 - Assessment uses a `Support` type with `level` and `note` fields. Each assessor provides its own note for unsupported entries. Use the `supported()`, `unsupported(note)`, `notApplicable()` helpers. The standard unsupported note is `'requires adding code after generate'`.
 - `KNOWN_RESOURCE_KEYS` (in `gen1-app.ts`) defines all supported category:service pairs. Unknown resources get the `'UNKNOWN'` key.
+- The lock step has a full rollback implementation (removes stack policy, removes environment variable). Before rollback, it validates that any prior `refactor` has been rolled back so that stateful resources are present in Gen1 before retain policies are removed.
+- The generate step does not support rollback — it throws an error directing the user to use git to restore their local directory.
+- The refactor step has a complete rollback implementation that moves resources back from Gen2 to Gen1 stacks.
 
 **Common pitfalls:**
 
 - Don't skip the lock step—subsequent steps validate that the stack is locked before proceeding.
 - The `--skip-validations` flag bypasses safety checks—use with extreme caution in production.
 - Environment mismatch between local and migration target will throw an error—ensure consistency.
-- Rollback implementations are incomplete for most steps (throw 'Not Implemented' errors)—manual intervention may be needed on failure.
 - Cannot specify both `--rollback` and `--no-rollback` flags simultaneously.
 - The lock step's rollback removes the deny stack policy but does not undo retain policies or DynamoDB deletion protection (preserves safety).

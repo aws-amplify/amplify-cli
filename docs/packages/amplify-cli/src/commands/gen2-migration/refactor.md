@@ -35,7 +35,7 @@ AmplifyMigrationRefactorStep (refactor.ts)
 | `CategoryRefactorer`           | `workflow/category-refactorer.ts`          | Abstract base class. Implements the shared plan() workflow: resolve → build mappings → update → beforeMove → move → afterMove.                                                                                                                                                                                                      |
 | `ForwardCategoryRefactorer`    | `workflow/forward-category-refactorer.ts`  | Forward direction base. Resolves Gen1 source and Gen2 target templates. Moves Gen2 resources to a holding stack before the main refactor.                                                                                                                                                                                           |
 | `RollbackCategoryRefactorer`   | `workflow/rollback-category-refactorer.ts` | Rollback direction base. Resolves Gen2 source and Gen1 target. Restores holding stack resources back to Gen2 after the main refactor.                                                                                                                                                                                               |
-| `Cfn`                          | `cfn.ts`                                   | Shared CloudFormation client wrapper. Handles update, refactor, changeset, delete, describe, and template fetch operations. Tracks update claims to prevent duplicate stack updates across refactorers. Writes operation snapshots with hashed filenames to avoid Windows MAX_PATH limits.                                          |
+| `Cfn`                          | `_common/cfn.ts`                           | Shared CloudFormation client wrapper. Handles update, refactor, changeset, delete, describe, and template fetch operations. Tracks update claims to prevent duplicate stack updates across refactorers. Writes operation snapshots with hashed filenames to avoid Windows MAX_PATH limits.                                          |
 | `StackFacade`                  | `stack-facade.ts`                          | Read-only facade over a CloudFormation stack hierarchy. Fetches nested stacks, templates, stack descriptions, and resources.                                                                                                                                                                                                        |
 | Resolvers                      | `resolvers/`                               | Pure functions that transform CloudFormation templates: parameter substitution, output resolution, dependency stripping, condition evaluation.                                                                                                                                                                                      |
 | `oauth-values-retriever`       | `oauth-values-retriever.ts`                | Retrieves OAuth provider credentials from Cognito and SSM for auth migrations with social login.                                                                                                                                                                                                                                    |
@@ -79,7 +79,7 @@ flowchart TD
     M --> N[Move holding resources → Gen2 stack]
 ```
 
-The rollback workflow mirrors forward but in reverse. It resolves and updates both stacks (necessary if the Gen2 app was redeployed after forward, which introduces fresh `Fn::GetAtt` references). After moving resources back to Gen1, `afterMove` independently fetches the holding stack template and discovers which resources to restore back to Gen2. The holding stack is left with just a placeholder resource — cleanup is handled by `amplify gen2-migration decommission`.
+The rollback workflow mirrors forward but in reverse. It resolves and updates both stacks (necessary if the Gen2 app was redeployed after forward, which introduces fresh `Fn::GetAtt` references). After moving resources back to Gen1, `afterMove` independently fetches the holding stack template and discovers which resources to restore back to Gen2. Once the last refactorer has moved its resources out of the holding stack, the rollback deletes the holding stack (it contains only the placeholder resource at that point).
 
 ### plan() Lifecycle
 
@@ -170,6 +170,19 @@ During forward migration, Gen2 resources are moved to a temporary holding stack 
 | analytics (Kinesis)    | Kinesis::Stream                                                                    | `AnalyticsKinesisForwardRefactorer`   | `AnalyticsKinesisRollbackRefactorer`   |
 
 Auth Cognito and UserPoolGroups are separate refactorers because they come from different Gen1 stacks but map to the same Gen2 auth stack.
+
+## Stateless Resources (No Refactor)
+
+The following resources are stateless and do not require refactoring — they are recreated in the Gen2 stack by the generate step:
+
+| Category | Service            | Reason                                         |
+| -------- | ------------------ | ---------------------------------------------- |
+| function | Lambda             | Stateless — code is redeployed                 |
+| api      | AppSync            | Stateless — schema is redeployed               |
+| api      | API Gateway        | Stateless — API is redeployed                  |
+| geo      | Map                | Stateless — recreated in Gen2                  |
+| geo      | PlaceIndex         | Stateless — recreated in Gen2                  |
+| geo      | GeofenceCollection | Unsupported for refactor (assessment marks it) |
 
 ## Validations
 
