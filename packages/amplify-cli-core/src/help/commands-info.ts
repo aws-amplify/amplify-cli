@@ -804,6 +804,12 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandUsage: 'amplify gen2-migration refactor [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
         subCommandFlags: [],
       },
+      {
+        subCommand: 'retain',
+        subCommandDescription: 'Applies retention policies to Gen1 stack resources so they survive stack deletion',
+        subCommandUsage: 'amplify gen2-migration retain [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+        subCommandFlags: [],
+      },
     ],
   },
   {
