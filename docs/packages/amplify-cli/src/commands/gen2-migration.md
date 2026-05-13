@@ -135,13 +135,13 @@ amplify gen2-migration <step> [options]
 
 ### Subcommands
 
-| Subcommand | Description                                                                                                                     | Implementation                                          | Status      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ----------- |
-| `assess`   | Assess migration readiness for the Gen1 environment                                                                             | `assess.ts` → `AmplifyMigrationAssessor`                | Implemented |
-| `lock`     | Lock environment, apply `DeletionPolicy: Retain` to every resource in every Gen1 stack, and enable DynamoDB deletion protection | `lock.ts` → `AmplifyMigrationLockStep`                  | Implemented |
-| `generate` | Generate Gen2 backend code from Gen1 configuration                                                                              | `generate.ts` → `AmplifyMigrationGenerateStep`          | Implemented |
-| `refactor` | Move stateful resources from Gen1 to Gen2 stacks                                                                                | `refactor.ts` → `AmplifyMigrationRefactorStep`         | Implemented |
-| `retain`   | Apply retain policies to every resource in every Gen1 stack below root                                                          | `retain.ts` → `AmplifyMigrationRetainStep`              | Implemented |
+| Subcommand | Description                                                                                                                     | Implementation                                 | Status      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
+| `assess`   | Assess migration readiness for the Gen1 environment                                                                             | `assess.ts` → `AmplifyMigrationAssessor`       | Implemented |
+| `lock`     | Lock environment, apply `DeletionPolicy: Retain` to every resource in every Gen1 stack, and enable DynamoDB deletion protection | `lock.ts` → `AmplifyMigrationLockStep`         | Implemented |
+| `generate` | Generate Gen2 backend code from Gen1 configuration                                                                              | `generate.ts` → `AmplifyMigrationGenerateStep` | Implemented |
+| `refactor` | Move stateful resources from Gen1 to Gen2 stacks                                                                                | `refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented |
+| `retain`   | Apply retain policies to every resource in every Gen1 stack below root                                                          | `retain.ts` → `AmplifyMigrationRetainStep`     | Implemented |
 
 ### Global Options
 
