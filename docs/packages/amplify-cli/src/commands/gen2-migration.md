@@ -158,7 +158,7 @@ amplify gen2-migration <step> [options]
 
 - The step execution order matters: lock → generate → refactor → retain. Each step validates prerequisites from previous steps.
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
-- Stateful resources (defined in `RESOURCES_TO_RETAIN` list) require special handling—the lock step prevents their deletion and enables deletion protection.
+- Stateful resources (defined in the `DEFAULT_STATEFUL_RESOURCES` set in `_common/resource-types.ts`, exposed via `Gen1App.statefulResourceTypes`) require special handling — the lock step applies `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain` to them.
 - Because rollback functionality is still in development for refactor, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
 - Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full describe/validate/execute lifecycle — the dispatcher doesn't manage operations directly.
 - Validations are embedded in operations via `validate()`. When a validation fails, its `report` field is displayed in a "Failed Validations Report" section before the summary table.
