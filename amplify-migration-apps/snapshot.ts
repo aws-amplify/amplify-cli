@@ -53,8 +53,8 @@ async function main(): Promise<void> {
       break;
   }
 
+  e2enorm.normalize(appDir, sourceAppPath);
   e2esani.sanitize(appDir, sourceAppPath);
-  e2enorm.normalize(appDir, sourceAppPath)
 }
 
 main().catch((err) => {
