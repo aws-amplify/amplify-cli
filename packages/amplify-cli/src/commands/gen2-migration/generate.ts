@@ -36,7 +36,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
     const generators: Planner[] = [];
-    const assessor = new AmplifyMigrationAssessor(this.gen1App);
+    const assessor = new AmplifyMigrationAssessor(this.gen1App, this.logger);
     const assessment = assessor.assess();
 
     const operations: AmplifyMigrationOperation[] = [

@@ -32,7 +32,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const { accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const refactorers: Planner[] = [];
-    const assessor = new AmplifyMigrationAssessor(this.gen1App);
+    const assessor = new AmplifyMigrationAssessor(this.gen1App, this.logger);
     const assessment = assessor.assess();
 
     const discovered = this.gen1App.discover();
@@ -121,7 +121,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const { accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const refactorers: Planner[] = [];
-    const assessor = new AmplifyMigrationAssessor(this.gen1App);
+    const assessor = new AmplifyMigrationAssessor(this.gen1App, this.logger);
     const assessment = assessor.assess();
 
     const discovered = this.gen1App.discover();

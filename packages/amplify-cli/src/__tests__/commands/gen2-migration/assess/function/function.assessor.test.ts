@@ -55,6 +55,21 @@ describe('FunctionAssessor', () => {
     expect(assessment.features).toHaveLength(0);
   });
 
+  it('detects direct IAM policy object in custom-policies.json', () => {
+    const gen1App = mockGen1App(['function/myFunc/custom-policies.json'], {
+      [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE,
+      'function/myFunc/custom-policies.json': {
+        Version: '2012-10-17',
+        Statement: [{ Effect: 'Allow', Action: 's3:GetObject', Resource: 'arn:aws:s3:::bucket/*' }],
+      },
+    });
+    const assessment = new Assessment('app', 'dev');
+    new FunctionAssessor(gen1App, RESOURCE).record(assessment);
+
+    expect(assessment.features).toHaveLength(1);
+    expect(assessment.features[0]!.generate.level).toBe('unsupported');
+  });
+
   it('records no features when custom-policies.json is absent', () => {
     const gen1App = mockGen1App([], { [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE });
     const assessment = new Assessment('app', 'dev');

@@ -14,6 +14,7 @@ import { GeoFenceCollectionAssessor } from './assess/geo/geo-geofence-collection
 import { GeoMapAssessor } from './assess/geo/geo-map.assessor';
 import { GeoPlaceIndexAssessor } from './assess/geo/geo-place-index.assessor';
 import { CustomCdkAssessor } from './assess/custom/custom-cdk.assessor';
+import { SpinningLogger } from './_common/spinning-logger';
 
 /**
  * Evaluates migration readiness by discovering resources and
@@ -21,7 +22,7 @@ import { CustomCdkAssessor } from './assess/custom/custom-cdk.assessor';
  * feature-level support detection.
  */
 export class AmplifyMigrationAssessor {
-  public constructor(private readonly gen1App: Gen1App) {}
+  public constructor(private readonly gen1App: Gen1App, private readonly logger: SpinningLogger) {}
 
   public assess(): Assessment {
     const discovered = this.gen1App.discover();
@@ -29,7 +30,7 @@ export class AmplifyMigrationAssessor {
 
     for (const resource of discovered) {
       const assessors: Assessor[] = [];
-
+      this.logger.debug(`Assessing resource: ${resource.category}/${resource.resourceName} (${resource.service})`);
       switch (resource.key) {
         case 'auth:Cognito':
           assessors.push(new AuthCognitoAssessor(this.gen1App, resource));
