@@ -24,6 +24,7 @@ import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
 import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
+import { paginateListStackResources, StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
 
@@ -198,5 +199,41 @@ export class AwsFetcher {
       });
     }
     return root.id;
+  }
+
+  // ── CloudFormation ─────────────────────────────────────────────
+
+  /** Lists nested stacks (type `AWS::CloudFormation::Stack`) under the given stack using paginated ListStackResources. */
+  public async listNestedStacks(stackName: string): Promise<StackResourceSummary[]> {
+    const results: StackResourceSummary[] = [];
+    const paginator = paginateListStackResources({ client: this.clients.cloudFormation }, { StackName: stackName });
+    for await (const page of paginator) {
+      for (const resource of page.StackResourceSummaries ?? []) {
+        if (resource.ResourceType === 'AWS::CloudFormation::Stack') {
+          results.push(resource);
+        }
+      }
+    }
+    return results;
+  }
+
+  /** Lists all resources in a stack using paginated ListStackResources. */
+  public async listStackResources(stackName: string): Promise<StackResourceSummary[]> {
+    const results: StackResourceSummary[] = [];
+    const paginator = paginateListStackResources({ client: this.clients.cloudFormation }, { StackName: stackName });
+    for await (const page of paginator) {
+      results.push(...(page.StackResourceSummaries ?? []));
+    }
+    return results;
+  }
+
+  /** Finds the physical resource ID of a resource by its logical ID in a stack. */
+  public async findResourcePhysicalId(stackName: string, logicalResourceId: string): Promise<string | undefined> {
+    const paginator = paginateListStackResources({ client: this.clients.cloudFormation }, { StackName: stackName });
+    for await (const page of paginator) {
+      const match = (page.StackResourceSummaries ?? []).find((r) => r.LogicalResourceId === logicalResourceId);
+      if (match) return match.PhysicalResourceId;
+    }
+    return undefined;
   }
 }

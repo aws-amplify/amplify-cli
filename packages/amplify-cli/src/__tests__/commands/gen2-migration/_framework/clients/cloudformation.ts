@@ -15,7 +15,7 @@ import * as path from 'path';
  *
  * Mocks five commands:
  *
- * - `DescribeStackResourcesCommand`: Lists resources in a stack by parsing the
+ * - `ListStackResourcesCommand`: Lists resources in a stack by parsing the
  *   `Resources` section of the corresponding local CloudFormation template.
  *
  * - `DescribeStacksCommand`: Returns stack parameters and outputs for a nested stack.
@@ -47,7 +47,7 @@ export class CloudFormationMock {
       this._templateForStack.set(stackName, fs.readFileSync(path.join(refactorInputPath, stackFile), { encoding: 'utf-8' }));
     }
 
-    this.mockDescribeStackResources();
+    this.mockListStackResources();
     this.mockDescribeStacks();
     this.mockGetTemplate();
     this.mockCreateStackRefactor();
@@ -68,34 +68,31 @@ export class CloudFormationMock {
 
   /**
    * Pre-registers a physical resource ID → stack name mapping.
-   * Used when the new Gen1App code path bypasses DescribeStackResources.
+   * Used when the new Gen1App code path bypasses ListStackResources.
    */
   public registerResource(physicalId: string, stackName: string): void {
     this._stackNameForResource.set(physicalId, stackName);
   }
 
-  private mockDescribeStackResources() {
+  private mockListStackResources() {
     this.mock
-      .on(cloudformation.DescribeStackResourcesCommand)
-      .callsFake(async (input: cloudformation.DescribeStackResourcesInput): Promise<cloudformation.DescribeStackResourcesOutput> => {
+      .on(cloudformation.ListStackResourcesCommand)
+      .callsFake(async (input: cloudformation.ListStackResourcesInput): Promise<cloudformation.ListStackResourcesOutput> => {
         const templatePath = this.app.templatePathForStack(input.StackName!);
         const template: any = JSONUtilities.readJson<any>(templatePath);
-        const stackResources: cloudformation.StackResource[] = [];
+        const stackResourceSummaries: cloudformation.StackResourceSummary[] = [];
         for (const logicalId of Object.keys(template.Resources)) {
-          if (input.LogicalResourceId && logicalId !== input.LogicalResourceId) {
-            continue;
-          }
           const resource = template.Resources[logicalId];
           const physicalId =
             resource.Type === 'AWS::CloudFormation::Stack'
               ? this.app.nestedStackName(input.StackName!, logicalId)
               : this.app.physicalId(input.StackName!, logicalId) ?? `${input.StackName}/${logicalId}`;
-          stackResources.push({
+          stackResourceSummaries.push({
             LogicalResourceId: logicalId,
             PhysicalResourceId: physicalId,
             ResourceType: resource.Type,
-            Timestamp: undefined,
-            ResourceStatus: undefined,
+            LastUpdatedTimestamp: new Date(),
+            ResourceStatus: cloudformation.ResourceStatus.CREATE_COMPLETE,
           });
 
           // remember which stack has the resource because we are going to get
@@ -103,7 +100,7 @@ export class CloudFormationMock {
           this._stackNameForResource.set(physicalId, input.StackName!);
         }
 
-        return { StackResources: stackResources };
+        return { StackResourceSummaries: stackResourceSummaries };
       });
   }
 

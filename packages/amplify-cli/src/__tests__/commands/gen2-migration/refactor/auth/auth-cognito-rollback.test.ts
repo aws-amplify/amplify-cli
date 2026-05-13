@@ -9,7 +9,7 @@ import {
   CloudFormationClient,
   GetTemplateCommand,
   DescribeStacksCommand,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
   ResourceStatus,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
@@ -56,7 +56,7 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-holding' }).resolves({
       Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({ StackResourceSummaries: [] });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-holding' }).resolves({
       TemplateBody: JSON.stringify({
         AWSTemplateFormatVersion: '2010-09-09',
@@ -79,30 +79,30 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
       }),
     });
 
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen2-auth',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authtestMain',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({ StackResourceSummaries: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResourceSummaries: [] });
 
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth' }).resolves({
       Stacks: [{ StackName: 'gen2-auth', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
@@ -192,61 +192,61 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
   function setupRollbackMocks(holdingStackExists: boolean) {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen2-auth',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authtestMain',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'amplifyAuthUserPool12345678',
           ResourceType: 'AWS::Cognito::UserPool',
           PhysicalResourceId: 'us-east-1_TEST',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolAppClient12345678',
           ResourceType: 'AWS::Cognito::UserPoolClient',
           PhysicalResourceId: 'client-id',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolDomain12345678',
           ResourceType: 'AWS::Cognito::UserPoolDomain',
           PhysicalResourceId: 'test-domain',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolIdentityProviderGoogle12345678',
           ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
           PhysicalResourceId: 'Google',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResourceSummaries: [] });
 
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth' }).resolves({
       Stacks: [{ StackName: 'gen2-auth', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
@@ -269,13 +269,13 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
         Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
       });
       // holding stack has a user pool
-      cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({
-        StackResources: [
+      cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({
+        StackResourceSummaries: [
           {
             LogicalResourceId: 'amplifyAuthUserPool12345678',
             ResourceType: 'AWS::Cognito::UserPool',
             PhysicalResourceId: 'us-east-1_HOLDING',
-            Timestamp: ts,
+            LastUpdatedTimestamp: ts,
             ResourceStatus: rs,
           },
         ],
@@ -448,61 +448,61 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
   function setupRollbackMocks(holdingStackExists: boolean) {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen2-auth',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authtestMain',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth' }).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'amplifyAuthUserPool12345678',
           ResourceType: 'AWS::Cognito::UserPool',
           PhysicalResourceId: 'us-east-1_TEST',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolAppClient12345678',
           ResourceType: 'AWS::Cognito::UserPoolClient',
           PhysicalResourceId: 'client-id',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolDomain12345678',
           ResourceType: 'AWS::Cognito::UserPoolDomain',
           PhysicalResourceId: 'test-domain',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
         {
           LogicalResourceId: 'amplifyAuthUserPoolIdentityProviderGoogle12345678',
           ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
           PhysicalResourceId: 'Google',
-          Timestamp: ts,
+          LastUpdatedTimestamp: ts,
           ResourceStatus: rs,
         },
       ],
     });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResources: [] });
+    cfnMock.on(ListStackResourcesCommand, { StackName: 'gen1-auth' }).resolves({ StackResourceSummaries: [] });
 
     cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth' }).resolves({
       Stacks: [{ StackName: 'gen2-auth', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
@@ -525,13 +525,13 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
         Stacks: [{ StackName: 'gen2-auth-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
       });
       // holding stack has a user pool
-      cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({
-        StackResources: [
+      cfnMock.on(ListStackResourcesCommand, { StackName: 'gen2-auth-holding' }).resolves({
+        StackResourceSummaries: [
           {
             LogicalResourceId: 'amplifyAuthUserPool12345678',
             ResourceType: 'AWS::Cognito::UserPool',
             PhysicalResourceId: 'us-east-1_HOLDING',
-            Timestamp: ts,
+            LastUpdatedTimestamp: ts,
             ResourceStatus: rs,
           },
         ],

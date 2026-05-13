@@ -1,4 +1,4 @@
-import { Output, StackResource } from '@aws-sdk/client-cloudformation';
+import { Output, StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../_common/cfn-template';
 import { walkCfnTree } from './cfn-tree-walker';
@@ -20,7 +20,7 @@ import { CloudControlClient, GetResourceCommand } from '@aws-sdk/client-cloudcon
 export async function resolveOutputs(params: {
   readonly template: CFNTemplate;
   readonly stackOutputs: Output[];
-  readonly stackResources: StackResource[];
+  readonly stackResources: StackResourceSummary[];
   readonly cloudControl: CloudControlClient;
 }): Promise<CFNTemplate> {
   const { template, stackOutputs, stackResources, cloudControl } = params;

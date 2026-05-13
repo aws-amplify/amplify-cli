@@ -1,7 +1,7 @@
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { AwsClients } from '../../../../commands/gen2-migration/_common/aws-clients';
 import { mockClient } from 'aws-sdk-client-mock';
-import { CloudFormationClient, GetTemplateCommand, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, GetTemplateCommand, ListStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 
 describe('StackFacade', () => {
   let cfnMock: ReturnType<typeof mockClient>;
@@ -33,27 +33,27 @@ describe('StackFacade', () => {
   });
 
   it('fetchNestedStacks filters to AWS::CloudFormation::Stack resources only', async () => {
-    cfnMock.on(DescribeStackResourcesCommand).resolves({
-      StackResources: [
+    cfnMock.on(ListStackResourcesCommand).resolves({
+      StackResourceSummaries: [
         {
           LogicalResourceId: 'authStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'arn:auth',
-          Timestamp: new Date(),
+          LastUpdatedTimestamp: new Date(),
           ResourceStatus: 'CREATE_COMPLETE',
         },
         {
           LogicalResourceId: 'MyBucket',
           ResourceType: 'AWS::S3::Bucket',
           PhysicalResourceId: 'bucket-123',
-          Timestamp: new Date(),
+          LastUpdatedTimestamp: new Date(),
           ResourceStatus: 'CREATE_COMPLETE',
         },
         {
           LogicalResourceId: 'storageStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'arn:storage',
-          Timestamp: new Date(),
+          LastUpdatedTimestamp: new Date(),
           ResourceStatus: 'CREATE_COMPLETE',
         },
       ],
