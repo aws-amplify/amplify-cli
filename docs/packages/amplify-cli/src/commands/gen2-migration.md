@@ -169,7 +169,7 @@ amplify gen2-migration <step> [options]
 - `AwsClients` has a private constructor — use `AwsClients.create(context)` in production. Tests bypass this with `new (AwsClients as any)(...)`.
 - Assessment uses a `Support` type with `level` and `note` fields. Each assessor provides its own note for unsupported entries. Use the `supported()`, `unsupported(note)`, `notApplicable()` helpers. The standard unsupported note is `'requires adding code after generate'`.
 - `KNOWN_RESOURCE_KEYS` (in `gen1-app.ts`) defines all supported category:service pairs. Unknown resources get the `'UNKNOWN'` key.
-- The lock step has a full rollback implementation (removes stack policy, removes environment variable). It validates drift before rollback to ensure the environment hasn't been modified outside the migration workflow.
+- The lock step has a full rollback implementation (removes stack policy, removes environment variable). Before rollback, it validates that any prior `refactor` has been rolled back so that stateful resources are present in Gen1 before retain policies are removed.
 - The generate step does not support rollback — it throws an error directing the user to use git to restore their local directory.
 - The refactor step has a complete rollback implementation that moves resources back from Gen2 to Gen1 stacks.
 
