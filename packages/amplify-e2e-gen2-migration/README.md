@@ -20,6 +20,7 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 | Option       | Alias | Description                                                                        |
 | ------------ | ----- | ---------------------------------------------------------------------------------- |
 | `--app`      | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`. |
+| `--profile`  |       | AWS profile to use. When set, disables automatic credential refresh.               |
 | `--verbose`  | `-v`  | Enable debug-level logging.                                                        |
 | `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to full `e2e` run.       |
 | `--teardown` |       | Delete all deployed resources after execution.                                     |
