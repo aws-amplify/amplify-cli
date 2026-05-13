@@ -10,7 +10,7 @@ through the complete migration process:
 4. Refactoring CloudFormation stacks to move stateful resources,
 5. Retaining every resource below root so the user can safely delete the Gen1 root stack.
 
-The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps return a `Plan` object that drives a unified `describe → validate → execute` lifecycle. The `Plan` encapsulates operations and renders validation reports, operations summaries, and implications — the top-level dispatcher orchestrates all steps uniformly without knowing their internals.
+The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps return a `Plan` object that drives a unified `validate → describe → execute` lifecycle. The `Plan` encapsulates operations and renders validation reports, operations summaries, and implications — the top-level dispatcher orchestrates all steps uniformly without knowing their internals.
 
 ## Key Responsibilities
 
@@ -65,7 +65,7 @@ Each step extends `AmplifyMigrationStep` and returns a `Plan` from `forward()` o
 
 [`src/commands/gen2-migration/_common/plan.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_common/plan.ts)
 
-Encapsulates a list of `AmplifyMigrationOperation` objects and drives the describe/validate/execute lifecycle. Constructed with `PlanProps`: operations, a logger, a title, and optional implications.
+Encapsulates a list of `AmplifyMigrationOperation` objects and drives the validate/describe/execute lifecycle. Constructed with `PlanProps`: operations, a logger, a title, and optional implications.
 
 - `validate()` — runs each operation's validation with spinner context, renders a "Failed Validations Report" (description in red + report text) for any failures, then renders a pass/fail summary table. Returns `boolean` (`true` if all passed).
 - `describe()` — renders the operations summary and implications
@@ -160,7 +160,7 @@ amplify gen2-migration <step> [options]
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
 - Stateful resources (defined in the `DEFAULT_STATEFUL_RESOURCES` set in `_common/resource-types.ts`, exposed via `Gen1App.statefulResourceTypes`) require special handling — the lock step applies `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain` to them.
 - Because rollback functionality is still in development for refactor, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
-- Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full describe/validate/execute lifecycle — the dispatcher doesn't manage operations directly.
+- Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full validate/describe/execute lifecycle — the dispatcher doesn't manage operations directly.
 - Validations are embedded in operations via `validate()`. When a validation fails, its `report` field is displayed in a "Failed Validations Report" section before the summary table.
 - `SpinningLogger` is the only logger class — the deprecated `Logger` subclass has been removed. Import directly from `_common/spinning-logger.ts`.
 - Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
