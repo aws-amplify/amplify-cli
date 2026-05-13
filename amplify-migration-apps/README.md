@@ -233,11 +233,11 @@ To run them manually on a single app:
 
 ```console
 cd amplify-migration-apps/<app-name>
-npx tsx ../sanitize.ts
 npx tsx ../normalize.ts
+npx tsx ../sanitize.ts
 ```
 
-Order matters — sanitize first, then normalize (matches the `snapshot.ts` capture tool).
+Order matters — normalize first, then sanitize.
 
 ## Snapshot Capture Tool
 
