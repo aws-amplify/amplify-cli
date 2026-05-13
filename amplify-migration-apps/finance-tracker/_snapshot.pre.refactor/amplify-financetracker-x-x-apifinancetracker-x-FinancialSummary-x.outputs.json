@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GetAttFinancialSummaryTableName",
+    "OutputValue": "FinancialSummary-advknbihlbchtlonmy35v53toa-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:FinancialSummaryTable:Name"
+  },
+  {
+    "OutputKey": "GetAttFinancialSummaryDataSourceName",
+    "OutputValue": "FinancialSummaryTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:FinancialSummaryDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttFinancialSummaryTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/FinancialSummary-advknbihlbchtlonmy35v53toa-x/stream/2026-05-10T23:53:30.687",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:FinancialSummaryTable:StreamArn"
+  }
+]

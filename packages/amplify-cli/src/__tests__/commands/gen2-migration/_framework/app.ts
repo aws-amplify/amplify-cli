@@ -9,6 +9,7 @@ import { AwsFetcher } from '../../../../commands/gen2-migration/_common/aws-fetc
 import { AwsClients } from '../../../../commands/gen2-migration/_common/aws-clients';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
+import { DEFAULT_STATEFUL_RESOURCES } from '../../../../commands/gen2-migration/_common/resource-types';
 
 const MIGRATION_APPS_PATH = path.join(__dirname, '..', '..', '..', '..', '..', '..', '..', 'amplify-migration-apps');
 
@@ -317,6 +318,7 @@ export class MigrationApp {
       json: Gen1App.prototype.json.bind({ ccbDir: this.ccbPath }),
       file: Gen1App.prototype.file.bind({ ccbDir: this.ccbPath }),
       fileExists: Gen1App.prototype.fileExists.bind({ ccbDir: this.ccbPath }),
+      statefulResourceTypes: [...Array.from(DEFAULT_STATEFUL_RESOURCES)],
       cliInputs: (category: string, resourceName: string) =>
         Gen1App.prototype.json.call({ ccbDir: this.ccbPath }, path.join(category, resourceName, 'cli-inputs.json')),
       ensureCliInputs: Gen1App.prototype.ensureCliInputs.bind({ ccbDir: this.ccbPath }),

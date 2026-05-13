@@ -14,12 +14,14 @@ import {
   GetTemplateCommand,
   Parameter,
   ResourceMapping,
+  ResourceToImport,
   Stack,
   UpdateStackCommand,
   UpdateStackCommandInput,
   waitUntilChangeSetCreateComplete,
   waitUntilStackCreateComplete,
   waitUntilStackDeleteComplete,
+  waitUntilStackImportComplete,
   waitUntilStackRefactorCreateComplete,
   waitUntilStackRefactorExecuteComplete,
   waitUntilStackUpdateComplete,
@@ -48,7 +50,16 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
 };
 
 export const HOLDING_STACK_NAME_SUFFIX = '-holding';
+
+/**
+ * Valid CloudFormation stack statuses for a holding stack.
+ * UPDATE_COMPLETE: normal state after successful refactor.
+ * UPDATE_ROLLBACK_COMPLETE: stack rolled back a failed update but is still usable.
+ * CREATE_COMPLETE: initial state when the stack was just created.
+ */
+export const VALID_HOLDING_STACK_STATUSES = ['UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE', 'CREATE_COMPLETE'];
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
+export const HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY = 'ForwardMappings';
 export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
@@ -92,8 +103,9 @@ export class Cfn {
     readonly parameters: Parameter[];
     readonly templateBody: CFNTemplate;
     readonly resource?: DiscoveredResource;
+    readonly snapshotPrefix?: string;
   }): Promise<void> {
-    const { stackName, parameters, templateBody, resource } = params;
+    const { stackName, parameters, templateBody, resource, snapshotPrefix } = params;
     try {
       const input: UpdateStackCommandInput = {
         TemplateBody: JSON.stringify(templateBody),
@@ -101,7 +113,7 @@ export class Cfn {
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
       };
-      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters });
+      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters, prefix: snapshotPrefix ?? 'update' });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
@@ -118,7 +130,11 @@ export class Cfn {
    * Creates and executes a CloudFormation stack refactor.
    * Throws on failure.
    */
-  public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
+  public async refactor(
+    resourceMappings: ResourceMapping[],
+    resource?: DiscoveredResource,
+    pre?: (targetTemplate: CFNTemplate) => Promise<void>,
+  ): Promise<void> {
     const sourceStackId = resourceMappings[0].Source!.StackName!;
     const targetStackId = resourceMappings[0].Destination!.StackName!;
 
@@ -171,6 +187,10 @@ export class Cfn {
         resource,
       });
       this.info(`Finished adding placeholder to source stack '${sourceStackName}'`);
+    }
+
+    if (pre) {
+      await pre(targetTemplate);
     }
 
     const input: CreateStackRefactorCommandInput = {
@@ -276,6 +296,7 @@ export class Cfn {
         stackName: changeSet.StackName!,
         templateBody: JSON.stringify(templateBody),
         parameters: changeSet.Parameters ?? [],
+        prefix: 'update',
       });
     }
 
@@ -284,6 +305,111 @@ export class Cfn {
 
     this.info(`Waiting for stack update to complete: ${displayName}`, resource);
     await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: changeSet.StackName });
+  }
+
+  /**
+   * Removes resources from a stack's template (they become CFN-unmanaged).
+   *
+   * Callers MUST have verified that every targeted logical ID has
+   * DeletionPolicy: Retain AND UpdateReplacePolicy: Retain before invoking,
+   * typically via a preceding checkRetainPolicies validation op. This method
+   * also throws at execute time if any Retain policy is missing, but by then
+   * the validation phase has passed and the user sees a later error than
+   * ideal.
+   */
+  public async orphan(params: {
+    readonly stackName: string;
+    readonly logicalIds: string[];
+    readonly resource: DiscoveredResource;
+  }): Promise<void> {
+    const { stackName, logicalIds, resource } = params;
+    const displayName = extractStackNameFromId(stackName);
+    const template = await this.fetchTemplate(stackName);
+
+    const missingRetain = logicalIds.filter((id) => id in template.Resources && template.Resources[id].DeletionPolicy !== 'Retain');
+    if (missingRetain.length > 0) {
+      throw new AmplifyError('MigrationError', {
+        message:
+          `Cannot orphan resources from '${displayName}': ${missingRetain.join(', ')} ` +
+          `missing 'DeletionPolicy: Retain' - orphaning would delete the physical resources.`,
+      });
+    }
+
+    const stack = await this.describeStack(stackName);
+
+    for (const id of logicalIds) {
+      delete template.Resources[id];
+    }
+
+    writeOrphanSnapshot({ stackName, logicalIds, prefix: 'orphan' });
+
+    await this.update({
+      stackName,
+      templateBody: template,
+      parameters: stack.Parameters ?? [],
+      resource,
+      snapshotPrefix: 'orphan',
+    });
+  }
+
+  /**
+   * Imports existing physical resources into a stack via CreateChangeSet(IMPORT).
+   *
+   * templateAdditions: what the imported resources should look like in the
+   * stack's template — merged into the current template by logical ID.
+   *
+   * resourcesToImport: which physical resources to adopt, keyed by the same
+   * logical IDs as templateAdditions.
+   */
+  public async importResources(params: {
+    readonly stackName: string;
+    readonly templateAdditions: Record<string, CFNResource>;
+    readonly resourcesToImport: ResourceToImport[];
+    readonly resource: DiscoveredResource;
+  }): Promise<void> {
+    const { stackName, templateAdditions, resourcesToImport, resource } = params;
+    const displayName = extractStackNameFromId(stackName);
+    const changeSetName = `gen2-migration-import-${Date.now()}`;
+
+    const templateBody = await this.fetchTemplate(stackName);
+    for (const [logicalId, r] of Object.entries(templateAdditions)) {
+      templateBody.Resources[logicalId] = r;
+    }
+
+    writeImportSnapshot({
+      stackName,
+      templateBody: JSON.stringify(templateBody),
+      parameters: [],
+      resourcesToImport,
+      prefix: 'import',
+    });
+
+    this.info(`Creating import changeset for ${displayName} (${resourcesToImport.length} resource(s))`, resource);
+
+    await this.client.send(
+      new CreateChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+        ChangeSetType: 'IMPORT',
+        TemplateBody: JSON.stringify(templateBody),
+        ResourcesToImport: resourcesToImport,
+        Capabilities: [CFN_IAM_CAPABILITY],
+      }),
+    );
+
+    this.info(`Waiting for import changeset creation: ${displayName}`, resource);
+    await waitUntilChangeSetCreateComplete(
+      { client: this.client, maxWaitTime: 120 },
+      { StackName: stackName, ChangeSetName: changeSetName },
+    );
+
+    this.info(`Executing import changeset: ${displayName}`, resource);
+    await this.client.send(new ExecuteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+
+    this.info(`Waiting for import to complete: ${displayName}`, resource);
+    await waitUntilStackImportComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: stackName });
+
+    this.info(`Import complete: ${displayName}`, resource);
   }
 
   /**
@@ -373,12 +499,6 @@ export class Cfn {
     const changes = changeSet.Changes ?? [];
     if (changes.length === 0) return 'No changes';
 
-    const truncate = (value: string | undefined): string => {
-      if (!value) return '';
-      const max = 60;
-      return value.length > max ? `${value.slice(0, max - 1)}…` : value;
-    };
-
     const colorAction = (action: string): string => {
       if (action === 'Add') return chalk.green(action);
       if (action === 'Remove') return chalk.red(action);
@@ -442,8 +562,8 @@ export class Cfn {
 
       details.forEach((detail, i) => {
         const path = paths[i];
-        const before = truncate(detail.Target.BeforeValue);
-        const after = truncate(detail.Target.AfterValue);
+        const before = detail.Target.BeforeValue;
+        const after = detail.Target.AfterValue;
         const paddedPath = path.padEnd(pathWidth);
 
         if (before && after) {
@@ -482,17 +602,52 @@ interface WriteUpdateSnapshotInput {
   readonly stackName: string;
   readonly templateBody: string;
   readonly parameters: Parameter[];
+  readonly prefix: string;
+}
+
+interface WriteImportSnapshotInput extends WriteUpdateSnapshotInput {
+  readonly resourcesToImport: ResourceToImport[];
+}
+
+interface WriteOrphanSnapshotInput {
+  readonly stackName: string;
+  readonly logicalIds: string[];
+  readonly prefix: string;
+}
+
+function writeImportSnapshot(input: WriteImportSnapshotInput): void {
+  const stackName = extractStackNameFromId(input.stackName);
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`),
+    formatTemplateBody(input.templateBody),
+  );
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
+    JSON.stringify(input.parameters, null, 2) + '\n',
+  );
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.resources.json`),
+    JSON.stringify(input.resourcesToImport, null, 2) + '\n',
+  );
 }
 
 function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
   const stackName = extractStackNameFromId(input.stackName);
   writeRefactorSnapshotFile(
-    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `update.${stackName}.template.json`),
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.template.json`),
     formatTemplateBody(input.templateBody),
   );
   writeRefactorSnapshotFile(
-    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`),
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.parameters.json`),
     JSON.stringify(input.parameters, null, 2) + '\n',
+  );
+}
+
+function writeOrphanSnapshot(input: WriteOrphanSnapshotInput): void {
+  const stackName = extractStackNameFromId(input.stackName);
+  writeRefactorSnapshotFile(
+    path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${input.prefix}.${stackName}.logicalIds.json`),
+    JSON.stringify(input.logicalIds, null, 2) + '\n',
   );
 }
 

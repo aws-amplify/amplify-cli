@@ -27,7 +27,8 @@ Each app directory follows this layout:
 │   ├── config.json                   # E2E system configuration (optional)
 │   ├── post-generate.ts              # Fixups after gen2-migration generate
 │   ├── post-push.ts                  # Fixups after amplify push (optional)
-│   └── post-refactor.ts              # Fixups after gen2-migration refactor
+│   ├── post-refactor.ts              # Fixups after gen2-migration refactor
+│   └── post-rollback.ts             # Reverses post-refactor fixups after rollback (optional)
 ├── tests/                            # Jest test suites for validating deployed stacks
 │   ├── signup.ts                     # Cognito user provisioning (app-specific)
 │   ├── jest.setup.ts                 # Jest setup (retry config)
@@ -61,20 +62,34 @@ caller's working directory.
 
 Contains E2E configuration and lifecycle hook scripts for the app.
 
-**`config.json`** — read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime:
+**`config.json`** — read by the [E2E system](../packages/amplify-e2e-gen2-migration/) at runtime. Each key corresponds to a migration step and accepts a `StepConfig` object:
 
 ```json
 {
-  "lock": { "skipValidations": true },
-  "refactor": { "skip": true, "skipValidations": true }
+  "lockForward": { "skipValidations": true },
+  "lockRollback": { "skipValidations": false },
+  "refactorForward": { "skip": true },
+  "refactorRollback": { "skipValidations": true },
+  "generate": { "skipValidations": true }
 }
 ```
 
-- `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
-- `refactor.skip` — skip the refactor step entirely.
-- `refactor.skipValidations` — pass `--skip-validations` to `gen2-migration refactor`.
+| Field              | Type         | Description                                                  |
+| ------------------ | ------------ | ------------------------------------------------------------ |
+| `lockForward`      | `StepConfig` | Config for `gen2-migration lock`.                            |
+| `lockRollback`     | `StepConfig` | Config for `gen2-migration lock --rollback`.                 |
+| `refactorForward`  | `StepConfig` | Config for `gen2-migration refactor`.                        |
+| `refactorRollback` | `StepConfig` | Config for `gen2-migration refactor --rollback`.             |
+| `generate`         | `StepConfig` | Config for `gen2-migration generate`.                        |
 
-If the file does not exist, defaults are used.
+`StepConfig` fields:
+
+| Field             | Type      | Description                            |
+| ----------------- | --------- | -------------------------------------- |
+| `skipValidations` | `boolean` | Pass `--skip-validations` to the step. |
+| `skip`            | `boolean` | Skip the step entirely.                |
+
+If the file does not exist, defaults are used (no skips, no skip-validations).
 
 **Hook scripts** — optional TypeScript files that apply app-specific fixups the migration CLI cannot automate. Each accepts `appPath` as a CLI argument. If a script does not exist, the E2E system silently skips it.
 
@@ -84,6 +99,7 @@ If the file does not exist, defaults are used.
 - `pre-sandbox.ts` — before `npx ampx sandbox --once`
 - `post-sandbox.ts` — after the first Gen2 sandbox deploy
 - `post-refactor.ts` — after `gen2-migration refactor`
+- `post-rollback.ts` — after `gen2-migration refactor --rollback` (reverses `post-refactor.ts` fixups)
 
 **Test npm scripts** — defined in the app's `package.json`, invoked by the E2E at validation points:
 

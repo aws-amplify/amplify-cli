@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/financetracker-36344755354a3948535a-build.zip"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "apifinancetrackerGraphQLAPIIdOutput",
+    "ParameterValue": "advknbihlbchtlonmy35v53toa"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-financetracker-x-x-deployment"
+  },
+  {
+    "ParameterKey": "customcustomfinanceMonthlyReportTopicArn",
+    "ParameterValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-MonthlyReportTopic8D223100-nR4J630BiqQZ"
+  },
+  {
+    "ParameterKey": "customcustomfinanceBudgetAlertTopicArn",
+    "ParameterValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-BudgetAlertTopicF20DF526-DFMxF2RX1UKQ"
+  },
+  {
+    "ParameterKey": "lambdaLayers",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "GetAttTransactionTableName",
+    "OutputValue": "Transaction-advknbihlbchtlonmy35v53toa-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "cqtbb2d36zbalo5egilazvdefi:GetAtt:TransactionTable:Name"
+  },
+  {
+    "OutputKey": "GetAttTransactionTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Transaction-advknbihlbchtlonmy35v53toa-x/stream/2026-05-10T23:52:42.678",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "cqtbb2d36zbalo5egilazvdefi:GetAtt:TransactionTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionTransactionTable251AF238TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Transaction-advknbihlbchtlonmy35v53toa-x"
+  }
+]

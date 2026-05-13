@@ -1,0 +1,36 @@
+{
+  "x": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-financetracker-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-financetracker-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-financetracker-x-x-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-financetracker-x-x-deployment",
+      "UnauthRoleName": "amplify-financetracker-x-x-unauthRole",
+      "StackName": "amplify-financetracker-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-financetracker-x-x/f9f58d00-4cca-11f1-a0e0-127b2d3cf8f1",
+      "AmplifyAppId": "financetracker"
+    },
+    "categories": {
+      "auth": {
+        "financetracker331811e6": {}
+      },
+      "function": {
+        "financetracker": {
+          "deploymentBucketName": "amplify-financetracker-x-x-deployment",
+          "s3Key": "amplify-builds/financetracker-36344755354a3948535a-build.zip"
+        }
+      },
+      "api": {
+        "financetracker": {}
+      },
+      "custom": {
+        "customfinance": {},
+        "customresolver": {}
+      },
+      "storage": {
+        "s320279658": {}
+      }
+    }
+  }
+}

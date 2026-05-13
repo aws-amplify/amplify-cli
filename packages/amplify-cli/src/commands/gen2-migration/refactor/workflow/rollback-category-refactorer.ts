@@ -2,12 +2,16 @@ import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../_common/cfn-template';
 import { AmplifyMigrationOperation } from '../../_common/operation';
-import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
+import { resolveNoEchoParameters, resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../../_common/utils';
-import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
-import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../../_common/cfn';
+import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
+import {
+  HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY,
+  MIGRATION_PLACEHOLDER_LOGICAL_ID,
+  VALID_HOLDING_STACK_STATUSES,
+} from '../../_common/cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -28,9 +32,27 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     sourceStackId: string,
     targetStackId: string,
   ): Promise<ResourceMapping[]> {
+    const holdingStack = await this.cfn.findStack(this.getHoldingStackName(extractStackNameFromId(sourceStackId)));
+    if (!holdingStack) {
+      // can happen if rollback is executed twice in a row
+      return [];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const holdingStackTemplate = await this.cfn.fetchTemplate(holdingStack.StackName!);
+    const forwardMappings = (holdingStackTemplate.Metadata?.[HOLDING_STACK_FORWARD_MAPPINGS_METADATA_KEY] ?? []) as ResourceMapping[];
+
+    function findGen1LogicalId(gen2LogicalId: string) {
+      const mapping = forwardMappings.find((m) => m.Destination?.LogicalResourceId === gen2LogicalId);
+      if (!mapping) {
+        throw new AmplifyError('ResourceMappingError', { message: `Unable to find forward mapping for resource ${gen2LogicalId}` });
+      }
+      return mapping.Source?.LogicalResourceId;
+    }
+
     const mappings: ResourceMapping[] = [];
     for (const [sourceId, resource] of sourceResources) {
-      const gen1LogicalId = this.targetLogicalId(sourceId, resource);
+      const gen1LogicalId = findGen1LogicalId(sourceId);
       if (!gen1LogicalId) {
         throw new AmplifyError('ResourceMappingError', {
           message: `Failed building mappings: Unable to determine target id of resource ${sourceId} (${resource.Type})`,
@@ -48,11 +70,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   }
 
   /**
-   * Returns the Gen1 logical ID for a Gen2 resource. Sub-classes implement per category.
-   */
-  protected abstract targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
-
-  /**
    * Resolves the Gen2 source stack template for rollback.
    * Resolution chain: params → outputs → deps (no conditions).
    */
@@ -60,17 +77,16 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
     const outputs = description.Outputs ?? [];
 
-    const withParams = resolveParameters(originalTemplate, parameters);
+    const withParams = await resolveParameters(originalTemplate, parameters);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withOutputs = resolveOutputs({
+    const withOutputs = await resolveOutputs({
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.gen1App.region,
-      accountId: this.accountId,
+      cloudControl: this.gen1App.clients.cloudControl,
     });
     const resolved = resolveDependencies(withOutputs);
 
@@ -84,7 +100,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
     const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
+    const parameters = resolveNoEchoParameters(originalTemplate, description.Parameters ?? []);
 
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
@@ -93,7 +109,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    * Rollback: no pre-move operations.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async beforeMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+  protected async beforeMove(_blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
@@ -101,8 +117,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    * Restores holding stack resources into Gen2.
    * Templates are fetched fresh at execution time.
    */
-  protected async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackName = extractStackNameFromId(gen2StackId);
+  protected async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(blueprint.sourceStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
     this.debug(`Locating holding stack: ${holdingStackName}`);
@@ -123,6 +139,14 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           },
         },
       ];
+    }
+
+    if (!VALID_HOLDING_STACK_STATUSES.includes(holdingStack.StackStatus!)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Unexpected state of stack ${holdingStackName}: ${holdingStack.StackStatus} (expected ${VALID_HOLDING_STACK_STATUSES.join(
+          ', ',
+        )})`,
+      });
     }
 
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);

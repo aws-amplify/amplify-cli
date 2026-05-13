@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId",
+    "ParameterValue": "cqtbb2d36zbalo5egilazvdefi"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857OutputsC7E647D6",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Transaction-advknbihlbchtlonmy35v53toa-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceNestedStackcustomcustomfinanceNestedStackResource0661268DOutputsamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceMonthlyReportTopicDA4ABB2FRef",
+    "ParameterValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceNestedStackcustomcustomfinanceNestedStackResource0661268DOutputsamplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceBudgetAlertTopicF3AC188DRef",
+    "ParameterValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl"
+  }
+]

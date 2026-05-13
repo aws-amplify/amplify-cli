@@ -14,6 +14,8 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
 import { ProxyAgent } from 'proxy-agent';
+import { CloudControlClient } from '@aws-sdk/client-cloudcontrol';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 
 export const proxyAgent = () => {
   let httpAgent;
@@ -35,6 +37,7 @@ export class AwsClients {
   public readonly amplify: AmplifyClient;
   public readonly appSync: AppSyncClient;
   public readonly cloudFormation: CloudFormationClient;
+  public readonly cloudControl: CloudControlClient;
   public readonly cognitoIdentityProvider: CognitoIdentityProviderClient;
   public readonly cognitoIdentity: CognitoIdentityClient;
   public readonly s3: S3Client;
@@ -49,6 +52,7 @@ export class AwsClients {
     this.amplify = new AmplifyClient(config);
     this.appSync = new AppSyncClient(config);
     this.cloudFormation = new CloudFormationClient(config);
+    this.cloudControl = new CloudControlClient(config);
     this.cognitoIdentityProvider = new CognitoIdentityProviderClient(config);
     this.cognitoIdentity = new CognitoIdentityClient(config);
     this.s3 = new S3Client(config as S3ClientConfig);
@@ -76,6 +80,8 @@ export class AwsClients {
     const config: ClientConfig = {
       ...cred,
       customUserAgent: provider.formUserAgentParam(context, 'gen2-migration'),
+      // https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html
+      retryStrategy: new ConfiguredRetryStrategy(10, (attempt) => 1000 * 2 ** attempt),
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),

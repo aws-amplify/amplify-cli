@@ -84,7 +84,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": "us-east-1_JGz6FiGtE"
+        "UserPoolId": "us-east-1_cqYuFX4HK"
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
@@ -118,7 +118,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_JGz6FiGtE"
+        "UserPoolId": "us-east-1_cqYuFX4HK"
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
@@ -132,7 +132,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "5uh7k7dh65moi4103m2s6j17u5",
+            "ClientId": "3v94ud83hsep5rnh3ta3k6rgal",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -142,7 +142,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_JGz6FiGtE"
+                  "us-east-1_cqYuFX4HK"
                 ]
               ]
             }
@@ -173,7 +173,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:16cde945-17c4-4dcc-bfa0-c90f3b75643e",
+        "IdentityPoolId": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -186,9 +186,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_JGz6FiGtE",
+                  "us-east-1_cqYuFX4HK",
                   ":",
-                  "5uh7k7dh65moi4103m2s6j17u5"
+                  "3v94ud83hsep5rnh3ta3k6rgal"
                 ]
               ]
             },
@@ -196,8 +196,8 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard26042620-amplifyAuthunauthenticate-fNLBa6hbaz77",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard26042620-amplifyAuthauthenticatedU-epoTvTg7Pgx4"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
         }
       },
       "UpdateReplacePolicy": "Retain",
@@ -207,5 +207,59 @@
       }
     }
   },
-  "Outputs": {}
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+          "LogicalResourceId": "UserPool"
+        },
+        "Destination": {
+          "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+          "LogicalResourceId": "UserPoolClientWeb"
+        },
+        "Destination": {
+          "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+          "LogicalResourceId": "UserPoolClient"
+        },
+        "Destination": {
+          "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+          "LogicalResourceId": "IdentityPool"
+        },
+        "Destination": {
+          "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+          "LogicalResourceId": "IdentityPoolRoleMap"
+        },
+        "Destination": {
+          "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+        }
+      }
+    ]
+  }
 }

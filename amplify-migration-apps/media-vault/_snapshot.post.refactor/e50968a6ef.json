@@ -1,0 +1,352 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": false
+        },
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationSubject": "Your verification code",
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 8,
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false,
+            "TemporaryPasswordValidityDays": 7
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolTags": {
+          "amplify:deployment-type": "sandbox",
+          "amplify:friendly-name": "amplifyAuth",
+          "created-by": "amplify"
+        },
+        "UsernameAttributes": [
+          "email",
+          "phone_number"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        },
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "Your verification code is {####}",
+          "EmailSubject": "Your verification code",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
+      }
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "aws.cognito.signin.user.admin",
+          "email",
+          "openid",
+          "phone",
+          "profile"
+        ],
+        "AuthSessionValidity": 3,
+        "CallbackURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "EnablePropagateAdditionalUserContextData": false,
+        "EnableTokenRevocation": true,
+        "GenerateSecret": false,
+        "LogoutURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "RefreshTokenValidity": 43200,
+        "SupportedIdentityProviders": [
+          "COGNITO",
+          "Facebook",
+          "Google"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "minutes"
+        },
+        "UserPoolId": "us-east-1_DVpEoOThJ"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+      }
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "ExplicitAuthFlows": [
+          "ALLOW_CUSTOM_AUTH",
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "LogoutURLs": [
+          "https://main.mediavault.amplifyapp.com/"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "SupportedIdentityProviders": [
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/amplifyAuthGoogleIdPA9736819",
+          "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/amplifyAuthFacebookIDP7CB5B5CC",
+          "COGNITO"
+        ],
+        "UserPoolId": "us-east-1_DVpEoOThJ"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
+      }
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": true,
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "222mggmu5tbjer39m60734j943",
+            "ProviderName": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_DVpEoOThJ"
+                ]
+              ]
+            }
+          },
+          {
+            "ClientId": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x/amplifyAuthUserPoolNativeAppClient79534448",
+            "ProviderName": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_DVpEoOThJ"
+                ]
+              ]
+            }
+          }
+        ],
+        "IdentityPoolTags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
+      }
+    },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:b6e4912b-1122-4674-8e7e-27e0fc110d94",
+        "RoleMappings": {
+          "UserPoolWebClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_DVpEoOThJ",
+                  ":",
+                  "222mggmu5tbjer39m60734j943"
+                ]
+              ]
+            },
+            "Type": "Token"
+          }
+        },
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-mediavault2605061-amplifyAuthunauthenticate-pgZt4EoKnACS",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-mediavault2605061-amplifyAuthauthenticatedU-e8ZobVKZeICV"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
+      }
+    },
+    "amplifyAuthAdminGroupCC42FF04": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "Admin",
+        "Precedence": 0,
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-mediavault2605061-amplifyAuthAdminGroupRole-FQWPuWxLKtur",
+        "UserPoolId": "us-east-1_DVpEoOThJ"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/AdminGroup"
+      }
+    },
+    "amplifyAuthBasicGroupC4A5D75D": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "Basic",
+        "Precedence": 1,
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-mediavault2605061-amplifyAuthBasicGroupRole-d2OuX7xrYT9F",
+        "UserPoolId": "us-east-1_DVpEoOThJ"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mediavault-e2e-sandbox-x/auth/amplifyAuth/BasicGroup"
+      }
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authmediavault1f08412d-x",
+          "LogicalResourceId": "UserPool"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authmediavault1f08412d-x",
+          "LogicalResourceId": "UserPoolClientWeb"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authmediavault1f08412d-x",
+          "LogicalResourceId": "UserPoolClient"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authmediavault1f08412d-x",
+          "LogicalResourceId": "IdentityPool"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authmediavault1f08412d-x",
+          "LogicalResourceId": "IdentityPoolRoleMap"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authuserPoolGroups-x",
+          "LogicalResourceId": "AdminGroup"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-mediavault-x-x-authuserPoolGroups-x",
+          "LogicalResourceId": "BasicGroup"
+        },
+        "Destination": {
+          "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthBasicGroupC4A5D75D"
+        }
+      }
+    ]
+  }
+}

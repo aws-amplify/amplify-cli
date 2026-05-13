@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment, supported } from '../assessment';
+import { Assessment, notApplicable, supported } from '../assessment';
 import { Gen1App, DiscoveredResource } from '../../_common/gen1-app';
 
 /**
@@ -12,6 +12,6 @@ export class GeoPlaceIndexAssessor implements Assessor {
    * Records resource-level support for this PlaceIndex resource.
    */
   public record(assessment: Assessment): void {
-    assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
+    assessment.recordResource({ resource: this.resource, generate: supported(), refactor: notApplicable() });
   }
 }

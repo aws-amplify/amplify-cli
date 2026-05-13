@@ -10,6 +10,7 @@ import { AmplifyMigrationAssessor } from './gen2-migration/assess';
 import { Gen1App } from './gen2-migration/_common/gen1-app';
 import { Plan } from './gen2-migration/_common/plan';
 import { AmplifyGen2MigrationValidations } from './gen2-migration/_common/validations';
+import { AmplifyMigrationRetainStep } from './gen2-migration/retain';
 
 const STEPS = {
   lock: {
@@ -24,6 +25,10 @@ const STEPS = {
     class: AmplifyMigrationRefactorStep,
     // eslint-disable-next-line spellcheck/spell-checker
     description: 'Moves stateful resources from your Gen1 CloudFormation stacks to your Gen2 stacks',
+  },
+  retain: {
+    class: AmplifyMigrationRetainStep,
+    description: 'Apply retain to every resource in every Gen1 stack below the root',
   },
 };
 
@@ -41,6 +46,7 @@ export const run = async (context: $TSContext) => {
   const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
   const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
   const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
+  const additionalStatefulResources = (context.parameters.options ?? {})['additional-stateful-resource-types'];
 
   if (skipValidations && validationsOnly) {
     throw new AmplifyError('InputValidationError', {
@@ -54,13 +60,13 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  const gen1App = await Gen1App.create(context);
+  const gen1App = await Gen1App.create(context, additionalStatefulResources);
 
   const logger = new SpinningLogger(`${stepName}] [${gen1App.appName}/${gen1App.envName}`, { debug: isDebug });
 
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
-    const assessor = new AmplifyMigrationAssessor(gen1App);
+    const assessor = new AmplifyMigrationAssessor(gen1App, logger);
     assessor.run();
     return;
   }

@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-financetracker-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
+    },
+    "Destination": {
+      "StackName": "amplify-financetracker-e2e-sandbox-x-storage0EC3F24A-x-holding",
+      "LogicalResourceId": "financetrackera14ace1bd4be4b579cb608d44266aea7xgen2xBucketA9559A65"
+    }
+  }
+]

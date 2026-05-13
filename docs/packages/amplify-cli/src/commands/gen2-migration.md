@@ -5,9 +5,10 @@ the migration of Gen1 applications to Gen2. It exposes a step-based CLI workflow
 through the complete migration process:
 
 1. Assessing migration readiness,
-2. Locking the Gen1 environment,
+2. Locking the Gen1 environment (retains every resource in every Gen1 stack as part of this step),
 3. Generating Gen2 code,
-4. Refactoring CloudFormation stacks to move stateful resources.
+4. Refactoring CloudFormation stacks to move stateful resources,
+5. Retaining every resource below root so the user can safely delete the Gen1 root stack.
 
 The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps return a `Plan` object that drives a unified `describe → validate → execute` lifecycle. The `Plan` encapsulates operations and renders validation reports, operations summaries, and implications — the top-level dispatcher orchestrates all steps uniformly without knowing their internals.
 
@@ -54,6 +55,7 @@ Detailed documentation for subcommands is available in:
 - [lock.md](./gen2-migration/lock.md) - Environment locking and deletion protection
 - [generate.md](./gen2-migration/generate.md) - Code generation pipeline for transforming Gen1 configs to Gen2 TypeScript
 - [refactor.md](./gen2-migration/refactor.md) - CloudFormation stack refactoring for moving stateful resources
+- [retain.md](./gen2-migration/retain.md) - Apply retain policies below root so Gen1 can be deleted safely
 
 ## Architecture
 
@@ -133,12 +135,13 @@ amplify gen2-migration <step> [options]
 
 ### Subcommands
 
-| Subcommand | Description                                                           | Implementation                                 | Status      |
-| ---------- | --------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
-| `assess`   | Assess migration readiness for the Gen1 environment                   | `assess.ts` → `AmplifyMigrationAssessor`       | Implemented |
-| `lock`     | Lock environment and enable deletion protection on stateful resources | `lock.ts` → `AmplifyMigrationLockStep`         | Implemented |
-| `generate` | Generate Gen2 backend code from Gen1 configuration                    | `generate.ts` → `AmplifyMigrationGenerateStep` | Implemented |
-| `refactor` | Move stateful resources from Gen1 to Gen2 stacks                      | `refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented |
+| Subcommand | Description                                                                                                                     | Implementation                                          | Status      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ----------- |
+| `assess`   | Assess migration readiness for the Gen1 environment                                                                             | `assess.ts` → `AmplifyMigrationAssessor`                | Implemented |
+| `lock`     | Lock environment, apply `DeletionPolicy: Retain` to every resource in every Gen1 stack, and enable DynamoDB deletion protection | `lock.ts` → `AmplifyMigrationLockStep`                  | Implemented |
+| `generate` | Generate Gen2 backend code from Gen1 configuration                                                                              | `generate.ts` → `AmplifyMigrationGenerateStep`          | Implemented |
+| `refactor` | Move stateful resources from Gen1 to Gen2 stacks                                                                                | `refactor.ts` → `AmplifyMigrationRefactorStep`         | Implemented |
+| `retain`   | Apply retain policies to every resource in every Gen1 stack below root                                                          | `retain.ts` → `AmplifyMigrationRetainStep`              | Implemented |
 
 ### Global Options
 
@@ -153,7 +156,7 @@ amplify gen2-migration <step> [options]
 
 **Important considerations:**
 
-- The step execution order matters: lock → generate → refactor. Each step validates prerequisites from previous steps.
+- The step execution order matters: lock → generate → refactor → retain. Each step validates prerequisites from previous steps.
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
 - Stateful resources (defined in `RESOURCES_TO_RETAIN` list) require special handling—the lock step prevents their deletion and enables deletion protection.
 - Because rollback functionality is still in development for refactor, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
@@ -176,4 +179,4 @@ amplify gen2-migration <step> [options]
 - The `--skip-validations` flag bypasses safety checks—use with extreme caution in production.
 - Environment mismatch between local and migration target will throw an error—ensure consistency.
 - Cannot specify both `--rollback` and `--no-rollback` flags simultaneously.
-- The lock step's rollback does not disable deletion protection on DynamoDB tables (preserves safety).
+- The lock step's rollback removes the deny stack policy but does not undo retain policies or DynamoDB deletion protection (preserves safety).

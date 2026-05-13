@@ -49,7 +49,14 @@ export class FunctionAssessor implements Assessor {
     if (!this.gen1App.fileExists(filePath)) return false;
 
     const policies = this.gen1App.json(filePath);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped custom-policies.json
-    return policies.some((p: any) => p.Action.length > 0 || p.Resource.length > 0);
+
+    // default empty structure is array, so if its something else
+    // the user must have changed it.
+    if (!Array.isArray(policies)) return true;
+
+    return policies.some(
+      (p: { Action: string | string[]; Resource: string | string[] }) =>
+        (p.Action && p.Action.length > 0) || (p.Resource && p.Resource.length > 0),
+    );
   }
 }

@@ -21,10 +21,6 @@ import {
 } from '@aws-sdk/client-cloudformation';
 
 class TestRollbackRefactorer extends RollbackCategoryRefactorer {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected targetLogicalId(_sourceId: string, _sourceResource: CFNResource): string | undefined {
-    return 'S3Bucket';
-  }
   protected async fetchSourceStackId() {
     return 'gen2-stack-id';
   }
@@ -95,7 +91,11 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
+    const operations = await (refactorer as any).afterMove({
+      sourceStackId: 'gen2-stack-id',
+      targetStackId: 'gen1-stack-id',
+      mappings: [],
+    });
 
     // 1 operation: move resources from holding stack back to Gen2
     expect(operations).toHaveLength(1);
@@ -118,15 +118,60 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
+    const operations = await (refactorer as any).afterMove({
+      sourceStackId: 'gen2-stack-id',
+      targetStackId: 'gen1-stack-id',
+      mappings: [],
+    });
     expect(operations).toHaveLength(0);
+  });
+
+  it('throws StackStateError when holding stack is in unexpected state', async () => {
+    cfnMock.on(DescribeStacksCommand).resolves({
+      Stacks: [{ StackName: 'holding', StackStatus: 'ROLLBACK_COMPLETE', CreationTime: new Date() }],
+    });
+
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const refactorer = new TestRollbackRefactorer(
+      new StackFacade(clients, 'gen1-root'),
+      new StackFacade(clients, 'gen2-root'),
+      { region: 'us-east-1', clients } as unknown as Gen1App,
+      '123456789',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' },
+      cfn,
+    );
+
+    await expect(
+      (refactorer as any).afterMove({ sourceStackId: 'gen2-auth-stack-id', targetStackId: 'gen1-stack-id', mappings: [] }),
+    ).rejects.toMatchObject({
+      name: 'StackStateError',
+      message: expect.stringContaining('ROLLBACK_COMPLETE'),
+    });
   });
 });
 
 class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {
   private readonly ids: ReadonlyMap<string, string>;
+  private readonly holdingMappings: ResourceMapping[];
 
   constructor(ids: ReadonlyMap<string, string>) {
+    const cfnMockObj = {
+      findStack: jest.fn().mockResolvedValue({ StackName: 'gen2-stack-holding', StackStatus: 'UPDATE_COMPLETE' }),
+      fetchTemplate: jest.fn().mockImplementation(() => {
+        const forwardMappings: ResourceMapping[] = Array.from(ids.entries()).map(([gen2Id, gen1Id]) => ({
+          Source: { StackName: 'gen1-stack', LogicalResourceId: gen1Id },
+          Destination: { StackName: 'gen2-stack', LogicalResourceId: gen2Id },
+        }));
+        return Promise.resolve({
+          AWSTemplateFormatVersion: '2010-09-09',
+          Resources: {},
+          Metadata: { ForwardMappings: forwardMappings },
+        });
+      }),
+    } as unknown as Cfn;
     super(
       null as any,
       null as any,
@@ -134,13 +179,13 @@ class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
-      null as unknown as Cfn,
+      cfnMockObj,
     );
     this.ids = ids;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected targetLogicalId(sourceId: string, _sourceResource: CFNResource): string | undefined {
-    return this.ids.get(sourceId);
+    this.holdingMappings = Array.from(ids.entries()).map(([gen2Id, gen1Id]) => ({
+      Source: { StackName: 'gen1-stack', LogicalResourceId: gen1Id },
+      Destination: { StackName: 'gen2-stack', LogicalResourceId: gen2Id },
+    }));
   }
   protected async fetchSourceStackId() {
     return 'gen2-stack';
@@ -186,7 +231,7 @@ describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based
   it('throws for resource with no known Gen1 logical ID', async () => {
     const refactorer = new TestRollbackMappingRefactorer(new Map());
     await expect(refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map())).rejects.toThrow(
-      'Unable to determine target id of resource amplifyTopic',
+      'Unable to find forward mapping for resource amplifyTopic',
     );
   });
 

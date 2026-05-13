@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 import CLITable from 'cli-table3';
-import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { DiscoveredResource } from '../_common/gen1-app';
-
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 const GUIDE_LINK = 'https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/';
 
 /**

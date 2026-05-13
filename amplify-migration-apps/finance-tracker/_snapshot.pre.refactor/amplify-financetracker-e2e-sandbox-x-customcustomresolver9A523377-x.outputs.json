@@ -1,0 +1,12 @@
+[
+  {
+    "OutputKey": "customresolverDataSourceName1BC154AE",
+    "OutputValue": "TransactionsByCategoryDataSource",
+    "Description": "Name of the custom DynamoDB data source"
+  },
+  {
+    "OutputKey": "customresolverResolverArn614A0647",
+    "OutputValue": "arn:aws:appsync:us-east-1:123456789012:apis/cqtbb2d36zbalo5egilazvdefi/types/Query/resolvers/getTransactionsByCategory",
+    "Description": "ARN of the custom getTransactionsByCategory resolver"
+  }
+]

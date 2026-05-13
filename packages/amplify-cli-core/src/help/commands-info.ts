@@ -750,7 +750,8 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'gen2-migration',
     commandDescription: 'Migrates your Gen1 Amplify project to Gen2',
-    commandUsage: 'amplify gen2-migration <subcommand> [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+    commandUsage:
+      'amplify gen2-migration <subcommand> [--skip-validations] [--validations-only] [--rollback] [--no-rollback] [--additional-stateful-resource-types <path>]',
     commandFlags: [
       {
         short: '',
@@ -771,6 +772,11 @@ export const commandsInfo: Array<CommandInfo> = [
         short: '',
         long: 'no-rollback',
         flagDescription: 'Disable automatic rollback on failure',
+      },
+      {
+        short: '',
+        long: 'additional-stateful-resource-types',
+        flagDescription: 'Path to a JSON file containing additional CloudFormation resource types to treat as stateful',
       },
     ],
     subCommands: [
@@ -796,6 +802,12 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommand: 'refactor',
         subCommandDescription: 'Moves stateful resources from your Gen1 CloudFormation stacks to your Gen2 stacks',
         subCommandUsage: 'amplify gen2-migration refactor [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'retain',
+        subCommandDescription: 'Applies retention policies to Gen1 stack resources so they survive stack deletion',
+        subCommandUsage: 'amplify gen2-migration retain [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
         subCommandFlags: [],
       },
     ],

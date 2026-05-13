@@ -585,7 +585,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration":
+"@aws-amplify/amplify-e2e-gen2-migration@workspace:^, @aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-gen2-migration@workspace:packages/amplify-e2e-gen2-migration"
   dependencies:
@@ -622,7 +622,7 @@ __metadata:
     uuid: ^9.0.1
     yargs: ^17.7.2
   bin:
-    amplify-migrate: dist/cli.js
+    amplify-migrate: lib/cli.js
   languageName: unknown
   linkType: soft
 
@@ -1212,6 +1212,7 @@ __metadata:
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-api-gateway": ^3.919.0
     "@aws-sdk/client-appsync": ^3.919.0
+    "@aws-sdk/client-cloudcontrol": ^3.919.0
     "@aws-sdk/client-cloudformation": ^3.919.0
     "@aws-sdk/client-cloudwatch-events": ^3.919.0
     "@aws-sdk/client-cognito-identity": ^3.919.0
@@ -1222,6 +1223,7 @@ __metadata:
     "@aws-sdk/client-ssm": ^3.919.0
     "@aws-sdk/client-sts": ^3.919.0
     "@smithy/node-http-handler": ^4.4.3
+    "@smithy/util-retry": ^4.2.0
     "@types/archiver": ^5.3.1
     "@types/columnify": ^1.5.1
     "@types/folder-hash": ^4.0.1
@@ -1246,7 +1248,6 @@ __metadata:
     aws-cdk-lib: ~2.189.1
     aws-sdk-client-mock: ^4.1.0
     aws-sdk-client-mock-jest: ^4.1.0
-    bottleneck: 2.19.5
     cdk-from-cfn: ^0.291.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
@@ -2437,6 +2438,55 @@ __metadata:
     "@smithy/util-utf8": ^4.2.0
     tslib: ^2.6.2
   checksum: 7310d27a497314579440500311680da673c8e3d6dfd06be5d3bfd1f9ded9655a0f48fadd22f24a3a667a0a3a67faa0bd04e9ad7c9baf77dbf939716b2082c2f9
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-cloudcontrol@npm:^3.919.0":
+  version: 3.919.0
+  resolution: "@aws-sdk/client-cloudcontrol@npm:3.919.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": 3.916.0
+    "@aws-sdk/credential-provider-node": 3.919.0
+    "@aws-sdk/middleware-host-header": 3.914.0
+    "@aws-sdk/middleware-logger": 3.914.0
+    "@aws-sdk/middleware-recursion-detection": 3.919.0
+    "@aws-sdk/middleware-user-agent": 3.916.0
+    "@aws-sdk/region-config-resolver": 3.914.0
+    "@aws-sdk/types": 3.914.0
+    "@aws-sdk/util-endpoints": 3.916.0
+    "@aws-sdk/util-user-agent-browser": 3.914.0
+    "@aws-sdk/util-user-agent-node": 3.916.0
+    "@smithy/config-resolver": ^4.4.0
+    "@smithy/core": ^3.17.1
+    "@smithy/fetch-http-handler": ^5.3.4
+    "@smithy/hash-node": ^4.2.3
+    "@smithy/invalid-dependency": ^4.2.3
+    "@smithy/middleware-content-length": ^4.2.3
+    "@smithy/middleware-endpoint": ^4.3.5
+    "@smithy/middleware-retry": ^4.4.5
+    "@smithy/middleware-serde": ^4.2.3
+    "@smithy/middleware-stack": ^4.2.3
+    "@smithy/node-config-provider": ^4.3.3
+    "@smithy/node-http-handler": ^4.4.3
+    "@smithy/protocol-http": ^5.3.3
+    "@smithy/smithy-client": ^4.9.1
+    "@smithy/types": ^4.8.0
+    "@smithy/url-parser": ^4.2.3
+    "@smithy/util-base64": ^4.3.0
+    "@smithy/util-body-length-browser": ^4.2.0
+    "@smithy/util-body-length-node": ^4.2.1
+    "@smithy/util-defaults-mode-browser": ^4.3.4
+    "@smithy/util-defaults-mode-node": ^4.2.6
+    "@smithy/util-endpoints": ^3.2.3
+    "@smithy/util-middleware": ^4.2.3
+    "@smithy/util-retry": ^4.2.3
+    "@smithy/util-utf8": ^4.2.0
+    "@smithy/util-waiter": ^4.2.3
+    "@smithy/uuid": ^1.1.0
+    tslib: ^2.6.2
+  checksum: fcccf889bd76c3d5937388b1bfc98b2d139c2bf720fbb7439ff44b5e4db31944b6fcb5e325b9f86ac6e48f0321403335cac18a04687f2e118cab466a3591290b
   languageName: node
   linkType: hard
 
@@ -15961,6 +16011,7 @@ __metadata:
     "@aws-amplify/amplify-category-auth": 3.7.27
     "@aws-amplify/amplify-cli-core": 4.5.0
     "@aws-amplify/amplify-e2e-core": 5.7.12
+    "@aws-amplify/amplify-e2e-gen2-migration": "workspace:^"
     "@aws-amplify/amplify-opensearch-simulator": 1.7.25
     "@aws-amplify/graphql-transformer-core": ^2.11.3
     "@aws-sdk/client-amplify": ^3.919.0

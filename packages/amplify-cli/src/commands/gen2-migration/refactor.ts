@@ -21,6 +21,8 @@ import { Cfn } from './_common/cfn';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './assess';
+import { CustomCDKRollbackRefactorer } from './refactor/custom/custom-cdk-rollback';
+import { CustomCDKForwardRefactorer } from './refactor/custom/custom-cdk-forward';
 
 const GUIDE_LINK = 'https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/#step-8-post-refactor-critical';
 
@@ -30,7 +32,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const { accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const refactorers: Planner[] = [];
-    const assessor = new AmplifyMigrationAssessor(this.gen1App);
+    const assessor = new AmplifyMigrationAssessor(this.gen1App, this.logger);
     const assessment = assessor.assess();
 
     const discovered = this.gen1App.discover();
@@ -68,6 +70,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           break;
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
+          break;
+        case 'custom:customCDK':
+          refactorers.push(new CustomCDKForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
 
         // stateless resources — nothing to refactor
@@ -116,7 +121,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const { accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const refactorers: Planner[] = [];
-    const assessor = new AmplifyMigrationAssessor(this.gen1App);
+    const assessor = new AmplifyMigrationAssessor(this.gen1App, this.logger);
     const assessment = assessor.assess();
 
     const discovered = this.gen1App.discover();
@@ -157,6 +162,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           refactorers.push(
             new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
+          break;
+        case 'custom:customCDK':
+          refactorers.push(new CustomCDKRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
 
         // stateless resources — nothing to refactor

@@ -13,10 +13,10 @@ import { walkCfnTree } from './cfn-tree-walker';
  *
  * Operates on the entire template (Resources, Outputs, Conditions, etc.).
  */
-export function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): CFNTemplate {
+export async function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): Promise<CFNTemplate> {
   if (!parameters.length && !stackName) return template;
 
-  const templateParams = template.Parameters ?? {};
+  const paramDefinitions = template.Parameters ?? {};
 
   // Build a lookup of parameter key → resolved value.
   // The resolved value is already the final replacement (string, array, etc.).
@@ -34,7 +34,7 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
     }
     if (!ParameterValue) continue;
 
-    const paramDef = templateParams[ParameterKey];
+    const paramDef = paramDefinitions[ParameterKey];
     if (!paramDef) continue;
     if (paramDef.NoEcho) continue;
 
@@ -46,11 +46,30 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
 
   if (paramMap.size === 0) return template;
 
-  return walkCfnTree(template, (node) => {
+  const walked = await walkCfnTree(template, async (node) => {
     if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
       const value = paramMap.get(node.Ref);
       if (value !== undefined) return value;
     }
     return undefined;
-  }) as CFNTemplate;
+  });
+
+  return walked as CFNTemplate;
+}
+
+/**
+ * Replaces NoEcho parameters with UsePreviousValue to prevent DescribeStacks'
+ * masked "****" values from flowing back into CreateChangeSet / UpdateStack,
+ * where they would re-resolve {Ref}s to the literal "****"
+ */
+export function resolveNoEchoParameters(template: CFNTemplate, parameters: Parameter[]): Parameter[] {
+  const paramDefinitions = template.Parameters ?? {};
+  return parameters.map((param) => {
+    if (!param.ParameterKey) return param;
+    const paramDef = paramDefinitions[param.ParameterKey];
+    if (paramDef?.NoEcho) {
+      return { ParameterKey: param.ParameterKey, UsePreviousValue: true };
+    }
+    return param;
+  });
 }

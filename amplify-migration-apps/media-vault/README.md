@@ -323,10 +323,10 @@ Next, accept all default values and follow the getting started wizard to connect
 ![](./images/add-main-branch.png)
 ![](./images/deploying-main-branch.png)
 
-Wait for the deployment to finish successfully. Now you need to setup social provider identities for the Cognito user pool.
-Grab the App ID from the Amplify Console and the Cognito domain prefix from the Cognito Console.
 
-![](./images/cognito-domain-prefix.png)
+Wait for the deployment to finish successfully. Now you need to setup social provider identities for the Cognito user pool.
+First. Run `amplify status` to retrieve the `Hosted UI Endpoint`. 
+The `Hosted UI Endpoint` looks like: `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
 
 **Facebook**
 
@@ -336,17 +336,12 @@ Grab the App ID from the Amplify Console and the Cognito domain prefix from the 
    - Set application name to `amplify-media-vault-gen1`.
    - Note the `App ID` and `App Secret` values, they will be needed later on.
 
-2. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _App Settings_ → _Basic_ → _App domains_.
 
-   - `https://main.<appId>.amplifyapp.com`
-   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
-
-3. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Settings → \_Valid OAuth Redirect URIs_.
-
-   - `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`
+2. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Settings → \_Valid OAuth Redirect URIs_.
+Add the Hosted UI Endpoint url with oauth2/idpresponse/ appended:
    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
 
-4. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Permissions and features → \_email_ → _Add_.
+3. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Permissions and features → \_email_ → _Add_.
 
    ![](./images/facebook-email-scope.png)
 
@@ -360,27 +355,21 @@ Grab the App ID from the Amplify Console and the Cognito domain prefix from the 
    - Note the `Client ID` and `Client Secret` values, they will be needed later on.
 
 2. Navigate to _Clients_ → _GoogleWebClient1_ → _Authorized JavaScript origins_.
-
-   - `https://main.<appId>.amplifyapp.com`
-   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
+Add the Hosted UI Endpoint url:
+   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com`
 
 3. Navigate to _Clients_ → _GoogleWebClient1_ → _Authorized redirect URIs_.
-
-   - `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`
+Add the Hosted UI Endpoint url with oauth2/idpresponse/ appended:
    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
 
 ## Migrating to Gen2
 
 > Based on https://docs.amplify.aws/react/start/migrate-to-gen2/migrate-existing-app/
 
-> [!WARNING]
-> Migration is not fully supported for this app yet due to a bug in refactoring the social provider
-> configuration. This guide ends at the `generate` step.
-
-First install the amplify CLI package:
+First, install the experimental CLI package that provides the new commands:
 
 ```console
-npm install --no-save @aws-amplify/cli
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
 ```
 
 Now run them:
@@ -397,6 +386,14 @@ npx amplify gen2-migration generate
 ```console
 npm run post-generate
 ```
+
+> [!NOTE]
+> If you're deploying from your own machine (e.g. validating hosting manually
+> instead of running the CLI's automated e2e), run `npm run post-generate-local`
+> instead of `npm run post-generate`. The `-local` variant skips the
+> `monkeyPatchAuthSecret` step, which stubs out `secret()` with plaintext
+> placeholders — only appropriate for the automated e2e harness. Under the
+> hood it's the same script with `SKIP_AUTH_SECRET_PATCH=1` set.
 
 ```console
 rm -rf node_modules package-lock.json
@@ -424,6 +421,102 @@ Now connect the `gen2-main` branch to the hosting service:
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
 
-Wait for the deployment to finish successfully. 
+Wait for the deployment to finish successfully.
 
-**The guide ends here because social providers don't support refactoring yet.**
+### Add the Gen2 URL to OAuth allowlists
+
+The generated `amplify/auth/resource.ts` inherits `callbackUrls` and `logoutUrls`
+from your Gen1 app — the new `gen2-main.<gen2-appId>.amplifyapp.com` URL is
+**not** in that list, so Hosted UI sign-in will fail with `redirect_mismatch`
+until you add it. There are three places to update:
+
+1. **`amplify/auth/resource.ts`** — add the Gen2 hosting URL to both
+   `externalProviders.callbackUrls`/`logoutUrls` and to the
+   `oAuth.callbackUrls`/`logoutUrls` inside `applyEscapeHatches` in `amplify/auth/resource.ts`. Look for
+   the `// Add the Gen2 Amplify Hosting URL ...` comment the generator emits.
+   Commit and push to redeploy.
+
+2. **Find the new gen-2 cognito domain** —
+   Open
+   [Cognito console](https://console.aws.amazon.com/cognito/), select your
+   user pool, and note the domain under _App integration_ → _Domain_.
+
+   ![](./images/cognito-domain.png)
+2. **Google developer console** — in _Clients_ → _GoogleWebClient1_ →
+   _Authorized JavaScript origins_ and _Authorized redirect URIs_, add the
+   Gen2 Cognito domain.
+
+   - `https://<gen2-cognito-domain>` for _Authorized JavaScript origins_
+   - `https://<gen2-cognito-domain>/oauth2/idpresponse/` for _Authorized redirect URIs_
+
+3. **Facebook developer console** — in _Use Cases_ → _Authenticate and request
+   data from users with Facebook Login_ → _Settings_ → _Valid OAuth Redirect
+   URIs_, add:
+   - `https://<gen2-cognito-domain>/oauth2/idpresponse/`
+
+Verify Hosted UI
+sign-in works on the Gen2 branch before proceeding.
+
+Next, locate the root stack of the Gen2 branch:
+
+![](./images/find-gen2-stack.png)
+
+```console
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-stack-name>
+```
+
+```console
+git checkout gen2-main
+```
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
+- // postRefactor();
++ postRefactor();
+```
+
+```console
+git add .
+git commit -m "chore: post refactor"
+git push origin gen2-main
+```
+
+Wait for the deployment to finish successfully.
+
+## Rolling back the refactor
+
+`refactor --rollback` moves the stateful resources (Cognito User Pool,
+S3 bucket, DynamoDB tables, User Pool Groups) back from the Gen2 stack to
+the Gen1 stack.
+
+**1. Run the rollback from `main`:**
+
+```console
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-stack-name> --rollback
+```
+
+Use the same `<gen2-stack-name>` you passed to the forward refactor.
+
+**2. Undo the `postRefactor()` edit on `gen2-main`:**
+
+```console
+git checkout gen2-main
+```
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
+- postRefactor();
++ // postRefactor();
+```
+
+```console
+git add .
+git commit -m "chore: undo post refactor for rollback"
+git push origin gen2-main
+```
+
+Wait for the deployment to finish.

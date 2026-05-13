@@ -12,8 +12,8 @@ import {
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 import { S3Client, paginateListObjectsV2, DeleteObjectsCommand } from '@aws-sdk/client-s3';
-import { fromIni } from '@aws-sdk/credential-providers';
 import { Logger } from './logger';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 
 /** Maximum number of discover-and-delete passes for stuck stacks. */
 const MAX_DELETE_PASSES = 5;
@@ -33,13 +33,18 @@ const DELETE_POLL_INTERVAL_SECONDS = 10;
 export class Teardown {
   private readonly deploymentName: string;
   private readonly logger: Logger;
-  private readonly clientConfig: { credentials: ReturnType<typeof fromIni> };
+  private readonly clientConfig: { credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider };
   private readonly errors: string[] = [];
 
-  constructor(deploymentName: string, profile: string) {
+  /**
+   * @param deploymentName The deployment name prefix used to discover stacks.
+   * @param clientConfig   SDK client config with a credentials provider.
+   *                       Typically obtained from `App.getClientConfig()`.
+   */
+  constructor(deploymentName: string, clientConfig: { credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider }) {
     this.deploymentName = deploymentName;
     this.logger = new Logger(`teardown-${deploymentName}`);
-    this.clientConfig = { credentials: fromIni({ profile }) };
+    this.clientConfig = clientConfig;
   }
 
   /**
@@ -60,20 +65,26 @@ export class Teardown {
       StackStatus.REVIEW_IN_PROGRESS,
     ];
 
-    const stacks = await this.discoverStacks(cfnClient, allStatuses, (name) => name.startsWith(stackPrefix));
-    if (stacks.length === 0) {
+    const allStacks = await this.discoverStacks(cfnClient, allStatuses, (name) => name.startsWith(stackPrefix), false);
+    this.logger.info(`Discovered ${allStacks.length} total stack(s) matching prefix '${stackPrefix}'`);
+    for (const stackName of allStacks) {
+      await this.emptyStackBuckets(cfnClient, stackName);
+    }
+
+    const rootStacks = await this.discoverStacks(cfnClient, allStatuses, (name) => name.startsWith(stackPrefix), true);
+    if (rootStacks.length === 0) {
       this.logger.info('No stacks found. Nothing to tear down.');
       return;
     }
-    this.logger.info(`Discovered ${stacks.length} stack(s) matching prefix '${stackPrefix}'`);
+    this.logger.info(`Discovered ${rootStacks.length} root stack(s) matching prefix '${stackPrefix}'`);
 
-    await this.setDeletionPolicies(cfnClient, stacks);
-    await this.disableDeletionProtection(cfnClient, stacks);
+    await this.setDeletionPolicies(cfnClient, rootStacks);
+    await this.disableDeletionProtection(cfnClient, rootStacks);
 
-    await this.deleteGen1Stacks(cfnClient, stacks);
+    await this.deleteGen1Stacks(cfnClient, rootStacks);
     await this.deleteAmplifyApp();
-    await this.deleteGen2Sandbox(cfnClient, stacks);
-    await this.deleteHoldingStacks(cfnClient, stacks);
+    await this.deleteGen2Sandbox(cfnClient, rootStacks);
+    await this.deleteHoldingStacks(cfnClient, rootStacks);
 
     if (this.errors.length > 0) {
       const summary = this.errors.map((e, i) => `  ${i + 1}. ${e}`).join('\n');
@@ -272,11 +283,12 @@ export class Teardown {
     cfnClient: CloudFormationClient,
     statusFilter: StackStatus[],
     predicate: (name: string) => boolean,
+    ignoreNested: boolean,
   ): Promise<string[]> {
     const stacks: string[] = [];
     for await (const page of paginateListStacks({ client: cfnClient }, { StackStatusFilter: statusFilter })) {
       for (const stack of page.StackSummaries ?? []) {
-        if (stack.ParentId) {
+        if (ignoreNested && stack.ParentId) {
           // nested stacks are skipped because the parent will deleted them.
           continue;
         }
@@ -317,15 +329,11 @@ export class Teardown {
       StackStatus.REVIEW_IN_PROGRESS,
     ];
     for (let pass = 0; pass < MAX_DELETE_PASSES; pass++) {
-      const stacks = await this.discoverStacks(cfnClient, statusFilter, predicate);
+      const stacks = await this.discoverStacks(cfnClient, statusFilter, predicate, true);
       if (stacks.length === 0) return;
 
       if (pass > 0) {
         this.logger.info(`Delete pass ${pass + 1} for ${stacks.length} remaining stack(s)`);
-      }
-
-      for (const stackName of stacks) {
-        await this.emptyStackBuckets(cfnClient, stackName);
       }
 
       for (const stackName of stacks) {
@@ -354,7 +362,7 @@ export class Teardown {
     }
 
     // Final check: anything still around after all passes is an error.
-    const leftover = await this.discoverStacks(cfnClient, statusFilter, predicate);
+    const leftover = await this.discoverStacks(cfnClient, statusFilter, predicate, false);
     for (const stackName of leftover) {
       this.recordError('Stack delete', new Error(`${stackName} could not be deleted after ${MAX_DELETE_PASSES} passes`));
     }
@@ -415,7 +423,7 @@ export class Teardown {
     const s3 = new S3Client(this.clientConfig);
     for (const bucket of buckets) {
       try {
-        this.logger.info(`Emptying bucket: ${bucket}`);
+        this.logger.info(`Emptying bucket: ${bucket} (stack: ${stackName})`);
         for await (const page of paginateListObjectsV2({ client: s3 }, { Bucket: bucket })) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const objects = (page.Contents ?? []).filter((o) => o.Key).map((o) => ({ Key: o.Key! }));

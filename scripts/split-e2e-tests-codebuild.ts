@@ -60,6 +60,15 @@ const DISABLE_COVERAGE = [
   'src/__tests__/datastore-modelgen.test.ts',
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-backend-only.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-discussions.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-fitness-tracker.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-finance-tracker.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-media-vault.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-mood-board.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-product-catalog.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-project-boards.test.ts',
+  'src/__tests__/gen2-migration/gen2-migration-store-locator.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
@@ -128,6 +137,17 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/pinpoint/javascript-analytics-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/javascript-notifications-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
+    // gen2-migration tests dont currently work on windows because of 'Could not resolve credentials using profile'.
+    // need to dive deeper to figure it out.
+    'src/__tests__/gen2-migration/gen2-migration-backend-only.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-discussions.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-fitness-tracker.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-finance-tracker.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-media-vault.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-mood-board.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-product-catalog.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-project-boards.test.ts',
+    'src/__tests__/gen2-migration/gen2-migration-store-locator.test.ts',
   ],
 };
 export function loadConfigBase() {
@@ -284,7 +304,10 @@ const splitTestsV3 = (
         identifier,
       };
       formattedJob.env.variables = {};
-      if (isMigration || job.tests.length === 1) {
+      const isGen2Migration = job.tests.some((t) => t.includes('gen2-migration'));
+      if (isGen2Migration) {
+        formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_LARGE';
+      } else if (isMigration || job.tests.length === 1) {
         formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
       }
       formattedJob.env.variables.TEST_SUITE = job.tests.join('|');

@@ -1,8 +1,8 @@
-import { AuthCognitoForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
+import { AuthCognitoForwardRefactorer, buildImportSpec } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
 import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_common/cfn-template';
 import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
 import { Gen1App } from '../../../../../commands/gen2-migration/_common/gen1-app';
-import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
+import { SocialAuthConfig, StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -18,7 +18,11 @@ import {
   ResourceMapping,
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
-import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolCommand,
+  ListIdentityProvidersCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
 import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 
 const ts = new Date();
@@ -115,7 +119,13 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     const refactorer = new AuthCognitoForwardRefactorer(
       gen1Env,
       gen2Branch,
-      { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
+      {
+        region: 'us-east-1',
+        clients,
+        appId: 'appId',
+        envName: 'main',
+        resourceMetaOutput: () => undefined,
+      } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
@@ -132,111 +142,6 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     expect(flat[1]).toContain('Prepare target');
     expect(flat[2]).toContain('holding');
     expect(flat[3]).toContain('Move');
-  });
-
-  it('OAuth: populates hostedUIProviderCreds when hostedUIProviderMeta parameter exists', async () => {
-    const oauthGen1Template: CFNTemplate = {
-      ...gen1AuthTemplate,
-      Parameters: {
-        hostedUIProviderMeta: { Type: 'String' },
-        hostedUIProviderCreds: { Type: 'String' },
-      },
-    };
-
-    // Default: no stacks found (for holding stack lookup)
-    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
-
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [
-        {
-          LogicalResourceId: 'authtestStack',
-          ResourceType: 'AWS::CloudFormation::Stack',
-          PhysicalResourceId: 'gen1-auth-stack',
-          Timestamp: ts,
-          ResourceStatus: rs,
-        },
-      ],
-    });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [
-        {
-          LogicalResourceId: 'authStack',
-          ResourceType: 'AWS::CloudFormation::Stack',
-          PhysicalResourceId: 'gen2-auth-stack',
-          Timestamp: ts,
-          ResourceStatus: rs,
-        },
-      ],
-    });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth-stack' }).resolves({ StackResources: [] });
-    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-stack' }).resolves({ StackResources: [] });
-
-    cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-auth-stack' }).resolves({
-      Stacks: [
-        {
-          StackName: 'gen1-auth-stack',
-          StackStatus: rs,
-          CreationTime: ts,
-          Description: oauthGen1Template.Description,
-          Parameters: [
-            { ParameterKey: 'hostedUIProviderMeta', ParameterValue: JSON.stringify([{ ProviderName: 'Google' }]) },
-            { ParameterKey: 'hostedUIProviderCreds', ParameterValue: '[]' },
-          ],
-          Outputs: [{ OutputKey: 'UserPoolId', OutputValue: 'us-east-1_ABC123' }],
-        },
-      ],
-    });
-    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-stack' }).resolves({
-      Stacks: [{ StackName: 'gen2-auth-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
-    });
-    cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth-stack' }).resolves({ TemplateBody: JSON.stringify(oauthGen1Template) });
-    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
-    cfnMock.on(CreateChangeSetCommand).resolves({});
-    cfnMock.on(DescribeChangeSetCommand).callsFake((input) => ({ Status: 'CREATE_COMPLETE', StackName: input.StackName, Changes: [] }));
-    cfnMock.on(ExecuteChangeSetCommand).resolves({});
-    cfnMock.on(DeleteChangeSetCommand).resolves({});
-
-    const cognitoMock = mockClient(CognitoIdentityProviderClient);
-    cognitoMock.on(DescribeIdentityProviderCommand).resolves({
-      IdentityProvider: { ProviderDetails: { client_id: 'google-id', client_secret: 'google-secret' } },
-    });
-
-    const clients = new (AwsClients as any)({ region: 'us-east-1' });
-    (clients as any).cloudFormation = new CloudFormationClient({});
-    (clients as any).cognitoIdentityProvider = new CognitoIdentityProviderClient({});
-    const gen1Env = new StackFacade(clients, 'gen1-root');
-    const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthCognitoForwardRefactorer(
-      gen1Env,
-      gen2Branch,
-      { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
-      '123456789',
-      noOpLogger(),
-      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
-      new Cfn(new CloudFormationClient({}), noOpLogger()),
-    );
-
-    const ops = await refactorer.plan();
-
-    expect(cognitoMock.commandCalls(DescribeIdentityProviderCommand)).toHaveLength(1);
-    expect(ops.length).toBeGreaterThanOrEqual(4);
-
-    const { CreateChangeSetCommand: CreateCS } = await import('@aws-sdk/client-cloudformation');
-    cfnMock.on(DescribeStacksCommand).resolves({
-      Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
-    });
-    // ops[0] and ops[1] are stack status validations; ops[2] is updateSource
-    await ops[2].execute();
-
-    const createCsCalls = cfnMock.commandCalls(CreateCS);
-    expect(createCsCalls.length).toBeGreaterThanOrEqual(1);
-    const credsParam = createCsCalls[0].args[0].input.Parameters?.find(
-      (p: { ParameterKey?: string }) => p.ParameterKey === 'hostedUIProviderCreds',
-    );
-    expect(credsParam?.ParameterValue).toContain('google-id');
-    expect(credsParam?.ParameterValue).toContain('google-secret');
-
-    cognitoMock.restore();
   });
 
   it('throws when auth exists in source but not destination', async () => {
@@ -263,7 +168,13 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     const refactorer = new AuthCognitoForwardRefactorer(
       gen1Env,
       gen2Branch,
-      { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
+      {
+        region: 'us-east-1',
+        clients,
+        appId: 'appId',
+        envName: 'main',
+        resourceMetaOutput: () => undefined,
+      } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
@@ -288,7 +199,13 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings — UserPoolClient 
         super(
           gen1Env,
           gen2Branch,
-          { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
+          {
+            region: 'us-east-1',
+            clients,
+            appId: 'appId',
+            envName: 'main',
+            resourceMetaOutput: () => undefined,
+          } as unknown as Gen1App,
           '123456789',
           noOpLogger(),
           {
@@ -335,5 +252,242 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings — UserPoolClient 
     expect(map.get('UserPoolClientWeb')).toBe('amplifyAuthUserPoolAppClient1234ABCD');
     expect(map.get('UserPoolClient')).toBe('amplifyAuthUserPoolNativeAppClient1234ABCD');
     expect(map.get('UserPool')).toBe('amplifyAuthUserPool1234ABCD');
+  });
+});
+
+describe('buildImportSpec', () => {
+  test('throws when Gen1 pool has an IDP that has no matching logical ID in Gen2 template', () => {
+    const config: SocialAuthConfig = {
+      userPoolId: 'us-east-1_TEST',
+      domain: 'test-domain',
+      providers: [{ providerName: 'UnknownProvider', providerType: 'OIDC' }],
+    };
+    expect(() => buildImportSpec(config, 'domainLogicalId', new Map())).toThrow(
+      /Identity provider 'UnknownProvider'.*no matching UserPoolIdentityProvider/,
+    );
+  });
+});
+
+describe('AuthCognitoForwardRefactorer — holding stack behavior', () => {
+  let cfnMock: ReturnType<typeof mockClient>;
+  let ssmMock: ReturnType<typeof mockClient>;
+  let cognitoMock: ReturnType<typeof mockClient>;
+
+  const gen2AuthTemplateWithSocialAuth: CFNTemplate = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Description: 'gen2 auth',
+    Resources: {
+      amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+      amplifyAuthUserPoolDomain12345678: {
+        Type: 'AWS::Cognito::UserPoolDomain',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
+        Properties: { Domain: 'test-domain', UserPoolId: 'us-east-1_TEST' },
+      },
+      amplifyAuthUserPoolIdentityProviderGoogle12345678: {
+        Type: 'AWS::Cognito::UserPoolIdentityProvider',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
+        Properties: { ProviderName: 'Google', ProviderType: 'Google', UserPoolId: 'us-east-1_TEST' },
+      },
+    },
+    Outputs: {},
+  };
+
+  beforeEach(() => {
+    cfnMock = mockClient(CloudFormationClient);
+    ssmMock = mockClient(SSMClient);
+    cognitoMock = mockClient(CognitoIdentityProviderClient);
+  });
+
+  afterEach(() => {
+    cfnMock.restore();
+    ssmMock.restore();
+    cognitoMock.restore();
+  });
+
+  function setupSocialAuthMocks(holdingStackExists: boolean) {
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResources: [
+        {
+          LogicalResourceId: 'authtestStack',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          PhysicalResourceId: 'gen1-auth-stack',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+      ],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResources: [
+        {
+          LogicalResourceId: 'authStack',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          PhysicalResourceId: 'gen2-auth-stack',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+      ],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-auth-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-auth-stack' }).resolves({
+      StackResources: [
+        {
+          LogicalResourceId: 'amplifyAuthUserPool12345678',
+          ResourceType: 'AWS::Cognito::UserPool',
+          PhysicalResourceId: 'us-east-1_TEST',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+        {
+          LogicalResourceId: 'amplifyAuthUserPoolDomain12345678',
+          ResourceType: 'AWS::Cognito::UserPoolDomain',
+          PhysicalResourceId: 'test-domain',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+        {
+          LogicalResourceId: 'amplifyAuthUserPoolIdentityProviderGoogle12345678',
+          ResourceType: 'AWS::Cognito::UserPoolIdentityProvider',
+          PhysicalResourceId: 'Google',
+          Timestamp: ts,
+          ResourceStatus: rs,
+        },
+      ],
+    });
+
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-auth-stack' }).resolves({
+      Stacks: [
+        {
+          StackName: 'gen1-auth-stack',
+          StackStatus: rs,
+          CreationTime: ts,
+          Description: gen1AuthTemplate.Description,
+          Parameters: [],
+          Outputs: [],
+        },
+      ],
+    });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-stack' }).resolves({
+      Stacks: [{ StackName: 'gen2-auth-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+
+    if (holdingStackExists) {
+      cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-stack-holding' }).resolves({
+        Stacks: [{ StackName: 'gen2-auth-stack-holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
+      });
+      cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack-holding' }).resolves({
+        TemplateBody: JSON.stringify({
+          AWSTemplateFormatVersion: '2010-09-09',
+          Resources: {
+            amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
+          },
+          Outputs: {},
+        }),
+      });
+    }
+
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen1AuthTemplate) });
+    cfnMock
+      .on(GetTemplateCommand, { StackName: 'gen2-auth-stack' })
+      .resolves({ TemplateBody: JSON.stringify(gen2AuthTemplateWithSocialAuth) });
+
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).callsFake((input) => ({ Status: 'CREATE_COMPLETE', StackName: input.StackName, Changes: [] }));
+    cfnMock.on(ExecuteChangeSetCommand).resolves({});
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
+  }
+
+  function createForwardRefactorer() {
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    const gen1Env = new StackFacade(clients, 'gen1-root');
+    const gen2Branch = new StackFacade(clients, 'gen2-root');
+    return new AuthCognitoForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      {
+        region: 'us-east-1',
+        clients,
+        appId: 'appId',
+        envName: 'main',
+        resourceMetaOutput: () => 'us-east-1_TEST',
+      } as unknown as Gen1App,
+      '123456789',
+      noOpLogger(),
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      new Cfn(new CloudFormationClient({}), noOpLogger()),
+    );
+  }
+
+  it('beforeMove skips orphan when holding stack exists', async () => {
+    setupSocialAuthMocks(true);
+    const refactorer = createForwardRefactorer();
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    // Should NOT contain orphan operation for social auth
+    expect(descriptions.some((d) => d.includes('Orphan'))).toBe(false);
+  });
+
+  it('beforeMove includes orphan when no holding stack', async () => {
+    setupSocialAuthMocks(false);
+    const refactorer = createForwardRefactorer();
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    // Should contain orphan operation for social auth
+    expect(descriptions.some((d) => d.includes('Orphan'))).toBe(true);
+  });
+
+  it('move skips import when holding stack exists', async () => {
+    setupSocialAuthMocks(true);
+    const refactorer = createForwardRefactorer();
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    // Should NOT contain import operation
+    expect(descriptions.some((d) => d.includes('Import social auth'))).toBe(false);
+  });
+
+  it('move includes import when no holding stack', async () => {
+    setupSocialAuthMocks(false);
+    const refactorer = createForwardRefactorer();
+
+    cognitoMock.on(DescribeUserPoolCommand).resolves({
+      UserPool: {
+        Id: 'us-east-1_TEST',
+        Domain: 'test-domain',
+      },
+    });
+    cognitoMock.on(ListIdentityProvidersCommand).resolves({
+      Providers: [{ ProviderName: 'Google', ProviderType: 'Google' }],
+    });
+
+    const ops = await refactorer.plan();
+    const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
+
+    // Should contain import operation
+    expect(descriptions.some((d) => d.includes('Import social auth'))).toBe(true);
+  });
+
+  it('throws StackStateError when holding stack is in unexpected state', async () => {
+    setupSocialAuthMocks(false);
+    // Override the holding stack mock to return an unexpected status
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-auth-stack-holding' }).resolves({
+      Stacks: [{ StackName: 'gen2-auth-stack-holding', StackStatus: 'ROLLBACK_COMPLETE', CreationTime: ts }],
+    });
+
+    const refactorer = createForwardRefactorer();
+
+    await expect(refactorer.plan()).rejects.toMatchObject({
+      name: 'StackStateError',
+      message: expect.stringContaining('ROLLBACK_COMPLETE'),
+    });
   });
 });

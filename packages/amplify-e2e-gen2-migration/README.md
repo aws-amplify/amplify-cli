@@ -21,80 +21,17 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 | ------------ | ----- | ---------------------------------------------------------------------------------- |
 | `--app`      | `-a`  | App to migrate (required). Must match a directory under `amplify-migration-apps/`. |
 | `--verbose`  | `-v`  | Enable debug-level logging.                                                        |
-| `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to `migrate`.            |
+| `--step`     |       | Stop at a specific step (`deploy` or `migrate`). Defaults to full `e2e` run.       |
 | `--teardown` |       | Delete all deployed resources after execution.                                     |
 
 ### Credential Refresh
 
-Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. When `TEST_ACCOUNT_ROLE` is used, the CLI re-assumes the role and rewrites `~/.aws/credentials` before every long-running step (`init`, `push`, `assess`, `lock`, `generate`, `refactor`, `deployGen2Sandbox`, `teardown`) so sessions don't expire mid-operation. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
+Full migration runs take 30+ minutes, which exceeds typical STS session TTLs. In CI, `CredentialManager` performs a two-hop assume-role chain on each `refresh()` call:
 
-## Migration Workflow
+1. CodeBuild container credentials (long-lived) → assume `TEST_ACCOUNT_ROLE` (parent account, 1hr)
+2. Parent account credentials → assume `OrganizationAccountAccessRole` in `CHILD_ACCOUNT_ID` (1hr)
 
-The CLI executes the following steps for a given app:
-
-1. Copy app source to a temp directory (excluding `_snapshot*` and `node_modules`)
-2. `amplify init` — initialize the Gen1 project
-3. Configure categories by restoring the pre-generate snapshot into the `amplify/` directory
-4. `npm install`
-5. Run `pre-push` npm script (app-specific fixups before deployment)
-6. `amplify push` — deploy the Gen1 stack
-7. Run `post-push` npm script (app-specific fixups)
-8. Run `test:gen1` — validate the Gen1 deployment
-9. `amplify gen2-migration assess`
-10. `amplify gen2-migration lock`
-11. Run `test:gen1` — validate Gen1 still works after lock
-12. Checkout a new `gen2-<env>` branch
-13. `amplify gen2-migration generate`
-14. `npm install`
-15. Run `post-generate` npm script (app-specific fixups)
-16. Run `pre-sandbox` npm script (app-specific fixups before sandbox deploy)
-17. `npx ampx sandbox --once` — deploy the Gen2 stack
-18. Run `post-sandbox` npm script (app-specific fixups after first sandbox deploy)
-19. Run `test:gen1` and `test:gen2` — validate both stacks
-20. Checkout `main` branch (refactor requires Gen1 files)
-21. `amplify gen2-migration refactor` — move stateful resources to Gen2
-22. Checkout `gen2-<env>` branch
-23. Run `post-refactor` npm script (app-specific fixups)
-24. Run `test:gen1` and `test:gen2` — validate both stacks
-25. Redeploy Gen2 sandbox to pick up post-refactor changes
-26. Run `test:gen1` and `test:gen2` — final validation
-27. Run `test:shared` — validate stateful resources are shared between Gen1 and Gen2
-
-Test scripts run at multiple points to verify that both stacks remain functional throughout the migration.
-
-The system runs npm scripts defined in each app's `package.json`:
-
-- `pre-push` — before `amplify push`
-- `post-push` — after `amplify push`
-- `post-generate` — after `gen2-migration generate`
-- `pre-sandbox` — before `npx ampx sandbox --once`
-- `post-sandbox` — after the first `npx ampx sandbox --once` deploy
-- `post-refactor` — after `gen2-migration refactor`
-- `test:gen1` — Jest tests against the Gen1 config (`src/amplifyconfiguration.json`)
-- `test:gen2` — Jest tests against the Gen2 config (`amplify_outputs.json`)
-- `test:shared` — Jest tests that validate stateful resources are shared between Gen1 and Gen2
-
-Scripts set to `"true"` in `package.json` are effectively no-ops.
-
-### Migration Config
-
-Each app can optionally include a `migration/config.json` to customize the E2E workflow:
-
-```json
-{
-  "lock": { "skipValidations": true }
-}
-```
-
-| Field                      | Description                                             |
-| -------------------------- | ------------------------------------------------------- |
-| `lock.skipValidations`     | Pass `--skip-validations` to `gen2-migration lock`.     |
-| `refactor.skip`            | Skip the refactor step entirely.                        |
-| `refactor.skipValidations` | Pass `--skip-validations` to `gen2-migration refactor`. |
-
-If the file does not exist, defaults are used.
-
-For details on the app layout, test scripts, and migration scripts, see the [amplify-migration-apps README](../../amplify-migration-apps/README.md).
+Because each `refresh()` starts from the long-lived CodeBuild container credentials, the resulting sessions are always fresh regardless of total migration duration. Spawned subprocesses (Amplify CLI, `ampx sandbox`) pick up the refreshed profile via `AWS_PROFILE`. In `--profile` mode, no refresh happens — the caller-supplied profile is assumed to be long-lived.
 
 ## Package Architecture
 
