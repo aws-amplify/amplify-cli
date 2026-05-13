@@ -1223,6 +1223,7 @@ __metadata:
     "@aws-sdk/client-ssm": ^3.919.0
     "@aws-sdk/client-sts": ^3.919.0
     "@smithy/node-http-handler": ^4.4.3
+    "@smithy/util-retry": ^4.2.0
     "@types/archiver": ^5.3.1
     "@types/columnify": ^1.5.1
     "@types/folder-hash": ^4.0.1
