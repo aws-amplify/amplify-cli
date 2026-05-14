@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.4.0...@aws-amplify/cli-internal@14.5.0) (2026-05-14)
+
+
+### Bug Fixes
+
+* **cli:** `gen2-migration assess` breaks on function custom policies that defined direct IAM policies ([#14868](https://github.com/aws-amplify/amplify-cli/issues/14868)) ([fb7c6c2](https://github.com/aws-amplify/amplify-cli/commit/fb7c6c280f9d2b775b552c287a217bc7b568369a))
+* **cli:** `gen2-migration lock --rollback` reports false drift ([#14862](https://github.com/aws-amplify/amplify-cli/issues/14862)) ([5b01458](https://github.com/aws-amplify/amplify-cli/commit/5b0145862499e9c25fc66373cb32134ede76c1f9))
+* **cli:** `gen2-migration lock` doesn't locate all api model nested stacks ([#14880](https://github.com/aws-amplify/amplify-cli/issues/14880)) ([b96c3c8](https://github.com/aws-amplify/amplify-cli/commit/b96c3c8fd02d4ef9b31c28bb04c754135ec7cd7a))
+* **cli:** drift not showing up in help ([#14860](https://github.com/aws-amplify/amplify-cli/issues/14860)) ([d9c5e13](https://github.com/aws-amplify/amplify-cli/commit/d9c5e13812c3bd5e9caa60020bd91f06e82df791))
+* **cli:** dynamo table mappings are sometimes omitted in `gen2-migration generate`  ([#14850](https://github.com/aws-amplify/amplify-cli/issues/14850)) ([ab1bbb8](https://github.com/aws-amplify/amplify-cli/commit/ab1bbb8daedc69d5a8b1e39dc736fb93d8ee1939)), closes [#14487](https://github.com/aws-amplify/amplify-cli/issues/14487)
+* **cli:** native user pool client dropped during gen2-migration ([#14857](https://github.com/aws-amplify/amplify-cli/issues/14857)) ([d395430](https://github.com/aws-amplify/amplify-cli/commit/d3954308fe1f2cc19433d7f12c3bd3822c6b4781))
+* **cli:** support social auth in gen2-migration ([#14853](https://github.com/aws-amplify/amplify-cli/issues/14853)) ([395a0b0](https://github.com/aws-amplify/amplify-cli/commit/395a0b01038ac3920e2def13e39b9330b0d5a783))
+* **gen2-migration:** preserve user attribute read/write restrictions ([#14841](https://github.com/aws-amplify/amplify-cli/issues/14841)) ([8c623db](https://github.com/aws-amplify/amplify-cli/commit/8c623db501d8d5f63c327a05c282a542f635e5ee)), closes [#14748](https://github.com/aws-amplify/amplify-cli/issues/14748)
+
+
+### Features
+
+* bump version ([#14878](https://github.com/aws-amplify/amplify-cli/issues/14878)) ([8fea83d](https://github.com/aws-amplify/amplify-cli/commit/8fea83d2f399e1ac1260789e1c3be3ed076bdfdc))
+* **cli:** `gen2-migration refactor` supports cdk custom resources ([#14875](https://github.com/aws-amplify/amplify-cli/issues/14875)) ([b08b3bc](https://github.com/aws-amplify/amplify-cli/commit/b08b3bc92c111cd5d34bc59009cfd0b4a7f364ce))
+* **cli:** add `retain` command for gen2-migration ([#14843](https://github.com/aws-amplify/amplify-cli/issues/14843)) ([6ec357b](https://github.com/aws-amplify/amplify-cli/commit/6ec357b3d51d8c5a70ecde24d86cb547ab70d644))
+* **cli:** concrete error reporting in `gen2-migration` commands ([#14858](https://github.com/aws-amplify/amplify-cli/issues/14858)) ([67dfa9d](https://github.com/aws-amplify/amplify-cli/commit/67dfa9d5c735f5c5a7328a98e39354dfb30ca0e1))
+* **cli:** overriden and extended resolver support in `gen2-migration generate` ([#14859](https://github.com/aws-amplify/amplify-cli/issues/14859)) ([d74e1fc](https://github.com/aws-amplify/amplify-cli/commit/d74e1fc417a7a486841b5a6f6c2fcd8ac45602b9))
+* **cli:** support custom CDK resource migration in gen2-migration generate ([#14863](https://github.com/aws-amplify/amplify-cli/issues/14863)) ([daa6a68](https://github.com/aws-amplify/amplify-cli/commit/daa6a68a0caed5a2a82c41321ee581a2474de2ed))
+
+
+
+
+
 # [14.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.3.0...@aws-amplify/cli-internal@14.4.0) (2026-05-01)
 
 

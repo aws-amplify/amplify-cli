@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.5.0...@aws-amplify/amplify-cli-core@4.6.0) (2026-05-14)
+
+
+### Bug Fixes
+
+* **cli:** `gen2-migration assess` breaks on function custom policies that defined direct IAM policies ([#14868](https://github.com/aws-amplify/amplify-cli/issues/14868)) ([fb7c6c2](https://github.com/aws-amplify/amplify-cli/commit/fb7c6c280f9d2b775b552c287a217bc7b568369a))
+* **cli:** drift not showing up in help ([#14860](https://github.com/aws-amplify/amplify-cli/issues/14860)) ([d9c5e13](https://github.com/aws-amplify/amplify-cli/commit/d9c5e13812c3bd5e9caa60020bd91f06e82df791))
+
+
+### Features
+
+* **cli:** `gen2-migration refactor` supports cdk custom resources ([#14875](https://github.com/aws-amplify/amplify-cli/issues/14875)) ([b08b3bc](https://github.com/aws-amplify/amplify-cli/commit/b08b3bc92c111cd5d34bc59009cfd0b4a7f364ce))
+* **cli:** concrete error reporting in `gen2-migration` commands ([#14858](https://github.com/aws-amplify/amplify-cli/issues/14858)) ([67dfa9d](https://github.com/aws-amplify/amplify-cli/commit/67dfa9d5c735f5c5a7328a98e39354dfb30ca0e1))
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.4...@aws-amplify/amplify-cli-core@4.5.0) (2026-05-01)
 
 
