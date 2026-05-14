@@ -1,9 +1,0 @@
-## [Start] Initialization default values. **
-$util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put("updatedAt", $updatedAt))
-$util.toJson({
-  "version": "2018-05-29",
-  "payload": {}
-})
-## [End] Initialization default values. **
