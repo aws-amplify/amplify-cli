@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.18-rc.b96c3c8fd02d4ef.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.17...amplify-e2e-tests@4.11.18-rc.b96c3c8fd02d4ef.0) (2026-05-14)
+
+
+### Bug Fixes
+
+* **cli:** `gen2-migration lock --rollback` reports false drift ([#14862](https://github.com/aws-amplify/amplify-cli/issues/14862)) ([5b01458](https://github.com/aws-amplify/amplify-cli/commit/5b0145862499e9c25fc66373cb32134ede76c1f9))
+
+
+
+
+
 ## [4.11.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.16...amplify-e2e-tests@4.11.17) (2026-05-01)
 
 
