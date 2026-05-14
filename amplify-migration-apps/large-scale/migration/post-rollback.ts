@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * Post-rollback script for backend-only app.
+ * Post-rollback script for large-scale app.
  *
  * Reverses the manual edits applied by post-refactor:
  * 1. Comment back the postRefactor() call in amplify/backend.ts

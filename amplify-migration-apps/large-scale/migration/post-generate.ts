@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * Post-generate script for backend-only app.
+ * Post-generate script for large-scale app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
  * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH

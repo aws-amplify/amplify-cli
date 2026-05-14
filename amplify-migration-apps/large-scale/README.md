@@ -23,7 +23,7 @@ amplify init
 ✔ Do you want to continue with Amplify Gen 1? (y/N) · yes
 ✔ Why would you like to use Amplify Gen 1? · Prefer not to answer
 Note: It is recommended to run this command from the root of your app directory
-? Enter a name for the project backendonly
+? Enter a name for the project largescale
 The following configuration will be applied:
 
 Project information
@@ -153,9 +153,9 @@ amplify push
 ┌──────────┬─────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name       │ Operation │ Provider plugin   │
 ├──────────┼─────────────────────┼───────────┼───────────────────┤
-│ Auth     │ backendonlyd8280ac9 │ Create    │ awscloudformation │
+│ Auth     │ largescaled8280ac9 │ Create    │ awscloudformation │
 ├──────────┼─────────────────────┼───────────┼───────────────────┤
-│ Api      │ backendonly         │ Create    │ awscloudformation │
+│ Api      │ largescale         │ Create    │ awscloudformation │
 ├──────────┼─────────────────────┼───────────┼───────────────────┤
 │ Storage  │ s36d5cefa6          │ Create    │ awscloudformation │
 ├──────────┼─────────────────────┼───────────┼───────────────────┤

@@ -1,13 +1,13 @@
 {
-    "AppSyncApiName": "backendonly",
+    "AppSyncApiName": "largescale",
     "DynamoDBBillingMode": "PAY_PER_REQUEST",
     "DynamoDBEnableServerSideEncryption": false,
     "AuthCognitoUserPoolId": {
         "Fn::GetAtt": [
-            "authbackendonlyf8c4c57b",
+            "authlargescalef8c4c57b",
             "Outputs.UserPoolId"
         ]
     },
-    "S3DeploymentBucket": "amplify-backendonly-x-x-deployment",
+    "S3DeploymentBucket": "amplify-largescale-x-x-deployment",
     "S3DeploymentRootKey": "amplify-appsync-files/1bb98024bb45fe354a03a385c4e3bfd9504f2f39"
 }

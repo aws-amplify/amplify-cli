@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * Post-refactor script for backend-only app.
+ * Post-refactor script for large-scale app.
  *
  * Applies manual edits required after `amplify gen2-migration refactor`:
  * 1. Uncomment the postRefactor() call in amplify/backend.ts

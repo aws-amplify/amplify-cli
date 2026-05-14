@@ -326,12 +326,12 @@
         "IdentityPoolName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "backendonlyf8c4c57b_identitypool_f8c4c57b",
+            "largescalef8c4c57b_identitypool_f8c4c57b",
             {
               "Fn::Join": [
                 "",
                 [
-                  "backendonlyf8c4c57b_identitypool_f8c4c57b__",
+                  "largescalef8c4c57b_identitypool_f8c4c57b__",
                   {
                     "Ref": "env"
                   }

@@ -1,13 +1,13 @@
 export type AmplifyDependentResourcesAttributes = {
   api: {
-    backendonly: {
+    largescale: {
       GraphQLAPIEndpointOutput: 'string';
       GraphQLAPIIdOutput: 'string';
       GraphQLAPIKeyOutput: 'string';
     };
   };
   auth: {
-    backendonlyf8c4c57b: {
+    largescalef8c4c57b: {
       AppClientID: 'string';
       AppClientIDWeb: 'string';
       IdentityPoolId: 'string';

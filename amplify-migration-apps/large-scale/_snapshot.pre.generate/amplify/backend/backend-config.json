@@ -1,13 +1,13 @@
 {
   "api": {
-    "backendonly": {
+    "largescale": {
       "dependsOn": [
         {
           "attributes": [
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "backendonlyf8c4c57b"
+          "resourceName": "largescalef8c4c57b"
         }
       ],
       "output": {
@@ -16,7 +16,7 @@
             {
               "authenticationType": "AMAZON_COGNITO_USER_POOLS",
               "userPoolConfig": {
-                "userPoolId": "authbackendonlyf8c4c57b"
+                "userPoolId": "authlargescalef8c4c57b"
               }
             }
           ],
@@ -33,7 +33,7 @@
     }
   },
   "auth": {
-    "backendonlyf8c4c57b": {
+    "largescalef8c4c57b": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {

@@ -199,15 +199,15 @@
         }
       }
     },
-    "authbackendonlyf8c4c57b": {
+    "authlargescalef8c4c57b": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/auth/backendonlyf8c4c57b-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-largescale-x-x-deployment/amplify-cfn-templates/auth/largescalef8c4c57b-cloudformation-template.json",
         "Parameters": {
-          "identityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b",
+          "identityPoolName": "largescalef8c4c57b_identitypool_f8c4c57b",
           "allowUnauthenticatedIdentities": true,
           "resourceNameTruncated": "backenf8c4c57b",
-          "userPoolName": "backendonlyf8c4c57b_userpool_f8c4c57b",
+          "userPoolName": "largescalef8c4c57b_userpool_f8c4c57b",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -227,7 +227,7 @@
           "userpoolClientLambdaRole": "backenf8c4c57b_userpoolclient_lambda_role",
           "userpoolClientSetAttributes": false,
           "sharedId": "f8c4c57b",
-          "resourceName": "backendonlyf8c4c57b",
+          "resourceName": "largescalef8c4c57b",
           "authSelections": "identityPoolAndUserPool",
           "useDefault": "default",
           "usernameAttributes": "email",
@@ -253,21 +253,21 @@
         }
       }
     },
-    "apibackendonly": {
+    "apilargescale": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-largescale-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
-          "AppSyncApiName": "backendonly",
+          "AppSyncApiName": "largescale",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
           "DynamoDBEnableServerSideEncryption": false,
           "AuthCognitoUserPoolId": {
             "Fn::GetAtt": [
-              "authbackendonlyf8c4c57b",
+              "authlargescalef8c4c57b",
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "amplify-backendonly-x-x-deployment",
+          "S3DeploymentBucket": "amplify-largescale-x-x-deployment",
           "S3DeploymentRootKey": "amplify-appsync-files/1bb98024bb45fe354a03a385c4e3bfd9504f2f39",
           "env": "x"
         }
@@ -276,9 +276,9 @@
     "storages3c31471c3": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-largescale-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
-          "bucketName": "backendonlycb1a13ab81664ecaa7d015068ab2d016",
+          "bucketName": "largescalecb1a13ab81664ecaa7d015068ab2d016",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
           "selectedAuthenticatedPermissions": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject",
           "unauthRoleName": {
@@ -309,9 +309,9 @@
     "functionquotegeneratorbe": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-largescale-x-x-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-backendonly-x-x-deployment",
+          "deploymentBucketName": "amplify-largescale-x-x-deployment",
           "s3Key": "amplify-builds/quotegeneratorbe-74755344625831362b75-build.zip",
           "env": "x"
         }
@@ -321,7 +321,7 @@
       "DependsOn": [
         "AuthRole",
         "UnauthRole",
-        "authbackendonlyf8c4c57b"
+        "authlargescalef8c4c57b"
       ],
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -431,7 +431,7 @@
         },
         "idpId": {
           "Fn::GetAtt": [
-            "authbackendonlyf8c4c57b",
+            "authlargescalef8c4c57b",
             "Outputs.IdentityPoolId"
           ]
         },

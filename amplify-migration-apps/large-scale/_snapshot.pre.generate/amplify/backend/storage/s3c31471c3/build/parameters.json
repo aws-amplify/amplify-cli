@@ -1,5 +1,5 @@
 {
-  "bucketName": "backendonlycb1a13ab81664ecaa7d015068ab2d016",
+  "bucketName": "largescalecb1a13ab81664ecaa7d015068ab2d016",
   "selectedGuestPermissions": [
     "s3:GetObject",
     "s3:ListBucket"
