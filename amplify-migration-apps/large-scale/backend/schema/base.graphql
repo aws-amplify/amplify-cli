@@ -1,0 +1,53 @@
+type QuoteResponse {
+  message: String! @auth(rules: [{ allow: public }])
+  quote: String! @auth(rules: [{ allow: public }])
+  author: String! @auth(rules: [{ allow: public }])
+  timestamp: String! @auth(rules: [{ allow: public }])
+  totalQuotes: Int! @auth(rules: [{ allow: public }])
+}
+
+type Query {
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator-${env}") @auth(rules: [{ allow: public }])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Category {
+  GENERAL
+  TECHNICAL
+  BUSINESS
+  SUPPORT
+  MARKETING
+}
+
+type Address {
+  street: String
+  city: String
+  state: String
+  zip: String
+  country: String
+}
+
+type Metadata {
+  key: String
+  value: String
+  timestamp: AWSDateTime
+}
+
+type Coordinates {
+  latitude: Float
+  longitude: Float
+  altitude: Float
+}
