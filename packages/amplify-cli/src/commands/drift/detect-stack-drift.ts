@@ -207,7 +207,7 @@ export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff:
 
     // Auth trigger policies: known Cognito trigger policy pattern
     const cognitoActions = ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:GetGroup', 'cognito-idp:CreateGroup'];
-    const isCognitoTriggerPolicy = policyName === 'AddToGroupCognito' && cognitoActions.every((a) => actions.has(a));
+    const isCognitoTriggerPolicy = policyName.endsWith('AddToGroupCognito') && cognitoActions.every((a) => actions.has(a));
 
     // S3 storage trigger policies: known S3 trigger policy pattern
     const s3Actions = ['s3:ListBucket', 's3:PutObject', 's3:GetObject', 's3:DeleteObject'];
