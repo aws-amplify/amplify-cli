@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { existsSync, readdirSync } from 'node:fs';
+import { globSync } from 'glob';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
@@ -150,7 +151,7 @@ export class DataGenerator implements Planner {
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const schema = this.gen1App.file(path.join('api', this.resource.resourceName, 'schema.graphql'));
+    const schema = this.collectUserSchema();
     const apiId = this.gen1App.resourceMetaOutput(this.resource, 'GraphQLAPIIdOutput');
 
     const tableMappings = this.createTableMappings(apiId);
@@ -223,6 +224,18 @@ export class DataGenerator implements Planner {
     }
 
     return operations;
+  }
+
+  private collectUserSchema(): string {
+    const schemaFilePath = path.join('api', this.resource.resourceName, 'schema.graphql');
+    if (this.gen1App.fileExists(schemaFilePath)) {
+      return this.gen1App.file(schemaFilePath);
+    }
+
+    const schemaDirPath = path.join('api', this.resource.resourceName, 'schema');
+    const fullDirPath = path.join(this.gen1App.ccbDir, schemaDirPath);
+    const files = globSync('**/*.graphql', { cwd: fullDirPath }).sort();
+    return files.map((f) => this.gen1App.file(path.join(schemaDirPath, f))).join('\n');
   }
 
   /** Discovers VTL files in the Gen1 resolvers directory. */
