@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket18F709CB": {
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket08BB617F": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -77,7 +77,7 @@
         },
         "Destination": {
           "StackName": "amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x",
-          "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket18F709CB"
+          "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket08BB617F"
         }
       }
     ]

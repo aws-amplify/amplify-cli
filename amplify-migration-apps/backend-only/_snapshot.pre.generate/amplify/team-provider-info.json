@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-backendonly-x-x-deployment",
       "UnauthRoleName": "amplify-backendonly-x-x-unauthRole",
       "StackName": "amplify-backendonly-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/54f3d490-41c3-11f1-82df-12a754d266f9",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/3021c990-505c-11f1-9523-0afffb7187cf",
       "AmplifyAppId": "backendonly"
     },
     "categories": {

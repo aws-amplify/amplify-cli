@@ -1,0 +1,25 @@
+## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Validate create mutation for @index 'byOwnerAndScore'. **
+#set( $hasSeenSomeKeyArg = false )
+#set( $keyFieldNames = ["score", "createdAt"] )
+#foreach( $keyFieldName in $keyFieldNames )
+#if( $mergedValues.containsKey("$keyFieldName") ) #set( $hasSeenSomeKeyArg = true ) #end
+#end
+#foreach( $keyFieldName in $keyFieldNames )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey("$keyFieldName") )
+    $util.error("When creating any part of the composite sort key for @index 'byOwnerAndScore', you must provide all fields for the key. Missing key: '$keyFieldName'.")
+  #end
+#end
+## [End] Validate create mutation for @index 'byOwnerAndScore'. **
+#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'score#createdAt': "scoreCreatedAt" }))
+#else
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('score#createdAt', "scoreCreatedAt"))
+#end
+#if( $hasSeenSomeKeyArg )
+  $util.qr($ctx.args.input.put('score#createdAt',"${mergedValues.score}#${mergedValues.createdAt}"))
+#end
+{}

@@ -8,7 +8,7 @@
       "DeploymentBucketName": "amplify-backendonly-x-x-deployment",
       "UnauthRoleName": "amplify-backendonly-x-x-unauthRole",
       "StackName": "amplify-backendonly-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/54f3d490-41c3-11f1-82df-12a754d266f9",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-backendonly-x-x/3021c990-505c-11f1-9523-0afffb7187cf",
       "AmplifyAppId": "backendonly"
     }
   },
@@ -42,13 +42,13 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/auth/backendonlyf8c4c57b-cloudformation-template.json",
         "logicalId": "authbackendonlyf8c4c57b"
       },
-      "lastPushTimeStamp": "2026-04-26T23:02:22.122Z",
+      "lastPushTimeStamp": "2026-05-15T12:54:05.938Z",
       "output": {
-        "UserPoolId": "us-east-1_ZBk9pkkL1",
-        "AppClientIDWeb": "7co1u9jfpg4oilmh8culo47bmh",
-        "AppClientID": "gud63b4ojpv3bruh773osqvea",
-        "IdentityPoolId": "us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_ZBk9pkkL1",
+        "UserPoolId": "us-east-1_8VP0rQGKL",
+        "AppClientIDWeb": "2sk9refvbkk6g5kdftvjmdvmha",
+        "AppClientID": "4h390skcbfvim0fh6nvfpnk0rr",
+        "IdentityPoolId": "us-east-1:2a2b2eb5-c596-4981-be73-9cd8dd8546c7",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_8VP0rQGKL",
         "IdentityPoolName": "backendonlyf8c4c57b_identitypool_f8c4c57b__x",
         "UserPoolName": "backendonlyf8c4c57b_userpool_f8c4c57b"
       },
@@ -85,16 +85,16 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "qjgez2h2dfenrkezjjoo3i4utu",
-        "GraphQLAPIEndpointOutput": "https://ozs75siwonekvdv4mdgqjogiue.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIIdOutput": "swnmmzmw75hwtclcpxwndu4aia",
+        "GraphQLAPIEndpointOutput": "https://p2tos6szjjbfdclsei47rsrpfy.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
-      "lastPushTimeStamp": "2026-04-26T23:02:22.122Z",
+      "lastPushTimeStamp": "2026-05-15T12:54:05.938Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apibackendonly"
       },
-      "lastPushDirHash": "zkjPafARM+uXrv38eYzFsXd8gd8="
+      "lastPushDirHash": "Q4whDrxlEWnsC/JN6vu1Qxb6wFs="
     }
   },
   "storage": {
@@ -102,7 +102,7 @@
       "service": "S3",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
-      "lastPushTimeStamp": "2026-04-26T23:02:22.122Z",
+      "lastPushTimeStamp": "2026-05-15T12:54:05.938Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages3c31471c3"
@@ -119,9 +119,9 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-04-26T22:58:27.313Z",
+      "lastBuildTimeStamp": "2026-05-15T12:47:51.893Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-04-26T22:58:27.408Z",
+      "lastPackageTimeStamp": "2026-05-15T12:47:51.950Z",
       "distZipFilename": "quotegeneratorbe-74755344625831362b75-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-backendonly-x-x-deployment",
@@ -131,7 +131,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-backendonly-x-x-deployment/amplify-cfn-templates/function/quotegeneratorbe-cloudformation-template.json",
         "logicalId": "functionquotegeneratorbe"
       },
-      "lastPushTimeStamp": "2026-04-26T23:02:22.122Z",
+      "lastPushTimeStamp": "2026-05-15T12:54:05.938Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/backendonlyLambdaRole8a0d8e62-x",
         "Region": "us-east-1",
@@ -139,7 +139,7 @@
         "Name": "quotegeneratorbe-x",
         "LambdaExecutionRole": "backendonlyLambdaRole8a0d8e62-x"
       },
-      "lastPushDirHash": "WfZWJQ9ehrtPKAaxZ2j6JUHR3rw="
+      "lastPushDirHash": "eVPqYQ2qvSHsSxOML/oiUrPQb0c="
     }
   }
 }
