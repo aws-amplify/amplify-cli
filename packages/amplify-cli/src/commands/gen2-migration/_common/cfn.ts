@@ -114,7 +114,7 @@ export class Cfn {
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
       };
-      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters, prefix: snapshotPrefix ?? 'update' });
+      writeUpdateSnapshot({ stackName, templateBody: JSON.stringify(templateBody), parameters, prefix: snapshotPrefix ?? 'update' });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.gen1App.clients.cloudFormation.send(new UpdateStackCommand(input));
     } catch (e) {
