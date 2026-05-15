@@ -36,11 +36,16 @@ export class S3Mock {
 
   constructor(private readonly app: MigrationApp) {
     this.mock = mockClient(s3.S3Client);
+    this.mockPutObject();
     this.mockGetBucketAccelerateConfiguration();
     this.mockGetBucketVersioning();
     this.mockGetBucketEncryption();
     this.mockGetObject();
     this.mockGetBucketNotificationConfiguration();
+  }
+
+  private mockPutObject() {
+    this.mock.on(s3.PutObjectCommand).resolves({ $metadata: {} });
   }
 
   private mockGetBucketAccelerateConfiguration() {

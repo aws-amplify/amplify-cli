@@ -200,14 +200,17 @@ export class Cfn {
     const sourceTemplateUrl = await this.uploadTemplate(JSON.stringify(sourceTemplate), sourceStackName, 'refactor');
     const targetTemplateUrl = await this.uploadTemplate(JSON.stringify(targetTemplate), targetStackName, 'refactor');
     const input: CreateStackRefactorCommandInput = {
-      StackDefinitions: [{ TemplateURL: sourceTemplateUrl }, { TemplateURL: targetTemplateUrl }],
+      StackDefinitions: [
+        { StackName: sourceStackName, TemplateURL: sourceTemplateUrl },
+        { StackName: targetStackName, TemplateURL: targetTemplateUrl },
+      ],
       ResourceMappings: resourceMappings,
       EnableStackCreation: true,
     };
 
     input.Description = buildRefactorDescription(input);
 
-    writeRefactorSnapshot(input);
+    writeRefactorSnapshot(input, JSON.stringify(sourceTemplate), JSON.stringify(targetTemplate));
 
     this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`, resource);
 
@@ -700,15 +703,15 @@ function writeOrphanSnapshot(input: WriteOrphanSnapshotInput): void {
   );
 }
 
-function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {
+function writeRefactorSnapshot(input: CreateStackRefactorCommandInput, sourceTemplateBody: string, targetTemplateBody: string): void {
   const source = input.StackDefinitions![0];
   const target = input.StackDefinitions![1];
   const sourceStackName = extractStackNameFromId(source.StackName!);
   const targetStackName = extractStackNameFromId(target.StackName!);
   const description = `refactor.__from__.${sourceStackName}.__to__.${targetStackName}`;
   const basePath = path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, description);
-  writeRefactorSnapshotFile(`${basePath}.source.template.json`, formatTemplateBody(source.TemplateBody!));
-  writeRefactorSnapshotFile(`${basePath}.target.template.json`, formatTemplateBody(target.TemplateBody!));
+  writeRefactorSnapshotFile(`${basePath}.source.template.json`, formatTemplateBody(sourceTemplateBody));
+  writeRefactorSnapshotFile(`${basePath}.target.template.json`, formatTemplateBody(targetTemplateBody));
   writeRefactorSnapshotFile(
     path.join(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, `${description}.mappings.json`),
     JSON.stringify(input.ResourceMappings ?? [], null, 2) + '\n',

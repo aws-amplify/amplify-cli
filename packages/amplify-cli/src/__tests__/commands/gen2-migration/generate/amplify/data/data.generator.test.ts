@@ -38,6 +38,7 @@ const dataResource: DiscoveredResource = {
  */
 function mockSchema(gen1App: Gen1App, rawSchema: string, modelNames: string[]): void {
   const buildSchema = modelNames.map((m) => `type Model${m}Connection { items: [${m}]! nextToken: String }`).join('\n');
+  jest.spyOn(gen1App, 'fileExists').mockImplementation((p: string) => p.endsWith('schema.graphql'));
   jest.spyOn(gen1App, 'file').mockImplementation((p: string) => {
     if (p.includes('build/schema.graphql')) return buildSchema;
     if (p.endsWith('schema.graphql')) return rawSchema;

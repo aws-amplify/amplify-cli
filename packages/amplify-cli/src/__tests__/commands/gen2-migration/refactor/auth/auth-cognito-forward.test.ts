@@ -24,6 +24,10 @@ import {
   ListIdentityProvidersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
+import { S3Client } from '@aws-sdk/client-s3';
+
+// Mock S3 globally so uploadTemplate calls succeed
+mockClient(S3Client);
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -129,7 +133,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       '123456789',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
-      new Cfn(new CloudFormationClient({}), noOpLogger()),
+      new Cfn({ region: 'us-east-1', clients } as unknown as Gen1App, noOpLogger()),
     );
 
     const ops = await refactorer.plan();
@@ -178,7 +182,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       '123456789',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
-      new Cfn(new CloudFormationClient({}), noOpLogger()),
+      new Cfn({ region: 'us-east-1', clients } as unknown as Gen1App, noOpLogger()),
     );
 
     await expect(refactorer.plan()).rejects.toThrow('Unable to find target stack');
@@ -418,7 +422,7 @@ describe('AuthCognitoForwardRefactorer — holding stack behavior', () => {
       '123456789',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
-      new Cfn(new CloudFormationClient({}), noOpLogger()),
+      new Cfn({ region: 'us-east-1', clients } as unknown as Gen1App, noOpLogger()),
     );
   }
 
