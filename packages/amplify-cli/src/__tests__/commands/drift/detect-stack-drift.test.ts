@@ -81,6 +81,25 @@ describe('isAmplifyTriggerPolicyDrift', () => {
     expect(isAmplifyTriggerPolicyDrift(drift, propDiff, mockPrinter)).toBe(true);
   });
 
+  it('filters Cognito trigger policy drift with prefixed policy name (breakCircularDependency=false)', () => {
+    const drift = makeDrift({ ResourceType: 'AWS::IAM::Role', LogicalResourceId: 'LambdaExecutionRole' });
+    const policyValue = JSON.stringify({
+      PolicyDocument: JSON.stringify({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:GetGroup', 'cognito-idp:CreateGroup'],
+            Resource: 'arn:aws:cognito-idp:us-east-1:728254692372:userpool/us-east-1_74MJs6tyH',
+          },
+        ],
+      }),
+      PolicyName: 'bpedsysauthPostConfirmationAddToGroupCognito',
+    });
+    const propDiff = makePropDiff({ PropertyPath: '/Policies/0', ExpectedValue: 'null', ActualValue: policyValue });
+    expect(isAmplifyTriggerPolicyDrift(drift, propDiff, mockPrinter)).toBe(true);
+  });
+
   it('filters S3 storage trigger policy drift', () => {
     const drift = makeDrift({ ResourceType: 'AWS::IAM::Role', LogicalResourceId: 'LambdaExecutionRole' });
     const policyValue = JSON.stringify({
