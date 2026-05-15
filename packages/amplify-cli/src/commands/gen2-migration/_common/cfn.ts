@@ -1,5 +1,4 @@
 import {
-  CloudFormationClient,
   CloudFormationServiceException,
   CreateChangeSetCommand,
   CreateStackRefactorCommand,
@@ -26,6 +25,7 @@ import {
   waitUntilStackRefactorExecuteComplete,
   waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from './cfn-template';
 import { extractStackNameFromId } from './utils';
@@ -35,7 +35,7 @@ import chalk from 'chalk';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DiscoveredResource } from './gen1-app';
+import { DiscoveredResource, Gen1App } from './gen1-app';
 
 const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
@@ -73,7 +73,7 @@ export class Cfn {
    */
   private readonly updateStackClaims = new Set<string>();
 
-  constructor(private readonly client: CloudFormationClient, private readonly logger: SpinningLogger) {
+  constructor(private readonly gen1App: Gen1App, private readonly logger: SpinningLogger) {
     if (!fs.existsSync(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY)) {
       fs.mkdirSync(REFACTOR_SNAPSHOT_OUTPUT_DIRECTORY, { recursive: true });
     }
@@ -107,15 +107,16 @@ export class Cfn {
   }): Promise<void> {
     const { stackName, parameters, templateBody, resource, snapshotPrefix } = params;
     try {
+      const templateUrl = await this.uploadTemplate(JSON.stringify(templateBody), stackName, 'update');
       const input: UpdateStackCommandInput = {
-        TemplateBody: JSON.stringify(templateBody),
+        TemplateURL: templateUrl,
         Parameters: parameters,
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
       };
       writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody!, parameters, prefix: snapshotPrefix ?? 'update' });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
-      await this.client.send(new UpdateStackCommand(input));
+      await this.gen1App.clients.cloudFormation.send(new UpdateStackCommand(input));
     } catch (e) {
       if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE)) {
         return;
@@ -123,7 +124,10 @@ export class Cfn {
       throw e;
     }
     this.info(`Waiting for stack update to complete: ${extractStackNameFromId(stackName)}`, resource);
-    await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: stackName });
+    await waitUntilStackUpdateComplete(
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { StackName: stackName },
+    );
   }
 
   /**
@@ -193,11 +197,10 @@ export class Cfn {
       await pre(targetTemplate);
     }
 
+    const sourceTemplateUrl = await this.uploadTemplate(JSON.stringify(sourceTemplate), sourceStackName, 'refactor');
+    const targetTemplateUrl = await this.uploadTemplate(JSON.stringify(targetTemplate), targetStackName, 'refactor');
     const input: CreateStackRefactorCommandInput = {
-      StackDefinitions: [
-        { TemplateBody: JSON.stringify(sourceTemplate), StackName: sourceStackName },
-        { TemplateBody: JSON.stringify(targetTemplate), StackName: targetStackName },
-      ],
+      StackDefinitions: [{ TemplateURL: sourceTemplateUrl }, { TemplateURL: targetTemplateUrl }],
       ResourceMappings: resourceMappings,
       EnableStackCreation: true,
     };
@@ -208,7 +211,7 @@ export class Cfn {
 
     this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`, resource);
 
-    const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
+    const { StackRefactorId } = await this.gen1App.clients.cloudFormation.send(new CreateStackRefactorCommand(input));
     if (!StackRefactorId) {
       throw new AmplifyError('StackStateError', {
         message: 'CreateStackRefactor returned no StackRefactorId',
@@ -216,22 +219,37 @@ export class Cfn {
     }
 
     this.info(`Waiting for stack refactor creation to complete: ${StackRefactorId}`, resource);
-    await waitUntilStackRefactorCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
+    await waitUntilStackRefactorCreateComplete(
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { StackRefactorId },
+    );
 
-    await this.client.send(new ExecuteStackRefactorCommand({ StackRefactorId }));
+    await this.gen1App.clients.cloudFormation.send(new ExecuteStackRefactorCommand({ StackRefactorId }));
 
     this.info(`Waiting for stack refactor execution to complete: ${StackRefactorId}`, resource);
-    await waitUntilStackRefactorExecuteComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
+    await waitUntilStackRefactorExecuteComplete(
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { StackRefactorId },
+    );
 
     this.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackId)}`, resource);
-    await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: sourceStackId });
+    await waitUntilStackUpdateComplete(
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { StackName: sourceStackId },
+    );
 
     // Destination may be newly created (EnableStackCreation) or updated
     this.info(`Waiting for destination stack: ${extractStackNameFromId(targetStackId)}`, resource);
     if (targetStack) {
-      await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
+      await waitUntilStackUpdateComplete(
+        { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+        { StackName: targetStackId },
+      );
     } else {
-      await waitUntilStackCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
+      await waitUntilStackCreateComplete(
+        { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+        { StackName: targetStackId },
+      );
     }
 
     this.info(`Finished refactoring ${sourceStackName} → ${targetStackName}`, resource);
@@ -249,11 +267,12 @@ export class Cfn {
     const { stackName, parameters, templateBody } = params;
     const changeSetName = `gen2-migration-${Date.now()}`;
 
-    await this.client.send(
+    const templateUrl = await this.uploadTemplate(JSON.stringify(templateBody), stackName, 'create-change-set');
+    await this.gen1App.clients.cloudFormation.send(
       new CreateChangeSetCommand({
         StackName: stackName,
         ChangeSetName: changeSetName,
-        TemplateBody: JSON.stringify(templateBody),
+        TemplateURL: templateUrl,
         Parameters: parameters,
         Capabilities: [CFN_IAM_CAPABILITY],
       }),
@@ -261,19 +280,19 @@ export class Cfn {
 
     try {
       await waitUntilChangeSetCreateComplete(
-        { client: this.client, maxWaitTime: 120 },
+        { client: this.gen1App.clients.cloudFormation, maxWaitTime: 120 },
         { StackName: stackName, ChangeSetName: changeSetName },
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e.message?.includes(`The submitted information didn't contain changes`)) {
-        await this.client.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+        await this.gen1App.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
         return undefined;
       }
       throw e;
     }
 
-    return await this.client.send(
+    return await this.gen1App.clients.cloudFormation.send(
       new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
     );
   }
@@ -301,10 +320,15 @@ export class Cfn {
     }
 
     this.info(`Executing change set for stack: ${displayName}`, resource);
-    await this.client.send(new ExecuteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }));
+    await this.gen1App.clients.cloudFormation.send(
+      new ExecuteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }),
+    );
 
     this.info(`Waiting for stack update to complete: ${displayName}`, resource);
-    await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: changeSet.StackName });
+    await waitUntilStackUpdateComplete(
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { StackName: changeSet.StackName },
+    );
   }
 
   /**
@@ -386,12 +410,13 @@ export class Cfn {
 
     this.info(`Creating import changeset for ${displayName} (${resourcesToImport.length} resource(s))`, resource);
 
-    await this.client.send(
+    const templateUrl = await this.uploadTemplate(JSON.stringify(templateBody), stackName, 'import');
+    await this.gen1App.clients.cloudFormation.send(
       new CreateChangeSetCommand({
         StackName: stackName,
         ChangeSetName: changeSetName,
         ChangeSetType: 'IMPORT',
-        TemplateBody: JSON.stringify(templateBody),
+        TemplateURL: templateUrl,
         ResourcesToImport: resourcesToImport,
         Capabilities: [CFN_IAM_CAPABILITY],
       }),
@@ -399,15 +424,18 @@ export class Cfn {
 
     this.info(`Waiting for import changeset creation: ${displayName}`, resource);
     await waitUntilChangeSetCreateComplete(
-      { client: this.client, maxWaitTime: 120 },
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: 120 },
       { StackName: stackName, ChangeSetName: changeSetName },
     );
 
     this.info(`Executing import changeset: ${displayName}`, resource);
-    await this.client.send(new ExecuteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+    await this.gen1App.clients.cloudFormation.send(new ExecuteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
 
     this.info(`Waiting for import to complete: ${displayName}`, resource);
-    await waitUntilStackImportComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: stackName });
+    await waitUntilStackImportComplete(
+      { client: this.gen1App.clients.cloudFormation, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { StackName: stackName },
+    );
 
     this.info(`Import complete: ${displayName}`, resource);
   }
@@ -416,7 +444,9 @@ export class Cfn {
    * Deletes a change set without executing it.
    */
   public async deleteChangeSet(changeSet: DescribeChangeSetOutput): Promise<void> {
-    await this.client.send(new DeleteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }));
+    await this.gen1App.clients.cloudFormation.send(
+      new DeleteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }),
+    );
   }
 
   /**
@@ -425,7 +455,7 @@ export class Cfn {
    */
   public async findStack(stackName: string): Promise<Stack | null> {
     try {
-      const response = await this.client.send(new DescribeStacksCommand({ StackName: stackName }));
+      const response = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackName }));
       const stack = response.Stacks?.[0];
       if (stack && stack.StackStatus !== 'DELETE_COMPLETE') {
         return stack;
@@ -461,7 +491,9 @@ export class Cfn {
    * Throws if the stack returns an empty template.
    */
   public async fetchTemplate(stackName: string): Promise<CFNTemplate> {
-    const response = await this.client.send(new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }));
+    const response = await this.gen1App.clients.cloudFormation.send(
+      new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }),
+    );
     if (!response.TemplateBody) {
       throw new AmplifyError('InvalidStackError', {
         message: `Stack '${extractStackNameFromId(stackName)}' returned an empty template`,
@@ -477,9 +509,9 @@ export class Cfn {
   public async deleteStack(stackName: string, resource?: DiscoveredResource): Promise<void> {
     try {
       this.info(`Deleting stack: ${extractStackNameFromId(stackName)}`, resource);
-      await this.client.send(new DeleteStackCommand({ StackName: stackName }));
+      await this.gen1App.clients.cloudFormation.send(new DeleteStackCommand({ StackName: stackName }));
       this.info(`Waiting for stack deletion: ${extractStackNameFromId(stackName)}`, resource);
-      await waitUntilStackDeleteComplete({ client: this.client, maxWaitTime: 300 }, { StackName: stackName });
+      await waitUntilStackDeleteComplete({ client: this.gen1App.clients.cloudFormation, maxWaitTime: 300 }, { StackName: stackName });
     } catch (error: unknown) {
       if (
         error instanceof CloudFormationServiceException &&
@@ -579,6 +611,23 @@ export class Cfn {
     }
 
     return lines.join('\n').trimStart();
+  }
+
+  /**
+   * Uploads a template to the S3 deployment bucket and returns the S3 URL for use as TemplateURL.
+   */
+  private async uploadTemplate(templateBody: string, stackNameOrArn: string, operation: string): Promise<string> {
+    const key = `gen2-migration/${operation}.${extractStackNameFromId(stackNameOrArn)}.${Date.now()}.template.json`;
+    await this.gen1App.clients.s3.send(
+      new PutObjectCommand({
+        Bucket: this.gen1App.deploymentBucket,
+        Key: key,
+        Body: templateBody,
+        ContentType: 'application/json',
+      }),
+    );
+    const region = await this.gen1App.clients.s3.config.region();
+    return `https://s3.${region}.amazonaws.com/${this.gen1App.deploymentBucket}/${key}`;
   }
 
   private info(message: string, resource?: DiscoveredResource) {

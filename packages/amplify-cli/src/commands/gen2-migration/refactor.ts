@@ -211,7 +211,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const clients = this.gen1App.clients;
     const gen1Env = new StackFacade(clients, this.gen1App.rootStackName);
     const gen2Branch = new StackFacade(clients, toStack);
-    const cfn = new Cfn(clients.cloudFormation, this.logger);
+    const cfn = new Cfn(this.gen1App, this.logger);
 
     return { accountId, gen1Env, gen2Branch, cfn };
   }
