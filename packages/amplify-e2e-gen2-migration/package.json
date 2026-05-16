@@ -30,7 +30,7 @@
     "ini": "^1.3.5",
     "inquirer": "^8.2.6",
     "ora": "^5.4.1",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
