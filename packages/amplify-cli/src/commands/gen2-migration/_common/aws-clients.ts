@@ -14,7 +14,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
 import { ProxyAgent } from 'proxy-agent';
-import { CloudControlClient, CloudControlClientConfig } from '@aws-sdk/client-cloudcontrol';
+import { CloudControlClient } from '@aws-sdk/client-cloudcontrol';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 
 export const proxyAgent = () => {
@@ -52,7 +52,7 @@ export class AwsClients {
     this.amplify = new AmplifyClient(config);
     this.appSync = new AppSyncClient(config);
     this.cloudFormation = new CloudFormationClient(config);
-    this.cloudControl = new CloudControlClient(config as CloudControlClientConfig);
+    this.cloudControl = new CloudControlClient(config);
     this.cognitoIdentityProvider = new CognitoIdentityProviderClient(config);
     this.cognitoIdentity = new CognitoIdentityClient(config);
     this.s3 = new S3Client(config as S3ClientConfig);
