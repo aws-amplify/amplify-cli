@@ -30,7 +30,7 @@ describe('add s3 walkthrough tests', () => {
 
   beforeEach(() => {
     //Mock: UUID generation
-    jest.spyOn(uuid, 'v4').mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
+    (jest.spyOn(uuid, 'v4') as jest.SpyInstance).mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
 
     //Mock: Context/Amplify-Meta
     mockContext = {
@@ -214,7 +214,7 @@ describe('update s3 permission walkthrough tests', () => {
   let mockContext: $TSContext;
   beforeEach(() => {
     //Mock: UUID generation
-    jest.spyOn(uuid, 'v4').mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
+    (jest.spyOn(uuid, 'v4') as jest.SpyInstance).mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
 
     //Mock: Context/Amplify-Meta
     mockContext = {
@@ -418,7 +418,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
   let mockContext: $TSContext;
   beforeEach(() => {
     //Mock: UUID generation
-    jest.spyOn(uuid, 'v4').mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
+    (jest.spyOn(uuid, 'v4') as jest.SpyInstance).mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
 
     //Mock: Context/Amplify-Meta
     mockContext = {
@@ -672,7 +672,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMetaForUpdateWalkthroughLambda);
 
     //The newly generated function-name should use UUID2
-    jest.spyOn(uuid, 'v4').mockReturnValueOnce(S3MockDataBuilder.mockPolicyUUID2);
+    (jest.spyOn(uuid, 'v4') as jest.SpyInstance).mockReturnValueOnce(S3MockDataBuilder.mockPolicyUUID2);
 
     const returnedResourcename = await updateWalkthrough(mockContext);
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -684,7 +684,7 @@ describe('migrate s3 and update s3 permission walkthrough tests', () => {
   let mockContext: $TSContext;
   beforeEach(() => {
     //Mock: UUID generation
-    jest.spyOn(uuid, 'v4').mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
+    (jest.spyOn(uuid, 'v4') as jest.SpyInstance).mockReturnValue(S3MockDataBuilder.mockPolicyUUID);
 
     //Mock: Context/Amplify-Meta
     mockContext = {
