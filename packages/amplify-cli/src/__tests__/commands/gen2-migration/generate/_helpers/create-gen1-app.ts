@@ -36,5 +36,5 @@ export async function createGen1App(meta: Record<string, unknown>): Promise<Gen1
   } as unknown as AwsClients);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- no real $TSContext needed
-  return Gen1App.create({} as any);
+  return Gen1App.create({} as any, 'test');
 }

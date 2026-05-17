@@ -26,10 +26,10 @@ const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
 
 ### Common Gen1 Configuration Extraction
 
-Creates a `Gen1App` facade that encapsulates all Gen1 app state — AWS clients, environment config, and the cloud backend snapshot. `Gen1App.create(context)` reads `team-provider-info.json`, fetches the app from the Amplify service, downloads the cloud backend from S3, and reads `amplify-meta.json`. The resulting instance is passed to all step constructors.
+Creates a `Gen1App` facade that encapsulates all Gen1 app state — AWS clients, environment config, and the cloud backend snapshot. `Gen1App.create(context, stepName)` reads `team-provider-info.json`, fetches the app from the Amplify service, downloads the cloud backend from S3 (with spinner progress), and reads `amplify-meta.json`. The resulting instance is passed to all step constructors.
 
 ```ts
-const gen1App = await Gen1App.create(context);
+const gen1App = await Gen1App.create(context, stepName);
 const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context, validations);
 ```
 
@@ -127,6 +127,8 @@ Atomic operation with `describe()`, `validate()`, and `execute()` methods. The `
 
 Logger that manages a spinner in normal mode and falls back to plain text output in debug mode. Consumers use `info`/`debug`/`warn` for messages and `push`/`pop` to manage hierarchical spinner context. Used by `Plan` to show progress during validation and execution.
 
+In non-debug mode, `debug()` calls are written to a log file at `$TMPDIR/amplify-gen2-migration/logs/gen2-migration-<timestamp>.log`. On failure, the error message includes the path to this log file so users can share it for troubleshooting without needing to re-run with `--debug`.
+
 ## CLI Interface
 
 ```bash
@@ -163,9 +165,9 @@ amplify gen2-migration <step> [options]
 - Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full validate/describe/execute lifecycle — the dispatcher doesn't manage operations directly.
 - Validations are embedded in operations via `validate()`. When a validation fails, its `report` field is displayed in a "Failed Validations Report" section before the summary table.
 - `SpinningLogger` is the only logger class — the deprecated `Logger` subclass has been removed. Import directly from `_common/spinning-logger.ts`.
-- Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
+- Automatic rollback is enabled by default but can be disabled with `--no-rollback`. If rollback itself fails, the error is printed but the original execution error is still thrown (rollback failure doesn't mask the root cause).
 - The `--rollback` flag explicitly executes rollback operations for a step.
-- `Gen1App` is the single facade for all Gen1 app state. It is created once in the dispatcher via `Gen1App.create(context)` and passed to all steps. Steps access `gen1App.appId`, `gen1App.region`, `gen1App.envName`, etc. instead of individual constructor params.
+- `Gen1App` is the single facade for all Gen1 app state. It is created once in the dispatcher via `Gen1App.create(context, stepName)` and passed to all steps. Steps access `gen1App.appId`, `gen1App.region`, `gen1App.envName`, etc. instead of individual constructor params.
 - `AwsClients` has a private constructor — use `AwsClients.create(context)` in production. Tests bypass this with `new (AwsClients as any)(...)`.
 - Assessment uses a `Support` type with `level` and `note` fields. Each assessor provides its own note for unsupported entries. Use the `supported()`, `unsupported(note)`, `notApplicable()` helpers. The standard unsupported note is `'requires adding code after generate'`.
 - `KNOWN_RESOURCE_KEYS` (in `gen1-app.ts`) defines all supported category:service pairs. Unknown resources get the `'UNKNOWN'` key.

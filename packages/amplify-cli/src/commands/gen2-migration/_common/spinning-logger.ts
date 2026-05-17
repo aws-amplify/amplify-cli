@@ -1,5 +1,10 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import { printer, AmplifySpinner, isDebug as globalIsDebug } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
+
+const LOG_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration', 'logs');
 
 /**
  * Logger that manages a spinner in normal mode and falls back to
@@ -10,14 +15,16 @@ export class SpinningLogger {
   private static readonly SEPARATOR = ' → ';
   private readonly segments: string[] = [];
   private readonly spinner: AmplifySpinner;
-  private readonly debugMode: boolean;
+  public readonly debugMode: boolean;
+  public readonly logFilePath: string;
   private spinnerActive = false;
 
   constructor(private readonly prefix: string, options?: { readonly debug?: boolean }) {
     this.debugMode = options?.debug ?? globalIsDebug;
     this.spinner = new AmplifySpinner();
+    this.logFilePath = path.join(LOG_DIR, `gen2-migration-${Date.now()}.log`);
 
-    // Restore the cursor if the process is interrupted while the spinner is active
+    // Restore the cursor if the process is interrupted while the spinner is active.
     process.on('SIGINT', () => {
       if (this.spinnerActive) {
         this.spinner.stop();
@@ -34,7 +41,7 @@ export class SpinningLogger {
     this.segments.length = 0;
     this.segments.push(text);
     if (this.debugMode) {
-      this.printLine(text, '→');
+      this.debug(text);
       return;
     }
     this.spinnerActive = true;
@@ -58,7 +65,7 @@ export class SpinningLogger {
   public succeed(text: string): void {
     this.segments.length = 0;
     if (this.debugMode) {
-      this.printLine(text, '•');
+      this.printLine(text, '✔');
       return;
     }
     if (this.spinnerActive) {
@@ -73,7 +80,7 @@ export class SpinningLogger {
   public failed(text: string): void {
     this.segments.length = 0;
     if (this.debugMode) {
-      this.printLine(text, '•');
+      this.printLine(text, '✘');
       return;
     }
     if (this.spinnerActive) {
@@ -88,7 +95,8 @@ export class SpinningLogger {
   public push(text: string): void {
     this.segments.push(text);
     if (this.debugMode) {
-      this.printLine(text, '→');
+      // in debug this will just show without the previous segment context
+      // and make it hard to read. our debug logs should suffice.
       return;
     }
     if (this.spinnerActive) {
@@ -110,15 +118,20 @@ export class SpinningLogger {
    * Logs an informational message. Pauses the spinner if active.
    */
   public info(message: string): void {
-    this.withSpinnerPaused(() => this.printLine(message, '•'));
+    this.withSpinnerPaused(() => this.printLine(message, this.debugMode ? '[INFO]' : '•'));
   }
 
   /**
    * Logs a debug message (only visible in debug mode).
    */
   public debug(message: string): void {
+    const line = this.formatLine(message, '[DEBUG]');
     if (this.debugMode) {
-      printer.debug(this.formatLine(message, '·'));
+      printer.debug(line);
+    } else {
+      // log debug statements to a file regardless of mode for easier
+      // bug reporting.
+      this.appendToFile(line);
     }
   }
 
@@ -126,11 +139,13 @@ export class SpinningLogger {
    * Logs a warning message. Pauses the spinner if active.
    */
   public warn(message: string): void {
+    const line = this.formatLine(message, '[WARN]');
     if (this.debugMode) {
-      printer.warn(this.formatLine(message, '·'));
+      printer.warn(line);
       return;
+    } else {
+      this.withSpinnerPaused(() => printer.warn(line));
     }
-    this.withSpinnerPaused(() => printer.warn(this.formatLine(message, '·')));
   }
 
   /**
@@ -178,6 +193,14 @@ export class SpinningLogger {
 
   private formatLine(message: string, bullet: string): string {
     return `[${new Date().toISOString()}] [${chalk.bold(this.prefix)}] ${bullet} ${message}`;
+  }
+
+  private appendToFile(line: string) {
+    const dir = path.dirname(this.logFilePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.appendFileSync(this.logFilePath, `${line}\n`, { encoding: 'utf-8' });
   }
 
   private printLine(message: string, bullet: string): void {
