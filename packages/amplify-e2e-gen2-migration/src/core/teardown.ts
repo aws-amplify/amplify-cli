@@ -11,7 +11,14 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListAppsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
-import { S3Client, paginateListObjectsV2, DeleteObjectsCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  paginateListObjectsV2,
+  DeleteObjectsCommand,
+  CreateBucketCommand,
+  PutObjectCommand,
+  DeleteBucketCommand,
+} from '@aws-sdk/client-s3';
 import { Logger } from './logger';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 
@@ -35,6 +42,7 @@ export class Teardown {
   private readonly logger: Logger;
   private readonly clientConfig: { credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider };
   private readonly errors: string[] = [];
+  private templateBucket: string | undefined;
 
   /**
    * @param deploymentName The deployment name prefix used to discover stacks.
@@ -55,6 +63,8 @@ export class Teardown {
     this.logger.info('Starting teardown...');
 
     const cfnClient = new CloudFormationClient(this.clientConfig);
+    const s3Client = new S3Client(this.clientConfig);
+
     const stackPrefix = `amplify-${this.deploymentName}-`;
     const allStatuses = [
       StackStatus.CREATE_COMPLETE,
@@ -78,6 +88,8 @@ export class Teardown {
     }
     this.logger.info(`Discovered ${rootStacks.length} root stack(s) matching prefix '${stackPrefix}'`);
 
+    await this.createTemplateBucket(s3Client);
+
     await this.setDeletionPolicies(cfnClient, rootStacks);
     await this.disableDeletionProtection(cfnClient, rootStacks);
 
@@ -86,12 +98,63 @@ export class Teardown {
     await this.deleteGen2Sandbox(cfnClient, rootStacks);
     await this.deleteHoldingStacks(cfnClient, rootStacks);
 
+    await this.deleteTemplateBucket(s3Client);
+
     if (this.errors.length > 0) {
       const summary = this.errors.map((e, i) => `  ${i + 1}. ${e}`).join('\n');
       throw new Error(`Teardown completed with ${this.errors.length} error(s):\n${summary}`);
     }
 
     this.logger.info('Teardown complete');
+  }
+
+  // ============================================================
+  // Template bucket management
+  // ============================================================
+
+  /** Create a dedicated S3 bucket for uploading large CloudFormation templates. */
+  private async createTemplateBucket(s3Client: S3Client): Promise<void> {
+    const bucketName = `amplify-teardown-templates-${this.deploymentName}-${Date.now()}`;
+    this.logger.info(`Creating template bucket: ${bucketName}`);
+    try {
+      await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+      this.templateBucket = bucketName;
+    } catch (e) {
+      this.recordError('Create template bucket', e);
+    }
+  }
+
+  /** Empty and delete the dedicated template bucket. */
+  private async deleteTemplateBucket(s3Client: S3Client): Promise<void> {
+    if (!this.templateBucket) return;
+    try {
+      this.logger.info(`Cleaning up template bucket: ${this.templateBucket}`);
+      await this.emptyBucket(this.templateBucket);
+      await s3Client.send(new DeleteBucketCommand({ Bucket: this.templateBucket }));
+      this.logger.info(`Deleted template bucket: ${this.templateBucket}`);
+    } catch (e) {
+      this.recordError('Delete template bucket', e);
+    }
+  }
+
+  /** Upload a template to S3 and return the URL for use with TemplateURL. */
+  private async uploadTemplate(s3Client: S3Client, stackName: string, templateBody: string): Promise<string> {
+    if (!this.templateBucket) {
+      throw new Error('Template bucket was not created. Cannot upload template.');
+    }
+    // Stack name may be an ARN (e.g. arn:aws:cloudformation:us-east-1:123456789:stack/my-stack/guid).
+    const name = stackName.startsWith('arn:') ? stackName.split('/')[1] ?? stackName : stackName;
+    const key = `${name}-${Date.now()}.json`;
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: this.templateBucket,
+        Key: key,
+        Body: templateBody,
+        ContentType: 'application/json',
+      }),
+    );
+    const region = await s3Client.config.region();
+    return `https://${this.templateBucket}.s3.${region}.amazonaws.com/${key}`;
   }
 
   // ============================================================
@@ -180,9 +243,8 @@ export class Teardown {
       if (!resources) return;
 
       let modified = false;
-      for (const [logicalId, resource] of Object.entries(resources)) {
+      for (const resource of Object.values(resources)) {
         if (resource.DeletionPolicy && resource.DeletionPolicy !== 'Delete') {
-          this.logger.info(`Updating ${logicalId}.DeletionPolicy: ${resource.DeletionPolicy} -> Delete`);
           resource.DeletionPolicy = 'Delete';
           modified = true;
         }
@@ -197,11 +259,16 @@ export class Teardown {
         UsePreviousValue: true,
       }));
 
+      const templateJson = JSON.stringify(template);
+      const s3Client = new S3Client(this.clientConfig);
+      const templateUrl = await this.uploadTemplate(s3Client, stackName, templateJson);
+
       this.logger.info(`Updating DeletionPolicy of stateful resources in stack ${stackName} to 'Delete'`);
+
       await cfnClient.send(
         new UpdateStackCommand({
           StackName: stackName,
-          TemplateBody: JSON.stringify(template),
+          TemplateURL: templateUrl,
           Parameters: existingParams,
           Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
         }),
@@ -420,20 +487,25 @@ export class Teardown {
       .map((r) => r.PhysicalResourceId!);
     if (buckets.length === 0) return;
 
-    const s3 = new S3Client(this.clientConfig);
     for (const bucket of buckets) {
-      try {
-        this.logger.info(`Emptying bucket: ${bucket} (stack: ${stackName})`);
-        for await (const page of paginateListObjectsV2({ client: s3 }, { Bucket: bucket })) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const objects = (page.Contents ?? []).filter((o) => o.Key).map((o) => ({ Key: o.Key! }));
-          if (objects.length > 0) {
-            await s3.send(new DeleteObjectsCommand({ Bucket: bucket, Delete: { Objects: objects, Quiet: true } }));
-          }
+      this.logger.info(`Emptying bucket: ${bucket} (stack: ${stackName})`);
+      await this.emptyBucket(bucket);
+    }
+  }
+
+  /** Delete all objects in an S3 bucket. */
+  private async emptyBucket(bucket: string): Promise<void> {
+    const s3 = new S3Client(this.clientConfig);
+    try {
+      for await (const page of paginateListObjectsV2({ client: s3 }, { Bucket: bucket })) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const objects = (page.Contents ?? []).filter((o) => o.Key).map((o) => ({ Key: o.Key! }));
+        if (objects.length > 0) {
+          await s3.send(new DeleteObjectsCommand({ Bucket: bucket, Delete: { Objects: objects, Quiet: true } }));
         }
-      } catch (e) {
-        this.recordError(`Empty bucket (${bucket})`, e);
       }
+    } catch (e) {
+      this.recordError(`Empty bucket (${bucket})`, e);
     }
   }
 
