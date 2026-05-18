@@ -1264,4 +1264,63 @@ describe('FunctionGenerator', () => {
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");
   });
+
+  it('uses original model name casing from schema for table grants and env vars', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('type randomItem @model { id: ID! }\ntype MealPlan @model { id: ID! }');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_RANDOMITEMTABLE_NAME: 'randomItem-abc-main',
+          API_MYAPI_RANDOMITEMTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/randomItem-abc-main',
+          API_MYAPI_MEALPLANTABLE_NAME: 'MealPlan-abc-main',
+          API_MYAPI_MEALPLANTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/MealPlan-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+
+    // The table reference should use original model names, not naive capitalization
+    expect(resourceTs).toContain('randomItem');
+    expect(resourceTs).toContain('MealPlan');
+    // Should NOT contain incorrectly cased versions
+    expect(resourceTs).not.toContain('Randomitem');
+    expect(resourceTs).not.toContain('Mealplan');
+  });
 });

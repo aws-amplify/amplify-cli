@@ -35,6 +35,7 @@ export class FunctionGenerator implements Planner {
   private readonly resource: DiscoveredResource;
   private readonly renderer: FunctionRenderer;
   private readonly logger: SpinningLogger;
+  private cachedModelNames: readonly string[] | undefined;
 
   public constructor(options: FunctionGeneratorOptions) {
     this.gen1App = options.gen1App;
@@ -51,6 +52,16 @@ export class FunctionGenerator implements Planner {
   }
   public setS3Generator(s3Generator: S3Generator): void {
     this.s3Generator = s3Generator;
+  }
+
+  /**
+   * Returns model names extracted from the GraphQL schema.
+   * Caches the result so the schema is read at most once per generator.
+   */
+  private readModelNames(): readonly string[] {
+    if (this.cachedModelNames) return this.cachedModelNames;
+    this.cachedModelNames = readSchemaModelNames(this.gen1App);
+    return this.cachedModelNames;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -76,7 +87,7 @@ export class FunctionGenerator implements Planner {
     this.logger.debug(`Fetching Lambda function schedule '${deployedName}'`);
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
     const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
-    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {});
+    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {}, this.readModelNames());
 
     const dynamoActions = this.extractDynamoActions();
     const kinesisActions = this.extractKinesisActions();
@@ -104,6 +115,7 @@ export class FunctionGenerator implements Planner {
       dataTriggerModels,
       storageTriggerTables,
       unMappedAuthActions,
+      modelNames: this.readModelNames(),
       kinesisConfig: hasAnalytics
         ? {
             resourceName: this.gen1App.singleResourceName('analytics', 'Kinesis'),
@@ -446,4 +458,28 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
 
   const unMapped = cognitoActions.filter((a) => !covered.has(a));
   return { permissions: result as AuthPermissions, unMapped: unMapped };
+}
+
+/**
+ * Reads the GraphQL schema from the Gen1 app and extracts model names.
+ * Returns an empty array when no AppSync API exists.
+ */
+function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
+  const apiCategory = gen1App.categoryMeta('api');
+  if (!apiCategory) return [];
+  const apiEntry = Object.entries(apiCategory).find(([, v]) => (v as Record<string, unknown>).service === 'AppSync');
+  if (!apiEntry) return [];
+  const [apiName] = apiEntry;
+  try {
+    const schema = gen1App.file(path.join('api', apiName, 'schema.graphql'));
+    const modelRegex = /type\s+(\w+)\s+@model/g;
+    const names: string[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = modelRegex.exec(schema)) !== null) {
+      names.push(match[1]);
+    }
+    return names;
+  } catch {
+    return [];
+  }
 }
