@@ -83,6 +83,7 @@ export class Gen1App {
   public readonly aws: AwsFetcher;
   public readonly ccbDir: string;
   public readonly rootStackName: string;
+  public readonly deploymentBucket: string;
   public readonly statefulResourceTypes: string[];
 
   // eslint-disable-next-line @typescript-eslint/naming-convention -- private backing field for meta()
@@ -97,6 +98,7 @@ export class Gen1App {
     this.aws = new AwsFetcher(this.clients);
     this._meta = JSONUtilities.readJson<$TSMeta>(path.join(this.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;
     this.rootStackName = this._meta.providers.awscloudformation.StackName;
+    this.deploymentBucket = this._meta.providers.awscloudformation.DeploymentBucketName;
     this.region = this._meta.providers.awscloudformation.Region;
     this.statefulResourceTypes = [...Array.from(DEFAULT_STATEFUL_RESOURCES)];
     if (props.additionalStatefulResourceTypes) {

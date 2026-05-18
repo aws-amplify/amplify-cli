@@ -5,6 +5,10 @@ import { StackFacade } from '../../../../../commands/gen2-migration/refactor/sta
 import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
+import { S3Client } from '@aws-sdk/client-s3';
+
+// Mock S3 globally so uploadTemplate calls succeed
+mockClient(S3Client);
 import {
   CloudFormationClient,
   DescribeStacksCommand,
@@ -57,11 +61,12 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+    const cfn = new Cfn(gen1App, noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
@@ -84,11 +89,12 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+    const cfn = new Cfn(gen1App, noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
@@ -123,11 +129,12 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+    const cfn = new Cfn(gen1App, noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
@@ -149,11 +156,12 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
 
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+    const cfn = new Cfn(gen1App, noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },

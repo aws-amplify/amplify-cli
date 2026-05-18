@@ -155,8 +155,10 @@ export class CloudFormationMock {
       async (input: cloudformation.CreateStackRefactorCommandInput): Promise<cloudformation.CreateStackRefactorCommandOutput> => {
         const source = input.StackDefinitions![0];
         const target = input.StackDefinitions![1];
-        this._setTemplate(source.StackName!, source.TemplateBody!);
-        this._setTemplate(target.StackName!, target.TemplateBody!);
+        const sourceBody = source.TemplateBody ?? this.resolveTemplateUrl(source.TemplateURL);
+        const targetBody = target.TemplateBody ?? this.resolveTemplateUrl(target.TemplateURL);
+        if (sourceBody) this._setTemplate(source.StackName!, sourceBody);
+        if (targetBody) this._setTemplate(target.StackName!, targetBody);
         return { StackRefactorId: `${Date.now()}`, $metadata: {} };
       },
     );
@@ -202,8 +204,9 @@ export class CloudFormationMock {
       .on(cloudformation.ExecuteChangeSetCommand)
       .callsFake(async (input: cloudformation.ExecuteChangeSetCommandInput): Promise<cloudformation.ExecuteChangeSetCommandOutput> => {
         const pending = this._pendingChangeSets.get(input.StackName!);
-        if (pending?.TemplateBody) {
-          this._setTemplate(input.StackName!, pending.TemplateBody);
+        const body = pending?.TemplateBody ?? this.resolveTemplateUrl(pending?.TemplateURL);
+        if (body) {
+          this._setTemplate(input.StackName!, body);
         }
         this._pendingChangeSets.delete(input.StackName!);
         return { $metadata: {} };
@@ -214,12 +217,20 @@ export class CloudFormationMock {
     this.mock
       .on(cloudformation.UpdateStackCommand)
       .callsFake(async (input: cloudformation.UpdateStackCommandInput): Promise<cloudformation.UpdateStackCommandOutput> => {
-        this._setTemplate(input.StackName!, input.TemplateBody!);
+        const body = input.TemplateBody ?? this.resolveTemplateUrl(input.TemplateURL);
+        if (body) {
+          this._setTemplate(input.StackName!, body);
+        }
         return { StackId: input.StackName, $metadata: {} };
       });
   }
 
   private _setTemplate(stackName: string, templateBody: string) {
     this._templateForStack.set(stackName, templateBody);
+  }
+
+  private resolveTemplateUrl(url: string | undefined): string | undefined {
+    if (!url) return undefined;
+    return this.app.clients.s3.resolveTemplateUrl(url);
   }
 }

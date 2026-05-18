@@ -69,7 +69,9 @@ describe('AmplifyMigrationLockStep', () => {
           amplify: { send: mockAmplifySend },
           appSync: { send: jest.fn() },
           dynamoDB: { send: jest.fn() },
+          s3: { send: jest.fn(), config: { region: () => 'us-east-1' } },
         },
+        deploymentBucket: 'test-deployment-bucket',
         aws: {
           listNestedStacks: jest.fn().mockImplementation((stackName: string) => {
             if (stackName === 'test-root-stack') {
@@ -300,7 +302,9 @@ describe('AmplifyMigrationLockStep', () => {
             amplify: { send: mockAmplifySend },
             appSync: { send: jest.fn() },
             dynamoDB: { send: jest.fn() },
+            s3: { send: jest.fn(), config: { region: () => 'us-east-1' } },
           },
+          deploymentBucket: 'test-deployment-bucket',
           aws: {
             listNestedStacks: jest.fn().mockResolvedValue([
               {

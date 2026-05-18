@@ -20,6 +20,10 @@ import {
   DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
 import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
+import { S3Client } from '@aws-sdk/client-s3';
+
+// Mock S3 globally so uploadTemplate calls succeed
+mockClient(S3Client);
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -69,8 +73,8 @@ function makeInstances() {
   (clients as any).cloudFormation = new CloudFormationClient({});
   const gen1Env = new StackFacade(clients, 'gen1-root');
   const gen2Branch = new StackFacade(clients, 'gen2-root');
-  const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
   const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+  const cfn = new Cfn(gen1App, noOpLogger());
   return { clients, gen1Env, gen2Branch, cfn, gen1App };
 }
 

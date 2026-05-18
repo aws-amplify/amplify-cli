@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Resources": {
-    "quotegeneratorbegen2xlambdaServiceRole17D69F84": {
+    "quotegeneratorbegen2xlambdaServiceRole43FA8E55": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -51,7 +51,7 @@
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function/quotegeneratorbe-gen2-x-lambda/ServiceRole/Resource"
       }
     },
-    "quotegeneratorbegen2xlambdaF51E07BE": {
+    "quotegeneratorbegen2xlambdaBE61AEC8": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Architectures": [
@@ -78,7 +78,7 @@
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [
-            "quotegeneratorbegen2xlambdaServiceRole17D69F84",
+            "quotegeneratorbegen2xlambdaServiceRole43FA8E55",
             "Arn"
           ]
         },
@@ -100,7 +100,7 @@
         "Timeout": 25
       },
       "DependsOn": [
-        "quotegeneratorbegen2xlambdaServiceRole17D69F84"
+        "quotegeneratorbegen2xlambdaServiceRole43FA8E55"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -114,7 +114,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNOw6DQAxF0bXQG4cMSvqAlJICFoDMjEHDx0jxEArE3iNAqU7zdJ9B87hjEtGqsXVDPPoGt4I1sKsC2QFo1XobaWoc1TI77hWLk/ciNvhZwNOEWzmPDHkrhztoWpMqB8XXAWiK2WIHDhkpw1XDvJV/Y4dzVwXqvHQ7HEfY6+1rDN6fmES9eh9/Fgl+Yiwvf1Ota1y7AAAA"
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zXNuw6CQBCF4WehH0Zc1F5MLCngAciwO5DlMiTOIgXh3Q0Qq685+Y9Bc79hEtGisXV9PPga15w1sCsD2R5o0WodaKwdVTI57hTzg/csNvhJwNOIazENDK9GdjfQtCJVDorPHdAUs9n2HDJShrOGr0b+jQ2OXRmo9dJusB9hp5evMXh9YBJ16n38mSX4kbE4/QHaOuKsuwAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/function/CDKMetadata/Default"
@@ -389,9 +389,9 @@
     }
   },
   "Outputs": {
-    "amplifybackendonlye2esandbox26ff64ae95functionquotegeneratorbegen2xlambda6E6631D2Ref": {
+    "amplifybackendonlye2esandbox5a0ee18a1bfunctionquotegeneratorbegen2xlambdaB0DD6AD0Ref": {
       "Value": {
-        "Ref": "quotegeneratorbegen2xlambdaF51E07BE"
+        "Ref": "quotegeneratorbegen2xlambdaBE61AEC8"
       }
     }
   }

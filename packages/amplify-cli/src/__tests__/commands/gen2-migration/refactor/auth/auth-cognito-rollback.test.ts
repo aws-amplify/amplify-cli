@@ -21,6 +21,10 @@ import {
   ListIdentityProvidersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Cfn } from '../../../../../commands/gen2-migration/_common/cfn';
+import { S3Client } from '@aws-sdk/client-s3';
+
+// Mock S3 globally so uploadTemplate calls succeed
+mockClient(S3Client);
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -132,11 +136,12 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
     setupBasicMocks();
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+    const cfn = new Cfn(gen1App, noOpLogger());
     const refactorer = new AuthCognitoRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
@@ -314,14 +319,15 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
   function createRollbackRefactorer() {
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
     return new AuthCognitoRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
-      new Cfn(new CloudFormationClient({}), noOpLogger()),
+      new Cfn(gen1App, noOpLogger()),
     );
   }
 
@@ -570,14 +576,15 @@ describe('AuthCognitoRollbackRefactorer — holding stack behavior', () => {
   function createRollbackRefactorer() {
     const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
+    const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
     return new AuthCognitoRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
-      { region: 'us-east-1', clients } as unknown as Gen1App,
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
-      new Cfn(new CloudFormationClient({}), noOpLogger()),
+      new Cfn(gen1App, noOpLogger()),
     );
   }
 

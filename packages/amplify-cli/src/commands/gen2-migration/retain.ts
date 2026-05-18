@@ -131,7 +131,7 @@ export class AmplifyMigrationRetainStep extends AmplifyMigrationStep {
    * already fully retained.
    */
   private buildRetainOperation(stackId: string, resource?: DiscoveredResource): AmplifyMigrationOperation {
-    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+    const cfn = new Cfn(this.gen1App, this.logger);
     const stackName = extractStackNameFromId(stackId);
 
     return {

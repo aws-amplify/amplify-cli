@@ -1,7 +1,7 @@
 {
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket18F709CB": {
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket08BB617F": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -65,10 +65,10 @@
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x/Bucket/Resource"
       }
     },
-    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketPolicy939A1B40": {
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketPolicy6DC62CB0": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": "amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+        "Bucket": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
         "PolicyDocument": {
           "Statement": [
             {
@@ -83,12 +83,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/*"
                     ]
                   ]
@@ -107,12 +107,12 @@
                 "AWS": "arn:aws:iam::123456789012:role/amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/*"
                     ]
                   ]
@@ -129,11 +129,11 @@
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x/Bucket/Policy/Resource"
       }
     },
-    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketAutoDeleteObjectsCustomResourceAD12AD28": {
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketAutoDeleteObjectsCustomResource2F5948E5": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-        "BucketName": "amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n"
+        "BucketName": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain",
@@ -187,7 +187,7 @@
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              "amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+              "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
               " S3 bucket."
             ]
           ]
@@ -201,24 +201,24 @@
         "aws:asset:property": "Code"
       }
     },
-    "BACKENDONLYCB1A13AB81664ECAA7D015068AB2D016BEE08GEN2TALHWAIJYGBUCKETNAMEParameterB50972AE": {
+    "BACKENDONLYCB1A13AB81664ECAA7D015068AB2D016E6E2DGEN2CKQFAADCIVBUCKETNAMEParameter4DFB2161": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
-        "Name": "/amplify/resource_reference/backendonly/e2e-sandbox-x/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_016_BEE_08_GEN_2_TALHWAIJYG_BUCKET_NAME",
+        "Name": "/amplify/resource_reference/backendonly/e2e-sandbox-x/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_016_E_6_E_2_D_GEN_2_CKQFAADCIV_BUCKET_NAME",
         "Tags": {
           "amplify:deployment-type": "sandbox",
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": "amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n"
+        "Value": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_016_BEE_08_GEN_2_TALHWAIJYG_BUCKET_NAMEParameter/Resource"
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_016_E_6_E_2_D_GEN_2_CKQFAADCIV_BUCKET_NAMEParameter/Resource"
       }
     },
-    "amplifybackendonlye2esandbox26ff64ae95storageAccess34513EEBC": {
+    "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess3BB1C7193": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -230,7 +230,7 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                    "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                     "/public/*"
                   ]
                 ]
@@ -247,14 +247,14 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n"
+              "Resource": "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifybackendonlye2esandbox26ff64ae95storageAccess34513EEBC",
+        "PolicyName": "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess3BB1C7193",
         "Roles": [
-          "amplify-backendonl2604261-amplifyAuthunauthenticate-KwRXukFGjgZa"
+          "amplify-backendonl2605150-amplifyAuthunauthenticate-DpytVdr2sIt7"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -263,7 +263,7 @@
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/amplify-backendonly-e2e-sandbox-x--storageAccess3/Resource"
       }
     },
-    "amplifybackendonlye2esandbox26ff64ae95storageAccess4BD5ADFD5": {
+    "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess4424CE1A2": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -276,7 +276,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/public/*"
                     ]
                   ]
@@ -285,7 +285,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/protected/*"
                     ]
                   ]
@@ -294,7 +294,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/private/*"
                     ]
                   ]
@@ -309,7 +309,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/public/*"
                     ]
                   ]
@@ -318,7 +318,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/protected/*"
                     ]
                   ]
@@ -327,7 +327,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/private/*"
                     ]
                   ]
@@ -349,7 +349,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n"
+              "Resource": "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
             },
             {
               "Action": "s3:DeleteObject",
@@ -359,7 +359,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/public/*"
                     ]
                   ]
@@ -368,7 +368,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/protected/*"
                     ]
                   ]
@@ -377,7 +377,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:aws:s3:::amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n",
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
                       "/private/*"
                     ]
                   ]
@@ -387,9 +387,9 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "amplifybackendonlye2esandbox26ff64ae95storageAccess4BD5ADFD5",
+        "PolicyName": "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess4424CE1A2",
         "Roles": [
-          "amplify-backendonl2604261-amplifyAuthauthenticatedU-ZGQ2GmBmoCuX"
+          "amplify-backendonl2605150-amplifyAuthauthenticatedU-O6YZQ1EpMmo4"
         ]
       },
       "UpdateReplacePolicy": "Delete",
@@ -401,7 +401,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Ts3WCQ7ctnFm1XpECGWpqdw2iRS721CU/466SBSOnPxaz/tRQfW4gfVKX7k07VCOdIb4iizYNqLNoPSVPyJvIe4nM6Cow6fL6i0Wlm7kiufid3j28xbuiCFbd5P4FxxR8Hju0QgX6V1lVPuRzNfSmv9/dOdAI1rQortXJ8VsITYSyHW1DtqiYJg3fp6kSFuIy3pWKanDxOLtCdlPweCMFv0H1cFfqMWw14xqx4zSiO7IdUk53yL0/HCpKtg8wXrVM1EZJidkEU75fgN6LNUTegEAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Ts3ogAO3bZxZtR4RQllqKrdNIsXuNhTlv6MuEoUjJ7/W835UUD0+wHqlL1yadihHOkF8RRZsG9FmUPrCH5E3EHeTGVDU/tNl9RYLS1dyxXPxOzz7eQM3xJCt20n8C44oeDj1aISL9K4yqv1I5mtpzf8/unOgES1o0d2qk2K2EBsJ5LpaB21RMMwbP09SpC3EZT2rlNR+YvH2iOynYHBGi/6D6uDP1GLYaUa1ZUZpRHfkuqScbxF6vjtXFdw/wXrVM1EZJidkEY75fgMik1QqegEAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/CDKMetadata/Default"
@@ -676,16 +676,16 @@
     }
   },
   "Parameters": {
-    "referencetoamplifybackendonlye2esandbox26ff64ae95authNestedStackauthNestedStackResourceFF5A04B3Outputsamplifybackendonlye2esandbox26ff64ae95authamplifyAuthunauthenticatedUserRoleF1059779Ref": {
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef": {
       "Type": "String"
     },
-    "referencetoamplifybackendonlye2esandbox26ff64ae95authNestedStackauthNestedStackResourceFF5A04B3Outputsamplifybackendonlye2esandbox26ff64ae95authamplifyAuthauthenticatedUserRoleB566BDCARef": {
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifybackendonlye2esandbox26ff64ae95storagebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket3C04B633Ref": {
-      "Value": "amplify-backendonl2604261-backendonlycb1a13ab81664-ow7eqtjgg86n"
+    "amplifybackendonlye2esandbox5a0ee18a1bstoragebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket0CF0231BRef": {
+      "Value": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
     }
   }
 }

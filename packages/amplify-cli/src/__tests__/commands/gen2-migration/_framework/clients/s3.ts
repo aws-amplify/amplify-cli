@@ -33,14 +33,38 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
  */
 export class S3Mock {
   public readonly mock;
+  private readonly _uploadedObjects: Map<string, string> = new Map();
 
   constructor(private readonly app: MigrationApp) {
     this.mock = mockClient(s3.S3Client);
+    this.mockPutObject();
     this.mockGetBucketAccelerateConfiguration();
     this.mockGetBucketVersioning();
     this.mockGetBucketEncryption();
     this.mockGetObject();
     this.mockGetBucketNotificationConfiguration();
+  }
+
+  /** Returns the body of a previously uploaded object by its S3 key, or undefined. */
+  public getUploadedObject(key: string): string | undefined {
+    return this._uploadedObjects.get(key);
+  }
+
+  /** Resolves a TemplateURL to its uploaded body. Returns undefined if not found. */
+  public resolveTemplateUrl(url: string): string | undefined {
+    // URL format: https://s3.<region>.amazonaws.com/<bucket>/<key>
+    const match = url.match(/amazonaws\.com\/[^/]+\/(.+)$/);
+    if (!match) return undefined;
+    return this._uploadedObjects.get(match[1]);
+  }
+
+  private mockPutObject() {
+    this.mock.on(s3.PutObjectCommand).callsFake(async (input: s3.PutObjectCommandInput) => {
+      if (input.Key && input.Body) {
+        this._uploadedObjects.set(input.Key, typeof input.Body === 'string' ? input.Body : input.Body.toString());
+      }
+      return { $metadata: {} };
+    });
   }
 
   private mockGetBucketAccelerateConfiguration() {

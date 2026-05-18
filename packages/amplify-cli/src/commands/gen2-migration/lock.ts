@@ -332,7 +332,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private async retainResource(appResource: DiscoveredResource, stackId: string): Promise<AmplifyMigrationOperation[]> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+    const cfn = new Cfn(this.gen1App, this.logger);
 
     const stackName = extractStackNameFromId(stackId);
     const template = await cfn.fetchTemplate(stackId);
@@ -408,7 +408,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       validate: () => ({
         description: `Stack Integrity: ${stackName}`,
         run: async () => {
-          const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+          const cfn = new Cfn(this.gen1App, this.logger);
           const deployedTemplate = await cfn.fetchTemplate(stackId);
 
           const missingResources = new CLITable({

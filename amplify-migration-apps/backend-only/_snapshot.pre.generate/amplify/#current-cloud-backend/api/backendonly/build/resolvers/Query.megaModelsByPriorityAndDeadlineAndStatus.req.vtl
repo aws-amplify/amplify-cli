@@ -1,0 +1,143 @@
+## [Start] Set query expression for key **
+#set( $modelQueryExpression = {} )
+## [Start] Validate key arguments. **
+#if( !$util.isNull($ctx.args.deadlineStatus) && $util.isNullOrBlank($ctx.args.priority) )
+  $util.error("When providing argument 'deadlineStatus' you must also provide 'priority'.", "InvalidArgumentsError")
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) )
+  #set( $sortKeyArgumentOperations = $ctx.args.deadlineStatus.keySet() )
+  #if( $sortKeyArgumentOperations.size() > 1 )
+    $util.error("Argument deadlineStatus must specify at most one key condition operation.", "InvalidArgumentsError")
+  #end
+  #foreach( $operation in $sortKeyArgumentOperations )
+    #if( $operation == "between" )
+      #if( $ctx.args.deadlineStatus.between.size() != 2 )
+        $util.error("Argument 'deadlineStatus.between' expects exactly two elements.", "InvalidArgumentsError")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.deadlineStatus.between[0].status) && $util.isNullOrBlank($ctx.args.deadlineStatus.between[0].deadline) )
+        $util.error("When providing argument 'deadlineStatus.between[0].status' you must also provide 'deadlineStatus.between[0].deadline'.", "InvalidArgumentsError")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.deadlineStatus.between[1].status) && $util.isNullOrBlank($ctx.args.deadlineStatus.between[1].deadline) )
+        $util.error("When providing argument 'deadlineStatus.between[1].status' you must also provide 'deadlineStatus.between[1].deadline'.", "InvalidArgumentsError")
+      #end
+    #else
+      #if( !$util.isNullOrBlank($ctx.args.deadlineStatus.get("$operation").status) && $util.isNullOrBlank($ctx.args.deadlineStatus.get("$operation").deadline) )
+        $util.error("When providing argument 'deadlineStatus.$operation.status' you must also provide 'deadlineStatus.$operation.deadline'.", "InvalidArgumentsError")
+      #end
+    #end
+  #end
+#end
+## [End] Validate key arguments. **
+#if( !$util.isNull($ctx.args.priority) )
+  #set( $modelQueryExpression.expression = "#priority = :priority" )
+  #set( $modelQueryExpression.expressionNames = {
+  "#priority": "priority"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  ":priority": {
+      "S": "$ctx.args.priority"
+  }
+} )
+#end
+## [Start] Applying Key Condition **
+#set( $sortKeyValue = "" )
+#set( $sortKeyValue2 = "" )
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.beginsWith) )
+#if( !$util.isNull($ctx.args.deadlineStatus.beginsWith.deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.beginsWith.deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.beginsWith.status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.beginsWith.status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.between) )
+  #if( $ctx.args.deadlineStatus.between.size() != 2 )
+    $util.error("Argument deadlineStatus.between expects exactly 2 elements.")
+  #end
+#if( !$util.isNull($ctx.args.deadlineStatus.between[0].deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.between[0].deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.between[0].status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.between[0].status" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.between[1].deadline) ) #set( $sortKeyValue2 = "$ctx.args.deadlineStatus.between[1].deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.between[1].status) ) #set( $sortKeyValue2 = "$sortKeyValue2#$ctx.args.deadlineStatus.between[1].status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey0", { "S": "$sortKeyValue" }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey1", { "S": "$sortKeyValue2" }))
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.eq) )
+#if( !$util.isNull($ctx.args.deadlineStatus.eq.deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.eq.deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.eq.status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.eq.status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey = :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.lt) )
+#if( !$util.isNull($ctx.args.deadlineStatus.lt.deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.lt.deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.lt.status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.lt.status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey < :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.le) )
+#if( !$util.isNull($ctx.args.deadlineStatus.le.deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.le.deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.le.status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.le.status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey <= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.gt) )
+#if( !$util.isNull($ctx.args.deadlineStatus.gt.deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.gt.deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.gt.status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.gt.status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey > :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.deadlineStatus) && !$util.isNull($ctx.args.deadlineStatus.ge) )
+#if( !$util.isNull($ctx.args.deadlineStatus.ge.deadline) ) #set( $sortKeyValue = "$ctx.args.deadlineStatus.ge.deadline" ) #end
+#if( !$util.isNull($ctx.args.deadlineStatus.ge.status) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.deadlineStatus.ge.status" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey >= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "deadline#status"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+
+
+## [End] Applying Key Condition **
+## [End] Set query expression for key **
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $QueryRequest = {
+  "version": "2018-05-29",
+  "operation": "Query",
+  "limit": $limit,
+  "query": $modelQueryExpression,
+  "index": "byPriorityAndDeadline"
+} )
+#if( !$util.isNull($ctx.args.sortDirection)
+                  && $ctx.args.sortDirection == "DESC" )
+  #set( $QueryRequest.scanIndexForward = false )
+#else
+  #set( $QueryRequest.scanIndexForward = true )
+#end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  "and":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error("Unable to process the filter expression", "Unrecognized Filter")
+  #end
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove("expressionValues"))
+    #end
+    #set( $QueryRequest.filter = $filterExpression )
+  #end
+#end
+$util.toJson($QueryRequest)

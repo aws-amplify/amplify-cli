@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttMegaRelatedHTableName",
+    "OutputValue": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaRelatedHTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaRelatedHMegaRelatedHDataSourceAB43BA59Name",
+    "OutputValue": "MegaRelatedHTable"
+  },
+  {
+    "OutputKey": "GetAttMegaRelatedHTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x/stream/2026-05-15T12:50:37.691",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaRelatedHTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttMegaRelatedHDataSourceName",
+    "OutputValue": "MegaRelatedHTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaRelatedHDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaRelatedHMegaRelatedHTableFED49939Ref",
+    "OutputValue": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x"
+  }
+]
