@@ -583,6 +583,7 @@ describe('DataGenerator', () => {
     expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
       "import { defineData } from '@aws-amplify/backend';
       import type { Backend } from '../backend';
+      import { myAuthFn } from '../function/myAuthFn/resource';
 
       const schema = \`type Todo @model { id: ID! }\`;
 

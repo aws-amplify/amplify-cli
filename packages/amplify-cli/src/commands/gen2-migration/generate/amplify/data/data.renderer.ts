@@ -201,6 +201,15 @@ export function computeSpliceIndexes(
  * Options for rendering a defineData() resource file.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any -- authorizationModes is untyped JSON */
+/**
+ * Describes a Lambda authorizer function that needs to be imported
+ * into data/resource.ts for the lambdaAuthorizationMode config.
+ */
+export interface LambdaAuthFunctionRef {
+  readonly name: string;
+  readonly importPath: string;
+}
+
 export interface DataRenderOptions {
   readonly schema: string;
   readonly tableMappings: Record<string, string>;
@@ -209,6 +218,7 @@ export interface DataRenderOptions {
   readonly hasAuth?: boolean;
   readonly apiId?: string;
   readonly classifiedResolvers?: ClassifiedVtlFiles;
+  readonly lambdaAuthFunction?: LambdaAuthFunctionRef;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -240,6 +250,10 @@ export class DataRenderer {
     const { schema, preSchemaStatements } = this.prepareSchema(opts.schema);
 
     const nodes: ts.Node[] = [this.renderNamedImport('defineData', '@aws-amplify/backend'), this.renderBackendTypeImport()];
+
+    if (opts.lambdaAuthFunction) {
+      nodes.push(this.renderNamedImport(opts.lambdaAuthFunction.name, opts.lambdaAuthFunction.importPath));
+    }
 
     const escapeHatchResult = this.renderApplyEscapeHatches(opts);
     for (const imp of escapeHatchResult.additionalImports) {

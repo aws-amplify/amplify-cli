@@ -9,7 +9,7 @@ import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
-import { DataRenderer } from './data.renderer';
+import { DataRenderer, LambdaAuthFunctionRef } from './data.renderer';
 import { SpinningLogger } from '../../../_common/spinning-logger';
 
 // ── Resolver Utility Types ─────────────────────────────────────────────
@@ -170,6 +170,7 @@ export class DataGenerator implements Planner {
       graphqlApi.additionalAuthenticationProviders !== undefined && graphqlApi.additionalAuthenticationProviders.length > 0;
     const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
     const authorizationModes = supplementOidcConfig(this.gen1App.resourceMetaOutput(this.resource, 'authConfig'), graphqlApi);
+    const lambdaAuthFunction = extractLambdaAuthFunction(authorizationModes);
     const hasIamAuth = this.detectIamAuth(authorizationModes, graphqlApi);
     const vtlFiles = this.findResolverVtlFiles(this.resource.resourceName);
     const hasResolvers = vtlFiles.length > 0;
@@ -191,6 +192,7 @@ export class DataGenerator implements Planner {
             hasAuth,
             apiId,
             classifiedResolvers,
+            lambdaAuthFunction,
           });
 
           const content = TS.printNodes(nodes);
@@ -313,4 +315,44 @@ function supplementOidcConfig(authConfig: any, graphqlApi: GraphqlApi): any {
   }
 
   return result;
+}
+
+/**
+ * Extracts the Lambda authorizer function reference from the authConfig.
+ * Searches both defaultAuthentication and additionalAuthenticationProviders.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig from amplify-meta.json
+function extractLambdaAuthFunction(authorizationModes: any): LambdaAuthFunctionRef | undefined {
+  if (!authorizationModes) return undefined;
+
+  const lambdaFunctionName =
+    findLambdaFunctionName(authorizationModes.defaultAuthentication) ??
+    findLambdaFunctionNameInProviders(authorizationModes.additionalAuthenticationProviders);
+
+  if (!lambdaFunctionName) return undefined;
+
+  return {
+    name: lambdaFunctionName,
+    importPath: `../function/${lambdaFunctionName}/resource`,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig provider
+function findLambdaFunctionName(provider: any): string | undefined {
+  if (provider?.authenticationType === 'AWS_LAMBDA' && provider.lambdaAuthorizerConfig?.lambdaFunction) {
+    return provider.lambdaAuthorizerConfig.lambdaFunction;
+  }
+  return undefined;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig providers array
+function findLambdaFunctionNameInProviders(providers: any[] | undefined): string | undefined {
+  if (!providers) return undefined;
+  // AppSync supports only one Lambda authorizer per API, but we iterate defensively
+  // in case the config structure has multiple providers listed
+  for (const provider of providers) {
+    const name = findLambdaFunctionName(provider);
+    if (name) return name;
+  }
+  return undefined;
 }
