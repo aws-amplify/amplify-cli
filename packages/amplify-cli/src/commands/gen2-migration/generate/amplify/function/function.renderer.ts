@@ -243,7 +243,7 @@ export class FunctionRenderer {
     if (opts.dataTriggerModels.length > 0) {
       additionalImports['aws-cdk-lib/aws-lambda-event-sources'] = new Set(['DynamoEventSource']);
       additionalImports['aws-cdk-lib/aws-lambda'] = new Set(['StartingPosition']);
-      statements.push(createDynamoTrigger(opts.resourceName, opts.dataTriggerModels));
+      statements.push(...createDynamoTrigger(opts.resourceName, opts.dataTriggerModels));
     }
 
     // Storage DynamoDB triggers (standalone tables, not AppSync-managed)
@@ -725,87 +725,91 @@ function createUnMappedAuthGrant(funcName: string, actions: readonly string[]): 
   );
 }
 
-/** Creates a DynamoDB stream trigger for-of loop. */
-function createDynamoTrigger(functionName: string, triggers: readonly DetectedDynamoTrigger[]): ts.ForOfStatement {
-  return factory.createForOfStatement(
-    undefined,
-    factory.createVariableDeclarationList(
-      [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
-      ts.NodeFlags.Const,
-    ),
-    factory.createArrayLiteralExpression(triggers.map((t) => factory.createStringLiteral(t.name))),
-    factory.createBlock(
-      [
-        factory.createVariableStatement(
-          [],
-          factory.createVariableDeclarationList(
-            [
-              factory.createVariableDeclaration(
-                'table',
-                undefined,
-                undefined,
-                factory.createElementAccessExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier('backend.data.resources'),
-                    factory.createIdentifier('tables'),
-                  ),
-                  factory.createIdentifier('model'),
+/** Creates separate DynamoDB stream trigger statements per model. */
+function createDynamoTrigger(functionName: string, triggers: readonly DetectedDynamoTrigger[]): ts.Statement[] {
+  const statements: ts.Statement[] = [];
+  for (const trigger of triggers) {
+    const tableVar = `table${trigger.name}`;
+    // const tableX = backend.data.resources.tables["ModelName"]
+    statements.push(
+      factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              tableVar,
+              undefined,
+              undefined,
+              factory.createElementAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.data.resources'),
+                  factory.createIdentifier('tables'),
                 ),
+                factory.createStringLiteral(trigger.name),
               ),
-            ],
-            ts.NodeFlags.Const,
-          ),
-        ),
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier(`backend.${functionName}.resources`),
-                factory.createIdentifier('lambda'),
-              ),
-              factory.createIdentifier('addEventSource'),
             ),
-            undefined,
-            [
-              factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
-                factory.createIdentifier('table'),
-                factory.createObjectLiteralExpression(createDynamoEventSourceProps(triggers[0]?.props)),
-              ]),
-            ],
-          ),
+          ],
+          ts.NodeFlags.Const,
         ),
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantStreamRead')),
-            undefined,
-            [
-              factory.createNonNullExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
-                  factory.createIdentifier('role'),
-                ),
+      ),
+    );
+    // backend.funcName.resources.lambda.addEventSource(new DynamoEventSource(tableX, { ... }))
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier(`backend.${functionName}.resources`),
+              factory.createIdentifier('lambda'),
+            ),
+            factory.createIdentifier('addEventSource'),
+          ),
+          undefined,
+          [
+            factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
+              factory.createIdentifier(tableVar),
+              factory.createObjectLiteralExpression(createDynamoEventSourceProps(trigger.props)),
+            ]),
+          ],
+        ),
+      ),
+    );
+    // tableX.grantStreamRead(backend.funcName.resources.lambda.role!)
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantStreamRead')),
+          undefined,
+          [
+            factory.createNonNullExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                factory.createIdentifier('role'),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantTableListStreams')),
-            undefined,
-            [
-              factory.createNonNullExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
-                  factory.createIdentifier('role'),
-                ),
+      ),
+    );
+    // tableX.grantTableListStreams(backend.funcName.resources.lambda.role!)
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantTableListStreams')),
+          undefined,
+          [
+            factory.createNonNullExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                factory.createIdentifier('role'),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-      true,
-    ),
-  );
+      ),
+    );
+  }
+  return statements;
 }
 
 /** Creates storage DynamoDB stream triggers for standalone tables. */

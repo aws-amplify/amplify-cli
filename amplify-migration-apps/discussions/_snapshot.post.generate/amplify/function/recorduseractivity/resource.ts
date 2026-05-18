@@ -48,16 +48,39 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
     'dynamodb:Delete*',
     'dynamodb:PartiQLDelete'
   );
-  for (const model of ['Topic', 'Post', 'Comment']) {
-    const table = backend.data.resources.tables[model];
-    backend.recorduseractivity.resources.lambda.addEventSource(
-      new DynamoEventSource(table, {
-        startingPosition: StartingPosition.LATEST,
-      })
-    );
-    table.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
-    table.grantTableListStreams(
-      backend.recorduseractivity.resources.lambda.role!
-    );
-  }
+  const tableTopic = backend.data.resources.tables['Topic'];
+  backend.recorduseractivity.resources.lambda.addEventSource(
+    new DynamoEventSource(tableTopic, {
+      startingPosition: StartingPosition.LATEST,
+      batchSize: 100,
+    })
+  );
+  tableTopic.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
+  tableTopic.grantTableListStreams(
+    backend.recorduseractivity.resources.lambda.role!
+  );
+  const tablePost = backend.data.resources.tables['Post'];
+  backend.recorduseractivity.resources.lambda.addEventSource(
+    new DynamoEventSource(tablePost, {
+      startingPosition: StartingPosition.LATEST,
+      batchSize: 100,
+    })
+  );
+  tablePost.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
+  tablePost.grantTableListStreams(
+    backend.recorduseractivity.resources.lambda.role!
+  );
+  const tableComment = backend.data.resources.tables['Comment'];
+  backend.recorduseractivity.resources.lambda.addEventSource(
+    new DynamoEventSource(tableComment, {
+      startingPosition: StartingPosition.LATEST,
+      batchSize: 100,
+    })
+  );
+  tableComment.grantStreamRead(
+    backend.recorduseractivity.resources.lambda.role!
+  );
+  tableComment.grantTableListStreams(
+    backend.recorduseractivity.resources.lambda.role!
+  );
 }
