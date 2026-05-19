@@ -1,10 +1,11 @@
 import { Assessor } from '../assessor';
 import { Assessment, supported, unsupported, notApplicable } from '../assessment';
 import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../_common/gen1-app';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Assesses migration readiness for an AppSync GraphQL API resource.
- * Detects overrides.ts usage and conflict resolution (DataStore).
+ * Rejects Transformer V1 projects, detects overrides.ts usage and conflict resolution (DataStore).
  */
 export class DataAssessor implements Assessor {
   public constructor(private readonly gen1App: Gen1App, private readonly resource: DiscoveredResource) {}
@@ -14,7 +15,17 @@ export class DataAssessor implements Assessor {
    */
   public record(assessment: Assessment): void {
     this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
-    assessment.recordResource({ resource: this.resource, generate: supported(), refactor: notApplicable() });
+
+    const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+    if (transformerVersion !== 2) {
+      assessment.recordResource({
+        resource: this.resource,
+        generate: unsupported('Transformer V1 is not supported in Gen2'),
+        refactor: notApplicable(),
+      });
+    } else {
+      assessment.recordResource({ resource: this.resource, generate: supported(), refactor: notApplicable() });
+    }
 
     const overridesPath = `api/${this.resource.resourceName}/override.ts`;
 

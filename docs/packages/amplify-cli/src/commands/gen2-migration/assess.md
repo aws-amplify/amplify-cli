@@ -76,7 +76,7 @@ Produced by `Gen1App.discover()`. The `key` field is a typed `category:service` 
 | auth      | Cognito-UserPool-Groups | ✔                | ✔           |
 | storage   | S3                      | ✔                | ✔           |
 | storage   | DynamoDB                | ✔                | ✔           |
-| api       | AppSync                 | ✔                | n/a         |
+| api       | AppSync                 | ✔ (V2 only)      | n/a         |
 | api       | API Gateway             | ✔                | n/a         |
 | analytics | Kinesis                 | ✔                | ✔           |
 | function  | Lambda                  | ✔ (Node.js only) | n/a         |
@@ -89,5 +89,5 @@ Produced by `Gen1App.discover()`. The `key` field is a typed `category:service` 
 - Adding a new resource type: add the pair to `KNOWN_RESOURCE_KEYS` in `gen1-app.ts`, create an assessor, handle the case in `assess.ts`, and in the generate/refactor steps. The compiler enforces exhaustiveness.
 - The `Assessment` is also used by generate and refactor steps for validation — `validFor(step)` returns false if any resource or feature is unsupported for that step. The `of(resource, step)` method returns the `Support` for a specific resource, used by the generate orchestrator to skip unsupported resources before instantiating generators.
 - Feature detection (overrides, custom policies, conflict resolution) is assessor-specific. Each assessor checks for files in the cloud backend directory via `gen1App.fileExists()` or reads `cli-inputs.json` via `gen1App.cliInputs()`.
-- `DataAssessor` detects conflict resolution (DataStore) by reading `cli-inputs.json` for the API resource. If `serviceConfiguration.conflictResolution` is present and non-empty, both generate and refactor are marked unsupported because Gen2 does not support DataStore conflict resolution.
+- `DataAssessor` checks the GraphQL transformer version via `FeatureFlags.getNumber('graphQLTransformer.transformerVersion')`. If the version is not 2 (i.e., Transformer V1), the resource is marked unsupported for generate. It also detects conflict resolution (DataStore) by reading `cli-inputs.json` for the API resource. If `serviceConfiguration.conflictResolution` is present and non-empty, both generate and refactor are marked unsupported because Gen2 does not support DataStore conflict resolution.
 - `FunctionAssessor` reads the Lambda runtime from the local CloudFormation template (`function/<name>/<name>-cloudformation-template.json`). Non-Node.js runtimes are marked as unsupported for generate. Function refactor is always not-applicable since functions are stateless.
