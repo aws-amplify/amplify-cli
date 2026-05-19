@@ -1,5 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { globSync } from 'glob';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
@@ -461,8 +463,15 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
 }
 
 /**
- * Reads the GraphQL schema from the Gen1 app and extracts model names.
+ * Reads model names from the Gen1 app's GraphQL schema.
  * Returns an empty array when no AppSync API exists.
+ *
+ * Strategy:
+ * 1. Primary: Read `build/schema.graphql` (transformer output) and extract names
+ *    from the standardised `ModelXConnection` types. This is the most reliable
+ *    approach as it is not affected by directive ordering in the raw schema.
+ * 2. Fallback: Read the raw user schema (single file or directory) and match
+ *    `type <Name> ... @model` with a parser that handles interleaved directives.
  */
 function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
   const apiCategory = gen1App.categoryMeta('api');
@@ -470,16 +479,77 @@ function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
   const apiEntry = Object.entries(apiCategory).find(([, v]) => (v as Record<string, unknown>).service === 'AppSync');
   if (!apiEntry) return [];
   const [apiName] = apiEntry;
+
+  // Primary: use build/schema.graphql (transformer standardised output)
+  const buildSchemaPath = path.join('api', apiName, 'build', 'schema.graphql');
   try {
-    const schema = gen1App.file(path.join('api', apiName, 'schema.graphql'));
-    const modelRegex = /type\s+(\w+)\s+@model/g;
+    const buildSchema = gen1App.file(buildSchemaPath);
+    const connectionRegex = /type\s+Model(\w+)Connection\b/g;
     const names: string[] = [];
     let match: RegExpExecArray | null;
-    while ((match = modelRegex.exec(schema)) !== null) {
+    while ((match = connectionRegex.exec(buildSchema)) !== null) {
       names.push(match[1]);
     }
-    return names;
+    if (names.length > 0) return names;
+  } catch {
+    // build schema not available — fall through to raw schema
+  }
+
+  // Fallback: read raw user schema (single file or directory)
+  try {
+    const schema = collectUserSchema(gen1App, apiName);
+    return extractModelNamesFromRawSchema(schema);
   } catch {
     return [];
   }
+}
+
+/**
+ * Collects all user-authored GraphQL schema content from either the single
+ * `schema.graphql` file or the `schema/` directory (multi-file pattern).
+ */
+function collectUserSchema(gen1App: Gen1App, apiName: string): string {
+  const schemaFilePath = path.join('api', apiName, 'schema.graphql');
+  if (gen1App.fileExists(schemaFilePath)) {
+    return gen1App.file(schemaFilePath);
+  }
+
+  const schemaDirPath = path.join('api', apiName, 'schema');
+  const fullDirPath = path.join(gen1App.ccbDir, schemaDirPath);
+  if (!existsSync(fullDirPath)) return '';
+  const files = globSync('**/*.graphql', { cwd: fullDirPath }).sort();
+  return files.map((f) => gen1App.file(path.join(schemaDirPath, f))).join('\n');
+}
+
+/**
+ * Extracts @model type names from a raw GraphQL schema string.
+ * Handles directives with nested braces (e.g., @auth(rules: [{...}]))
+ * appearing between the type name and @model.
+ */
+function extractModelNamesFromRawSchema(schema: string): string[] {
+  const names: string[] = [];
+  const typeRegex = /\btype\s+(\w+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = typeRegex.exec(schema)) !== null) {
+    const typeName = match[1];
+    const afterName = schema.slice(match.index + match[0].length);
+    let depth = 0;
+    let foundModel = false;
+    for (let i = 0; i < afterName.length; i++) {
+      const ch = afterName[i];
+      if (ch === '(') {
+        depth++;
+      } else if (ch === ')') {
+        depth--;
+      } else if (depth === 0 && ch === '{') {
+        break;
+      }
+      if (depth === 0 && afterName.slice(i).startsWith('@model')) {
+        foundModel = true;
+        break;
+      }
+    }
+    if (foundModel) names.push(typeName);
+  }
+  return names;
 }
