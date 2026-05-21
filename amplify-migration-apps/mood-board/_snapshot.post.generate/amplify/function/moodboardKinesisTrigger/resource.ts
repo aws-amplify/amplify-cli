@@ -12,7 +12,7 @@ export const moodboardKinesisTrigger = defineFunction({
   name: `moodboardKinesisTrigger-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -32,6 +32,10 @@ export function applyEscapeHatches(
   backend.moodboardKinesisTrigger.addEnvironment(
     'API_MOODBOARD_GRAPHQLAPIIDOUTPUT',
     backend.data.apiId
+  );
+  backend.moodboardKinesisTrigger.addEnvironment(
+    'REGION',
+    backend.moodboardKinesisTrigger.stack.region
   );
   backend.data.resources.graphqlApi.grantMutation(
     backend.moodboardKinesisTrigger.resources.lambda

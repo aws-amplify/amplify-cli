@@ -9,7 +9,7 @@ export const fetchuseractivity = defineFunction({
   name: `fetchuseractivity-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -26,6 +26,10 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.fetchuseractivity.addEnvironment(
     'STORAGE_ACTIVITY_NAME',
     activity.tableName
+  );
+  backend.fetchuseractivity.addEnvironment(
+    'REGION',
+    backend.fetchuseractivity.stack.region
   );
   activity.grant(
     backend.fetchuseractivity.resources.lambda,

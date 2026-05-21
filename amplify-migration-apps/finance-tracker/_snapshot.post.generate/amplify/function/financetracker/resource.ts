@@ -10,7 +10,6 @@ export const financetracker = defineFunction({
   memoryMB: 128,
   environment: {
     ENV: `${branchName}`,
-    REGION: 'us-east-1',
     BUDGET_ALERT_TOPIC_ARN:
       'arn:aws:sns:us-east-1:123456789012:amplify-financetracker-x-x-customcustomfinance-x-BudgetAlertTopicF20DF526-DFMxF2RX1UKQ',
     MONTHLY_REPORT_TOPIC_ARN:
@@ -32,6 +31,10 @@ export function applyEscapeHatches(backend: Backend) {
   backend.financetracker.addEnvironment(
     'API_FINANCETRACKER_TRANSACTIONTABLE_NAME',
     backend.data.resources.tables['Transaction'].tableName
+  );
+  backend.financetracker.addEnvironment(
+    'REGION',
+    backend.financetracker.stack.region
   );
   backend.data.resources.tables['Transaction'].grant(
     backend.financetracker.resources.lambda,

@@ -11,7 +11,7 @@ export const recorduseractivity = defineFunction({
   name: `recorduseractivity-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -28,6 +28,10 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.recorduseractivity.addEnvironment(
     'STORAGE_ACTIVITY_NAME',
     activity.tableName
+  );
+  backend.recorduseractivity.addEnvironment(
+    'REGION',
+    backend.recorduseractivity.stack.region
   );
   activity.grant(
     backend.recorduseractivity.resources.lambda,

@@ -11,7 +11,7 @@ export const activityTrigger = defineFunction({
   name: `activityTrigger-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -28,6 +28,10 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.activityTrigger.addEnvironment(
     'STORAGE_ACTIVITY_NAME',
     activity.tableName
+  );
+  backend.activityTrigger.addEnvironment(
+    'REGION',
+    backend.activityTrigger.stack.region
   );
   activity.grant(
     backend.activityTrigger.resources.lambda,

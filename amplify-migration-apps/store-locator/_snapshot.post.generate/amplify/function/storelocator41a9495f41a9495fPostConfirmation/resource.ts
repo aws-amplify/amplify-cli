@@ -11,7 +11,6 @@ export const storelocator41a9495f41a9495fPostConfirmation = defineFunction({
   environment: {
     ENV: `${branchName}`,
     MODULES: 'add-to-group',
-    REGION: 'us-east-1',
     GROUP: 'storeLocatorAdmin',
   },
   runtime: 22,
@@ -19,4 +18,8 @@ export const storelocator41a9495f41a9495fPostConfirmation = defineFunction({
 
 export function applyEscapeHatches(backend: Backend) {
   backend.storelocator41a9495f41a9495fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocator41a9495f41a9495fPostConfirmation-${branchName}`;
+  backend.storelocator41a9495f41a9495fPostConfirmation.addEnvironment(
+    'REGION',
+    backend.storelocator41a9495f41a9495fPostConfirmation.stack.region
+  );
 }

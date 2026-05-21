@@ -8,7 +8,7 @@ export const thumbnailgen = defineFunction({
   name: `thumbnailgen-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -17,5 +17,9 @@ export function applyEscapeHatches(backend: Backend) {
   backend.thumbnailgen.addEnvironment(
     'STORAGE_MEDIAVAULT_BUCKETNAME',
     backend.storage.resources.bucket.bucketName
+  );
+  backend.thumbnailgen.addEnvironment(
+    'REGION',
+    backend.thumbnailgen.stack.region
   );
 }
