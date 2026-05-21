@@ -1,5 +1,5 @@
-import { AwsFetcher } from '../../../../../commands/gen2-migration/generate/_infra/aws-fetcher';
-import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
+import { AwsFetcher } from '../../../../../commands/gen2-migration/_common/aws-fetcher';
+import { AwsClients } from '../../../../../commands/gen2-migration/_common/aws-clients';
 
 function createMockClients(overrides: { lambdaSend?: jest.Mock; cloudWatchEventsSend?: jest.Mock }): AwsClients {
   return {
