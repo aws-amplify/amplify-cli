@@ -489,9 +489,19 @@ export class DataRenderer {
     ];
     if (cfg.clientId) props.push(factory.createPropertyAssignment('clientId', factory.createStringLiteral(cfg.clientId)));
     if (cfg.authTTL)
-      props.push(factory.createPropertyAssignment('tokenExpiryFromAuthInSeconds', factory.createNumericLiteral(cfg.authTTL.toString())));
+      props.push(
+        factory.createPropertyAssignment(
+          'tokenExpiryFromAuthInSeconds',
+          factory.createNumericLiteral(Math.floor(Number(cfg.authTTL) / 1000).toString()),
+        ),
+      );
     if (cfg.iatTTL)
-      props.push(factory.createPropertyAssignment('tokenExpireFromIssueInSeconds', factory.createNumericLiteral(cfg.iatTTL.toString())));
+      props.push(
+        factory.createPropertyAssignment(
+          'tokenExpireFromIssueInSeconds',
+          factory.createNumericLiteral(Math.floor(Number(cfg.iatTTL) / 1000).toString()),
+        ),
+      );
     target.push(factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(props)));
   }
 
