@@ -1237,6 +1237,44 @@ describe('FunctionGenerator', () => {
     expect(output).toContain('KinesisEventSource');
   });
 
+  it('moves REGION from literal env vars to dynamic addEnvironment using stack.region', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 3,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: { Variables: { REGION: 'us-east-1', MY_VAR: 'hello' } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+
+    // REGION should NOT appear as a literal environment variable
+    expect(output).not.toMatch(/environment:.*REGION/);
+    // MY_VAR should still be a literal env var
+    expect(output).toContain("MY_VAR: 'hello'");
+    // REGION should be set dynamically via addEnvironment using the stack region token
+    expect(output).toContain("backend.myFunc.addEnvironment('REGION', backend.myFunc.stack.region)");
+  });
+
   it('throws for non-nodejs runtime', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
