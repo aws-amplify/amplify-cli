@@ -1073,4 +1073,52 @@ describe('RestApiGenerator', () => {
     const output = writtenFile('resource.ts');
     expect(output).toContain('myapiApi');
   });
+
+  it('renders Cognito authorizer and admin permissions for AdminQueries API', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        AdminQueries: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main', ApiId: 'abc123' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito', output: { UserPoolId: 'us-east-1_abc123' } } },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('abc123');
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: { '/{proxy+}': { lambdaFunction: 'AdminQueriesd29134db', permissions: { setting: 'private' } } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'AdminQueries',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).toContain('CognitoUserPoolsAuthorizer');
+    expect(output).toContain('defaultCorsPreflightOptions');
+    expect(output).toContain('authorizationType: AuthorizationType.COGNITO');
+    expect(output).toContain("authorizationScopes: ['aws.cognito.signin.user.admin']");
+    expect(output).toMatch(/root\.addMethod\(\s*'ANY',\s*AdminQueriesd29134dbIntegration,\s*adminQueriesMethodOptions\s*\)/);
+    expect(output).toContain('anyMethod: false');
+    expect(output).toMatch(/rootProxy\.addMethod\(\s*'ANY',\s*AdminQueriesd29134dbIntegration,\s*adminQueriesMethodOptions\s*\)/);
+    expect(output).toContain('backend.AdminQueriesd29134db.resources.lambda.addToRolePolicy');
+    expect(output).toContain("'cognito-idp:AdminGetUser'");
+    expect(output).toContain("'cognito-idp:ListUsersInGroup'");
+    expect(output).toContain('backend.auth.resources.userPool.userPoolArn');
+    expect(output).toContain('userpool/us-east-1_abc123');
+    expect(output).toContain('backend.addOutput');
+  });
 });

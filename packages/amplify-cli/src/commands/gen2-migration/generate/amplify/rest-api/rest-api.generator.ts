@@ -75,12 +75,46 @@ export class RestApiGenerator implements Planner {
     const gen1ApiId = this.gen1App.resourceMetaOutput(this.resource, 'ApiId');
     this.logger.debug(`Fetching REST API root resource for '${gen1ApiId}'`);
     const gen1RootResourceId = await this.gen1App.aws.fetchRestApiRootResourceId(gen1ApiId);
+    const paths = cliInputs.paths ?? {};
+    const adminQueriesFunctionNames = this.adminQueriesFunctionNames(this.resource.resourceName, paths);
     return {
       apiName: this.resource.resourceName,
       exportedFunctionName: `define${this.resource.resourceName.charAt(0).toUpperCase() + this.resource.resourceName.slice(1)}Api`,
-      paths: cliInputs.paths ?? {},
+      paths,
       gen1ApiId,
       gen1RootResourceId,
+      ...(adminQueriesFunctionNames.length > 0 && {
+        adminQueriesFunctionNames,
+        gen1UserPoolId: this.gen1UserPoolId(),
+      }),
     };
+  }
+
+  private adminQueriesFunctionNames(apiName: string, paths: Record<string, { readonly lambdaFunction?: string }>): string[] {
+    const functions = new Set(
+      Object.values(paths)
+        .map((pathConfig) => pathConfig.lambdaFunction)
+        .filter((name): name is string => !!name),
+    );
+    if (apiName === 'AdminQueries') {
+      return Array.from(functions);
+    }
+    return Array.from(functions).filter((name) => name.startsWith('AdminQueries'));
+  }
+
+  private gen1UserPoolId(): string | undefined {
+    const authCategory = this.gen1App.categoryMeta('auth');
+    if (!authCategory) {
+      return undefined;
+    }
+
+    for (const resourceMeta of Object.values(authCategory)) {
+      const output = (resourceMeta as { readonly output?: { readonly UserPoolId?: string } }).output;
+      if (output?.UserPoolId) {
+        return output.UserPoolId;
+      }
+    }
+
+    return undefined;
   }
 }
