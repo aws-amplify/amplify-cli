@@ -3,7 +3,10 @@ import * as path from 'path';
 // parse the request url to get the path and storing in the request.params.path  with the prefix if present
 
 export function parseUrl(request, route: string) {
-  request.url = path.normalize(decodeURIComponent(request.url));
+  // Strip query string BEFORE normalizing the URL to prevent path.normalize
+  // from treating query parameter values (e.g. ?prefix=../../) as path segments
+  const urlWithoutQuery = request.url.split('?')[0];
+  request.url = path.normalize(decodeURIComponent(urlWithoutQuery));
   const temp = request.url.split(route);
   request.params.path = '';
 
@@ -20,6 +23,13 @@ export function parseUrl(request, route: string) {
 
   if (request.params.path[0] == '/' || request.params.path[0] == '.') {
     request.params.path = request.params.path.substring(1);
+  }
+
+  // Sanitize path traversal: reject any path that would escape the storage root.
+  // After all normalization, the path must not contain '..' segments.
+  const normalized = path.normalize(request.params.path);
+  if (normalized.startsWith('..') || path.isAbsolute(normalized)) {
+    request.params.path = path.basename(normalized);
   }
 
   // changing file path by removing invalid file path characters for windows
