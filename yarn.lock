@@ -276,7 +276,7 @@ __metadata:
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
     jest: ^29.7.0
-    jstreemap: ^1.28.2
+    jstreemap: 1.28.2
     lodash: ^4.17.21
     promise-sequential: ^1.1.1
     uuid: ^8.3.2
@@ -26090,7 +26090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jstreemap@npm:^1.28.2":
+"jstreemap@npm:1.28.2, jstreemap@npm:^1.28.2":
   version: 1.28.2
   resolution: "jstreemap@npm:1.28.2"
   checksum: d7f55ff23c3bc1f54a7b92675fd785ab4f069052b25137b2d1d47a10722dd8f8442d1a710d0d3144322412e654e3f3f71f4326f7126d7287497d4cdbd94c9f80
