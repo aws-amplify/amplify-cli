@@ -179,7 +179,11 @@ const WAVE_SIZE = 46;
  */
 const applyFanOutWaves = (builds: any[]): string[] => {
   builds.forEach((build, index) => {
-    build['depend-on'] = index < WAVE_SIZE ? ['upb'] : [builds[index - WAVE_SIZE].identifier];
+    const predecessor = index < WAVE_SIZE ? 'upb' : builds[index - WAVE_SIZE].identifier;
+    const extraDeps = (build['depend-on'] || []).filter(
+      (d: string) => d !== 'upb' && !d.startsWith('l_') && !d.startsWith('w_')
+    );
+    build['depend-on'] = extraDeps.length ? [...extraDeps, predecessor] : [predecessor];
   });
 
   // A job at index i is a leaf when no later job chains off it, i.e. when
