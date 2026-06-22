@@ -101,10 +101,11 @@ export class S3Generator implements Planner {
           await fs.mkdir(storageDir, { recursive: true });
           await fs.writeFile(path.join(storageDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addNamespaceImport('storage', './storage/resource');
-          this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
-          this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'storage', extraArgs: [] });
-          this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
+          const alias = this.backendGenerator.reserveAlias('storage', 'storage');
+          this.backendGenerator.addNamespaceImport(alias, './storage/resource');
+          this.backendGenerator.addDefineBackendEntry('storage', alias, 'storage');
+          this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: [] });
+          this.backendGenerator.addPostRefactorCall(`${alias}.postRefactor(backend);`);
         },
       },
     ];

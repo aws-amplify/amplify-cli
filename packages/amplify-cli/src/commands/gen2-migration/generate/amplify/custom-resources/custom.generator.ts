@@ -153,7 +153,7 @@ export class CustomResourceGenerator implements Planner {
    * Contributes import and defineXxx call for this custom resource to backend.ts.
    */
   private contributeToBackend(constructClassName: string): void {
-    const alias = this.resourceName;
+    const alias = this.backendGenerator.reserveAlias(this.resourceName, 'custom');
     const defineFnName = `define${constructClassName}`;
 
     this.backendGenerator.addNamespaceImport(alias, `./custom/${this.resourceName}/resource`);

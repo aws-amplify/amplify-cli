@@ -100,9 +100,10 @@ export class AnalyticsKinesisGenerator implements Planner {
           await fs.mkdir(analyticsDir, { recursive: true });
           await fs.writeFile(path.join(analyticsDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addNamespaceImport('analytics', './analytics/resource');
-          this.backendGenerator.addPostDefineBackendCall(DEFINE_ANALYTICS_VARIABLE_NAME, `analytics.defineAnalytics(backend)`);
-          this.backendGenerator.addPostRefactorCall(`analytics.postRefactor(${DEFINE_ANALYTICS_VARIABLE_NAME});`);
+          const alias = this.backendGenerator.reserveAlias('analytics', 'analytics');
+          this.backendGenerator.addNamespaceImport(alias, './analytics/resource');
+          this.backendGenerator.addPostDefineBackendCall(DEFINE_ANALYTICS_VARIABLE_NAME, `${alias}.defineAnalytics(backend)`);
+          this.backendGenerator.addPostRefactorCall(`${alias}.postRefactor(${DEFINE_ANALYTICS_VARIABLE_NAME});`);
         },
       },
     ];

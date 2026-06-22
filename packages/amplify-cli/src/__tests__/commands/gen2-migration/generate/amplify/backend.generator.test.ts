@@ -117,4 +117,28 @@ describe('BackendGenerator', () => {
       "
     `);
   });
+
+  it('deduplicates namespace aliases when two resources share a preferred name', async () => {
+    const gen = new BackendGenerator(outputDir, logger);
+
+    // Simulate: REST API "mergeStudents" and Lambda function "mergeStudents"
+    const apiAlias = gen.reserveAlias('mergeStudents', 'api');
+    const fnAlias = gen.reserveAlias('mergeStudents', 'function');
+
+    expect(apiAlias).toBe('mergeStudents');
+    expect(fnAlias).toBe('mergeStudentsFunction');
+    expect(apiAlias).not.toBe(fnAlias);
+
+    gen.addNamespaceImport(apiAlias, './api/mergeStudents/resource');
+    gen.addPostDefineBackendStatement(`${apiAlias}.defineMergeStudentsApi(backend)`);
+    gen.addNamespaceImport(fnAlias, './function/mergeStudents/resource');
+    gen.addDefineBackendEntry('mergeStudents', fnAlias, 'mergeStudents');
+
+    const ops = await gen.plan();
+    await ops[0].execute();
+
+    const content = await fs.readFile(path.join(outputDir, 'amplify', 'backend.ts'), 'utf-8');
+    const importLines = content.split('\n').filter((l) => l.startsWith('import * as mergeStudents '));
+    expect(importLines).toHaveLength(1);
+  });
 });

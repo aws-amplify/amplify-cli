@@ -28,10 +28,36 @@ export class BackendGenerator implements Planner {
   private readonly outputDir: string;
   private readonly renderer = new BackendRenderer();
   private readonly logger: SpinningLogger;
+  private readonly usedAliases = new Set<string>();
 
   public constructor(outputDir: string, logger: SpinningLogger) {
     this.outputDir = outputDir;
     this.logger = logger;
+  }
+
+  /**
+   * Reserves a unique import alias for a namespace import.
+   * Returns `preferred` if not yet taken; otherwise appends the capitalized
+   * category (e.g. `mergeStudentsFunction`). If that is also taken, appends
+   * an incrementing numeric suffix (e.g. `mergeStudentsFunction2`).
+   */
+  public reserveAlias(preferred: string, category: string): string {
+    if (!this.usedAliases.has(preferred)) {
+      this.usedAliases.add(preferred);
+      return preferred;
+    }
+    const categoryAlias = preferred + category.charAt(0).toUpperCase() + category.slice(1);
+    if (!this.usedAliases.has(categoryAlias)) {
+      this.usedAliases.add(categoryAlias);
+      return categoryAlias;
+    }
+    let suffix = 2;
+    while (this.usedAliases.has(categoryAlias + suffix)) {
+      suffix++;
+    }
+    const final = categoryAlias + suffix;
+    this.usedAliases.add(final);
+    return final;
   }
 
   /**
