@@ -219,7 +219,7 @@ async function transformResource(
   let content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
   // Add Construct import if not present
-  if (!content.includes("from 'constructs'")) {
+  if (!/import\s*\{[^}]*\bConstruct\b[^}]*\}\s*from\s*['"]constructs['"]/.test(content)) {
     const importRegex = /(import.*from.*['"]; ?\s*\n)/g;
     let lastImportMatch: RegExpExecArray | null = null;
     let regexMatch: RegExpExecArray | null;
