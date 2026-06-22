@@ -1,155 +1,145 @@
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import os from 'node:os';
 import { CustomResourceGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/custom-resources/custom.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migration/generate/package.json.generator';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import { Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { DEFAULT_STATEFUL_RESOURCES } from '../../../../../../commands/gen2-migration/_common/resource-types';
+
+jest.unmock('fs-extra');
+
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
+  return {
+    ...actual,
+    JSONUtilities: {
+      ...actual.JSONUtilities,
+      readJson: jest.fn().mockImplementation((filePath: string, opts?: unknown) => {
+        if (typeof filePath === 'string' && filePath.endsWith('package.json')) {
+          return { dependencies: {}, devDependencies: {} };
+        }
+        if (typeof filePath === 'string' && filePath.endsWith('project-config.json')) {
+          return { projectName: 'testProject' };
+        }
+        return actual.JSONUtilities.readJson(filePath, opts);
+      }),
+    },
+  };
+});
+
+const mockMkdir = jest.fn().mockResolvedValue(undefined);
+const mockWriteFile = jest.fn().mockResolvedValue(undefined);
+const mockCp = jest.fn().mockResolvedValue(undefined);
+const mockRm = jest.fn().mockResolvedValue(undefined);
+const mockReadFile = jest.fn();
+const mockReaddir = jest.fn().mockResolvedValue([]);
+const mockRename = jest.fn().mockResolvedValue(undefined);
+jest.mock('node:fs/promises', () => ({
+  mkdir: (...args: unknown[]) => mockMkdir(...args),
+  writeFile: (...args: unknown[]) => mockWriteFile(...args),
+  cp: (...args: unknown[]) => mockCp(...args),
+  rm: (...args: unknown[]) => mockRm(...args),
+  readFile: (...args: unknown[]) => mockReadFile(...args),
+  readdir: (...args: unknown[]) => mockReaddir(...args),
+  rename: (...args: unknown[]) => mockRename(...args),
+}));
+
+const CDK_STACK_WITH_DEPS = `
+import * as cdk from 'aws-cdk-lib';
+import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+
+export class cdkStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    const dependencies = AmplifyHelpers.addResourceDependency(this, props, 'myCustom', [
+      { category: 'auth', resourceName: 'myAuth' }
+    ]);
+    const poolId = cdk.Fn.ref(dependencies.auth.myAuth.UserPoolId);
+  }
+}
+`;
+
+const CDK_STACK_NO_DEPS = `
+import * as cdk from 'aws-cdk-lib';
+
+export class cdkStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+  }
+}
+`;
 
 /**
  * Verifies that the constructor parameter count in construct.ts always matches
- * the argument count in the `new <Class>(...)` call in resource.ts, even when
- * addResourceDependency uses a variable for category (which the old regex-based
- * extractDependencies would miss).
+ * the argument count in the `new <Class>(...)` call in resource.ts.
  */
 describe('CustomResourceGenerator dependency consistency', () => {
-  let outputDir: string;
+  const outputDir = '/fake/output';
   const logger = new SpinningLogger('test');
+  const gen1App = { statefulResourceTypes: [...Array.from(DEFAULT_STATEFUL_RESOURCES)] } as unknown as Gen1App;
 
-  beforeEach(async () => {
-    outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'dep-consistency-'));
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  afterEach(async () => {
-    await fs.rm(outputDir, { recursive: true, force: true });
-  });
+  it('construct.ts ctor params == resource.ts new call args when resource has dependencies', async () => {
+    mockReadFile.mockResolvedValue(CDK_STACK_WITH_DEPS);
 
-  it('construct.ts ctor params == resource.ts new call args when category is a variable', async () => {
-    // cdk-stack.ts: addResourceDependency uses a variable for category — regex misses it,
-    // but AST detects the addResourceDependency variable statement → hasDependencies=true
-    const cdkStackContent = [
-      "import * as cdk from 'aws-cdk-lib';",
-      "import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';",
-      "import { Construct } from 'constructs';",
-      '',
-      'export class cdkStack extends cdk.Stack {',
-      '  constructor(scope: Construct, id: string, props?: cdk.StackProps) {',
-      '    super(scope, id, props);',
-      '    const categoryName = `auth`;',
-      '    const dependencies = AmplifyHelpers.addResourceDependency(this, props, "varDep", [',
-      '      { category: categoryName, resourceName: "userPool" }',
-      '    ]);',
-      '  }',
-      '}',
-    ].join('\n');
+    const backendGenerator = new BackendGenerator(outputDir, logger);
+    const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-    // Create gen1 project structure
-    const amplifyBackendCustomDir = path.join(outputDir, 'amplify', 'backend', 'custom', 'varDep');
-    await fs.mkdir(amplifyBackendCustomDir, { recursive: true });
-    await fs.writeFile(path.join(amplifyBackendCustomDir, 'cdk-stack.ts'), cdkStackContent, 'utf-8');
-    await fs.writeFile(
-      path.join(amplifyBackendCustomDir, 'package.json'),
-      JSON.stringify({ dependencies: {}, devDependencies: {} }),
-      'utf-8',
-    );
+    // Find the construct content (written to cdk-stack.ts before rename)
+    const constructCall = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith('cdk-stack.ts'));
+    expect(constructCall).toBeDefined();
+    const constructContent = constructCall![1] as string;
 
-    await fs.mkdir(path.join(outputDir, 'amplify', 'backend', 'types'), { recursive: true });
+    // Find the resource.ts content
+    const resourceCall = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith('resource.ts'));
+    expect(resourceCall).toBeDefined();
+    const resourceContent = resourceCall![1] as string;
 
-    const configDir = path.join(outputDir, 'amplify', '.config');
-    await fs.mkdir(configDir, { recursive: true });
-    await fs.writeFile(path.join(configDir, 'project-config.json'), JSON.stringify({ projectName: 'testProj' }), 'utf-8');
+    // Count constructor params
+    const ctorMatch = constructContent.match(/constructor\(([\s\S]*?)\)\s*\{/);
+    expect(ctorMatch).toBeDefined();
+    const ctorParams = ctorMatch![1].split(',').filter((p: string) => p.trim()).length;
 
-    const origCwd = process.cwd;
-    process.cwd = () => outputDir;
+    // Count args in `new MyCustom(...)` — handle nested parens like backend.createStack('...')
+    const newCallMatch = resourceContent.match(/new MyCustom\(([\s\S]*?)\);/);
+    expect(newCallMatch).toBeDefined();
+    const newCallArgs = newCallMatch![1].split(/,(?![^(]*\))/).filter((a: string) => a.trim()).length;
 
-    try {
-      const backendGen = new BackendGenerator(outputDir, logger);
-      const pkgGen = new RootPackageJsonGenerator(outputDir);
-      const gen1App = { statefulResourceTypes: [...DEFAULT_STATEFUL_RESOURCES] } as any;
-
-      const generator = new CustomResourceGenerator(gen1App, backendGen, pkgGen, outputDir, 'varDep', logger);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      const constructPath = path.join(outputDir, 'amplify', 'custom', 'varDep', 'construct.ts');
-      const resourcePath = path.join(outputDir, 'amplify', 'custom', 'varDep', 'resource.ts');
-
-      const constructContent = await fs.readFile(constructPath, 'utf-8');
-      const resourceContent = await fs.readFile(resourcePath, 'utf-8');
-
-      // Count constructor params in construct.ts
-      const ctorMatch = constructContent.match(/constructor\(([\s\S]*?)\)\s*\{/);
-      const ctorParams = ctorMatch ? ctorMatch[1].split(',').filter((p: string) => p.trim()).length : 0;
-
-      // Count args in `new VarDep(...)` call in resource.ts (handle nested parens)
-      const newCallMatch = resourceContent.match(/new VarDep\(([\s\S]*?)\);/);
-      const newCallArgs = newCallMatch ? newCallMatch[1].split(/,(?![^(]*\))/).filter((a: string) => a.trim()).length : 0;
-
-      // Both must agree: 3 params (scope, id, backend) == 3 args
-      expect(newCallArgs).toBe(ctorParams);
-      expect(ctorParams).toBe(3);
-    } finally {
-      process.cwd = origCwd;
-    }
+    expect(ctorParams).toBe(3); // scope, id, backend
+    expect(newCallArgs).toBe(ctorParams);
   });
 
   it('construct.ts ctor params == resource.ts new call args when no dependencies', async () => {
-    const cdkStackContent = [
-      "import * as cdk from 'aws-cdk-lib';",
-      "import { Construct } from 'constructs';",
-      '',
-      'export class cdkStack extends cdk.Stack {',
-      '  constructor(scope: Construct, id: string, props?: cdk.StackProps) {',
-      '    super(scope, id, props);',
-      '  }',
-      '}',
-    ].join('\n');
+    mockReadFile.mockResolvedValue(CDK_STACK_NO_DEPS);
 
-    const amplifyBackendCustomDir = path.join(outputDir, 'amplify', 'backend', 'custom', 'noDep');
-    await fs.mkdir(amplifyBackendCustomDir, { recursive: true });
-    await fs.writeFile(path.join(amplifyBackendCustomDir, 'cdk-stack.ts'), cdkStackContent, 'utf-8');
-    await fs.writeFile(
-      path.join(amplifyBackendCustomDir, 'package.json'),
-      JSON.stringify({ dependencies: {}, devDependencies: {} }),
-      'utf-8',
-    );
+    const backendGenerator = new BackendGenerator(outputDir, logger);
+    const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'noDep', logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
 
-    await fs.mkdir(path.join(outputDir, 'amplify', 'backend', 'types'), { recursive: true });
+    const constructCall = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith('cdk-stack.ts'));
+    expect(constructCall).toBeDefined();
+    const constructContent = constructCall![1] as string;
 
-    const configDir = path.join(outputDir, 'amplify', '.config');
-    await fs.mkdir(configDir, { recursive: true });
-    await fs.writeFile(path.join(configDir, 'project-config.json'), JSON.stringify({ projectName: 'testProj' }), 'utf-8');
+    const resourceCall = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith('resource.ts'));
+    expect(resourceCall).toBeDefined();
+    const resourceContent = resourceCall![1] as string;
 
-    const origCwd = process.cwd;
-    process.cwd = () => outputDir;
+    const ctorMatch = constructContent.match(/constructor\(([\s\S]*?)\)\s*\{/);
+    expect(ctorMatch).toBeDefined();
+    const ctorParams = ctorMatch![1].split(',').filter((p: string) => p.trim()).length;
 
-    try {
-      const backendGen = new BackendGenerator(outputDir, logger);
-      const pkgGen = new RootPackageJsonGenerator(outputDir);
-      const gen1App = { statefulResourceTypes: [...DEFAULT_STATEFUL_RESOURCES] } as any;
+    const newCallMatch = resourceContent.match(/new NoDep\(([\s\S]*?)\);/);
+    expect(newCallMatch).toBeDefined();
+    const newCallArgs = newCallMatch![1].split(/,(?![^(]*\))/).filter((a: string) => a.trim()).length;
 
-      const generator = new CustomResourceGenerator(gen1App, backendGen, pkgGen, outputDir, 'noDep', logger);
-      const ops = await generator.plan();
-      await ops[0].execute();
-
-      const constructPath = path.join(outputDir, 'amplify', 'custom', 'noDep', 'construct.ts');
-      const resourcePath = path.join(outputDir, 'amplify', 'custom', 'noDep', 'resource.ts');
-
-      const constructContent = await fs.readFile(constructPath, 'utf-8');
-      const resourceContent = await fs.readFile(resourcePath, 'utf-8');
-
-      const ctorMatch = constructContent.match(/constructor\(([\s\S]*?)\)\s*\{/);
-      const ctorParams = ctorMatch ? ctorMatch[1].split(',').filter((p: string) => p.trim()).length : 0;
-
-      const newCallMatch = resourceContent.match(/new NoDep\(([\s\S]*?)\);/);
-      const newCallArgs = newCallMatch ? newCallMatch[1].split(/,(?![^(]*\))/).filter((a: string) => a.trim()).length : 0;
-
-      // Both must agree: 2 params (scope, id) == 2 args
-      expect(newCallArgs).toBe(ctorParams);
-      expect(ctorParams).toBe(2);
-    } finally {
-      process.cwd = origCwd;
-    }
+    expect(ctorParams).toBe(2); // scope, id
+    expect(newCallArgs).toBe(ctorParams);
   });
 });
