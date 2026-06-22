@@ -108,13 +108,12 @@ export class CustomResourceGenerator implements Planner {
           }
 
           const projectName = await readProjectName(rootDir);
-          const dependencies = await extractDependencies(sourceResourcePath);
           const constructClassName = capitalize(this.resourceName);
 
-          await transformResource(destResourcePath, projectName, this.resourceName, constructClassName, dependencies);
+          const addedBackendParam = await transformResource(destResourcePath, projectName, this.resourceName, constructClassName);
           await removeBuildArtifacts(destResourcePath);
           await renameCdkStackToConstruct(destResourcePath);
-          await generateResourceWrapper(this.gen1App, destResourcePath, this.resourceName, constructClassName, dependencies);
+          await generateResourceWrapper(this.gen1App, destResourcePath, this.resourceName, constructClassName, addedBackendParam);
 
           await this.mergeDependencies(sourceResourcePath);
           this.contributeToBackend(constructClassName);
@@ -162,49 +161,6 @@ export class CustomResourceGenerator implements Planner {
 }
 
 /**
- * Extracts category dependencies from AmplifyHelpers.addResourceDependency calls
- * and amplify-dependent-resources-ref imports.
- */
-async function extractDependencies(sourceResourcePath: string): Promise<string[]> {
-  const cdkStackFilePath = path.join(sourceResourcePath, 'cdk-stack.ts');
-  try {
-    const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-    const dependencies: string[] = [];
-
-    // Detect AmplifyHelpers.addResourceDependency calls
-    const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
-    let match: RegExpExecArray | null;
-    while ((match = dependencyRegex.exec(content)) !== null) {
-      const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
-      let categoryMatch: RegExpExecArray | null;
-      while ((categoryMatch = categoryRegex.exec(match[1])) !== null) {
-        if (!dependencies.includes(categoryMatch[1])) {
-          dependencies.push(categoryMatch[1]);
-        }
-      }
-    }
-
-    // Detect amplify-dependent-resources-ref imports as a dependency signal.
-    if (dependencies.length === 0 && content.includes('amplify-dependent-resources-ref')) {
-      const categoryAccessRegex = /\.\s*(auth|api|storage|function|analytics)\s*\./g;
-      let catMatch: RegExpExecArray | null;
-      while ((catMatch = categoryAccessRegex.exec(content)) !== null) {
-        if (!dependencies.includes(catMatch[1])) {
-          dependencies.push(catMatch[1]);
-        }
-      }
-      if (dependencies.length === 0) {
-        dependencies.push('unknown');
-      }
-    }
-
-    return dependencies;
-  } catch (e) {
-    throw new Error(`Failed to read dependencies for custom resource '${sourceResourcePath}': ${String(e)}`);
-  }
-}
-
-/**
  * Transforms cdk-stack.ts: applies AST transformations, renames the class,
  * and adds the Backend type import.
  */
@@ -213,8 +169,7 @@ async function transformResource(
   projectName: string | undefined,
   resourceName: string,
   constructClassName: string,
-  dependencies: string[],
-): Promise<void> {
+): Promise<boolean> {
   const cdkStackFilePath = path.join(destResourcePath, 'cdk-stack.ts');
   let content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
@@ -237,7 +192,7 @@ async function transformResource(
 
   // Apply AST-based transformations (handles CfnParameter removal, dependency rewrites, etc.)
   const sourceFile = ts.createSourceFile(cdkStackFilePath, content, ts.ScriptTarget.Latest, true);
-  const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
+  const { sourceFile: transformedFile, addedBackendParam } = AmplifyHelperTransformer.transform(sourceFile, projectName);
   const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   content = printer.printFile(transformedWithBranchName);
@@ -248,7 +203,7 @@ async function transformResource(
   // Add Backend type import only when the construct has dependencies
   // (i.e., when the transformer added a `backend` parameter).
   // Place it after other imports to match expected output.
-  if (dependencies.length > 0) {
+  if (addedBackendParam) {
     const importRegex2 = /(import.*from.*['"].*['"];?\s*\n)/g;
     let lastImportMatch2: RegExpExecArray | null = null;
     let regexMatch2: RegExpExecArray | null;
@@ -262,6 +217,7 @@ async function transformResource(
   }
 
   await fs.writeFile(cdkStackFilePath, content, { encoding: 'utf-8' });
+  return addedBackendParam;
 }
 
 /**
@@ -299,14 +255,14 @@ async function generateResourceWrapper(
   destResourcePath: string,
   resourceName: string,
   constructClassName: string,
-  dependencies: string[],
+  addedBackendParam: boolean,
 ): Promise<void> {
   const defineFnName = `define${constructClassName}`;
   const stackName = `custom${resourceName}`;
   const args = [`backend.createStack('${stackName}')`, `'${resourceName}'`];
 
-  // Pass backend when the resource has dependencies on other categories
-  if (dependencies.length > 0) {
+  // Pass backend when the AST transformer added a backend parameter to the construct constructor
+  if (addedBackendParam) {
     args.push('backend');
   }
 

@@ -5,15 +5,21 @@ const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
 function transformCode(code: string, projectName?: string): string {
   const sourceFile = ts.createSourceFile('test.ts', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-  let transformed = AmplifyHelperTransformer.transform(sourceFile, projectName);
+  let { sourceFile: transformed } = AmplifyHelperTransformer.transform(sourceFile, projectName);
   transformed = AmplifyHelperTransformer.addBranchNameVariable(transformed, projectName);
   return printer.printFile(transformed);
 }
 
 function transformOnly(code: string, projectName?: string): string {
   const sourceFile = ts.createSourceFile('test.ts', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-  const transformed = AmplifyHelperTransformer.transform(sourceFile, projectName);
+  const { sourceFile: transformed } = AmplifyHelperTransformer.transform(sourceFile, projectName);
   return printer.printFile(transformed);
+}
+
+function transformRaw(code: string, projectName?: string): { output: string; addedBackendParam: boolean } {
+  const sourceFile = ts.createSourceFile('test.ts', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const { sourceFile: transformed, addedBackendParam } = AmplifyHelperTransformer.transform(sourceFile, projectName);
+  return { output: printer.printFile(transformed), addedBackendParam };
 }
 
 describe('AmplifyHelperTransformer', () => {
@@ -183,10 +189,11 @@ class MyStack extends cdk.Stack {
 const dependencies = AmplifyHelpers.addResourceDependency(this, []);
 const poolId = cdk.Fn.ref(dependencies.auth.myAuth.UserPoolId);
 `;
-      const output = transformOnly(code);
+      const { output, addedBackendParam } = transformRaw(code);
 
       expect(output).not.toContain('addResourceDependency');
       expect(output).toContain('backend.auth.resources.userPool.userPoolId');
+      expect(addedBackendParam).toBe(true);
     });
 
     it('transforms function dependency access with resource name', () => {
@@ -194,9 +201,10 @@ const poolId = cdk.Fn.ref(dependencies.auth.myAuth.UserPoolId);
 const deps = AmplifyHelpers.addResourceDependency(this, []);
 const arn = cdk.Fn.ref(deps.function.myFunc.Arn);
 `;
-      const output = transformOnly(code);
+      const { output, addedBackendParam } = transformRaw(code);
 
       expect(output).toContain('backend.functions.myFunc.resources.lambda.functionArn');
+      expect(addedBackendParam).toBe(true);
     });
 
     it('adds backend parameter to constructor when dependencies exist', () => {
@@ -208,9 +216,23 @@ class MyStack extends cdk.Stack {
   }
 }
 `;
-      const output = transformOnly(code);
+      const { output, addedBackendParam } = transformRaw(code);
 
       expect(output).toContain('backend: Backend');
+      expect(addedBackendParam).toBe(true);
+    });
+
+    it('returns addedBackendParam false when no dependencies exist', () => {
+      const code = `
+class MyStack extends cdk.Stack {
+  constructor(scope: any, id: string) {
+    super(scope, id);
+  }
+}
+`;
+      const { addedBackendParam } = transformRaw(code);
+
+      expect(addedBackendParam).toBe(false);
     });
   });
 

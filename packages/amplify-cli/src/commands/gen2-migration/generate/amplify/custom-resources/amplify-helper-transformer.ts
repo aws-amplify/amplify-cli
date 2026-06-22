@@ -37,7 +37,7 @@ export class AmplifyHelperTransformer {
   /**
    * Transforms Gen1 AmplifyHelpers patterns to Gen2 equivalents via AST rewriting.
    */
-  public static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
+  public static transform(sourceFile: ts.SourceFile, projectName?: string): { sourceFile: ts.SourceFile; addedBackendParam: boolean } {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
     // Track parameter names with AmplifyResourceProps type
@@ -363,7 +363,7 @@ export class AmplifyHelperTransformer {
     };
 
     const result = ts.transform(sourceFile, [transformer]);
-    return result.transformed[0] as ts.SourceFile;
+    return { sourceFile: result.transformed[0] as ts.SourceFile, addedBackendParam: hasDependencies };
   }
 
   /**
