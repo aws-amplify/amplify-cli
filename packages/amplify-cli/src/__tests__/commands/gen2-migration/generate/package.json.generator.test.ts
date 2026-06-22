@@ -41,7 +41,7 @@ describe('RootPackageJsonGenerator', () => {
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
           "tsx": "^4.20.6",
-          "typescript": "^5.4.0"
+          "typescript": "~5.9.3"
         }
       }
       "
@@ -75,7 +75,7 @@ describe('RootPackageJsonGenerator', () => {
           "esbuild": "^0.27.0",
           "test-lib": "^3.0.0",
           "tsx": "^4.20.6",
-          "typescript": "^5.4.0"
+          "typescript": "~5.9.3"
         }
       }
       "
@@ -89,7 +89,7 @@ describe('RootPackageJsonGenerator', () => {
 
     const content = JSON.parse(await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8'));
     expect(content.devDependencies).toHaveProperty('typescript');
-    expect(content.devDependencies.typescript).toMatch(/^\^5/);
+    expect(content.devDependencies.typescript).toMatch(/^[~^]?5\./);
   });
 
   it('preserves existing package.json fields', async () => {
@@ -123,7 +123,7 @@ describe('RootPackageJsonGenerator', () => {
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
           "tsx": "^4.20.6",
-          "typescript": "^5.4.0"
+          "typescript": "~5.9.3"
         }
       }
       "
