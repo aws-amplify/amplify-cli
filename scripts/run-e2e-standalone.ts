@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-codebuild';
 import { fromIni } from '@aws-sdk/credential-providers';
 import * as fs from 'fs-extra';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import * as yaml from 'js-yaml';
 import { AWS_REGIONS_TO_RUN_TESTS, REPO_ROOT } from './cci-utils';
 
@@ -41,10 +41,12 @@ const BATCH_GET_LIMIT = 100;
 const WINDOWS_ENVIRONMENT_TYPE = 'WINDOWS_SERVER_2022_CONTAINER';
 const DEFAULT_LINUX_CONCURRENCY = 75;
 const DEFAULT_WINDOWS_CONCURRENCY = 75;
+const DEFAULT_DURATIONS_PATH = '.e2e-shard-durations.json';
 const WORKFLOW_SPEC_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated.yml');
 
 type Platform = 'linux' | 'windows';
 type TerminalStatus = 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'STOPPED' | 'TIMED_OUT';
+type LaunchOrder = 'longest-first' | 'shortest-first' | 'file';
 
 interface Shard {
   readonly identifier: string;
@@ -62,6 +64,8 @@ interface LauncherOptions {
   readonly filter?: string;
   readonly limit?: number;
   readonly retryFailed: number;
+  readonly durationsPath: string;
+  readonly order: LaunchOrder;
 }
 
 interface ShardResult {
@@ -95,6 +99,11 @@ const parseArgs = (argv: readonly string[]): LauncherOptions => {
     throw new Error(`--platform must be one of linux|windows|both, got: ${platformArg}`);
   }
 
+  const order = (get('--order') ?? 'longest-first') as LaunchOrder;
+  if (!['longest-first', 'shortest-first', 'file'].includes(order)) {
+    throw new Error(`--order must be one of longest-first|shortest-first|file, got: ${order}`);
+  }
+
   // `--max-concurrency` is a convenience that sets both per-platform caps.
   const sharedCap = get('--max-concurrency') ? Number(get('--max-concurrency')) : undefined;
 
@@ -108,7 +117,41 @@ const parseArgs = (argv: readonly string[]): LauncherOptions => {
     filter: get('--filter'),
     limit: get('--limit') ? Number(get('--limit')) : undefined,
     retryFailed: Number(get('--retry-failed') ?? 0),
+    durationsPath: get('--durations') ?? DEFAULT_DURATIONS_PATH,
+    order,
   };
+};
+
+/**
+ * Load the per-shard duration dataset (identifier → wall-clock minutes) produced
+ * from a prior green batch. Returns an empty map (with a warning) when the file
+ * is absent so duration ordering degrades gracefully to file order.
+ */
+const loadDurations = (options: LauncherOptions): ReadonlyMap<string, number> => {
+  const path = isAbsolute(options.durationsPath) ? options.durationsPath : join(REPO_ROOT, options.durationsPath);
+  if (!fs.existsSync(path)) {
+    console.warn(`⚠️  durations file not found at ${path}; falling back to file order`);
+    return new Map();
+  }
+  const raw = fs.readJsonSync(path) as { shard_durations?: Record<string, number> };
+  return new Map(Object.entries(raw.shard_durations ?? {}));
+};
+
+/**
+ * Order shards for launch. With `longest-first` (LPT heuristic) the longest
+ * shards start in the earliest pool slots so they are never the tail of the
+ * makespan; shards missing from the dataset are assumed to run for the median
+ * duration. `file` preserves the workflow-spec order.
+ */
+const orderShards = (shards: readonly Shard[], durations: ReadonlyMap<string, number>, order: LaunchOrder): Shard[] => {
+  if (order === 'file' || durations.size === 0) {
+    return [...shards];
+  }
+  const values = [...durations.values()].sort((a, b) => a - b);
+  const median = values.length === 0 ? 0 : values[Math.floor(values.length / 2)];
+  const durationOf = (s: Shard): number => durations.get(s.identifier) ?? median;
+  const sign = order === 'longest-first' ? -1 : 1;
+  return [...shards].sort((a, b) => sign * (durationOf(a) - durationOf(b)));
 };
 
 /** Parse the generated workflow spec into the list of runnable e2e shards. */
@@ -144,7 +187,8 @@ const parseShards = (options: LauncherOptions): Shard[] => {
     shards.push({ identifier, buildspec, testSuite, platform, region });
   }
 
-  return typeof options.limit === 'number' ? shards.slice(0, options.limit) : shards;
+  const ordered = orderShards(shards, loadDurations(options), options.order);
+  return typeof options.limit === 'number' ? ordered.slice(0, options.limit) : ordered;
 };
 
 /** Resolve the project-level $WINDOWS_IMAGE_2019 ECR image for windows overrides. */
@@ -316,7 +360,7 @@ const main = async (): Promise<void> => {
   const windowsShards = shards.filter((s) => s.platform === 'windows');
   console.log(
     `Launching ${shards.length} shard(s) — linux=${linuxShards.length} (cap ${options.maxConcurrencyLinux}), ` +
-      `windows=${windowsShards.length} (cap ${options.maxConcurrencyWindows}), source-sha=${options.sourceSha}`,
+      `windows=${windowsShards.length} (cap ${options.maxConcurrencyWindows}), source-sha=${options.sourceSha}, order=${options.order}`,
   );
 
   const windowsImage = windowsShards.length > 0 ? await resolveWindowsImage(client) : undefined;
