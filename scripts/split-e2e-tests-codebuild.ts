@@ -6,6 +6,13 @@ import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
+// Additive split-batch outputs. These do NOT replace the combined e2e_workflow_generated.yml above —
+// they are an alternative execution mode that fires two separate CodeBuild batches (one Linux, one
+// Windows) against the SAME AmplifyCLI-E2E-Testing project to dodge the orchestrator fan-out fault.
+const CODEBUILD_GENERATE_LINUX_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_linux_generated');
+const CODEBUILD_GENERATE_WINDOWS_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_windows_generated');
+const WAIT_FOR_IDS_LINUX_FILE_PATH = './codebuild_specs/wait_for_ids_linux.json';
+const WAIT_FOR_IDS_WINDOWS_FILE_PATH = './codebuild_specs/wait_for_ids_windows.json';
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
   'src/__tests__/auth_2e.test.ts',
@@ -154,8 +161,11 @@ export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
 export function saveConfig(config: any): void {
+  saveConfigToPath(config, CODEBUILD_GENERATE_CONFIG_PATH);
+}
+export function saveConfigToPath(config: any, generatePathWithoutExtension: string): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true, lineWidth: -1 })];
-  fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
+  fs.writeFileSync(`${generatePathWithoutExtension}.yml`, output.join('\n'));
 }
 export function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return globSync(pattern, { cwd: dir });
@@ -394,5 +404,79 @@ function main(): void {
   let currentBatch = [...baseBuildGraph, ...allBuilds];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase);
+
+  // --- Additive split-batch generation (combined output above is left untouched) ---
+  generateSplitConfigs(splitE2ETests);
+}
+
+// Prep groups that the Linux shards transitively depend on (each l_* shard depends on `upb`).
+// The chain is build_linux -> publish_to_local_registry -> build_pkg_binaries_* -> upb, so this
+// set is self-contained: every depend-on within it resolves to another member of the set.
+const LINUX_PREP_IDENTIFIERS = [
+  'build_linux',
+  'publish_to_local_registry',
+  'build_pkg_binaries_arm',
+  'build_pkg_binaries_linux',
+  'build_pkg_binaries_macos',
+  'build_pkg_binaries_win',
+  'upb',
+];
+// Windows shards depend on both `upb` and `build_windows`. `build_windows` has no dependencies of
+// its own, and `upb` still depends on all four build_pkg_binaries_* jobs, so we reuse the full Linux
+// prep chain and add build_windows. This keeps every depend-on resolvable within the Windows batch.
+const WINDOWS_PREP_IDENTIFIERS = [...LINUX_PREP_IDENTIFIERS, 'build_windows'];
+
+/**
+ * Emits two SELF-CONTAINED batchspecs from the already-computed shard set: one Linux-only, one
+ * Windows-only. Each batch carries its own copy of the prep chain (build + package + upload) so the
+ * two batches can be fired independently against the same project with no cross-batch ordering.
+ *
+ * FUTURE OPTIMIZATION: prep is currently duplicated across both batches (~2x prep cost, though it
+ * runs in parallel so there is no wall-clock penalty). Because the S3 caches are keyed by
+ * $CODEBUILD_SOURCE_VERSION (project-level buckets) and both batches share the same source version,
+ * the Windows batch could instead reuse the artifacts produced by the Linux batch's prep. That would
+ * require running Linux prep first and gating the Windows batch on its completion — intentionally
+ * omitted here to keep this first cut free of cross-batch ordering bugs.
+ */
+function generateSplitConfigs(splitE2ETests: any[]): void {
+  // Re-read prep jobs from a clean base load so the combined graph's mutations don't leak in.
+  const cleanBase: any = loadConfigBase();
+  const cleanBaseGraph: any[] = cleanBase.batch['build-graph'];
+  const prepJobsFor = (identifiers: string[]) => cleanBaseGraph.filter((job) => identifiers.includes(job.identifier));
+
+  const linuxShards = splitE2ETests.filter((job) => job.identifier.startsWith('l_'));
+  const windowsShards = splitE2ETests.filter((job) => job.identifier.startsWith('w_'));
+
+  // Linux batch: prep chain + all l_* shards + linux aggregate.
+  const linuxWaitForIds = linuxShards.map((job) => job.identifier).sort();
+  fs.writeFileSync(WAIT_FOR_IDS_LINUX_FILE_PATH, `${JSON.stringify(linuxWaitForIds, null, 2)}\n`);
+  const linuxAggregator = {
+    identifier: 'aggregate_e2e_reports',
+    env: {
+      'compute-type': 'BUILD_GENERAL1_MEDIUM',
+      variables: { WAIT_FOR_IDS_FILE_PATH: WAIT_FOR_IDS_LINUX_FILE_PATH },
+    },
+    buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
+    'depend-on': ['upb'],
+  };
+  const linuxConfig: any = loadConfigBase();
+  linuxConfig.batch['build-graph'] = [...prepJobsFor(LINUX_PREP_IDENTIFIERS), ...linuxShards, linuxAggregator];
+  saveConfigToPath(linuxConfig, CODEBUILD_GENERATE_LINUX_CONFIG_PATH);
+
+  // Windows batch: prep chain + build_windows + all w_* shards + windows aggregate.
+  const windowsWaitForIds = windowsShards.map((job) => job.identifier).sort();
+  fs.writeFileSync(WAIT_FOR_IDS_WINDOWS_FILE_PATH, `${JSON.stringify(windowsWaitForIds, null, 2)}\n`);
+  const windowsAggregator = {
+    identifier: 'aggregate_e2e_reports',
+    env: {
+      'compute-type': 'BUILD_GENERAL1_MEDIUM',
+      variables: { WAIT_FOR_IDS_FILE_PATH: WAIT_FOR_IDS_WINDOWS_FILE_PATH },
+    },
+    buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
+    'depend-on': ['upb'],
+  };
+  const windowsConfig: any = loadConfigBase();
+  windowsConfig.batch['build-graph'] = [...prepJobsFor(WINDOWS_PREP_IDENTIFIERS), ...windowsShards, windowsAggregator];
+  saveConfigToPath(windowsConfig, CODEBUILD_GENERATE_WINDOWS_CONFIG_PATH);
 }
 main();
