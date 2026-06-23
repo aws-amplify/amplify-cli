@@ -426,6 +426,114 @@ const LINUX_PREP_IDENTIFIERS = [
 // prep chain and add build_windows. This keeps every depend-on resolvable within the Windows batch.
 const WINDOWS_PREP_IDENTIFIERS = [...LINUX_PREP_IDENTIFIERS, 'build_windows'];
 
+// Index-offset sliding-window concurrency cap. CodeBuild's batch orchestrator faults materially
+// above ~100 simultaneously in-progress child builds, so each batch caps its in-progress fan-out at
+// W shards via a positional dependency chain: the shard at position p depends on the shard at
+// position p-W, which cannot start until p-W finishes. With two separate batches each capped at 75,
+// each orchestrator stays well under the ~100 fault threshold.
+const SLIDING_WINDOW_SIZE = 75;
+// Fallback per-shard durations (minutes) for identifiers absent from the durations file.
+const MEDIAN_DURATION_LINUX = 45;
+const MEDIAN_DURATION_WINDOWS = 80;
+const SHARD_DURATIONS_FILE = join(REPO_ROOT, '.e2e-shard-durations.json');
+// Split-only shard buildspecs. These are copies of the combined-path buildspecs plus a guaranteed
+// non-empty primary artifact (a marker file) so that chained depend-on successors can always resolve
+// the predecessor shard's artifact, even when a shard's test run emits no coverage/report files. The
+// combined-path buildspecs (run_e2e_tests_{linux,windows}.yml) are intentionally left untouched.
+const SPLIT_BUILDSPEC_LINUX = 'codebuild_specs/run_e2e_tests_linux_split.yml';
+const SPLIT_BUILDSPEC_WINDOWS = 'codebuild_specs/run_e2e_tests_windows_split.yml';
+
+/**
+ * Loads the per-shard wall-clock durations (minutes) keyed by shard identifier from a previous green
+ * batch. Returns an empty map when the file is missing so generation still succeeds (all shards then
+ * fall back to the median duration).
+ */
+function loadShardDurations(): Record<string, number> {
+  if (!fs.existsSync(SHARD_DURATIONS_FILE)) {
+    return {};
+  }
+  const parsed = JSON.parse(fs.readFileSync(SHARD_DURATIONS_FILE, 'utf8'));
+  return parsed.shard_durations ?? {};
+}
+
+/**
+ * Arranges shards into an index-offset sliding-window chain that bounds the number of simultaneously
+ * in-progress builds to `windowSize`.
+ *
+ * Positions are 1-based. A shard at position p <= windowSize depends only on `prepDeps` (it starts as
+ * soon as prep is ready). A shard at position p > windowSize depends on the shard at position
+ * p-windowSize (Windows additionally keeps `build_windows`), so at most `windowSize` shards are ever
+ * in-progress at once.
+ *
+ * Placement minimizes makespan and protects the per-build timeout: the longest shards are placed in
+ * the "terminal" slots (start positions with no successor) so each runs alone start-to-finish, and
+ * the remaining shards are LPT-paired (longest-early with shortest-late) so no 2-chain's summed
+ * duration exceeds the longest single shard.
+ *
+ * Returns the reordered shards with `depend-on` rewritten, plus the projected batch makespan in
+ * minutes (the longest chain sum, excluding prep).
+ */
+function arrangeSlidingWindow(
+  shards: any[],
+  windowSize: number,
+  prepDeps: string[],
+  medianDuration: number,
+  splitBuildspec: string,
+): { ordered: any[]; makespanMinutes: number } {
+  const durations = loadShardDurations();
+  const durationOf = (job: any): number => durations[job.identifier] ?? medianDuration;
+  // Clone so we never mutate the shard objects shared with the combined-graph output, and point each
+  // shard at the split-only buildspec variant that guarantees a non-empty primary artifact.
+  const clones = shards.map((job) => {
+    const clone = JSON.parse(JSON.stringify(job)) as any;
+    clone.buildspec = splitBuildspec;
+    return clone;
+  });
+  const n = clones.length;
+
+  if (n <= windowSize) {
+    clones.forEach((job) => {
+      job['depend-on'] = [...prepDeps];
+    });
+    const makespanMinutes = clones.reduce((max, job) => Math.max(max, durationOf(job)), 0);
+    return { ordered: clones, makespanMinutes };
+  }
+
+  const numTwoChains = n - windowSize; // start positions [1..numTwoChains] each have a successor
+  const numTerminal = 2 * windowSize - n; // start positions [numTwoChains+1..windowSize] have none
+  const sorted = [...clones].sort((a, b) => durationOf(b) - durationOf(a));
+  const terminal = sorted.slice(0, numTerminal); // longest shards run alone in terminal slots
+  const rest = sorted.slice(numTerminal); // 2 * numTwoChains shards, descending
+
+  const early: any[] = [];
+  const late: any[] = [];
+  for (let i = 0; i < numTwoChains; i++) {
+    early.push(rest[i]); // longer half -> early position (on prep)
+    late.push(rest[rest.length - 1 - i]); // shorter half -> late position (chained to its early)
+  }
+
+  // 0-based position layout:
+  //   [0 .. numTwoChains-1]          early shards          (depend on prep)
+  //   [numTwoChains .. windowSize-1] terminal shards       (depend on prep, no successor)
+  //   [windowSize .. n-1]            late shards            (depend on shard at index pos-windowSize)
+  const ordered: any[] = [...early, ...terminal, ...late];
+  // Windows late shards keep build_windows in addition to their chain predecessor.
+  const nonUpbPrep = prepDeps.filter((dep) => dep !== 'upb');
+  ordered.forEach((job, idx) => {
+    if (idx < windowSize) {
+      job['depend-on'] = [...prepDeps];
+    } else {
+      job['depend-on'] = [...nonUpbPrep, ordered[idx - windowSize].identifier];
+    }
+  });
+
+  let makespanMinutes = terminal.reduce((max, job) => Math.max(max, durationOf(job)), 0);
+  for (let i = 0; i < numTwoChains; i++) {
+    makespanMinutes = Math.max(makespanMinutes, durationOf(early[i]) + durationOf(late[i]));
+  }
+  return { ordered, makespanMinutes };
+}
+
 /**
  * Emits two SELF-CONTAINED batchspecs from the already-computed shard set: one Linux-only, one
  * Windows-only. Each batch carries its own copy of the prep chain (build + package + upload) so the
@@ -447,8 +555,28 @@ function generateSplitConfigs(splitE2ETests: any[]): void {
   const linuxShards = splitE2ETests.filter((job) => job.identifier.startsWith('l_'));
   const windowsShards = splitE2ETests.filter((job) => job.identifier.startsWith('w_'));
 
+  // Apply the index-offset sliding-window concurrency cap (W=75) to each batch independently. This
+  // rewrites every shard's depend-on (chaining position p to position p-75) and points each shard at
+  // the split-only buildspec variant.
+  const linuxArranged = arrangeSlidingWindow(linuxShards, SLIDING_WINDOW_SIZE, ['upb'], MEDIAN_DURATION_LINUX, SPLIT_BUILDSPEC_LINUX);
+  const windowsArranged = arrangeSlidingWindow(
+    windowsShards,
+    SLIDING_WINDOW_SIZE,
+    ['build_windows', 'upb'],
+    MEDIAN_DURATION_WINDOWS,
+    SPLIT_BUILDSPEC_WINDOWS,
+  );
+  // eslint-disable-next-line no-console
+  console.log(
+    `[split-e2e] sliding-window W=${SLIDING_WINDOW_SIZE} projected makespan (excl. prep): ` +
+      `linux ~${Math.round(linuxArranged.makespanMinutes)}m (${linuxArranged.ordered.length} shards), ` +
+      `windows ~${Math.round(windowsArranged.makespanMinutes)}m (${windowsArranged.ordered.length} shards)`,
+  );
+  const linuxShardsArranged = linuxArranged.ordered;
+  const windowsShardsArranged = windowsArranged.ordered;
+
   // Linux batch: prep chain + all l_* shards + linux aggregate.
-  const linuxWaitForIds = linuxShards.map((job) => job.identifier).sort();
+  const linuxWaitForIds = linuxShardsArranged.map((job) => job.identifier).sort();
   fs.writeFileSync(WAIT_FOR_IDS_LINUX_FILE_PATH, `${JSON.stringify(linuxWaitForIds, null, 2)}\n`);
   const linuxAggregator = {
     identifier: 'aggregate_e2e_reports',
@@ -460,11 +588,11 @@ function generateSplitConfigs(splitE2ETests: any[]): void {
     'depend-on': ['upb'],
   };
   const linuxConfig: any = loadConfigBase();
-  linuxConfig.batch['build-graph'] = [...prepJobsFor(LINUX_PREP_IDENTIFIERS), ...linuxShards, linuxAggregator];
+  linuxConfig.batch['build-graph'] = [...prepJobsFor(LINUX_PREP_IDENTIFIERS), ...linuxShardsArranged, linuxAggregator];
   saveConfigToPath(linuxConfig, CODEBUILD_GENERATE_LINUX_CONFIG_PATH);
 
   // Windows batch: prep chain + build_windows + all w_* shards + windows aggregate.
-  const windowsWaitForIds = windowsShards.map((job) => job.identifier).sort();
+  const windowsWaitForIds = windowsShardsArranged.map((job) => job.identifier).sort();
   fs.writeFileSync(WAIT_FOR_IDS_WINDOWS_FILE_PATH, `${JSON.stringify(windowsWaitForIds, null, 2)}\n`);
   const windowsAggregator = {
     identifier: 'aggregate_e2e_reports',
@@ -476,7 +604,7 @@ function generateSplitConfigs(splitE2ETests: any[]): void {
     'depend-on': ['upb'],
   };
   const windowsConfig: any = loadConfigBase();
-  windowsConfig.batch['build-graph'] = [...prepJobsFor(WINDOWS_PREP_IDENTIFIERS), ...windowsShards, windowsAggregator];
+  windowsConfig.batch['build-graph'] = [...prepJobsFor(WINDOWS_PREP_IDENTIFIERS), ...windowsShardsArranged, windowsAggregator];
   saveConfigToPath(windowsConfig, CODEBUILD_GENERATE_WINDOWS_CONFIG_PATH);
 }
 main();

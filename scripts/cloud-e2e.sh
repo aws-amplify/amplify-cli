@@ -45,8 +45,8 @@ function cloudE2ESplit {
     fi
     git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$TARGET_BRANCH --no-verify --force-with-lease
     echo "--- Triggering Linux batch ---"
-    triggerProjectBatch $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "${E2E_PROFILE_NAME}Prod" $E2E_PROJECT_NAME $TARGET_BRANCH "" codebuild_specs/e2e_workflow_linux_generated.yml
+    triggerProjectBatch $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "${E2E_PROFILE_NAME}Prod" $E2E_PROJECT_NAME $TARGET_BRANCH "" codebuild_specs/e2e_workflow_linux_generated.yml 360
     echo "--- Triggering Windows batch ---"
-    triggerProjectBatch $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "${E2E_PROFILE_NAME}Prod" $E2E_PROJECT_NAME $TARGET_BRANCH "" codebuild_specs/e2e_workflow_windows_generated.yml
+    triggerProjectBatch $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "${E2E_PROFILE_NAME}Prod" $E2E_PROJECT_NAME $TARGET_BRANCH "" codebuild_specs/e2e_workflow_windows_generated.yml 360
     echo "Both batches triggered. Use the two Batch IDs printed above with 'yarn wait-for-all-codebuild-split <linuxBatchId> <windowsBatchId>' to poll aggregate pass/fail."
 }
