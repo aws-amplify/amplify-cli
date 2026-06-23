@@ -426,6 +426,29 @@ const LINUX_PREP_IDENTIFIERS = [
 // prep chain and add build_windows. This keeps every depend-on resolvable within the Windows batch.
 const WINDOWS_PREP_IDENTIFIERS = [...LINUX_PREP_IDENTIFIERS, 'build_windows'];
 
+// Non-shard combined-workflow jobs that belong to the Linux batch (all LINUX_CONTAINER). These are
+// NOT part of the l_* sliding-window chain — they are carried over verbatim from the combined graph
+// with their original depend-on edges so the split Linux batch runs the FULL e2e suite, not just the
+// l_* shards. Their dependencies resolve within the Linux batch: prep-chain jobs are in
+// LINUX_PREP_IDENTIFIERS, and `cleanup_resources` depends on the Linux `aggregate_e2e_reports`.
+const EXTRA_LINUX_JOB_IDENTIFIERS = [
+  'build_tests_standalone',
+  'test',
+  'lint',
+  'mock_e2e_tests',
+  'validate_cdk_version',
+  'verify_api_extract',
+  'verify_yarn_lock',
+  'verify_versions_match',
+  'verify_pkg_cli',
+  'integration_test',
+  'amplify_sudo_install_test',
+  'amplify_install_test',
+  'amplify_console_integration_tests',
+  'amplify_general_config_tests',
+  'cleanup_resources',
+];
+
 // Index-offset sliding-window concurrency cap. CodeBuild's batch orchestrator faults materially
 // above ~100 simultaneously in-progress child builds, so each batch caps its in-progress fan-out at
 // W shards via a positional dependency chain: the shard at position p depends on the shard at
@@ -588,7 +611,12 @@ function generateSplitConfigs(splitE2ETests: any[]): void {
     'depend-on': ['upb'],
   };
   const linuxConfig: any = loadConfigBase();
-  linuxConfig.batch['build-graph'] = [...prepJobsFor(LINUX_PREP_IDENTIFIERS), ...linuxShardsArranged, linuxAggregator];
+  linuxConfig.batch['build-graph'] = [
+    ...prepJobsFor(LINUX_PREP_IDENTIFIERS),
+    ...prepJobsFor(EXTRA_LINUX_JOB_IDENTIFIERS),
+    ...linuxShardsArranged,
+    linuxAggregator,
+  ];
   saveConfigToPath(linuxConfig, CODEBUILD_GENERATE_LINUX_CONFIG_PATH);
 
   // Windows batch: prep chain + build_windows + all w_* shards + windows aggregate.
