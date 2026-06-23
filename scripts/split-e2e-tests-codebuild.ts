@@ -6,6 +6,23 @@ import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
+
+/**
+ * Time-barrier wave staggering tunables for the e2e CodeBuild batch.
+ *
+ * The orchestrator that fans the batch out cannot schedule the full ~280-shard
+ * burst at once (it fails with a CoFaWorkflows "Internal Service Error"). To
+ * spread dispatch over time WITHOUT serializing wave completion, shards are
+ * grouped into waves. Wave 1 starts immediately after `upb`/`build_windows`;
+ * each later wave is gated behind a synthetic "barrier" build that only sleeps.
+ * All barriers depend solely on `upb`/`build_windows`, so they all start in
+ * parallel right after the package upload — the stagger comes purely from their
+ * differing sleep durations, NOT from chaining one wave's completion to the next.
+ */
+// Number of shards per wave (per OS). Wave 1 has no barrier.
+const E2E_WAVE_SIZE = 50;
+// Seconds added per wave to the barrier sleep. Wave k sleeps (k-1) * interval.
+const E2E_WAVE_BARRIER_INTERVAL_SEC = 300;
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
   'src/__tests__/auth_2e.test.ts',
@@ -352,6 +369,72 @@ const splitTestsV3 = (
   });
   return result;
 };
+/**
+ * Builds a synthetic barrier build group whose only job is to sleep, gating a
+ * wave of Linux e2e shards. Depends only on `upb` so it starts in parallel with
+ * every other barrier; the stagger comes from the sleep duration alone.
+ */
+function makeLinuxBarrier(identifier: string, wave: number): any {
+  const sleepSeconds = (wave - 1) * E2E_WAVE_BARRIER_INTERVAL_SEC;
+  return {
+    identifier,
+    buildspec: `version: 0.2\nphases:\n  build:\n    commands:\n      - sleep ${sleepSeconds}\n`,
+    env: { 'compute-type': 'BUILD_GENERAL1_SMALL' },
+    'depend-on': ['upb'],
+  };
+}
+
+/**
+ * Builds a synthetic barrier build group gating a wave of Windows e2e shards.
+ * Mirrors {@link makeLinuxBarrier} but runs on the Windows container the `w_`
+ * shards use and sleeps via PowerShell. Depends only on `build_windows`/`upb`.
+ */
+function makeWindowsBarrier(identifier: string, wave: number): any {
+  const sleepSeconds = (wave - 1) * E2E_WAVE_BARRIER_INTERVAL_SEC;
+  return {
+    identifier,
+    buildspec: `version: 0.2\nenv:\n  shell: powershell.exe\nphases:\n  build:\n    commands:\n      - Start-Sleep -Seconds ${sleepSeconds}\n`,
+    env: { type: 'WINDOWS_SERVER_2022_CONTAINER', image: '$WINDOWS_IMAGE_2019' },
+    'depend-on': ['build_windows', 'upb'],
+  };
+}
+
+/**
+ * Applies time-barrier wave staggering to the generated e2e shards in place.
+ *
+ * Splits the `l_`/`w_` shards into waves of {@link E2E_WAVE_SIZE}. Wave 1 keeps
+ * its original dependency on `upb` (and `build_windows` for Windows). Each later
+ * wave is rewired to depend on a synthetic barrier build instead, so the wave
+ * cannot dispatch until that barrier's sleep elapses. Barriers depend only on
+ * `upb`/`build_windows` — never on each other or on a prior wave — so dispatch
+ * is spread over time without serializing completion.
+ *
+ * Mutates the `depend-on` of each shard and returns the new barrier build groups.
+ */
+function applyWaveStaggering(shards: any[]): any[] {
+  const barriers: any[] = [];
+
+  const stagger = (osPrefix: 'l' | 'w', keptDeps: string[], makeBarrier: (identifier: string, wave: number) => any): void => {
+    const osShards = shards.filter((shard) => shard.identifier.startsWith(`${osPrefix}_`));
+    osShards.forEach((shard, index) => {
+      const wave = Math.floor(index / E2E_WAVE_SIZE) + 1;
+      if (wave === 1) {
+        return; // wave 1 keeps its original depend-on (upb / build_windows + upb)
+      }
+      const barrierId = `${osPrefix}_wave_barrier_${wave}`;
+      if (!barriers.some((barrier) => barrier.identifier === barrierId)) {
+        barriers.push(makeBarrier(barrierId, wave));
+      }
+      shard['depend-on'] = [...keptDeps, barrierId];
+    });
+  };
+
+  stagger('l', [], makeLinuxBarrier);
+  stagger('w', ['build_windows'], makeWindowsBarrier);
+
+  return barriers;
+}
+
 function main(): void {
   const configBase: any = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
@@ -377,10 +460,15 @@ function main(): void {
   );
 
   let allBuilds = [...splitE2ETests];
+  // Report wait list is the shard identifiers only — barriers are synthetic and
+  // must NOT be polled by aggregate_e2e_reports, so compute this before staggering.
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
   fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
+  // Stagger shard dispatch with time barriers (mutates shard depend-on in place).
+  const waveBarriers = applyWaveStaggering(splitE2ETests);
+  allBuilds = [...waveBarriers, ...allBuilds];
   const reportsAggregator = {
     identifier: 'aggregate_e2e_reports',
     env: {
