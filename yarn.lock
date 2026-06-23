@@ -276,7 +276,6 @@ __metadata:
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
     jest: ^29.7.0
-    jstreemap: ^1.28.2
     lodash: ^4.17.21
     promise-sequential: ^1.1.1
     uuid: ^8.3.2
@@ -26087,13 +26086,6 @@ __metadata:
     json-schema: 0.4.0
     verror: 1.10.0
   checksum: 5e4bca99e90727c2040eb4c2190d0ef1fe51798ed5714e87b841d304526190d960f9772acc7108fa1416b61e1122bcd60e4460c91793dce0835df5852aab55af
-  languageName: node
-  linkType: hard
-
-"jstreemap@npm:^1.28.2":
-  version: 1.28.2
-  resolution: "jstreemap@npm:1.28.2"
-  checksum: d7f55ff23c3bc1f54a7b92675fd785ab4f069052b25137b2d1d47a10722dd8f8442d1a710d0d3144322412e654e3f3f71f4326f7126d7287497d4cdbd94c9f80
   languageName: node
   linkType: hard
 
