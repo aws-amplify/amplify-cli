@@ -2,13 +2,16 @@ import {
   createNewProjectDir,
   initJSProjectWithProfile,
   addApiWithoutSchema,
-  amplifyPush,
+  amplifyOverrideApi,
+  amplifyPushOverride,
   deleteProjectDir,
   rebuildApi,
   getProjectMeta,
   updateApiSchema,
   deleteProject,
 } from '@aws-amplify/amplify-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { testTableAfterRebuildApi, testTableBeforeRebuildApi } from '../rebuild-test-helpers';
 
 const projName = 'apitest';
@@ -27,7 +30,11 @@ describe('amplify rebuild api', () => {
     await initJSProjectWithProfile(projRoot, { name: projName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
     await updateApiSchema(projRoot, projName, 'searchable_model_v2.graphql');
-    await amplifyPush(projRoot);
+    await amplifyOverrideApi(projRoot);
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql-searchable.ts');
+    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', projName, 'override.ts');
+    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    await amplifyPushOverride(projRoot);
     const projMeta = getProjectMeta(projRoot);
     const apiId = projMeta?.api?.[projName]?.output?.GraphQLAPIIdOutput;
     const region = projMeta?.providers?.awscloudformation?.Region;

@@ -1,11 +1,27 @@
-import { addApi, amplifyPush, configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from '@aws-amplify/amplify-e2e-core';
+import {
+  addApi,
+  amplifyOverrideApi,
+  amplifyPushOverride,
+  configureAmplify,
+  getApiKey,
+  getConfiguredAppsyncClientAPIKeyAuth,
+} from '@aws-amplify/amplify-e2e-core';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { testMutations, testQueries, updateSchemaInTestProject } from '../common';
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
-  await amplifyPush(projectDir);
+
+  await amplifyOverrideApi(projectDir);
+  const backendApiDirPath = path.join(projectDir, 'amplify', 'backend', 'api');
+  const apiResDirName = fs.readdirSync(backendApiDirPath)[0];
+  const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'overrides', 'override-api-gql-searchable.ts');
+  const destOverrideFilePath = path.join(backendApiDirPath, apiResDirName, 'override.ts');
+  fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+  await amplifyPushOverride(projectDir);
   await new Promise<void>((res) => setTimeout(() => res(), 60000));
 
   const awsconfig = configureAmplify(projectDir);
