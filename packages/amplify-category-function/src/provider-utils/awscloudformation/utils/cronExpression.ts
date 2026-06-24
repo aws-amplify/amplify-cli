@@ -2,6 +2,7 @@
 AWS Cron Expression generator
 */
 
+import { TreeSet } from 'jstreemap';
 const SECOND = 0;
 const MINUTE = 1;
 const HOUR = 2;
@@ -37,13 +38,13 @@ dayMap.set('SAT', 7);
 
 export class CronExpression {
   private cronExpression: string = null;
-  seconds = new Set<number>();
-  minutes = new Set<number>();
-  hours = new Set<number>();
-  daysOfMonth = new Set<number>();
-  months = new Set<number>();
-  daysOfWeek = new Set<number>();
-  years = new Set<number>();
+  seconds = new TreeSet();
+  minutes = new TreeSet();
+  hours = new TreeSet();
+  daysOfMonth = new TreeSet();
+  months = new TreeSet();
+  daysOfWeek = new TreeSet();
+  years = new TreeSet();
   lastDayOfWeek = false;
   numDayOfWeek = 0;
   lastDayOfMonth = false;
@@ -98,25 +99,25 @@ export class CronExpression {
     this.expressionParsed = true;
     try {
       if (this.seconds === null) {
-        this.seconds = new Set<number>();
+        this.seconds = new TreeSet();
       }
       if (this.minutes === null) {
-        this.minutes = new Set<number>();
+        this.minutes = new TreeSet();
       }
       if (this.hours === null) {
-        this.hours = new Set<number>();
+        this.hours = new TreeSet();
       }
       if (this.daysOfMonth === null) {
-        this.daysOfMonth = new Set<number>();
+        this.daysOfMonth = new TreeSet();
       }
       if (this.months === null) {
-        this.months = new Set<number>();
+        this.months = new TreeSet();
       }
       if (this.daysOfWeek === null) {
-        this.daysOfWeek = new Set<number>();
+        this.daysOfWeek = new TreeSet();
       }
       if (this.years === null) {
-        this.years = new Set<number>();
+        this.years = new TreeSet();
       }
 
       let exprOn = SECOND;
@@ -147,9 +148,9 @@ export class CronExpression {
       if (exprOn <= YEAR) {
         this.storeExpressionValues(0, '*', YEAR);
       }
-      const dow: Set<number> = this.getSet(DAY_OF_WEEK);
+      const dow: TreeSet<number> = this.getSet(DAY_OF_WEEK);
 
-      const dom: Set<number> = this.getSet(DAY_OF_MONTH);
+      const dom: TreeSet<number> = this.getSet(DAY_OF_MONTH);
 
       // Copying the logic from the UnsupportedOperationException below
       const dayOfMSpec = !dom.has(NO_SPEC_INT);
@@ -245,7 +246,7 @@ export class CronExpression {
         throw new Error("'?' can only be specified for Day-of-Month or Day-of-Week." + String(i));
       }
       if (type === DAY_OF_WEEK && !this.lastDayOfMonth) {
-        const val: number = Math.max(...this.daysOfMonth);
+        const val: number = this.daysOfMonth.last();
         if (val === NO_SPEC_INT) {
           throw new Error("'?' can only be specified for Day-of-Month -OR- Day-of-Week." + String(i));
         }
@@ -628,13 +629,13 @@ export class CronExpression {
     // reset internal state
     this.expressionParsed = false;
 
-    this.seconds = new Set<number>();
-    this.minutes = new Set<number>();
-    this.hours = new Set<number>();
-    this.daysOfMonth = new Set<number>();
-    this.months = new Set<number>();
-    this.daysOfWeek = new Set<number>();
-    this.years = new Set<number>();
+    this.seconds = new TreeSet();
+    this.minutes = new TreeSet();
+    this.hours = new TreeSet();
+    this.daysOfMonth = new TreeSet();
+    this.months = new TreeSet();
+    this.daysOfWeek = new TreeSet();
+    this.years = new TreeSet();
 
     this.lastDayOfWeek = false;
     this.numDayOfWeek = 0;
