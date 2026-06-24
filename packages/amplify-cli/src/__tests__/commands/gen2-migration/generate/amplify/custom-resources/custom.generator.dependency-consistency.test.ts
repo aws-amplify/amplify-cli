@@ -58,6 +58,26 @@ export class cdkStack extends cdk.Stack {
 }
 `;
 
+// Customer migrationgen2 pattern: bare `addResourceDependency` named import assigned
+// to a typed `dependencies` variable. Previously undetected -> TS2663 dependencies undefined.
+const CDK_STACK_BARE_IMPORT_DEPS = `
+import * as cdk from 'aws-cdk-lib';
+import { type AmplifyResourceProps, addResourceDependency } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
+
+export class cdkStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props: AmplifyResourceProps) {
+    super(scope, id, props);
+    const dependencies: AmplifyDependentResourcesAttributes = addResourceDependency(this, props, 'myCustom', [
+      { category: 'function', resourceName: 'myFunc' },
+      { category: 'auth', resourceName: 'myAuth' }
+    ]);
+    const fnName = cdk.Fn.ref(dependencies.function.myFunc.Name);
+    const poolArn = cdk.Fn.ref(dependencies.auth.myAuth.UserPoolArn);
+  }
+}
+`;
+
 const CDK_STACK_NO_DEPS = `
 import * as cdk from 'aws-cdk-lib';
 
@@ -106,6 +126,47 @@ describe('CustomResourceGenerator dependency consistency', () => {
     const ctorParams = ctorMatch![1].split(',').filter((p: string) => p.trim()).length;
 
     // Count args in `new MyCustom(...)` — handle nested parens like backend.createStack('...')
+    const newCallMatch = resourceContent.match(/new MyCustom\(([\s\S]*?)\);/);
+    expect(newCallMatch).toBeDefined();
+    const newCallArgs = newCallMatch![1].split(/,(?![^(]*\))/).filter((a: string) => a.trim()).length;
+
+    expect(ctorParams).toBe(3); // scope, id, backend
+    expect(newCallArgs).toBe(ctorParams);
+  });
+
+  it('rewrites bare addResourceDependency refs to backend.* and adds backend param (customer pattern)', async () => {
+    mockReadFile.mockResolvedValue(CDK_STACK_BARE_IMPORT_DEPS);
+
+    const backendGenerator = new BackendGenerator(outputDir, logger);
+    const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
+    const generator = new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, 'myCustom', logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const constructCall = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith('cdk-stack.ts'));
+    expect(constructCall).toBeDefined();
+    const constructContent = constructCall![1] as string;
+
+    const resourceCall = mockWriteFile.mock.calls.find((c: unknown[]) => (c[0] as string).endsWith('resource.ts'));
+    expect(resourceCall).toBeDefined();
+    const resourceContent = resourceCall![1] as string;
+
+    // backend constructor param emitted and dependency refs rewritten to backend.*
+    expect(constructContent).toContain('backend: Backend');
+    expect(constructContent).toContain('backend.functions.myFunc.resources.lambda.functionName');
+    expect(constructContent).toContain('backend.auth.resources.userPool.userPoolArn');
+
+    // No leftover Gen1 dependency artifacts that would cause TS2663
+    expect(constructContent).not.toContain('addResourceDependency');
+    expect(constructContent).not.toContain('dependencies.');
+    expect(constructContent).not.toContain('Fn.ref');
+    expect(constructContent).not.toContain('AmplifyDependentResourcesAttributes');
+
+    // ctor params and resource.ts new call args stay consistent (scope, id, backend)
+    const ctorMatch = constructContent.match(/constructor\(([\s\S]*?)\)\s*\{/);
+    expect(ctorMatch).toBeDefined();
+    const ctorParams = ctorMatch![1].split(',').filter((p: string) => p.trim()).length;
+
     const newCallMatch = resourceContent.match(/new MyCustom\(([\s\S]*?)\);/);
     expect(newCallMatch).toBeDefined();
     const newCallArgs = newCallMatch![1].split(/,(?![^(]*\))/).filter((a: string) => a.trim()).length;

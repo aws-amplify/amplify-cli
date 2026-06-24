@@ -236,6 +236,62 @@ class MyStack extends cdk.Stack {
     });
   });
 
+  describe('bare addResourceDependency named-import (customer migrationgen2 pattern)', () => {
+    // Customer Gen1 cdk-stack.ts imports addResourceDependency as a bare named import
+    // and assigns it to a typed `dependencies` variable. Detection must recognize the
+    // bare Identifier call (not just PropertyAccess) so refs get rewritten to backend.*
+    const BARE_IMPORT_CODE = `
+import { type AmplifyResourceProps, addResourceDependency } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
+
+export class cdkStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props: AmplifyResourceProps) {
+    super(scope, id, props);
+    const dependencies: AmplifyDependentResourcesAttributes = addResourceDependency(this, props, 'myCustom', [
+      { category: 'function', resourceName: 'myFunc' },
+      { category: 'auth', resourceName: 'myAuth' },
+    ]);
+    const fnName = cdk.Fn.ref(dependencies.function.myFunc.Name);
+    const poolArn = cdk.Fn.ref(dependencies.auth.myAuth.UserPoolArn);
+  }
+}
+`;
+
+    it('detects the bare addResourceDependency call and sets addedBackendParam', () => {
+      const { addedBackendParam } = transformRaw(BARE_IMPORT_CODE);
+      expect(addedBackendParam).toBe(true);
+    });
+
+    it('adds the backend constructor parameter', () => {
+      const { output } = transformRaw(BARE_IMPORT_CODE);
+      expect(output).toContain('backend: Backend');
+    });
+
+    it('rewrites dependencies.* references to backend.* and removes the call', () => {
+      const { output } = transformRaw(BARE_IMPORT_CODE);
+
+      expect(output).toContain('backend.functions.myFunc.resources.lambda.functionName');
+      expect(output).toContain('backend.auth.resources.userPool.userPoolArn');
+      expect(output).not.toContain('addResourceDependency');
+      expect(output).not.toContain('dependencies.');
+      expect(output).not.toContain('Fn.ref');
+      expect(output).not.toContain('AmplifyDependentResourcesAttributes');
+    });
+
+    it('detects a bare addResourceDependency even without a type annotation', () => {
+      const code = `
+import { addResourceDependency } from '@aws-amplify/cli-extensibility-helper';
+const dependencies = addResourceDependency(this, props, 'myCustom', []);
+const fnName = cdk.Fn.ref(dependencies.function.myFunc.Name);
+`;
+      const { output, addedBackendParam } = transformRaw(code);
+
+      expect(addedBackendParam).toBe(true);
+      expect(output).toContain('backend.functions.myFunc.resources.lambda.functionName');
+      expect(output).not.toContain('addResourceDependency');
+    });
+  });
+
   describe('AmplifyDependentResourcesAttributes removal', () => {
     it('removes variable with AmplifyDependentResourcesAttributes type', () => {
       const code = `const attrs: AmplifyDependentResourcesAttributes = {};`;

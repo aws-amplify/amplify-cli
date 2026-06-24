@@ -146,11 +146,14 @@ export class AmplifyHelperTransformer {
               return undefined;
             }
 
-            // Remove AmplifyHelpers.addResourceDependency variable statements
+            // Remove addResourceDependency variable statements. Detect both the
+            // property-access form (`AmplifyHelpers.addResourceDependency(...)`) and the
+            // bare named-import form (`addResourceDependency(...)`).
             if (declaration && declaration.initializer && ts.isCallExpression(declaration.initializer)) {
               const callExpr = declaration.initializer;
               const isAddResourceDependency =
-                ts.isPropertyAccessExpression(callExpr.expression) && callExpr.expression.name.text === 'addResourceDependency';
+                (ts.isPropertyAccessExpression(callExpr.expression) && callExpr.expression.name.text === 'addResourceDependency') ||
+                (ts.isIdentifier(callExpr.expression) && callExpr.expression.text === 'addResourceDependency');
 
               if (isAddResourceDependency) {
                 if (ts.isIdentifier(declaration.name)) {
@@ -177,10 +180,17 @@ export class AmplifyHelperTransformer {
               }
             }
 
-            // Remove variable declarations with AmplifyDependentResourcesAttributes type annotation
+            // Remove variable declarations with AmplifyDependentResourcesAttributes type annotation.
+            // Before deleting, register the declared variable so that downstream
+            // `dependencies.*` references (and Fn.ref(dependencies.*)) get rewritten to backend.*
+            // and the backend constructor param/arg are emitted.
             if (declaration && declaration.type && ts.isTypeReferenceNode(declaration.type)) {
               const typeName = declaration.type.typeName;
               if (ts.isIdentifier(typeName) && typeName.text === 'AmplifyDependentResourcesAttributes') {
+                if (ts.isIdentifier(declaration.name)) {
+                  dependencyVariables.add(declaration.name.text);
+                }
+                hasDependencies = true;
                 return undefined;
               }
             }
