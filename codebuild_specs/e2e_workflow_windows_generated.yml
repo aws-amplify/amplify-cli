@@ -61,13 +61,13 @@ batch:
         - build_pkg_binaries_win
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: w_function_9b_custom_policies_container
+    - identifier: w_api_lambda_auth_2_schema_iterative_update_1
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_9b.test.ts|src/__tests__/custom_policies_container.test.ts
+          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_2.test.ts|src/__tests__/schema-iterative-update-1.test.ts
       depend-on:
         - build_windows
         - upb
@@ -432,13 +432,13 @@ batch:
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_searchable_apigw
+    - identifier: w_function_14_function_13
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/apigw.test.ts
+          TEST_SUITE: src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts
       depend-on:
         - build_windows
         - upb
@@ -823,7 +823,7 @@ batch:
           TEST_SUITE: src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-kinesis.test.ts
       depend-on:
         - build_windows
-        - w_function_9b_custom_policies_container
+        - w_api_lambda_auth_2_schema_iterative_update_1
     - identifier: w_notifications_apns_init_b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -1193,7 +1193,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2d.test.ts|src/__tests__/auth_2b.test.ts
       depend-on:
         - build_windows
-        - w_schema_searchable_apigw
+        - w_function_14_function_13
     - identifier: w_schema_auth_6d_schema_auth_6c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -1284,23 +1284,23 @@ batch:
       depend-on:
         - build_windows
         - w_container_hosting_auth_10
-    - identifier: w_function_14_function_13
+    - identifier: w_schema_searchable_apigw
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts
+          TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/apigw.test.ts
       depend-on:
         - build_windows
         - w_iam_permissions_boundary_node_function
-    - identifier: w_api_lambda_auth_2_schema_iterative_update_1
+    - identifier: w_function_9b_custom_policies_container
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_2.test.ts|src/__tests__/schema-iterative-update-1.test.ts
+          TEST_SUITE: src/__tests__/function_9b.test.ts|src/__tests__/custom_policies_container.test.ts
       depend-on:
         - build_windows
         - w_schema_auth_8a_schema_auth_7c

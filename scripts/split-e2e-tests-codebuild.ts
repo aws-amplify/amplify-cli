@@ -455,6 +455,23 @@ const EXTRA_LINUX_JOB_IDENTIFIERS = [
 // position p-W, which cannot start until p-W finishes. With two separate batches each capped at 75,
 // each orchestrator stays well under the ~100 fault threshold.
 const SLIDING_WINDOW_SIZE = 75;
+// Known-red shards (and the bundles that carry them) that are expected to fail intermittently. In a
+// sliding-window chain a shard at an "early" position has a successor that depend-on's it, and a
+// CodeBuild dependency only resolves on predecessor SUCCESS -- so a red early shard would skip its
+// downstream successor. We pin every shard whose identifier contains one of these fragments into a
+// terminal (no-successor) slot so its failure never cascades. Matched as substrings so merged-bundle
+// identifiers (e.g. l_searchable_datastore_schema_searchable) are covered.
+const KNOWN_RED_SHARD_FRAGMENTS = [
+  'containers_api_1',
+  'containers_api_2',
+  'containers_api_secrets',
+  'custom_policies_container',
+  'schema_searchable',
+  'searchable_migration',
+  'searchable_datastore',
+  'api_6c',
+];
+const isKnownRedShard = (job: any): boolean => KNOWN_RED_SHARD_FRAGMENTS.some((fragment) => String(job.identifier).includes(fragment));
 // Fallback per-shard durations (minutes) for identifiers absent from the durations file.
 const MEDIAN_DURATION_LINUX = 45;
 const MEDIAN_DURATION_WINDOWS = 80;
@@ -540,6 +557,30 @@ function arrangeSlidingWindow(
   //   [numTwoChains .. windowSize-1] terminal shards       (depend on prep, no successor)
   //   [windowSize .. n-1]            late shards            (depend on shard at index pos-windowSize)
   const ordered: any[] = [...early, ...terminal, ...late];
+
+  // Force known-red shards out of "early" (successor-bearing) slots. A shard at index k is depended
+  // on by the shard at k+windowSize, so only indices [0, numTwoChains) have a successor; indices
+  // [numTwoChains, n) are terminal (no successor). Swap every red early shard with a non-red terminal
+  // shard so no shard ever depends on a red one, and a red failure cannot skip a downstream shard.
+  const terminalNonRedSlots: number[] = [];
+  for (let k = numTwoChains; k < n; k++) {
+    if (!isKnownRedShard(ordered[k])) {
+      terminalNonRedSlots.push(k);
+    }
+  }
+  for (let i = 0; i < numTwoChains; i++) {
+    if (isKnownRedShard(ordered[i])) {
+      const swapIdx = terminalNonRedSlots.pop();
+      if (swapIdx === undefined) {
+        throw new Error(
+          `[split-e2e] not enough terminal (no-successor) slots to pin all known-red shards; ` +
+            `increase SLIDING_WINDOW_SIZE or reduce KNOWN_RED_SHARD_FRAGMENTS`,
+        );
+      }
+      [ordered[i], ordered[swapIdx]] = [ordered[swapIdx], ordered[i]];
+    }
+  }
+
   // Windows late shards keep build_windows in addition to their chain predecessor.
   const nonUpbPrep = prepDeps.filter((dep) => dep !== 'upb');
   ordered.forEach((job, idx) => {
@@ -550,9 +591,15 @@ function arrangeSlidingWindow(
     }
   });
 
-  let makespanMinutes = terminal.reduce((max, job) => Math.max(max, durationOf(job)), 0);
-  for (let i = 0; i < numTwoChains; i++) {
-    makespanMinutes = Math.max(makespanMinutes, durationOf(early[i]) + durationOf(late[i]));
+  // Makespan is the longest dependency chain (positions start, start+windowSize, ...), computed from
+  // the final placement so it reflects any red-shard swaps above.
+  let makespanMinutes = 0;
+  for (let start = 0; start < windowSize; start++) {
+    let chainMinutes = 0;
+    for (let idx = start; idx < n; idx += windowSize) {
+      chainMinutes += durationOf(ordered[idx]);
+    }
+    makespanMinutes = Math.max(makespanMinutes, chainMinutes);
   }
   return { ordered, makespanMinutes };
 }
