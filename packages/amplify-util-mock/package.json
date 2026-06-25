@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-mock",
-  "version": "5.10.29",
+  "version": "5.10.30",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-appsync-simulator": "2.16.20",
-    "@aws-amplify/amplify-category-function": "5.8.2",
+    "@aws-amplify/amplify-category-function": "5.8.3",
     "@aws-amplify/amplify-cli-core": "4.6.0",
     "@aws-amplify/amplify-environment-parameters": "1.9.25",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.26",
