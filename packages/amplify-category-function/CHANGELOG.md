@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.8.2...@aws-amplify/amplify-category-function@5.8.3) (2026-06-25)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** pin jstreemap to 1.28.2 instead of removing it ([77cf79a](https://github.com/aws-amplify/amplify-cli/commit/77cf79ab8c069233c53a24540e84c0f8189ceabd))
+* **amplify-category-function:** remove jstreemap dependency ([178fbba](https://github.com/aws-amplify/amplify-cli/commit/178fbba1c8360061020a56cddf220283869687e9)), closes [#14922](https://github.com/aws-amplify/amplify-cli/issues/14922)
+
+
+
+
+
 ## [5.8.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.8.1...@aws-amplify/amplify-category-function@5.8.2) (2026-05-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-function

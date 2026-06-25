@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "14.5.0",
+  "version": "14.5.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "@aws-amplify/amplify-category-api": "^5.15.3",
     "@aws-amplify/amplify-category-auth": "3.7.28",
     "@aws-amplify/amplify-category-custom": "3.1.33",
-    "@aws-amplify/amplify-category-function": "5.8.2",
+    "@aws-amplify/amplify-category-function": "5.8.3",
     "@aws-amplify/amplify-category-geo": "3.5.27",
     "@aws-amplify/amplify-category-hosting": "3.5.46",
     "@aws-amplify/amplify-category-interactions": "5.1.39",
@@ -63,7 +63,7 @@
     "@aws-amplify/amplify-provider-awscloudformation": "8.11.19",
     "@aws-amplify/amplify-python-function-template-provider": "1.4.8",
     "@aws-amplify/amplify-util-import": "2.8.6",
-    "@aws-amplify/amplify-util-mock": "5.10.29",
+    "@aws-amplify/amplify-util-mock": "5.10.30",
     "@aws-amplify/amplify-util-uibuilder": "1.14.27",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-amplify": "^3.919.0",

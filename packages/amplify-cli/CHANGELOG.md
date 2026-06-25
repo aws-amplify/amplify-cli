@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.5.0...@aws-amplify/cli-internal@14.5.1) (2026-06-25)
+
+
+### Bug Fixes
+
+* **cli-internal:** correct OIDC TTL conversion and handle clientId field ([aa9d525](https://github.com/aws-amplify/amplify-cli/commit/aa9d52543f03e2034a506291ad6113bcf73d8964))
+* **cli:** assess transformer version in data assessor ([#14896](https://github.com/aws-amplify/amplify-cli/issues/14896)) ([77f6761](https://github.com/aws-amplify/amplify-cli/commit/77f6761ccfa9267e492379416c956a48dff41569))
+* **cli:** relax auth trigger drift filter to match prefixed policy names ([63d7266](https://github.com/aws-amplify/amplify-cli/commit/63d72662059971239de931867e4489fd532d6fb6))
+
+
+
+
+
 # [14.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.4.0...@aws-amplify/cli-internal@14.5.0) (2026-05-14)
 
 
