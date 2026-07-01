@@ -10,7 +10,7 @@ jest.mock('cfn-response', () => ({
   send: jest.fn((event, context, status, data) => {
     context.__result = { status, data };
   }),
-}));
+}), { virtual: true });
 
 jest.mock('@aws-sdk/client-iam', () => {
   class NoSuchEntityException extends Error {
@@ -75,7 +75,7 @@ jest.mock('@aws-sdk/client-iam', () => {
     DeleteOpenIDConnectProviderCommand: mkCmd('Delete'),
     __send: send,
   };
-});
+}, { virtual: true });
 
 const iamMock = require('@aws-sdk/client-iam');
 const { handler } = require('../openIdLambda');
