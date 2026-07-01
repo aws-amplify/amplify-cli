@@ -3,8 +3,10 @@ const {
   IAMClient,
   AddClientIDToOpenIDConnectProviderCommand,
   CreateOpenIDConnectProviderCommand,
+  DeleteOpenIDConnectProviderCommand,
   GetOpenIDConnectProviderCommand,
   ListOpenIDConnectProvidersCommand,
+  RemoveClientIDFromOpenIDConnectProviderCommand,
 } = require('@aws-sdk/client-iam');
 const iam = new IAMClient({});
 
@@ -22,22 +24,30 @@ async function tryHandleEvent(event, context) {
   }
 }
 
+// Returns the ARN of the OIDC provider matching the given url, or undefined if none exists.
+async function findProviderArn(url) {
+  const listOpenIDConnectProvidersResponse = await iam.send(new ListOpenIDConnectProvidersCommand({}));
+  if (
+    listOpenIDConnectProvidersResponse.OpenIDConnectProviderList &&
+    listOpenIDConnectProvidersResponse.OpenIDConnectProviderList.length > 0
+  ) {
+    const vals = listOpenIDConnectProvidersResponse.OpenIDConnectProviderList.map((x) => x.Arn);
+    return vals.find((i) => i.split('/')[1] === url.split('//')[1]);
+  }
+  return undefined;
+}
+
 async function handleEvent(event) {
+  const clientIdList = event.ResourceProperties.clientIdList ? event.ResourceProperties.clientIdList.split(',') : [];
+  const url = event.ResourceProperties.url;
+
   if (event.RequestType === 'Update' || event.RequestType === 'Create') {
     const params = {
-      ClientIDList: event.ResourceProperties.clientIdList.split(','),
+      ClientIDList: clientIdList,
       ThumbprintList: ['0000000000000000000000000000000000000000'],
-      Url: event.ResourceProperties.url,
+      Url: url,
     };
-    let existingValue;
-    const listOpenIDConnectProvidersResponse = await iam.send(new ListOpenIDConnectProvidersCommand({}));
-    if (
-      listOpenIDConnectProvidersResponse.OpenIDConnectProviderList &&
-      listOpenIDConnectProvidersResponse.OpenIDConnectProviderList.length > 0
-    ) {
-      const vals = listOpenIDConnectProvidersResponse.OpenIDConnectProviderList.map((x) => x.Arn);
-      existingValue = vals.find((i) => i.split('/')[1] === params.Url.split('//')[1]);
-    }
+    const existingValue = await findProviderArn(url);
     if (!existingValue) {
       const createOpenIDConnectProviderResponse = await iam.send(new CreateOpenIDConnectProviderCommand(params));
       return {
@@ -65,5 +75,46 @@ async function handleEvent(event) {
       };
     }
   }
+
+  if (event.RequestType === 'Delete') {
+    // Clean up the OIDC provider on stack teardown. The provider is account-global and
+    // keyed by URL, so it can be shared by other Amplify environments/apps in the same
+    // account. To avoid breaking those, we only remove the client IDs this resource
+    // registered and delete the provider itself once no client IDs remain. All calls
+    // tolerate an already-removed provider/client ID so the handler stays idempotent.
+    try {
+      const existingValue = await findProviderArn(url);
+      if (!existingValue) {
+        return {};
+      }
+      const getOpenIDConnectProviderResponse = await iam.send(
+        new GetOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }),
+      );
+      const currentAudiences = getOpenIDConnectProviderResponse.ClientIDList || [];
+      const remainingAudiences = currentAudiences.filter((clientID) => !clientIdList.includes(clientID));
+      if (remainingAudiences.length === 0) {
+        await iam.send(new DeleteOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }));
+      } else {
+        // Provider is still used by other client IDs (another Amplify app); only drop ours.
+        for (const clientID of clientIdList) {
+          if (currentAudiences.includes(clientID)) {
+            await iam.send(
+              new RemoveClientIDFromOpenIDConnectProviderCommand({
+                ClientID: clientID,
+                OpenIDConnectProviderArn: existingValue,
+              }),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      // NoSuchEntity means the provider (or client ID) is already gone; treat as success.
+      if (e.name !== 'NoSuchEntityException') {
+        throw e;
+      }
+    }
+    return {};
+  }
+
   return {};
 }

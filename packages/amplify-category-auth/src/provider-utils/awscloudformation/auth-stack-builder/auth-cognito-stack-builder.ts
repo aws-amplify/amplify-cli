@@ -1065,7 +1065,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['iam:CreateOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider', 'iam:AddClientIDToOpenIDConnectProvider'],
+            Action: [
+              'iam:CreateOpenIDConnectProvider',
+              'iam:GetOpenIDConnectProvider',
+              'iam:AddClientIDToOpenIDConnectProvider',
+              'iam:RemoveClientIDFromOpenIDConnectProvider',
+              'iam:DeleteOpenIDConnectProvider',
+            ],
             Resource: cdk.Fn.sub('arn:aws:iam::${account}:oidc-provider/accounts.google.com', {
               account: cdk.Fn.ref('AWS::AccountId'),
             }),
