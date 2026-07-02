@@ -80,7 +80,7 @@ jest.mock('@aws-sdk/client-iam', () => {
 const iamMock = require('@aws-sdk/client-iam');
 const { handler } = require('../openIdLambda');
 
-const URL = 'https://accounts.google.com';
+const GOOGLE_OIDC_URL = 'https://accounts.google.com';
 
 // The handler is intentionally fire-and-forget (returns void, calls cfn-response.send when done).
 // Flush pending microtasks until cfn-response.send populates the result.
@@ -90,6 +90,9 @@ async function invoke(event) {
   for (let i = 0; i < 100 && !context.__result; i++) {
     // eslint-disable-next-line no-await-in-loop
     await new Promise((r) => setImmediate(r));
+  }
+  if (!context.__result) {
+    throw new Error('handler never called response.send');
   }
   return context.__result;
 }
@@ -101,7 +104,7 @@ describe('openIdLambda custom resource', () => {
   });
 
   it('creates the OIDC provider on Create', async () => {
-    const res = await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a,b', url: URL } });
+    const res = await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a,b', url: GOOGLE_OIDC_URL } });
     expect(res.status).toBe('SUCCESS');
     const arns = Object.keys(mockState.providers);
     expect(arns).toHaveLength(1);
@@ -109,25 +112,59 @@ describe('openIdLambda custom resource', () => {
   });
 
   it('deletes the OIDC provider on Delete when this stack is the sole owner', async () => {
-    await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a,b', url: URL } });
-    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a,b', url: URL } });
+    await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a,b', url: GOOGLE_OIDC_URL } });
+    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a,b', url: GOOGLE_OIDC_URL } });
     expect(res.status).toBe('SUCCESS');
     expect(Object.keys(mockState.providers)).toHaveLength(0);
   });
 
   it('retains a shared provider and removes only this stacks client IDs on Delete', async () => {
-    await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a', url: URL } });
+    await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a', url: GOOGLE_OIDC_URL } });
     const arn = Object.keys(mockState.providers)[0];
     mockState.providers[arn].ClientIDList.push('otherApp');
-    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a', url: URL } });
+    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a', url: GOOGLE_OIDC_URL } });
     expect(res.status).toBe('SUCCESS');
     expect(Object.keys(mockState.providers)).toHaveLength(1);
     expect(mockState.providers[arn].ClientIDList).toEqual(['otherApp']);
   });
 
   it('is idempotent when the provider is already gone', async () => {
-    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a', url: URL } });
+    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a', url: GOOGLE_OIDC_URL } });
     expect(res.status).toBe('SUCCESS');
+    expect(Object.keys(mockState.providers)).toHaveLength(0);
+  });
+
+  it('appends new client IDs to the existing provider on Update', async () => {
+    await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a', url: GOOGLE_OIDC_URL } });
+    const res = await invoke({ RequestType: 'Update', ResourceProperties: { clientIdList: 'a,b', url: GOOGLE_OIDC_URL } });
+    expect(res.status).toBe('SUCCESS');
+    const arn = Object.keys(mockState.providers)[0];
+    expect(mockState.providers[arn].ClientIDList).toEqual(['a', 'b']);
+  });
+
+  it('deletes the provider when a concurrent stack empties it during our Delete', async () => {
+    // Provider is shared: our client ID is 'a', another stack owns 'b'.
+    await invoke({ RequestType: 'Create', ResourceProperties: { clientIdList: 'a,b', url: GOOGLE_OIDC_URL } });
+    const arn = Object.keys(mockState.providers)[0];
+
+    // Simulate the other stack removing 'b' concurrently, in between our initial read and our
+    // own removal, by piggy-backing on the RemoveClientID call for 'a'.
+    const defaultImpl = iamMock.__send.getMockImplementation();
+    iamMock.__send.mockImplementation(async (cmd) => {
+      const result = await defaultImpl(cmd);
+      if (cmd.__name === 'Remove' && cmd.input.ClientID === 'a') {
+        const p = mockState.providers[arn];
+        if (p) p.ClientIDList = p.ClientIDList.filter((id) => id !== 'b');
+      }
+      return result;
+    });
+
+    const res = await invoke({ RequestType: 'Delete', ResourceProperties: { clientIdList: 'a', url: GOOGLE_OIDC_URL } });
+    iamMock.__send.mockImplementation(defaultImpl);
+
+    expect(res.status).toBe('SUCCESS');
+    // Provider had ['a','b'] at first read (remaining 'b' looked non-empty), but 'b' was removed
+    // concurrently; the re-read must observe the empty list and delete the provider.
     expect(Object.keys(mockState.providers)).toHaveLength(0);
   });
 });

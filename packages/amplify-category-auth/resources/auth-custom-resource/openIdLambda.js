@@ -26,15 +26,12 @@ async function tryHandleEvent(event, context) {
 
 // Returns the ARN of the OIDC provider matching the given url, or undefined if none exists.
 async function findProviderArn(url) {
+  const providerHost = new URL(url).host;
   const listOpenIDConnectProvidersResponse = await iam.send(new ListOpenIDConnectProvidersCommand({}));
-  if (
-    listOpenIDConnectProvidersResponse.OpenIDConnectProviderList &&
-    listOpenIDConnectProvidersResponse.OpenIDConnectProviderList.length > 0
-  ) {
-    const vals = listOpenIDConnectProvidersResponse.OpenIDConnectProviderList.map((x) => x.Arn);
-    return vals.find((i) => i.split('/')[1] === url.split('//')[1]);
-  }
-  return undefined;
+  const providers = listOpenIDConnectProvidersResponse.OpenIDConnectProviderList || [];
+  // OIDC provider ARNs look like arn:aws:iam::<account>:oidc-provider/<host>
+  const match = providers.find((p) => p.Arn && p.Arn.endsWith(`:oidc-provider/${providerHost}`));
+  return match ? match.Arn : undefined;
 }
 
 async function handleEvent(event) {
@@ -105,6 +102,13 @@ async function handleEvent(event) {
               }),
             );
           }
+        }
+        // Re-read after removing our client IDs. If another stack sharing this provider
+        // removed its client IDs concurrently, the provider is now empty and would otherwise
+        // be left orphaned with zero client IDs, so delete it here.
+        const refreshed = await iam.send(new GetOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }));
+        if ((refreshed.ClientIDList || []).length === 0) {
+          await iam.send(new DeleteOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }));
         }
       }
     } catch (e) {
