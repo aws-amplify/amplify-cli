@@ -10,10 +10,11 @@ export const storage = defineStorage({
   access: (allow) => ({
     'public/*': [allow.authenticated.to(['write', 'read', 'delete'])],
     'protected/{entity_id}/*': [
-      allow.authenticated.to(['write', 'read', 'delete']),
+      allow.entity('identity').to(['write', 'read', 'delete']),
+      allow.authenticated.to(['read']),
     ],
     'private/{entity_id}/*': [
-      allow.authenticated.to(['write', 'read', 'delete']),
+      allow.entity('identity').to(['write', 'read', 'delete']),
     ],
   }),
   triggers: {
