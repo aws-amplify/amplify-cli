@@ -189,8 +189,11 @@ describe('S3Generator', () => {
         name: \`myBucket-main-\${branchName}\`,
         access: (allow) => ({
           'public/*': [allow.authenticated.to(['read', 'write'])],
-          'protected/{entity_id}/*': [allow.authenticated.to(['read', 'write'])],
-          'private/{entity_id}/*': [allow.authenticated.to(['read', 'write'])],
+          'protected/{entity_id}/*': [
+            allow.entity('identity').to(['read', 'write']),
+            allow.authenticated.to(['read']),
+          ],
+          'private/{entity_id}/*': [allow.entity('identity').to(['read', 'write'])],
         }),
       });
 
@@ -216,6 +219,43 @@ describe('S3Generator', () => {
       }
       "
     `);
+  });
+
+  // private/ and protected/ are per-user paths: authenticated access must be scoped to the
+  // caller's own identity via allow.entity('identity'), matching the Gen1 configuration.
+  it('scopes authenticated private/protected access to the caller identity', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
+    });
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      authAccess: ['READ', 'CREATE_AND_UPDATE', 'DELETE'],
+      guestAccess: [],
+    });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
+
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+      logger,
+    );
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('resource.ts');
+    const normalized = content.replace(/\s+/g, ' ');
+
+    // Per-user paths use entity('identity') so {entity_id} maps to the caller's identity.
+    expect(normalized).toMatch(
+      /'private\/\{entity_id\}\/\*':\s*\[\s*allow\.entity\('identity'\)\.to\(\['read', 'write', 'delete'\]\)\s*,?\s*\]/,
+    );
+    expect(normalized).toMatch(/'protected\/\{entity_id\}\/\*':\s*\[\s*allow\.entity\('identity'\)\.to\(\['read', 'write', 'delete'\]\)/);
+
+    // Enforce per-user scoping: private/protected must not grant write/delete via allow.authenticated.
+    expect(content).not.toMatch(/'(private|protected)\/\{entity_id\}\/\*': \[[^\]]*allow\.authenticated\.to\(\[[^\]]*'(write|delete)'/s);
   });
 
   it('renders guest access patterns', async () => {
@@ -324,10 +364,11 @@ describe('S3Generator', () => {
             allow.authenticated.to(['read', 'write', 'delete']),
           ],
           'protected/{entity_id}/*': [
-            allow.authenticated.to(['read', 'write', 'delete']),
+            allow.entity('identity').to(['read', 'write', 'delete']),
+            allow.authenticated.to(['read']),
           ],
           'private/{entity_id}/*': [
-            allow.authenticated.to(['read', 'write', 'delete']),
+            allow.entity('identity').to(['read', 'write', 'delete']),
           ],
         }),
       });
@@ -402,11 +443,12 @@ describe('S3Generator', () => {
             allow.groups(['admin']).to(['read', 'write', 'delete']),
           ],
           'protected/{entity_id}/*': [
+            allow.entity('identity').to(['read']),
             allow.authenticated.to(['read']),
             allow.groups(['admin']).to(['read', 'write', 'delete']),
           ],
           'private/{entity_id}/*': [
-            allow.authenticated.to(['read']),
+            allow.entity('identity').to(['read']),
             allow.groups(['admin']).to(['read', 'write', 'delete']),
           ],
         }),

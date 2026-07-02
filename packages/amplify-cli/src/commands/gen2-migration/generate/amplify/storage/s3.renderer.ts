@@ -280,10 +280,15 @@ export class S3Renderer {
       publicPathAccess.push(this.createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest));
     }
     if (accessPatterns.auth && accessPatterns.auth.length > 0) {
-      const pattern = this.createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth);
-      publicPathAccess.push(pattern);
-      protectedPathAccess.push(pattern);
-      privatePathAccess.push(pattern);
+      // public/* is a shared path: authenticated users get the Gen1 auth permission set.
+      publicPathAccess.push(this.createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth));
+      // private/ and protected/ are per-user paths. Use allow.entity('identity') so the
+      // {entity_id} token resolves to the caller's own Cognito identity, matching the
+      // per-user scoping of the Gen1 configuration.
+      privatePathAccess.push(this.createEntityPattern(allowIdentifier, accessPatterns.auth));
+      protectedPathAccess.push(this.createEntityPattern(allowIdentifier, accessPatterns.auth));
+      // Gen1 protected/ also grants read to other authenticated users.
+      protectedPathAccess.push(this.createAllowPattern(allowIdentifier, 'authenticated', ['read']));
     }
     if (accessPatterns.groups) {
       for (const [groupName, permissions] of Object.entries(accessPatterns.groups)) {
@@ -347,6 +352,25 @@ export class S3Renderer {
   private createAllowPattern(allowIdentifier: ts.Identifier, userLevel: string, permissions: readonly Permission[]): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier(`${userLevel}.to`)),
+      undefined,
+      [factory.createArrayLiteralExpression(permissions.map((p) => factory.createStringLiteral(p)))],
+    );
+  }
+
+  /**
+   * Renders `allow.entity('identity').to([...])`, which scopes an {entity_id} path to the
+   * caller's own Cognito identity in the generated IAM policy.
+   */
+  private createEntityPattern(allowIdentifier: ts.Identifier, permissions: readonly Permission[]): CallExpression {
+    return factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier('entity')),
+          undefined,
+          [factory.createStringLiteral('identity')],
+        ),
+        factory.createIdentifier('to'),
+      ),
       undefined,
       [factory.createArrayLiteralExpression(permissions.map((p) => factory.createStringLiteral(p)))],
     );
