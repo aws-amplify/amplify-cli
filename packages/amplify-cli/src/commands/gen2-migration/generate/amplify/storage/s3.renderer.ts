@@ -277,22 +277,25 @@ export class S3Renderer {
     const protectedPathAccess: CallExpression[] = [];
 
     if (accessPatterns.guest && accessPatterns.guest.length > 0) {
-      publicPathAccess.push(this.createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest));
+      publicPathAccess.push(S3Renderer.createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest));
     }
     if (accessPatterns.auth && accessPatterns.auth.length > 0) {
       // public/* is a shared path: authenticated users get the Gen1 auth permission set.
-      publicPathAccess.push(this.createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth));
+      publicPathAccess.push(S3Renderer.createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth));
       // private/ and protected/ are per-user paths. Use allow.entity('identity') so the
       // {entity_id} token resolves to the caller's own Cognito identity, matching the
       // per-user scoping of the Gen1 configuration.
-      privatePathAccess.push(this.createEntityPattern(allowIdentifier, accessPatterns.auth));
-      protectedPathAccess.push(this.createEntityPattern(allowIdentifier, accessPatterns.auth));
-      // Gen1 protected/ also grants read to other authenticated users.
-      protectedPathAccess.push(this.createAllowPattern(allowIdentifier, 'authenticated', ['read']));
+      privatePathAccess.push(S3Renderer.createEntityPattern(allowIdentifier, accessPatterns.auth));
+      protectedPathAccess.push(S3Renderer.createEntityPattern(allowIdentifier, accessPatterns.auth));
+      // Gen1 protected/ also grants read to other authenticated users. When the Gen1 auth
+      // permission set is read-only, this authenticated read subsumes the owner's
+      // entity('identity') read rule above; the overlap is harmless and keeps the per-path
+      // mapping uniform across permission sets.
+      protectedPathAccess.push(S3Renderer.createAllowPattern(allowIdentifier, 'authenticated', ['read']));
     }
     if (accessPatterns.groups) {
       for (const [groupName, permissions] of Object.entries(accessPatterns.groups)) {
-        const pattern = this.createAllowPattern(allowIdentifier, `groups(['${groupName}'])`, permissions);
+        const pattern = S3Renderer.createAllowPattern(allowIdentifier, `groups(['${groupName}'])`, permissions);
         publicPathAccess.push(pattern);
         privatePathAccess.push(pattern);
         protectedPathAccess.push(pattern);
@@ -308,7 +311,7 @@ export class S3Renderer {
         }
       }
       for (const [functionName, permissions] of Object.entries(consolidated)) {
-        const pattern = this.createResourcePattern(allowIdentifier, functionName, Array.from(permissions));
+        const pattern = S3Renderer.createResourcePattern(allowIdentifier, functionName, Array.from(permissions));
         publicPathAccess.push(pattern);
         privatePathAccess.push(pattern);
         protectedPathAccess.push(pattern);
@@ -349,7 +352,7 @@ export class S3Renderer {
     return factory.createPropertyAssignment(factory.createIdentifier('access'), accessFunction);
   }
 
-  private createAllowPattern(allowIdentifier: ts.Identifier, userLevel: string, permissions: readonly Permission[]): CallExpression {
+  private static createAllowPattern(allowIdentifier: ts.Identifier, userLevel: string, permissions: readonly Permission[]): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier(`${userLevel}.to`)),
       undefined,
@@ -361,7 +364,7 @@ export class S3Renderer {
    * Renders `allow.entity('identity').to([...])`, which scopes an {entity_id} path to the
    * caller's own Cognito identity in the generated IAM policy.
    */
-  private createEntityPattern(allowIdentifier: ts.Identifier, permissions: readonly Permission[]): CallExpression {
+  private static createEntityPattern(allowIdentifier: ts.Identifier, permissions: readonly Permission[]): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(
         factory.createCallExpression(
@@ -376,7 +379,11 @@ export class S3Renderer {
     );
   }
 
-  private createResourcePattern(allowIdentifier: ts.Identifier, functionName: string, permissions: readonly Permission[]): CallExpression {
+  private static createResourcePattern(
+    allowIdentifier: ts.Identifier,
+    functionName: string,
+    permissions: readonly Permission[],
+  ): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(
         factory.createCallExpression(

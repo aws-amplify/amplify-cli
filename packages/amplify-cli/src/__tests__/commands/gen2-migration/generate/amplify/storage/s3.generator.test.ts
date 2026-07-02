@@ -248,14 +248,22 @@ describe('S3Generator', () => {
     const content = writtenFile('resource.ts');
     const normalized = content.replace(/\s+/g, ' ');
 
-    // Per-user paths use entity('identity') so {entity_id} maps to the caller's identity.
     expect(normalized).toMatch(
       /'private\/\{entity_id\}\/\*':\s*\[\s*allow\.entity\('identity'\)\.to\(\['read', 'write', 'delete'\]\)\s*,?\s*\]/,
     );
     expect(normalized).toMatch(/'protected\/\{entity_id\}\/\*':\s*\[\s*allow\.entity\('identity'\)\.to\(\['read', 'write', 'delete'\]\)/);
 
-    // Enforce per-user scoping: private/protected must not grant write/delete via allow.authenticated.
-    expect(content).not.toMatch(/'(private|protected)\/\{entity_id\}\/\*': \[[^\]]*allow\.authenticated\.to\(\[[^\]]*'(write|delete)'/s);
+    // private/ and protected/ must not grant write/delete via allow.authenticated (public/*
+    // legitimately can, so the check is scoped to those paths). Rules render in the order
+    // public, protected, private, so slice out each per-user segment and assert on it.
+    const protectedSegment = normalized.slice(
+      normalized.indexOf("'protected/{entity_id}/*'"),
+      normalized.indexOf("'private/{entity_id}/*'"),
+    );
+    const privateSegment = normalized.slice(normalized.indexOf("'private/{entity_id}/*'"));
+    for (const segment of [protectedSegment, privateSegment]) {
+      expect(segment).not.toMatch(/allow\.authenticated\.to\(\[[^\]]*'(write|delete)'/);
+    }
   });
 
   it('renders guest access patterns', async () => {
