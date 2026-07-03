@@ -280,17 +280,16 @@ export class S3Renderer {
       publicPathAccess.push(S3Renderer.createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest));
     }
     if (accessPatterns.auth && accessPatterns.auth.length > 0) {
-      // public/* is a shared path: authenticated users get the Gen1 auth permission set.
+      // Gen1 authenticated access maps per path:
+      // - public/* is shared: authenticated users get the Gen1 auth permission set.
+      // - private/ and protected/ are per-user: use allow.entity('identity') so {entity_id}
+      //   resolves to the caller's own Cognito identity, matching the Gen1 per-user scoping.
+      // - protected/ additionally grants authenticated read (Gen1 cross-user read). When the
+      //   auth set is read-only this subsumes the owner's entity read; the overlap is harmless
+      //   and keeps the per-path mapping uniform across permission sets.
       publicPathAccess.push(S3Renderer.createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth));
-      // private/ and protected/ are per-user paths. Use allow.entity('identity') so the
-      // {entity_id} token resolves to the caller's own Cognito identity, matching the
-      // per-user scoping of the Gen1 configuration.
       privatePathAccess.push(S3Renderer.createEntityPattern(allowIdentifier, accessPatterns.auth));
       protectedPathAccess.push(S3Renderer.createEntityPattern(allowIdentifier, accessPatterns.auth));
-      // Gen1 protected/ also grants read to other authenticated users. When the Gen1 auth
-      // permission set is read-only, this authenticated read subsumes the owner's
-      // entity('identity') read rule above; the overlap is harmless and keeps the per-path
-      // mapping uniform across permission sets.
       protectedPathAccess.push(S3Renderer.createAllowPattern(allowIdentifier, 'authenticated', ['read']));
     }
     if (accessPatterns.groups) {
@@ -360,10 +359,8 @@ export class S3Renderer {
     );
   }
 
-  /**
-   * Renders `allow.entity('identity').to([...])`, which scopes an {entity_id} path to the
-   * caller's own Cognito identity in the generated IAM policy.
-   */
+  // Renders `allow.entity('identity').to([...])`, which scopes an {entity_id} path to the
+  // caller's own Cognito identity in the generated IAM policy.
   private static createEntityPattern(allowIdentifier: ts.Identifier, permissions: readonly Permission[]): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(
