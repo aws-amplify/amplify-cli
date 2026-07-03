@@ -26,6 +26,9 @@ async function tryHandleEvent(event, context) {
 
 // Returns the ARN of the OIDC provider matching the given url, or undefined if none exists.
 async function findProviderArn(url) {
+  if (!url) {
+    return undefined;
+  }
   const providerHost = new URL(url).host;
   const listOpenIDConnectProvidersResponse = await iam.send(new ListOpenIDConnectProvidersCommand({}));
   const providers = listOpenIDConnectProvidersResponse.OpenIDConnectProviderList || [];
@@ -90,7 +93,26 @@ async function handleEvent(event) {
       const currentAudiences = getOpenIDConnectProviderResponse.ClientIDList || [];
       const remainingAudiences = currentAudiences.filter((clientID) => !clientIdList.includes(clientID));
       if (remainingAudiences.length === 0) {
-        await iam.send(new DeleteOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }));
+        // Our client IDs appear to be the only ones. Re-read immediately before deleting so we do
+        // not destroy a provider that another stack concurrently added client IDs to (or re-created)
+        // between our first read and the delete.
+        const refreshed = await iam.send(new GetOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }));
+        const refreshedRemaining = (refreshed.ClientIDList || []).filter((clientID) => !clientIdList.includes(clientID));
+        if (refreshedRemaining.length === 0) {
+          await iam.send(new DeleteOpenIDConnectProviderCommand({ OpenIDConnectProviderArn: existingValue }));
+        } else {
+          // A concurrent stack added client IDs after our first read; only drop ours.
+          for (const clientID of clientIdList) {
+            if ((refreshed.ClientIDList || []).includes(clientID)) {
+              await iam.send(
+                new RemoveClientIDFromOpenIDConnectProviderCommand({
+                  ClientID: clientID,
+                  OpenIDConnectProviderArn: existingValue,
+                }),
+              );
+            }
+          }
+        }
       } else {
         // Provider is still used by other client IDs (another Amplify app); only drop ours.
         for (const clientID of clientIdList) {
