@@ -25,7 +25,20 @@ export interface FunctionRenderOptions {
   readonly kinesisConfig?: KinesisConfig;
   readonly unMappedAuthActions: readonly string[];
   readonly storageTriggerTables: readonly string[];
+  /**
+   * Lambda layer module specifiers (e.g. `/opt/GQLUtilities`) required by the
+   * function source. Each becomes a key in the generated `layers` map so that
+   * esbuild externalizes it instead of failing to resolve `/opt/*` at build time.
+   */
+  readonly layerModules?: readonly string[];
 }
+
+/**
+ * Placeholder value emitted for each detected Lambda layer in the generated
+ * `layers` map. The migration cannot know the Gen2 layer ARN, so the developer
+ * must replace this with a real layer version ARN before deploying.
+ */
+export const LAYER_ARN_PLACEHOLDER = 'REPLACE_WITH_LAYER_VERSION_ARN';
 
 export interface KinesisConfig {
   readonly resourceName: string;
@@ -89,6 +102,7 @@ export class FunctionRenderer {
     this.renderEnvironment(properties, namedImports, opts);
     this.renderRuntime(properties, opts.runtime);
     this.renderSchedule(properties, opts.schedule);
+    this.renderLayers(properties, opts.layerModules);
 
     return TS.renderResourceTsFile({
       exportedVariableName: factory.createIdentifier(opts.resourceName),
@@ -353,6 +367,34 @@ export class FunctionRenderer {
     if (converted) {
       target.push(factory.createPropertyAssignment('schedule', factory.createStringLiteral(converted)));
     }
+  }
+
+  /**
+   * Renders the `layers` property from detected `/opt/*` layer requires.
+   *
+   * Each module specifier becomes a key in the `layers` map. In Gen2 the key is
+   * used to externalize the module during esbuild bundling (so `/opt/*` requires
+   * no longer break the build) and the value is the Lambda layer version ARN
+   * attached at runtime. The ARN is unknown at migration time, so a placeholder
+   * is emitted with an explanatory comment for the developer to fill in.
+   */
+  private renderLayers(target: ObjectLiteralElementLike[], layerModules?: readonly string[]): void {
+    if (!layerModules || layerModules.length === 0) return;
+
+    const layerEntries = Array.from(new Set(layerModules)).map((moduleName) =>
+      factory.createPropertyAssignment(factory.createStringLiteral(moduleName), factory.createStringLiteral(LAYER_ARN_PLACEHOLDER)),
+    );
+
+    const layersProperty = factory.createPropertyAssignment('layers', factory.createObjectLiteralExpression(layerEntries, true));
+
+    ts.addSyntheticLeadingComment(
+      layersProperty,
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ' TODO: replace the placeholder ARN(s) with the ARN of the migrated Lambda layer version. See https://docs.amplify.aws/react/build-a-backend/functions/add-lambda-layers',
+      true,
+    );
+
+    target.push(layersProperty);
   }
 }
 

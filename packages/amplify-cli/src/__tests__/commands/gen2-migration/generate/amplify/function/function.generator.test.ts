@@ -4,6 +4,9 @@ import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migrat
 import { Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import nodePath from 'node:path';
 
 jest.unmock('fs-extra');
 
@@ -1263,5 +1266,161 @@ describe('FunctionGenerator', () => {
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");
+  });
+
+  describe('Lambda layer (/opt/*) handling', () => {
+    let fixtureCwd: string;
+    let previousCwd: string;
+
+    /**
+     * Creates a real Gen1 function source tree under a temp cwd so the generator
+     * scans actual files (no mocking of the detection path).
+     */
+    function writeFunctionSource(resourceName: string, files: Record<string, string>): void {
+      const srcDir = nodePath.join(fixtureCwd, 'amplify', 'backend', 'function', resourceName, 'src');
+      mkdirSync(srcDir, { recursive: true });
+      for (const [relPath, content] of Object.entries(files)) {
+        const target = nodePath.join(srcDir, relPath);
+        mkdirSync(nodePath.dirname(target), { recursive: true });
+        writeFileSync(target, content, 'utf8');
+      }
+    }
+
+    async function buildLayerGen1App(resourceName: string): Promise<Gen1App> {
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        function: {
+          [resourceName]: {
+            service: 'Lambda',
+            output: {
+              Name: `${resourceName}-main-abc`,
+              Arn: `arn:aws:lambda:us-east-1:123:function:${resourceName}-main-abc`,
+            },
+          },
+        },
+      });
+      jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue(`${resourceName}-main-abc`);
+      jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+      jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+      jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+        FunctionName: `${resourceName}-main-abc`,
+        Handler: 'index.handler',
+        Timeout: 3,
+        MemorySize: 128,
+        Runtime: 'nodejs18.x',
+        Environment: { Variables: {} },
+      });
+      jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+      return gen1App;
+    }
+
+    beforeEach(() => {
+      previousCwd = process.cwd();
+      fixtureCwd = mkdtempSync(nodePath.join(tmpdir(), 'gen2-layer-fixture-'));
+      process.chdir(fixtureCwd);
+    });
+
+    afterEach(() => {
+      process.chdir(previousCwd);
+      rmSync(fixtureCwd, { recursive: true, force: true });
+    });
+
+    it('externalizes /opt/* layer requires via the defineFunction layers map', async () => {
+      const gen1App = await buildLayerGen1App('layerFunc');
+      writeFunctionSource('layerFunc', {
+        'index.js': ["const { doThing } = require('/opt/GQLUtilities');", 'exports.handler = async () => doThing();'].join('\n'),
+      });
+
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'layerFunc',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      const output = writtenFile('resource.ts');
+      expect(output).toContain('layers: {');
+      expect(output).toContain("'/opt/GQLUtilities': 'REPLACE_WITH_LAYER_VERSION_ARN'");
+      // The layers map must be inside defineFunction (before the escape-hatch fn),
+      // which is what makes esbuild externalize the module.
+      expect(output.indexOf('layers: {')).toBeLessThan(output.indexOf('applyEscapeHatches'));
+    });
+
+    it('normalizes nested and multiple /opt/* imports to unique layer roots', async () => {
+      const gen1App = await buildLayerGen1App('layerFunc2');
+      writeFunctionSource('layerFunc2', {
+        'index.mjs': [
+          "import util from '/opt/GQLUtilities/helpers/format.js';",
+          "import { z } from '/opt/GQLUtilities';",
+          "const shared = require('/opt/SharedLib');",
+          'export const handler = async () => [util, z, shared];',
+        ].join('\n'),
+        'nested/inner.ts': "export const x = require('/opt/SharedLib/nested');",
+      });
+
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'layerFunc2',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      const output = writtenFile('resource.ts');
+      expect(output).toContain("'/opt/GQLUtilities': 'REPLACE_WITH_LAYER_VERSION_ARN'");
+      expect(output).toContain("'/opt/SharedLib': 'REPLACE_WITH_LAYER_VERSION_ARN'");
+      // Nested subpaths collapse to the layer root — no duplicate keys.
+      expect(output).not.toContain('/opt/GQLUtilities/helpers');
+      expect(output.match(/\/opt\/GQLUtilities'/g)).toHaveLength(1);
+    });
+
+    it('emits a migration warning describing the detected layers', async () => {
+      const gen1App = await buildLayerGen1App('layerFunc3');
+      writeFunctionSource('layerFunc3', {
+        'index.js': "const u = require('/opt/GQLUtilities');\nexports.handler = async () => u;",
+      });
+
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'layerFunc3',
+      });
+      const ops = await generator.plan();
+      const descriptions = await ops[0].describe();
+
+      const warning = descriptions.find((d) => d.includes('/opt/GQLUtilities'));
+      expect(warning).toBeDefined();
+      expect(warning).toContain('replace the placeholder ARN');
+    });
+
+    it('does not emit a layers map when the function has no /opt/* imports', async () => {
+      const gen1App = await buildLayerGen1App('plainFunc');
+      writeFunctionSource('plainFunc', {
+        'index.js': "const os = require('os');\nexports.handler = async () => os.platform();",
+      });
+
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'plainFunc',
+      });
+      const ops = await generator.plan();
+      await ops[0].execute();
+
+      const output = writtenFile('resource.ts');
+      expect(output).not.toContain('layers:');
+      const descriptions = await ops[0].describe();
+      expect(descriptions.some((d) => d.includes('/opt/'))).toBe(false);
+    });
   });
 });

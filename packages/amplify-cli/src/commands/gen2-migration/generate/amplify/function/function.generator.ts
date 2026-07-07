@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { Dirent, existsSync, readdirSync, readFileSync } from 'node:fs';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../_common/planner';
@@ -87,6 +88,8 @@ export class FunctionGenerator implements Planner {
     const storageTriggerTables = this.detectDynamoTriggerTables();
     const isKinesisTrigger = this.isKinesisTrigger();
 
+    const layerModules = this.detectLayerModules();
+
     const hasAnalytics = kinesisActions.length > 0 || isKinesisTrigger;
 
     const renderOpts: FunctionRenderOptions = {
@@ -104,6 +107,7 @@ export class FunctionGenerator implements Planner {
       dataTriggerModels,
       storageTriggerTables,
       unMappedAuthActions,
+      layerModules,
       kinesisConfig: hasAnalytics
         ? {
             resourceName: this.gen1App.singleResourceName('analytics', 'Kinesis'),
@@ -123,7 +127,11 @@ export class FunctionGenerator implements Planner {
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Generate amplify/function/${resourceName}/resource.ts`],
+        describe: async () => {
+          const lines = [`Generate amplify/function/${resourceName}/resource.ts`];
+          for (const line of this.layerWarningLines(layerModules)) lines.push(line);
+          return lines;
+        },
         execute: async () => {
           const dirPath = path.join(this.outputDir, 'amplify', 'function', resourceName);
 
@@ -134,6 +142,8 @@ export class FunctionGenerator implements Planner {
           await fs.mkdir(dirPath, { recursive: true });
           await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
           await this.copyFunctionSource(resourceName, dirPath);
+
+          for (const line of this.layerWarningLines(layerModules)) this.logger.warn(line);
 
           const alias = resourceName;
           this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
@@ -221,6 +231,72 @@ export class FunctionGenerator implements Planner {
         );
       },
     });
+  }
+
+  /**
+   * Scans the Gen1 function source for Lambda layer imports of the form
+   * `require('/opt/<layer>')` / `import ... from '/opt/<layer>'`. These resolve
+   * to a Lambda layer mounted at `/opt` at runtime and cannot be resolved by
+   * esbuild at build time. Returns the unique layer roots (`/opt/<layer>`) so
+   * they can be externalized via the generated `layers` map.
+   */
+  private detectLayerModules(): string[] {
+    const srcDir = path.join('amplify', 'backend', 'function', this.resource.resourceName, 'src');
+    if (!existsSync(srcDir)) return [];
+
+    const SOURCE_EXTENSIONS = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs']);
+    // Matches the module specifier of a require()/import()/import-from statement
+    // whose target starts with `/opt/`.
+    const importPattern = /(?:require\s*\(\s*|import\s*\(\s*|from\s+)['"](\/opt\/[^'"]+)['"]/g;
+
+    const layerRoots = new Set<string>();
+    const walk = (dir: string): void => {
+      let entries: Dirent[];
+      try {
+        entries = readdirSync(dir, { withFileTypes: true }) as Dirent[];
+      } catch {
+        // Directory became unreadable — skip it rather than fail the migration.
+        return;
+      }
+      for (const entry of entries) {
+        if (entry.name === 'node_modules') continue;
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(full);
+          continue;
+        }
+        if (!SOURCE_EXTENSIONS.has(path.extname(entry.name))) continue;
+        let content: string;
+        try {
+          content = readFileSync(full, 'utf8');
+        } catch {
+          continue;
+        }
+        for (const match of content.matchAll(importPattern)) {
+          const specifier = match[1];
+          // Normalize `/opt/<layer>/nested/path` down to the layer root `/opt/<layer>`.
+          const segments = specifier.split('/').filter(Boolean); // ['opt', '<layer>', ...]
+          if (segments.length >= 2) layerRoots.add(`/${segments[0]}/${segments[1]}`);
+        }
+      }
+    };
+    walk(srcDir);
+
+    return Array.from(layerRoots).sort();
+  }
+
+  /**
+   * Human-readable migration warnings for detected Lambda layers. Surfaced both
+   * in the plan's Operations Summary and via the logger during execution.
+   */
+  private layerWarningLines(layerModules: readonly string[]): string[] {
+    if (layerModules.length === 0) return [];
+    return [
+      `Detected Lambda layer import(s) (${layerModules.join(', ')}) in function '${this.resource.resourceName}'. ` +
+        `These were externalized in the generated defineFunction({ layers }) so the build succeeds, ` +
+        `but you MUST replace the placeholder ARN(s) with your migrated Lambda layer version ARN(s) before deploying. ` +
+        `The Gen1 layer package itself is not migrated automatically.`,
+    ];
   }
 
   private contributeDependencies(): void {
