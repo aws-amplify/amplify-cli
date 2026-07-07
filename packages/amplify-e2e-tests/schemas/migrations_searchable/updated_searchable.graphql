@@ -1,0 +1,7 @@
+type User @model @searchable {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: AWSDate
+  userItems: [String]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-financetracker-x-x-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "advknbihlbchtlonmy35v53toa"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/a4cb1f0ff73cb98bbf900bb096b1f227a7c26dc0"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "financetracker"
+  }
+]

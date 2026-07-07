@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "./src",
+    "strict": false,
+    "lib": ["ESNext", "dom"]
+  },
+  "references": [{ "path": "../amplify-e2e-core" }, { "path": "../amplify-e2e-gen2-migration" }],
+  "exclude": ["node_modules", "lib", "__tests__", "custom-resources", "overrides"]
+}

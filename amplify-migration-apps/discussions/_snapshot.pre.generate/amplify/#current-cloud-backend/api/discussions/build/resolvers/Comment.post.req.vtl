@@ -1,0 +1,25 @@
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("postCommentsId"), $ctx.source.postCommentsId) )
+#if( $util.isNull($partitionKeyValue) )
+  #return
+#else
+  #set( $GetRequest = {
+  "version": "2018-05-29",
+  "operation": "Query"
+} )
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
+  },
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
+  }
+}))
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  #end
+  $util.toJson($GetRequest)
+#end

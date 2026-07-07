@@ -1,0 +1,4 @@
+export function override(props: any) {
+  // this is an intentional runtime error here
+  throw new Error("error");
+}

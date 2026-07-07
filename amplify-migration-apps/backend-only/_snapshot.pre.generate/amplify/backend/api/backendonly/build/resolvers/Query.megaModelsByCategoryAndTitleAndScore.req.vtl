@@ -1,0 +1,143 @@
+## [Start] Set query expression for key **
+#set( $modelQueryExpression = {} )
+## [Start] Validate key arguments. **
+#if( !$util.isNull($ctx.args.titleScore) && $util.isNullOrBlank($ctx.args.category) )
+  $util.error("When providing argument 'titleScore' you must also provide 'category'.", "InvalidArgumentsError")
+#end
+#if( !$util.isNull($ctx.args.titleScore) )
+  #set( $sortKeyArgumentOperations = $ctx.args.titleScore.keySet() )
+  #if( $sortKeyArgumentOperations.size() > 1 )
+    $util.error("Argument titleScore must specify at most one key condition operation.", "InvalidArgumentsError")
+  #end
+  #foreach( $operation in $sortKeyArgumentOperations )
+    #if( $operation == "between" )
+      #if( $ctx.args.titleScore.between.size() != 2 )
+        $util.error("Argument 'titleScore.between' expects exactly two elements.", "InvalidArgumentsError")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.titleScore.between[0].score) && $util.isNullOrBlank($ctx.args.titleScore.between[0].title) )
+        $util.error("When providing argument 'titleScore.between[0].score' you must also provide 'titleScore.between[0].title'.", "InvalidArgumentsError")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.titleScore.between[1].score) && $util.isNullOrBlank($ctx.args.titleScore.between[1].title) )
+        $util.error("When providing argument 'titleScore.between[1].score' you must also provide 'titleScore.between[1].title'.", "InvalidArgumentsError")
+      #end
+    #else
+      #if( !$util.isNullOrBlank($ctx.args.titleScore.get("$operation").score) && $util.isNullOrBlank($ctx.args.titleScore.get("$operation").title) )
+        $util.error("When providing argument 'titleScore.$operation.score' you must also provide 'titleScore.$operation.title'.", "InvalidArgumentsError")
+      #end
+    #end
+  #end
+#end
+## [End] Validate key arguments. **
+#if( !$util.isNull($ctx.args.category) )
+  #set( $modelQueryExpression.expression = "#category = :category" )
+  #set( $modelQueryExpression.expressionNames = {
+  "#category": "category"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  ":category": {
+      "S": "$ctx.args.category"
+  }
+} )
+#end
+## [Start] Applying Key Condition **
+#set( $sortKeyValue = "" )
+#set( $sortKeyValue2 = "" )
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.beginsWith) )
+#if( !$util.isNull($ctx.args.titleScore.beginsWith.title) ) #set( $sortKeyValue = "$ctx.args.titleScore.beginsWith.title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.beginsWith.score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.beginsWith.score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.between) )
+  #if( $ctx.args.titleScore.between.size() != 2 )
+    $util.error("Argument titleScore.between expects exactly 2 elements.")
+  #end
+#if( !$util.isNull($ctx.args.titleScore.between[0].title) ) #set( $sortKeyValue = "$ctx.args.titleScore.between[0].title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.between[0].score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.between[0].score" ) #end
+#if( !$util.isNull($ctx.args.titleScore.between[1].title) ) #set( $sortKeyValue2 = "$ctx.args.titleScore.between[1].title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.between[1].score) ) #set( $sortKeyValue2 = "$sortKeyValue2#$ctx.args.titleScore.between[1].score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey0", { "S": "$sortKeyValue" }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey1", { "S": "$sortKeyValue2" }))
+#end
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.eq) )
+#if( !$util.isNull($ctx.args.titleScore.eq.title) ) #set( $sortKeyValue = "$ctx.args.titleScore.eq.title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.eq.score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.eq.score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey = :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.lt) )
+#if( !$util.isNull($ctx.args.titleScore.lt.title) ) #set( $sortKeyValue = "$ctx.args.titleScore.lt.title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.lt.score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.lt.score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey < :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.le) )
+#if( !$util.isNull($ctx.args.titleScore.le.title) ) #set( $sortKeyValue = "$ctx.args.titleScore.le.title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.le.score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.le.score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey <= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.gt) )
+#if( !$util.isNull($ctx.args.titleScore.gt.title) ) #set( $sortKeyValue = "$ctx.args.titleScore.gt.title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.gt.score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.gt.score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey > :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.titleScore) && !$util.isNull($ctx.args.titleScore.ge) )
+#if( !$util.isNull($ctx.args.titleScore.ge.title) ) #set( $sortKeyValue = "$ctx.args.titleScore.ge.title" ) #end
+#if( !$util.isNull($ctx.args.titleScore.ge.score) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.titleScore.ge.score" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey >= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "title#score"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+
+
+## [End] Applying Key Condition **
+## [End] Set query expression for key **
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $QueryRequest = {
+  "version": "2018-05-29",
+  "operation": "Query",
+  "limit": $limit,
+  "query": $modelQueryExpression,
+  "index": "byCategoryAndTitle"
+} )
+#if( !$util.isNull($ctx.args.sortDirection)
+                  && $ctx.args.sortDirection == "DESC" )
+  #set( $QueryRequest.scanIndexForward = false )
+#else
+  #set( $QueryRequest.scanIndexForward = true )
+#end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  "and":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error("Unable to process the filter expression", "Unrecognized Filter")
+  #end
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove("expressionValues"))
+    #end
+    #set( $QueryRequest.filter = $filterExpression )
+  #end
+#end
+$util.toJson($QueryRequest)

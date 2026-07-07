@@ -1,0 +1,119 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "AuthRoleArn": {
+      "Type": "String"
+    },
+    "UnauthRoleArn": {
+      "Type": "String"
+    },
+    "authmediavault1f08412dUserPoolId": {
+      "Type": "String",
+      "Default": "authmediavault1f08412dUserPoolId"
+    },
+    "authmediavault1f08412dIdentityPoolId": {
+      "Type": "String",
+      "Default": "authmediavault1f08412dIdentityPoolId"
+    },
+    "authmediavault1f08412dAppClientID": {
+      "Type": "String",
+      "Default": "authmediavault1f08412dAppClientID"
+    },
+    "authmediavault1f08412dAppClientIDWeb": {
+      "Type": "String",
+      "Default": "authmediavault1f08412dAppClientIDWeb"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "AdminGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "us-east-1_10XCh2HEz",
+              "-AdminGroupRole"
+            ]
+          ]
+        }
+      }
+    },
+    "BasicGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "us-east-1_10XCh2HEz",
+              "-BasicGroupRole"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AdminGroupRole": {
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-AdminGroupRole"
+    },
+    "BasicGroupRole": {
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-BasicGroupRole"
+    }
+  }
+}

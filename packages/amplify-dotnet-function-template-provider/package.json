@@ -1,0 +1,42 @@
+{
+  "name": "@aws-amplify/amplify-dotnet-function-template-provider",
+  "version": "2.7.10",
+  "description": ".NET templates supplied by the Amplify Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-dotnet-function-template-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "dotnet"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
+    "graphql-transformer-core": "^8.2.18"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^20.9.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

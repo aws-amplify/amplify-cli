@@ -1,0 +1,11 @@
+export const CDK_DEPLOYMENT_NAME = 'AWS CDK';
+export const CFN_DEPLOYMENT_NAME = 'AWS CloudFormation';
+export const customDeploymentOptions = [CDK_DEPLOYMENT_NAME, CFN_DEPLOYMENT_NAME];
+export const categoryName = 'custom';
+export const CDK_SERVICE_NAME = 'customCDK';
+export const CFN_SERVICE_NAME = 'customCloudformation';
+export const DEPLOYMENT_PROVIDER_NAME = 'awscloudformation';
+export const customResourceCFNFilenameSuffix = `cloudformation-template.json`;
+export const cdkFileName = 'cdk-stack.ts';
+export const TYPES_DIR_NAME = 'types';
+export const AMPLIFY_RESOURCES_TYPE_DEF_FILENAME = 'amplify-dependent-resources-ref.d.ts';

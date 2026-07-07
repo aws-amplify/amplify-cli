@@ -1,0 +1,29 @@
+name: Install Amplify CLI
+description: Installs Amplify CLI
+inputs:
+  cli-version:
+    description: a version of Amplify CLI
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Install CLI
+      shell: bash
+      if: runner.os != 'Windows'
+      run: |
+        npm install -g @aws-amplify/cli@${{ inputs.cli-version }}
+        AMPLIFY_PATH=$(which amplify)
+        echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+        echo "AMPLIFY_PATH=$AMPLIFY_PATH" >> $GITHUB_ENV
+
+    - name: Install CLI Windows
+      shell: powershell
+      if: runner.os == 'Windows'
+      run: |
+        npm install -g @aws-amplify/cli@${{ inputs.cli-version }}
+        # "where.exe" is used instead of "where" to disambiguate
+        # "where" is aliased to "Where-Object" in powershell, i.e. not pointing to the tool we want
+        # "amplify.cmd" is searched because "where.exe amplify" returns ambiguous list
+        $AMPLIFY_PATH=(where.exe amplify.cmd)
+        echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+        "AMPLIFY_PATH=$AMPLIFY_PATH" >> $env:GITHUB_ENV

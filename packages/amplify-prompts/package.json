@@ -1,0 +1,67 @@
+{
+  "name": "@aws-amplify/amplify-prompts",
+  "version": "2.8.7",
+  "description": "Utility functions for Amplify CLI terminal I/O",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "demo": "yarn build && node lib/demo/demo.js",
+    "test": "jest --logHeapUsage --color",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-amplify/amplify-cli.git"
+  },
+  "keywords": [
+    "amplify",
+    "cli",
+    "prompts"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
+  "dependencies": {
+    "@aws-amplify/amplify-cli-shared-interfaces": "1.2.6",
+    "chalk": "^4.1.1",
+    "enquirer": "^2.3.6"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

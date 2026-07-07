@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef",
+    "OutputValue": "us-east-1:c545b731-c650-4ff3-b2f6-1d78d98b925e"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref",
+    "OutputValue": "amplify-financetra2605101-amplifyAuthauthenticatedU-PdzEwCYD3yi2"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPool3103AD1ARef",
+    "OutputValue": "us-east-1_Do724qq9c"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthUserPoolAppClientB938D093Ref",
+    "OutputValue": "2l1dhna5tv910dt62g3jpmjnaa"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef",
+    "OutputValue": "amplify-financetra2605101-amplifyAuthunauthenticate-7zLAZsqRcPdQ"
+  }
+]

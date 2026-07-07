@@ -1,0 +1,82 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Infer resource(s) stack creation using Amplify CLI",
+    "Parameters": {
+        "authRoleName": {
+            "Type": "String"
+        },
+        "unauthRoleName": {
+            "Type": "String"
+        },
+        "resourceName": {
+            "Type": "String"
+        },
+        "inferPolicyName": {
+            "Type": "String"
+        },
+        "access": {
+            "Type": "String"
+        },
+        "inferType": {
+            "Type": "String"
+        },<% if (props.inferType === 'inferModel') { %>
+        "endpointName": {
+            "Type": "String"
+        },
+        "endpointConfig": {
+            "Type": "String"
+        },
+        "endpointARN": {
+            "Type": "String"
+        },<% } %>
+        "env": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "AuthGuestRoleAccess":{
+            "Fn::Equals": [{"Ref":"access"}, "authAndGuest"]
+        }
+    },
+    "Outputs": {
+        "region": {
+            "Value": { 
+                "Fn::FindInMap": [
+                    "RegionMapping",
+                    { "Ref" : "AWS::Region" },
+                    { "Ref": "inferType" }
+                ]
+            }
+        },<% if (props.inferType === 'inferModel') { %>
+        "endpointName": {
+            "Value": {"Ref": "endpointName"}
+        }<% } %>
+    },
+    "Resources": {<% if (props.inferType === 'inferModel') { %> 
+        "InferModelPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": { "Ref":"inferPolicyName" },
+                "Roles": {
+                    "Fn::If": [
+                        "AuthGuestRoleAccess",
+                        [{"Ref": "authRoleName"}, {"Ref": "unauthRoleName"}],
+                        [{"Ref": "authRoleName"}]
+                    ]
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "sagemaker:InvokeEndpoint"
+                            ],
+                            "Resource": {"Ref": "endpointARN"}
+                        }
+                    ]
+                }
+            }
+        }<% } %>
+    }
+}

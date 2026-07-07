@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "title-case": "^3.0.3",
+    "upper-case": "^2.0.2"
+  },
+  "devDependencies": {}
+}

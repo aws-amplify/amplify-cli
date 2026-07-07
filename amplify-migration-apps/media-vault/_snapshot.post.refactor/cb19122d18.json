@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-mediavault-x-x-storagemediavault-x",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "amplify-mediavault-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "mediavaultb574f210f1634e3a8d1934f263da5bedxgen2xBucketF165D505"
+    }
+  }
+]

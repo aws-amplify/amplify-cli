@@ -1,0 +1,24 @@
+name: Usage Question
+description: Ask a question about AWS Amplify CLI usage
+labels: ['question', 'pending-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for submitting this question!
+
+        For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
+
+        - For issues regarding REST API's, GraphQL API's, or containers, please visit [amplify-category-api](https://github.com/aws-amplify/amplify-category-api/issues/new/choose)
+        - For **Amplify Hosting** issues, visit [amplify-hosting](https://github.com/aws-amplify/amplify-hosting/issues/new/choose)
+        - For **Amplify Codegen** issues, visit [amplify-codegen](https://github.com/aws-amplify/amplify-codegen/issues/new/choose)
+  - type: input
+    attributes:
+      label: Amplify CLI Version
+      placeholder: Run `amplify version` to get the Amplify CLI version
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Question
+      description: Provide relevant details (e.g. code snippets). _Be sure to remove any sensitive data._

@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-storelocator-x-x-authuserPoolGroups-x",
+      "LogicalResourceId": "storeLocatorAdminGroup"
+    },
+    "Destination": {
+      "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthstoreLocatorAdminGroup85B78B77"
+    }
+  }
+]

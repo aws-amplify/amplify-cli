@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "storage": {
+      "Transaction:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": [],
+  "dependsOn": [
+    {
+      "category": "custom",
+      "resourceName": "customfinance",
+      "attributes": [
+        "BudgetAlertTopicArn",
+        "MonthlyReportTopicArn"
+      ]
+    }
+  ]
+}

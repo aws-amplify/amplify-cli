@@ -1,0 +1,17 @@
+{
+  "1d7f871c38": "update.amplify-fitnesstracker-x-x-authuserPoolGroups-x.template.json",
+  "95c0db6995": "update.amplify-fitnesstracker-x-x-authuserPoolGroups-x.parameters.json",
+  "889f5a3941": "update.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.template.json",
+  "39aadb0a47": "update.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.parameters.json",
+  "b46e6f9691": "refactor.__from__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding.source.template.json",
+  "5ad500eb28": "refactor.__from__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding.target.template.json",
+  "df9b6329d4": "refactor.__from__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x-holding.mappings.json",
+  "cc885fb307": "refactor.__from__.amplify-fitnesstracker-x-x-authuserPoolGroups-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.source.template.json",
+  "09c85055c5": "refactor.__from__.amplify-fitnesstracker-x-x-authuserPoolGroups-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.target.template.json",
+  "43491f023b": "refactor.__from__.amplify-fitnesstracker-x-x-authuserPoolGroups-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.mappings.json",
+  "6d98bcb330": "update.amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x.template.json",
+  "8092a79756": "update.amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x.parameters.json",
+  "b59e11038c": "refactor.__from__.amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.source.template.json",
+  "67a8b7b309": "refactor.__from__.amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.target.template.json",
+  "3b977b5fb2": "refactor.__from__.amplify-fitnesstracker-x-x-authfitnesstracker33f5545533f55455-x.__to__.amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x.mappings.json"
+}

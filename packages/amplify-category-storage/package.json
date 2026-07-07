@@ -1,0 +1,83 @@
+{
+  "name": "@aws-amplify/amplify-category-storage",
+  "version": "5.5.27",
+  "description": "amplify-cli storage plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-storage"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --logHeapUsage",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "watch": "tsc -w",
+    "generateSchemas": "ts-node ./resources/genInputSchema.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-environment-parameters": "1.9.25",
+    "@aws-amplify/amplify-prompts": "2.8.7",
+    "@aws-amplify/amplify-util-import": "2.8.6",
+    "@aws-amplify/cli-extensibility-helper": "3.0.43",
+    "@aws-sdk/client-dynamodb": "^3.1080.0",
+    "@aws-sdk/client-s3": "^3.1080.0",
+    "amplify-headless-interface": "1.17.8",
+    "amplify-util-headless-input": "1.9.19",
+    "aws-cdk-lib": "~2.189.1",
+    "chalk": "^4.1.1",
+    "constructs": "^10.0.5",
+    "enquirer": "^2.3.6",
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.21",
+    "promise-sequential": "^1.1.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "cloudform-types": "^4.2.0",
+    "rimraf": "^6.0.1"
+  },
+  "jest": {
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

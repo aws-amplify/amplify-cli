@@ -1,0 +1,159 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`get add auth request adaptor translates request with aliasAttributes 1`] = `
+{
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "aliasAttributes": [
+    "email",
+    "phone_number",
+    "preferred_username",
+  ],
+  "authProviders": [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": [],
+  "identityPoolName": undefined,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": [
+    "email",
+  ],
+  "resourceName": "myTestAuth",
+  "serviceName": "Cognito",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": [],
+  "userPoolGroups": false,
+  "userPoolName": undefined,
+  "usernameAttributes": [
+    "email",
+  ],
+  "userpoolClientReadAttributes": [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": [],
+}
+`;
+
+exports[`get add auth request adaptor translates request with autoVerifiedAttributes 1`] = `
+{
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "aliasAttributes": [],
+  "authProviders": [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": [
+    "email",
+    "phone_number",
+  ],
+  "emailVerificationMessage": "test email verificaiton message {####}",
+  "emailVerificationSubject": "test email verification subject",
+  "identityPoolName": undefined,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": [
+    "email",
+  ],
+  "resourceName": "myTestAuth",
+  "serviceName": "Cognito",
+  "smsVerificationMessage": "test sms verification message {####}",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": [],
+  "userPoolGroups": false,
+  "userPoolName": undefined,
+  "usernameAttributes": [
+    "email",
+  ],
+  "userpoolClientReadAttributes": [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": [],
+}
+`;
+
+exports[`get add auth request adaptor translates request without aliasAttributes 1`] = `
+{
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "aliasAttributes": [
+    "email",
+    "phone_number",
+    "preferred_username",
+  ],
+  "authProviders": [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": [],
+  "identityPoolName": undefined,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": [
+    "email",
+  ],
+  "resourceName": "myTestAuth",
+  "serviceName": "Cognito",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": [],
+  "userPoolGroups": false,
+  "userPoolName": undefined,
+  "usernameAttributes": [
+    "email",
+  ],
+  "userpoolClientReadAttributes": [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": [],
+}
+`;
+
+exports[`get add auth request adaptor valid translations translates request with minimal user pool config only 1`] = `
+{
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "aliasAttributes": [],
+  "authProviders": [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": [],
+  "identityPoolName": undefined,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": [
+    "email",
+  ],
+  "resourceName": "myTestAuth",
+  "serviceName": "Cognito",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": [],
+  "userPoolGroups": false,
+  "userPoolName": undefined,
+  "usernameAttributes": [
+    "email",
+  ],
+  "userpoolClientReadAttributes": [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": [],
+}
+`;
+
+exports[`get update auth request adaptor valid translations translates empty oAuth config into hostedUI: false 1`] = `
+{
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "authProviders": [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": [],
+  "hostedUI": false,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": [
+    "required_attribute",
+  ],
+  "serviceName": "Cognito",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": [],
+  "userPoolGroups": false,
+  "userpoolClientReadAttributes": [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": [],
+}
+`;

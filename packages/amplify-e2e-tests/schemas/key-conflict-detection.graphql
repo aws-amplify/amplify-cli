@@ -1,0 +1,4 @@
+type Note @model @key(fields: ["noteId"]) {
+  noteId: String!
+  note: String
+}

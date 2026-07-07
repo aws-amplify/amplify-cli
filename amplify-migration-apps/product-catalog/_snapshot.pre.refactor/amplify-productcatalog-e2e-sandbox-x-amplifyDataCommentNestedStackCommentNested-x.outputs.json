@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "GetAttCommentTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x/stream/2026-04-26T23:02:24.761",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "yjojfcxlk5bhfn6xtoverbaad4:GetAtt:CommentTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyproductcataloge2esandbox554f5b1732dataamplifyDataCommentCommentDataSourceE60B0BF7Name",
+    "OutputValue": "CommentTable"
+  },
+  {
+    "OutputKey": "amplifyproductcataloge2esandbox554f5b1732dataamplifyDataCommentCommentTable46E8BE4ATableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x"
+  },
+  {
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "yjojfcxlk5bhfn6xtoverbaad4:GetAtt:CommentTable:Name"
+  }
+]

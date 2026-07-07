@@ -1,0 +1,36 @@
+{
+  "name": "@aws-amplify/amplify-util-import",
+  "version": "2.8.6",
+  "description": "Resource import support package",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "aws",
+    "amplify",
+    "import"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.1080.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1080.0",
+    "@aws-sdk/client-dynamodb": "^3.1080.0",
+    "@aws-sdk/client-s3": "^3.1080.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

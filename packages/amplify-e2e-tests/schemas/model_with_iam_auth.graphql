@@ -1,0 +1,9 @@
+type Todo
+  @model
+  @auth(rules: [{ allow: private, provider: iam }])
+  @key(name: "todosByOwnerId", fields: ["owner_id"], queryField: "todosByOwnerId") {
+  id: ID!
+  owner_id: String!
+  task: String!
+  description: String
+}

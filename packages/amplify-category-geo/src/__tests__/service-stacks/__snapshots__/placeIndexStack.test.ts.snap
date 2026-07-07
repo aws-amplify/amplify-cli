@@ -1,0 +1,704 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cdk stack creation for place index service creates place index policy for Authorized and Guest users access type 1`] = `
+{
+  "Mappings": {
+    "RegionMapping": {
+      "eu-west-2": {
+        "locationServiceRegion": "eu-central-1",
+      },
+    },
+  },
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomPlaceIndex",
+          "IndexArn",
+        ],
+      },
+    },
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomPlaceIndex",
+          "IndexName",
+        ],
+      },
+    },
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
+          "RegionMapping",
+          {
+            "Ref": "AWS::Region",
+          },
+          "locationServiceRegion",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "authRoleName": {
+      "Type": "String",
+    },
+    "authmockAuthUserPoolId": {
+      "Type": "String",
+    },
+    "authuserPoolGroupsadminGroupGroupRole": {
+      "Type": "String",
+    },
+    "dataProvider": {
+      "Type": "String",
+    },
+    "dataSourceIntendedUse": {
+      "Type": "String",
+    },
+    "env": {
+      "Type": "String",
+    },
+    "indexName": {
+      "Type": "String",
+    },
+    "isDefault": {
+      "Type": "String",
+    },
+    "unauthRoleName": {
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "CustomPlaceIndex": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomPlaceIndexLambda79813BB9",
+            "Arn",
+          ],
+        },
+        "dataSource": {
+          "Ref": "dataProvider",
+        },
+        "dataSourceIntendedUse": {
+          "Ref": "dataSourceIntendedUse",
+        },
+        "env": {
+          "Ref": "env",
+        },
+        "indexName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "indexName",
+              },
+              {
+                "Ref": "env",
+              },
+            ],
+          ],
+        },
+        "region": {
+          "Fn::FindInMap": [
+            "RegionMapping",
+            {
+              "Ref": "AWS::Region",
+            },
+            "locationServiceRegion",
+          ],
+        },
+      },
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomPlaceIndexLambda79813BB9": {
+      "DependsOn": [
+        "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');
+const { LocationClient, CreatePlaceIndexCommand, DeletePlaceIndexCommand, UpdatePlaceIndexCommand } = require('@aws-sdk/client-location');
+exports.handler = async function (event, context) {
+  try {
+    console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    const pricingPlan = 'RequestBasedUsage';
+    if (event.RequestType === 'Create') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        DataSource: event.ResourceProperties.dataSource,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+        PricingPlan: pricingPlan,
+      };
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new CreatePlaceIndexCommand(params));
+      console.log('create resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await response.send(event, context, response.SUCCESS, res, params.IndexName);
+      } else {
+        await response.send(event, context, response.FAILED, res, params.IndexName);
+      }
+    }
+    if (event.RequestType === 'Update') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+        PricingPlan: pricingPlan,
+      };
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new UpdatePlaceIndexCommand(params));
+      console.log('update resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await response.send(event, context, response.SUCCESS, res, params.IndexName);
+      } else {
+        await response.send(event, context, response.FAILED, res, params.IndexName);
+      }
+    }
+    if (event.RequestType === 'Delete') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+      };
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new DeletePlaceIndexCommand(params));
+      event.PhysicalResourceId = event.ResourceProperties.indexName;
+      console.log('delete resource response data' + JSON.stringify(res));
+      await response.send(event, context, response.SUCCESS, res, params.IndexName);
+    }
+  } catch (err) {
+    console.log(err.stack);
+    const res = { Error: err };
+    await response.send(event, context, response.FAILED, res, event.ResourceProperties.indexName);
+    throw err;
+  }
+};
+",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "geo:CreatePlaceIndex",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "geo:UpdatePlaceIndex",
+                "geo:DeletePlaceIndex",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:geo:\${region}:\${account}:place-index/\${indexName}",
+                  {
+                    "account": {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "indexName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          {
+                            "Ref": "indexName",
+                          },
+                          {
+                            "Ref": "env",
+                          },
+                        ],
+                      ],
+                    },
+                    "region": {
+                      "Fn::FindInMap": [
+                        "RegionMapping",
+                        {
+                          "Ref": "AWS::Region",
+                        },
+                        "locationServiceRegion",
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "Roles": [
+          {
+            "Ref": "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PlaceIndexPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:SearchPlaceIndexForPosition",
+                "geo:SearchPlaceIndexForText",
+                "geo:SearchPlaceIndexForSuggestions",
+                "geo:GetPlace",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CustomPlaceIndex",
+                  "IndexArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::Join": [
+                  "-",
+                  [
+                    {
+                      "Ref": "indexName",
+                    },
+                    {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
+              },
+              "Policy",
+            ],
+          ],
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+          {
+            "Ref": "unauthRoleName",
+          },
+          {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "authmockAuthUserPoolId",
+                },
+                "adminGroupGroupRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+}
+`;
+
+exports[`cdk stack creation for place index service creates place index policy for Authorized users only access type 1`] = `
+{
+  "Mappings": {
+    "RegionMapping": {
+      "eu-west-2": {
+        "locationServiceRegion": "eu-central-1",
+      },
+    },
+  },
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomPlaceIndex",
+          "IndexArn",
+        ],
+      },
+    },
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomPlaceIndex",
+          "IndexName",
+        ],
+      },
+    },
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
+          "RegionMapping",
+          {
+            "Ref": "AWS::Region",
+          },
+          "locationServiceRegion",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "authRoleName": {
+      "Type": "String",
+    },
+    "authmockAuthUserPoolId": {
+      "Type": "String",
+    },
+    "authuserPoolGroupsadminGroupGroupRole": {
+      "Type": "String",
+    },
+    "dataProvider": {
+      "Type": "String",
+    },
+    "dataSourceIntendedUse": {
+      "Type": "String",
+    },
+    "env": {
+      "Type": "String",
+    },
+    "indexName": {
+      "Type": "String",
+    },
+    "isDefault": {
+      "Type": "String",
+    },
+    "unauthRoleName": {
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "CustomPlaceIndex": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomPlaceIndexLambda79813BB9",
+            "Arn",
+          ],
+        },
+        "dataSource": {
+          "Ref": "dataProvider",
+        },
+        "dataSourceIntendedUse": {
+          "Ref": "dataSourceIntendedUse",
+        },
+        "env": {
+          "Ref": "env",
+        },
+        "indexName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "indexName",
+              },
+              {
+                "Ref": "env",
+              },
+            ],
+          ],
+        },
+        "region": {
+          "Fn::FindInMap": [
+            "RegionMapping",
+            {
+              "Ref": "AWS::Region",
+            },
+            "locationServiceRegion",
+          ],
+        },
+      },
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomPlaceIndexLambda79813BB9": {
+      "DependsOn": [
+        "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');
+const { LocationClient, CreatePlaceIndexCommand, DeletePlaceIndexCommand, UpdatePlaceIndexCommand } = require('@aws-sdk/client-location');
+exports.handler = async function (event, context) {
+  try {
+    console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    const pricingPlan = 'RequestBasedUsage';
+    if (event.RequestType === 'Create') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        DataSource: event.ResourceProperties.dataSource,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+        PricingPlan: pricingPlan,
+      };
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new CreatePlaceIndexCommand(params));
+      console.log('create resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await response.send(event, context, response.SUCCESS, res, params.IndexName);
+      } else {
+        await response.send(event, context, response.FAILED, res, params.IndexName);
+      }
+    }
+    if (event.RequestType === 'Update') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+        PricingPlan: pricingPlan,
+      };
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new UpdatePlaceIndexCommand(params));
+      console.log('update resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await response.send(event, context, response.SUCCESS, res, params.IndexName);
+      } else {
+        await response.send(event, context, response.FAILED, res, params.IndexName);
+      }
+    }
+    if (event.RequestType === 'Delete') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+      };
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new DeletePlaceIndexCommand(params));
+      event.PhysicalResourceId = event.ResourceProperties.indexName;
+      console.log('delete resource response data' + JSON.stringify(res));
+      await response.send(event, context, response.SUCCESS, res, params.IndexName);
+    }
+  } catch (err) {
+    console.log(err.stack);
+    const res = { Error: err };
+    await response.send(event, context, response.FAILED, res, event.ResourceProperties.indexName);
+    throw err;
+  }
+};
+",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "geo:CreatePlaceIndex",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "geo:UpdatePlaceIndex",
+                "geo:DeletePlaceIndex",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:geo:\${region}:\${account}:place-index/\${indexName}",
+                  {
+                    "account": {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "indexName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          {
+                            "Ref": "indexName",
+                          },
+                          {
+                            "Ref": "env",
+                          },
+                        ],
+                      ],
+                    },
+                    "region": {
+                      "Fn::FindInMap": [
+                        "RegionMapping",
+                        {
+                          "Ref": "AWS::Region",
+                        },
+                        "locationServiceRegion",
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "Roles": [
+          {
+            "Ref": "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PlaceIndexPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:SearchPlaceIndexForPosition",
+                "geo:SearchPlaceIndexForText",
+                "geo:SearchPlaceIndexForSuggestions",
+                "geo:GetPlace",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CustomPlaceIndex",
+                  "IndexArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::Join": [
+                  "-",
+                  [
+                    {
+                      "Ref": "indexName",
+                    },
+                    {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
+              },
+              "Policy",
+            ],
+          ],
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+          {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "authmockAuthUserPoolId",
+                },
+                "adminGroupGroupRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+}
+`;

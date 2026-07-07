@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceMonthlyReportTopicDA4ABB2FRef",
+    "OutputValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i"
+  },
+  {
+    "OutputKey": "customfinanceBudgetAlertTopicArnB3C2C0AB",
+    "OutputValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl",
+    "Description": "SNS Topic ARN for budget alerts",
+    "ExportName": "financetracker-BudgetAlertTopicArn-gen2-x"
+  },
+  {
+    "OutputKey": "customfinanceMonthlyReportTopicArn3264B244",
+    "OutputValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i",
+    "Description": "SNS Topic ARN for monthly reports",
+    "ExportName": "financetracker-MonthlyReportTopicArn-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceBudgetAlertTopicF3AC188DRef",
+    "OutputValue": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl"
+  },
+  {
+    "OutputKey": "customfinanceQueue1Name6E5FDCF7",
+    "OutputValue": "amplify-financetracker-e2e-sandbo-customfinanceQueue1ABF38704-WWyRISEcoQBA"
+  }
+]

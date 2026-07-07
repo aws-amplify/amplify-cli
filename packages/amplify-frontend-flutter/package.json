@@ -1,0 +1,35 @@
+{
+  "name": "@aws-amplify/amplify-frontend-flutter",
+  "version": "1.4.7",
+  "description": "amplify-cli front-end plugin for Flutter projects",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-frontend-flutter"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "jest --logHeapUsage",
+    "test-watch": "yarn test --watch"
+  },
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "graphql-config": "^2.2.1",
+    "inquirer": "^7.3.3"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

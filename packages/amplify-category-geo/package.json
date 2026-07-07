@@ -1,0 +1,68 @@
+{
+  "name": "@aws-amplify/amplify-category-geo",
+  "version": "3.5.27",
+  "description": "Amplify CLI plugin to manage the Geo resources for the project",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-geo"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "test": "jest --logHeapUsage",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-prompts": "2.8.7",
+    "@aws-sdk/client-location": "^3.1080.0",
+    "ajv": "^6.12.6",
+    "amplify-headless-interface": "1.17.8",
+    "amplify-util-headless-input": "1.9.19",
+    "aws-cdk-lib": "~2.189.1",
+    "constructs": "^10.0.5",
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.21",
+    "uuid": "^8.3.2"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "name": "@aws-amplify/amplify-util-uibuilder",
+  "version": "1.14.27",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-category-api": "^5.15.3",
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-prompts": "2.8.7",
+    "@aws-amplify/codegen-ui": "2.14.2",
+    "@aws-amplify/codegen-ui-react": "2.14.2",
+    "@aws-sdk/client-amplifybackend": "^3.1080.0",
+    "@aws-sdk/client-amplifyuibuilder": "^3.1080.0",
+    "amplify-codegen": "^4.10.3",
+    "fs-extra": "^8.1.0",
+    "node-fetch": "^2.6.7",
+    "ora": "^4.0.3",
+    "tiny-async-pool": "^2.1.0"
+  },
+  "devDependencies": {
+    "@aws-amplify/appsync-modelgen-plugin": "^2.6.0",
+    "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^29.5.1",
+    "@types/semver": "^7.1.0",
+    "@types/tiny-async-pool": "^2.0.0",
+    "ts-jest": "^29.1.0"
+  },
+  "jest": {
+    "testRunner": "jest-circus/runner",
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "window": {},
+          "diagnostics": true
+        }
+      ]
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/*.test.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**",
+      "!lib/**"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "testRegex": "((src/(__tests__|__e2e__|__e2e_v2__))/.*.test.ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

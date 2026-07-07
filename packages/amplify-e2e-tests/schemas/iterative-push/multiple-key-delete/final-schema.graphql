@@ -1,0 +1,14 @@
+type Todo3 @model {
+  id: ID!
+}
+
+type Something @model {
+  id: ID!
+}
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+  addfield2: String
+}

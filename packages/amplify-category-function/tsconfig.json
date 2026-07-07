@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strict": false
+  },
+  "references": [
+    {
+      "path": "../amplify-function-plugin-interface"
+    },
+    {
+      "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-environment-parameters"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x",
+      "LogicalResourceId": "activity1E902D9C"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-e2e-sandbox-x-storageactivityA346F297-x-holding",
+      "LogicalResourceId": "activity1E902D9C"
+    }
+  }
+]

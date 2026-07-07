@@ -1,0 +1,61 @@
+{
+  "name": "@aws-amplify/amplify-category-hosting",
+  "version": "3.5.46",
+  "description": "amplify-cli hosting plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-hosting"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "jest --logHeapUsage --coverage"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-prompts": "2.8.7",
+    "@aws-sdk/client-cloudfront": "^3.1080.0",
+    "@aws-sdk/client-s3": "^3.1080.0",
+    "@aws-sdk/lib-storage": "^3.919.0",
+    "chalk": "^4.1.1",
+    "fs-extra": "^8.1.0",
+    "mime-types": "^2.1.26",
+    "minimatch": "^3.0.4",
+    "moment": "^2.24.0",
+    "ora": "^4.0.3",
+    "promise-sequential": "^1.1.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "index.js"
+    ],
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

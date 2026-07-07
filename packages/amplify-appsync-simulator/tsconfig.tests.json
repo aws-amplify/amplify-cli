@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "strict": false,
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "references": [],
+  "exclude": ["**/lib/**/*", "resources/**/*"]
+}

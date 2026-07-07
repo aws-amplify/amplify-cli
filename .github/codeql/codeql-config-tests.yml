@@ -1,0 +1,7 @@
+paths:
+  - packages/**/__tests__/**
+  - packages/**/*.test.*
+  - packages/**/__e2e__/**
+query-filters:
+  - exclude:
+      id: js/insecure-temporary-file

@@ -1,0 +1,119 @@
+const { spinner } = require('@aws-amplify/amplify-cli-core');
+const fs = require('fs-extra');
+const fetch = require('node-fetch');
+const { ProxyAgent } = require('proxy-agent');
+const {
+  CreateDeploymentCommand,
+  GetJobCommand,
+  ListJobsCommand,
+  StartDeploymentCommand,
+  StopJobCommand,
+} = require('@aws-sdk/client-amplify');
+
+const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
+const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
+const DEPLOY_FAILURE_MESSAGE =
+  'Deployment failed! Please report an issue on the Amplify Console GitHub issue tracker at https://github.com/aws-amplify/amplify-console/issues.';
+
+function getDefaultDomainForApp(appId) {
+  return `https://${appId}.amplifyapp.com`;
+}
+
+function getDefaultDomainForBranch(appId, branch) {
+  return `https://${branch}.${appId}.amplifyapp.com`;
+}
+
+async function publishFileToAmplify(appId, branchName, artifactsPath, amplifyClient) {
+  spinner.start(DEPLOY_ARTIFACTS_MESSAGE);
+  try {
+    const params = {
+      appId,
+      branchName,
+    };
+    await cancelAllPendingJob(appId, branchName, amplifyClient);
+    const { zipUploadUrl, jobId } = await amplifyClient.send(new CreateDeploymentCommand(params));
+    await httpPutFile(artifactsPath, zipUploadUrl);
+    await amplifyClient.send(new StartDeploymentCommand({ ...params, jobId }));
+    await waitJobToSucceed({ ...params, jobId }, amplifyClient);
+    spinner.succeed(DEPLOY_COMPLETE_MESSAGE);
+  } catch (err) {
+    spinner.fail(DEPLOY_FAILURE_MESSAGE);
+    throw err;
+  }
+}
+
+async function cancelAllPendingJob(appId, branchName, amplifyClient) {
+  const params = {
+    appId,
+    branchName,
+  };
+  const { jobSummaries } = await amplifyClient.send(new ListJobsCommand(params));
+  for (const jobSummary of jobSummaries) {
+    const { jobId, status } = jobSummary;
+    if (status === 'PENDING' || status === 'RUNNING') {
+      const job = { ...params, jobId };
+      await amplifyClient.send(new StopJobCommand(job));
+    }
+  }
+}
+
+function waitJobToSucceed(job, amplifyClient) {
+  /* eslint-disable no-async-promise-executor */
+  /* eslint-disable @typescript-eslint/no-misused-promises */
+  return new Promise(async (resolve, reject) => {
+    const timeout = setTimeout(() => {
+      console.log('Job Timeout before succeeded');
+      reject(new Error('Job Timeout before succeeded'));
+    }, 1000 * 60 * 10);
+    let processing = true;
+    try {
+      while (processing) {
+        const getJobResult = await amplifyClient.send(new GetJobCommand(job));
+        const jobSummary = getJobResult.job.summary;
+        if (jobSummary.status === 'FAILED') {
+          console.log(`Job failed.${JSON.stringify(jobSummary)}`);
+          clearTimeout(timeout);
+          processing = false;
+          resolve();
+        }
+        if (jobSummary.status === 'SUCCEED') {
+          clearTimeout(timeout);
+          processing = false;
+          resolve();
+        }
+        await sleep(1000 * 3);
+      }
+    } catch (err) {
+      processing = false;
+      reject(err);
+    }
+  });
+  /* eslint-enable */
+}
+
+async function httpPutFile(filePath, url) {
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
+  const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const proxyOption = proxy ? { agent: new ProxyAgent() } : {};
+  await fetch(url, {
+    method: 'PUT',
+    body: fs.readFileSync(filePath),
+    ...proxyOption,
+  });
+}
+
+function sleep(ms) {
+  return new Promise((resolve, reject) => {
+    try {
+      setTimeout(resolve, ms);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+module.exports = {
+  getDefaultDomainForApp,
+  getDefaultDomainForBranch,
+  publishFileToAmplify,
+};

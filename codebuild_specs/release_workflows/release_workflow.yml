@@ -1,0 +1,126 @@
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+  git-credential-helper: yes
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-east-1
+    CDK_DEFAULT_REGION: us-east-1
+    CLI_REGION: us-east-1
+    AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
+    AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
+
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: validate_cdk_version
+      buildspec: codebuild_specs/validate_cdk_version.yml
+      depend-on:
+        - build_linux
+    - identifier: verify_yarn_lock
+      buildspec: codebuild_specs/verify_yarn_lock.yml
+      depend-on:
+        - build_linux
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_arm
+      buildspec: codebuild_specs/build_pkg_binaries_arm.yml
+      depend-on:
+        - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_linux
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      depend-on:
+        - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_macos
+      buildspec: codebuild_specs/build_pkg_binaries_macos.yml
+      depend-on:
+        - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_win
+      buildspec: codebuild_specs/build_pkg_binaries_win.yml
+      depend-on:
+        - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: upb
+      buildspec: codebuild_specs/upload_pkg_binaries.yml
+      depend-on:
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: verify_pkg_cli
+      buildspec: codebuild_specs/verify_pkg_cli.yml
+      depend-on:
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: verify_versions_match
+      buildspec: codebuild_specs/verify_versions_match.yml
+      depend-on:
+        - publish_to_local_registry
+    - identifier: github_prerelease
+      buildspec: codebuild_specs/release_workflows/github_prerelease.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - upb
+    - identifier: github_prerelease_install_sanity_check
+      buildspec: codebuild_specs/release_workflows/github_prerelease_install_sanity_check.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - github_prerelease
+    - identifier: publish_to_npm
+      buildspec: codebuild_specs/publish_to_npm.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - upb
+        - verify_versions_match
+        - github_prerelease_install_sanity_check
+        - publish_to_local_registry
+        - validate_cdk_version
+        - verify_yarn_lock
+        - verify_pkg_cli
+    - identifier: post_publish_push_to_git
+      buildspec: codebuild_specs/release_workflows/post_publish_push_to_git.yml
+      depend-on:
+        - publish_to_npm
+    - identifier: github_release
+      buildspec: codebuild_specs/release_workflows/github_release.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - post_publish_push_to_git
+    - identifier: deployment_verification_post_release
+      buildspec: codebuild_specs/deployment_verification_post_release.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        git-credential-helper: yes
+      debug-session: true
+      depend-on:
+        - github_release

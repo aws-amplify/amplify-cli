@@ -1,0 +1,27 @@
+type Blog @model {
+  id: ID!
+  name: String!
+  posts: [Post] @connection(keyName: "byBlog4", fields: ["id"])
+}
+
+type Post
+  @model
+  @key(name: "byBlog1", fields: ["blogID", "createdAt"]) # edit
+  # New keys
+  @key(name: "byBlog4", fields: ["blogID"])
+  @key(name: "byBlog5", fields: ["blogID"])
+  @key(name: "byBlog6", fields: ["blogID"]) {
+  id: ID!
+  title: String!
+  blogID: ID!
+  blog: Blog @connection(fields: ["blogID"])
+  comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
+  createdAt: AWSTimestamp
+}
+
+type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
+  id: ID!
+  postID: ID!
+  post: Post @connection(fields: ["postID"])
+  content: String!
+}

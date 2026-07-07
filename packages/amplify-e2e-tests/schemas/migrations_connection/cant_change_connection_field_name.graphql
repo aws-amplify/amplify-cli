@@ -1,0 +1,11 @@
+type Post @model {
+  id: ID!
+  title: String!
+  comments: [Comment] @connection(name: "PostComments")
+}
+
+type Comment @model {
+  id: ID!
+  content: String!
+  parentPost: Post @connection(name: "PostComments")
+}

@@ -1,0 +1,54 @@
+#Enum
+enum Status {
+  public
+  private
+}
+# Model with enum
+type Attration @model {
+  id: ID!
+  name: String!
+  status: Status!
+  tags: [String]
+  lastUpdate: AWSDate!
+}
+
+# AWS Scalars
+type User @model {
+  name: String!
+  email: AWSEmail!
+  meta: AWSJSON
+  avatar: AWSURL
+  lastIPAddress: AWSIPAddress
+  phone: AWSPhone
+  lastActivity: AWSTimestamp
+  workStart: AWSTime
+  workEnd: AWSTime
+  birthday: AWSDate
+  joinedOn: AWSDateTime
+}
+
+# 2 way 1:M connections
+type Post @model {
+  title: String!
+  content: String
+  comments: [Comment] @connection(name: "PostComment")
+}
+
+type Comment @model {
+  comment: String!
+  post: Post @connection(name: "PostComment")
+}
+
+# 1:1 Connection
+
+type Person @model {
+  id: ID!
+  name: String!
+  license: License @connection
+}
+
+type License @model {
+  id: ID!
+  number: String!
+  belongsTo: Person @connection
+}

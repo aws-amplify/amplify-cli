@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`adding custom resources test add/update CDK and CFN custom resources 1`] = `
+{
+  "env": {
+    "Description": "Current Amplify CLI env name",
+    "Type": "String",
+  },
+  "storageddbArn": {
+    "Type": "String",
+  },
+  "storageddbName": {
+    "Type": "String",
+  },
+  "storageddbPartitionKeyName": {
+    "Type": "String",
+  },
+  "storageddbPartitionKeyType": {
+    "Type": "String",
+  },
+  "storageddbRegion": {
+    "Type": "String",
+  },
+  "storageddbStreamArn": {
+    "Type": "String",
+  },
+}
+`;
+
+exports[`adding custom resources test add/update CDK and CFN custom resources 2`] = `
+{
+  "env": {
+    "Description": "Current Amplify CLI env name",
+    "Type": "String",
+  },
+  "storageddbArn": {
+    "Type": "String",
+  },
+  "storageddbName": {
+    "Type": "String",
+  },
+  "storageddbPartitionKeyName": {
+    "Type": "String",
+  },
+  "storageddbPartitionKeyType": {
+    "Type": "String",
+  },
+  "storageddbRegion": {
+    "Type": "String",
+  },
+  "storageddbStreamArn": {
+    "Type": "String",
+  },
+}
+`;

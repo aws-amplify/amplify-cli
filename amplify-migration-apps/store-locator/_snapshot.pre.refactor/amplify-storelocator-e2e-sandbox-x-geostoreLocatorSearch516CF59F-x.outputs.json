@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "amplifystorelocatore2esandboxeac7f296ebgeostoreLocatorSearchCustomPlaceIndex588CEBB4IndexName",
+    "OutputValue": "storeLocatorSearch-gen2-x"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-gen2-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "storeLocatorSearch-gen2-x"
+  }
+]

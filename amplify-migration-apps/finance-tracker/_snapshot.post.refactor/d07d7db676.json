@@ -1,0 +1,10 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId",
+    "ParameterValue": "cqtbb2d36zbalo5egilazvdefi"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataNestedStackdataNestedStackResourceE5C3DAB9Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataTransactionNestedStackTransactionNestedStackResource9C48F857OutputsC7E647D6",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Transaction-advknbihlbchtlonmy35v53toa-x"
+  }
+]

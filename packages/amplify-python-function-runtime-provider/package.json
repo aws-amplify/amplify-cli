@@ -1,0 +1,46 @@
+{
+  "name": "amplify-python-function-runtime-provider",
+  "version": "2.4.56",
+  "description": "Provides functionality related to functions in Python on AWS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-python-function-runtime-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "python"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
+    "execa": "^5.1.1",
+    "glob": "^11.0.1",
+    "ini": "^1.3.5",
+    "semver": "^7.5.4",
+    "which": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/node": "^20.9.0",
+    "@types/semver": "^7.1.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

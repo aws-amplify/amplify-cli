@@ -1,0 +1,347 @@
+{
+  "Mappings": {
+    "RegionMapping": {
+      "us-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-east-2": {
+        "locationServiceRegion": "us-east-2"
+      },
+      "us-west-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-southeast-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      },
+      "ap-southeast-2": {
+        "locationServiceRegion": "ap-southeast-2"
+      },
+      "ap-northeast-1": {
+        "locationServiceRegion": "ap-northeast-1"
+      },
+      "eu-central-1": {
+        "locationServiceRegion": "eu-central-1"
+      },
+      "eu-north-1": {
+        "locationServiceRegion": "eu-north-1"
+      },
+      "eu-west-1": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "sa-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "ca-central-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-west-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-north-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-northwest-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-south-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-3": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "eu-west-2": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "eu-west-3": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "me-south-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      }
+    }
+  },
+  "Parameters": {
+    "authuserPoolGroupsstoreLocatorAdminGroupRole": {
+      "Type": "String"
+    },
+    "authstorelocator41a9495f41a9495fUserPoolId": {
+      "Type": "String"
+    },
+    "authRoleName": {
+      "Type": "String"
+    },
+    "unauthRoleName": {
+      "Type": "String"
+    },
+    "mapName": {
+      "Type": "String"
+    },
+    "mapStyle": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "isDefault": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "CustomMapLambdaServiceRole4EE7732C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "geo:CreateMap",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "geo:UpdateMap",
+                "geo:DeleteMap"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:geo:${region}:${account}:map/${mapName}",
+                  {
+                    "region": {
+                      "Fn::FindInMap": [
+                        "RegionMapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "locationServiceRegion"
+                      ]
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "mapName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          {
+                            "Ref": "mapName"
+                          },
+                          {
+                            "Ref": "env"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "Roles": [
+          {
+            "Ref": "CustomMapLambdaServiceRole4EE7732C"
+          }
+        ]
+      }
+    },
+    "CustomMapLambda51D5D430": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');\nconst { LocationClient, CreateMapCommand, DeleteMapCommand, UpdateMapCommand } = require('@aws-sdk/client-location');\nexports.handler = async function (event, context) {\n  try {\n    console.log('REQUEST RECEIVED:' + JSON.stringify(event));\n    const pricingPlan = 'RequestBasedUsage';\n    if (event.RequestType === 'Create') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n        Configuration: {\n          Style: event.ResourceProperties.mapStyle,\n        },\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new CreateMapCommand(params));\n      console.log('create resource response data' + JSON.stringify(res));\n      if (res.MapName && res.MapArn) {\n        await response.send(event, context, response.SUCCESS, res, params.MapName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.MapName);\n      }\n    }\n    if (event.RequestType === 'Update') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new UpdateMapCommand(params));\n      console.log('update resource response data' + JSON.stringify(res));\n      if (res.MapName && res.MapArn) {\n        await response.send(event, context, response.SUCCESS, res, params.MapName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.MapName);\n      }\n    }\n    if (event.RequestType === 'Delete') {\n      let params = {\n        MapName: event.ResourceProperties.mapName,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new DeleteMapCommand(params));\n      console.log('delete resource response data' + JSON.stringify(res));\n      await response.send(event, context, response.SUCCESS, res, params.MapName);\n    }\n  } catch (err) {\n    console.log(err.stack);\n    const res = { Error: err };\n    await response.send(event, context, response.FAILED, res, event.ResourceProperties.mapName);\n    throw err;\n  }\n};\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomMapLambdaServiceRole4EE7732C",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "CustomMapLambdaServiceRole4EE7732C"
+      ]
+    },
+    "CustomMap": {
+      "Type": "Custom::LambdaCallout",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomMapLambda51D5D430",
+            "Arn"
+          ]
+        },
+        "mapName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "mapName"
+              },
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "mapStyle": {
+          "Ref": "mapStyle"
+        },
+        "region": {
+          "Fn::FindInMap": [
+            "RegionMapping",
+            {
+              "Ref": "AWS::Region"
+            },
+            "locationServiceRegion"
+          ]
+        },
+        "env": {
+          "Ref": "env"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MapPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:GetMapStyleDescriptor",
+                "geo:GetMapGlyphs",
+                "geo:GetMapSprites",
+                "geo:GetMapTile"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CustomMap",
+                  "MapArn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::Join": [
+                  "-",
+                  [
+                    {
+                      "Ref": "mapName"
+                    },
+                    {
+                      "Ref": "env"
+                    }
+                  ]
+                ]
+              },
+              "Policy"
+            ]
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName"
+          },
+          {
+            "Ref": "unauthRoleName"
+          },
+          {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "authstorelocator41a9495f41a9495fUserPoolId"
+                },
+                "storeLocatorAdminGroupRole"
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomMap",
+          "MapName"
+        ]
+      }
+    },
+    "Style": {
+      "Value": {
+        "Ref": "mapStyle"
+      }
+    },
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
+          "RegionMapping",
+          {
+            "Ref": "AWS::Region"
+          },
+          "locationServiceRegion"
+        ]
+      }
+    },
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomMap",
+          "MapArn"
+        ]
+      }
+    }
+  },
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"geo-Map\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
+}

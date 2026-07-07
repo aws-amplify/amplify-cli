@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "types": ["jest"],
+    "outDir": "lib",
+    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
+    "declaration": true,
+    "typeRoots": ["node_modules/@types", "./typings", "../../node_modules/@types"]
+  },
+  "exclude": ["node_modules", "lib", "__tests__"]
+}

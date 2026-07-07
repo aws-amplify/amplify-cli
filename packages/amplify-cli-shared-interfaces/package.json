@@ -1,0 +1,39 @@
+{
+  "name": "@aws-amplify/amplify-cli-shared-interfaces",
+  "version": "1.2.6",
+  "description": "API interfaces to be shared across different amplfy-cli packages",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "demo": "yarn build && node lib/demo/demo.js",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-amplify/amplify-cli.git"
+  },
+  "keywords": [
+    "amplify",
+    "cli",
+    "prompts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
+  "devDependencies": {
+    "rimraf": "^6.0.1"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

@@ -1,0 +1,531 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Resources": {
+    "customfinanceBudgetAlertTopic1D98F61E": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Fin Tracker Budget Alerts",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/BudgetAlertTopic/Resource"
+      }
+    },
+    "customfinanceBudgetAlertTopicexamplegmailcom8B32A49D": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "example@gmail.com",
+        "Protocol": "email",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/BudgetAlertTopic/example@gmail.com/Resource"
+      }
+    },
+    "customfinanceMonthlyReportTopic558EAC22": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Finance Tracker Monthly Reports",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/MonthlyReportTopic/Resource"
+      }
+    },
+    "customfinanceMonthlyReportTopicexamplegmailcom8B7B0C41": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": "example@gmail.com",
+        "Protocol": "email",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/MonthlyReportTopic/example@gmail.com/Resource"
+      }
+    },
+    "customfinanceQueue1ABF38704": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/Queue1/Resource"
+      }
+    },
+    "customfinanceQueuesFunctionServiceRole33EC0D02": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/QueuesFunction/ServiceRole/Resource"
+      }
+    },
+    "customfinanceQueuesFunction4E6FDAC0": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "\n        exports.handler = async (event) => {\n          return { statusCode: 200, body: JSON.stringify({ message: 'Hello World!' }) };\n        };\n      "
+        },
+        "Environment": {
+          "Variables": {
+            "QUEUE1_NAME": "amplify-financetracker-e2e-sandbo-customfinanceQueue1ABF38704-WWyRISEcoQBA"
+          }
+        },
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::123456789012:role/amplify-financetra2605101-customfinanceQueuesFuncti-epvzLeubxcNI",
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/QueuesFunction/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LzQrCMBCEn8V7utqIvoDgUbH1LmkSYfuT1G7WHkLeXdJS8DTfzPBJkKcjlDs1U6FNV/TYQLxZCtbUQelOqJlekRxBfPoRtbi83Qo1N6QnHAN6l9f/ngR9COKDLdv8LZBEr4bGKIhXdnrTNk4C1QCx8v1i5Ewp053DyCEJ542FlvZfKaE8w2HXEmIxsQs4WKjW/AFVLwq0zwAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "customfinanceBudgetAlertTopicArnB3C2C0AB": {
+      "Description": "SNS Topic ARN for budget alerts",
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl",
+      "Export": {
+        "Name": "financetracker-BudgetAlertTopicArn-gen2-x"
+      }
+    },
+    "customfinanceMonthlyReportTopicArn3264B244": {
+      "Description": "SNS Topic ARN for monthly reports",
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i",
+      "Export": {
+        "Name": "financetracker-MonthlyReportTopicArn-gen2-x"
+      }
+    },
+    "customfinanceQueue1Name6E5FDCF7": {
+      "Value": "amplify-financetracker-e2e-sandbo-customfinanceQueue1ABF38704-WWyRISEcoQBA"
+    },
+    "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceBudgetAlertTopicF3AC188DRef": {
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceBudgetAlertTopic1D98F61E-nNzkUb9Qsldl"
+    },
+    "amplifyfinancetrackere2esandbox2ecf3e941bcustomcustomfinanceMonthlyReportTopicDA4ABB2FRef": {
+      "Value": "arn:aws:sns:us-east-1:123456789012:amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x-customfinanceMonthlyReportTopic558EAC22-Z7FhROonL81i"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  }
+}

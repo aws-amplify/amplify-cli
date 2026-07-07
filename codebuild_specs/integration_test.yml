@@ -1,0 +1,17 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    CI: true
+    CIRCLECI: true
+    IS_AMPLIFY_CI: true
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _integrationTest
+artifacts:
+  files:
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/videos/*
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/screenshots/*
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/videos/*
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/screenshots/*

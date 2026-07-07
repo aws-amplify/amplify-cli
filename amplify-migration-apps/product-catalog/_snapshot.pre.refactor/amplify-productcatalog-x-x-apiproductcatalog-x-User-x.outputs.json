@@ -1,0 +1,36 @@
+[
+  {
+    "OutputKey": "GetAttUserTableName",
+    "OutputValue": "User-ygivvj3x3fgkjcyo2xd4oyyhuu-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "ygivvj3x3fgkjcyo2xd4oyyhuu:GetAtt:UserTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
+    "OutputValue": "gzy745isbjaljav7eme3k2aey4"
+  },
+  {
+    "OutputKey": "transformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
+    "OutputValue": "knqflcqktbbsvnngl3wdcldgvq"
+  },
+  {
+    "OutputKey": "transformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
+    "OutputValue": "4phsob6gjfg2dgswtggaf42ady"
+  },
+  {
+    "OutputKey": "GetAttUserDataSourceName",
+    "OutputValue": "UserTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "ygivvj3x3fgkjcyo2xd4oyyhuu:GetAtt:UserDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttUserTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-ygivvj3x3fgkjcyo2xd4oyyhuu-x/stream/2026-04-26T23:01:36.804",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "ygivvj3x3fgkjcyo2xd4oyyhuu:GetAtt:UserTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
+    "OutputValue": "qn5nhq3nird7rlly7dxolrsplm"
+  }
+]

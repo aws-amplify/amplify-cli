@@ -1,0 +1,6 @@
+{
+  "name": "ios",
+  "type": "frontend",
+  "commands": ["help"],
+  "eventHandlers": ["PostInit", "PostCodegenModels", "PostPull"]
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "api": {
+      "moodboard": [
+        "Mutation"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

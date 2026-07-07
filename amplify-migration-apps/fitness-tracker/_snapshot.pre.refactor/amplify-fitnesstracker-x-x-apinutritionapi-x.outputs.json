@@ -1,0 +1,17 @@
+[
+  {
+    "OutputKey": "ApiName",
+    "OutputValue": "nutritionapi",
+    "Description": "API Friendly name"
+  },
+  {
+    "OutputKey": "RootUrl",
+    "OutputValue": "https://xxhikloa6h.execute-api.us-east-1.amazonaws.com/x",
+    "Description": "Root URL of the API gateway"
+  },
+  {
+    "OutputKey": "ApiId",
+    "OutputValue": "xxhikloa6h",
+    "Description": "API ID (prefix of API URL)"
+  }
+]

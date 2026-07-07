@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 1`] = `
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env",
+        },
+        "NONE",
+      ],
+    },
+  },
+  "Description": "DDB Resource for AWS Amplify CLI",
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DynamoDBTable",
+          "Arn",
+        ],
+      },
+    },
+    "Name": {
+      "Value": {
+        "Ref": "DynamoDBTable",
+      },
+    },
+    "PartitionKeyName": {
+      "Value": {
+        "Ref": "partitionKeyName",
+      },
+    },
+    "PartitionKeyType": {
+      "Value": {
+        "Ref": "partitionKeyType",
+      },
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region",
+      },
+    },
+    "SortKeyName": {
+      "Value": {
+        "Ref": "sortKeyName",
+      },
+    },
+    "SortKeyType": {
+      "Value": {
+        "Ref": "sortKeyType",
+      },
+    },
+    "StreamArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DynamoDBTable",
+          "StreamArn",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "env": {
+      "Type": "String",
+    },
+    "partitionKeyName": {
+      "Type": "String",
+    },
+    "partitionKeyType": {
+      "Type": "String",
+    },
+    "sortKeyName": {
+      "Type": "String",
+    },
+    "sortKeyType": {
+      "Type": "String",
+    },
+    "tableName": {
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "DynamoDBTable": {
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "name",
+            "AttributeType": "N",
+          },
+          {
+            "AttributeName": "col",
+            "AttributeType": "S",
+          },
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "gsiname",
+            "KeySchema": [
+              {
+                "AttributeName": "name",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5,
+            },
+          },
+          {
+            "IndexName": "updategsiname",
+            "KeySchema": [
+              {
+                "AttributeName": "col",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5,
+            },
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "name",
+            "KeyType": "RANGE",
+          },
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_IMAGE",
+        },
+        "TableName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "tableName",
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "tableName",
+                  },
+                  "-",
+                  {
+                    "Ref": "env",
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+    },
+  },
+}
+`;
+
+exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 2`] = `
+{
+  "partitionKeyName": "id",
+  "partitionKeyType": "S",
+  "sortKeyName": "name",
+  "sortKeyType": "N",
+  "tableName": "mocktablename",
+}
+`;

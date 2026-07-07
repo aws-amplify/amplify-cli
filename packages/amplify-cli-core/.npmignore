@@ -1,0 +1,6 @@
+**/__mocks__/**
+**/__tests__/**
+src
+tsconfig.json
+!resources/overrides-resource/tsconfig.json
+tsconfig.tsbuildinfo

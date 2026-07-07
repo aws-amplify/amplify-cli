@@ -1,0 +1,10 @@
+{
+  "serviceConfiguration": {
+    "serviceName": "S3",
+    "permissions": {
+      "auth": ["READ"]
+    },
+    "bucketName": "something",
+    "resourceName": "something"
+  }
+}

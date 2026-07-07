@@ -1,0 +1,19 @@
+type Post @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  title: String!
+}
+
+type Customer @model @auth(rules: [{ allow: public }]) {
+  email: String! @primaryKey
+  username: String @index(name: "byUsername", queryField: "byUsername")
+}
+
+type Test @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) @auth(rules: [{ allow: public }]) {
+  id: ID!
+  title: String!
+}
+
+type Rename @model(queries: { get: "rename" }, mutations: { create: "makeRename" }, subscriptions: null) @auth(rules: [{ allow: public }]) {
+  id: ID!
+  title: String!
+}

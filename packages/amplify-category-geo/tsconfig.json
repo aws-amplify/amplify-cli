@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strict": true
+  },
+  "include": ["src/**/*", "src/**/*.json"],
+  "references": [{ "path": "../amplify-cli-core" }]
+}
