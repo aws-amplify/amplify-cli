@@ -1,0 +1,10 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
+  }
+]

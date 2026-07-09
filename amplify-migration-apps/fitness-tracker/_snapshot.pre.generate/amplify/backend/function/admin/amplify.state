@@ -1,0 +1,9 @@
+{
+  "pluginId": "amplify-nodejs-function-runtime-provider",
+  "functionRuntime": "nodejs",
+  "useLegacyBuild": true,
+  "defaultEditorFile": "src/app.js",
+  "scripts": {
+    "build": "npm install --no-bin-links --production"
+  }
+}

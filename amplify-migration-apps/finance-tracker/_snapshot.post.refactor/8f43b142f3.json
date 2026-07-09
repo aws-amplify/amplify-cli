@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "apifinancetrackerGraphQLAPIKeyOutput",
+    "ParameterValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "ParameterKey": "apifinancetrackerGraphQLAPIIdOutput",
+    "ParameterValue": "advknbihlbchtlonmy35v53toa"
+  },
+  {
+    "ParameterKey": "apifinancetrackerGraphQLAPIEndpointOutput",
+    "ParameterValue": "https://6fwd3ldthnh73gyh4m2hplxwpa.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4ApiId",
+    "ParameterValue": "hcupii7azrauhgy5ecxnsstcfu"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPIDefaultApiKeyE93AC188ApiKey",
+    "ParameterValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4GraphQLUrl",
+    "ParameterValue": "https://igvi5e2orbefzg7kirdrmxczgm.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aanalyticsNestedStackanalyticsNestedStackResource5E3C7CDEOutputsamplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn",
+    "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+  }
+]

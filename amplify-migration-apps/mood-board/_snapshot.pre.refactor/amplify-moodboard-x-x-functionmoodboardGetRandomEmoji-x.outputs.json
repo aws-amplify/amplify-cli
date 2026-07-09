@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/moodboardLambdaRolef849b419-x"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:moodboardGetRandomEmoji-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "moodboardGetRandomEmoji-x"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "moodboardLambdaRolef849b419-x"
+  }
+]

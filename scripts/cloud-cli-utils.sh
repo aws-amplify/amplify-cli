@@ -26,6 +26,12 @@ function triggerProjectBatch {
     project_name=$4
     target_branch=$5
     npm_tag=$6
+    # Optional: path to a batchspec to override the project's default buildspec. Used by the split
+    # Linux/Windows e2e mode (cloudE2ESplit) to fire one batch per platform against the same project.
+    buildspec_override=$7
+    # Optional: per-build timeout (minutes) override for the builds in this batch. The split mode
+    # raises this above the project default to give the chained shards extra margin.
+    build_timeout=$8
     authenticate $account_number $role_name $profile_name
     echo AWS Account: $account_number
     echo Project: $project_name
@@ -36,6 +42,18 @@ function triggerProjectBatch {
       IMAGE_OVERRIDE_FLAG="--image-override $CODEBUILD_IMAGE_OVERRIDE"
       echo "Using image override: $CODEBUILD_IMAGE_OVERRIDE"
     fi
+
+    BUILDSPEC_OVERRIDE_FLAG=""
+    if [ -n "$buildspec_override" ]; then
+      BUILDSPEC_OVERRIDE_FLAG="--buildspec-override $buildspec_override"
+      echo "Using buildspec override: $buildspec_override"
+    fi
+
+    BUILD_TIMEOUT_FLAG=""
+    if [ -n "$build_timeout" ]; then
+      BUILD_TIMEOUT_FLAG="--build-timeout-in-minutes-override $build_timeout"
+      echo "Using build timeout override: ${build_timeout} minutes"
+    fi
     
     if [[ "$npm_tag" != "" ]]; then
       echo NPM tag: $npm_tag
@@ -43,7 +61,10 @@ function triggerProjectBatch {
     fi
     RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
      $IMAGE_OVERRIDE_FLAG \
+     $BUILDSPEC_OVERRIDE_FLAG \
+     $BUILD_TIMEOUT_FLAG \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT $npm_variable_override \
      --query 'buildBatch.id' --output text)
+    echo "Batch ID: $RESULT"
     echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=us-east-1"
 }

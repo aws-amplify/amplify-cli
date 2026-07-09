@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/moodboardKinesisTrigger-327a374a39456c64746b-build.zip"
+  },
+  {
+    "ParameterKey": "analyticsmoodboardKinesiskinesisStreamArn",
+    "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+  },
+  {
+    "ParameterKey": "apimoodboardGraphQLAPIKeyOutput",
+    "ParameterValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "ParameterKey": "apimoodboardGraphQLAPIIdOutput",
+    "ParameterValue": "tw6yns43nvct3fzlwlouod43x4"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-moodboard-x-x-deployment"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "apimoodboardGraphQLAPIEndpointOutput",
+    "ParameterValue": "https://irhgsgfhcndnxgzhqplujkpfoq.appsync-api.us-east-1.amazonaws.com/graphql"
+  }
+]

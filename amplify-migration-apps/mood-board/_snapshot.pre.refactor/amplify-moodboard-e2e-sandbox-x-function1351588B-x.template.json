@@ -1,0 +1,793 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Resources": {
+    "moodboardGetRandomEmojigen2xlambdaServiceRole80D89AB8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardGetRandomEmoji-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardGetRandomEmoji-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "moodboardGetRandomEmojigen2xlambda9168466B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "4592ea6319e810e83d2c22143e245eed02993b78aa4adb1be31546dfc377e2fd.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}"
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "moodboardGetRandomEmoji-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "moodboardGetRandomEmojigen2xlambdaServiceRole80D89AB8",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardGetRandomEmoji-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "moodboardGetRandomEmojigen2xlambdaServiceRole80D89AB8"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardGetRandomEmoji-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.4592ea6319e810e83d2c22143e245eed02993b78aa4adb1be31546dfc377e2fd",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "moodboardKinesisReadergen2xlambdaServiceRoleA2AC3911": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardKinesisReader-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisReader-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "moodboardKinesisReadergen2xlambdaServiceRoleDefaultPolicy41086E06": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kinesis:ListShards",
+                "kinesis:ListStreams",
+                "kinesis:ListStreamConsumers",
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:DescribeStreamConsumer",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:SubscribeToShard",
+                "kinesis:DescribeLimits",
+                "kinesis:ListTagsForStream"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2aanalyticsNestedStackanalyticsNestedStackResource5E3C7CDEOutputsamplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "moodboardKinesisReadergen2xlambdaServiceRoleDefaultPolicy41086E06",
+        "Roles": [
+          {
+            "Ref": "moodboardKinesisReadergen2xlambdaServiceRoleA2AC3911"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisReader-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "moodboardKinesisReadergen2xlambda8EEE03DA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "431d5d0740772c46eab1aef5ae9fed51a3cbb6d847ad1f9a84034760b908c8a3.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}",
+            "ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN": {
+              "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2aanalyticsNestedStackanalyticsNestedStackResource5E3C7CDEOutputsamplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "moodboardKinesisReader-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "moodboardKinesisReadergen2xlambdaServiceRoleA2AC3911",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardKinesisReader-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "moodboardKinesisReadergen2xlambdaServiceRoleDefaultPolicy41086E06",
+        "moodboardKinesisReadergen2xlambdaServiceRoleA2AC3911"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisReader-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.431d5d0740772c46eab1aef5ae9fed51a3cbb6d847ad1f9a84034760b908c8a3",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "moodboardKinesisTriggergen2xlambdaServiceRole3E67DF7A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardKinesisTrigger-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisTrigger-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "moodboardKinesisTriggergen2xlambdaServiceRoleDefaultPolicy7BC2BCA7": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appsync:GraphQL",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":appsync:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":apis/",
+                    {
+                      "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4ApiId"
+                    },
+                    "/types/Mutation/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kinesis:DescribeStreamSummary",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards",
+                "kinesis:SubscribeToShard",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams",
+                "kinesis:DescribeStreamConsumer"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2aanalyticsNestedStackanalyticsNestedStackResource5E3C7CDEOutputsamplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "moodboardKinesisTriggergen2xlambdaServiceRoleDefaultPolicy7BC2BCA7",
+        "Roles": [
+          {
+            "Ref": "moodboardKinesisTriggergen2xlambdaServiceRole3E67DF7A"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisTrigger-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "moodboardKinesisTriggergen2xlambda2CCCACFB": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "8feb77d9803f047940821a1cd8809a46cbacefb83a65bea415a0f88626829e34.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}",
+            "API_MOODBOARD_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPIDefaultApiKeyE93AC188ApiKey"
+            },
+            "API_MOODBOARD_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4GraphQLUrl"
+            },
+            "API_MOODBOARD_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4ApiId"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "moodboardKinesisTrigger-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "moodboardKinesisTriggergen2xlambdaServiceRole3E67DF7A",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardKinesisTrigger-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "moodboardKinesisTriggergen2xlambdaServiceRoleDefaultPolicy7BC2BCA7",
+        "moodboardKinesisTriggergen2xlambdaServiceRole3E67DF7A"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisTrigger-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.8feb77d9803f047940821a1cd8809a46cbacefb83a65bea415a0f88626829e34",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "moodboardKinesisTriggergen2xlambdaKinesisEventSourceamplifymoodboarde2esandbox6f64fc6f2afunctionKinesisStream7E3EC8A7DB295CDB": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Ref": "referencetoamplifymoodboarde2esandbox6f64fc6f2aanalyticsNestedStackanalyticsNestedStackResource5E3C7CDEOutputsamplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn"
+        },
+        "FunctionName": {
+          "Ref": "moodboardKinesisTriggergen2xlambda2CCCACFB"
+        },
+        "StartingPosition": "LATEST",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "moodboardKinesisTrigger-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/moodboardKinesisTrigger-gen2-x-lambda/KinesisEventSource:amplifymoodboarde2esandbox6f64fc6f2afunctionKinesisStream7E3EC8A7/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WO3QqDMAxGn8X7mo3KHmDKdjcZ+gASa5T604qpyhDffVRhN4PAyZeEQyTIm4RrgCuHqurCXpewpcSOqtyh6gSuXGw9DmWFhbEVtQzpgedslNPWCI0DbJntSSS1Ofi2vVYfH89uFxwVyEyO4e4hOIJ4Vh25GJnEqYctqc3P+ljIuNzOk6IXjqM2jff9T/ddHMrcYeOPMuJjvQv/LbR8WaQEX0HLWofTbJweCLKTX6I1duwAAQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/function/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifymoodboarde2esandbox6f64fc6f2aanalyticsNestedStackanalyticsNestedStackResource5E3C7CDEOutputsamplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPIDefaultApiKeyE93AC188ApiKey": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox6f64fc6f2adataNestedStackdataNestedStackResourceDCAEE54BOutputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4GraphQLUrl": {
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "amplifymoodboarde2esandbox6f64fc6f2afunctionmoodboardGetRandomEmojigen2xlambda40627949Ref": {
+      "Value": {
+        "Ref": "moodboardGetRandomEmojigen2xlambda9168466B"
+      }
+    },
+    "amplifymoodboarde2esandbox6f64fc6f2afunctionmoodboardKinesisReadergen2xlambda3A50EB36Ref": {
+      "Value": {
+        "Ref": "moodboardKinesisReadergen2xlambda8EEE03DA"
+      }
+    },
+    "amplifymoodboarde2esandbox6f64fc6f2afunctionmoodboardKinesisTriggergen2xlambdaCC9206E6Ref": {
+      "Value": {
+        "Ref": "moodboardKinesisTriggergen2xlambda2CCCACFB"
+      }
+    }
+  }
+}

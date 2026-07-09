@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "unauthPolicyName",
+    "ParameterValue": "kinesis_amplify_bca5ce95"
+  },
+  {
+    "ParameterKey": "authRoleName",
+    "ParameterValue": "amplify-moodboard-x-x-authRole"
+  },
+  {
+    "ParameterKey": "unauthRoleName",
+    "ParameterValue": "amplify-moodboard-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "authPolicyName",
+    "ParameterValue": "kinesis_amplify_bca5ce95"
+  },
+  {
+    "ParameterKey": "kinesisStreamShardCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "kinesisStreamName",
+    "ParameterValue": "moodboardKinesis"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  }
+]

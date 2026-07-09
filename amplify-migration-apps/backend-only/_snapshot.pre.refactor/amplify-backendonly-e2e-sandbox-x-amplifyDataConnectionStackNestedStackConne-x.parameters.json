@@ -1,0 +1,110 @@
+[
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildANestedStackMegaChildANestedStackResource0A142839Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildAMegaChildATable2BB59BCBTableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaChildA-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildBNestedStackMegaChildBNestedStackResourceBA7CD829Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildBMegaChildBTable0BA464CBTableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaChildB-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildDNestedStackMegaChildDNestedStackResource7E14E03EOutputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildDMegaChildDDataSource72B803E3Name",
+    "ParameterValue": "MegaChildDTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedJNestedStackMegaRelatedJNestedStackResourceC818ACB2Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedJMegaRelatedJTable1F7C2F25TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedJ-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataTodoNestedStackTodoNestedStackResource7395A31COutputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataTodoTodoTable047965C9TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId",
+    "ParameterValue": "clbup6fs5fgy7jotxbvo54dqvy"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedHNestedStackMegaRelatedHNestedStackResourceBFAF6D21Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedHMegaRelatedHTable9FB4320DTableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedFNestedStackMegaRelatedFNestedStackResourceFFDAA64AOutputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedFMegaRelatedFDataSourceD15D29BCName",
+    "ParameterValue": "MegaRelatedFTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef",
+    "ParameterValue": "amplify-backendonl2605150-amplifyAuthauthenticatedU-O6YZQ1EpMmo4"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedHNestedStackMegaRelatedHNestedStackResourceBFAF6D21Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedHMegaRelatedHDataSourceAEBFCCFCName",
+    "ParameterValue": "MegaRelatedHTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedINestedStackMegaRelatedINestedStackResource84FAC102Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedIMegaRelatedITableF36C45CCTableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedI-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedINestedStackMegaRelatedINestedStackResource84FAC102Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedIMegaRelatedIDataSource849C3760Name",
+    "ParameterValue": "MegaRelatedITable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildENestedStackMegaChildENestedStackResource7BCB3F02Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildEMegaChildEDataSourceE49603C4Name",
+    "ParameterValue": "MegaChildETable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedJNestedStackMegaRelatedJNestedStackResourceC818ACB2Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedJMegaRelatedJDataSource11828001Name",
+    "ParameterValue": "MegaRelatedJTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataTodoNestedStackTodoNestedStackResource7395A31COutputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataTodoTodoDataSourceBB117D84Name",
+    "ParameterValue": "TodoTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildANestedStackMegaChildANestedStackResource0A142839Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildAMegaChildADataSource0B544F46Name",
+    "ParameterValue": "MegaChildATable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildENestedStackMegaChildENestedStackResource7BCB3F02Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildEMegaChildETable224B048ETableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaChildE-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef",
+    "ParameterValue": "amplify-backendonl2605150-amplifyAuthunauthenticate-DpytVdr2sIt7"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedGNestedStackMegaRelatedGNestedStackResource8EA24CD6Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedGMegaRelatedGTableF598A997TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedG-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildDNestedStackMegaChildDNestedStackResource7E14E03EOutputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildDMegaChildDTableE09D1D4ATableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaChildD-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedFNestedStackMegaRelatedFNestedStackResourceFFDAA64AOutputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedFMegaRelatedFTable1FD82B72TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedF-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildCNestedStackMegaChildCNestedStackResource9A607535Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildCMegaChildCTable0E0D26F3TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaChildC-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildCNestedStackMegaChildCNestedStackResource9A607535Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildCMegaChildCDataSource54CBD02DName",
+    "ParameterValue": "MegaChildCTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildBNestedStackMegaChildBNestedStackResourceBA7CD829Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaChildBMegaChildBDataSource300DDF84Name",
+    "ParameterValue": "MegaChildBTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref",
+    "ParameterValue": "us-east-1:b05b7842-b63f-40a6-8832-946b23db5909"
+  },
+  {
+    "ParameterKey": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedGNestedStackMegaRelatedGNestedStackResource8EA24CD6Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedGMegaRelatedGDataSource2A47DF7BName",
+    "ParameterValue": "MegaRelatedGTable"
+  }
+]

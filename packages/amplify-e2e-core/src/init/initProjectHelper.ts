@@ -3,9 +3,18 @@
 /* eslint-disable func-style */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
+import * as fs from 'fs-extra';
+import * as ini from 'ini';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+import { AmplifyClient, CreateAppCommand, CreateBackendEnvironmentCommand, paginateListApps } from '@aws-sdk/client-amplify';
+
+/**
+ * Name of the app that should exist in our accounts to satisfy the new customer restriction.
+ */
+export const GEN1_PLACEHOLDER_APP_NAME = 'gen1-placeholder-do-not-delete';
 
 const defaultSettings = {
   name: EOL,
@@ -30,6 +39,36 @@ const defaultSettings = {
   includeGen2RecommendationPrompt: true,
   testingWithLatestCodebase: false,
 };
+
+/**
+ * Gets the index of a profile in the AWS config file.
+ * The Amplify CLI uses the config file order for profile selection.
+ * Config file sections are named "default" or "profile <name>".
+ * @param profileName The name of the profile to find
+ * @returns The index of the profile in the list (0-based), or 0 if not found
+ */
+function getProfileIndex(profileName: string): number {
+  try {
+    const configPath = pathManager.getAWSConfigFilePath();
+    const configContents = ini.parse(fs.readFileSync(configPath, 'utf-8'));
+    // Config file uses "default" and "profile <name>" as section names
+    // Extract actual profile names from section names
+    const profiles = Object.keys(configContents).map((section) => {
+      if (section === 'default') {
+        return 'default';
+      }
+      // Remove "profile " prefix if present
+      return section.replace(/^profile\s+/, '');
+    });
+    const index = profiles.indexOf(profileName);
+    if (index === -1) {
+      throw Error(`Profile: ${profileName} not found.`);
+    }
+    return index;
+  } catch (error) {
+    throw Error(`Failed to read config file when getting AWS profile: ${(error as Error).message}`);
+  }
+}
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
@@ -99,6 +138,90 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName);
+  }
+
+  if (s.includeUsageDataPrompt) {
+    chain.wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/).sendYes();
+  }
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
+}
+
+export function initJSProjectWithProfileGen2Migration(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
+  const s = { ...defaultSettings, ...settings };
+
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
+  addCircleCITags(cwd);
+
+  const cliArgs = ['init'];
+  const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
+  if (providerConfigSpecified) {
+    cliArgs.push('--providers', JSON.stringify(s.providerConfig));
+  }
+
+  if (s.permissionsBoundaryArn) {
+    cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
+  }
+
+  if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
+
+  const binaryPath = getCLIPath(s.testingWithLatestCodebase);
+  const chain = spawn(binaryPath, cliArgs, {
+    cwd,
+    stripColors: true,
+    env,
+    disableCIDetection: s.disableCIDetection,
+  });
+
+  if (s.includeGen2RecommendationPrompt) {
+    chain
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn();
+  }
+
+  chain
+    .wait('Enter a name for the project')
+    .sendLine(s.name)
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(s.envName)
+    .wait('Choose your default editor:')
+    .sendLine(s.editor)
+    .wait("Choose the type of app that you're building")
+    .sendCarriageReturn()
+    .wait('What javascript framework are you using')
+    .sendLine(s.framework)
+    .wait('Source Directory Path:')
+    .sendLine(s.srcDir)
+    .wait('Distribution Directory Path:')
+    .sendLine(s.distDir)
+    .wait('Build Command:')
+    .sendLine(s.buildCmd)
+    .wait('Start Command:')
+    .sendCarriageReturn();
+
+  if (!providerConfigSpecified) {
+    const profileIndex = getProfileIndex(s.profileName);
+
+    chain
+      .wait('Using default provider  awscloudformation')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
+      .wait('Please choose the profile you want to use');
+
+    if (profileIndex > 0) {
+      chain.sendKeyDown(profileIndex);
+    }
+    chain.sendCarriageReturn();
   }
 
   if (s.includeUsageDataPrompt) {
@@ -556,4 +679,29 @@ export function initHeadless(cwd: string, envName?: string, appId?: string): Pro
   }
 
   return spawn(getCLIPath(), cliArgs, { cwd, stripColors: true }).runAsync();
+}
+
+/**
+ * Ensure a placeholder Amplify app with a backend environment exists so that
+ * the Gen1 new-customer restriction (`isExistingGen1Customer`) passes.
+ * No-ops only if the specific placeholder app already exists.
+ */
+export async function ensureGen1PlaceholderApp(client: AmplifyClient): Promise<void> {
+  for await (const page of paginateListApps({ client }, {})) {
+    if (page.apps?.some((a) => a.name === GEN1_PLACEHOLDER_APP_NAME)) {
+      return;
+    }
+  }
+
+  const createResponse = await client.send(new CreateAppCommand({ name: GEN1_PLACEHOLDER_APP_NAME }));
+  const appId = createResponse.app?.appId;
+  if (!appId) {
+    throw new Error('Failed to create placeholder Amplify app — no appId returned');
+  }
+  await client.send(
+    new CreateBackendEnvironmentCommand({
+      appId,
+      environmentName: 'main',
+    }),
+  );
 }

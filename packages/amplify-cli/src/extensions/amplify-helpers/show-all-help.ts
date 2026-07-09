@@ -79,6 +79,10 @@ export function showAllHelp(context) {
       description: 'Displays and manages environment related information for your Amplify project.',
     },
     {
+      name: 'gen2-migration',
+      description: 'Migrates your Gen1 Amplify project to Gen2.',
+    },
+    {
       name: 'console',
       description: 'Opens the web console for the selected cloud resource.',
     },

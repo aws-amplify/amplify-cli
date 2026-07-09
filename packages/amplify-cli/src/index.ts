@@ -18,6 +18,7 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import chalk from 'chalk';
 import { saveAll as saveAllEnvParams, ServiceUploadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
@@ -63,6 +64,16 @@ const disableCDKDeprecationWarning = () => {
  * Command line entry point
  */
 export const run = async (startTime: number): Promise<void> => {
+  process.stderr.write(
+    '\n' +
+      chalk.yellow(
+        '⚠️  WARNING: AWS Amplify Gen 1 CLI is in maintenance mode and will reach end of life on May 1, 2027.\n' +
+          'During maintenance mode, only critical bug fixes and security patches will be provided.\n' +
+          'Migrate to Amplify Gen 2: https://docs.amplify.aws/react/start/migrate-to-gen2/',
+      ) +
+      '\n\n',
+  );
+
   deleteOldVersion();
 
   //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
@@ -257,4 +268,4 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
   }
 };
 
-// bump version to 14.3.0
+// bump version to 14.5.0

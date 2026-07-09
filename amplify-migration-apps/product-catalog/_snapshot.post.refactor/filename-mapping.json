@@ -1,0 +1,22 @@
+{
+  "670ece108a": "update.amplify-productcatalog-x-x-authproductcatalog90174ac4-x.template.json",
+  "5da2911dff": "update.amplify-productcatalog-x-x-authproductcatalog90174ac4-x.parameters.json",
+  "65046967e0": "update.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.template.json",
+  "1e76f71cb3": "update.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.parameters.json",
+  "850aeb6868": "refactor.__from__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.__to__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x-holding.source.template.json",
+  "cada8e0232": "refactor.__from__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.__to__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x-holding.target.template.json",
+  "d29f791b12": "refactor.__from__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.__to__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x-holding.mappings.json",
+  "7d116b00ec": "refactor.__from__.amplify-productcatalog-x-x-authproductcatalog90174ac4-x.__to__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.source.template.json",
+  "e19e14eca1": "refactor.__from__.amplify-productcatalog-x-x-authproductcatalog90174ac4-x.__to__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.target.template.json",
+  "d579fd2cf1": "refactor.__from__.amplify-productcatalog-x-x-authproductcatalog90174ac4-x.__to__.amplify-productcatalog-e2e-sandbox-x-auth179371D7-x.mappings.json",
+  "8d0b49fc4c": "update.amplify-productcatalog-x-x-storages338e5b439-x.template.json",
+  "81b54853e4": "update.amplify-productcatalog-x-x-storages338e5b439-x.parameters.json",
+  "d272ad79b7": "update.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.template.json",
+  "865f81c56b": "update.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.parameters.json",
+  "42d9ae9221": "refactor.__from__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json",
+  "b7e7b0797c": "refactor.__from__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x-holding.target.template.json",
+  "31ada18b5f": "refactor.__from__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x-holding.mappings.json",
+  "7208f908cf": "refactor.__from__.amplify-productcatalog-x-x-storages338e5b439-x.__to__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.source.template.json",
+  "7c00c9fd49": "refactor.__from__.amplify-productcatalog-x-x-storages338e5b439-x.__to__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.target.template.json",
+  "e02afe4f2f": "refactor.__from__.amplify-productcatalog-x-x-storages338e5b439-x.__to__.amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x.mappings.json"
+}

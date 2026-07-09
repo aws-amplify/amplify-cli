@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket3FA4DAD5"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x-holding",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688bxgen2xBucket3FA4DAD5"
+    }
+  }
+]

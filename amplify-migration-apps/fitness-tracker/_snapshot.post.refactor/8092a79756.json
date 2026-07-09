@@ -1,0 +1,178 @@
+[
+  {
+    "ParameterKey": "authRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-authRole"
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "hostedUI",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Your verification code"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "33f55455"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "manual"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "fitnesstracker33f55455_identitypool_33f55455"
+  },
+  {
+    "ParameterKey": "thirdPartyAuth",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": "Admin"
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "adminQueries",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "permissions",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupArn",
+    "ParameterValue": "functionfitnesstracker33f5545533f55455PreSignupArn"
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "fitnes33f55455"
+  },
+  {
+    "ParameterKey": "userPoolGroups",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "fitnesstracker33f55455_userpool_33f55455"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": "[object Object]"
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "functionfitnesstracker33f5545533f55455PreSignupName",
+    "ParameterValue": "functionfitnesstracker33f5545533f55455PreSignupName"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "fitnesstracker33f5545533f55455"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "triggers",
+    "ParameterValue": "{\"PreSignup\":[\"email-filter-allowlist\"]}"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "30"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authTriggerConnections",
+    "ParameterValue": "{\"triggerType\":\"PreSignUp\",\"lambdaFunctionName\":\"fitnesstracker33f5545533f55455PreSignup\"}"
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "fitnes33f55455_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]

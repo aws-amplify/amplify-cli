@@ -967,6 +967,87 @@ batch:
           DISABLE_COVERAGE: 1
       depend-on:
         - upb
+    - identifier: l_gen2_migration_store_locator
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-store-locator.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_project_boards
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-project-boards.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_product_catalog
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-product-catalog.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_mood_board
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-mood-board.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_media_vault
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-media-vault.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_fitness_tracker
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-fitness-tracker.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_finance_tracker
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-finance-tracker.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_discussions
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-discussions.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
+    - identifier: l_gen2_migration_backend_only
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_LARGE
+          TEST_SUITE: src/__tests__/gen2-migration/gen2-migration-backend-only.test.ts
+          DISABLE_COVERAGE: 1
+      depend-on:
+        - upb
     - identifier: l_js_frontend_config
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:

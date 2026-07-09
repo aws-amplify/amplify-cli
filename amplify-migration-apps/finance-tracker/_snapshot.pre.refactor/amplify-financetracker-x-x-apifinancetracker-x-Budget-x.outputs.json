@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GetAttBudgetDataSourceName",
+    "OutputValue": "BudgetTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:BudgetDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttBudgetTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Budget-advknbihlbchtlonmy35v53toa-x/stream/2026-05-10T23:53:30.304",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:BudgetTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttBudgetTableName",
+    "OutputValue": "Budget-advknbihlbchtlonmy35v53toa-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:BudgetTable:Name"
+  }
+]

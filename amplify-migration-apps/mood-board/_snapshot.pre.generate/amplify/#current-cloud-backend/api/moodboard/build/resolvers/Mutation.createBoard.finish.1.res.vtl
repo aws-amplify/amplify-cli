@@ -1,0 +1,18 @@
+## [Start] Custom finish slot - Append "(new!)" tag to board name in response. **
+## This runs as the final step before the response is returned to the client.
+## It adds a visual indicator that the board was just created.
+
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+
+#if( !$util.isNullOrEmpty($ctx.prev.result) )
+  #set( $result = $ctx.prev.result )
+  #if( !$util.isNullOrEmpty($result.name) )
+    $util.qr($result.put("name", "${result.name} (new!)"))
+  #end
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.prev.result)
+#end
+## [End] Custom finish slot - Append "(new!)" tag to board name in response. **

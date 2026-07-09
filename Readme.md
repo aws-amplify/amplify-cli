@@ -23,9 +23,13 @@
 >
 > If you are starting a new project, we recommend starting with [Amplify Gen 2](https://github.com/aws-amplify/amplify-backend).
 >
-> If you are an existing Gen 1 customer, we encourage you to start planning your migration to Gen 2 by
-> testing the [beta version of our migration tool](https://github.com/aws-amplify/amplify-cli/discussions/14490)
-> on **non-production** environments. We remain committed to supporting both Gen 1 and Gen 2 for the foreseeable future.
+> If you are an existing Gen 1 customer, we encourage you to start migrating to Gen 2 using the [migration guide and tooling](https://docs.amplify.aws/react/start/migrate-to-gen2/).
+
+## ⚠️ Amplify Gen 1 is in Maintenance Mode
+
+Amplify Gen1 is in maintenance mode. Starting May 1, 2026, Gen 1 backends will receive only critical bug fixes and security patches and will reach end of life on May 1, 2027. Migrate your backend to [Amplify Gen 2](https://docs.amplify.aws/) using the [migration guide and tooling](https://docs.amplify.aws/react/start/migrate-to-gen2/) to continue receiving new features and support.
+
+---
 
 # AWS Amplify CLI (Gen 1)
 

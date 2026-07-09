@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "UnauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "authfitnesstracker33f5545533f55455IdentityPoolId",
+    "ParameterValue": "us-east-1:219ac99d-0294-49a3-aad1-abd4063c42cf"
+  },
+  {
+    "ParameterKey": "AuthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-x-x-authRole"
+  },
+  {
+    "ParameterKey": "authfitnesstracker33f5545533f55455UserPoolId",
+    "ParameterValue": "us-east-1_meUfbq8Lb"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "authfitnesstracker33f5545533f55455AppClientIDWeb",
+    "ParameterValue": "7757qf7k4fnkmni8spsllsf657"
+  },
+  {
+    "ParameterKey": "authfitnesstracker33f5545533f55455AppClientID",
+    "ParameterValue": "1i0f15mvl5o0lqddsbjf7d1nn4"
+  }
+]

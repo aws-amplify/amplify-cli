@@ -1,0 +1,4 @@
+{
+  "refactorForward": { "skipValidations": true },
+  "refactorRollback": { "skipValidations": true }
+}
