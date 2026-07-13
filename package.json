@@ -190,8 +190,6 @@
     "rollup": "2.80.0",
     "immutable": "^4.3.8",
     "svgo": "^3.3.3",
-    "serialize-javascript": "^7.0.3",
-    "graphql-elasticsearch-transformer": "5.2.89",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.20"
+    "serialize-javascript": "^7.0.3"
   }
 }
