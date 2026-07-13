@@ -6,7 +6,10 @@ source $scriptDir/.env set
 printf 'What is your PR number ? '
 read PR_NUMBER
 
-if [[ -n $USE_FIDO_KEY ]] ; then
+# Skip mwinit when CLOUD_PR_SKIP_MWINIT is set (e.g. already Midway-authenticated / non-interactive run)
+if [[ -n $CLOUD_PR_SKIP_MWINIT ]] ; then
+  echo "CLOUD_PR_SKIP_MWINIT set - skipping mwinit"
+elif [[ -n $USE_FIDO_KEY ]] ; then
   mwinit -s -f
 else
   mwinit
@@ -19,7 +22,6 @@ RESULT=$(aws codebuild start-build-batch \
 --project-name AmplifyCLI-PR-Testing \
 --build-timeout-in-minutes-override 180 \
 --source-version "pr/$PR_NUMBER" \
---debug-session-enabled \
 --git-clone-depth-override=1000 \
 --environment-variables-override name=AMPLIFY_CI_MANUAL_PR_BUILD,value=true,type=PLAINTEXT \
 --query 'buildBatch.id' --output text)
