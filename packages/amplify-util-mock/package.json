@@ -86,7 +86,7 @@
     "axios": "^1.11.0",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",
-    "graphql-auth-transformer": "^7.2.90",
+    "graphql-auth-transformer": "^7.2.91",
     "graphql-connection-transformer": "^5.2.85",
     "graphql-dynamodb-transformer": "^7.2.85",
     "graphql-function-transformer": "^3.3.76",

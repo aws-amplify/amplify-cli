@@ -143,9 +143,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.15.5":
-  version: 5.15.5
-  resolution: "@aws-amplify/amplify-category-api@npm:5.15.5"
+"@aws-amplify/amplify-category-api@npm:^5.15.6":
+  version: 5.15.6
+  resolution: "@aws-amplify/amplify-category-api@npm:5.15.6"
   dependencies:
     "@aws-amplify/graphql-auth-transformer": 3.6.16
     "@aws-amplify/graphql-schema-generator": ^0.9.4
@@ -167,10 +167,10 @@ __metadata:
     cloudform-types: ^4.2.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: 7.2.90
+    graphql-auth-transformer: 7.2.91
     graphql-connection-transformer: 5.2.85
     graphql-dynamodb-transformer: 7.2.85
-    graphql-elasticsearch-transformer: 5.2.89
+    graphql-elasticsearch-transformer: 5.2.90
     graphql-function-transformer: 3.3.76
     graphql-http-transformer: 5.2.85
     graphql-key-transformer: 3.2.85
@@ -197,7 +197,7 @@ __metadata:
     amplify-util-headless-input: ^1.9.18
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 2544d07f13862b8745be9e648c39030a9135da18608010aa1d95e8e64ce26f49a7acc2cfaecec60457614744a32ef39ce95b47bcbc785b7c3a1cad2f194d4f60
+  checksum: 1f4e915306bbbe5ef647f6107fef153c3676267c9f93327ac7386229f2516df73c204802158323df49ce034dc84cfa0dbb0d5e9423c2a2655d5eab2448821ce4
   languageName: node
   linkType: hard
 
@@ -509,7 +509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.15.5
+    "@aws-amplify/amplify-category-api": ^5.15.6
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-environment-parameters": 1.9.25
     "@aws-sdk/client-s3": ^3.919.0
@@ -1016,7 +1016,7 @@ __metadata:
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: ^7.2.90
+    graphql-auth-transformer: ^7.2.91
     graphql-connection-transformer: ^5.2.85
     graphql-dynamodb-transformer: ^7.2.85
     graphql-function-transformer: ^3.3.76
@@ -1041,7 +1041,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.15.5
+    "@aws-amplify/amplify-category-api": ^5.15.6
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
@@ -1178,7 +1178,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.48
     "@aws-amplify/amplify-category-analytics": 5.0.47
-    "@aws-amplify/amplify-category-api": ^5.15.5
+    "@aws-amplify/amplify-category-api": ^5.15.6
     "@aws-amplify/amplify-category-auth": 3.7.28
     "@aws-amplify/amplify-category-custom": 3.1.33
     "@aws-amplify/amplify-category-function": 5.8.3
@@ -22907,16 +22907,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-auth-transformer@npm:7.2.90, graphql-auth-transformer@npm:^7.2.90":
-  version: 7.2.90
-  resolution: "graphql-auth-transformer@npm:7.2.90"
+"graphql-auth-transformer@npm:7.2.91, graphql-auth-transformer@npm:^7.2.91":
+  version: 7.2.91
+  resolution: "graphql-auth-transformer@npm:7.2.91"
   dependencies:
     graphql: ^15.5.0
     graphql-connection-transformer: 5.2.85
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
     graphql-transformer-core: 8.2.18
-  checksum: 4d1b811049d9f92cd3666a08fb07833d3886a3f8ac3173d1575bb5ef771fe59aef882b2959d77c046c433605f23be0182bb063770dba3c466dd832dec4ee183a
+  checksum: f5862d867b4548aede5e6f07857314a8c899c58f7cdc429250eb8101f2fd46d9d924634f680e804f19db9ae4fac2263e21cf4fdb88d62c4224be67e9e8facb7b
   languageName: node
   linkType: hard
 
@@ -22966,16 +22966,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-elasticsearch-transformer@npm:5.2.89":
-  version: 5.2.89
-  resolution: "graphql-elasticsearch-transformer@npm:5.2.89"
+"graphql-elasticsearch-transformer@npm:5.2.90":
+  version: 5.2.90
+  resolution: "graphql-elasticsearch-transformer@npm:5.2.90"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
     graphql-transformer-core: 8.2.18
-  checksum: ad9663767a2ea6b2bc90ca1eb79d1a8bbe8fbd960cb07997ba318aa1e7c6c4f683e5f095a4849f80dd4b0fb3a0af43c63ef8a5815660551157a6d4a936aad05d
+  checksum: 7bb05a71203694d6790c9505e1006c8ac62d0998e2c6a5065fcaf1948cd8cf6a2336161da53b5067a0a739b7bd5486e9e1910ba61c6c2cb56f9893c65e326460
   languageName: node
   linkType: hard
 
