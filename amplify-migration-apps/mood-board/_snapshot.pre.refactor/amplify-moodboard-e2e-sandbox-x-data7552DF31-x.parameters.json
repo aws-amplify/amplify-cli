@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthUserPool5FF73B88Ref",
+    "ParameterValue": "us-east-1_cqYuFX4HK"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthIdentityPool795773D0Ref",
+    "ParameterValue": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
+  }
+]

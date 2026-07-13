@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x",
+      "LogicalResourceId": "customfinanceQueue1ABF38704"
+    },
+    "Destination": {
+      "StackName": "amplify-financetracker-x-x-customcustomfinance-x",
+      "LogicalResourceId": "Queue11B0C5920"
+    }
+  }
+]

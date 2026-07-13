@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
-import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyFault, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { WriteStream } from 'fs-extra';
 import fetch from 'node-fetch';
@@ -10,7 +10,20 @@ import { run } from '../../commands/diagnose';
 import { Context } from '../../domain/context';
 
 jest.mock('uuid');
-jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
+  return {
+    ...actual,
+    pathManager: { findProjectRoot: jest.fn() },
+    stateManager: {
+      getBackendConfig: jest.fn(),
+      getProjectConfig: jest.fn(),
+      getMeta: jest.fn().mockReturnValue({}),
+      getCurrentEnvName: jest.fn().mockReturnValue('dev'),
+    },
+    spinner: { start: jest.fn(), stop: jest.fn(), succeed: jest.fn(), fail: jest.fn() },
+  };
+});
 jest.mock('../../commands/helpers/collect-files');
 jest.mock('../../commands/helpers/encryption-helpers', () => ({
   createHashedIdentifier: jest.fn().mockReturnValue({
@@ -162,5 +175,68 @@ describe('run report command', () => {
     expect(zipperMock.finalize).toBeCalled();
     expect(fetch).toBeCalled();
     expect(zipperMock.append).toBeCalledTimes(3);
+  });
+
+  it('serializes errors with circular downstream references without throwing', async () => {
+    const contextMock = {
+      usageData: {
+        getUsageDataPayload: jest.fn().mockReturnValue({
+          sessionUuid: 'sessionId',
+          installationUuid: '',
+        }),
+      },
+      exeInfo: {},
+      input: {
+        options: {
+          'send-report': true,
+        },
+      },
+    };
+
+    const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+    pathManagerMock.findProjectRoot = jest.fn().mockReturnValue('user/source/myProject');
+    const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+    stateManagerMock.getBackendConfig = jest.fn().mockReturnValue(mockMeta);
+    stateManagerMock.getProjectConfig = jest.fn().mockReturnValue({ projectName: 'myProject' });
+
+    const collectFilesMock = collectFiles as jest.MockedFunction<typeof collectFiles>;
+    collectFilesMock.mockReturnValue([]);
+
+    const mockArchiver = archiver as jest.Mocked<typeof archiver>;
+    const zipperMock = {
+      append: jest.fn(),
+      pipe: jest.fn(),
+      finalize: jest.fn(),
+    };
+    mockArchiver.create = jest.fn().mockReturnValue(zipperMock);
+
+    const fsMock = fs as jest.Mocked<typeof fs>;
+    fsMock.createWriteStream.mockReturnValue({
+      on: jest.fn().mockImplementation((event, resolveFunction) => {
+        if (event === 'close') {
+          resolveFunction();
+        }
+      }),
+      error: jest.fn(),
+    } as unknown as WriteStream);
+
+    // Construct a downstream error with a self-referential property, mirroring the
+    // `$response.req <-> $response.res` cycle that AWS SDK v3 ServiceException carries.
+    const downstream = new Error('underlying AWS error') as Error & { $response?: unknown };
+    const response: { req: unknown } = { req: {} };
+    const request: { res: unknown } = { res: response };
+    response.req = request;
+    downstream.$response = response;
+
+    const fault = new AmplifyFault('NotificationsChannelSmsFault', { message: 'Failed to enable the SMS channel.' }, downstream);
+
+    const contextMockTyped = contextMock as unknown as Context;
+    await expect(run(contextMockTyped, fault)).resolves.not.toThrow();
+
+    const errorJsonCall = zipperMock.append.mock.calls.find(([, meta]: [unknown, { name: string }]) => meta?.name === 'error.json');
+    expect(errorJsonCall).toBeDefined();
+    const payload = JSON.parse(errorJsonCall![0] as string);
+    expect(payload.error.name).toBe('NotificationsChannelSmsFault');
+    expect(payload.downstreamException.message).toBe('underlying AWS error');
   });
 });

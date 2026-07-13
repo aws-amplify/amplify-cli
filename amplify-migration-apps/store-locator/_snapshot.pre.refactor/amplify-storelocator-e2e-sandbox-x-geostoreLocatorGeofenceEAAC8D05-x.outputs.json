@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "amplifystorelocatore2esandboxeac7f296ebgeostoreLocatorGeofenceCustomGeofenceCollection920A9856CollectionName",
+    "OutputValue": "storeLocatorGeofence-gen2-x"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-gen2-x"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "storeLocatorGeofence-gen2-x"
+  }
+]

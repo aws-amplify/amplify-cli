@@ -1,0 +1,357 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Resources": {
+    "MoodboardKinesisCognitoAuthPolicyCE721FE6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+            }
+          ]
+        },
+        "PolicyName": "moodboardKinesis-auth-policy-gen2-x",
+        "Roles": [
+          "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/MoodboardKinesis/CognitoAuthPolicy"
+      }
+    },
+    "MoodboardKinesisCognitoUnauthPolicyE7A8C80F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+            }
+          ]
+        },
+        "PolicyName": "moodboardKinesis-unauth-policy-gen2-x",
+        "Roles": [
+          "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/MoodboardKinesis/CognitoUnauthPolicy"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHUQqDMAyA4bP43mYjsBP4vo15gJG1EWJtHSadDPHuIsIPHz8C3hCuDS3qQ0x+lA+sd1bj2BmF5GjR95qksIpC25fOZqbshPJxz2mU8N9c25dHtW+1zZUpMgx6+SHCUTOoiJ9rMckMr9Md6WFT5ncAAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "kinesisStreamArn": {
+      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+    },
+    "kinesisStreamId": {
+      "Value": "moodboardKinesis-gen2-x"
+    },
+    "kinesisStreamShardCount": {
+      "Value": "1"
+    },
+    "amplifymoodboarde2esandbox6f64fc6f2aanalyticsMoodboardKinesisKinesisStream84A5CAF1Arn": {
+      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref": {
+      "Type": "String"
+    }
+  }
+}

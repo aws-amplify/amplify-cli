@@ -118,7 +118,7 @@ export const amplifyPullSandbox = (cwd: string, settings: { sandboxId: string; a
  */
 export const amplifyPullNonInteractive = (
   cwd: string,
-  settings: { appId: string; envName: string; frontend?: { frontend: string; config?: { ResDir?: string } } },
+  settings: { appId: string; envName: string; profile?: string; frontend?: { frontend: string; config?: { ResDir?: string } } },
 ): Promise<void> => {
   const { appId, envName, frontend } = settings;
   const amplifyParamObj = { appId, envName };
@@ -127,7 +127,7 @@ export const amplifyPullNonInteractive = (
       configLevel: 'project',
       useProfile: true,
       // eslint-disable-next-line spellcheck/spell-checker
-      profileName: TEST_PROFILE_NAME,
+      profileName: settings.profile ?? TEST_PROFILE_NAME,
     },
   };
   const args = [

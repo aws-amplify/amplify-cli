@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthAdminGroupRole248BC660Ref",
+    "ParameterValue": "amplify-fitnesstra2604261-amplifyAuthAdminGroupRole-flbPCV3FKAa6"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authadmingen2xlambda831F5B43Arn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-x"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef",
+    "ParameterValue": "amplify-fitnesstra2604261-amplifyAuthauthenticatedU-VBypwE3n9aIB"
+  }
+]

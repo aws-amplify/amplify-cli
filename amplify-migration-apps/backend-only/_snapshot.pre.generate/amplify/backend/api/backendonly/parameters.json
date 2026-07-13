@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "backendonly",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authbackendonlyf8c4c57b",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

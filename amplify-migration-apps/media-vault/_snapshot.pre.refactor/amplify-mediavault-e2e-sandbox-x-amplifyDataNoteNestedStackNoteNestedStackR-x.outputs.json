@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "GetAttNoteTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Note-wmrr5dtpkfgvxmdyzkec7igmum-x/stream/2026-05-06T16:55:15.754",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "7eddrzeh7benpmtjooxhgkl5pq:GetAtt:NoteTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttNoteTableName",
+    "OutputValue": "Note-wmrr5dtpkfgvxmdyzkec7igmum-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "7eddrzeh7benpmtjooxhgkl5pq:GetAtt:NoteTable:Name"
+  }
+]

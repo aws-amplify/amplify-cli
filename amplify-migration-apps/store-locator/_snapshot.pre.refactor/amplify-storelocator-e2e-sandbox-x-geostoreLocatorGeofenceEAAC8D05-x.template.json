@@ -1,0 +1,679 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Mappings": {
+    "storeLocatorGeofenceRegionMapping9D9BCEA8": {
+      "us-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-east-2": {
+        "locationServiceRegion": "us-east-2"
+      },
+      "us-west-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-southeast-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      },
+      "ap-southeast-2": {
+        "locationServiceRegion": "ap-southeast-2"
+      },
+      "ap-northeast-1": {
+        "locationServiceRegion": "ap-northeast-1"
+      },
+      "eu-central-1": {
+        "locationServiceRegion": "eu-central-1"
+      },
+      "eu-north-1": {
+        "locationServiceRegion": "eu-north-1"
+      },
+      "eu-west-1": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "sa-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "ca-central-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-west-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-north-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-northwest-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-south-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-3": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "eu-west-2": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "eu-west-3": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "me-south-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      }
+    }
+  },
+  "Resources": {
+    "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRole9040D5514E15B340": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaServiceRole9040D551"
+      }
+    },
+    "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369D308393B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "geo:CreateGeofenceCollection",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "geo:UpdateGeofenceCollection",
+                "geo:DeleteGeofenceCollection"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:geo:",
+                    {
+                      "Fn::FindInMap": [
+                        "storeLocatorGeofenceRegionMapping9D9BCEA8",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "locationServiceRegion"
+                      ]
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":geofence-collection/storeLocatorGeofence-gen2-x"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369",
+        "Roles": [
+          {
+            "Ref": "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRole9040D5514E15B340"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369"
+      }
+    },
+    "storeLocatorGeofenceCustomGeofenceCollectionLambdaCA3D002BC8592787": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');\nconst {\n  LocationClient,\n  CreateGeofenceCollectionCommand,\n  DeleteGeofenceCollectionCommand,\n  UpdateGeofenceCollectionCommand,\n} = require('@aws-sdk/client-location');\nexports.handler = async function (event, context) {\n  try {\n    console.log('REQUEST RECEIVED:' + JSON.stringify(event));\n    const pricingPlan = 'RequestBasedUsage';\n    if (event.RequestType === 'Create') {\n      const params = {\n        CollectionName: event.ResourceProperties.collectionName,\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new CreateGeofenceCollectionCommand(params));\n      console.log('create resource response data' + JSON.stringify(res));\n      if (res.CollectionName && res.CollectionArn) {\n        await response.send(event, context, response.SUCCESS, res, params.CollectionName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.CollectionName);\n      }\n    }\n    if (event.RequestType === 'Update') {\n      const params = {\n        CollectionName: event.ResourceProperties.collectionName,\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new UpdateGeofenceCollectionCommand(params));\n      console.log('update resource response data' + JSON.stringify(res));\n      if (res.CollectionName) {\n        await response.send(event, context, response.SUCCESS, res, params.CollectionName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.CollectionName);\n      }\n    }\n    if (event.RequestType === 'Delete') {\n      const params = {\n        CollectionName: event.ResourceProperties.collectionName,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new DeleteGeofenceCollectionCommand(params));\n      console.log('delete resource response data' + JSON.stringify(res));\n      await response.send(event, context, response.SUCCESS, res, params.CollectionName);\n    }\n  } catch (err) {\n    console.log(err.stack);\n    const res = { Error: err };\n    await response.send(event, context, response.FAILED, res, event.ResourceProperties.collectionName);\n    throw err;\n  }\n};\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRole9040D5514E15B340",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRole9040D5514E15B340",
+        "storeLocatorGeofenceCustomGeofenceCollectionLambdaServiceRoleDefaultPolicy0A18B369D308393B"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollectionLambdaCA3D002B"
+      }
+    },
+    "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D": {
+      "Type": "Custom::LambdaCallout",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "storeLocatorGeofenceCustomGeofenceCollectionLambdaCA3D002BC8592787",
+            "Arn"
+          ]
+        },
+        "collectionName": "storeLocatorGeofence-gen2-x",
+        "region": {
+          "Fn::FindInMap": [
+            "storeLocatorGeofenceRegionMapping9D9BCEA8",
+            {
+              "Ref": "AWS::Region"
+            },
+            "locationServiceRegion"
+          ]
+        },
+        "env": "gen2-x"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/CustomGeofenceCollection"
+      }
+    },
+    "storeLocatorGeofencestoreLocatorAdminGeofenceCollectionPolicy34A5CD0F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:GetGeofence",
+                "geo:PutGeofence",
+                "geo:BatchPutGeofence",
+                "geo:BatchDeleteGeofence",
+                "geo:ListGeofences"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:geo:",
+                    {
+                      "Fn::FindInMap": [
+                        "storeLocatorGeofenceRegionMapping9D9BCEA8",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "locationServiceRegion"
+                      ]
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":geofence-collection/",
+                    {
+                      "Fn::GetAtt": [
+                        "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
+                        "CollectionName"
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "storeLocatorAdminstoreLocatorGeofence-gen2-xPolicy",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifystorelocatore2esandboxeac7f296ebauthNestedStackauthNestedStackResourceB25DD027Outputsamplifystorelocatore2esandboxeac7f296ebauthamplifyAuthstoreLocatorAdminGroupRole9011FC60Ref"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/storeLocatorAdminGeofenceCollectionPolicy"
+      }
+    },
+    "storeLocatorGeofencegen1AuthPolicyD0EAFABD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:GetGeofence",
+                "geo:PutGeofence",
+                "geo:BatchPutGeofence",
+                "geo:BatchDeleteGeofence",
+                "geo:ListGeofences"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:geo:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":geofence-collection/storeLocatorGeofence-x"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "storeLocatorGeofencegen1AuthPolicyD0EAFABD",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifystorelocatore2esandboxeac7f296ebauthNestedStackauthNestedStackResourceB25DD027Outputsamplifystorelocatore2esandboxeac7f296ebauthamplifyAuthstoreLocatorAdminGroupRole9011FC60Ref"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/storeLocatorGeofence/gen1AuthPolicy/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWLSw6DIBQAz+IeXy1JewGS7voJPUCDgM1TeBgf1DTGuzfW1SxmRoI8SWgqM3Nt3VAHbGG5ec7ePbOxg1AdXc04Ir2Fmfm1oImwqI50Cn6TjxTQfsWOVQQTW2dAdXQpZDMmWrdKFc4pas+pTPb/3UseS14FJeeh58NHSjieoal6RqynQhmjB73zB9rkKhqmAAAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/geostoreLocatorGeofence/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
+          "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
+          "CollectionName"
+        ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
+          "storeLocatorGeofenceRegionMapping9D9BCEA8",
+          {
+            "Ref": "AWS::Region"
+          },
+          "locationServiceRegion"
+        ]
+      }
+    },
+    "Arn": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Fn::FindInMap": [
+                "storeLocatorGeofenceRegionMapping9D9BCEA8",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "locationServiceRegion"
+              ]
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":geofence-collection/",
+            {
+              "Fn::GetAtt": [
+                "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
+                "CollectionName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "amplifystorelocatore2esandboxeac7f296ebgeostoreLocatorGeofenceCustomGeofenceCollection920A9856CollectionName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "storeLocatorGeofenceCustomGeofenceCollectionB76AA26D",
+          "CollectionName"
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifystorelocatore2esandboxeac7f296ebauthNestedStackauthNestedStackResourceB25DD027Outputsamplifystorelocatore2esandboxeac7f296ebauthamplifyAuthstoreLocatorAdminGroupRole9011FC60Ref": {
+      "Type": "String"
+    }
+  }
+}

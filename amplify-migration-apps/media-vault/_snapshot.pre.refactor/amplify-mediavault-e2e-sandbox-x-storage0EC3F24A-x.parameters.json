@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthAdminGroupRole472B90D8Ref",
+    "ParameterValue": "amplify-mediavault2605061-amplifyAuthAdminGroupRole-FQWPuWxLKtur"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthBasicGroupRole15135035Ref",
+    "ParameterValue": "amplify-mediavault2605061-amplifyAuthBasicGroupRole-d2OuX7xrYT9F"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthauthenticatedUserRole8F31C94BRef",
+    "ParameterValue": "amplify-mediavault2605061-amplifyAuthauthenticatedU-e8ZobVKZeICV"
+  },
+  {
+    "ParameterKey": "referencetoamplifymediavaulte2esandbox0d6352a7e6authNestedStackauthNestedStackResourceE14FA47AOutputsamplifymediavaulte2esandbox0d6352a7e6authamplifyAuthunauthenticatedUserRole8C755CBBRef",
+    "ParameterValue": "amplify-mediavault2605061-amplifyAuthunauthenticate-pgZt4EoKnACS"
+  }
+]

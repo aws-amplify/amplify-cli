@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.18...amplify-e2e-tests@4.11.19) (2026-06-25)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [4.11.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.17...amplify-e2e-tests@4.11.18) (2026-05-14)
+
+
+### Bug Fixes
+
+* **cli:** `gen2-migration lock --rollback` reports false drift ([#14862](https://github.com/aws-amplify/amplify-cli/issues/14862)) ([5b01458](https://github.com/aws-amplify/amplify-cli/commit/5b0145862499e9c25fc66373cb32134ede76c1f9))
+
+
+
+
+
+## [4.11.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.16...amplify-e2e-tests@4.11.17) (2026-05-01)
+
+
+### Bug Fixes
+
+* remove unconditional quickstart block ([#14837](https://github.com/aws-amplify/amplify-cli/issues/14837)) ([412db64](https://github.com/aws-amplify/amplify-cli/commit/412db649c4affdace43656eaa6d60043686515da))
+
+
+
+
+
 ## [4.11.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.15...amplify-e2e-tests@4.11.16) (2026-03-20)
 
 

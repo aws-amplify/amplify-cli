@@ -1,0 +1,42 @@
+{
+  "x": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-discussions-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-discussions-x-x-deployment",
+      "UnauthRoleName": "amplify-discussions-x-x-unauthRole",
+      "StackName": "amplify-discussions-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/4f849dd0-41c5-11f1-9284-0affe1a46c7d",
+      "AmplifyAppId": "discussions"
+    },
+    "categories": {
+      "auth": {
+        "discussionsc578c16ec578c16e": {}
+      },
+      "function": {
+        "activityTrigger": {
+          "deploymentBucketName": "amplify-discussions-x-x-deployment",
+          "s3Key": "amplify-builds/activityTrigger-6237437664322f794638-build.zip"
+        },
+        "fetchuseractivity": {
+          "deploymentBucketName": "amplify-discussions-x-x-deployment",
+          "s3Key": "amplify-builds/fetchuseractivity-364962303866625a5833-build.zip"
+        },
+        "recorduseractivity": {
+          "deploymentBucketName": "amplify-discussions-x-x-deployment",
+          "s3Key": "amplify-builds/recorduseractivity-54696a587a7168467354-build.zip"
+        }
+      },
+      "api": {
+        "discussions": {}
+      },
+      "storage": {
+        "activity": {},
+        "avatars": {},
+        "bookmarks": {}
+      }
+    }
+  }
+}

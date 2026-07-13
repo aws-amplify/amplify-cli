@@ -1,0 +1,42 @@
+type QuoteResponse {
+  message: String! @auth(rules: [{ allow: public }])
+  quote: String! @auth(rules: [{ allow: public }])
+  author: String! @auth(rules: [{ allow: public }])
+  timestamp: String! @auth(rules: [{ allow: public }])
+  totalQuotes: Int! @auth(rules: [{ allow: public }])
+}
+
+type Query {
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator-${env}") @auth(rules: [{ allow: public }])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+type Project @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  title: String!
+  description: String
+  status: ProjectStatus!
+  deadline: AWSDateTime
+  color: String
+  todos: [Todo] @hasMany
+}
+
+type Todo @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  description: String
+  images: [String]
+  projectID: ID
+}

@@ -1,0 +1,627 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
+  "Resources": {
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketPolicy6DC62CB0": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::123456789012:role/amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+              },
+              "Resource": [
+                "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x/Bucket/Policy/Resource"
+      }
+    },
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucketAutoDeleteObjectsCustomResource2F5948E5": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+        "BucketName": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::123456789012:role/amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+        "Runtime": "nodejs22.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "aws:asset:property": "Code"
+      }
+    },
+    "BACKENDONLYCB1A13AB81664ECAA7D015068AB2D016E6E2DGEN2CKQFAADCIVBUCKETNAMEParameter4DFB2161": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/backendonly/e2e-sandbox-x/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_016_E_6_E_2_D_GEN_2_CKQFAADCIV_BUCKET_NAME",
+        "Tags": {
+          "amplify:deployment-type": "sandbox",
+          "created-by": "amplify"
+        },
+        "Type": "String",
+        "Value": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_016_E_6_E_2_D_GEN_2_CKQFAADCIV_BUCKET_NAMEParameter/Resource"
+      }
+    },
+    "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess3BB1C7193": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                    "/public/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess3BB1C7193",
+        "Roles": [
+          "amplify-backendonl2605150-amplifyAuthunauthenticate-DpytVdr2sIt7"
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/amplify-backendonly-e2e-sandbox-x--storageAccess3/Resource"
+      }
+    },
+    "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess4424CE1A2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy",
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifybackendonlye2esandbox5a0ee18a1bstorageAccess4424CE1A2",
+        "Roles": [
+          "amplify-backendonl2605150-amplifyAuthauthenticatedU-O6YZQ1EpMmo4"
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/amplify-backendonly-e2e-sandbox-x--storageAccess4/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Ts3ogAO3bZxZtR4RQllqKrdNIsXuNhTlv6MuEoUjJ7/W835UUD0+wHqlL1yadihHOkF8RRZsG9FmUPrCH5E3EHeTGVDU/tNl9RYLS1dyxXPxOzz7eQM3xJCt20n8C44oeDj1aISL9K4yqv1I5mtpzf8/unOgES1o0d2qk2K2EBsJ5LpaB21RMMwbP09SpC3EZT2rlNR+YvH2iOynYHBGi/6D6uDP1GLYaUa1ZUZpRHfkuqScbxF6vjtXFdw/wXrVM1EZJidkEY75fgMik1QqegEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef": {
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "amplifybackendonlye2esandbox5a0ee18a1bstoragebackendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket0CF0231BRef": {
+      "Value": "amplify-backendonl2605150-backendonlycb1a13ab81664-7lu3iriim9vy"
+    }
+  }
+}

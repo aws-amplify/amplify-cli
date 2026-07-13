@@ -1,0 +1,182 @@
+[
+  {
+    "ParameterKey": "usernameAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "authRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole"
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "hostedUI",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Your verification code"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "41a9495f"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "manual"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "storelocator41a9495f_identitypool_41a9495f"
+  },
+  {
+    "ParameterKey": "thirdPartyAuth",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": "storeLocatorAdmin"
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "adminQueries",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "permissions",
+    "ParameterValue": "{\"policyName\":\"AddToGroupCognito\",\"trigger\":\"PostConfirmation\",\"effect\":\"Allow\",\"actions\":[\"cognito-idp:AdminAddUserToGroup\",\"cognito-idp:GetGroup\",\"cognito-idp:CreateGroup\"],\"resource\":{\"paramType\":\"!GetAtt\",\"keys\":[\"UserPool\",\"Arn\"]}}"
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "storel41a9495f"
+  },
+  {
+    "ParameterKey": "userPoolGroups",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationArn",
+    "ParameterValue": "functionstorelocator41a9495f41a9495fPostConfirmationArn"
+  },
+  {
+    "ParameterKey": "functionstorelocator41a9495f41a9495fPostConfirmationName",
+    "ParameterValue": "functionstorelocator41a9495f41a9495fPostConfirmationName"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "storelocator41a9495f_userpool_41a9495f"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": "[object Object]"
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "storelocator41a9495f41a9495f"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "triggers",
+    "ParameterValue": "{\"PostConfirmation\":[\"add-to-group\"]}"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "100"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole"
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authTriggerConnections",
+    "ParameterValue": "{\"triggerType\":\"PostConfirmation\",\"lambdaFunctionName\":\"storelocator41a9495f41a9495fPostConfirmation\"}"
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "storel41a9495f_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]

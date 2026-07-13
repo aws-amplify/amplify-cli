@@ -748,6 +748,71 @@ export const commandsInfo: Array<CommandInfo> = [
     subCommands: [],
   },
   {
+    command: 'gen2-migration',
+    commandDescription: 'Migrates your Gen1 Amplify project to Gen2',
+    commandUsage:
+      'amplify gen2-migration <subcommand> [--skip-validations] [--validations-only] [--rollback] [--no-rollback] [--additional-stateful-resource-types <path>]',
+    commandFlags: [
+      {
+        short: '',
+        long: 'skip-validations',
+        flagDescription: 'Skip pre-execution validations',
+      },
+      {
+        short: '',
+        long: 'validations-only',
+        flagDescription: 'Run validations without executing the step',
+      },
+      {
+        short: '',
+        long: 'rollback',
+        flagDescription: 'Rollback the specified step',
+      },
+      {
+        short: '',
+        long: 'no-rollback',
+        flagDescription: 'Disable automatic rollback on failure',
+      },
+      {
+        short: '',
+        long: 'additional-stateful-resource-types',
+        flagDescription: 'Path to a JSON file containing additional CloudFormation resource types to treat as stateful',
+      },
+    ],
+    subCommands: [
+      {
+        subCommand: 'assess',
+        subCommandDescription: 'Assesses migration readiness for your Gen1 environment',
+        subCommandUsage: 'amplify gen2-migration assess',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'lock',
+        subCommandDescription: 'Locks your Gen1 environment to prevent updates during migration',
+        subCommandUsage: 'amplify gen2-migration lock [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'generate',
+        subCommandDescription: 'Generates Gen2 application code from your existing Gen1 environment',
+        subCommandUsage: 'amplify gen2-migration generate [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'refactor',
+        subCommandDescription: 'Moves stateful resources from your Gen1 CloudFormation stacks to your Gen2 stacks',
+        subCommandUsage: 'amplify gen2-migration refactor [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'retain',
+        subCommandDescription: 'Applies retention policies to Gen1 stack resources so they survive stack deletion',
+        subCommandUsage: 'amplify gen2-migration retain [--skip-validations] [--validations-only] [--rollback] [--no-rollback]',
+        subCommandFlags: [],
+      },
+    ],
+  },
+  {
     command: 'uninstall',
     commandDescription: 'Uninstall the Amplify CLI',
     commandUsage: 'amplify uninstall',
@@ -1281,6 +1346,13 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandFlags: [],
       },
     ],
+  },
+  {
+    command: 'drift',
+    commandDescription: 'Detect drift between local, deployed, and actual cloud resource states',
+    commandUsage: 'amplify drift',
+    commandFlags: [],
+    subCommands: [],
   },
   {
     command: 'build',

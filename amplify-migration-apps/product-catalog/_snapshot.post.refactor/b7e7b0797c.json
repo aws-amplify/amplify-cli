@@ -1,0 +1,85 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucket99715AA1": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed3x-gen2-x"
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/storage/productcatalogf95af07481f845caa6594c26ac9c8ed3x-gen2-x/Bucket/Resource"
+      }
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-productcatalog-x-x-storages338e5b439-x",
+          "LogicalResourceId": "S3Bucket"
+        },
+        "Destination": {
+          "StackName": "amplify-productcatalog-e2e-sandbox-x-storage0EC3F24A-x",
+          "LogicalResourceId": "productcatalogf95af07481f845caa6594c26ac9c8ed3xgen2xBucket99715AA1"
+        }
+      }
+    ]
+  }
+}

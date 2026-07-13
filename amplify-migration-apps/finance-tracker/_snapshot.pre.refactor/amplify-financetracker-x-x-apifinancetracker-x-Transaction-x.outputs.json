@@ -1,0 +1,48 @@
+[
+  {
+    "OutputKey": "transformerrootstackTransactionSubscriptionOnCreateTransactionDataResolverFnSubscriptionOnCreateTransactionDataResolverFnAppSyncFunctionB6BAC21CFunctionId",
+    "OutputValue": "2sb3l5jpgrg3jfq7njy3pho37q"
+  },
+  {
+    "OutputKey": "transformerrootstackTransactionTransactionOwnerDataResolverFnTransactionOwnerDataResolverFnAppSyncFunctionE365EE63FunctionId",
+    "OutputValue": "t2x6ysbivbh3jhldn2lcnogyea"
+  },
+  {
+    "OutputKey": "transformerrootstackTransactionQuerygetTransactionpostAuth0FunctionQuerygetTransactionpostAuth0FunctionAppSyncFunctionE2F460C1FunctionId",
+    "OutputValue": "yrwyepdyjndebowygyulzz6dv4"
+  },
+  {
+    "OutputKey": "GetAttTransactionTableName",
+    "OutputValue": "Transaction-advknbihlbchtlonmy35v53toa-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:TransactionTable:Name"
+  },
+  {
+    "OutputKey": "GetAttTransactionDataSourceName",
+    "OutputValue": "TransactionTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:TransactionDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackTransactionQuerygetTransactionauth0FunctionQuerygetTransactionauth0FunctionAppSyncFunctionFEAFFE85FunctionId",
+    "OutputValue": "qvm5m73xfvgadma22f2ercynki"
+  },
+  {
+    "OutputKey": "GetAttTransactionTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Transaction-advknbihlbchtlonmy35v53toa-x/stream/2026-05-10T23:52:42.678",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "advknbihlbchtlonmy35v53toa:GetAtt:TransactionTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackTransactionMutationcreateTransactioninit0FunctionMutationcreateTransactioninit0FunctionAppSyncFunction6AFE3BC8FunctionId",
+    "OutputValue": "ixgeg6zxnzgutjgwcobuvnbei4"
+  },
+  {
+    "OutputKey": "transformerrootstackTransactionMutationupdateTransactioninit0FunctionMutationupdateTransactioninit0FunctionAppSyncFunctionD3CE5D54FunctionId",
+    "OutputValue": "mz6lufhxwrgezlm5tgmaiubxue"
+  },
+  {
+    "OutputKey": "transformerrootstackTransactionSubscriptiononCreateTransactionauth0FunctionSubscriptiononCreateTransactionauth0FunctionAppSyncFunction7459F7D8FunctionId",
+    "OutputValue": "dvj7xg4x3jfzxdu6gornemvklq"
+  }
+]

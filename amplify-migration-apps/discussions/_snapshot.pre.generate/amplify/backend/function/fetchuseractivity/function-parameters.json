@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "storage": {
+      "activity": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

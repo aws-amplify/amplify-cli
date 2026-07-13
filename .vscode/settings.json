@@ -2,7 +2,7 @@
   "editor.rulers": [140],
   "files.exclude": {
     "**/.git": true,
-    "**/build": true
+    "**/build": false
   },
   "files.insertFinalNewline": true,
   "editor.formatOnSave": true,
@@ -21,5 +21,6 @@
   },
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "prettier.prettierPath": "./node_modules/prettier",
-  "jest.jestCommandLine": "./node_modules/.bin/jest"
+  "jest.jestCommandLine": "./node_modules/.bin/jest",
+  "kiroAgent.configureMCP": "Disabled"
 }

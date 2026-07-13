@@ -1,0 +1,57 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "customfinanceQueue1ABF38704": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          },
+          {
+            "Key": "Environment",
+            "Value": "gen2-x"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "Amplify"
+          },
+          {
+            "Key": "Project",
+            "Value": "FinanceTracker"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/customcustomfinance/customfinance/Queue1/Resource"
+      }
+    },
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-customcustomfinance-x",
+          "LogicalResourceId": "Queue11B0C5920"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x",
+          "LogicalResourceId": "customfinanceQueue1ABF38704"
+        }
+      }
+    ]
+  }
+}

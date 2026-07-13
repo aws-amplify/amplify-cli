@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "transformerrootstackExerciseExerciseDataSourceE8B787D0Name",
+    "OutputValue": "ExerciseTable"
+  },
+  {
+    "OutputKey": "GetAttExerciseTableName",
+    "OutputValue": "Exercise-bdrql4nrffefnbpcrkkc27shn4-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "bdrql4nrffefnbpcrkkc27shn4:GetAtt:ExerciseTable:Name"
+  },
+  {
+    "OutputKey": "GetAttExerciseDataSourceName",
+    "OutputValue": "ExerciseTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "bdrql4nrffefnbpcrkkc27shn4:GetAtt:ExerciseDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackExerciseExerciseTable2F3E478ERef",
+    "OutputValue": "Exercise-bdrql4nrffefnbpcrkkc27shn4-x"
+  },
+  {
+    "OutputKey": "GetAttExerciseTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-bdrql4nrffefnbpcrkkc27shn4-x/stream/2026-04-26T23:01:28.823",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "bdrql4nrffefnbpcrkkc27shn4:GetAtt:ExerciseTable:StreamArn"
+  }
+]
