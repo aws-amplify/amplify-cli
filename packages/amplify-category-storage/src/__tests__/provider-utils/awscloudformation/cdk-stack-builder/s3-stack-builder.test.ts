@@ -25,6 +25,7 @@ const mockContext = {
       },
     }),
     getUserPoolGroupList: () => [],
+    getEnvInfo: () => ({ envName: 'mockenv' }),
     // eslint-disable-next-line
     getResourceStatus: () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
@@ -91,13 +92,13 @@ describe('Test S3 transform generates correct CFN template', () => {
       unauthRoleName: { Ref: 'UnauthRoleName' },
       authRoleName: { Ref: 'AuthRoleName' },
       triggerFunction: mockTriggerFunction,
-      s3PrivatePolicy: `Private_policy_${shortId}`,
-      s3ProtectedPolicy: `Protected_policy_${shortId}`,
-      s3PublicPolicy: `Public_policy_${shortId}`,
-      s3ReadPolicy: `read_policy_${shortId}`,
-      s3UploadsPolicy: `Uploads_policy_${shortId}`,
-      authPolicyName: `s3_amplify_${shortId}`,
-      unauthPolicyName: `s3_amplify_${shortId}`,
+      s3PrivatePolicy: `Private_policy_${shortId}_mockenv`,
+      s3ProtectedPolicy: `Protected_policy_${shortId}_mockenv`,
+      s3PublicPolicy: `Public_policy_${shortId}_mockenv`,
+      s3ReadPolicy: `read_policy_${shortId}_mockenv`,
+      s3UploadsPolicy: `Uploads_policy_${shortId}_mockenv`,
+      authPolicyName: `s3_amplify_${shortId}_mockenv`,
+      unauthPolicyName: `s3_amplify_${shortId}_mockenv`,
       AuthenticatedAllowList: 'ALLOW',
       GuestAllowList: 'ALLOW',
       s3PermissionsAuthenticatedPrivate: 's3:PutObject,s3:GetObject,s3:DeleteObject',

@@ -112,13 +112,14 @@ export class AmplifyS3ResourceStackTransform {
     if (userInput.adminTriggerFunction?.triggerFunction && userInput.adminTriggerFunction.triggerFunction !== 'NONE') {
       this.cfnInputParams.adminTriggerFunction = userInput.adminTriggerFunction.triggerFunction;
     }
-    this.cfnInputParams.s3PrivatePolicy = `Private_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3PublicPolicy = `Public_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3ReadPolicy = `read_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3UploadsPolicy = `Uploads_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.authPolicyName = `s3_amplify_${userInput.policyUUID}`;
-    this.cfnInputParams.unauthPolicyName = `s3_amplify_${userInput.policyUUID}`;
+    const policyNameSuffix = `${userInput.policyUUID}_${this.context.amplify.getEnvInfo().envName}`;
+    this.cfnInputParams.s3PrivatePolicy = `Private_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3PublicPolicy = `Public_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3ReadPolicy = `read_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3UploadsPolicy = `Uploads_policy_${policyNameSuffix}`;
+    this.cfnInputParams.authPolicyName = `s3_amplify_${policyNameSuffix}`;
+    this.cfnInputParams.unauthPolicyName = `s3_amplify_${policyNameSuffix}`;
     this.cfnInputParams.AuthenticatedAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.authAccess);
     this.cfnInputParams.GuestAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.guestAccess);
     this.cfnInputParams.s3PermissionsAuthenticatedPrivate = this._getPublicPrivatePermissions(
