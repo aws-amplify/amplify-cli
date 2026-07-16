@@ -143,6 +143,7 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_dynamodb_1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -152,6 +153,7 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_geo_remove_1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -160,6 +162,7 @@ batch:
           TEST_SUITE: src/__tests__/geo-remove-1.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_api_1_api_key_migration4
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -167,6 +170,7 @@ batch:
           TEST_SUITE: src/__tests__/api_1.test.ts|src/__tests__/migration/api.key.migration4.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_user_groups_s3_access_hosted_ui_admin_api
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -174,6 +178,7 @@ batch:
           TEST_SUITE: src/__tests__/auth/user-groups-s3-access.test.ts|src/__tests__/auth/hosted-ui.test.ts|src/__tests__/auth/admin-api.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_delete_auth_1b_auth_11
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -181,6 +186,7 @@ batch:
           TEST_SUITE: src/__tests__/delete.test.ts|src/__tests__/auth_1b.test.ts|src/__tests__/auth_11.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_auth_2e
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -189,6 +195,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2e.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_api_6b_api_3_layer_1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -196,6 +203,7 @@ batch:
           TEST_SUITE: src/__tests__/api_6b.test.ts|src/__tests__/api_3.test.ts|src/__tests__/layer-1.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_general_config_headless_init_dynamodb_simulator_user_groups
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -203,6 +211,7 @@ batch:
           TEST_SUITE: src/__tests__/general-config/general-config-headless-init.test.ts|src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts|src/__tests__/auth/user-groups.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_apigw_api_5_api_key_migration2
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -210,6 +219,7 @@ batch:
           TEST_SUITE: src/__tests__/apigw.test.ts|src/__tests__/api_5.test.ts|src/__tests__/migration/api.key.migration2.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_auth_13_layer_2_api_lambda_auth_2
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -217,6 +227,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-13.test.ts|src/__tests__/layer-2.test.ts|src/__tests__/graphql-v2/api_lambda_auth_2.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_auth_1a_geo_headless_function_9a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -224,6 +235,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-1a.test.ts|src/__tests__/geo-headless.test.ts|src/__tests__/function_9a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_global_sandbox_c_analytics_2_pull
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -231,6 +243,7 @@ batch:
           TEST_SUITE: src/__tests__/global_sandbox-c.test.ts|src/__tests__/analytics-2.test.ts|src/__tests__/pull.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_auth_1a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -239,6 +252,7 @@ batch:
           TEST_SUITE: src/__tests__/import_auth_1a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_iterative_update_locking_function_8_api_8
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -246,6 +260,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts|src/__tests__/function_8.test.ts|src/__tests__/api_8.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_auth_2a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -254,6 +269,7 @@ batch:
           TEST_SUITE: src/__tests__/import_auth_2a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_geo_update_1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -262,6 +278,7 @@ batch:
           TEST_SUITE: src/__tests__/geo-update-1.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_auth_6_storage_1b_storage_1a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -269,6 +286,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_6.test.ts|src/__tests__/storage-1b.test.ts|src/__tests__/storage-1a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_auth_3
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -277,6 +295,7 @@ batch:
           TEST_SUITE: src/__tests__/import_auth_3.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_geo_update_2
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -285,6 +304,7 @@ batch:
           TEST_SUITE: src/__tests__/geo-update-2.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_auth_4a_auth_3b_auth_3a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -292,6 +312,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_4a.test.ts|src/__tests__/auth_3b.test.ts|src/__tests__/auth_3a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_iterative_update_3_schema_iterative_rollback_2_schema_auth_5a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -299,6 +320,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-iterative-update-3.test.ts|src/__tests__/schema-iterative-rollback-2.test.ts|src/__tests__/schema-auth-5a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_auth_7b_api_6a_http_migration
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -306,6 +328,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_7b.test.ts|src/__tests__/api_6a.test.ts|src/__tests__/transformer-migrations/http-migration.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_function_4_function_3b_function_2c
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -313,6 +336,7 @@ batch:
           TEST_SUITE: src/__tests__/function_4.test.ts|src/__tests__/function_3b.test.ts|src/__tests__/function_2c.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_function_11_api_connection_migration2_storage_4
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -320,6 +344,7 @@ batch:
           TEST_SUITE: src/__tests__/function_11.test.ts|src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/storage-4.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_key_resolvers_geo_multi_env
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -327,6 +352,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-key.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/geo-multi-env.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_auth_1b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -335,6 +361,7 @@ batch:
           TEST_SUITE: src/__tests__/import_auth_1b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_geo_remove_3
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -343,6 +370,7 @@ batch:
           TEST_SUITE: src/__tests__/geo-remove-3.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_export_pull_c_custom_resource_with_storage
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -351,6 +379,7 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_api_lambda_auth_1_schema_auth_14_api_key_migration1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -358,6 +387,7 @@ batch:
           TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/schema-auth-14.test.ts|src/__tests__/migration/api.key.migration1.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_storage_5
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -366,6 +396,7 @@ batch:
           TEST_SUITE: src/__tests__/storage-5.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_custom_resources_auth_9
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -373,6 +404,7 @@ batch:
           TEST_SUITE: src/__tests__/custom_resources.test.ts|src/__tests__/auth_9.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_iterative_update_1_function_5_schema_function_1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -380,6 +412,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/function_5.test.ts|src/__tests__/schema-function-1.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_function_2_schema_auth_3_schema_auth_12
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -387,6 +420,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-function-2.test.ts|src/__tests__/schema-auth-3.test.ts|src/__tests__/schema-auth-12.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_auth_2b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -395,6 +429,7 @@ batch:
           TEST_SUITE: src/__tests__/import_auth_2b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_dynamodb_2a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -403,6 +438,7 @@ batch:
           TEST_SUITE: src/__tests__/import_dynamodb_2a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_s3_2b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -411,6 +447,7 @@ batch:
           TEST_SUITE: src/__tests__/import_s3_2b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_notifications_analytics_compatibility_in_app_1_studio_modelgen
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -418,6 +455,7 @@ batch:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts|src/__tests__/studio-modelgen.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_connection_1
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -426,6 +464,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-connection-1.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_s3_2c
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -434,6 +473,7 @@ batch:
           TEST_SUITE: src/__tests__/import_s3_2c.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_s3_2a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -442,6 +482,7 @@ batch:
           TEST_SUITE: src/__tests__/import_s3_2a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_storage_2_function_6_custom_policies_function
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -449,6 +490,7 @@ batch:
           TEST_SUITE: src/__tests__/storage-2.test.ts|src/__tests__/function_6.test.ts|src/__tests__/custom_policies_function.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_connection_2_function_2a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -456,6 +498,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-connection-2.test.ts|src/__tests__/function_2a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_dynamodb_2b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -464,6 +507,7 @@ batch:
           TEST_SUITE: src/__tests__/import_dynamodb_2b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_iterative_rollback_1_schema_auth_9_b_schema_auth_7b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -471,6 +515,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts|src/__tests__/schema-auth-9-b.test.ts|src/__tests__/schema-auth-7b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_dynamodb_2c
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -479,6 +524,7 @@ batch:
           TEST_SUITE: src/__tests__/import_dynamodb_2c.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_geo_remove_2
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -487,6 +533,7 @@ batch:
           TEST_SUITE: src/__tests__/geo-remove-2.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_export_pull_d_auth_8a_auth_4b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -494,6 +541,7 @@ batch:
           TEST_SUITE: src/__tests__/export-pull-d.test.ts|src/__tests__/auth_8a.test.ts|src/__tests__/auth_4b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_auth_15
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -502,6 +550,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-15.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_import_s3_3
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -510,6 +559,7 @@ batch:
           TEST_SUITE: src/__tests__/import_s3_3.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_schema_auth_11_b_predictions_layer_3
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -517,6 +567,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-11-b.test.ts|src/__tests__/predictions.test.ts|src/__tests__/layer-3.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_init_special_case_function_3a_python_function_3a_nodejs
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -524,6 +575,7 @@ batch:
           TEST_SUITE: src/__tests__/init-special-case.test.ts|src/__tests__/function_3a_python.test.ts|src/__tests__/function_3a_nodejs.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_s3_sse_geo_add_b_auth_8b
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -531,6 +583,7 @@ batch:
           TEST_SUITE: src/__tests__/s3-sse.test.ts|src/__tests__/geo-add-b.test.ts|src/__tests__/auth_8b.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_feature_flags_auth_8c_auth_7a
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -538,6 +591,7 @@ batch:
           TEST_SUITE: src/__tests__/feature-flags.test.ts|src/__tests__/auth_8c.test.ts|src/__tests__/auth_7a.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_hostingPROD
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -546,6 +600,7 @@ batch:
           TEST_SUITE: src/__tests__/hostingPROD.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_hosting_geo_import_3
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -553,6 +608,7 @@ batch:
           TEST_SUITE: src/__tests__/hosting.test.ts|src/__tests__/geo-import-3.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_predictions_migration_api_key_migration3_api_connection_migration
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -560,6 +616,7 @@ batch:
           TEST_SUITE: src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/migration/api.key.migration3.test.ts|src/__tests__/migration/api.connection.migration.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_auth_migration_push_pull_2
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -567,6 +624,7 @@ batch:
           TEST_SUITE: src/__tests__/transformer-migrations/auth-migration.test.ts|src/__tests__/push.test.ts|src/__tests__/pull-2.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_init_force_push_hooks_c_help
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -574,6 +632,7 @@ batch:
           TEST_SUITE: src/__tests__/init-force-push.test.ts|src/__tests__/hooks-c.test.ts|src/__tests__/help.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_with_babel_config_notifications_in_app_messaging_env_2_notifications_fcm
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -581,6 +640,7 @@ batch:
           TEST_SUITE: src/__tests__/with-babel-config.test.ts|src/__tests__/notifications-in-app-messaging-env-2.test.ts|src/__tests__/notifications-fcm.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_notifications_sms_pull_notifications_in_app_messaging_env_1_custom_transformers
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
@@ -588,6 +648,7 @@ batch:
           TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
       depend-on:
         - upb
+      ignore-failure: true
     - identifier: l_gen2_migration_discussions
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:

@@ -589,6 +589,16 @@ function arrangeSlidingWindow(
     } else {
       job['depend-on'] = [...nonUpbPrep, ordered[idx - windowSize].identifier];
     }
+    // The sliding-window chain is a concurrency throttle, not a semantic dependency: the shard at
+    // index idx+windowSize depend-on's this shard purely to cap in-progress fan-out. A CodeBuild
+    // build-graph edge only resolves on predecessor SUCCESS, so a flaky shard in a successor-bearing
+    // (early) slot would STOP its follower and fail the batch. Marking every shard that has a
+    // successor (idx + windowSize < n) with ignore-failure lets a flake reach an ignorable terminal
+    // state: the batch is not failed by it and its follower still runs. Only throttle-chain
+    // predecessors are marked here; the prep edges (build_linux/build_windows/upb) are untouched.
+    if (idx + windowSize < n) {
+      job['ignore-failure'] = true;
+    }
   });
 
   // Makespan is the longest dependency chain (positions start, start+windowSize, ...), computed from

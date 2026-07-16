@@ -409,20 +409,22 @@ export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boole
 };
 
 /**
- * Function to test amplify push with overrides functionality
+ * Test amplify push with overrides functionality. `overridePushTimeoutMS` raises the per-command
+ * no-output timeout above the default 20 minutes for backends whose push provisions inherently slow,
+ * output-silent resources (e.g. an OpenSearch domain), which would otherwise trip the watchdog.
  */
 export const amplifyPushOverride = async (
   cwd: string,
   testingWithLatestCodebase = false,
   env: Record<string, string> = {},
+  overridePushTimeoutMS = 0,
 ): Promise<void> => {
+  const noOutputTimeout = overridePushTimeoutMS || pushTimeoutMS;
   // Test detailed status
-  await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait(/.*/)
-    .runAsync();
+  await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout }).wait(/.*/).runAsync();
 
   // Test amplify push
-  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout, env })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
     .wait(/.*/)

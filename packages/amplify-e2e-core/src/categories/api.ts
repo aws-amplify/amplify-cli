@@ -810,9 +810,9 @@ export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOpti
   });
 }
 
-export function rebuildApi(projDir: string, apiName: string) {
+export function rebuildApi(projDir: string, apiName: string, noOutputTimeout = 5 * 60 * 1000) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
+    spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true, noOutputTimeout })
       .wait('Type the name of the API to confirm you want to continue')
       .sendLine(apiName)
       .run((err) => (err ? reject(err) : resolve()));
