@@ -9,7 +9,7 @@ import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 import { SSMClient } from '@aws-sdk/client-ssm';
-import { STSClient } from '@aws-sdk/client-sts';
+import { STSClient, STSClientConfig } from '@aws-sdk/client-sts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
@@ -61,7 +61,7 @@ export class AwsClients {
     this.dynamoDB = new DynamoDBClient(config);
     this.apiGateway = new APIGatewayClient(config);
     this.ssm = new SSMClient(config);
-    this.sts = new STSClient(config);
+    this.sts = new STSClient(config as STSClientConfig);
   }
 
   public static async create(context: $TSContext): Promise<AwsClients> {
