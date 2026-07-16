@@ -71,7 +71,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_api_connection_migration_init_special_case
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -82,7 +81,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_model_migration_schema_auth_5c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -93,18 +91,16 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
-    - identifier: w_notifications_sms_update_notifications_multi_env
+    - identifier: w_function_14_function_13
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts
+          TEST_SUITE: src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_geo_import_2_geo_import_1a
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -115,7 +111,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_api_3_layer_1
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -126,7 +121,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_auth_migration_push
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -137,7 +131,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_auth_1b_auth_11
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -148,18 +141,16 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
-    - identifier: w_notifications_analytics_compatibility_sms_1_hooks_b
+    - identifier: w_function_12_export_pull_c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
+          TEST_SUITE: src/__tests__/function_12.test.ts|src/__tests__/export-pull-c.test.ts
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_15
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -170,7 +161,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_env_4_auth_5f
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -181,7 +171,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_8c_schema_auth_6b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -192,7 +181,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_import_s3_3
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -203,7 +191,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_import_s3_1
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -215,7 +202,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_export_pull_b_auth_7b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -226,7 +212,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_parameter_store_2_parameter_store_1
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -237,7 +222,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_5a_export_pull_d
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -248,7 +232,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_auth_8a_auth_4b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -259,7 +242,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_notifications_lifecycle_auth_2f
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -270,7 +252,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_global_sandbox_c_analytics_2
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -281,7 +262,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_geo_add_a_env_1
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -292,7 +272,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_storage_1a_schema_iterative_update_2
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -303,7 +282,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_4c_init_a
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -314,7 +292,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_5d_global_sandbox_b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -325,7 +302,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_api_lambda_auth_1_schema_auth_14
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -336,7 +312,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_env_3
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -347,18 +322,16 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
-    - identifier: w_notifications_analytics_compatibility_sms_2_notifications_analytics_compatibility_in_app_1
+    - identifier: w_smoketest_ios_general_config_headless_init
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-2.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts
+          TEST_SUITE: src/__tests__/smoke-tests/smoketest-ios.test.ts|src/__tests__/general-config/general-config-headless-init.test.ts
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_4d_frontend_config_drift
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -369,7 +342,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_api_9b_function_2b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -380,7 +352,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_model_a_function_2c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -391,7 +362,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_1a_geo_headless
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -402,7 +372,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_model_d_schema_model_b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -413,7 +382,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_feature_flags_auth_8c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -424,7 +392,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_predictions_schema_model_c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -435,7 +402,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_2a_schema_auth_1b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -446,7 +412,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_api_key_migration5_schema_auth_9_b
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -457,7 +422,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_predictions_migration_api_key_migration3
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -468,18 +432,16 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
-    - identifier: w_function_14_function_13
+    - identifier: w_schema_auth_11_a
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
         type: WINDOWS_SERVER_2022_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-11-a.test.ts
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_admin_api_schema_iterative_update_locking
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -490,7 +452,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_function_9a_export_pull_a
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -501,7 +462,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_init_c_configure_project
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -512,7 +472,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_init_f_init_d
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -523,7 +482,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_key_resolvers
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -534,7 +492,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_custom_transformers_with_babel_config
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -545,7 +502,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_connection_2_function_2a
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -556,7 +512,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_4a_s3_sse
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -567,7 +522,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_container_hosting_auth_10
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -578,7 +532,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_iam_permissions_boundary_node_function
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -589,7 +542,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_schema_auth_8a_schema_auth_7c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -600,7 +552,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-      ignore-failure: true
     - identifier: w_api_2b_api_2a
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -902,7 +853,7 @@ batch:
           TEST_SUITE: src/__tests__/amplify-configure.test.ts|src/__tests__/layer-4.test.ts
       depend-on:
         - build_windows
-        - w_notifications_sms_update_notifications_multi_env
+        - w_function_14_function_13
     - identifier: w_notifications_in_app_messaging
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -952,7 +903,7 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-7b.test.ts|src/__tests__/schema-auth-7a.test.ts
       depend-on:
         - build_windows
-        - w_notifications_analytics_compatibility_sms_1_hooks_b
+        - w_function_12_export_pull_c
     - identifier: w_function_migration_storage_3
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -1132,7 +1083,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_4c.test.ts|src/__tests__/auth_3c.test.ts
       depend-on:
         - build_windows
-        - w_notifications_analytics_compatibility_sms_2_notifications_analytics_compatibility_in_app_1
+        - w_smoketest_ios_general_config_headless_init
     - identifier: w_notifications_sms_pull_notifications_in_app_messaging_env_1
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -1242,7 +1193,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2d.test.ts|src/__tests__/auth_2b.test.ts
       depend-on:
         - build_windows
-        - w_function_14_function_13
+        - w_schema_auth_11_a
     - identifier: w_schema_auth_6d_schema_auth_6c
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -1303,36 +1254,6 @@ batch:
       depend-on:
         - build_windows
         - w_custom_transformers_with_babel_config
-    - identifier: w_schema_auth_11_a
-      buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
-      env:
-        type: WINDOWS_SERVER_2022_CONTAINER
-        image: $WINDOWS_IMAGE_2019
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-11-a.test.ts
-      depend-on:
-        - build_windows
-        - w_schema_connection_2_function_2a
-    - identifier: w_smoketest_ios_general_config_headless_init
-      buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
-      env:
-        type: WINDOWS_SERVER_2022_CONTAINER
-        image: $WINDOWS_IMAGE_2019
-        variables:
-          TEST_SUITE: src/__tests__/smoke-tests/smoketest-ios.test.ts|src/__tests__/general-config/general-config-headless-init.test.ts
-      depend-on:
-        - build_windows
-        - w_schema_auth_4a_s3_sse
-    - identifier: w_function_12_export_pull_c
-      buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
-      env:
-        type: WINDOWS_SERVER_2022_CONTAINER
-        image: $WINDOWS_IMAGE_2019
-        variables:
-          TEST_SUITE: src/__tests__/function_12.test.ts|src/__tests__/export-pull-c.test.ts
-      depend-on:
-        - build_windows
-        - w_container_hosting_auth_10
     - identifier: w_schema_searchable_apigw
       buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
       env:
@@ -1340,6 +1261,36 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/apigw.test.ts
+      depend-on:
+        - build_windows
+        - w_schema_connection_2_function_2a
+    - identifier: w_notifications_analytics_compatibility_sms_2_notifications_analytics_compatibility_in_app_1
+      buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
+      env:
+        type: WINDOWS_SERVER_2022_CONTAINER
+        image: $WINDOWS_IMAGE_2019
+        variables:
+          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-2.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts
+      depend-on:
+        - build_windows
+        - w_schema_auth_4a_s3_sse
+    - identifier: w_notifications_analytics_compatibility_sms_1_hooks_b
+      buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
+      env:
+        type: WINDOWS_SERVER_2022_CONTAINER
+        image: $WINDOWS_IMAGE_2019
+        variables:
+          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
+      depend-on:
+        - build_windows
+        - w_container_hosting_auth_10
+    - identifier: w_notifications_sms_update_notifications_multi_env
+      buildspec: codebuild_specs/run_e2e_tests_windows_split.yml
+      env:
+        type: WINDOWS_SERVER_2022_CONTAINER
+        image: $WINDOWS_IMAGE_2019
+        variables:
+          TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts
       depend-on:
         - build_windows
         - w_iam_permissions_boundary_node_function

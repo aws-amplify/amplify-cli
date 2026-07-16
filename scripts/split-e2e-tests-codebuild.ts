@@ -470,6 +470,13 @@ const KNOWN_RED_SHARD_FRAGMENTS = [
   'searchable_migration',
   'searchable_datastore',
   'api_6c',
+  // Notifications SMS shards provision real Pinpoint SMS channels and are intermittently flaky (and
+  // trip the Windows node-pty/ConPTY startup flake), which is what STOPped w_auth_4c_auth_3c via the
+  // throttle chain. Pin the whole SMS family terminal so no shard depends on them. Both fragments are
+  // needed: 'notifications_analytics_compatibility_sms' covers the sms-1/sms-2 compatibility shards,
+  // and 'notifications_sms' covers notifications-sms, notifications-sms-pull, notifications-sms-update.
+  'notifications_analytics_compatibility_sms',
+  'notifications_sms',
 ];
 const isKnownRedShard = (job: any): boolean => KNOWN_RED_SHARD_FRAGMENTS.some((fragment) => String(job.identifier).includes(fragment));
 // Fallback per-shard durations (minutes) for identifiers absent from the durations file.
@@ -588,16 +595,6 @@ function arrangeSlidingWindow(
       job['depend-on'] = [...prepDeps];
     } else {
       job['depend-on'] = [...nonUpbPrep, ordered[idx - windowSize].identifier];
-    }
-    // The sliding-window chain is a concurrency throttle, not a semantic dependency: the shard at
-    // index idx+windowSize depend-on's this shard purely to cap in-progress fan-out. A CodeBuild
-    // build-graph edge only resolves on predecessor SUCCESS, so a flaky shard in a successor-bearing
-    // (early) slot would STOP its follower and fail the batch. Marking every shard that has a
-    // successor (idx + windowSize < n) with ignore-failure lets a flake reach an ignorable terminal
-    // state: the batch is not failed by it and its follower still runs. Only throttle-chain
-    // predecessors are marked here; the prep edges (build_linux/build_windows/upb) are untouched.
-    if (idx + windowSize < n) {
-      job['ignore-failure'] = true;
     }
   });
 
