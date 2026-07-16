@@ -362,6 +362,37 @@ const splitTestsV3 = (
   });
   return result;
 };
+/**
+ * Maximum number of E2E jobs the batch orchestrator is asked to release at once for the combined
+ * workflow (codebuild_specs/e2e_workflow_generated.yml) that the single AmplifyCLI-E2E-Testing
+ * start-build-batch consumes. Pointing every one of the ~265 shards at `upb` makes the orchestrator
+ * fan the whole set out the instant upb completes, which faults the batch state machine with an
+ * "Internal Service Error". Staggering the fan-out into waves of WAVE_SIZE keeps the maximum
+ * simultaneous release width at WAVE_SIZE:
+ *   - jobs at index < WAVE_SIZE depend on `upb` (wave 0)
+ *   - job at index i (i >= WAVE_SIZE) depends on the job at index (i - WAVE_SIZE)
+ * Every dependency index is strictly less than i, so the graph stays acyclic and the most jobs
+ * released by any single completion event is WAVE_SIZE.
+ */
+const WAVE_SIZE = 46;
+
+/**
+ * Rewires the `depend-on` edges of the combined-workflow E2E jobs so at most WAVE_SIZE jobs are
+ * released at once. Non-shard prerequisites already present on a job (e.g. `build_windows`) are
+ * preserved; only the `upb` fan-out edge is replaced by the wave predecessor. Returns the identifiers
+ * of the final-wave "leaf" jobs so downstream jobs (aggregate_e2e_reports) can wait for the entire
+ * fan-out to finish.
+ */
+const applyFanOutWaves = (builds: any[]): string[] => {
+  builds.forEach((build, index) => {
+    const predecessor = index < WAVE_SIZE ? 'upb' : builds[index - WAVE_SIZE].identifier;
+    const extraDeps = (build['depend-on'] || []).filter((d: string) => d !== 'upb' && !d.startsWith('l_') && !d.startsWith('w_'));
+    build['depend-on'] = extraDeps.length ? [...extraDeps, predecessor] : [predecessor];
+  });
+
+  return builds.slice(Math.max(0, builds.length - WAVE_SIZE)).map((build) => build.identifier);
+};
+
 function main(): void {
   const configBase: any = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
@@ -386,6 +417,10 @@ function main(): void {
     undefined,
   );
 
+  // Stagger the combined-workflow e2e fan-out into waves so the batch orchestrator is never asked to
+  // release the entire fan-out at once (see applyFanOutWaves / WAVE_SIZE).
+  const leafJobIdentifiers = applyFanOutWaves(splitE2ETests);
+
   let allBuilds = [...splitE2ETests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
@@ -398,7 +433,7 @@ function main(): void {
       variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
     },
     buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
-    'depend-on': ['upb'],
+    'depend-on': leafJobIdentifiers,
   };
   allBuilds.push(reportsAggregator);
   let currentBatch = [...baseBuildGraph, ...allBuilds];
