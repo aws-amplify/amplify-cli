@@ -35,6 +35,7 @@ import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 import { init as initErrorHandler, handleException, handleUnhandledRejection } from './amplify-exception-handler';
+import { installInquirerNode24Shim } from './node24-inquirer-shim';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -64,6 +65,10 @@ const disableCDKDeprecationWarning = () => {
  * Command line entry point
  */
 export const run = async (startTime: number): Promise<void> => {
+  // Node 24: guard inquirer's readline teardown against ERR_USE_AFTER_CLOSE.
+  // Must run before any prompt can fire.
+  installInquirerNode24Shim();
+
   process.stderr.write(
     '\n' +
       chalk.yellow(
