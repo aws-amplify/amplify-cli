@@ -47,6 +47,13 @@ type ExecutionStep = {
   requiresInput: boolean;
   name: string;
   expectation?: any;
+  /**
+   * When true, this step is not required to match. If the child process exits
+   * before the step matches, it is silently dropped instead of failing the
+   * chain. Used for prompts that only appear for some flows (e.g. the codegen
+   * "generate code for your newly created GraphQL API" prompt).
+   */
+  optional?: boolean;
 };
 
 /**
@@ -87,6 +94,7 @@ export type ExecutionContext = {
    * @deprecated If using `amplify-prompts` sending a newline after 'n' is not required and could cause problems. Use `sendNo` instead.
    */
   sendConfirmNo: () => ExecutionContext;
+  sendConfirmNoIfPrompt: (expectation: string | RegExp) => ExecutionContext;
   sendNo: () => ExecutionContext;
   sendCtrlC: () => ExecutionContext;
   sendCtrlA: () => ExecutionContext;
@@ -297,6 +305,31 @@ function chain(context: Context): ExecutionContext {
         requiresInput: false,
       };
       context.queue.push(_send);
+      return chain(context);
+    },
+    sendConfirmNoIfPrompt(expectation: string | RegExp): ExecutionContext {
+      // Optional prompt handler: waits for `expectation` and answers "N" if it
+      // appears, but is silently dropped if the process exits without emitting
+      // it. This lets a single push/deploy helper cover both flows where the
+      // prompt shows (e.g. an API push emitting the codegen "generate code"
+      // prompt) and flows where it never does (e.g. an auth-only push), without
+      // hanging on stdin or failing the chain on exit.
+      const _wait: ExecutionStep = {
+        fn: (data) => {
+          const matched = testExpectation(data, expectation, context);
+          if (matched) {
+            context.process.write(`N${RETURN}`);
+          }
+          return matched;
+        },
+        name: '_wait',
+        shift: false,
+        optional: true,
+        description: `[sendConfirmNoIfPrompt] ${expectation}`,
+        requiresInput: true,
+        expectation,
+      };
+      context.queue.push(_wait);
       return chain(context);
     },
     sendNo(): ExecutionContext {
@@ -616,6 +649,16 @@ function chain(context: Context): ExecutionContext {
     // `context.queue` and responds to the `callback` accordingly.
     //
     function flushQueue() {
+      // Drop any leading optional steps that never matched. These represent
+      // prompts that simply did not appear for this flow (e.g. the codegen
+      // "generate code" prompt on a non-API push) and must not fail the chain.
+      while (context.queue.length > 0 && context.queue[0].optional) {
+        context.queue.shift();
+      }
+      // If only optional steps remained, there is nothing left to satisfy.
+      if (context.queue.length === 0) {
+        return true;
+      }
       const remainingQueue = context.queue.slice().map((item) => {
         const description = ['_sendline', '_send'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
         return {
