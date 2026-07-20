@@ -810,11 +810,13 @@ export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOpti
   });
 }
 
-export function rebuildApi(projDir: string, apiName: string, noOutputTimeout = 5 * 60 * 1000) {
+export function rebuildApi(projDir: string, apiName: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true, noOutputTimeout })
+    spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
       .wait('Type the name of the API to confirm you want to continue')
       .sendLine(apiName)
+      .wait('Do you want to generate code for your newly created GraphQL API')
+      .sendConfirmNo()
       .run((err) => (err ? reject(err) : resolve()));
   });
 }
