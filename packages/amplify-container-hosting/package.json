@@ -26,7 +26,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.15.6",
+    "@aws-amplify/amplify-category-api": "^5.15.3",
     "@aws-amplify/amplify-cli-core": "4.6.0",
     "@aws-amplify/amplify-environment-parameters": "1.9.25",
     "@aws-sdk/client-s3": "^3.919.0",
