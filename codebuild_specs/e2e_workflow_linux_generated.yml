@@ -581,11 +581,11 @@ batch:
           TEST_SUITE: src/__tests__/with-babel-config.test.ts|src/__tests__/notifications-in-app-messaging-env-2.test.ts|src/__tests__/notifications-fcm.test.ts
       depend-on:
         - upb
-    - identifier: l_notifications_sms_pull_notifications_in_app_messaging_env_1_custom_transformers
+    - identifier: l_auth_2h_auth_2g_auth_12
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
+          TEST_SUITE: src/__tests__/auth_2h.test.ts|src/__tests__/auth_2g.test.ts|src/__tests__/auth_12.test.ts
       depend-on:
         - upb
     - identifier: l_gen2_migration_discussions
@@ -1098,11 +1098,11 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-4d.test.ts|src/__tests__/frontend_config_drift.test.ts|src/__tests__/env-4.test.ts
       depend-on:
         - l_feature_flags_auth_8c_auth_7a
-    - identifier: l_auth_2h_auth_2g_auth_12
+    - identifier: l_notifications_sms_pull_notifications_in_app_messaging_env_1_custom_transformers
       buildspec: codebuild_specs/run_e2e_tests_linux_split.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_2h.test.ts|src/__tests__/auth_2g.test.ts|src/__tests__/auth_12.test.ts
+          TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
       depend-on:
         - l_hostingPROD
     - identifier: l_notifications_sms_update_notifications_multi_env_minify_cloudformation
@@ -1148,7 +1148,7 @@ batch:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/containers-api-2.test.ts
       depend-on:
-        - l_notifications_sms_pull_notifications_in_app_messaging_env_1_custom_transformers
+        - l_auth_2h_auth_2g_auth_12
     - identifier: aggregate_e2e_reports
       env:
         compute-type: BUILD_GENERAL1_MEDIUM

@@ -110,6 +110,7 @@ export const amplifyPushForce = (cwd: string, testingWithLatestCodebase = false)
   spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .wait(/.*/)
     .runAsync();
 
@@ -146,6 +147,7 @@ export const amplifyPushWithoutCodegen = async (
   return spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendCarriageReturn()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .runAsync();
 };
 
@@ -188,6 +190,7 @@ export function amplifyPushUpdate(
     .wait('Are you sure you want to continue?')
     .sendYes()
     .wait(waitForText || /.*/)
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .runAsync();
 }
 
@@ -208,6 +211,7 @@ export function amplifyPushUpdateLegacy(
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
     .wait(waitForText || /.*/)
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .runAsync();
 }
 
@@ -218,6 +222,7 @@ export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false, 
   spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
     .wait('Are you sure you want to continue?')
     .sendYes()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .wait(/.*/)
     .runAsync();
 
@@ -228,6 +233,7 @@ export const amplifyPushAuthV10 = (cwd: string, testingWithLatestCodebase = fals
   spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .wait(/.*/)
     .runAsync();
 
@@ -238,6 +244,7 @@ export const amplifyPushAuthV5V6 = (cwd: string): Promise<void> =>
   spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .wait(/.*/)
     .runAsync();
 
@@ -292,6 +299,7 @@ export function amplifyPushUpdateForDependentModel(
     .wait(/.*/)
     .wait('Do you want to remove the GraphQL model access on these affected functions?')
     .sendConfirmYes()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .wait(/.*/)
     .runAsync();
 }
@@ -425,6 +433,7 @@ export const amplifyPushOverride = async (
   await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
+    .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
     .wait(/.*/)
     .runAsync();
 };
