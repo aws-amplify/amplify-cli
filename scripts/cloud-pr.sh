@@ -16,6 +16,7 @@ else
 fi
 
 ada cred update --profile=cb-ci-account --account=$E2E_ACCOUNT_PROD --role=CodeBuildE2E --provider=isengard --once
+# --report-build-batch-status-override makes CodeBuild post the required GitHub commit-status back to the PR head SHA on completion
 RESULT=$(aws codebuild start-build-batch \
 --profile=cb-ci-account \
 --region us-east-1 \
@@ -23,6 +24,7 @@ RESULT=$(aws codebuild start-build-batch \
 --build-timeout-in-minutes-override 180 \
 --source-version "pr/$PR_NUMBER" \
 --git-clone-depth-override=1000 \
+--report-build-batch-status-override \
 --environment-variables-override name=AMPLIFY_CI_MANUAL_PR_BUILD,value=true,type=PLAINTEXT \
 --query 'buildBatch.id' --output text)
 
