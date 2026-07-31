@@ -23,7 +23,7 @@ import {
 import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
 import { GetAppCommand } from '@aws-sdk/client-amplify';
-import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
+import { paginateGetResources } from '@aws-sdk/client-api-gateway';
 import { paginateListStackResources, StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
@@ -190,15 +190,17 @@ export class AwsFetcher {
   // ── API Gateway ────────────────────────────────────────────────
 
   public async fetchRestApiRootResourceId(restApiId: string): Promise<string> {
-    const { items } = await this.clients.apiGateway.send(new GetResourcesCommand({ restApiId }));
-    const root = items?.find((r) => r.path === '/');
-    if (!root?.id) {
-      throw new AmplifyError('RestApiResourceNotFoundError', {
-        message: `Root resource not found for REST API '${restApiId}'`,
-        resolution: 'Verify the API Gateway REST API exists and the CLI has the correct AWS credentials and region configured.',
-      });
+    const paginator = paginateGetResources({ client: this.clients.apiGateway }, { restApiId });
+    for await (const page of paginator) {
+      const root = page.items?.find((r) => r.path === '/');
+      if (root?.id) {
+        return root.id;
+      }
     }
-    return root.id;
+    throw new AmplifyError('RestApiResourceNotFoundError', {
+      message: `Root resource not found for REST API '${restApiId}'`,
+      resolution: 'Verify the API Gateway REST API exists and the CLI has the correct AWS credentials and region configured.',
+    });
   }
 
   // ── CloudFormation ─────────────────────────────────────────────
