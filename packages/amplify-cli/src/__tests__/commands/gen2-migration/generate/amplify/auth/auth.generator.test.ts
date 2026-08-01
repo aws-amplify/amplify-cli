@@ -258,6 +258,86 @@ describe('AuthGenerator', () => {
     `);
   });
 
+  it('generates phone login when email verification is disabled', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      AutoVerifiedAttributes: ['phone_number'],
+      UsernameAttributes: ['phone_number'],
+      SchemaAttributes: [{ Name: 'email', Required: true, Mutable: true }],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+        import { CfnResource } from 'aws-cdk-lib';
+        import type { Backend } from '../backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            phone: true,
+          },
+          userAttributes: {
+            email: {
+              required: true,
+              mutable: true,
+            },
+          },
+          multifactor: {
+            mode: 'OFF',
+          },
+        });
+
+        export function applyEscapeHatches(backend: Backend) {
+          const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+          cfnUserPool.usernameAttributes = ['phone_number'];
+          cfnUserPool.policies = {
+            passwordPolicy: {},
+          };
+          for (const cfnResource of backend.auth.stack.node
+            .findAll()
+            .filter(
+              (c) =>
+                CfnResource.isCfnResource(c) &&
+                [
+                  'AWS::Cognito::UserPool',
+                  'AWS::Cognito::IdentityPool',
+                  'AWS::Cognito::UserPoolClient',
+                  'AWS::Cognito::IdentityPoolRoleAttachment',
+                  'AWS::Cognito::UserPoolGroup',
+                ].includes(c.cfnResourceType)
+            )) {
+            (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+            (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+          }
+        }
+        "
+      `);
+  });
+
   it('generates email with verification options', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },

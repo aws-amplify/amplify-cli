@@ -663,18 +663,27 @@ export class AuthRenderer {
     const logInWith = factory.createIdentifier('loginWith');
     const assignments: ts.ObjectLiteralElementLike[] = [];
 
-    const emailOptions =
-      options.userPool.EmailVerificationMessage || options.userPool.EmailVerificationSubject
-        ? {
-            emailVerificationBody: options.userPool.EmailVerificationMessage ?? '',
-            emailVerificationSubject: options.userPool.EmailVerificationSubject ?? '',
-          }
-        : undefined;
+    const autoVerified = options.userPool.AutoVerifiedAttributes ?? [];
+    const isPhoneOnlyVerification = autoVerified.includes('phone_number') && !autoVerified.includes('email');
 
-    if (emailOptions) {
-      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(emailOptions)));
+    if (isPhoneOnlyVerification) {
+      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
     } else {
-      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+      const emailOptions =
+        options.userPool.EmailVerificationMessage || options.userPool.EmailVerificationSubject
+          ? {
+              emailVerificationBody: options.userPool.EmailVerificationMessage ?? '',
+              emailVerificationSubject: options.userPool.EmailVerificationSubject ?? '',
+            }
+          : undefined;
+
+      if (emailOptions) {
+        assignments.push(
+          factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(emailOptions)),
+        );
+      } else {
+        assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+      }
     }
 
     const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders);
