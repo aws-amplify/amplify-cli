@@ -1045,8 +1045,8 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
-    "@aws-amplify/codegen-ui": 2.20.7
-    "@aws-amplify/codegen-ui-react": 2.20.7
+    "@aws-amplify/codegen-ui": ^2.20.7
+    "@aws-amplify/codegen-ui-react": ^2.20.7
     "@aws-sdk/client-amplifybackend": ^3.919.0
     "@aws-sdk/client-amplifyuibuilder": ^3.919.0
     "@types/fs-extra": ^8.0.1
@@ -1304,7 +1304,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/codegen-ui-react@npm:2.20.7":
+"@aws-amplify/codegen-ui-react@npm:^2.20.7":
   version: 2.20.7
   resolution: "@aws-amplify/codegen-ui-react@npm:2.20.7"
   dependencies:
@@ -1324,7 +1324,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/codegen-ui@npm:2.20.7":
+"@aws-amplify/codegen-ui@npm:2.20.7, @aws-amplify/codegen-ui@npm:^2.20.7":
   version: 2.20.7
   resolution: "@aws-amplify/codegen-ui@npm:2.20.7"
   dependencies:
