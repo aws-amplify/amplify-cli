@@ -1045,8 +1045,8 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
-    "@aws-amplify/codegen-ui": 2.14.2
-    "@aws-amplify/codegen-ui-react": 2.14.2
+    "@aws-amplify/codegen-ui": 2.20.7
+    "@aws-amplify/codegen-ui-react": 2.20.7
     "@aws-sdk/client-amplifybackend": ^3.919.0
     "@aws-sdk/client-amplifyuibuilder": ^3.919.0
     "@types/fs-extra": ^8.0.1
@@ -1304,13 +1304,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/codegen-ui-react@npm:2.14.2":
-  version: 2.14.2
-  resolution: "@aws-amplify/codegen-ui-react@npm:2.14.2"
+"@aws-amplify/codegen-ui-react@npm:2.20.7":
+  version: 2.20.7
+  resolution: "@aws-amplify/codegen-ui-react@npm:2.20.7"
   dependencies:
-    "@aws-amplify/codegen-ui": 2.14.2
+    "@aws-amplify/codegen-ui": 2.20.7
     "@typescript/vfs": ~1.3.5
+    pluralize: ^8.0.0
     prettier: 2.3.2
+    semver: ^7.5.4
     typescript: <=4.5.0
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
@@ -1318,17 +1320,17 @@ __metadata:
   dependenciesMeta:
     prettier:
       optional: true
-  checksum: 91052ff146601bedc2e08f6b878ddc89e8633529e203f1a4a4c68ff441cc27d141c0dc748893e572b2f91501d81405f819d76aacde6345b212ef271d1b223b4d
+  checksum: 6c333ffbf38aeccbc35e6433e8bcb5204ebb9747400a7964a60781049b33d55435271b502b341d1030cdceb9d6f40e66cdfe0d2fa3d77fb5f0ad12389058b4e3
   languageName: node
   linkType: hard
 
-"@aws-amplify/codegen-ui@npm:2.14.2":
-  version: 2.14.2
-  resolution: "@aws-amplify/codegen-ui@npm:2.14.2"
+"@aws-amplify/codegen-ui@npm:2.20.7":
+  version: 2.20.7
+  resolution: "@aws-amplify/codegen-ui@npm:2.20.7"
   dependencies:
     change-case: ^4.1.2
     yup: ^0.32.11
-  checksum: 1ef00989aa89584e10e9d5216c78265ba3ce06f6770b414237db1e09fa49fa07a5d7faa24cd121df67af1bffcf9d8c4c518fb0a30df2e9b95cc3b637a523c704
+  checksum: 4c61a21523ae15234bea615eb17378129fa20447522ba5618abbcce04b512cd5ba32fb4ffd156bfa8dc104bbe74cba2e8f5915afd62e9fb41f1d4e38cc3306c9
   languageName: node
   linkType: hard
 
