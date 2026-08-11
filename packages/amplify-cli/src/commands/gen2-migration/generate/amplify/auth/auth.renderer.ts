@@ -661,25 +661,30 @@ export class AuthRenderer {
 
   /**
    * Derives which login mechanisms (email, phone) the Gen1 user pool actually
-   * uses, based on its sign-in and verification configuration.
+   * uses, based on its sign-in configuration.
    *
    * Gen2 `defineAuth` maps `loginWith.email`/`loginWith.phone` (truthy) onto the
-   * Cognito user pool's `signInAliases` and `autoVerify` settings. To preserve
-   * parity we enable a mechanism when it appears as a username attribute, an
-   * alias attribute, or an auto-verified attribute on the source pool. A pool
-   * that verifies via `phone_number` therefore migrates to `loginWith.phone`
-   * rather than being forced onto email verification.
+   * Cognito user pool's `signInAliases` and `autoVerify` settings. The
+   * authoritative signals for "can sign in with" are `UsernameAttributes` and
+   * `AliasAttributes`, so those are consulted first. `AutoVerifiedAttributes`
+   * only controls whether Cognito sends a verification code on signup/update and
+   * does not by itself make an attribute usable for sign in (e.g. a pool may
+   * auto-verify an attribute for SMS-based recovery while supporting only plain
+   * username sign-in). It is therefore used only as a fallback when neither
+   * `UsernameAttributes` nor `AliasAttributes` is populated — which is the
+   * shape of the pool in aws-amplify/amplify-cli#14810, where phone-based
+   * verification is the only signal available.
    *
    * `defineAuth` requires at least one of email/phone, so we fall back to email
-   * when the pool exposes neither (e.g. username-only sign-in), matching the
-   * previous default behavior.
+   * when the pool exposes none of the above (e.g. username-only sign-in),
+   * matching the previous default behavior.
    */
   private static deriveLoginMechanisms(userPool: UserPoolType): { readonly email: boolean; readonly phone: boolean } {
-    const signals = new Set<string>([
-      ...(userPool.UsernameAttributes ?? []),
-      ...(userPool.AliasAttributes ?? []),
-      ...(userPool.AutoVerifiedAttributes ?? []),
-    ]);
+    const signInAttributes = [...(userPool.UsernameAttributes ?? []), ...(userPool.AliasAttributes ?? [])];
+    // Fall back to auto-verified attributes only when no sign-in attribute is
+    // configured, since auto-verify alone does not imply the attribute is a
+    // usable login mechanism.
+    const signals = new Set<string>(signInAttributes.length > 0 ? signInAttributes : userPool.AutoVerifiedAttributes ?? []);
     let email = signals.has('email');
     const phone = signals.has('phone_number');
     if (!email && !phone) {
