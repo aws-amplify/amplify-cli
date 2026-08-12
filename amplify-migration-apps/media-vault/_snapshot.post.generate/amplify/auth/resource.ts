@@ -15,6 +15,7 @@ export const auth = defineAuth({
       verificationEmailSubject: 'Your verification code',
       verificationEmailBody: () => 'Your verification code is {####}',
     },
+    phone: true,
     externalProviders: {
       google: {
         clientId: secret('GOOGLE_CLIENT_ID'),
