@@ -11,6 +11,8 @@ import { AwsFetcher } from './aws-fetcher';
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { App, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DEFAULT_STATEFUL_RESOURCES } from './resource-types';
+import { SpinningLogger } from './spinning-logger';
+import { isDebug } from '@aws-amplify/amplify-prompts';
 
 interface Gen1AppProps {
   readonly ccbDir: string;
@@ -106,7 +108,8 @@ export class Gen1App {
     }
   }
 
-  public static async create(context: $TSContext, additionalStatefulResourceTypesPath?: string): Promise<Gen1App> {
+  public static async create(context: $TSContext, stepName: string, additionalStatefulResourceTypesPath?: string): Promise<Gen1App> {
+    const logger = new SpinningLogger(stepName, { debug: isDebug });
     const clients = await AwsClients.create(context);
 
     const tpiRelPath = `./${path.relative(process.cwd(), pathManager.getTeamProviderInfoFilePath())}`;
@@ -148,7 +151,10 @@ export class Gen1App {
       });
     }
 
+    logger.start(`Downloading backend from ${cfnProvider.DeploymentBucketName}`);
     const ccbDir = await Gen1App.downloadCloudBackend(clients.s3, cfnProvider.DeploymentBucketName);
+    logger.stop();
+    logger.debug(`Finished downloading backend`);
     return new Gen1App({ ccbDir, clients, envName, app: app.app!, additionalStatefulResourceTypes });
   }
 

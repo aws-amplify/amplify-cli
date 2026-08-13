@@ -102,8 +102,8 @@ export class App {
 
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const testingWithLatestCodebase = process.env.AMPLIFY_PATH ? false : true;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.amplifyPath = getCLIPath(testingWithLatestCodebase);
     this.logger.info(`Amplify Path: ${this.amplifyPath}`);
 
@@ -176,6 +176,7 @@ export class App {
     const tpi = JSON.parse(fs.readFileSync(tpiPath, { encoding: 'utf-8' }));
     const appId = tpi[this.envName].awscloudformation.AmplifyAppId;
     this.logger.info('amplify pull started');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await amplifyPullNonInteractive(this.targetAppPath, {
       appId: appId,
       envName: this.envName,

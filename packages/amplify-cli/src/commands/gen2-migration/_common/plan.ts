@@ -60,7 +60,7 @@ export class Plan {
       this.logger.pop();
       entries.push({ description: validation.description, valid: result.valid, report: result.report });
     }
-    this.logger.succeed('→ Validating complete');
+    this.logger.succeed('Validating complete');
     this.renderValidationResults(entries);
     return entries.every((e) => e.valid);
   }

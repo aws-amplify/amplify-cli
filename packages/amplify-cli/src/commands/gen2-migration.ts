@@ -60,10 +60,38 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  const gen1App = await Gen1App.create(context, additionalStatefulResources);
+  const gen1App = await Gen1App.create(context, stepName, additionalStatefulResources);
 
   const logger = new SpinningLogger(`${stepName}] [${gen1App.appName}/${gen1App.envName}`, { debug: isDebug });
 
+  try {
+    await runStep(context, stepName, gen1App, logger, {
+      skipValidations,
+      validationsOnly,
+      rollingBack,
+      disableAutoRollback,
+    });
+  } catch (e: unknown) {
+    if (e instanceof Error && !logger.debugMode) {
+      // record stacktrace and let the user know that a debug log is available even though
+      // they didn't run the command with --debug. note if the command is executed
+      // with --debug, the stacktrace is already recorded by the generic amplify exception handler.
+      logger.debug(e.stack ?? 'Stacktrace: N/A');
+      (e as Error).message = `${(e as Error).message}\n\nDebug log written to: ${logger.logFilePath}`;
+    }
+    throw e;
+  }
+};
+
+interface RunStepOptions {
+  readonly skipValidations: boolean;
+  readonly validationsOnly: boolean;
+  readonly rollingBack: boolean;
+  readonly disableAutoRollback: boolean;
+}
+
+async function runStep(context: $TSContext, stepName: string, gen1App: Gen1App, logger: SpinningLogger, options: RunStepOptions) {
+  const step = STEPS[stepName];
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
     const assessor = new AmplifyMigrationAssessor(gen1App, logger);
@@ -79,16 +107,16 @@ export const run = async (context: $TSContext) => {
   logger.start('Planning');
   let plan: Plan;
   try {
-    plan = rollingBack ? await implementation.rollback() : await implementation.forward();
-    logger.succeed('→ Planning complete');
+    plan = options.rollingBack ? await implementation.rollback() : await implementation.forward();
+    logger.succeed('Planning complete');
   } catch (error: unknown) {
-    logger.failed('→ Planning failed');
+    logger.failed('Planning failed');
     printer.blankLine();
     throw error;
   }
 
   // Validate
-  if (!skipValidations) {
+  if (!options.skipValidations) {
     const passed = await plan.validate();
     if (!passed) {
       const skipCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
@@ -100,19 +128,21 @@ export const run = async (context: $TSContext) => {
     }
   }
 
-  if (validationsOnly) return;
+  if (options.validationsOnly) return;
 
   printer.blankLine();
   printer.info(
     chalk.yellow(
-      `You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${gen1App.appName}/${gen1App.envName}'.`,
+      `You are about to ${options.rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${gen1App.appName}/${
+        gen1App.envName
+      }'.`,
     ),
   );
   printer.blankLine();
 
   await plan.describe();
 
-  if (!rollingBack) {
+  if (!options.rollingBack) {
     printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
     printer.blankLine();
   }
@@ -134,17 +164,23 @@ export const run = async (context: $TSContext) => {
     await plan.execute();
     return;
   } catch (error: unknown) {
-    if (!rollingBack && !disableAutoRollback) {
+    if (!options.rollingBack && !options.disableAutoRollback) {
       printer.blankLine();
       printer.error(`Failed: ${error}`);
       printer.blankLine();
-      const rollbackPlan = await implementation.rollback();
-      await rollbackPlan.execute();
+      try {
+        const rollbackPlan = await implementation.rollback();
+        await rollbackPlan.execute();
+      } catch (e: unknown) {
+        printer.blankLine();
+        printer.error(`Rollback failed: ${error}`);
+        printer.blankLine();
+      }
     }
 
     throw error;
   }
-};
+}
 
 function shiftParams(context) {
   delete context.parameters.first;

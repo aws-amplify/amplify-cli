@@ -335,19 +335,23 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const cfn = new Cfn(this.gen1App, this.logger);
 
     const stackName = extractStackNameFromId(stackId);
+    this.logger.debug(`Fetching template for stack: ${stackName}`);
     const template = await cfn.fetchTemplate(stackId);
 
     for (const [logicalId, resource] of Object.entries(template.Resources)) {
       if (this.gen1App.statefulResourceTypes.includes(resource.Type)) {
+        this.logger.debug(`Modifying removal policies for resource ${logicalId} (${resource.Type}) to Retain`);
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
 
       if (AUTH_HOSTED_UI_LOGICAL_IDS_TO_RETAIN.includes(logicalId)) {
+        this.logger.debug(`Modifying removal policies for resource ${logicalId} (${resource.Type}) to Retain`);
         resource.DeletionPolicy = 'Retain';
         resource.UpdateReplacePolicy = 'Retain';
       }
       if (resource.Type === DYNAMO_RESOURCE_TYPE) {
+        this.logger.debug(`Setting ${DYNAMO_DELETION_PROTECTION_PROPERTY} property of resource ${logicalId} (${resource.Type}) to true`);
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html#cfn-dynamodb-table-deletionprotectionenabled
         resource.Properties[DYNAMO_DELETION_PROTECTION_PROPERTY] = true;
       }
@@ -360,6 +364,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }));
 
     this.logger.push(`${stackName} (Create ChangeSet)`);
+    this.logger.debug(`Creating changeset for stack: ${stackName}`);
     const changeSet = await cfn.createChangeSet({
       stackName: stackId,
       templateBody: template,
@@ -372,6 +377,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
 
     const report = cfn.renderChangeSet(changeSet);
+    this.logger.debug(`Validating changeset for stack ${stackName} contains expected changes`);
     const valid = this.validateRetainChangeset(changeSet);
 
     operations.push({

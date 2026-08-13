@@ -152,7 +152,7 @@ describe('Gen1App', () => {
     it('throws InputValidationError when file contains a JSON object instead of array', async () => {
       (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ key: 'value' }));
 
-      await expect(Gen1App.create({} as any, '/path/to/stateful-types.json')).rejects.toMatchObject({
+      await expect(Gen1App.create({} as any, 'test', '/path/to/stateful-types.json')).rejects.toMatchObject({
         name: 'InputValidationError',
         message: 'Invalid file structure: /path/to/stateful-types.json. Must be a JSON array.',
       });
@@ -161,7 +161,7 @@ describe('Gen1App', () => {
     it('throws InputValidationError when file contains a JSON string instead of array', async () => {
       (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify('just a string'));
 
-      await expect(Gen1App.create({} as any, '/path/to/stateful-types.json')).rejects.toMatchObject({
+      await expect(Gen1App.create({} as any, 'test', '/path/to/stateful-types.json')).rejects.toMatchObject({
         name: 'InputValidationError',
         message: 'Invalid file structure: /path/to/stateful-types.json. Must be a JSON array.',
       });
@@ -170,7 +170,7 @@ describe('Gen1App', () => {
     it('throws InputValidationError when file contains a number instead of array', async () => {
       (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(42));
 
-      await expect(Gen1App.create({} as any, '/path/to/stateful-types.json')).rejects.toMatchObject({
+      await expect(Gen1App.create({} as any, 'test', '/path/to/stateful-types.json')).rejects.toMatchObject({
         name: 'InputValidationError',
         message: 'Invalid file structure: /path/to/stateful-types.json. Must be a JSON array.',
       });
@@ -187,7 +187,7 @@ describe('Gen1App', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(Gen1App as any, 'downloadCloudBackend').mockResolvedValue(ccbDir);
 
-      const app = await Gen1App.create({} as any, '/path/to/stateful-types.json');
+      const app = await Gen1App.create({} as any, 'test', '/path/to/stateful-types.json');
 
       expect(app.statefulResourceTypes).toEqual([...DEFAULT_STATEFUL_RESOURCES, 'AWS::Custom::MyResource']);
     });
