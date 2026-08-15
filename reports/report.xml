@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="24" failures="0" errors="0" time="11.563">
+  <testsuite name="FunctionGenerator" errors="0" failures="0" skipped="0" timestamp="2026-05-18T22:23:05" time="11.521" tests="24">
+    <testcase classname="FunctionGenerator throws when function is not found" name="FunctionGenerator throws when function is not found" time="0.009">
+    </testcase>
+    <testcase classname="FunctionGenerator returns one operation describing the function resource" name="FunctionGenerator returns one operation describing the function resource" time="0.003">
+    </testcase>
+    <testcase classname="FunctionGenerator registers namespace import and defineBackend entry on backendGenerator" name="FunctionGenerator registers namespace import and defineBackend entry on backendGenerator" time="0.198">
+    </testcase>
+    <testcase classname="FunctionGenerator copies function source files" name="FunctionGenerator copies function source files" time="0.012">
+    </testcase>
+    <testcase classname="FunctionGenerator renders a basic defineFunction with entry point" name="FunctionGenerator renders a basic defineFunction with entry point" time="0.01">
+    </testcase>
+    <testcase classname="FunctionGenerator renders timeout and memory" name="FunctionGenerator renders timeout and memory" time="0.009">
+    </testcase>
+    <testcase classname="FunctionGenerator renders environment variables" name="FunctionGenerator renders environment variables" time="0.01">
+    </testcase>
+    <testcase classname="FunctionGenerator renders ENV variable as branch name template" name="FunctionGenerator renders ENV variable as branch name template" time="0.009">
+    </testcase>
+    <testcase classname="FunctionGenerator renders API_KEY as secret when it matches SSM pattern" name="FunctionGenerator renders API_KEY as secret when it matches SSM pattern" time="0.008">
+    </testcase>
+    <testcase classname="FunctionGenerator renders environment variables" name="FunctionGenerator renders environment variables" time="0.012">
+    </testcase>
+    <testcase classname="FunctionGenerator renders rate schedule expression" name="FunctionGenerator renders rate schedule expression" time="0.008">
+    </testcase>
+    <testcase classname="FunctionGenerator renders cron schedule expression" name="FunctionGenerator renders cron schedule expression" time="0.008">
+    </testcase>
+    <testcase classname="FunctionGenerator renders rate with hours unit" name="FunctionGenerator renders rate with hours unit" time="0.007">
+    </testcase>
+    <testcase classname="FunctionGenerator renders rate with days unit" name="FunctionGenerator renders rate with days unit" time="0.007">
+    </testcase>
+    <testcase classname="FunctionGenerator renders DynamoDB actions in escape hatches" name="FunctionGenerator renders DynamoDB actions in escape hatches" time="0.011">
+    </testcase>
+    <testcase classname="FunctionGenerator renders Kinesis actions in escape hatches" name="FunctionGenerator renders Kinesis actions in escape hatches" time="0.01">
+    </testcase>
+    <testcase classname="FunctionGenerator renders GraphQL API permissions in escape hatches" name="FunctionGenerator renders GraphQL API permissions in escape hatches" time="0.007">
+    </testcase>
+    <testcase classname="FunctionGenerator renders unmapped auth actions as addToRolePolicy" name="FunctionGenerator renders unmapped auth actions as addToRolePolicy" time="0.009">
+    </testcase>
+    <testcase classname="FunctionGenerator renders DynamoDB trigger models" name="FunctionGenerator renders DynamoDB trigger models" time="0.01">
+    </testcase>
+    <testcase classname="FunctionGenerator contributes auth trigger when category is auth" name="FunctionGenerator contributes auth trigger when category is auth" time="0.006">
+    </testcase>
+    <testcase classname="FunctionGenerator contributes storage trigger when category is storage and S3 trigger exists" name="FunctionGenerator contributes storage trigger when category is storage and S3 trigger exists" time="0.01">
+    </testcase>
+    <testcase classname="FunctionGenerator detects Kinesis trigger from event source mapping" name="FunctionGenerator detects Kinesis trigger from event source mapping" time="0.01">
+    </testcase>
+    <testcase classname="FunctionGenerator throws for non-nodejs runtime" name="FunctionGenerator throws for non-nodejs runtime" time="0.001">
+    </testcase>
+    <testcase classname="FunctionGenerator uses original model name casing from schema for table grants and env vars" name="FunctionGenerator uses original model name casing from schema for table grants and env vars" time="0.011">
+    </testcase>
+  </testsuite>
+</testsuites>

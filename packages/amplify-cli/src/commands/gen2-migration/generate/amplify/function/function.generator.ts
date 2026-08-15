@@ -6,7 +6,14 @@ import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
-import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars, DynamicEnvVar } from './function.renderer';
+import {
+  FunctionRenderer,
+  FunctionRenderOptions,
+  classifyEnvVars,
+  DynamicEnvVar,
+  DetectedDynamoTrigger,
+  extractDynamoTriggerProps,
+} from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
@@ -247,10 +254,10 @@ export class FunctionGenerator implements Planner {
     return Array.from(new Set(args));
   }
 
-  private detectDataTriggerModels(): string[] {
+  private detectDataTriggerModels(): DetectedDynamoTrigger[] {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     const template = this.gen1App.json(templatePath);
-    const models: string[] = [];
+    const triggers: DetectedDynamoTrigger[] = [];
     for (const resource of Object.values(template.Resources ?? {})) {
       const res = resource as Record<string, unknown>;
       if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
@@ -260,9 +267,9 @@ export class FunctionGenerator implements Planner {
       const fnSub = fnImportValue?.['Fn::Sub'];
       if (!fnSub) continue;
       const match = fnSub.match(/:GetAtt:(\w+)Table:StreamArn/);
-      if (match) models.push(match[1]);
+      if (match) triggers.push({ name: match[1], props: extractDynamoTriggerProps(props) });
     }
-    return models;
+    return triggers;
   }
 
   /**
@@ -270,11 +277,11 @@ export class FunctionGenerator implements Planner {
    * CloudFormation template for EventSourceMapping resources that reference
    * storage table stream ARNs via `Ref: storage<tableName>StreamArn`.
    */
-  private detectDynamoTriggerTables(): string[] {
+  private detectDynamoTriggerTables(): DetectedDynamoTrigger[] {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
-    const tables: string[] = [];
+    const triggers: DetectedDynamoTrigger[] = [];
 
     for (const resource of Object.values(template.Resources)) {
       const res = resource as Record<string, unknown>;
@@ -286,11 +293,11 @@ export class FunctionGenerator implements Planner {
 
       const match = eventSourceArn.Ref.match(/^storage(\w+)StreamArn$/);
       if (match) {
-        tables.push(match[1]);
+        triggers.push({ name: match[1], props: extractDynamoTriggerProps(props) });
       }
     }
 
-    return tables;
+    return triggers;
   }
 
   private isKinesisTrigger(): boolean {

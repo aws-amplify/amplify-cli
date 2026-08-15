@@ -9,6 +9,22 @@ const factory = ts.factory;
  * Options for rendering a complete function resource.ts file,
  * including defineFunction() and applyEscapeHatches().
  */
+/**
+ * Event source mapping properties extracted from a Gen1 CFN template.
+ */
+export interface DynamoTriggerProps {
+  readonly startingPosition: string;
+  readonly batchSize?: number;
+}
+
+/**
+ * A DynamoDB stream trigger with its CFN event source mapping properties.
+ */
+export interface DetectedDynamoTrigger {
+  readonly name: string;
+  readonly props: DynamoTriggerProps;
+}
+
 export interface FunctionRenderOptions {
   readonly resourceName: string;
   readonly entry: string;
@@ -21,10 +37,10 @@ export interface FunctionRenderOptions {
   readonly dynamicEnvVars: readonly DynamicEnvVar[];
   readonly dynamoActions: readonly string[];
   readonly appSyncPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
-  readonly dataTriggerModels: readonly string[];
+  readonly dataTriggerModels: readonly DetectedDynamoTrigger[];
   readonly kinesisConfig?: KinesisConfig;
   readonly unMappedAuthActions: readonly string[];
-  readonly storageTriggerTables: readonly string[];
+  readonly storageTriggerTables: readonly DetectedDynamoTrigger[];
 }
 
 export interface KinesisConfig {
@@ -227,7 +243,7 @@ export class FunctionRenderer {
     if (opts.dataTriggerModels.length > 0) {
       additionalImports['aws-cdk-lib/aws-lambda-event-sources'] = new Set(['DynamoEventSource']);
       additionalImports['aws-cdk-lib/aws-lambda'] = new Set(['StartingPosition']);
-      statements.push(createDynamoTrigger(opts.resourceName, opts.dataTriggerModels));
+      statements.push(...createDynamoTrigger(opts.resourceName, opts.dataTriggerModels));
     }
 
     // Storage DynamoDB triggers (standalone tables, not AppSync-managed)
@@ -271,7 +287,7 @@ export class FunctionRenderer {
     // Add storage table parameters for standalone DynamoDB tables referenced in the body.
     // Collect from both env-var escape hatches and storage triggers.
     const allStorageTableParams = new Set<string>(storageTableNames);
-    for (const t of opts.storageTriggerTables) allStorageTableParams.add(t);
+    for (const t of opts.storageTriggerTables) allStorageTableParams.add(t.name);
     if (allStorageTableParams.size > 0) {
       if (!additionalImports['aws-cdk-lib/aws-dynamodb']) {
         additionalImports['aws-cdk-lib/aws-dynamodb'] = new Set();
@@ -709,94 +725,35 @@ function createUnMappedAuthGrant(funcName: string, actions: readonly string[]): 
   );
 }
 
-/** Creates a DynamoDB stream trigger for-of loop. */
-function createDynamoTrigger(functionName: string, models: readonly string[]): ts.ForOfStatement {
-  return factory.createForOfStatement(
-    undefined,
-    factory.createVariableDeclarationList(
-      [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
-      ts.NodeFlags.Const,
-    ),
-    factory.createArrayLiteralExpression(models.map((model) => factory.createStringLiteral(model))),
-    factory.createBlock(
-      [
-        factory.createVariableStatement(
-          [],
-          factory.createVariableDeclarationList(
-            [
-              factory.createVariableDeclaration(
-                'table',
-                undefined,
-                undefined,
-                factory.createElementAccessExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier('backend.data.resources'),
-                    factory.createIdentifier('tables'),
-                  ),
-                  factory.createIdentifier('model'),
-                ),
-              ),
-            ],
-            ts.NodeFlags.Const,
-          ),
-        ),
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier(`backend.${functionName}.resources`),
-                factory.createIdentifier('lambda'),
-              ),
-              factory.createIdentifier('addEventSource'),
-            ),
-            undefined,
-            [
-              factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
-                factory.createIdentifier('table'),
-                factory.createObjectLiteralExpression([TS.enumProp('startingPosition', 'StartingPosition', 'LATEST')]),
-              ]),
-            ],
-          ),
-        ),
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantStreamRead')),
-            undefined,
-            [
-              factory.createNonNullExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
-                  factory.createIdentifier('role'),
-                ),
-              ),
-            ],
-          ),
-        ),
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantTableListStreams')),
-            undefined,
-            [
-              factory.createNonNullExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
-                  factory.createIdentifier('role'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-      true,
-    ),
-  );
-}
-
-/** Creates storage DynamoDB stream triggers for standalone tables. */
-function createStorageDynamoTrigger(functionName: string, tableNames: readonly string[]): ts.Statement[] {
+/** Creates separate DynamoDB stream trigger statements per model. */
+function createDynamoTrigger(functionName: string, triggers: readonly DetectedDynamoTrigger[]): ts.Statement[] {
   const statements: ts.Statement[] = [];
-  for (const tableName of tableNames) {
-    // backend.funcName.resources.lambda.addEventSource(new DynamoEventSource(tableName, { startingPosition: StartingPosition.LATEST }))
+  for (const trigger of triggers) {
+    const tableVar = `table${trigger.name}`;
+    // const tableX = backend.data.resources.tables["ModelName"]
+    statements.push(
+      factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              tableVar,
+              undefined,
+              undefined,
+              factory.createElementAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.data.resources'),
+                  factory.createIdentifier('tables'),
+                ),
+                factory.createStringLiteral(trigger.name),
+              ),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      ),
+    );
+    // backend.funcName.resources.lambda.addEventSource(new DynamoEventSource(tableX, { ... }))
     statements.push(
       factory.createExpressionStatement(
         factory.createCallExpression(
@@ -810,18 +767,79 @@ function createStorageDynamoTrigger(functionName: string, tableNames: readonly s
           undefined,
           [
             factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
-              factory.createIdentifier(tableName),
-              factory.createObjectLiteralExpression([TS.enumProp('startingPosition', 'StartingPosition', 'LATEST')]),
+              factory.createIdentifier(tableVar),
+              factory.createObjectLiteralExpression(createDynamoEventSourceProps(trigger.props)),
             ]),
           ],
         ),
       ),
     );
-    // tableName.grantStreamRead(backend.funcName.resources.lambda.role!)
+    // tableX.grantStreamRead(backend.funcName.resources.lambda.role!)
     statements.push(
       factory.createExpressionStatement(
         factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grantStreamRead')),
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantStreamRead')),
+          undefined,
+          [
+            factory.createNonNullExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                factory.createIdentifier('role'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    // tableX.grantTableListStreams(backend.funcName.resources.lambda.role!)
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantTableListStreams')),
+          undefined,
+          [
+            factory.createNonNullExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                factory.createIdentifier('role'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  return statements;
+}
+
+/** Creates storage DynamoDB stream triggers for standalone tables. */
+function createStorageDynamoTrigger(functionName: string, triggers: readonly DetectedDynamoTrigger[]): ts.Statement[] {
+  const statements: ts.Statement[] = [];
+  for (const trigger of triggers) {
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier(`backend.${functionName}.resources`),
+              factory.createIdentifier('lambda'),
+            ),
+            factory.createIdentifier('addEventSource'),
+          ),
+          undefined,
+          [
+            factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
+              factory.createIdentifier(trigger.name),
+              factory.createObjectLiteralExpression(createDynamoEventSourceProps(trigger.props)),
+            ]),
+          ],
+        ),
+      ),
+    );
+    statements.push(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(trigger.name), factory.createIdentifier('grantStreamRead')),
           undefined,
           [
             factory.createNonNullExpression(
@@ -838,7 +856,7 @@ function createStorageDynamoTrigger(functionName: string, tableNames: readonly s
     statements.push(
       factory.createExpressionStatement(
         factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grantTableListStreams')),
+          factory.createPropertyAccessExpression(factory.createIdentifier(trigger.name), factory.createIdentifier('grantTableListStreams')),
           undefined,
           [
             factory.createNonNullExpression(
@@ -853,6 +871,30 @@ function createStorageDynamoTrigger(functionName: string, tableNames: readonly s
     );
   }
   return statements;
+}
+
+/**
+ * Extracts DynamoDB event source mapping properties (StartingPosition
+ * and BatchSize) from a CFN EventSourceMapping resource's Properties.
+ * Falls back to LATEST if StartingPosition is missing.
+ */
+export function extractDynamoTriggerProps(props: Record<string, unknown> | undefined): DynamoTriggerProps {
+  const startingPosition = typeof props?.StartingPosition === 'string' ? props.StartingPosition : 'LATEST';
+  const batchSize = typeof props?.BatchSize === 'number' ? props.BatchSize : undefined;
+  return { startingPosition, batchSize };
+}
+
+/**
+ * Builds the object literal properties for a DynamoEventSource constructor:
+ * `{ startingPosition: StartingPosition.X, batchSize: N }`.
+ */
+function createDynamoEventSourceProps(props: DynamoTriggerProps | undefined): ts.PropertyAssignment[] {
+  const position = props?.startingPosition ?? 'LATEST';
+  const assignments: ts.PropertyAssignment[] = [TS.enumProp('startingPosition', 'StartingPosition', position)];
+  if (props?.batchSize !== undefined) {
+    assignments.push(factory.createPropertyAssignment('batchSize', factory.createNumericLiteral(props.batchSize)));
+  }
+  return assignments;
 }
 
 /** Creates a Kinesis stream trigger. */

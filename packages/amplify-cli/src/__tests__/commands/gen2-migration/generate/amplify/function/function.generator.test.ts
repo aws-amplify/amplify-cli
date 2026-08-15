@@ -1069,16 +1069,14 @@ describe('FunctionGenerator', () => {
 
       export function applyEscapeHatches(backend: Backend) {
         backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
-        for (const model of ['Todo']) {
-          const table = backend.data.resources.tables[model];
-          backend.myFunc.resources.lambda.addEventSource(
-            new DynamoEventSource(table, {
-              startingPosition: StartingPosition.LATEST,
-            })
-          );
-          table.grantStreamRead(backend.myFunc.resources.lambda.role!);
-          table.grantTableListStreams(backend.myFunc.resources.lambda.role!);
-        }
+        const tableTodo = backend.data.resources.tables['Todo'];
+        backend.myFunc.resources.lambda.addEventSource(
+          new DynamoEventSource(tableTodo, {
+            startingPosition: StartingPosition.LATEST,
+          })
+        );
+        tableTodo.grantStreamRead(backend.myFunc.resources.lambda.role!);
+        tableTodo.grantTableListStreams(backend.myFunc.resources.lambda.role!);
       }
       "
     `);
@@ -1263,5 +1261,252 @@ describe('FunctionGenerator', () => {
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");
+  });
+
+  it('renders single DynamoDB trigger with custom BatchSize and StartingPosition from CFN', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        EventSourceMapping: {
+          Type: 'AWS::Lambda::EventSourceMapping',
+          Properties: {
+            EventSourceArn: {
+              'Fn::ImportValue': {
+                'Fn::Sub': '${api}:GetAtt:TodoTable:StreamArn',
+              },
+            },
+            FunctionName: { Ref: 'LambdaFunction' },
+            BatchSize: 50,
+            StartingPosition: 'TRIM_HORIZON',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 3,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: { Variables: {} },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineFunction } from '@aws-amplify/backend';
+      import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+      import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const myFunc = defineFunction({
+        entry: './index.js',
+        name: \`myFunc-\${branchName}\`,
+        timeoutSeconds: 3,
+        memoryMB: 128,
+        runtime: 18,
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+        const tableTodo = backend.data.resources.tables['Todo'];
+        backend.myFunc.resources.lambda.addEventSource(
+          new DynamoEventSource(tableTodo, {
+            startingPosition: StartingPosition.TRIM_HORIZON,
+            batchSize: 50,
+          })
+        );
+        tableTodo.grantStreamRead(backend.myFunc.resources.lambda.role!);
+        tableTodo.grantTableListStreams(backend.myFunc.resources.lambda.role!);
+      }
+      "
+    `);
+  });
+
+  it('renders multiple DynamoDB triggers with DIFFERENT BatchSize/StartingPosition per model', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        TodoEventSourceMapping: {
+          Type: 'AWS::Lambda::EventSourceMapping',
+          Properties: {
+            EventSourceArn: {
+              'Fn::ImportValue': {
+                'Fn::Sub': '${api}:GetAtt:TodoTable:StreamArn',
+              },
+            },
+            FunctionName: { Ref: 'LambdaFunction' },
+            BatchSize: 10,
+            StartingPosition: 'TRIM_HORIZON',
+          },
+        },
+        PostEventSourceMapping: {
+          Type: 'AWS::Lambda::EventSourceMapping',
+          Properties: {
+            EventSourceArn: {
+              'Fn::ImportValue': {
+                'Fn::Sub': '${api}:GetAtt:PostTable:StreamArn',
+              },
+            },
+            FunctionName: { Ref: 'LambdaFunction' },
+            BatchSize: 100,
+            StartingPosition: 'LATEST',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 3,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: { Variables: {} },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineFunction } from '@aws-amplify/backend';
+      import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+      import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const myFunc = defineFunction({
+        entry: './index.js',
+        name: \`myFunc-\${branchName}\`,
+        timeoutSeconds: 3,
+        memoryMB: 128,
+        runtime: 18,
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+        const tableTodo = backend.data.resources.tables['Todo'];
+        backend.myFunc.resources.lambda.addEventSource(
+          new DynamoEventSource(tableTodo, {
+            startingPosition: StartingPosition.TRIM_HORIZON,
+            batchSize: 10,
+          })
+        );
+        tableTodo.grantStreamRead(backend.myFunc.resources.lambda.role!);
+        tableTodo.grantTableListStreams(backend.myFunc.resources.lambda.role!);
+        const tablePost = backend.data.resources.tables['Post'];
+        backend.myFunc.resources.lambda.addEventSource(
+          new DynamoEventSource(tablePost, {
+            startingPosition: StartingPosition.LATEST,
+            batchSize: 100,
+          })
+        );
+        tablePost.grantStreamRead(backend.myFunc.resources.lambda.role!);
+        tablePost.grantTableListStreams(backend.myFunc.resources.lambda.role!);
+      }
+      "
+    `);
+  });
+
+  it('falls back to StartingPosition LATEST when not specified in CFN template', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        EventSourceMapping: {
+          Type: 'AWS::Lambda::EventSourceMapping',
+          Properties: {
+            EventSourceArn: {
+              'Fn::ImportValue': {
+                'Fn::Sub': '${api}:GetAtt:TodoTable:StreamArn',
+              },
+            },
+            FunctionName: { Ref: 'LambdaFunction' },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 3,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: { Variables: {} },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineFunction } from '@aws-amplify/backend';
+      import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+      import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const myFunc = defineFunction({
+        entry: './index.js',
+        name: \`myFunc-\${branchName}\`,
+        timeoutSeconds: 3,
+        memoryMB: 128,
+        runtime: 18,
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+        const tableTodo = backend.data.resources.tables['Todo'];
+        backend.myFunc.resources.lambda.addEventSource(
+          new DynamoEventSource(tableTodo, {
+            startingPosition: StartingPosition.LATEST,
+          })
+        );
+        tableTodo.grantStreamRead(backend.myFunc.resources.lambda.role!);
+        tableTodo.grantTableListStreams(backend.myFunc.resources.lambda.role!);
+      }
+      "
+    `);
   });
 });

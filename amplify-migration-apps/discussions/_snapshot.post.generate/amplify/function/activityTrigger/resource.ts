@@ -51,6 +51,7 @@ export function applyEscapeHatches(backend: Backend, activity: Table) {
   backend.activityTrigger.resources.lambda.addEventSource(
     new DynamoEventSource(activity, {
       startingPosition: StartingPosition.LATEST,
+      batchSize: 100,
     })
   );
   activity.grantStreamRead(backend.activityTrigger.resources.lambda.role!);
