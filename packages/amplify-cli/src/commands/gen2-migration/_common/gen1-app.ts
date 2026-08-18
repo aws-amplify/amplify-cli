@@ -229,6 +229,15 @@ export class Gen1App {
   }
 
   /**
+   * Returns a resource output value from amplify-meta.json, or undefined if absent.
+   * Use for optional outputs that may not exist in all Gen1 configurations.
+   */
+  public tryResourceMetaOutput(resource: DiscoveredResource, outputKey: string): string | undefined {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
+    return (this._meta as any)[resource.category]?.[resource.resourceName]?.output?.[outputKey];
+  }
+
+  /**
    * Returns the name of the single resource in a category matching a service type.
    */
   public singleResourceName(category: string, service: string): string {

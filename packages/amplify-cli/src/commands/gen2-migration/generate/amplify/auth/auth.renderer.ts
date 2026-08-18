@@ -1080,8 +1080,10 @@ export class AuthRenderer {
     // Declare cfnIdentityPool once when any IdentityPool escape hatch is needed
     // (either disabling unauth identities or removing the hard-coded
     // SupportedLoginProviders on regenerate). Defining the const twice would
-    // produce invalid TypeScript.
-    const needsCfnIdentityPool = options.identityPool?.AllowUnauthenticatedIdentities === false || hasIdentityProviders;
+    // produce invalid TypeScript. Skipped entirely when no Identity Pool exists
+    // (User Pool-only configurations).
+    const needsCfnIdentityPool =
+      !!options.identityPool && (options.identityPool.AllowUnauthenticatedIdentities === false || hasIdentityProviders);
     if (needsCfnIdentityPool) {
       statements.push(TS.constFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool'));
     }
@@ -1090,7 +1092,7 @@ export class AuthRenderer {
       statements.push(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
     }
 
-    if (hasIdentityProviders) {
+    if (hasIdentityProviders && options.identityPool) {
       // cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders')
       //
       // Gen1 generates SupportedLoginProviders on the IdentityPool from the
@@ -1118,7 +1120,7 @@ export class AuthRenderer {
       statements.push(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
     }
 
-    statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient));
+    statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient, !!options.identityPool));
 
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
 
@@ -1229,7 +1231,7 @@ export class AuthRenderer {
     return statements;
   }
 
-  private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType): ts.Statement[] {
+  private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType, hasIdentityPool: boolean): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const hasIdentityProviders = AuthRenderer.hasIdentityProviders(userPoolClient);
 
@@ -1411,7 +1413,7 @@ export class AuthRenderer {
       ),
     );
 
-    statements.push(...this.buildCognitoProvidersPushStatements(clientVarName));
+    statements.push(...this.buildCognitoProvidersPushStatements(clientVarName, hasIdentityPool));
 
     if (hasIdentityProviders) {
       statements.push(...this.buildProviderSetupStatements());
@@ -1426,9 +1428,11 @@ export class AuthRenderer {
 
   /**
    * Builds the cognitoIdentityProviders push block that registers the native app client
-   * with the identity pool.
+   * with the identity pool. Skipped when no identity pool is present (User Pool-only config).
    */
-  private buildCognitoProvidersPushStatements(clientVarName: string): ts.Statement[] {
+  private buildCognitoProvidersPushStatements(clientVarName: string, hasIdentityPool: boolean): ts.Statement[] {
+    if (!hasIdentityPool) return [];
+
     const statements: ts.Statement[] = [];
 
     // const cognitoProviders = backend.auth.resources.cfnResources.cfnIdentityPool.cognitoIdentityProviders;
