@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-function",
-  "version": "5.8.2",
+  "version": "5.8.3",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
     "graphql-transformer-core": "^8.2.18",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
-    "jstreemap": "^1.28.2",
+    "jstreemap": "1.28.2",
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2"

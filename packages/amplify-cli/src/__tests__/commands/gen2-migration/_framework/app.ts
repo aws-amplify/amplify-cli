@@ -7,7 +7,7 @@ import { SpinningLogger } from '../../../../commands/gen2-migration/_common/spin
 import { Gen1App } from '../../../../commands/gen2-migration/_common/gen1-app';
 import { AwsFetcher } from '../../../../commands/gen2-migration/_common/aws-fetcher';
 import { AwsClients } from '../../../../commands/gen2-migration/_common/aws-clients';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities, FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
 import { DEFAULT_STATEFUL_RESOURCES } from '../../../../commands/gen2-migration/_common/resource-types';
 
@@ -398,6 +398,7 @@ export class MigrationApp {
 
     process.chdir(workDir);
     try {
+      await FeatureFlags.initialize({ getCurrentEnvName: () => app.environmentName });
       await callback(app);
     } finally {
       process.chdir(cwd);

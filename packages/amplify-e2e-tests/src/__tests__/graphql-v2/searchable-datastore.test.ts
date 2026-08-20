@@ -1,7 +1,8 @@
 import {
   initJSProjectWithProfile,
   deleteProject,
-  amplifyPush,
+  amplifyOverrideApi,
+  amplifyPushOverride,
   createRandomName,
   addAuthWithDefault,
   addApiWithoutSchema,
@@ -13,6 +14,8 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 (global as any).fetch = require('node-fetch');
 
@@ -46,7 +49,11 @@ describe('transformer model searchable migration test', () => {
     await addApiWithoutSchema(projRoot, { apiName: projectName });
     await apiEnableDataStore(projRoot, {});
     await updateApiSchema(projRoot, projectName, v2Schema);
-    await amplifyPush(projRoot);
+    await amplifyOverrideApi(projRoot);
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'overrides', 'override-api-gql-searchable.ts');
+    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', projectName, 'override.ts');
+    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    await amplifyPushOverride(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
     await runAndValidateQuery('test1', 'test1', 10);

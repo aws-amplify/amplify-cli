@@ -255,7 +255,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-function@5.8.2, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
+"@aws-amplify/amplify-category-function@5.8.3, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-function@workspace:packages/amplify-category-function"
   dependencies:
@@ -276,7 +276,7 @@ __metadata:
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
     jest: ^29.7.0
-    jstreemap: ^1.28.2
+    jstreemap: 1.28.2
     lodash: ^4.17.21
     promise-sequential: ^1.1.1
     uuid: ^8.3.2
@@ -965,12 +965,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.10.29, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.10.30, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
     "@aws-amplify/amplify-appsync-simulator": 2.16.20
-    "@aws-amplify/amplify-category-function": 5.8.2
+    "@aws-amplify/amplify-category-function": 5.8.3
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-environment-parameters": 1.9.25
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
@@ -1172,7 +1172,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@14.5.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@14.5.1, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1181,7 +1181,7 @@ __metadata:
     "@aws-amplify/amplify-category-api": ^5.15.3
     "@aws-amplify/amplify-category-auth": 3.7.28
     "@aws-amplify/amplify-category-custom": 3.1.33
-    "@aws-amplify/amplify-category-function": 5.8.2
+    "@aws-amplify/amplify-category-function": 5.8.3
     "@aws-amplify/amplify-category-geo": 3.5.27
     "@aws-amplify/amplify-category-hosting": 3.5.46
     "@aws-amplify/amplify-category-interactions": 5.1.39
@@ -1206,7 +1206,7 @@ __metadata:
     "@aws-amplify/amplify-provider-awscloudformation": 8.11.19
     "@aws-amplify/amplify-python-function-template-provider": 1.4.8
     "@aws-amplify/amplify-util-import": 2.8.6
-    "@aws-amplify/amplify-util-mock": 5.10.29
+    "@aws-amplify/amplify-util-mock": 5.10.30
     "@aws-amplify/amplify-util-uibuilder": 1.14.27
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-amplify": ^3.919.0
@@ -1294,7 +1294,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 14.5.0
+    "@aws-amplify/cli-internal": 14.5.1
     "@types/tar": ^6.1.1
     axios: ^1.11.0
     rimraf: ^6.0.1
@@ -20186,9 +20186,9 @@ __metadata:
   linkType: hard
 
 "diff@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "diff@npm:4.0.2"
-  checksum: 81b91f9d39c4eaca068eb0c1eb0e4afbdc5bb2941d197f513dd596b820b956fef43485876226d65d497bebc15666aa2aa82c679e84f65d5f2bfbf14ee46e32c1
+  version: 4.0.4
+  resolution: "diff@npm:4.0.4"
+  checksum: 855fb70b093d1d9643ddc12ea76dca90dc9d9cdd7f82c08ee8b9325c0dc5748faf3c82e2047ced5dcaa8b26e58f7903900be2628d0380a222c02d79d8de385df
   languageName: node
   linkType: hard
 
@@ -22043,13 +22043,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.6":
-  version: 1.15.6
-  resolution: "follow-redirects@npm:1.15.6"
+"follow-redirects@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "follow-redirects@npm:1.16.0"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 9ff767f0d7be6aa6870c82ac79cf0368cd73e01bbc00e9eb1c2a16fbb198ec105e3c9b6628bb98e9f3ac66fe29a957b9645bcb9a490bb7aa0d35f908b6b85071
+  checksum: a1e2900163e6f1b4d1ed5c221b607f41decbab65534c63fe7e287e40a5d552a6496e7d9d7d976fa4ba77b4c51c11e5e9f683f10b43011ea11e442ff128d0e181
   languageName: node
   linkType: hard
 
@@ -26090,7 +26090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jstreemap@npm:^1.28.2":
+"jstreemap@npm:1.28.2":
   version: 1.28.2
   resolution: "jstreemap@npm:1.28.2"
   checksum: d7f55ff23c3bc1f54a7b92675fd785ab4f069052b25137b2d1d47a10722dd8f8442d1a710d0d3144322412e654e3f3f71f4326f7126d7287497d4cdbd94c9f80
