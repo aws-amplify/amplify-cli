@@ -314,7 +314,10 @@ export class MigrationApp {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
       discover: Gen1App.prototype.discover.bind({ _meta: this.meta } as any),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
-      resourceMetaOutput: Gen1App.prototype.resourceMetaOutput.bind({ _meta: this.meta } as any),
+      resourceMetaOutput: Gen1App.prototype.resourceMetaOutput.bind({
+        _meta: this.meta,
+        tryResourceMetaOutput: Gen1App.prototype.tryResourceMetaOutput.bind({ _meta: this.meta }),
+      } as any),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
       tryResourceMetaOutput: Gen1App.prototype.tryResourceMetaOutput.bind({ _meta: this.meta } as any),
       json: Gen1App.prototype.json.bind({ ccbDir: this.ccbPath }),

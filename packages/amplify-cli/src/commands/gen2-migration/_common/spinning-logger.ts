@@ -19,8 +19,6 @@ export class SpinningLogger {
     this.debugMode = options?.debug ?? globalIsDebug;
     this.spinner = new AmplifySpinner();
 
-    SpinningLogger.instances.add(this);
-
     // Register the SIGINT handler only once to avoid accumulating listeners
     // across multiple SpinningLogger instances (which causes
     // MaxListenersExceededWarning and prevents clean process exit in tests).
@@ -49,6 +47,7 @@ export class SpinningLogger {
       return;
     }
     this.spinnerActive = true;
+    SpinningLogger.instances.add(this);
     this.spinner.start(this.buildSpinnerText());
   }
 
@@ -60,6 +59,7 @@ export class SpinningLogger {
     if (!this.debugMode && this.spinnerActive) {
       this.spinner.stop();
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
     }
   }
 
@@ -75,6 +75,7 @@ export class SpinningLogger {
     if (this.spinnerActive) {
       this.spinner.stop(text, true);
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
     }
   }
 
@@ -90,6 +91,7 @@ export class SpinningLogger {
     if (this.spinnerActive) {
       this.spinner.stop(text, false);
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
     }
   }
 
@@ -160,12 +162,15 @@ export class SpinningLogger {
   public pause() {
     if (this.spinnerActive && !this.debugMode) {
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
       this.spinner.stop();
     }
   }
 
   public resume() {
     if (!this.spinnerActive && !this.debugMode) {
+      this.spinnerActive = true;
+      SpinningLogger.instances.add(this);
       this.spinner.start(this.buildSpinnerText());
     }
   }

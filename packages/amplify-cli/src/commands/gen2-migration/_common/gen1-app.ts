@@ -218,8 +218,7 @@ export class Gen1App {
    * Returns a resource output value from amplify-meta.json.
    */
   public resourceMetaOutput(resource: DiscoveredResource, outputKey: string): string {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
-    const value = (this._meta as any)[resource.category]?.[resource.resourceName]?.output?.[outputKey];
+    const value = this.tryResourceMetaOutput(resource, outputKey);
     if (value === undefined) {
       throw new AmplifyError('ResourceMetaOutputNotFoundError', {
         message: `Missing output '${outputKey}' for resource '${resource.resourceName}' in category '${resource.category}'`,
