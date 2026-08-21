@@ -69,4 +69,25 @@ export class MockClients {
     this.sts = new STSMock(app);
     this.cloudcontrol = new CloudControlMock(app);
   }
+
+  /**
+   * Restores all mock clients, releasing interceptor resources.
+   *
+   * Must be called after each test (or in a finally block) to prevent
+   * Socket handle leaks that block Jest from exiting cleanly under Node 24.
+   */
+  public destroy(): void {
+    this.amplify.mock.restore();
+    this.apiGateway.mock.restore();
+    this.cloudformation.mock.restore();
+    this.lambda.mock.restore();
+    this.cognitoIdentityProvider.mock.restore();
+    this.cognitoIdentity.mock.restore();
+    this.cwe.mock.restore();
+    this.appsync.mock.restore();
+    this.s3.mock.restore();
+    this.dynamodb.mock.restore();
+    this.sts.mock.restore();
+    this.cloudcontrol.mock.restore();
+  }
 }

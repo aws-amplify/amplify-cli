@@ -56,7 +56,7 @@ export class AuthGenerator implements Planner {
 
     const appClientIdWeb = this.gen1App.resourceMetaOutput(this.resource, 'AppClientIDWeb');
     const appClientIdNative = this.gen1App.resourceMetaOutput(this.resource, 'AppClientID');
-    const identityPoolId = this.gen1App.resourceMetaOutput(this.resource, 'IdentityPoolId');
+    const identityPoolId = this.gen1App.tryResourceMetaOutput(this.resource, 'IdentityPoolId');
 
     this.logger.debug(`Fetching auth resources for user pool '${userPoolId}'`);
     const [mfaConfig, webClient, nativeClient, identityProviders, identityGroups, identityPool] = await Promise.all([
@@ -65,7 +65,7 @@ export class AuthGenerator implements Planner {
       this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdNative),
       this.gen1App.aws.fetchIdentityProviders(userPoolId),
       this.gen1App.aws.fetchIdentityGroups(userPoolId),
-      this.gen1App.aws.fetchIdentityPool(identityPoolId),
+      identityPoolId ? this.gen1App.aws.fetchIdentityPool(identityPoolId) : Promise.resolve(undefined),
     ]);
 
     const renderOptions: AuthRenderOptions = {

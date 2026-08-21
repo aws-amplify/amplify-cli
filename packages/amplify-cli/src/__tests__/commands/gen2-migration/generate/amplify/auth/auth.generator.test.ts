@@ -2315,4 +2315,51 @@ describe('AuthGenerator', () => {
       "
     `);
   });
+
+  // When Gen1 auth was configured as 'User Sign-Up & Sign-In only' (User Pool only),
+  // the migration tool should not emit Identity Pool escape hatches or
+  // cognitoIdentityProviders push statements.
+  it('generates auth without Identity Pool when IdentityPoolId is absent', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            // No IdentityPoolId — User Pool only configuration
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    // fetchIdentityPool should NOT be called
+    const fetchIdPoolSpy = jest.spyOn(gen1App.aws, 'fetchIdentityPool');
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    // Identity Pool should not be fetched
+    expect(fetchIdPoolSpy).not.toHaveBeenCalled();
+
+    const content = writtenFile('auth/resource.ts');
+
+    // Should NOT contain any Identity Pool references
+    expect(content).not.toContain('cfnIdentityPool');
+    expect(content).not.toContain('cognitoIdentityProviders');
+    expect(content).not.toContain('cognitoProviders');
+
+    // Should still generate valid auth with User Pool configuration
+    expect(content).toContain('defineAuth');
+    expect(content).toContain('loginWith');
+    expect(content).toContain('applyEscapeHatches');
+    expect(content).toContain('userPool.addClient');
+  });
 });
