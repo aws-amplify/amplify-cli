@@ -1,5 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { Runtime as CdkRuntime } from 'aws-cdk-lib/aws-lambda';
 import { newLineIdentifier, TS } from '../../ts';
 import { AnalyticsKinesisGenerator } from '../analytics/kinesis.generator';
 
@@ -43,6 +44,26 @@ export interface DynamicEnvVar {
 }
 
 /**
+ * Options for rendering a custom (non-JS) function resource file.
+ */
+export interface RenderCustomFunctionOptions {
+  readonly resourceName: string;
+  readonly handler: string;
+  readonly runtime: string;
+  readonly architecture?: string;
+  readonly timeoutSeconds?: number;
+  readonly memoryMB?: number;
+  /** Literal environment variables to emit on the function. */
+  readonly environment?: Readonly<Record<string, string>>;
+  /**
+   * Human-readable notes about Gen1 configuration that could not be migrated
+   * automatically (dynamic env vars, schedule, permission grants). Emitted as a
+   * TODO block so the migrated function does not silently lose them.
+   */
+  readonly manualMigrationNotes?: readonly string[];
+}
+
+/**
  * Renders defineFunction() resource.ts files from Gen1 Lambda configuration.
  * Pure — no AWS calls, no side effects.
  */
@@ -53,6 +74,106 @@ export class FunctionRenderer {
   public constructor(appId: string, backendEnvironmentName: string) {
     this.appId = appId;
     this.backendEnvironmentName = backendEnvironmentName;
+  }
+
+  /**
+   * Produces the complete TypeScript source for a custom (non-JS) function's resource.ts.
+   * Uses the CDK Function construct pattern via defineFunction((scope) => new Function(...)).
+   * Literal environment variables are emitted; dynamic env vars, schedules, and permission
+   * grants (which the Node.js path wires via applyEscapeHatches) are surfaced as a TODO block
+   * so they are not silently lost.
+   */
+  public renderCustomFunction(opts: RenderCustomFunctionOptions): string {
+    const architecture = opts.architecture === 'arm64' ? 'ARM_64' : 'X86_64';
+    // Go/custom (provided.*) runtimes are always built to a `bootstrap` binary, so the
+    // handler MUST be 'bootstrap' regardless of the Gen1 handler string.
+    const isProvided = opts.runtime.startsWith('go') || opts.runtime.startsWith('provided');
+    const handler = isProvided ? 'bootstrap' : opts.handler;
+    const mappedRuntime = mapToCdkRuntime(opts.runtime);
+    // Guard against Lambda runtimes that CDK's Runtime enum no longer exports
+    // (deprecated/EOL versions). Fall back to a custom runtime so the generated
+    // resource.ts still compiles; the user then sets the runtime/bootstrap.
+    const runtimeIsKnown = (CdkRuntime as unknown as Record<string, unknown>)[mappedRuntime] !== undefined;
+    const cdkRuntime = runtimeIsKnown ? mappedRuntime : 'PROVIDED_AL2023';
+    // An unrecognized runtime family maps to PROVIDED_AL2023 (a valid member) but only
+    // gets copy-only bundling, so the generated file compiles yet won't deploy a working
+    // artifact — warn loudly instead of silently emitting broken code.
+    const isUnknownFamily = mappedRuntime === 'PROVIDED_AL2023' && !isProvided;
+    const timeout = opts.timeoutSeconds ?? 3;
+    const memorySize = opts.memoryMB ?? 128;
+
+    const lines: string[] = [
+      `import { execSync } from 'node:child_process';`,
+      `import * as path from 'node:path';`,
+      `import { fileURLToPath } from 'node:url';`,
+      `import { defineFunction } from '@aws-amplify/backend';`,
+      `import { Duration } from 'aws-cdk-lib';`,
+      `import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';`,
+      ``,
+      `const functionDir = path.dirname(fileURLToPath(import.meta.url));`,
+      ``,
+    ];
+
+    if (!runtimeIsKnown) {
+      lines.push(
+        `// NOTE: runtime '${opts.runtime}' has no matching CDK Runtime member (it may be deprecated/EOL).`,
+        `// Falling back to Runtime.PROVIDED_AL2023 — set the correct runtime and provide a bootstrap, or upgrade the function runtime.`,
+        ``,
+      );
+    } else if (isUnknownFamily) {
+      lines.push(
+        `// WARNING: runtime '${opts.runtime}' is not recognized. The bundling below only copies source files,`,
+        `// so this function will NOT build or deploy a working artifact as-is. Set the correct runtime and`,
+        `// provide a build/bootstrap step, or migrate the function to a supported runtime.`,
+        ``,
+      );
+    }
+
+    // Local bundling runs the runtime toolchain (python3/pip, go, mvn, dotnet) on the host;
+    // the runtime's CDK bundling image is the Docker fallback when the toolchain is absent.
+    if (opts.manualMigrationNotes && opts.manualMigrationNotes.length > 0) {
+      lines.push(`// TODO: The following Gen1 configuration was not migrated automatically and must be re-added manually:`);
+      for (const note of opts.manualMigrationNotes) {
+        lines.push(`//   - ${note}`);
+      }
+      lines.push(``);
+    }
+
+    const bundlingBlock = renderBundlingBlock(opts.runtime, opts.architecture);
+
+    lines.push(`export const ${opts.resourceName} = defineFunction(`);
+    lines.push(`  (scope) =>`);
+    lines.push(`    new Function(scope, '${opts.resourceName}', {`);
+    lines.push(`      handler: '${handler}',`);
+    lines.push(`      runtime: Runtime.${cdkRuntime},`);
+    lines.push(`      architecture: Architecture.${architecture},`);
+    lines.push(`      timeout: Duration.seconds(${timeout}),`);
+    lines.push(`      memorySize: ${memorySize},`);
+    if (opts.environment && Object.keys(opts.environment).length > 0) {
+      lines.push(`      environment: {`);
+      for (const [key, value] of Object.entries(opts.environment)) {
+        lines.push(`        ${JSON.stringify(key)}: ${JSON.stringify(value)},`);
+      }
+      lines.push(`      },`);
+    }
+    lines.push(`      code: Code.fromAsset(functionDir, {`);
+    lines.push(`        bundling: {`);
+    lines.push(`          image: Runtime.${cdkRuntime}.bundlingImage,`);
+    lines.push(`          local: {`);
+    lines.push(`            tryBundle(outputDir: string) {`);
+    for (const cmd of bundlingBlock) {
+      lines.push(`              ${cmd}`);
+    }
+    lines.push(`              return true;`);
+    lines.push(`            },`);
+    lines.push(`          },`);
+    lines.push(`        },`);
+    lines.push(`      }),`);
+    lines.push(`    }),`);
+    lines.push(`);`);
+    lines.push(``);
+
+    return lines.join('\n');
   }
 
   /**
@@ -973,4 +1094,70 @@ function convertScheduleExpression(raw: string): string | undefined {
   }
 
   return undefined;
+}
+
+/**
+ * Maps a Lambda runtime string to the CDK Runtime enum member name.
+ * 'python3.9' → 'PYTHON_3_9', 'go1.x' → 'PROVIDED_AL2023', etc.
+ */
+export function mapToCdkRuntime(runtime: string): string {
+  if (runtime.startsWith('python')) {
+    // 'python3.9' → 'PYTHON_3_9'
+    const version = runtime.replace('python', '').replace('.', '_');
+    return `PYTHON_${version}`;
+  }
+  if (runtime.startsWith('java')) {
+    // 'java21' → 'JAVA_21'
+    const version = runtime.replace('java', '');
+    return `JAVA_${version}`;
+  }
+  if (runtime.startsWith('dotnet')) {
+    // 'dotnet8' → 'DOTNET_8'
+    const version = runtime.replace('dotnet', '');
+    return `DOTNET_${version}`;
+  }
+  if (runtime.startsWith('ruby')) {
+    // 'ruby3.3' → 'RUBY_3_3'
+    const version = runtime.replace('ruby', '').replace('.', '_');
+    return `RUBY_${version}`;
+  }
+  // Go and custom runtimes use provided.al2023
+  if (runtime.startsWith('go') || runtime.startsWith('provided')) {
+    return 'PROVIDED_AL2023';
+  }
+  // Fallback for unknown runtimes
+  return 'PROVIDED_AL2023';
+}
+
+/**
+ * Returns the bundling commands for a non-JS runtime.
+ * Each string is a line of code inside the tryBundle function body.
+ */
+function renderBundlingBlock(runtime: string, architecture?: string): string[] {
+  const isArm = architecture === 'arm64';
+  if (runtime.startsWith('python')) {
+    const platform = isArm ? 'manylinux2014_aarch64' : 'manylinux2014_x86_64';
+    return [
+      `execSync(\`python3 -m pip install -r \${path.join(functionDir, 'requirements.txt')} -t \${path.join(outputDir)} --platform ${platform} --only-binary=:all:\`);`,
+      `execSync(\`cp -r \${functionDir}/* \${path.join(outputDir)}\`);`,
+    ];
+  }
+  if (runtime.startsWith('go') || runtime.startsWith('provided')) {
+    const goarch = isArm ? 'arm64' : 'amd64';
+    return [
+      `execSync(\`rsync -rLv \${functionDir}/* \${path.join(outputDir)}\`);`,
+      `execSync(\`cd \${path.join(outputDir)} && GOARCH=${goarch} GOOS=linux go build -tags lambda.norpc -o \${path.join(outputDir)}/bootstrap \${functionDir}/main.go\`);`,
+    ];
+  }
+  if (runtime.startsWith('java')) {
+    return [
+      `execSync(\`cp -r \${functionDir}/* \${path.join(outputDir)}\`);`,
+      `execSync(\`cd \${path.join(outputDir)} && mvn package -q\`);`,
+    ];
+  }
+  if (runtime.startsWith('dotnet')) {
+    return [`execSync(\`dotnet publish \${functionDir} -c Release -o \${path.join(outputDir)}\`);`];
+  }
+  // Default: just copy files
+  return [`execSync(\`cp -r \${functionDir}/* \${path.join(outputDir)}\`);`];
 }

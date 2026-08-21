@@ -1237,7 +1237,7 @@ describe('FunctionGenerator', () => {
     expect(output).toContain('KinesisEventSource');
   });
 
-  it('throws for non-nodejs runtime', async () => {
+  it('generates a custom function resource.ts for non-nodejs runtime', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       function: {
@@ -1254,15 +1254,31 @@ describe('FunctionGenerator', () => {
     jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
       FunctionName: 'myFunc-main-abc',
       Handler: 'handler.handler',
-      Timeout: 3,
-      MemorySize: 128,
+      Timeout: 15,
+      MemorySize: 256,
       Runtime: 'python3.9',
       Environment: { Variables: {} },
     });
     jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
 
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
-    await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const content = writtenFile('resource.ts');
+    expect(content).toContain('export const myFunc = defineFunction(');
+    expect(content).toContain("handler: 'handler.handler'");
+    expect(content).toContain('runtime: Runtime.PYTHON_3_9');
+    expect(content).toContain('timeout: Duration.seconds(15)');
+    expect(content).toContain('memorySize: 256');
+    expect(content).toContain('python3 -m pip install');
+
+    // Non-JS functions are wired into backend.ts and retain their source (no throw).
+    expect(mockCp).toHaveBeenCalledWith(
+      expect.stringContaining('myFunc'),
+      expect.any(String),
+      expect.objectContaining({ recursive: true }),
+    );
   });
 
   it('uses original model name casing from schema for table grants and env vars', async () => {
