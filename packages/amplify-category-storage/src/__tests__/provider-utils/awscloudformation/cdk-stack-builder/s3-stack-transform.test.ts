@@ -7,6 +7,12 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockbackendpath'),
   },
+  AmplifyError: class AmplifyError extends Error {
+    constructor(code: string, options: { message: string }) {
+      super(options.message);
+      this.name = code;
+    }
+  },
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state');
@@ -47,5 +53,30 @@ describe('AmplifyS3ResourceStackTransform', () => {
       authPolicyName: 's3_amplify_abc123_prod',
       unauthPolicyName: 's3_amplify_abc123_prod',
     });
+  });
+
+  it('throws when the current environment name cannot be determined', () => {
+    const userInput: S3UserInputs = {
+      resourceName: 'storage',
+      bucketName: 'bucket',
+      policyUUID: 'abc123',
+      storageAccess: undefined,
+      guestAccess: [],
+      authAccess: [],
+    };
+    // Env info carries no envName (uninitialized env / headless path).
+    const context = {
+      amplify: {
+        getEnvInfo: jest.fn().mockReturnValue({}),
+      },
+    } as unknown as $TSContext;
+
+    jest.spyOn(S3InputState.prototype, 'getCliInputPayload').mockReturnValue(userInput);
+    jest.spyOn(S3InputState.prototype, 'getUserInput').mockReturnValue(userInput);
+    jest.spyOn(S3InputState, 'getCfnPermissionsFromInputPermissions').mockReturnValue([]);
+
+    const transform = new AmplifyS3ResourceStackTransform('storage', context);
+
+    expect(() => transform.generateCfnInputParameters()).toThrow(/environment name/);
   });
 });

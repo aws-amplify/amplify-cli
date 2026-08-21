@@ -112,7 +112,20 @@ export class AmplifyS3ResourceStackTransform {
     if (userInput.adminTriggerFunction?.triggerFunction && userInput.adminTriggerFunction.triggerFunction !== 'NONE') {
       this.cfnInputParams.adminTriggerFunction = userInput.adminTriggerFunction.triggerFunction;
     }
-    const policyNameSuffix = `${userInput.policyUUID}_${this.context.amplify.getEnvInfo().envName}`;
+    // Policy names must be unique per environment. When multiple environments share the
+    // same IAM role (e.g. an imported Identity Pool with shared auth/unauth roles), reusing
+    // the same policyUUID across environments produces identically named inline policies on
+    // the same role, which CloudFormation's single-stack ownership enforcement rejects with
+    // "Policy resource was already managed by another stack". The environment name is read
+    // once and validated so the suffix never silently degrades to a shared "_undefined".
+    const envName = this.context.amplify.getEnvInfo()?.envName;
+    if (typeof envName !== 'string' || envName.length === 0) {
+      throw new AmplifyError('EnvironmentNotInitializedError', {
+        message: 'Cannot determine the current Amplify environment name while generating S3 IAM policy names.',
+        resolution: `Run 'amplify init' or 'amplify env checkout <env>' in the root of your app directory to select an environment, then try again.`,
+      });
+    }
+    const policyNameSuffix = `${userInput.policyUUID}_${envName}`;
     this.cfnInputParams.s3PrivatePolicy = `Private_policy_${policyNameSuffix}`;
     this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${policyNameSuffix}`;
     this.cfnInputParams.s3PublicPolicy = `Public_policy_${policyNameSuffix}`;
