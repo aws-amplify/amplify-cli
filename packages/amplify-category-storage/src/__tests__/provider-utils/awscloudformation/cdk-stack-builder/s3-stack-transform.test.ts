@@ -17,31 +17,40 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state');
 
+const userInput: S3UserInputs = {
+  resourceName: 'storage',
+  bucketName: 'bucket',
+  policyUUID: 'abc123',
+  storageAccess: undefined,
+  guestAccess: [],
+  authAccess: [],
+};
+
+const importedAuthMeta = { auth: { cognitoauth: { service: 'Cognito', serviceType: 'imported' } } };
+const managedAuthMeta = { auth: { cognitoauth: { service: 'Cognito', serviceType: 'managed' } } };
+
+const buildContext = (meta: unknown, envName: string): $TSContext =>
+  ({
+    amplify: {
+      getProjectMeta: jest.fn().mockReturnValue(meta),
+      getEnvInfo: jest.fn().mockReturnValue({ envName }),
+    },
+  } as unknown as $TSContext);
+
+const stubInputState = (): void => {
+  jest.spyOn(S3InputState.prototype, 'getCliInputPayload').mockReturnValue(userInput);
+  jest.spyOn(S3InputState.prototype, 'getUserInput').mockReturnValue(userInput);
+  jest.spyOn(S3InputState, 'getCfnPermissionsFromInputPermissions').mockReturnValue([]);
+};
+
 describe('AmplifyS3ResourceStackTransform', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('includes the environment name in IAM policy names', () => {
-    const userInput: S3UserInputs = {
-      resourceName: 'storage',
-      bucketName: 'bucket',
-      policyUUID: 'abc123',
-      storageAccess: undefined,
-      guestAccess: [],
-      authAccess: [],
-    };
-    const context = {
-      amplify: {
-        getEnvInfo: jest.fn().mockReturnValue({ envName: 'prod' }),
-      },
-    } as unknown as $TSContext;
-
-    jest.spyOn(S3InputState.prototype, 'getCliInputPayload').mockReturnValue(userInput);
-    jest.spyOn(S3InputState.prototype, 'getUserInput').mockReturnValue(userInput);
-    jest.spyOn(S3InputState, 'getCfnPermissionsFromInputPermissions').mockReturnValue([]);
-
-    const transform = new AmplifyS3ResourceStackTransform('storage', context);
+  it('appends the environment name to IAM policy names when auth is imported', () => {
+    stubInputState();
+    const transform = new AmplifyS3ResourceStackTransform('storage', buildContext(importedAuthMeta, 'prod'));
     transform.generateCfnInputParameters();
 
     expect(transform.getCFNInputParams()).toMatchObject({
@@ -55,27 +64,29 @@ describe('AmplifyS3ResourceStackTransform', () => {
     });
   });
 
-  it('throws when the current environment name cannot be determined', () => {
-    const userInput: S3UserInputs = {
-      resourceName: 'storage',
-      bucketName: 'bucket',
-      policyUUID: 'abc123',
-      storageAccess: undefined,
-      guestAccess: [],
-      authAccess: [],
-    };
-    // Env info carries no envName (uninitialized env / headless path).
-    const context = {
-      amplify: {
-        getEnvInfo: jest.fn().mockReturnValue({}),
-      },
-    } as unknown as $TSContext;
+  it('keeps the legacy (env-agnostic) IAM policy names when auth is not imported', () => {
+    // Managed auth gives each environment its own roles, so names never collide. Keeping the
+    // legacy name avoids forcing a policy replacement on every existing storage app on upgrade.
+    stubInputState();
+    const transform = new AmplifyS3ResourceStackTransform('storage', buildContext(managedAuthMeta, 'prod'));
+    transform.generateCfnInputParameters();
 
-    jest.spyOn(S3InputState.prototype, 'getCliInputPayload').mockReturnValue(userInput);
-    jest.spyOn(S3InputState.prototype, 'getUserInput').mockReturnValue(userInput);
-    jest.spyOn(S3InputState, 'getCfnPermissionsFromInputPermissions').mockReturnValue([]);
+    expect(transform.getCFNInputParams()).toMatchObject({
+      s3PrivatePolicy: 'Private_policy_abc123',
+      s3ProtectedPolicy: 'Protected_policy_abc123',
+      s3PublicPolicy: 'Public_policy_abc123',
+      s3ReadPolicy: 'read_policy_abc123',
+      s3UploadsPolicy: 'Uploads_policy_abc123',
+      authPolicyName: 's3_amplify_abc123',
+      unauthPolicyName: 's3_amplify_abc123',
+    });
+  });
 
-    const transform = new AmplifyS3ResourceStackTransform('storage', context);
+  it('throws when auth is imported but the current environment name cannot be determined', () => {
+    // Imported auth needs the env suffix; a blank envName would otherwise degrade to a
+    // shared "_undefined" name and re-collide, so we fail fast instead.
+    stubInputState();
+    const transform = new AmplifyS3ResourceStackTransform('storage', buildContext(importedAuthMeta, ''));
 
     expect(() => transform.generateCfnInputParameters()).toThrow(/environment name/);
   });
