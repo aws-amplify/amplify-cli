@@ -390,7 +390,7 @@ describe('DataGenerator', () => {
     `);
   });
 
-  it('renders OIDC auth mode', async () => {
+  it('renders OIDC auth mode with TTL converted from milliseconds to seconds', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       api: {
@@ -412,8 +412,8 @@ describe('DataGenerator', () => {
                 name: 'MyOIDC',
                 issuerUrl: 'https://example.com',
                 clientId: 'client123',
-                authTTL: 3600,
-                iatTTL: 7200,
+                authTTL: 3600000,
+                iatTTL: 7200000,
               },
             },
           ],
@@ -457,6 +457,93 @@ describe('DataGenerator', () => {
       });
       "
     `);
+  });
+
+  it('renders OIDC auth mode without clientId when absent and supplements from live API', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      if (key === 'authConfig')
+        return {
+          defaultAuthentication: {
+            authenticationType: 'OPENID_CONNECT',
+            openIDConnectConfig: {
+              name: 'NoClientIdProvider',
+              issuerUrl: 'https://idp.example.com',
+              authTTL: 1800000,
+              iatTTL: 3600000,
+            },
+          },
+        } as any;
+      return undefined as any;
+    });
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      openIDConnectConfig: { issuer: 'https://idp.example.com', clientId: 'supplemented-client-id' },
+      additionalAuthenticationProviders: [],
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).toContain("clientId: 'supplemented-client-id'");
+    expect(output).toContain('tokenExpiryFromAuthInSeconds: 1800');
+    expect(output).toContain('tokenExpireFromIssueInSeconds: 3600');
+  });
+
+  it('floors TTL values when not exact multiples of 1000', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        testApi: {
+          service: 'AppSync',
+          output: { GraphQLAPIIdOutput: 'api-123' },
+        },
+      },
+    });
+    mockSchema(gen1App, 'type Todo @model { id: ID! }', ['Todo']);
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockImplementation((_resource: DiscoveredResource, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      if (key === 'authConfig')
+        return {
+          defaultAuthentication: {
+            authenticationType: 'OPENID_CONNECT',
+            openIDConnectConfig: {
+              name: 'Floored',
+              issuerUrl: 'https://idp.example.com',
+              clientId: 'abc',
+              authTTL: 3599999,
+              iatTTL: 7200500,
+            },
+          },
+        } as any;
+      return undefined as any;
+    });
+    jest.spyOn(gen1App.aws, 'fetchGraphqlApi').mockResolvedValue({
+      apiId: 'api-123',
+      name: 'testApi',
+      additionalAuthenticationProviders: [],
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, dataResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).toContain('tokenExpiryFromAuthInSeconds: 3599');
+    expect(output).toContain('tokenExpireFromIssueInSeconds: 7200');
   });
 
   it('renders Lambda auth mode', async () => {

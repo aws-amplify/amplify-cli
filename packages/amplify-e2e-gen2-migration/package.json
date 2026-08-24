@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/amplify-e2e-gen2-migration",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Migration automation system for AWS Amplify Gen1 to Gen2",
   "main": "lib/index.js",
   "bin": {

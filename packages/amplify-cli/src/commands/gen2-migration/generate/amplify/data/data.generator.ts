@@ -169,7 +169,7 @@ export class DataGenerator implements Planner {
     const hasAdditionalAuthProviders =
       graphqlApi.additionalAuthenticationProviders !== undefined && graphqlApi.additionalAuthenticationProviders.length > 0;
     const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
-    const authorizationModes = this.gen1App.resourceMetaOutput(this.resource, 'authConfig');
+    const authorizationModes = supplementOidcConfig(this.gen1App.resourceMetaOutput(this.resource, 'authConfig'), graphqlApi);
     const hasIamAuth = this.detectIamAuth(authorizationModes, graphqlApi);
     const vtlFiles = this.findResolverVtlFiles(this.resource.resourceName);
     const hasResolvers = vtlFiles.length > 0;
@@ -274,4 +274,43 @@ export class DataGenerator implements Planner {
     if (defaultAuthType === 'AWS_IAM') return true;
     return graphqlApi.additionalAuthenticationProviders?.some((p) => p.authenticationType === 'AWS_IAM') ?? false;
   }
+}
+
+/**
+ * Supplements the authConfig from amplify-meta.json with OIDC clientId
+ * values from the live GraphQL API when they are missing in the local config.
+ *
+ * Gen1 amplify-meta.json may not include the `clientId` field for OIDC
+ * providers (depends on CLI version), but the live API always has it.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped authConfig from amplify-meta.json
+function supplementOidcConfig(authConfig: any, graphqlApi: GraphqlApi): any {
+  if (!authConfig) return authConfig;
+
+  const result = JSON.parse(JSON.stringify(authConfig));
+
+  if (
+    result.defaultAuthentication?.authenticationType === 'OPENID_CONNECT' &&
+    result.defaultAuthentication.openIDConnectConfig &&
+    !result.defaultAuthentication.openIDConnectConfig.clientId &&
+    graphqlApi.openIDConnectConfig?.clientId
+  ) {
+    result.defaultAuthentication.openIDConnectConfig.clientId = graphqlApi.openIDConnectConfig.clientId;
+  }
+
+  if (result.additionalAuthenticationProviders) {
+    for (const provider of result.additionalAuthenticationProviders) {
+      if (provider.authenticationType !== 'OPENID_CONNECT' || !provider.openIDConnectConfig || provider.openIDConnectConfig.clientId) {
+        continue;
+      }
+      const match = graphqlApi.additionalAuthenticationProviders?.find(
+        (p) => p.authenticationType === 'OPENID_CONNECT' && p.openIDConnectConfig?.issuer === provider.openIDConnectConfig.issuerUrl,
+      );
+      if (match?.openIDConnectConfig?.clientId) {
+        provider.openIDConnectConfig.clientId = match.openIDConnectConfig.clientId;
+      }
+    }
+  }
+
+  return result;
 }
