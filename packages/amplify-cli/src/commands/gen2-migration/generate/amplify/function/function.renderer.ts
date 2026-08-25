@@ -530,12 +530,26 @@ function nonNull(expr: ts.Expression): ts.Expression {
  * extractTableName('API_MYAPI_MEALTABLE_ARN', ['randomItem', 'Meal'])       // → 'Meal'
  */
 export function extractTableName(envVar: string, modelNames: readonly string[] = []): string | undefined {
-  const match = envVar.match(/API_.*_(.+?)TABLE_/);
+  // Preferred path: match the env var against known model names. The env var
+  // embeds the uppercased model name as `_<MODEL>TABLE_<ARN|NAME>`. Testing the
+  // known name directly (instead of slicing a segment out) correctly handles
+  // model names that contain underscores, which a positional regex cannot
+  // disambiguate from the API-name prefix.
+  //
+  // Assumption: model names are unique after uppercasing. If two models only
+  // differ by case (e.g. `randomItem` vs `randomitem`) the first in schema
+  // order wins. GraphQL type names are case-sensitively unique, so such a
+  // collision is not expressible in a valid schema.
+  const upperEnv = envVar.toUpperCase();
+  const matched = modelNames.find((name) => upperEnv.includes(`_${name.toUpperCase()}TABLE_`));
+  if (matched) return matched;
+
+  // Fallback (no schema model names available): anchor to the last segment
+  // before `TABLE_` so a greedy prefix cannot swallow underscore-delimited
+  // parts, then naively capitalize.
+  const match = envVar.match(/_([A-Za-z0-9]+)TABLE_(?:ARN|NAME)$/);
   if (!match) return undefined;
   const raw = match[1];
-  const upperRaw = raw.toUpperCase();
-  const found = modelNames.find((name) => name.toUpperCase() === upperRaw);
-  if (found) return found;
   return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
 }
 

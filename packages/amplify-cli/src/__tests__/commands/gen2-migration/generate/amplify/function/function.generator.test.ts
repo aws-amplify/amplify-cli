@@ -1465,6 +1465,78 @@ describe('FunctionGenerator', () => {
     expect(resourceTs).not.toContain('Blogpost');
   });
 
+  it('recovers a @model(queries: null) model missing from the build schema by merging the raw schema', async () => {
+    // A model declared `@model(queries: null)` emits no ModelXConnection type,
+    // so it is absent from build/schema.graphql. It must still be recovered
+    // from the raw schema; otherwise it falls through to naive casing — the
+    // exact bug this fix targets.
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      // Build schema only contains the Connection type for the model WITH a
+      // list query (blogPost). secretNote (queries: null) is deliberately absent.
+      if (filePath.includes('build/schema.graphql')) {
+        return 'type ModelblogPostConnection { items: [blogPost] }\ntype blogPost @model { id: ID! }';
+      }
+      if (filePath.includes('schema.graphql')) {
+        return 'type blogPost @model { id: ID! }\ntype secretNote @model(queries: null) { id: ID! }';
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      return filePath.includes('schema.graphql') && !filePath.includes('build');
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_BLOGPOSTTABLE_NAME: 'blogPost-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/blogPost-abc-main',
+          API_MYAPI_SECRETNOTETABLE_NAME: 'secretNote-abc-main',
+          API_MYAPI_SECRETNOTETABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/secretNote-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain("backend.data.resources.tables['blogPost']");
+    // secretNote is only in the raw schema — the merge must recover it.
+    expect(resourceTs).toContain("backend.data.resources.tables['secretNote']");
+    expect(resourceTs).not.toContain('Secretnote');
+  });
+
   it('reads model names from schema directory when schema.graphql does not exist', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
@@ -1569,7 +1641,9 @@ describe('FunctionGenerator', () => {
     await ops[0].execute();
 
     const resourceTs = writtenFile('resource.ts');
-    // Without model names, falls back to naive capitalization
-    expect(resourceTs).toContain('Some');
+    // Without model names, falls back to naive capitalization: SOME -> 'Some'.
+    // Assert the exact generated table reference so this proves the fallback
+    // path rather than an incidental 'Some' substring appearing elsewhere.
+    expect(resourceTs).toContain("backend.data.resources.tables['Some']");
   });
 });

@@ -466,12 +466,18 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
  * Reads model names from the Gen1 app's GraphQL schema.
  * Returns an empty array when no AppSync API exists.
  *
- * Strategy:
- * 1. Primary: Read `build/schema.graphql` (transformer output) and extract names
- *    from the standardised `ModelXConnection` types. This is the most reliable
- *    approach as it is not affected by directive ordering in the raw schema.
- * 2. Fallback: Read the raw user schema (single file or directory) and match
+ * Both sources below are merged (rather than short-circuiting on the first
+ * that yields anything) because neither is complete on its own:
+ * 1. `build/schema.graphql` (transformer output) exposes names via the
+ *    standardised `ModelXConnection` types. Robust against directive ordering,
+ *    but the transformer only emits a Connection type for models that have a
+ *    list query, so a model declared `@model(queries: null)` never appears here.
+ * 2. The raw user schema (single file or directory) is parsed for
  *    `type <Name> ... @model` with a parser that handles interleaved directives.
+ *    This covers every @model regardless of its query configuration.
+ *
+ * Merging guarantees a model missing from one source is still recovered from
+ * the other; names present in both are de-duplicated.
  */
 function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
   const apiCategory = gen1App.categoryMeta('api');
@@ -480,28 +486,32 @@ function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
   if (!apiEntry) return [];
   const [apiName] = apiEntry;
 
-  // Primary: use build/schema.graphql (transformer standardised output)
-  const buildSchemaPath = path.join('api', apiName, 'build', 'schema.graphql');
+  const names = new Set<string>();
+
+  // Source 1: build/schema.graphql (transformer standardised output).
   try {
-    const buildSchema = gen1App.file(buildSchemaPath);
+    const buildSchema = gen1App.file(path.join('api', apiName, 'build', 'schema.graphql'));
     const connectionRegex = /type\s+Model(\w+)Connection\b/g;
-    const names: string[] = [];
     let match: RegExpExecArray | null;
     while ((match = connectionRegex.exec(buildSchema)) !== null) {
-      names.push(match[1]);
+      names.add(match[1]);
     }
-    if (names.length > 0) return names;
   } catch {
-    // build schema not available — fall through to raw schema
+    // build schema not available — rely on the raw schema below
   }
 
-  // Fallback: read raw user schema (single file or directory)
+  // Source 2: raw user schema — catches models with no Connection type
+  // (e.g. `@model(queries: null)`) that Source 1 cannot see.
   try {
     const schema = collectUserSchema(gen1App, apiName);
-    return extractModelNamesFromRawSchema(schema);
+    for (const name of extractModelNamesFromRawSchema(schema)) {
+      names.add(name);
+    }
   } catch {
-    return [];
+    // raw schema not available — keep whatever the build schema yielded
   }
+
+  return [...names];
 }
 
 /**
@@ -544,7 +554,9 @@ function extractModelNamesFromRawSchema(schema: string): string[] {
       } else if (depth === 0 && ch === '{') {
         break;
       }
-      if (depth === 0 && afterName.slice(i).startsWith('@model')) {
+      // Match `@model` as a whole directive; a bare startsWith would also
+      // accept `@models` / `@modelFoo`.
+      if (depth === 0 && /^@model(?![A-Za-z0-9])/.test(afterName.slice(i))) {
         foundModel = true;
         break;
       }
