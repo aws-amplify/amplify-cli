@@ -141,8 +141,15 @@ export class AwsFetcher {
       throw e;
     }
     if (!ruleName) return undefined;
-    const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
-    return ruleResponse.ScheduleExpression;
+    try {
+      const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
+      return ruleResponse.ScheduleExpression;
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name === 'ResourceNotFoundException') {
+        return undefined;
+      }
+      throw e;
+    }
   }
 
   // ── Storage (S3) ────────────────────────────────────────────────
