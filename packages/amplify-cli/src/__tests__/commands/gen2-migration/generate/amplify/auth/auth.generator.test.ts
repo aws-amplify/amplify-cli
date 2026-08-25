@@ -208,7 +208,7 @@ describe('AuthGenerator', () => {
 
       export const auth = defineAuth({
         loginWith: {
-          email: true,
+          phone: true,
         },
         multifactor: {
           mode: 'OFF',
@@ -256,6 +256,126 @@ describe('AuthGenerator', () => {
       }
       "
     `);
+  });
+
+  // Regression test for https://github.com/aws-amplify/amplify-cli/issues/14810
+  // A Gen1 pool with email-based verification disabled (SMS/TOTP) keeps email
+  // only as a required attribute; verification is via phone_number. The migration
+  // must generate loginWith: { phone: true }, not email login.
+  it('generates phone login when email verification is disabled but email is a required attribute', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      AutoVerifiedAttributes: ['phone_number'],
+      SchemaAttributes: [{ Name: 'email', Required: true, Mutable: true }],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+    expect(content).toContain('phone: true');
+    expect(content).not.toContain('email: true');
+    // email is preserved as a required user attribute, not a login mechanism
+    expect(content).toMatch(/userAttributes:\s*\{[^}]*email:\s*\{[^}]*required:\s*true/s);
+  });
+
+  // Login mechanisms should be derived from AliasAttributes when that is the
+  // populated sign-in signal (not just UsernameAttributes/AutoVerifiedAttributes).
+  it('generates phone login from AliasAttributes', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      AliasAttributes: ['phone_number'],
+      SchemaAttributes: [],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+    expect(content).toContain('phone: true');
+    expect(content).not.toContain('email: true');
+  });
+
+  // A pool that supports both email and phone sign-in must enable both in loginWith.
+  it('generates both email and phone login when the pool supports both', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      UsernameAttributes: ['email', 'phone_number'],
+      SchemaAttributes: [],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+    expect(content).toContain('email: true');
+    expect(content).toContain('phone: true');
   });
 
   it('generates email with verification options', async () => {
@@ -2194,5 +2314,52 @@ describe('AuthGenerator', () => {
       }
       "
     `);
+  });
+
+  // When Gen1 auth was configured as 'User Sign-Up & Sign-In only' (User Pool only),
+  // the migration tool should not emit Identity Pool escape hatches or
+  // cognitoIdentityProviders push statements.
+  it('generates auth without Identity Pool when IdentityPoolId is absent', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            // No IdentityPoolId — User Pool only configuration
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    // fetchIdentityPool should NOT be called
+    const fetchIdPoolSpy = jest.spyOn(gen1App.aws, 'fetchIdentityPool');
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    // Identity Pool should not be fetched
+    expect(fetchIdPoolSpy).not.toHaveBeenCalled();
+
+    const content = writtenFile('auth/resource.ts');
+
+    // Should NOT contain any Identity Pool references
+    expect(content).not.toContain('cfnIdentityPool');
+    expect(content).not.toContain('cognitoIdentityProviders');
+    expect(content).not.toContain('cognitoProviders');
+
+    // Should still generate valid auth with User Pool configuration
+    expect(content).toContain('defineAuth');
+    expect(content).toContain('loginWith');
+    expect(content).toContain('applyEscapeHatches');
+    expect(content).toContain('userPool.addClient');
   });
 });

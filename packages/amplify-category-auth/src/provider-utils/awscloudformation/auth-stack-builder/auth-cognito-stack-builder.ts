@@ -1065,12 +1065,21 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['iam:CreateOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider', 'iam:AddClientIDToOpenIDConnectProvider'],
+            Action: [
+              'iam:CreateOpenIDConnectProvider',
+              'iam:GetOpenIDConnectProvider',
+              'iam:AddClientIDToOpenIDConnectProvider',
+              'iam:RemoveClientIDFromOpenIDConnectProvider',
+              'iam:DeleteOpenIDConnectProvider',
+            ],
             Resource: cdk.Fn.sub('arn:aws:iam::${account}:oidc-provider/accounts.google.com', {
               account: cdk.Fn.ref('AWS::AccountId'),
             }),
           },
           {
+            // findProviderArn (used by the Create/Update and Delete paths) calls
+            // ListOpenIDConnectProviders, which cannot be scoped to a single provider ARN, so it is
+            // granted here against the wildcard provider ARN (oidc-provider/*) in this account.
             Effect: 'Allow',
             Action: ['iam:ListOpenIDConnectProviders'],
             Resource: cdk.Fn.sub('arn:aws:iam::${account}:oidc-provider/${selector}', {

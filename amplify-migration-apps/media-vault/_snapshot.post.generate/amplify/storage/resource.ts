@@ -18,13 +18,14 @@ export const storage = defineStorage({
       allow.resource(thumbnailgen).to(['read', 'write', 'delete']),
     ],
     'protected/{entity_id}/*': [
-      allow.authenticated.to(['write', 'read', 'delete']),
+      allow.entity('identity').to(['write', 'read', 'delete']),
+      allow.authenticated.to(['read']),
       allow.groups(['Admin']).to(['write', 'read', 'delete']),
       allow.groups(['Basic']).to(['read']),
       allow.resource(thumbnailgen).to(['read', 'write', 'delete']),
     ],
     'private/{entity_id}/*': [
-      allow.authenticated.to(['write', 'read', 'delete']),
+      allow.entity('identity').to(['write', 'read', 'delete']),
       allow.groups(['Admin']).to(['write', 'read', 'delete']),
       allow.groups(['Basic']).to(['read']),
       allow.resource(thumbnailgen).to(['read', 'write', 'delete']),

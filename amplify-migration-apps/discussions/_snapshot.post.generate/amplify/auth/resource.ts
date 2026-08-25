@@ -4,10 +4,7 @@ import type { Backend } from '../backend';
 
 export const auth = defineAuth({
   loginWith: {
-    email: {
-      verificationEmailSubject: 'Verification',
-      verificationEmailBody: () => 'Here is your verification code {####}',
-    },
+    phone: true,
   },
   userAttributes: {
     email: {
