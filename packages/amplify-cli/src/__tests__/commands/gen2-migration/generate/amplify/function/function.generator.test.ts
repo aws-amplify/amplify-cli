@@ -1264,4 +1264,464 @@ describe('FunctionGenerator', () => {
     const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
     await expect(generator.plan()).rejects.toThrow("unsupported runtime 'python3.9'");
   });
+
+  it('uses original model name casing from schema for table grants and env vars', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      if (filePath.includes('build/schema.graphql')) {
+        return 'type ModelrandomItemConnection { items: [randomItem] }\ntype ModelMealPlanConnection { items: [MealPlan] }';
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_RANDOMITEMTABLE_NAME: 'randomItem-abc-main',
+          API_MYAPI_RANDOMITEMTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/randomItem-abc-main',
+          API_MYAPI_MEALPLANTABLE_NAME: 'MealPlan-abc-main',
+          API_MYAPI_MEALPLANTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/MealPlan-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+
+    // The table reference should use original model names, not naive capitalization
+    expect(resourceTs).toContain('randomItem');
+    expect(resourceTs).toContain('MealPlan');
+    // Should NOT contain incorrectly cased versions
+    expect(resourceTs).not.toContain('Randomitem');
+    expect(resourceTs).not.toContain('Mealplan');
+  });
+
+  it('falls back to raw schema regex when build/schema.graphql is not available', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      if (filePath.includes('build/schema.graphql')) {
+        throw new Error('File not found');
+      }
+      if (filePath.includes('schema.graphql')) {
+        return 'type randomItem @model { id: ID! }\ntype MealPlan @model { id: ID! }';
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      return filePath.includes('schema.graphql') && !filePath.includes('build');
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_RANDOMITEMTABLE_NAME: 'randomItem-abc-main',
+          API_MYAPI_RANDOMITEMTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/randomItem-abc-main',
+          API_MYAPI_MEALPLANTABLE_NAME: 'MealPlan-abc-main',
+          API_MYAPI_MEALPLANTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/MealPlan-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain('randomItem');
+    expect(resourceTs).toContain('MealPlan');
+    expect(resourceTs).not.toContain('Randomitem');
+    expect(resourceTs).not.toContain('Mealplan');
+  });
+
+  it('handles models with multiple directives before @model in raw schema fallback', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    const rawSchema = [
+      'type todoItem @auth(rules: [{allow: owner}]) @model { id: ID! title: String! }',
+      'type BlogPost @searchable @auth(rules: [{allow: public}]) @model { id: ID! content: String }',
+    ].join('\n');
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      if (filePath.includes('build/schema.graphql')) {
+        throw new Error('File not found');
+      }
+      if (filePath.includes('schema.graphql')) {
+        return rawSchema;
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      return filePath.includes('schema.graphql') && !filePath.includes('build');
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_TODOITEMTABLE_NAME: 'todoItem-abc-main',
+          API_MYAPI_TODOITEMTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/todoItem-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_NAME: 'BlogPost-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/BlogPost-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain('todoItem');
+    expect(resourceTs).toContain('BlogPost');
+    expect(resourceTs).not.toContain('Todoitem');
+    expect(resourceTs).not.toContain('Blogpost');
+  });
+
+  it('recovers a @model(queries: null) model missing from the build schema by merging the raw schema', async () => {
+    // A model declared `@model(queries: null)` emits no ModelXConnection type,
+    // so it is absent from build/schema.graphql. It must still be recovered
+    // from the raw schema; otherwise it falls through to naive casing — the
+    // exact bug this fix targets.
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      // Build schema only contains the Connection type for the model WITH a
+      // list query (blogPost). secretNote (queries: null) is deliberately absent.
+      if (filePath.includes('build/schema.graphql')) {
+        return 'type ModelblogPostConnection { items: [blogPost] }\ntype blogPost @model { id: ID! }';
+      }
+      if (filePath.includes('schema.graphql')) {
+        return 'type blogPost @model { id: ID! }\ntype secretNote @model(queries: null) { id: ID! }';
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      return filePath.includes('schema.graphql') && !filePath.includes('build');
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_BLOGPOSTTABLE_NAME: 'blogPost-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/blogPost-abc-main',
+          API_MYAPI_SECRETNOTETABLE_NAME: 'secretNote-abc-main',
+          API_MYAPI_SECRETNOTETABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/secretNote-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain("backend.data.resources.tables['blogPost']");
+    // secretNote is only in the raw schema — the merge must recover it.
+    expect(resourceTs).toContain("backend.data.resources.tables['secretNote']");
+    expect(resourceTs).not.toContain('Secretnote');
+  });
+
+  it('does not attribute a non-model type as a table when it precedes real models', async () => {
+    // A non-model `type Query` sits before the real models. It has no @model,
+    // so it must never become a table reference, and the models after it must
+    // still be cased correctly. (The scan is also bounded to each type as
+    // defense-in-depth so a hypothetical bodyless type cannot bleed into the
+    // next — unreachable for valid GraphQL, hence not separately testable.)
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      if (filePath.includes('build/schema.graphql')) {
+        throw new Error('File not found');
+      }
+      if (filePath.includes('schema.graphql')) {
+        // `Query` is a non-model type declared before the real models.
+        return [
+          'type Query { customField: String }',
+          'type blogPost @model { id: ID! }',
+          'type secretNote @model(queries: null) { id: ID! }',
+        ].join('\n');
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      return filePath.includes('schema.graphql') && !filePath.includes('build');
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_BLOGPOSTTABLE_NAME: 'blogPost-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/blogPost-abc-main',
+          API_MYAPI_SECRETNOTETABLE_NAME: 'secretNote-abc-main',
+          API_MYAPI_SECRETNOTETABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/secretNote-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain("backend.data.resources.tables['blogPost']");
+    expect(resourceTs).toContain("backend.data.resources.tables['secretNote']");
+    expect(resourceTs).not.toContain('Blogpost');
+    expect(resourceTs).not.toContain('Secretnote');
+    // `Query` is not a @model, so it must never appear as a table reference.
+    expect(resourceTs).not.toContain("tables['Query']");
+  });
+
+  it('reads model names from schema directory when schema.graphql does not exist', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+
+    // Create a schema directory with multiple .graphql files inside ccbDir
+    const fsExtra = require('fs-extra');
+    const schemaDirPath = require('path').join(gen1App.ccbDir, 'api', 'myApi', 'schema');
+    fsExtra.mkdirpSync(schemaDirPath);
+    fsExtra.writeFileSync(require('path').join(schemaDirPath, 'todo.graphql'), 'type todoItem @model { id: ID! title: String! }');
+    fsExtra.writeFileSync(require('path').join(schemaDirPath, 'blog.graphql'), 'type BlogPost @model { id: ID! content: String }');
+
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      if (filePath.includes('build/schema.graphql')) {
+        throw new Error('File not found');
+      }
+      return require('fs').readFileSync(require('path').join(gen1App.ccbDir, filePath), 'utf8');
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      if (filePath.includes('schema.graphql')) return false;
+      return false;
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_TODOITEMTABLE_NAME: 'todoItem-abc-main',
+          API_MYAPI_TODOITEMTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/todoItem-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_NAME: 'BlogPost-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/BlogPost-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain('todoItem');
+    expect(resourceTs).toContain('BlogPost');
+    expect(resourceTs).not.toContain('Todoitem');
+    expect(resourceTs).not.toContain('Blogpost');
+  });
+
+  it('returns empty model names gracefully when no API category exists', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_SOMETABLE_NAME: 'SomeTable-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    // Without model names, falls back to naive capitalization: SOME -> 'Some'.
+    // Assert the exact generated table reference so this proves the fallback
+    // path rather than an incidental 'Some' substring appearing elsewhere.
+    expect(resourceTs).toContain("backend.data.resources.tables['Some']");
+  });
 });

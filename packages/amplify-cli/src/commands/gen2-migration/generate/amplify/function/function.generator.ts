@@ -1,7 +1,10 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { globSync } from 'glob';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
@@ -35,6 +38,7 @@ export class FunctionGenerator implements Planner {
   private readonly resource: DiscoveredResource;
   private readonly renderer: FunctionRenderer;
   private readonly logger: SpinningLogger;
+  private cachedModelNames: readonly string[] | undefined;
 
   public constructor(options: FunctionGeneratorOptions) {
     this.gen1App = options.gen1App;
@@ -51,6 +55,16 @@ export class FunctionGenerator implements Planner {
   }
   public setS3Generator(s3Generator: S3Generator): void {
     this.s3Generator = s3Generator;
+  }
+
+  /**
+   * Returns model names extracted from the GraphQL schema.
+   * Caches the result so the schema is read at most once per generator.
+   */
+  private readModelNames(): readonly string[] {
+    if (this.cachedModelNames) return this.cachedModelNames;
+    this.cachedModelNames = readSchemaModelNames(this.gen1App);
+    return this.cachedModelNames;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -76,7 +90,7 @@ export class FunctionGenerator implements Planner {
     this.logger.debug(`Fetching Lambda function schedule '${deployedName}'`);
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
     const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
-    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {});
+    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {}, this.readModelNames());
 
     const dynamoActions = this.extractDynamoActions();
     const kinesisActions = this.extractKinesisActions();
@@ -104,6 +118,7 @@ export class FunctionGenerator implements Planner {
       dataTriggerModels,
       storageTriggerTables,
       unMappedAuthActions,
+      modelNames: this.readModelNames(),
       kinesisConfig: hasAnalytics
         ? {
             resourceName: this.gen1App.singleResourceName('analytics', 'Kinesis'),
@@ -446,4 +461,123 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
 
   const unMapped = cognitoActions.filter((a) => !covered.has(a));
   return { permissions: result as AuthPermissions, unMapped: unMapped };
+}
+
+/**
+ * Reads model names from the Gen1 app's GraphQL schema.
+ * Returns an empty array when no AppSync API exists.
+ *
+ * Both sources below are merged (rather than short-circuiting on the first
+ * that yields anything) because neither is complete on its own:
+ * 1. `build/schema.graphql` (transformer output) exposes names via the
+ *    standardised `ModelXConnection` types. Robust against directive ordering,
+ *    but the transformer only emits a Connection type for models that have a
+ *    list query, so a model declared `@model(queries: null)` never appears here.
+ * 2. The raw user schema (single file or directory) is parsed for
+ *    `type <Name> ... @model` with a parser that handles interleaved directives.
+ *    This covers every @model regardless of its query configuration.
+ *
+ * Merging guarantees a model missing from one source is still recovered from
+ * the other; names present in both are de-duplicated.
+ */
+function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
+  const apiCategory = gen1App.categoryMeta('api');
+  if (!apiCategory) return [];
+  const apiEntry = Object.entries(apiCategory).find(([, v]) => (v as Record<string, unknown>).service === 'AppSync');
+  if (!apiEntry) return [];
+  const [apiName] = apiEntry;
+
+  const names = new Set<string>();
+
+  // Source 1: build/schema.graphql (transformer standardised output).
+  try {
+    const buildSchema = gen1App.file(path.join('api', apiName, 'build', 'schema.graphql'));
+    const connectionRegex = /type\s+Model(\w+)Connection\b/g;
+    let match: RegExpExecArray | null;
+    while ((match = connectionRegex.exec(buildSchema)) !== null) {
+      names.add(match[1]);
+    }
+  } catch (err) {
+    // build schema not available — rely on the raw schema below
+    printer.debug(`readSchemaModelNames: build schema unavailable for api '${apiName}': ${String(err)}`);
+  }
+
+  // Source 2: raw user schema — catches models with no Connection type
+  // (e.g. `@model(queries: null)`) that Source 1 cannot see.
+  try {
+    const schema = collectUserSchema(gen1App, apiName);
+    for (const name of extractModelNamesFromRawSchema(schema)) {
+      names.add(name);
+    }
+  } catch (err) {
+    // raw schema not available — keep whatever the build schema yielded
+    printer.debug(`readSchemaModelNames: raw schema unavailable for api '${apiName}': ${String(err)}`);
+  }
+
+  return [...names];
+}
+
+/**
+ * Collects all user-authored GraphQL schema content from either the single
+ * `schema.graphql` file or the `schema/` directory (multi-file pattern).
+ */
+function collectUserSchema(gen1App: Gen1App, apiName: string): string {
+  // Gen1 apps use one layout XOR the other, never both: `amplify add api`
+  // scaffolds a single `schema.graphql`, and the multi-file `schema/`
+  // directory is the alternate layout. The Gen1 transformer's own schema
+  // loader reads one or the other (directory preferred), so preferring the
+  // single file when present and otherwise reading the directory mirrors
+  // that behaviour; there is no case where both must be unioned.
+  const schemaFilePath = path.join('api', apiName, 'schema.graphql');
+  if (gen1App.fileExists(schemaFilePath)) {
+    return gen1App.file(schemaFilePath);
+  }
+
+  const schemaDirPath = path.join('api', apiName, 'schema');
+  const fullDirPath = path.join(gen1App.ccbDir, schemaDirPath);
+  if (!existsSync(fullDirPath)) return '';
+  const files = globSync('**/*.graphql', { cwd: fullDirPath }).sort();
+  return files.map((f) => gen1App.file(path.join(schemaDirPath, f))).join('\n');
+}
+
+/**
+ * Extracts @model type names from a raw GraphQL schema string.
+ * Handles directives with nested braces (e.g., @auth(rules: [{...}]))
+ * appearing between the type name and @model.
+ */
+function extractModelNamesFromRawSchema(schema: string): string[] {
+  const names: string[] = [];
+  const typeRegex = /\btype\s+(\w+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = typeRegex.exec(schema)) !== null) {
+    const typeName = match[1];
+    // Bound the scan to the current type definition: slice off everything
+    // from the next top-level `type` keyword onward. A well-formed type is
+    // terminated by its `{...}` body (handled by the brace break below), but
+    // bounding here keeps the scan airtight even for a bodyless type — it can
+    // never walk `afterName` into the following type looking for `@model`.
+    const rest = schema.slice(match.index + match[0].length);
+    const nextType = rest.search(/\btype\s/);
+    const afterName = nextType === -1 ? rest : rest.slice(0, nextType);
+    let depth = 0;
+    let foundModel = false;
+    for (let i = 0; i < afterName.length; i++) {
+      const ch = afterName[i];
+      if (ch === '(') {
+        depth++;
+      } else if (ch === ')') {
+        depth--;
+      } else if (depth === 0 && ch === '{') {
+        break;
+      }
+      // Match `@model` as a whole directive; a bare startsWith would also
+      // accept `@models` / `@modelFoo`.
+      if (depth === 0 && /^@model(?![A-Za-z0-9])/.test(afterName.slice(i))) {
+        foundModel = true;
+        break;
+      }
+    }
+    if (foundModel) names.push(typeName);
+  }
+  return names;
 }

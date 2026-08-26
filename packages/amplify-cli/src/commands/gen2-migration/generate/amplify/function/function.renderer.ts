@@ -25,6 +25,7 @@ export interface FunctionRenderOptions {
   readonly kinesisConfig?: KinesisConfig;
   readonly unMappedAuthActions: readonly string[];
   readonly storageTriggerTables: readonly string[];
+  readonly modelNames?: readonly string[];
 }
 
 export interface KinesisConfig {
@@ -186,7 +187,7 @@ export class FunctionRenderer {
     const tableNames = new Set<string>();
     for (const hatch of opts.dynamicEnvVars) {
       if (hatch.name.startsWith('API_') && hatch.name.includes('TABLE_')) {
-        const tableName = extractTableName(hatch.name);
+        const tableName = extractTableName(hatch.name, opts.modelNames);
         if (tableName) tableNames.add(tableName);
       }
     }
@@ -363,7 +364,10 @@ export class FunctionRenderer {
  * - retained: stay in the defineFunction() environment block
  * - escapeHatches: become addEnvironment() calls in applyEscapeHatches
  */
-export function classifyEnvVars(variables: Record<string, string>): {
+export function classifyEnvVars(
+  variables: Record<string, string>,
+  modelNames: readonly string[] = [],
+): {
   readonly literalEnvVars: Record<string, string>;
   readonly dynamicEnvVars: readonly DynamicEnvVar[];
 } {
@@ -382,11 +386,11 @@ export function classifyEnvVars(variables: Record<string, string>): {
         { suffix: '_GRAPHQLAPIIDOUTPUT', build: () => backendPath('data', 'apiId') },
         {
           suffix: 'TABLE_ARN',
-          build: (envVar) => backendTableProp(extractTableName(envVar) ?? 'unknown', 'tableArn'),
+          build: (envVar) => backendTableProp(extractTableName(envVar, modelNames) ?? 'unknown', 'tableArn'),
         },
         {
           suffix: 'TABLE_NAME',
-          build: (envVar) => backendTableProp(extractTableName(envVar) ?? 'unknown', 'tableName'),
+          build: (envVar) => backendTableProp(extractTableName(envVar, modelNames) ?? 'unknown', 'tableName'),
         },
       ],
     },
@@ -513,9 +517,37 @@ function nonNull(expr: ts.Expression): ts.Expression {
   return factory.createNonNullExpression(expr);
 }
 
-/** Extracts the table name from an API_*TABLE_* env var. */
-export function extractTableName(envVar: string): string | undefined {
-  const match = envVar.match(/API_.*_(.+?)TABLE_/);
+/**
+ * Extracts the model name from an API_*TABLE_* env var by matching the
+ * uppercase segment against known model names from the GraphQL schema.
+ *
+ * When model names are provided, performs a case-insensitive lookup to
+ * recover the original casing (e.g., `RANDOMITEM` → `randomItem`).
+ * Falls back to capitalizing the first letter when no match is found.
+ *
+ * @example
+ * extractTableName('API_MYAPI_RANDOMITEMTABLE_ARN', ['randomItem', 'Meal']) // → 'randomItem'
+ * extractTableName('API_MYAPI_MEALTABLE_ARN', ['randomItem', 'Meal'])       // → 'Meal'
+ */
+export function extractTableName(envVar: string, modelNames: readonly string[] = []): string | undefined {
+  // Preferred path: match the env var against known model names. The env var
+  // embeds the uppercased model name as `_<MODEL>TABLE_<ARN|NAME>`. Testing the
+  // known name directly (instead of slicing a segment out) correctly handles
+  // model names that contain underscores, which a positional regex cannot
+  // disambiguate from the API-name prefix.
+  //
+  // Assumption: model names are unique after uppercasing. If two models only
+  // differ by case (e.g. `randomItem` vs `randomitem`) the first in schema
+  // order wins. GraphQL type names are case-sensitively unique, so such a
+  // collision is not expressible in a valid schema.
+  const upperEnv = envVar.toUpperCase();
+  const matched = modelNames.find((name) => upperEnv.includes(`_${name.toUpperCase()}TABLE_`));
+  if (matched) return matched;
+
+  // Fallback (no schema model names available): anchor to the last segment
+  // before `TABLE_` so a greedy prefix cannot swallow underscore-delimited
+  // parts, then naively capitalize.
+  const match = envVar.match(/_([A-Za-z0-9]+)TABLE_(?:ARN|NAME)$/);
   if (!match) return undefined;
   const raw = match[1];
   return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
