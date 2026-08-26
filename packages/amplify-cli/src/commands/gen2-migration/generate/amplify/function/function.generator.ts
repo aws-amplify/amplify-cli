@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { globSync } from 'glob';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
@@ -496,8 +497,9 @@ function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
     while ((match = connectionRegex.exec(buildSchema)) !== null) {
       names.add(match[1]);
     }
-  } catch {
+  } catch (err) {
     // build schema not available — rely on the raw schema below
+    printer.debug(`readSchemaModelNames: build schema unavailable for api '${apiName}': ${String(err)}`);
   }
 
   // Source 2: raw user schema — catches models with no Connection type
@@ -507,8 +509,9 @@ function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
     for (const name of extractModelNamesFromRawSchema(schema)) {
       names.add(name);
     }
-  } catch {
+  } catch (err) {
     // raw schema not available — keep whatever the build schema yielded
+    printer.debug(`readSchemaModelNames: raw schema unavailable for api '${apiName}': ${String(err)}`);
   }
 
   return [...names];
@@ -519,6 +522,12 @@ function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
  * `schema.graphql` file or the `schema/` directory (multi-file pattern).
  */
 function collectUserSchema(gen1App: Gen1App, apiName: string): string {
+  // Gen1 apps use one layout XOR the other, never both: `amplify add api`
+  // scaffolds a single `schema.graphql`, and the multi-file `schema/`
+  // directory is the alternate layout. The Gen1 transformer's own schema
+  // loader reads one or the other (directory preferred), so preferring the
+  // single file when present and otherwise reading the directory mirrors
+  // that behaviour; there is no case where both must be unioned.
   const schemaFilePath = path.join('api', apiName, 'schema.graphql');
   if (gen1App.fileExists(schemaFilePath)) {
     return gen1App.file(schemaFilePath);
@@ -542,7 +551,14 @@ function extractModelNamesFromRawSchema(schema: string): string[] {
   let match: RegExpExecArray | null;
   while ((match = typeRegex.exec(schema)) !== null) {
     const typeName = match[1];
-    const afterName = schema.slice(match.index + match[0].length);
+    // Bound the scan to the current type definition: slice off everything
+    // from the next top-level `type` keyword onward. A well-formed type is
+    // terminated by its `{...}` body (handled by the brace break below), but
+    // bounding here keeps the scan airtight even for a bodyless type — it can
+    // never walk `afterName` into the following type looking for `@model`.
+    const rest = schema.slice(match.index + match[0].length);
+    const nextType = rest.search(/\btype\s/);
+    const afterName = nextType === -1 ? rest : rest.slice(0, nextType);
     let depth = 0;
     let foundModel = false;
     for (let i = 0; i < afterName.length; i++) {

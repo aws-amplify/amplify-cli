@@ -1537,6 +1537,84 @@ describe('FunctionGenerator', () => {
     expect(resourceTs).not.toContain('Secretnote');
   });
 
+  it('does not attribute a non-model type as a table when it precedes real models', async () => {
+    // A non-model `type Query` sits before the real models. It has no @model,
+    // so it must never become a table reference, and the models after it must
+    // still be cased correctly. (The scan is also bounded to each type as
+    // defense-in-depth so a hypothetical bodyless type cannot bleed into the
+    // next — unreachable for valid GraphQL, hence not separately testable.)
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+      api: {
+        myApi: { service: 'AppSync' },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({
+      Resources: {
+        AmplifyResourcesPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Effect: 'Allow', Action: ['dynamodb:GetItem'], Resource: [{ Ref: 'apiMyApiTable' }] }],
+            },
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'file').mockImplementation((filePath: string) => {
+      if (filePath.includes('build/schema.graphql')) {
+        throw new Error('File not found');
+      }
+      if (filePath.includes('schema.graphql')) {
+        // `Query` is a non-model type declared before the real models.
+        return [
+          'type Query { customField: String }',
+          'type blogPost @model { id: ID! }',
+          'type secretNote @model(queries: null) { id: ID! }',
+        ].join('\n');
+      }
+      return '{}';
+    });
+    jest.spyOn(gen1App, 'fileExists').mockImplementation((filePath: string) => {
+      return filePath.includes('schema.graphql') && !filePath.includes('build');
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 30,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: {
+        Variables: {
+          API_MYAPI_BLOGPOSTTABLE_NAME: 'blogPost-abc-main',
+          API_MYAPI_BLOGPOSTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/blogPost-abc-main',
+          API_MYAPI_SECRETNOTETABLE_NAME: 'secretNote-abc-main',
+          API_MYAPI_SECRETNOTETABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/secretNote-abc-main',
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain("backend.data.resources.tables['blogPost']");
+    expect(resourceTs).toContain("backend.data.resources.tables['secretNote']");
+    expect(resourceTs).not.toContain('Blogpost');
+    expect(resourceTs).not.toContain('Secretnote');
+    // `Query` is not a @model, so it must never appear as a table reference.
+    expect(resourceTs).not.toContain("tables['Query']");
+  });
+
   it('reads model names from schema directory when schema.graphql does not exist', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
