@@ -160,6 +160,16 @@ execution. Runs last and writes `backend.ts` from accumulated content.
 - **Renderers are pure.** No AWS calls, no file I/O, no `Gen1App`
   dependency. Pass options, get AST nodes.
 
+### AdminQueries REST APIs
+
+The REST API generator recognizes the CLI-owned AdminQueries feature only when
+the API resource is named `AdminQueries` and its `amplify-meta.json` entry has
+the expected Cognito and Lambda dependencies. Function-name prefixes alone do
+not enable AdminQueries authorization or IAM permissions. Generated Gen1 User
+Pool ARNs use CDK's partition-aware `Stack.formatArn`. If the referenced Gen1
+User Pool ID is missing, generation warns and scopes the Lambda policy to the
+Gen2 User Pool only.
+
 ## Execution Flow
 
 ```mermaid

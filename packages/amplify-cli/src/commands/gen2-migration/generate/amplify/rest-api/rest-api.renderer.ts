@@ -4,7 +4,8 @@ import { newLineIdentifier, TS } from '../../ts';
 const factory = ts.factory;
 
 /**
- * Complete definition of a REST API extracted from Gen1 cli-inputs.json.
+ * Complete definition of a REST API extracted from Gen1 cli-inputs.json and
+ * amplify-meta.json.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any -- paths are untyped Gen1 cli-inputs.json */
 export interface RestApiRenderOptions {
@@ -554,10 +555,11 @@ export class RestApiRenderer {
   }
 
   private renderAdminQueriesLambdaPolicies(restApi: RestApiRenderOptions, apiVarName: string): ts.Statement[] {
-    const functionNames = restApi.adminQueriesFunctionNames ?? [];
-    if (functionNames.length === 0) {
+    if (!this.isAdminQueriesApi(restApi)) {
       return [];
     }
+
+    const functionNames = restApi.adminQueriesFunctionNames ?? [];
 
     const actions = [
       'cognito-idp:AdminAddUserToGroup',
@@ -605,23 +607,27 @@ export class RestApiRenderer {
     });
   }
 
-  private renderGen1UserPoolArn(apiVarName: string, gen1UserPoolId: string): ts.TemplateExpression {
+  private renderGen1UserPoolArn(apiVarName: string, gen1UserPoolId: string): ts.CallExpression {
     const stackOfApi = factory.createCallExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier('Stack'), factory.createIdentifier('of')),
       undefined,
       [factory.createIdentifier(apiVarName)],
     );
 
-    return factory.createTemplateExpression(factory.createTemplateHead('arn:aws:cognito-idp:'), [
-      factory.createTemplateSpan(
-        factory.createPropertyAccessExpression(stackOfApi, factory.createIdentifier('region')),
-        factory.createTemplateMiddle(':'),
-      ),
-      factory.createTemplateSpan(
-        factory.createPropertyAccessExpression(stackOfApi, factory.createIdentifier('account')),
-        factory.createTemplateTail(`:userpool/${gen1UserPoolId}`),
-      ),
-    ]);
+    return factory.createCallExpression(
+      factory.createPropertyAccessExpression(stackOfApi, factory.createIdentifier('formatArn')),
+      undefined,
+      [
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment('service', factory.createStringLiteral('cognito-idp')),
+            factory.createPropertyAssignment('resource', factory.createStringLiteral('userpool')),
+            factory.createPropertyAssignment('resourceName', factory.createStringLiteral(gen1UserPoolId)),
+          ],
+          true,
+        ),
+      ],
+    );
   }
 
   private renderCorsPreflightOptions(): ts.PropertyAssignment {
@@ -1011,6 +1017,6 @@ export class RestApiRenderer {
   }
 
   private isAdminQueriesApi(restApi: RestApiRenderOptions): boolean {
-    return (restApi.adminQueriesFunctionNames?.length ?? 0) > 0;
+    return this.hasAuth && (restApi.adminQueriesFunctionNames?.length ?? 0) > 0;
   }
 }
