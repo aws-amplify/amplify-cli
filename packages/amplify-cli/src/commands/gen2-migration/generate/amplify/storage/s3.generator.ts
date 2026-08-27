@@ -105,6 +105,15 @@ export class S3Generator implements Planner {
           this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
           this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'storage', extraArgs: [] });
           this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
+
+          // Emit function->storage access as forward-direction CDK grants in
+          // backend.ts (backend.storage.resources.bucket.grantReadWrite(backend.<fn>.resources.lambda))
+          // rather than reverse-direction allow.resource(fn) entries on
+          // defineStorage, which would create a `storage -> function` cross-stack
+          // dependency and cause circular dependencies at deploy time.
+          for (const statement of this.renderer.buildFunctionAccessBackendStatements(this.functionAccess)) {
+            this.backendGenerator.addPostDefineBackendStatement(statement);
+          }
         },
       },
     ];

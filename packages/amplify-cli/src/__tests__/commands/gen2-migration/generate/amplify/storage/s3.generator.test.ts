@@ -121,10 +121,7 @@ describe('S3Generator', () => {
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({}),
-      });
+      export const storage = defineStorage({ name: \`myBucket-main-\${branchName}\` });
 
       export function postRefactor(backend: Backend) {
         const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
@@ -596,7 +593,7 @@ describe('S3Generator', () => {
     `);
   });
 
-  it('renders function access patterns with imports', async () => {
+  it('emits function access as forward-direction grants in backend.ts', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
@@ -620,52 +617,27 @@ describe('S3Generator', () => {
     );
     generator.addFunctionAccess('processImages', ['read', 'write']);
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-      "import { defineStorage } from '@aws-amplify/backend';
-      import { processImages } from '../function/processImages/resource';
-      import { CfnResource } from 'aws-cdk-lib';
-      import type { Backend } from '../backend';
+    // Function->storage access must NOT be emitted as a reverse-direction
+    // allow.resource(fn) entry in the defineStorage access block (that creates a
+    // storage->function dependency and causes circular dependencies). With no
+    // guest/authenticated/group access, resource.ts has no access block and does
+    // not import the function.
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).not.toContain('access:');
+    expect(resourceTs).not.toContain('allow.resource');
+    expect(resourceTs).not.toContain("from '../function/processImages/resource'");
 
-      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({
-          'public/*': [allow.resource(processImages).to(['read', 'write'])],
-          'protected/{entity_id}/*': [
-            allow.resource(processImages).to(['read', 'write']),
-          ],
-          'private/{entity_id}/*': [
-            allow.resource(processImages).to(['read', 'write']),
-          ],
-        }),
-      });
-
-      export function postRefactor(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        s3Bucket.bucketName = 'myBucket-main-abc123';
-      }
-
-      export function applyEscapeHatches(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        for (const cfnResource of backend.storage.stack.node
-          .findAll()
-          .filter(
-            (c) =>
-              CfnResource.isCfnResource(c) &&
-              ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
-                c.cfnResourceType
-              )
-          )) {
-          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-        }
-      }
-      "
-    `);
+    // read + write consolidates into a single forward-direction grantReadWrite
+    // on the bucket construct in backend.ts, keeping the dependency
+    // function->storage.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      'backend.storage.resources.bucket.grantReadWrite(backend.processImages.resources.lambda);',
+    );
   });
 
   it('renders triggers with function imports', async () => {
@@ -707,7 +679,6 @@ describe('S3Generator', () => {
 
       export const storage = defineStorage({
         name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({}),
         triggers: {
           onUpload: onUploadFn,
           onDelete: onDeleteFn,
@@ -763,48 +734,22 @@ describe('S3Generator', () => {
     generator.addFunctionAccess('myFunc', ['read']);
     generator.addFunctionAccess('myFunc', ['write']);
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-      "import { defineStorage } from '@aws-amplify/backend';
-      import { myFunc } from '../function/myFunc/resource';
-      import { CfnResource } from 'aws-cdk-lib';
-      import type { Backend } from '../backend';
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).not.toContain('access:');
+    expect(resourceTs).not.toContain('allow.resource');
+    expect(resourceTs).not.toContain("from '../function/myFunc/resource'");
 
-      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({
-          'public/*': [allow.resource(myFunc).to(['read', 'write'])],
-          'protected/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
-          'private/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
-        }),
-      });
-
-      export function postRefactor(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        s3Bucket.bucketName = 'myBucket-main-abc123';
-      }
-
-      export function applyEscapeHatches(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        for (const cfnResource of backend.storage.stack.node
-          .findAll()
-          .filter(
-            (c) =>
-              CfnResource.isCfnResource(c) &&
-              ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
-                c.cfnResourceType
-              )
-          )) {
-          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-        }
-      }
-      "
-    `);
+    // Duplicate addFunctionAccess calls consolidate: read + write -> a single
+    // forward-direction grantReadWrite, emitted once into backend.ts.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      'backend.storage.resources.bucket.grantReadWrite(backend.myFunc.resources.lambda);',
+    );
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledTimes(1);
   });
 
   it('renders empty access when no access patterns configured', async () => {
@@ -839,10 +784,7 @@ describe('S3Generator', () => {
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({}),
-      });
+      export const storage = defineStorage({ name: \`myBucket-main-\${branchName}\` });
 
       export function postRefactor(backend: Backend) {
         const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;

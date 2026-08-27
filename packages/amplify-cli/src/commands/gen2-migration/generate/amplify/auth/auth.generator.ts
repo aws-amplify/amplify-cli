@@ -90,9 +90,7 @@ export class AuthGenerator implements Planner {
         execute: async () => {
           this.logger.info('Rendering auth/resource.ts');
           const nodeArray = this.defineAuth.render(renderOptions);
-          let content = TS.printNodes(nodeArray);
-
-          content = content.replace(/\(allow, _unused\)/g, '(allow)');
+          const content = TS.printNodes(nodeArray);
 
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
@@ -100,6 +98,26 @@ export class AuthGenerator implements Planner {
           this.backendGenerator.addNamespaceImport('auth', './auth/resource');
           this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
           this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'auth', extraArgs: [] });
+
+          /**
+           * Emit function -> auth access as forward-direction grants in backend.ts
+           * (`backend.auth.resources.userPool.grant(backend.<fn>.resources.lambda, ...actions)`)
+           * rather than a reverse-direction `access` block on defineAuth, which
+           * would create an `auth -> function` cross-stack dependency and cause
+           * circular dependencies at deploy time.
+           */
+          const unknownPermissions = AuthRenderer.unknownPermissions(this.access);
+          if (unknownPermissions.length > 0) {
+            this.logger.warn(
+              `Unrecognized Gen1 auth permission(s) [${unknownPermissions.join(
+                ', ',
+              )}] have no known cognito-idp action mapping and were emitted as raw 'cognito-idp:<permission>' actions. Verify the generated IAM actions in amplify/backend.ts.`,
+            );
+          }
+          for (const statement of this.defineAuth.buildFunctionAccessBackendStatements(this.access)) {
+            this.backendGenerator.addPostDefineBackendStatement(statement);
+          }
+
           if (userPool.Domain) {
             this.backendGenerator.addPostRefactorCall('auth.postRefactor(backend)');
           }

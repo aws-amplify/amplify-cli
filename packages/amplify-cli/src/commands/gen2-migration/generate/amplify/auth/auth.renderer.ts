@@ -113,6 +113,82 @@ const factory = ts.factory;
 // Secret management identifier for Gen 2
 const secretIdentifier = factory.createIdentifier('secret');
 
+/**
+ * Maps each Amplify Gen2 auth permission name (as configured on a Gen1 function's
+ * cognito access) to the concrete `cognito-idp:*` IAM actions it grants.
+ *
+ * This mirrors the permission -> action expansion that `allow.resource(fn).to()`
+ * performs internally in `@aws-amplify/backend-auth`. It is duplicated here
+ * because the forward-direction CDK grant (backend.auth.resources.userPool.grant)
+ * works on raw IAM actions rather than Amplify permission names. `@aws-amplify/backend-auth`
+ * does not export this table, so it cannot be imported; keep it in sync if the
+ * upstream permission set changes (the generator warns on any permission missing
+ * from this map, so a drift surfaces at generate time rather than silently).
+ */
+const PERMISSION_ACTION_MAP: Readonly<Record<string, readonly string[]>> = {
+  manageUsers: [
+    'cognito-idp:AdminConfirmSignUp',
+    'cognito-idp:AdminCreateUser',
+    'cognito-idp:AdminDeleteUser',
+    'cognito-idp:AdminDeleteUserAttributes',
+    'cognito-idp:AdminDisableUser',
+    'cognito-idp:AdminEnableUser',
+    'cognito-idp:AdminGetUser',
+    'cognito-idp:AdminListGroupsForUser',
+    'cognito-idp:AdminRespondToAuthChallenge',
+    'cognito-idp:AdminSetUserMFAPreference',
+    'cognito-idp:AdminSetUserSettings',
+    'cognito-idp:AdminUpdateUserAttributes',
+    'cognito-idp:AdminUserGlobalSignOut',
+    'cognito-idp:ListUsers',
+  ],
+  manageGroups: [
+    'cognito-idp:GetGroup',
+    'cognito-idp:ListGroups',
+    'cognito-idp:CreateGroup',
+    'cognito-idp:DeleteGroup',
+    'cognito-idp:UpdateGroup',
+  ],
+  manageGroupMembership: [
+    'cognito-idp:AdminAddUserToGroup',
+    'cognito-idp:AdminRemoveUserFromGroup',
+    'cognito-idp:AdminListGroupsForUser',
+    'cognito-idp:ListUsersInGroup',
+  ],
+  manageUserDevices: [
+    'cognito-idp:AdminForgetDevice',
+    'cognito-idp:AdminGetDevice',
+    'cognito-idp:AdminListDevices',
+    'cognito-idp:AdminUpdateDeviceStatus',
+  ],
+  managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
+  addUserToGroup: ['cognito-idp:AdminAddUserToGroup'],
+  createUser: ['cognito-idp:AdminCreateUser'],
+  deleteUser: ['cognito-idp:AdminDeleteUser'],
+  deleteUserAttributes: ['cognito-idp:AdminDeleteUserAttributes'],
+  disableUser: ['cognito-idp:AdminDisableUser'],
+  enableUser: ['cognito-idp:AdminEnableUser'],
+  forgetDevice: ['cognito-idp:AdminForgetDevice'],
+  getDevice: ['cognito-idp:AdminGetDevice'],
+  getUser: ['cognito-idp:AdminGetUser'],
+  listUsers: ['cognito-idp:ListUsers'],
+  listDevices: ['cognito-idp:AdminListDevices'],
+  listGroupsForUser: ['cognito-idp:AdminListGroupsForUser'],
+  listUsersInGroup: ['cognito-idp:ListUsersInGroup'],
+  listGroups: ['cognito-idp:ListGroups'],
+  createGroup: ['cognito-idp:CreateGroup'],
+  deleteGroup: ['cognito-idp:DeleteGroup'],
+  getGroup: ['cognito-idp:GetGroup'],
+  updateGroup: ['cognito-idp:UpdateGroup'],
+  removeUserFromGroup: ['cognito-idp:AdminRemoveUserFromGroup'],
+  resetUserPassword: ['cognito-idp:AdminResetUserPassword'],
+  setUserMfaPreference: ['cognito-idp:AdminSetUserMFAPreference'],
+  setUserPassword: ['cognito-idp:AdminSetUserPassword'],
+  setUserSettings: ['cognito-idp:AdminSetUserSettings'],
+  updateDeviceStatus: ['cognito-idp:AdminUpdateDeviceStatus'],
+  updateUserAttributes: ['cognito-idp:AdminUpdateUserAttributes'],
+};
+
 // Social provider secret key constants
 const googleClientID = 'GOOGLE_CLIENT_ID';
 const googleClientSecret = 'GOOGLE_CLIENT_SECRET';
@@ -285,7 +361,16 @@ export class AuthRenderer {
     const mfa = AuthRenderer.deriveMfaConfig(options.mfaConfig);
     this.addMfaConfig(mfa, defineAuthProperties);
 
-    this.addFunctionAccess(options.access, defineAuthProperties, namedImports);
+    // NOTE: Function access to auth is intentionally NOT emitted here as an
+    // `access: (allow) => [allow.resource(fn).to([...])]` block on defineAuth.
+    // That construct makes the auth stack reference the function's role, i.e.
+    // an `auth -> function` cross-stack dependency. Combined with the function's
+    // own `function -> data`/`function -> storage` grants and the usual
+    // `data -> auth`/`storage -> auth` edges, that closes a cross-stack cycle and
+    // produces a CloudformationStackCircularDependencyError on deploy.
+    // Instead, function access is emitted in backend.ts as a forward-direction
+    // grant on the underlying user pool construct (see buildFunctionAccessBackendStatements),
+    // which keeps the dependency as `function -> auth` and avoids the cycle.
 
     return TS.renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('auth'),
@@ -594,69 +679,101 @@ export class AuthRenderer {
     );
   }
 
-  private addFunctionAccess(
-    functions: readonly FunctionAccess[] | undefined,
-    properties: PropertyAssignment[],
-    namedImports: Record<string, Set<string>>,
-  ): void {
+  /**
+   * Builds the forward-direction function->auth grant statements emitted into
+   * backend.ts (not into auth/resource.ts).
+   *
+   * Each granted function is wired with a CDK grant on the underlying user pool
+   * construct:
+   *
+   *   backend.auth.resources.userPool.grant(
+   *     backend.<fn>.resources.lambda,
+   *     '<cognito-idp:Action>', ...
+   *   );
+   *
+   * This adds the IAM policy to the FUNCTION's role and only references the user
+   * pool ARN, so the cross-stack dependency stays `function -> auth`. It replaces
+   * the previous `access: (allow) => [allow.resource(fn).to([...])]` block on
+   * defineAuth, which pointed the dependency the other way (`auth -> function`)
+   * and caused deploy-time circular dependencies when the same function also
+   * accessed data/storage.
+   *
+   * Returns one statement string per granted function (already de-duplicated and
+   * with actions sorted for stable output), or an empty array when there is
+   * nothing to grant. The caller passes these to
+   * BackendGenerator.addPostDefineBackendStatement.
+   */
+  public buildFunctionAccessBackendStatements(functions: readonly FunctionAccess[] | undefined): string[] {
     if (!functions || functions.length === 0) {
-      return;
+      return [];
     }
 
-    const functionsWithAuthAccess = functions.filter((func) => Object.keys(func.permissions).length > 0);
-    if (functionsWithAuthAccess.length === 0) {
-      return;
-    }
-
-    for (const func of functionsWithAuthAccess) {
-      // Skip adding import if the function is already imported (e.g., by addLambdaTriggers for auth triggers).
-      const alreadyImported = Object.values(namedImports).some((names) => names.has(func.resourceName));
-      if (!alreadyImported) {
-        namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+    // Consolidate permissions per function (a function may appear more than once).
+    const actionsByFunction: Record<string, Set<string>> = {};
+    for (const func of functions) {
+      const enabledPermissions = Object.entries(func.permissions)
+        .filter(([, enabled]) => enabled)
+        .map(([permission]) => permission);
+      if (enabledPermissions.length === 0) {
+        continue;
       }
-    }
-
-    const accessRules: ts.Expression[] = [];
-
-    for (const func of functionsWithAuthAccess) {
-      for (const [permission, enabled] of Object.entries(func.permissions)) {
-        if (enabled) {
-          accessRules.push(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
-                  undefined,
-                  [factory.createIdentifier(func.resourceName)],
-                ),
-                factory.createIdentifier('to'),
-              ),
-              undefined,
-              [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
-            ),
-          );
+      if (!actionsByFunction[func.resourceName]) {
+        actionsByFunction[func.resourceName] = new Set();
+      }
+      for (const permission of enabledPermissions) {
+        for (const action of AuthRenderer.actionsForPermission(permission)) {
+          actionsByFunction[func.resourceName].add(action);
         }
       }
     }
 
-    if (accessRules.length > 0) {
-      properties.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('access'),
-          factory.createArrowFunction(
-            undefined,
-            undefined,
-            [
-              factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow')),
-              factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('_unused')),
-            ],
-            undefined,
-            undefined,
-            factory.createArrayLiteralExpression(accessRules, true),
-          ),
-        ),
-      );
+    const statements: string[] = [];
+    for (const [resourceName, actions] of Object.entries(actionsByFunction)) {
+      if (actions.size === 0) {
+        continue;
+      }
+      const actionArgs = Array.from(actions)
+        .sort()
+        .map((a) => `'${a}'`)
+        .join(', ');
+      statements.push(`backend.auth.resources.userPool.grant(backend.${resourceName}.resources.lambda, ${actionArgs});`);
     }
+    return statements;
+  }
+
+  /**
+   * Collects the distinct enabled permission names across all granted functions
+   * that are NOT present in PERMISSION_ACTION_MAP.
+   *
+   * The map covers the full AuthPermissions set, so this is normally empty; a
+   * non-empty result means the upstream permission set drifted from the mapping
+   * table. The generator warns on these (rather than the pure renderer logging)
+   * so the operator sees which permissions fell through to the raw-action
+   * fallback and can verify the generated IAM actions.
+   */
+  public static unknownPermissions(functions: readonly FunctionAccess[] | undefined): string[] {
+    if (!functions) {
+      return [];
+    }
+    const unknown = new Set<string>();
+    for (const func of functions) {
+      for (const [permission, enabled] of Object.entries(func.permissions)) {
+        if (enabled && !(permission in PERMISSION_ACTION_MAP)) {
+          unknown.add(permission);
+        }
+      }
+    }
+    return Array.from(unknown).sort();
+  }
+
+  /**
+   * Maps an Amplify Gen2 auth permission name to its concrete `cognito-idp:*` IAM
+   * actions via PERMISSION_ACTION_MAP. An unrecognized permission falls back to a
+   * raw `cognito-idp:<permission>` action so it is visible in review rather than
+   * silently dropped; unknownPermissions() surfaces the same case as a warning.
+   */
+  private static actionsForPermission(permission: string): readonly string[] {
+    return PERMISSION_ACTION_MAP[permission] ?? [`cognito-idp:${permission}`];
   }
 
   /**

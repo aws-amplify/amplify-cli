@@ -12,6 +12,12 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
+backend.auth.resources.userPool.grant(
+  backend.storelocator41a9495f41a9495fPostConfirmation.resources.lambda,
+  'cognito-idp:AdminAddUserToGroup',
+  'cognito-idp:CreateGroup',
+  'cognito-idp:GetGroup'
+);
 geo.defineGeo(backend);
 
 auth.applyEscapeHatches(backend);
