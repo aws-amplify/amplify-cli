@@ -1,6 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { fitnesstracker33f5545533f55455PreSignup } from '../function/fitnesstracker33f5545533f55455PreSignup/resource';
-import { admin } from '../function/admin/resource';
 import { CfnResource, Duration } from 'aws-cdk-lib';
 import type { Backend } from '../backend';
 
@@ -24,15 +23,6 @@ export const auth = defineAuth({
   multifactor: {
     mode: 'OFF',
   },
-  access: (allow) => [
-    allow.resource(admin).to(['getDevice']),
-    allow.resource(admin).to(['getUser']),
-    allow.resource(admin).to(['listDevices']),
-    allow.resource(admin).to(['listGroupsForUser']),
-    allow.resource(admin).to(['listUsers']),
-    allow.resource(admin).to(['listUsersInGroup']),
-    allow.resource(admin).to(['listGroups']),
-  ],
 });
 
 export function applyEscapeHatches(backend: Backend) {

@@ -41,6 +41,7 @@ export interface EscapeHatchCall {
  */
 export interface BackendRenderOptions {
   readonly namespaceImports: readonly NamespaceImport[];
+  readonly namedImports?: Readonly<Record<string, ReadonlySet<string>>>;
   readonly defineBackendEntries: readonly DefineBackendEntry[];
   readonly postDefineBackendCalls: readonly PostDefineBackendCall[];
   readonly postDefineBackendStatements: readonly string[];
@@ -65,6 +66,14 @@ export class BackendRenderer {
     }
     nodes.push(this.renderDefineBackendImport());
     nodes.push(TS.namedImport('aws-cdk-lib', 'Tags'));
+    // Additional named imports contributed by category generators (e.g. IAM
+    // PolicyStatement/Effect for function access grants), deduped and sorted.
+    for (const source of Object.keys(options.namedImports ?? {}).sort()) {
+      const names = Array.from(options.namedImports![source]).sort();
+      if (names.length > 0) {
+        nodes.push(TS.namedImport(source, ...names));
+      }
+    }
     nodes.push(newLineIdentifier);
 
     // 2. defineBackend call
