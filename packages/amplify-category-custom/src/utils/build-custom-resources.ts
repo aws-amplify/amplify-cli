@@ -68,6 +68,20 @@ export const generateDependentResourcesType = async (): Promise<void> => {
   await fs.writeFile(target, dependentResourceAttributesFileContent);
 };
 
+/**
+ * Check if the package.json in the given directory has a build script defined.
+ * @param targetDir - The directory containing the package.json
+ * @returns true if a build script is defined, false otherwise
+ */
+const hasBuildScript = (targetDir: string): boolean => {
+  const packageJsonPath = path.join(targetDir, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+  const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonPath);
+  return !!packageJson?.scripts?.build;
+};
+
 const buildResource = async (resource: ResourceMeta): Promise<void> => {
   const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
   if (skipHooks()) {
@@ -84,29 +98,50 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
     throw new Error('No package manager found. Please install npm, yarn, or pnpm to compile overrides for this project.');
   }
 
-  try {
-    execa.sync(packageManager.executable, ['install'], {
-      cwd: targetDir,
-      stdio: 'pipe',
-      encoding: 'utf-8',
-    });
-  } catch (error: $TSAny) {
-    if ((error as $TSAny).code === 'ENOENT') {
-      throw new Error(`Packaging overrides failed. Could not find ${packageManager} executable in the PATH.`);
-    } else {
-      throw new Error(`Packaging overrides failed with the error \n${error.message}`);
+  // If the custom resource has a build script in package.json, use it.
+  // This allows projects to customize their build process (e.g., adding --ignore-workspace for pnpm).
+  // Otherwise, fall back to the default behavior of running install + tsc separately.
+  if (hasBuildScript(targetDir)) {
+    try {
+      execa.sync(packageManager.executable, ['run', 'build'], {
+        cwd: targetDir,
+        stdio: 'pipe',
+        encoding: 'utf-8',
+      });
+    } catch (error: $TSAny) {
+      if ((error as $TSAny).code === 'ENOENT') {
+        throw new Error(`Building custom resource failed. Could not find ${packageManager.executable} executable in the PATH.`);
+      } else {
+        printer.error(`Failed building resource ${resource.resourceName}`);
+        throw error;
+      }
     }
-  }
+  } else {
+    // Default behavior: run install and tsc separately
+    try {
+      execa.sync(packageManager.executable, ['install'], {
+        cwd: targetDir,
+        stdio: 'pipe',
+        encoding: 'utf-8',
+      });
+    } catch (error: $TSAny) {
+      if ((error as $TSAny).code === 'ENOENT') {
+        throw new Error(`Packaging overrides failed. Could not find ${packageManager.executable} executable in the PATH.`);
+      } else {
+        throw new Error(`Packaging overrides failed with the error \n${error.message}`);
+      }
+    }
 
-  try {
-    execa.sync(packageManager.runner, ['tsc'], {
-      cwd: targetDir,
-      stdio: 'pipe',
-      encoding: 'utf-8',
-    });
-  } catch (error: $TSAny) {
-    printer.error(`Failed building resource ${resource.resourceName}`);
-    throw error;
+    try {
+      execa.sync(packageManager.runner, ['tsc'], {
+        cwd: targetDir,
+        stdio: 'pipe',
+        encoding: 'utf-8',
+      });
+    } catch (error: $TSAny) {
+      printer.error(`Failed building resource ${resource.resourceName}`);
+      throw error;
+    }
   }
 
   await generateCloudFormationFromCDK(resource.resourceName);
