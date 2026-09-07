@@ -8,6 +8,17 @@ import { TS } from '../../ts';
 import { RestApiRenderOptions, RestApiRenderer } from './rest-api.renderer';
 import { SpinningLogger } from '../../../_common/spinning-logger';
 
+interface ResourceDependency {
+  readonly category: string;
+  readonly resourceName: string;
+  readonly attributes?: readonly string[];
+}
+
+interface AdminQueriesConfig {
+  readonly authResourceName: string;
+  readonly functionNames: readonly string[];
+}
+
 /**
  * Generates a single REST API (API Gateway) resource and contributes
  * CDK constructs to backend.ts.
@@ -39,8 +50,8 @@ export class RestApiGenerator implements Planner {
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const restApi = await this.readRestApiConfig();
     const hasAuth = this.gen1App.categoryMeta('auth') !== undefined;
+    const restApi = await this.readRestApiConfig(hasAuth);
 
     return [
       {
@@ -70,17 +81,82 @@ export class RestApiGenerator implements Planner {
    * Reads the REST API definition for a single API Gateway resource
    * from local cli-inputs.json and amplify-meta.json.
    */
-  private async readRestApiConfig(): Promise<RestApiRenderOptions> {
+  private async readRestApiConfig(hasAuth: boolean): Promise<RestApiRenderOptions> {
     const cliInputs = this.gen1App.cliInputs('api', this.resource.resourceName);
     const gen1ApiId = this.gen1App.resourceMetaOutput(this.resource, 'ApiId');
     this.logger.debug(`Fetching REST API root resource for '${gen1ApiId}'`);
     const gen1RootResourceId = await this.gen1App.aws.fetchRestApiRootResourceId(gen1ApiId);
+    const paths = cliInputs.paths ?? {};
+    const adminQueriesConfig = this.adminQueriesConfig(paths, hasAuth);
     return {
       apiName: this.resource.resourceName,
       exportedFunctionName: `define${this.resource.resourceName.charAt(0).toUpperCase() + this.resource.resourceName.slice(1)}Api`,
-      paths: cliInputs.paths ?? {},
+      paths,
       gen1ApiId,
       gen1RootResourceId,
+      ...(adminQueriesConfig && {
+        adminQueriesFunctionNames: adminQueriesConfig.functionNames,
+        gen1UserPoolId: this.gen1UserPoolId(adminQueriesConfig.authResourceName),
+      }),
     };
+  }
+
+  private adminQueriesConfig(
+    paths: Record<string, { readonly lambdaFunction?: string }>,
+    hasAuth: boolean,
+  ): AdminQueriesConfig | undefined {
+    if (this.resource.resourceName !== 'AdminQueries') {
+      return undefined;
+    }
+
+    const rawDependencies = this.gen1App.resourceMeta(this.resource).dependsOn;
+    const dependencies = (Array.isArray(rawDependencies) ? rawDependencies : []) as ResourceDependency[];
+    const authDependency = dependencies.find(
+      (dependency) => dependency.category === 'auth' && dependency.attributes?.includes('UserPoolId'),
+    );
+    const functionDependencies = new Set(
+      dependencies
+        .filter(
+          (dependency) =>
+            dependency.category === 'function' && dependency.attributes?.includes('Arn') && dependency.attributes.includes('Name'),
+        )
+        .map((dependency) => dependency.resourceName),
+    );
+    const functionNames = Array.from(
+      new Set(
+        Object.values(paths)
+          .map((pathConfig) => pathConfig.lambdaFunction)
+          .filter((name): name is string => !!name && functionDependencies.has(name)),
+      ),
+    );
+
+    if (!authDependency || functionNames.length === 0) {
+      return undefined;
+    }
+
+    const authCategory = this.gen1App.categoryMeta('auth');
+    if (!hasAuth || !authCategory?.[authDependency.resourceName]) {
+      this.logger.warn(
+        `AdminQueries API '${this.resource.resourceName}' detected but its Cognito auth dependency ` +
+          `'${authDependency.resourceName}' is missing from amplify-meta.json; generated API will not include AdminQueries auth wiring`,
+      );
+      return undefined;
+    }
+
+    return { authResourceName: authDependency.resourceName, functionNames };
+  }
+
+  private gen1UserPoolId(authResourceName: string): string | undefined {
+    const authCategory = this.gen1App.categoryMeta('auth');
+    const authResourceMeta = authCategory?.[authResourceName] as { readonly output?: { readonly UserPoolId?: string } } | undefined;
+    const gen1UserPoolId = authResourceMeta?.output?.UserPoolId;
+    if (!gen1UserPoolId) {
+      this.logger.warn(
+        `AdminQueries API '${this.resource.resourceName}' detected but no Gen1 Cognito UserPoolId was found for ` +
+          `'${authResourceName}' in amplify-meta.json; generated IAM policy will scope to the Gen2 user pool only`,
+      );
+    }
+
+    return gen1UserPoolId;
   }
 }

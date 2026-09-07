@@ -4,7 +4,8 @@ import { newLineIdentifier, TS } from '../../ts';
 const factory = ts.factory;
 
 /**
- * Complete definition of a REST API extracted from Gen1 cli-inputs.json.
+ * Complete definition of a REST API extracted from Gen1 cli-inputs.json and
+ * amplify-meta.json.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any -- paths are untyped Gen1 cli-inputs.json */
 export interface RestApiRenderOptions {
@@ -13,6 +14,8 @@ export interface RestApiRenderOptions {
   readonly paths: Record<string, any>;
   readonly gen1ApiId: string;
   readonly gen1RootResourceId: string;
+  readonly adminQueriesFunctionNames?: readonly string[];
+  readonly gen1UserPoolId?: string;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -37,7 +40,7 @@ export class RestApiRenderer {
    */
   public render(restApi: RestApiRenderOptions): ts.NodeArray<ts.Node> {
     return factory.createNodeArray([
-      ...this.renderImports(),
+      ...this.renderImports(restApi),
       this.renderBackendTypeImport(),
       newLineIdentifier,
       TS.createBranchNameDeclaration(),
@@ -46,9 +49,14 @@ export class RestApiRenderer {
     ] as ts.Statement[]);
   }
 
-  private renderImports(): ts.ImportDeclaration[] {
+  private renderImports(restApi: RestApiRenderOptions): ts.ImportDeclaration[] {
+    const apiGatewayImports = ['RestApi', 'LambdaIntegration', 'AuthorizationType', 'Cors', 'ResponseType'];
+    if (this.isAdminQueriesApi(restApi)) {
+      apiGatewayImports.push('CognitoUserPoolsAuthorizer');
+    }
+
     return [
-      TS.namedImport('aws-cdk-lib/aws-apigateway', 'RestApi', 'LambdaIntegration', 'AuthorizationType', 'Cors', 'ResponseType'),
+      TS.namedImport('aws-cdk-lib/aws-apigateway', ...apiGatewayImports),
       TS.namedImport('aws-cdk-lib/aws-iam', 'Policy', 'PolicyStatement'),
       TS.namedImport('aws-cdk-lib', 'Stack'),
     ];
@@ -71,6 +79,7 @@ export class RestApiRenderer {
     const apiVarName = `${sanitizedName}Api`;
     const gen1ApiVarName = `gen1${sanitizedName}Api`;
     const gen1PolicyVarName = `gen1${sanitizedName}Policy`;
+    const adminQueriesMethodOptionsVarName = 'adminQueriesMethodOptions';
 
     statements.push(this.renderStack(restApi, 'stack'));
     statements.push(this.renderRestApiConstruct(restApi, 'stack', apiVarName));
@@ -79,6 +88,10 @@ export class RestApiRenderer {
     const integrations = this.renderLambdaIntegrations(restApi);
     statements.push(...integrations.statements);
 
+    if (this.isAdminQueriesApi(restApi)) {
+      statements.push(...this.renderAdminQueriesAuthorizer('stack', adminQueriesMethodOptionsVarName));
+    }
+
     statements.push(this.renderGen1ApiReference(restApi, 'stack', gen1ApiVarName));
     statements.push(this.renderGen1Policy(restApi, 'stack', gen1ApiVarName, gen1PolicyVarName));
 
@@ -86,8 +99,16 @@ export class RestApiRenderer {
       statements.push(this.renderGen1PolicyAttachment(gen1PolicyVarName));
     }
 
-    statements.push(...this.renderPaths(restApi, apiVarName, integrations.map));
+    statements.push(
+      ...this.renderPaths(
+        restApi,
+        apiVarName,
+        integrations.map,
+        this.isAdminQueriesApi(restApi) ? adminQueriesMethodOptionsVarName : undefined,
+      ),
+    );
     statements.push(...this.renderPathPolicies(restApi, apiVarName, 'stack', gen1ApiVarName));
+    statements.push(...this.renderAdminQueriesLambdaPolicies(restApi, apiVarName));
     statements.push(this.renderOutput(apiVarName));
 
     return statements;
@@ -143,6 +164,18 @@ export class RestApiRenderer {
   }
 
   private renderRestApiConstruct(restApi: RestApiRenderOptions, stackVarName: string, apiVarName: string): ts.Statement {
+    const restApiProps = [
+      factory.createPropertyAssignment(
+        'restApiName',
+        factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
+          factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+        ]),
+      ),
+    ];
+    if (this.isAdminQueriesApi(restApi)) {
+      restApiProps.push(this.renderCorsPreflightOptions());
+    }
+
     return factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(
@@ -154,17 +187,7 @@ export class RestApiRenderer {
             factory.createNewExpression(factory.createIdentifier('RestApi'), undefined, [
               factory.createIdentifier(stackVarName),
               factory.createStringLiteral('RestApi'),
-              factory.createObjectLiteralExpression(
-                [
-                  factory.createPropertyAssignment(
-                    'restApiName',
-                    factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
-                      factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-                    ]),
-                  ),
-                ],
-                true,
-              ),
+              factory.createObjectLiteralExpression(restApiProps, true),
             ]),
           ),
         ],
@@ -265,6 +288,42 @@ export class RestApiRenderer {
     }
 
     return { statements, map };
+  }
+
+  private renderAdminQueriesAuthorizer(stackVarName: string, methodOptionsVarName: string): ts.Statement[] {
+    return [
+      TS.declareConst(
+        'adminQueriesCognitoAuthorizer',
+        factory.createNewExpression(factory.createIdentifier('CognitoUserPoolsAuthorizer'), undefined, [
+          factory.createIdentifier(stackVarName),
+          factory.createStringLiteral('CognitoAuthorizer'),
+          factory.createObjectLiteralExpression(
+            [
+              factory.createPropertyAssignment(
+                'cognitoUserPools',
+                factory.createArrayLiteralExpression([TS.propAccess('backend', 'auth', 'resources', 'userPool')]),
+              ),
+              factory.createPropertyAssignment('identitySource', factory.createStringLiteral('method.request.header.Authorization')),
+            ],
+            true,
+          ),
+        ]),
+      ),
+      TS.declareConst(
+        methodOptionsVarName,
+        factory.createObjectLiteralExpression(
+          [
+            TS.enumProp('authorizationType', 'AuthorizationType', 'COGNITO'),
+            factory.createPropertyAssignment('authorizer', factory.createIdentifier('adminQueriesCognitoAuthorizer')),
+            factory.createPropertyAssignment(
+              'authorizationScopes',
+              factory.createArrayLiteralExpression([factory.createStringLiteral('aws.cognito.signin.user.admin')]),
+            ),
+          ],
+          true,
+        ),
+      ),
+    ];
   }
 
   private renderGen1ApiReference(restApi: RestApiRenderOptions, stackVarName: string, gen1ApiVarName: string): ts.Statement {
@@ -385,7 +444,12 @@ export class RestApiRenderer {
     );
   }
 
-  private renderPaths(restApi: RestApiRenderOptions, apiVarName: string, integrations: ReadonlyMap<string, string>): ts.Statement[] {
+  private renderPaths(
+    restApi: RestApiRenderOptions,
+    apiVarName: string,
+    integrations: ReadonlyMap<string, string>,
+    methodOptionsVarName?: string,
+  ): ts.Statement[] {
     const statements: ts.Statement[] = [];
 
     for (const [pathName, pathConfig] of Object.entries(restApi.paths)) {
@@ -443,31 +507,127 @@ export class RestApiRenderer {
           factory.createCallExpression(
             factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
             undefined,
-            [factory.createStringLiteral('ANY'), factory.createIdentifier(integrationVar)],
-          ),
-        ),
-      );
-
-      statements.push(
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
-            undefined,
             [
-              factory.createObjectLiteralExpression(
-                [
-                  factory.createPropertyAssignment('anyMethod', factory.createTrue()),
-                  factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(integrationVar)),
-                ],
-                true,
-              ),
+              factory.createStringLiteral('ANY'),
+              factory.createIdentifier(integrationVar),
+              ...(methodOptionsVarName ? [factory.createIdentifier(methodOptionsVarName)] : []),
             ],
           ),
         ),
       );
+
+      const addProxyCall = factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
+        undefined,
+        [
+          factory.createObjectLiteralExpression(
+            [
+              factory.createPropertyAssignment('anyMethod', methodOptionsVarName ? factory.createFalse() : factory.createTrue()),
+              factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(integrationVar)),
+            ],
+            true,
+          ),
+        ],
+      );
+
+      if (methodOptionsVarName) {
+        const proxyVarName = `${resourceName}Proxy`;
+        statements.push(TS.declareConst(proxyVarName, addProxyCall));
+        statements.push(
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(proxyVarName), factory.createIdentifier('addMethod')),
+              undefined,
+              [
+                factory.createStringLiteral('ANY'),
+                factory.createIdentifier(integrationVar),
+                factory.createIdentifier(methodOptionsVarName),
+              ],
+            ),
+          ),
+        );
+      } else {
+        statements.push(factory.createExpressionStatement(addProxyCall));
+      }
     }
 
     return statements;
+  }
+
+  private renderAdminQueriesLambdaPolicies(restApi: RestApiRenderOptions, apiVarName: string): ts.Statement[] {
+    if (!this.isAdminQueriesApi(restApi)) {
+      return [];
+    }
+
+    const functionNames = restApi.adminQueriesFunctionNames ?? [];
+
+    const actions = [
+      'cognito-idp:AdminAddUserToGroup',
+      'cognito-idp:AdminConfirmSignUp',
+      'cognito-idp:AdminDisableUser',
+      'cognito-idp:AdminEnableUser',
+      'cognito-idp:AdminGetUser',
+      'cognito-idp:AdminListGroupsForUser',
+      'cognito-idp:AdminRemoveUserFromGroup',
+      'cognito-idp:AdminUserGlobalSignOut',
+      'cognito-idp:ListGroups',
+      'cognito-idp:ListUsers',
+      'cognito-idp:ListUsersInGroup',
+    ];
+
+    return functionNames.map((functionName) => {
+      const resources = [
+        TS.propAccess('backend', 'auth', 'resources', 'userPool', 'userPoolArn') as ts.Expression,
+        ...(restApi.gen1UserPoolId ? [this.renderGen1UserPoolArn(apiVarName, restApi.gen1UserPoolId)] : []),
+      ];
+
+      return factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            TS.propAccess('backend', functionName, 'resources', 'lambda') as ts.Expression,
+            factory.createIdentifier('addToRolePolicy'),
+          ),
+          undefined,
+          [
+            factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'actions',
+                    factory.createArrayLiteralExpression(actions.map((action) => factory.createStringLiteral(action))),
+                  ),
+                  factory.createPropertyAssignment('resources', factory.createArrayLiteralExpression(resources)),
+                ],
+                true,
+              ),
+            ]),
+          ],
+        ),
+      );
+    });
+  }
+
+  private renderGen1UserPoolArn(apiVarName: string, gen1UserPoolId: string): ts.CallExpression {
+    const stackOfApi = factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('Stack'), factory.createIdentifier('of')),
+      undefined,
+      [factory.createIdentifier(apiVarName)],
+    );
+
+    return factory.createCallExpression(
+      factory.createPropertyAccessExpression(stackOfApi, factory.createIdentifier('formatArn')),
+      undefined,
+      [
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment('service', factory.createStringLiteral('cognito-idp')),
+            factory.createPropertyAssignment('resource', factory.createStringLiteral('userpool')),
+            factory.createPropertyAssignment('resourceName', factory.createStringLiteral(gen1UserPoolId)),
+          ],
+          true,
+        ),
+      ],
+    );
   }
 
   private renderCorsPreflightOptions(): ts.PropertyAssignment {
@@ -854,5 +1014,9 @@ export class RestApiRenderer {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw cli-inputs path config
       (p: any) => p.permissions?.setting === 'private' || p.permissions?.setting === 'protected',
     );
+  }
+
+  private isAdminQueriesApi(restApi: RestApiRenderOptions): boolean {
+    return this.hasAuth && (restApi.adminQueriesFunctionNames?.length ?? 0) > 0;
   }
 }

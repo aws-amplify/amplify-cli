@@ -1073,4 +1073,440 @@ describe('RestApiGenerator', () => {
     const output = writtenFile('resource.ts');
     expect(output).toContain('myapiApi');
   });
+
+  it('renders Cognito authorizer and admin permissions for AdminQueries API', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        AdminQueries: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main', ApiId: 'abc123' },
+          dependsOn: [
+            { category: 'auth', resourceName: 'myAuth', attributes: ['UserPoolId'] },
+            { category: 'function', resourceName: 'AdminQueriesd29134db', attributes: ['Arn', 'Name'] },
+          ],
+        },
+      },
+      auth: { myAuth: { service: 'Cognito', output: { UserPoolId: 'us-east-1_abc123' } } },
+    });
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: { '/{proxy+}': { lambdaFunction: 'AdminQueriesd29134db', permissions: { setting: 'private' } } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'AdminQueries',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).toMatchInlineSnapshot(`
+      "import {
+        RestApi,
+        LambdaIntegration,
+        AuthorizationType,
+        Cors,
+        ResponseType,
+        CognitoUserPoolsAuthorizer,
+      } from 'aws-cdk-lib/aws-apigateway';
+      import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+      import { Stack } from 'aws-cdk-lib';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export function defineAdminQueriesApi(backend: Backend) {
+        const stack = backend.createStack('rest-api-stack-AdminQueries');
+        const AdminQueriesApi = new RestApi(stack, 'RestApi', {
+          restApiName: \`AdminQueries-\${branchName}\`,
+          defaultCorsPreflightOptions: {
+            allowOrigins: Cors.ALL_ORIGINS,
+            allowMethods: Cors.ALL_METHODS,
+            allowHeaders: [
+              'Content-Type',
+              'X-Amz-Date',
+              'Authorization',
+              'X-Api-Key',
+              'X-Amz-Security-Token',
+              'X-Amz-User-Agent',
+            ],
+            statusCode: 200,
+          },
+        });
+        AdminQueriesApi.addGatewayResponse('Default4XX', {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+            'Access-Control-Allow-Origin': "'*'",
+            'Access-Control-Allow-Headers':
+              "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+            'Access-Control-Allow-Methods':
+              "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+            'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+          },
+        });
+        AdminQueriesApi.addGatewayResponse('Default5XX', {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+            'Access-Control-Allow-Origin': "'*'",
+            'Access-Control-Allow-Headers':
+              "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+            'Access-Control-Allow-Methods':
+              "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+            'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+          },
+        });
+        const AdminQueriesd29134dbIntegration = new LambdaIntegration(
+          backend.AdminQueriesd29134db.resources.lambda
+        );
+        const adminQueriesCognitoAuthorizer = new CognitoUserPoolsAuthorizer(
+          stack,
+          'CognitoAuthorizer',
+          {
+            cognitoUserPools: [backend.auth.resources.userPool],
+            identitySource: 'method.request.header.Authorization',
+          }
+        );
+        const adminQueriesMethodOptions = {
+          authorizationType: AuthorizationType.COGNITO,
+          authorizer: adminQueriesCognitoAuthorizer,
+          authorizationScopes: ['aws.cognito.signin.user.admin'],
+        };
+        const gen1AdminQueriesApi = RestApi.fromRestApiAttributes(
+          stack,
+          'Gen1AdminQueriesApi',
+          {
+            restApiId: 'abc123',
+            rootResourceId: 'root-resource-id',
+          }
+        );
+        const gen1AdminQueriesPolicy = new Policy(stack, 'Gen1AdminQueriesPolicy', {
+          statements: [
+            new PolicyStatement({
+              actions: ['execute-api:Invoke'],
+              resources: [\`\${gen1AdminQueriesApi.arnForExecuteApi('GET', '/*')}\`],
+            }),
+          ],
+        });
+        backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+          gen1AdminQueriesPolicy
+        );
+        const root = AdminQueriesApi.root;
+        root.addMethod(
+          'ANY',
+          AdminQueriesd29134dbIntegration,
+          adminQueriesMethodOptions
+        );
+        const rootProxy = root.addProxy({
+          anyMethod: false,
+          defaultIntegration: AdminQueriesd29134dbIntegration,
+        });
+        rootProxy.addMethod(
+          'ANY',
+          AdminQueriesd29134dbIntegration,
+          adminQueriesMethodOptions
+        );
+        backend.AdminQueriesd29134db.resources.lambda.addToRolePolicy(
+          new PolicyStatement({
+            actions: [
+              'cognito-idp:AdminAddUserToGroup',
+              'cognito-idp:AdminConfirmSignUp',
+              'cognito-idp:AdminDisableUser',
+              'cognito-idp:AdminEnableUser',
+              'cognito-idp:AdminGetUser',
+              'cognito-idp:AdminListGroupsForUser',
+              'cognito-idp:AdminRemoveUserFromGroup',
+              'cognito-idp:AdminUserGlobalSignOut',
+              'cognito-idp:ListGroups',
+              'cognito-idp:ListUsers',
+              'cognito-idp:ListUsersInGroup',
+            ],
+            resources: [
+              backend.auth.resources.userPool.userPoolArn,
+              Stack.of(AdminQueriesApi).formatArn({
+                service: 'cognito-idp',
+                resource: 'userpool',
+                resourceName: 'us-east-1_abc123',
+              }),
+            ],
+          })
+        );
+        backend.addOutput({
+          custom: {
+            API: {
+              [AdminQueriesApi.restApiName]: {
+                endpoint: AdminQueriesApi.url.slice(0, -1),
+                region: Stack.of(AdminQueriesApi).region,
+                apiName: AdminQueriesApi.restApiName,
+              },
+            },
+          },
+        });
+      }
+      "
+    `);
+  });
+
+  it('does not apply AdminQueries wiring based only on a function name prefix', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        ReportsApi: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main', ApiId: 'abc123' },
+        },
+      },
+      auth: { myAuth: { service: 'Cognito', output: { UserPoolId: 'us-east-1_abc123' } } },
+    });
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: { '/reports': { lambdaFunction: 'AdminQueriesReports', permissions: { setting: 'open' } } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'ReportsApi',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).not.toContain('CognitoUserPoolsAuthorizer');
+    expect(output).not.toContain('adminQueriesMethodOptions');
+    expect(output).not.toContain('cognito-idp:AdminGetUser');
+  });
+
+  it('does not render AdminQueries auth wiring when the auth category is absent', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        AdminQueries: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main', ApiId: 'abc123' },
+          dependsOn: [
+            { category: 'auth', resourceName: 'missingAuth', attributes: ['UserPoolId'] },
+            { category: 'function', resourceName: 'AdminQueriesd29134db', attributes: ['Arn', 'Name'] },
+          ],
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: { '/{proxy+}': { lambdaFunction: 'AdminQueriesd29134db', permissions: { setting: 'private' } } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'AdminQueries',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const output = writtenFile('resource.ts');
+    expect(output).not.toContain('CognitoUserPoolsAuthorizer');
+    expect(output).not.toContain('backend.auth');
+    expect(output).not.toContain('cognito-idp:AdminGetUser');
+  });
+
+  it('warns and scopes AdminQueries permissions to the Gen2 pool when the Gen1 pool ID is missing', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      api: {
+        AdminQueries: {
+          service: 'API Gateway',
+          output: { RootUrl: 'https://abc123.execute-api.us-east-1.amazonaws.com/main', ApiId: 'abc123' },
+          dependsOn: [
+            { category: 'auth', resourceName: 'myAuth', attributes: ['UserPoolId'] },
+            { category: 'function', resourceName: 'AdminQueriesd29134db', attributes: ['Arn', 'Name'] },
+          ],
+        },
+      },
+      auth: { myAuth: { service: 'Cognito', output: {} } },
+    });
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({
+      paths: { '/{proxy+}': { lambdaFunction: 'AdminQueriesd29134db', permissions: { setting: 'private' } } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchRestApiRootResourceId').mockResolvedValue('root-resource-id');
+    const warnSpy = jest.spyOn(logger, 'warn').mockImplementation();
+
+    const generator = new RestApiGenerator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      {
+        category: 'api',
+        resourceName: 'AdminQueries',
+        service: 'API Gateway',
+        key: 'api:API Gateway',
+      },
+      logger,
+    );
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("AdminQueries API 'AdminQueries' detected"));
+    const output = writtenFile('resource.ts');
+    expect(output).toMatchInlineSnapshot(`
+      "import {
+        RestApi,
+        LambdaIntegration,
+        AuthorizationType,
+        Cors,
+        ResponseType,
+        CognitoUserPoolsAuthorizer,
+      } from 'aws-cdk-lib/aws-apigateway';
+      import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+      import { Stack } from 'aws-cdk-lib';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export function defineAdminQueriesApi(backend: Backend) {
+        const stack = backend.createStack('rest-api-stack-AdminQueries');
+        const AdminQueriesApi = new RestApi(stack, 'RestApi', {
+          restApiName: \`AdminQueries-\${branchName}\`,
+          defaultCorsPreflightOptions: {
+            allowOrigins: Cors.ALL_ORIGINS,
+            allowMethods: Cors.ALL_METHODS,
+            allowHeaders: [
+              'Content-Type',
+              'X-Amz-Date',
+              'Authorization',
+              'X-Api-Key',
+              'X-Amz-Security-Token',
+              'X-Amz-User-Agent',
+            ],
+            statusCode: 200,
+          },
+        });
+        AdminQueriesApi.addGatewayResponse('Default4XX', {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+            'Access-Control-Allow-Origin': "'*'",
+            'Access-Control-Allow-Headers':
+              "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+            'Access-Control-Allow-Methods':
+              "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+            'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+          },
+        });
+        AdminQueriesApi.addGatewayResponse('Default5XX', {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+            'Access-Control-Allow-Origin': "'*'",
+            'Access-Control-Allow-Headers':
+              "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+            'Access-Control-Allow-Methods':
+              "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+            'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+          },
+        });
+        const AdminQueriesd29134dbIntegration = new LambdaIntegration(
+          backend.AdminQueriesd29134db.resources.lambda
+        );
+        const adminQueriesCognitoAuthorizer = new CognitoUserPoolsAuthorizer(
+          stack,
+          'CognitoAuthorizer',
+          {
+            cognitoUserPools: [backend.auth.resources.userPool],
+            identitySource: 'method.request.header.Authorization',
+          }
+        );
+        const adminQueriesMethodOptions = {
+          authorizationType: AuthorizationType.COGNITO,
+          authorizer: adminQueriesCognitoAuthorizer,
+          authorizationScopes: ['aws.cognito.signin.user.admin'],
+        };
+        const gen1AdminQueriesApi = RestApi.fromRestApiAttributes(
+          stack,
+          'Gen1AdminQueriesApi',
+          {
+            restApiId: 'abc123',
+            rootResourceId: 'root-resource-id',
+          }
+        );
+        const gen1AdminQueriesPolicy = new Policy(stack, 'Gen1AdminQueriesPolicy', {
+          statements: [
+            new PolicyStatement({
+              actions: ['execute-api:Invoke'],
+              resources: [\`\${gen1AdminQueriesApi.arnForExecuteApi('GET', '/*')}\`],
+            }),
+          ],
+        });
+        backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+          gen1AdminQueriesPolicy
+        );
+        const root = AdminQueriesApi.root;
+        root.addMethod(
+          'ANY',
+          AdminQueriesd29134dbIntegration,
+          adminQueriesMethodOptions
+        );
+        const rootProxy = root.addProxy({
+          anyMethod: false,
+          defaultIntegration: AdminQueriesd29134dbIntegration,
+        });
+        rootProxy.addMethod(
+          'ANY',
+          AdminQueriesd29134dbIntegration,
+          adminQueriesMethodOptions
+        );
+        backend.AdminQueriesd29134db.resources.lambda.addToRolePolicy(
+          new PolicyStatement({
+            actions: [
+              'cognito-idp:AdminAddUserToGroup',
+              'cognito-idp:AdminConfirmSignUp',
+              'cognito-idp:AdminDisableUser',
+              'cognito-idp:AdminEnableUser',
+              'cognito-idp:AdminGetUser',
+              'cognito-idp:AdminListGroupsForUser',
+              'cognito-idp:AdminRemoveUserFromGroup',
+              'cognito-idp:AdminUserGlobalSignOut',
+              'cognito-idp:ListGroups',
+              'cognito-idp:ListUsers',
+              'cognito-idp:ListUsersInGroup',
+            ],
+            resources: [backend.auth.resources.userPool.userPoolArn],
+          })
+        );
+        backend.addOutput({
+          custom: {
+            API: {
+              [AdminQueriesApi.restApiName]: {
+                endpoint: AdminQueriesApi.url.slice(0, -1),
+                region: Stack.of(AdminQueriesApi).region,
+                apiName: AdminQueriesApi.restApiName,
+              },
+            },
+          },
+        });
+      }
+      "
+    `);
+  });
 });
