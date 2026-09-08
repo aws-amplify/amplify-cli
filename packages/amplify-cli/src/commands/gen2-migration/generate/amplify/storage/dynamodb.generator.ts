@@ -54,7 +54,6 @@ export class DynamoDBGenerator implements Planner {
         execute: async () => {
           const capitalizedName = this.resource.resourceName.charAt(0).toUpperCase() + this.resource.resourceName.slice(1);
           const functionName = `defineStorage${capitalizedName}`;
-          const storageAlias = `storage${capitalizedName}`;
 
           // Write the resource.ts file for this DynamoDB table
           const resourceDir = path.join(this.outputDir, 'amplify', 'storage', this.resource.resourceName);
@@ -65,6 +64,7 @@ export class DynamoDBGenerator implements Planner {
           await fs.writeFile(path.join(resourceDir, 'resource.ts'), content, 'utf-8');
 
           // Contribute to backend.ts
+          const storageAlias = this.backendGenerator.reserveAlias(`storage${capitalizedName}`, 'storage');
           this.backendGenerator.addNamespaceImport(storageAlias, `./storage/${this.resource.resourceName}/resource`);
           this.backendGenerator.addPostDefineBackendCall(this.resource.resourceName, `${storageAlias}.${functionName}(backend)`);
           this.backendGenerator.addPostRefactorCall(`${storageAlias}.postRefactor(${this.resource.resourceName});`);

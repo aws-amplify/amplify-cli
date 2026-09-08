@@ -150,7 +150,7 @@ export class FunctionGenerator implements Planner {
           await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
           await this.copyFunctionSource(resourceName, dirPath);
 
-          const alias = resourceName;
+          const alias = this.backendGenerator.reserveAlias(resourceName, 'function');
           this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
           this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
 

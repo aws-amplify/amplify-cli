@@ -97,11 +97,12 @@ export class AuthGenerator implements Planner {
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addNamespaceImport('auth', './auth/resource');
-          this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
-          this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'auth', extraArgs: [] });
+          const alias = this.backendGenerator.reserveAlias('auth', 'auth');
+          this.backendGenerator.addNamespaceImport(alias, './auth/resource');
+          this.backendGenerator.addDefineBackendEntry('auth', alias, 'auth');
+          this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: [] });
           if (userPool.Domain) {
-            this.backendGenerator.addPostRefactorCall('auth.postRefactor(backend)');
+            this.backendGenerator.addPostRefactorCall(`${alias}.postRefactor(backend)`);
           }
         },
       },

@@ -69,8 +69,8 @@ export class RestApiGenerator implements Planner {
           await fs.mkdir(apiDir, { recursive: true });
           await fs.writeFile(path.join(apiDir, 'resource.ts'), content, 'utf-8');
 
-          const alias = restApi.apiName;
-          this.backendGenerator.addNamespaceImport(alias, `./api/${alias}/resource`);
+          const alias = this.backendGenerator.reserveAlias(restApi.apiName, 'api');
+          this.backendGenerator.addNamespaceImport(alias, `./api/${restApi.apiName}/resource`);
           this.backendGenerator.addPostDefineBackendStatement(`${alias}.${restApi.exportedFunctionName}(backend)`);
         },
       },

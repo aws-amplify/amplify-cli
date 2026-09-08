@@ -83,8 +83,9 @@ export class GeoGenerator implements Planner {
           await fs.mkdir(geoDir, { recursive: true });
           await fs.writeFile(path.join(geoDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addNamespaceImport('geo', './geo/resource');
-          this.backendGenerator.addPostDefineBackendStatement(`geo.defineGeo(backend)`);
+          const alias = this.backendGenerator.reserveAlias('geo', 'geo');
+          this.backendGenerator.addNamespaceImport(alias, './geo/resource');
+          this.backendGenerator.addPostDefineBackendStatement(`${alias}.defineGeo(backend)`);
         },
       },
     ];

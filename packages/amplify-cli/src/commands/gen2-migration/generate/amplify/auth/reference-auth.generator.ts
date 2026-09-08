@@ -67,8 +67,9 @@ export class ReferenceAuthGenerator implements Planner {
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addNamespaceImport('auth', './auth/resource');
-          this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
+          const alias = this.backendGenerator.reserveAlias('auth', 'auth');
+          this.backendGenerator.addNamespaceImport(alias, './auth/resource');
+          this.backendGenerator.addDefineBackendEntry('auth', alias, 'auth');
         },
       },
     ];

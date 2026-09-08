@@ -197,10 +197,11 @@ export class DataGenerator implements Planner {
           await fs.mkdir(dataDir, { recursive: true });
           await fs.writeFile(path.join(dataDir, 'resource.ts'), content, 'utf-8');
 
-          this.backendGenerator.addNamespaceImport('data', './data/resource');
-          this.backendGenerator.addDefineBackendEntry('data', 'data', 'data');
+          const alias = this.backendGenerator.reserveAlias('data', 'data');
+          this.backendGenerator.addNamespaceImport(alias, './data/resource');
+          this.backendGenerator.addDefineBackendEntry('data', alias, 'data');
           if (needsEscapeHatches) {
-            this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'data', extraArgs: [] });
+            this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: [] });
           }
         },
       },
