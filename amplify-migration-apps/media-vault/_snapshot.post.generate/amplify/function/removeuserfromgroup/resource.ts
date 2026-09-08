@@ -9,7 +9,7 @@ export const removeuserfromgroup = defineFunction({
   name: `removeuserfromgroup-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -18,6 +18,10 @@ export function applyEscapeHatches(backend: Backend) {
   backend.removeuserfromgroup.addEnvironment(
     'AUTH_MEDIAVAULT1F08412D_USERPOOLID',
     backend.auth.resources.userPool.userPoolId
+  );
+  backend.removeuserfromgroup.addEnvironment(
+    'REGION',
+    backend.removeuserfromgroup.stack.region
   );
   new aws_iam.Policy(
     backend.removeuserfromgroup.resources.lambda,

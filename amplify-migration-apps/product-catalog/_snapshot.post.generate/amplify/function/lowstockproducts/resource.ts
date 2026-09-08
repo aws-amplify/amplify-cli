@@ -10,7 +10,6 @@ export const lowstockproducts = defineFunction({
   memoryMB: 128,
   environment: {
     ENV: `${branchName}`,
-    REGION: 'us-east-1',
     LOW_STOCK_THRESHOLD: '5',
     PRODUCT_CATALOG_SECRET:
       '/amplify/productcatalog/x/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
@@ -31,6 +30,10 @@ export function applyEscapeHatches(backend: Backend) {
   backend.lowstockproducts.addEnvironment(
     'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
     backend.data.apiId
+  );
+  backend.lowstockproducts.addEnvironment(
+    'REGION',
+    backend.lowstockproducts.stack.region
   );
   backend.data.resources.graphqlApi.grantQuery(
     backend.lowstockproducts.resources.lambda

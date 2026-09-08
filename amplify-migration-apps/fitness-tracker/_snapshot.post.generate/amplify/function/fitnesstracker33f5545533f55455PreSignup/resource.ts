@@ -11,7 +11,6 @@ export const fitnesstracker33f5545533f55455PreSignup = defineFunction({
   environment: {
     ENV: `${branchName}`,
     MODULES: 'email-filter-allowlist',
-    REGION: 'us-east-1',
     DOMAINALLOWLIST: 'amazon.com',
     DOMAINBLACKLIST: '',
   },
@@ -20,4 +19,8 @@ export const fitnesstracker33f5545533f55455PreSignup = defineFunction({
 
 export function applyEscapeHatches(backend: Backend) {
   backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${branchName}`;
+  backend.fitnesstracker33f5545533f55455PreSignup.addEnvironment(
+    'REGION',
+    backend.fitnesstracker33f5545533f55455PreSignup.stack.region
+  );
 }

@@ -8,10 +8,14 @@ export const quotegeneratorbe = defineFunction({
   name: `quotegeneratorbe-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
 export function applyEscapeHatches(backend: Backend) {
   backend.quotegeneratorbe.resources.cfnResources.cfnFunction.functionName = `quotegeneratorbe-${branchName}`;
+  backend.quotegeneratorbe.addEnvironment(
+    'REGION',
+    backend.quotegeneratorbe.stack.region
+  );
 }

@@ -92,6 +92,19 @@ export class FunctionGenerator implements Planner {
     const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
     const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {}, this.readModelNames());
 
+    // REGION should resolve dynamically to the deployment region rather than
+    // being hardcoded. Move it from retained env vars to an escape hatch that
+    // uses the CDK stack region token.
+    const finalLiteralEnvVars = { ...literalEnvVars };
+    const finalDynamicEnvVars = [...dynamicEnvVars];
+    if ('REGION' in finalLiteralEnvVars) {
+      delete finalLiteralEnvVars.REGION;
+      finalDynamicEnvVars.push({
+        name: 'REGION',
+        expression: TS.propAccess('backend', this.resource.resourceName, 'stack', 'region'),
+      });
+    }
+
     const dynamoActions = this.extractDynamoActions();
     const kinesisActions = this.extractKinesisActions();
     const appSyncPermissions = this.extractAppSyncPermissions();
@@ -111,8 +124,8 @@ export class FunctionGenerator implements Planner {
       memoryMB: config.MemorySize,
       runtime,
       schedule,
-      literalEnvVars,
-      dynamicEnvVars,
+      literalEnvVars: finalLiteralEnvVars,
+      dynamicEnvVars: finalDynamicEnvVars,
       dynamoActions,
       appSyncPermissions,
       dataTriggerModels,

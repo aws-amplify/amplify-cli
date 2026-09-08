@@ -10,7 +10,7 @@ export const moodboardKinesisReader = defineFunction({
   name: `moodboardKinesisReader-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -22,6 +22,10 @@ export function applyEscapeHatches(
   backend.moodboardKinesisReader.addEnvironment(
     'ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN',
     analytics.kinesisStreamArn
+  );
+  backend.moodboardKinesisReader.addEnvironment(
+    'REGION',
+    backend.moodboardKinesisReader.stack.region
   );
   backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
     new aws_iam.PolicyStatement({

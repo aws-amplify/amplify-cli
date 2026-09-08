@@ -8,7 +8,7 @@ export const lognutrition = defineFunction({
   name: `lognutrition-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
+  environment: { ENV: `${branchName}` },
   runtime: 22,
 });
 
@@ -25,6 +25,10 @@ export function applyEscapeHatches(backend: Backend) {
   backend.lognutrition.addEnvironment(
     'API_FITNESSTRACKER_MEALTABLE_NAME',
     backend.data.resources.tables['Meal'].tableName
+  );
+  backend.lognutrition.addEnvironment(
+    'REGION',
+    backend.lognutrition.stack.region
   );
   backend.data.resources.tables['Meal'].grant(
     backend.lognutrition.resources.lambda,
