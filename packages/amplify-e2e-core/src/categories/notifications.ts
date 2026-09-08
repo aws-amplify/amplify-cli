@@ -1,5 +1,7 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
+const notificationTimeoutMS = 1000 * 60 * 10; // 10 minutes
+
 /**
  * notifications settings
  */
@@ -11,7 +13,7 @@ type NotificationSettings = {
  * removes all the notification channel
  */
 export const removeAllNotificationChannel = async (cwd: string): Promise<void> =>
-  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true, noOutputTimeout: notificationTimeoutMS })
     .wait('Choose the notification channel to remove')
     .sendLine('All channels on Pinpoint resource')
     .wait(`All notifications have been disabled`)
@@ -22,7 +24,7 @@ export const removeAllNotificationChannel = async (cwd: string): Promise<void> =
  * removes the notification channel
  */
 export const removeNotificationChannel = async (cwd: string, channel: string): Promise<void> =>
-  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true, noOutputTimeout: notificationTimeoutMS })
     .wait('Choose the notification channel to remove')
     .sendLine(channel)
     .wait(`The channel has been successfully disabled`)
@@ -45,7 +47,11 @@ export const addNotificationChannel = async (
   hasAuth = false,
   testingWithLatestCodebase = false,
 ): Promise<void> => {
-  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'notification'], { cwd, stripColors: true });
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'notification'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: notificationTimeoutMS,
+  });
 
   chain.wait('Choose the notification channel to enable').sendLine(channel);
 
@@ -92,7 +98,11 @@ export const updateNotificationChannel = async (
   enable = true,
   testingWithLatestCodebase = false,
 ): Promise<void> => {
-  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'notification'], { cwd, stripColors: true });
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'notification'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: notificationTimeoutMS,
+  });
   chain.wait('Choose the notification channel to configure').sendLine(channel);
   chain.wait(`Do you want to ${enable ? 'enable' : 'disable'} the ${channel} channel`).sendYes();
 

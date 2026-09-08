@@ -106,6 +106,7 @@ export type ExecutionContext = {
    */
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
   runAsync: (expectedErrorPredicate?: (err: Error) => boolean) => Promise<void>;
+  getProcess: () => Recorder | undefined;
 };
 
 /**
@@ -420,6 +421,9 @@ function chain(context: Context): ExecutionContext {
       };
       context.queue.push(_delay);
       return chain(context);
+    },
+    getProcess(): Recorder | undefined {
+      return context.process;
     },
   };
   const run = (callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext => {
@@ -832,7 +836,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
     // Undo ci-info detection, required for some tests
     // see https://github.com/watson/ci-info/blob/master/index.js#L57
     if (options.disableCIDetection === true) {
-      childEnv.CI = false;
+      childEnv.CI = 'false';
     }
   }
 
