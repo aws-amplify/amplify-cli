@@ -36,7 +36,7 @@
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
-    "uuid": "^8.3.2"
+    "uuid": "^14.0.0"
   },
   "jest": {
     "collectCoverage": true,
