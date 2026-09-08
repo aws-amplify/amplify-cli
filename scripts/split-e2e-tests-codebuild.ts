@@ -157,6 +157,47 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/gen2-migration/gen2-migration-store-locator.test.ts',
   ],
 };
+
+/**
+ * Maximum number of E2E jobs released into the batch at once.
+ *
+ * The project's concurrentBuildLimit is 60. Releasing all ~265 jobs at once
+ * (each depending only on `upb`) causes every batch to fail with
+ * "Concurrent build limit exceeded". Staggering the fan-out into waves of
+ * WAVE_SIZE jobs each keeps the maximum simultaneous release width at 46,
+ * well under the 60 cap.
+ *
+ * Wave assignment:
+ *   - jobs at index < WAVE_SIZE depend on `upb` (wave 0)
+ *   - job at index i (i >= WAVE_SIZE) depends on job at index (i - WAVE_SIZE)
+ *
+ * Because each dependency index is strictly less than i, the graph is acyclic.
+ * The most jobs released by any single completion event is WAVE_SIZE.
+ */
+const WAVE_SIZE = 46;
+
+/**
+ * Rewires the `depend-on` edges of the E2E build jobs so that at most
+ * WAVE_SIZE jobs are released at once (see constant above).
+ *
+ * Returns the identifiers of the "leaf" jobs — those in the final wave
+ * (nothing else chains off them) — so that downstream jobs such as
+ * `aggregate_e2e_reports` can wait for the entire fan-out to finish.
+ */
+const applyFanOutWaves = (builds: any[]): string[] => {
+  builds.forEach((build, index) => {
+    const predecessor = index < WAVE_SIZE ? 'upb' : builds[index - WAVE_SIZE].identifier;
+    const extraDeps = (build['depend-on'] || []).filter((d: string) => d !== 'upb' && !d.startsWith('l_') && !d.startsWith('w_'));
+    build['depend-on'] = extraDeps.length ? [...extraDeps, predecessor] : [predecessor];
+  });
+
+  // A job at index i is a leaf when no later job chains off it, i.e. when
+  // (i + WAVE_SIZE) >= builds.length. That is exactly the final WAVE_SIZE jobs.
+  // Every earlier job is an ancestor of one of these leaves, so waiting on the
+  // leaves transitively waits for the whole fan-out.
+  return builds.slice(Math.max(0, builds.length - WAVE_SIZE)).map((build) => build.identifier);
+};
+
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
@@ -386,6 +427,11 @@ function main(): void {
     undefined,
   );
 
+  // Stagger the e2e fan-out into waves so the batch orchestrator is never asked
+  // to release the entire fan-out at once. Returns the leaf job identifiers so
+  // aggregate_e2e_reports can wait for every test job to finish.
+  const leafJobIdentifiers = applyFanOutWaves(splitE2ETests);
+
   let allBuilds = [...splitE2ETests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
@@ -398,7 +444,7 @@ function main(): void {
       variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
     },
     buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
-    'depend-on': ['upb'],
+    'depend-on': leafJobIdentifiers,
   };
   allBuilds.push(reportsAggregator);
   let currentBatch = [...baseBuildGraph, ...allBuilds];
