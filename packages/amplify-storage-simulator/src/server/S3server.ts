@@ -17,6 +17,18 @@ import { StorageSimulatorServerConfig } from '../index';
 
 import * as util from './utils';
 
+/**
+ * Validates that a resolved file path is contained within the storage root directory.
+ * Prevents path traversal attacks that could read/write/delete files outside the mock storage.
+ */
+function assertPathWithinRoot(resolvedPath: string, rootDir: string): void {
+  const normalizedRoot = path.resolve(rootDir) + path.sep;
+  const normalizedPath = path.resolve(resolvedPath);
+  if (!normalizedPath.startsWith(normalizedRoot) && normalizedPath !== path.resolve(rootDir)) {
+    throw new Error(`Access denied: path "${resolvedPath}" is outside the storage root`);
+  }
+}
+
 const LIST_CONTENT = 'Contents';
 const LIST_COMMOM_PREFIXES = 'CommonPrefixes';
 const EVENT_RECORDS = 'Records';
@@ -126,6 +138,7 @@ export class StorageServer extends EventEmitter {
 
   private async handleRequestGet(request, response) {
     const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
+    assertPathWithinRoot(filePath, this.localDirectoryPath);
     if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
       fs.readFile(filePath, (err, data) => {
         if (err) {
@@ -173,6 +186,7 @@ export class StorageServer extends EventEmitter {
     let keyCount = 0;
     // getting folders recursively
     const dirPath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
+    assertPathWithinRoot(dirPath, this.localDirectoryPath);
 
     const files = globSync('**/*', {
       cwd: dirPath,
@@ -228,6 +242,7 @@ export class StorageServer extends EventEmitter {
 
   private async handleRequestDelete(request, response) {
     const filePath = path.join(this.localDirectoryPath, request.params.path);
+    assertPathWithinRoot(filePath, this.localDirectoryPath);
     if (fs.existsSync(filePath)) {
       fs.unlink(filePath, (err) => {
         if (err) throw err;
@@ -241,6 +256,7 @@ export class StorageServer extends EventEmitter {
 
   private async handleRequestPut(request, response) {
     const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
+    assertPathWithinRoot(directoryPath, this.localDirectoryPath);
     fs.ensureFileSync(directoryPath);
     // strip signature in android , returns same buffer for other clients
     const new_data = util.stripChunkSignature(request.body);
@@ -259,6 +275,7 @@ export class StorageServer extends EventEmitter {
 
   private async handleRequestPost(request, response) {
     const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
+    assertPathWithinRoot(directoryPath, this.localDirectoryPath);
     if (request.query.uploads !== undefined) {
       const id = uuid();
       this.uploadIds.push(id);
@@ -300,6 +317,7 @@ export class StorageServer extends EventEmitter {
       this.emit('event', eventObj);
     } else {
       const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
+      assertPathWithinRoot(directoryPath, this.localDirectoryPath);
       fs.ensureFileSync(directoryPath);
       const new_data = util.stripChunkSignature(request.body);
       fs.writeFileSync(directoryPath, new_data);
