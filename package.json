@@ -181,6 +181,7 @@
     "istanbul/async": "^2.6.4",
     "jake/async": "^2.6.4",
     "json5": "^2.2.3",
+    "jstreemap": "1.28.2",
     "mysql2": "^3.9.8",
     "nth-check": "^2.0.1",
     "undici": "^5.28.3",
