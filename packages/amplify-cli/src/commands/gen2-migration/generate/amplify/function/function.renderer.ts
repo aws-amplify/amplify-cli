@@ -310,12 +310,14 @@ export class FunctionRenderer {
   ): void {
     if (!opts.literalEnvVars || Object.keys(opts.literalEnvVars).length === 0) return;
 
+    const ssmSecretPrefix = `/amplify/${this.appId}/${this.backendEnvironmentName}/`;
+
     const envProps = Object.entries(opts.literalEnvVars).map(([key, value]) => {
-      if (key === 'API_KEY' && value.startsWith(`/amplify/${this.appId}/${this.backendEnvironmentName}`)) {
+      if (value.startsWith(ssmSecretPrefix)) {
         namedImports['@aws-amplify/backend'].add('secret');
         return factory.createPropertyAssignment(
           key,
-          factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral('API_KEY')]),
+          factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral(key)]),
         );
       }
 
