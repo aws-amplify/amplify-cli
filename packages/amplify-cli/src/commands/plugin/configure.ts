@@ -149,6 +149,8 @@ async function addPluginDirectory(pluginPlatform: PluginPlatform) {
       validate: (input: string) => {
         if (!fs.existsSync(input) || !fs.statSync(input).isDirectory()) {
           return 'Must enter a valid full path of a directory';
+        } else if (pluginPlatform.pluginDirectories.includes(input)) {
+          return 'Entered directory is already contained in scannable directories.';
         }
         return true;
       },
