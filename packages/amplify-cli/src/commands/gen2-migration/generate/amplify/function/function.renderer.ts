@@ -310,27 +310,53 @@ export class FunctionRenderer {
   ): void {
     if (!opts.literalEnvVars || Object.keys(opts.literalEnvVars).length === 0) return;
 
-    const envProps = Object.entries(opts.literalEnvVars).map(([key, value]) => {
+    const envProps: ts.PropertyAssignment[] = [];
+    for (const [key, value] of Object.entries(opts.literalEnvVars)) {
+      // REGION: resolve dynamically from AWS_REGION (auto-injected by Lambda) instead of hardcoding.
+      if (key === 'REGION') {
+        envProps.push(
+          factory.createPropertyAssignment(
+            key,
+            factory.createBinaryExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('process'), 'env'),
+                'AWS_REGION',
+              ),
+              ts.SyntaxKind.QuestionQuestionToken,
+              factory.createStringLiteral(''),
+            ),
+          ),
+        );
+        continue;
+      }
+
       if (key === 'API_KEY' && value.startsWith(`/amplify/${this.appId}/${this.backendEnvironmentName}`)) {
         namedImports['@aws-amplify/backend'].add('secret');
-        return factory.createPropertyAssignment(
-          key,
-          factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral('API_KEY')]),
+        envProps.push(
+          factory.createPropertyAssignment(
+            key,
+            factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral('API_KEY')]),
+          ),
         );
+        continue;
       }
 
       if (key === 'ENV') {
-        return factory.createPropertyAssignment(
-          key,
-          factory.createTemplateExpression(factory.createTemplateHead(''), [
-            factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-          ]),
+        envProps.push(
+          factory.createPropertyAssignment(
+            key,
+            factory.createTemplateExpression(factory.createTemplateHead(''), [
+              factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+            ]),
+          ),
         );
+        continue;
       }
 
-      return factory.createPropertyAssignment(key, factory.createStringLiteral(value));
-    });
+      envProps.push(factory.createPropertyAssignment(key, factory.createStringLiteral(value)));
+    }
 
+    if (envProps.length === 0) return;
     target.push(factory.createPropertyAssignment('environment', factory.createObjectLiteralExpression(envProps)));
   }
 

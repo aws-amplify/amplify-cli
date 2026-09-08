@@ -397,6 +397,106 @@ describe('FunctionGenerator', () => {
     `);
   });
 
+  it('renders REGION env var as dynamic process.env.AWS_REGION reference', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 3,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: { Variables: { ENV: 'main', REGION: 'us-east-1' } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const myFunc = defineFunction({
+        entry: './index.js',
+        name: \`myFunc-\${branchName}\`,
+        timeoutSeconds: 3,
+        memoryMB: 128,
+        environment: { ENV: \`\${branchName}\`, REGION: process.env.AWS_REGION ?? '' },
+        runtime: 18,
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
+      "
+    `);
+  });
+
+  it('renders environment block when REGION is the only env var', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: 'index.handler',
+      Timeout: 3,
+      MemorySize: 128,
+      Runtime: 'nodejs18.x',
+      Environment: { Variables: { REGION: 'us-east-1' } },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
+      "import { defineFunction } from '@aws-amplify/backend';
+      import type { Backend } from '../../backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const myFunc = defineFunction({
+        entry: './index.js',
+        name: \`myFunc-\${branchName}\`,
+        timeoutSeconds: 3,
+        memoryMB: 128,
+        environment: { REGION: process.env.AWS_REGION ?? '' },
+        runtime: 18,
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        backend.myFunc.resources.cfnResources.cfnFunction.functionName = \`myFunc-\${branchName}\`;
+      }
+      "
+    `);
+  });
+
   it('renders API_KEY as secret when it matches SSM pattern', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
