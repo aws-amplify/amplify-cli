@@ -146,6 +146,22 @@ export async function init(amplifyServiceParams) {
           e,
         );
       }
+      if (e.name === 'InvalidSignatureException') {
+        throw new AmplifyError(
+          'ProjectInitError',
+          {
+            message: 'The request to create the Amplify app failed with: Forbidden',
+            resolution:
+              'This usually means your AWS credentials are invalid or malformed. ' +
+              'Verify that your Access Key ID and Secret Access Key are correct ' +
+              'in your AWS profile or environment variables. ' +
+              'If you pasted credentials from a console, check for extra characters ' +
+              '(such as leading/trailing tildes). ' +
+              'For more information: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html',
+          },
+          e,
+        );
+      }
       if (context?.exeInfo?.awsConfigInfo?.configLevel === 'general' && e.name === 'ConfigError') {
         throw new AmplifyError('ConfigurationError', {
           code: e.name,
