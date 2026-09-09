@@ -112,13 +112,46 @@ export class AmplifyS3ResourceStackTransform {
     if (userInput.adminTriggerFunction?.triggerFunction && userInput.adminTriggerFunction.triggerFunction !== 'NONE') {
       this.cfnInputParams.adminTriggerFunction = userInput.adminTriggerFunction.triggerFunction;
     }
-    this.cfnInputParams.s3PrivatePolicy = `Private_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3PublicPolicy = `Public_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3ReadPolicy = `read_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.s3UploadsPolicy = `Uploads_policy_${userInput.policyUUID}`;
-    this.cfnInputParams.authPolicyName = `s3_amplify_${userInput.policyUUID}`;
-    this.cfnInputParams.unauthPolicyName = `s3_amplify_${userInput.policyUUID}`;
+    // Policy names carry the app-wide policyUUID. That alone is only insufficient when the
+    // authenticated/unauthenticated IAM roles are SHARED across environments, which happens
+    // when auth is an imported Cognito Identity Pool: two environments' storage stacks then
+    // try to manage identically named inline policies on the same role, and CloudFormation's
+    // single-stack ownership enforcement rejects the deploy ("Policy resource was already
+    // managed by another stack"). Appending the environment name keeps them distinct.
+    //
+    // For the default (managed) auth case each environment owns its own auth roles, so the
+    // identical policy names land on different roles and never collide. We deliberately keep
+    // the legacy `${policyUUID}` name there: a PolicyName change is replace-on-update for
+    // AWS::IAM::Policy, so suffixing unconditionally would force a policy replacement on
+    // EVERY existing storage app's next push -- churn (and risk) far beyond the shared-role
+    // bug this fixes. Gating on imported auth limits the rename to the environments that
+    // actually need it (and whose deploys are already failing).
+    const authResources = this.context.amplify.getProjectMeta?.()?.auth ?? {};
+    const hasImportedAuth = Object.values(authResources).some(
+      (authResource: $TSAny) => authResource?.service === 'Cognito' && authResource?.serviceType === 'imported',
+    );
+    let policyNameSuffix = userInput.policyUUID;
+    if (hasImportedAuth) {
+      // Imported auth shares roles across environments, so the env name is required to keep
+      // policy names distinct. generateCfnInputParameters only runs for a checked-out
+      // environment (push / add / update / override / export), so envName is expected here;
+      // fail fast with a clear error rather than silently producing a shared "_undefined".
+      const envName = this.context.amplify.getEnvInfo()?.envName;
+      if (typeof envName !== 'string' || envName.length === 0) {
+        throw new AmplifyError('EnvironmentNotInitializedError', {
+          message: 'Cannot determine the current Amplify environment name while generating S3 IAM policy names for imported auth.',
+          resolution: `Run 'amplify init' or 'amplify env checkout <env>' in the root of your app directory to select an environment, then try again.`,
+        });
+      }
+      policyNameSuffix = `${userInput.policyUUID}_${envName}`;
+    }
+    this.cfnInputParams.s3PrivatePolicy = `Private_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3PublicPolicy = `Public_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3ReadPolicy = `read_policy_${policyNameSuffix}`;
+    this.cfnInputParams.s3UploadsPolicy = `Uploads_policy_${policyNameSuffix}`;
+    this.cfnInputParams.authPolicyName = `s3_amplify_${policyNameSuffix}`;
+    this.cfnInputParams.unauthPolicyName = `s3_amplify_${policyNameSuffix}`;
     this.cfnInputParams.AuthenticatedAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.authAccess);
     this.cfnInputParams.GuestAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.guestAccess);
     this.cfnInputParams.s3PermissionsAuthenticatedPrivate = this._getPublicPrivatePermissions(
