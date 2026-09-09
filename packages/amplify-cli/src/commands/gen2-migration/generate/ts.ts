@@ -26,6 +26,22 @@ export type ResourceTsParameters = {
  */
 export class TS {
   /**
+   * Asserts that `name` is a valid JavaScript identifier before it is
+   * interpolated verbatim into generated source (e.g. `backend.${name}.resources.lambda`).
+   * Amplify resource names are expected to be identifier-safe, but an unexpected
+   * name containing hyphens/dots/spaces would emit invalid TypeScript; failing
+   * loudly at generate time is preferable to writing a file that won't compile.
+   * `context` names the interpolation site for the error message.
+   */
+  public static assertValidIdentifier(name: string, context: string): void {
+    // Matches a standard JS identifier (letter/underscore/$ start; the standard
+    // Unicode identifier ranges are not needed for Amplify resource names).
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name)) {
+      throw new Error(`Cannot generate ${context}: '${name}' is not a valid JavaScript identifier and would produce invalid TypeScript.`);
+    }
+  }
+
+  /**
    * Prints a TypeScript AST node array to a formatted string.
    */
   public static printNodes(nodes: ts.NodeArray<ts.Node>, printWidth?: number): string {
