@@ -18,7 +18,7 @@ export class LambdaDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       let result;
       if (req.operation === 'BatchInvoke') {
         const { fieldName, parentType } = extraData.info;
-        const batchName = `${parentType}.${fieldName}`;
+        const batchName = `${this._config.name}.${parentType.name}.${fieldName}`;
         const dataLoader = getBatchDataResolver(batchName, this._config.invoke);
         result = await dataLoader.load(req.payload);
       } else {
