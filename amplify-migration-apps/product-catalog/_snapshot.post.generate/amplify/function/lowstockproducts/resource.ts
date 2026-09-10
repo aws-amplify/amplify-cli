@@ -10,7 +10,7 @@ export const lowstockproducts = defineFunction({
   memoryMB: 128,
   environment: {
     ENV: `${branchName}`,
-    REGION: 'us-east-1',
+    REGION: process.env.AWS_REGION ?? '',
     LOW_STOCK_THRESHOLD: '5',
     PRODUCT_CATALOG_SECRET:
       '/amplify/productcatalog/x/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
