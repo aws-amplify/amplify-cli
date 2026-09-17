@@ -26,4 +26,12 @@ describe('executeProviderUtils', () => {
     const util = await executeProviderUtils(mockContext, 'awscloudformation', 'zipFiles', options);
     expect(util).toEqual({});
   });
+  it('should load provider plugin using require() not dynamic import() to support pkg binary', async () => {
+    // Ensures the module is loaded synchronously via require(), which is compatible with
+    // pkg-bundled binaries where vm.Script does not set importModuleDynamically callback.
+    const pluginPath = '../../../../__mocks__/faked-plugin';
+    const loaded = require(pluginPath);
+    expect(loaded).toBeDefined();
+    expect(loaded.providerUtils).toBeDefined();
+  });
 });

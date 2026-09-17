@@ -29,7 +29,10 @@ export const getConfiguredProviders = (context: $TSContext): Record<string, stri
  * Execute the provider command
  */
 export const executeProviderCommand = async (context: $TSContext, command: string, args: unknown[] = []): Promise<$TSAny> => {
-  const providers = await Promise.all(Object.values(getConfiguredProviders(context)).map((providerPath) => import(providerPath)));
+  // Use require() instead of dynamic import() to avoid ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING
+  // when running inside a pkg-bundled binary, where vm.Script does not set importModuleDynamically.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const providers = Object.values(getConfiguredProviders(context)).map((providerPath) => require(providerPath));
   await Promise.all(
     providers.filter((provider) => typeof provider?.[command] === 'function').map((provider) => provider[command](context, ...args)),
   );
