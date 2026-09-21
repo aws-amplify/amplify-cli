@@ -55,7 +55,7 @@
     "promise-toolbox": "^0.20.0",
     "slash": "^3.0.0",
     "ulid": "^2.3.0",
-    "uuid": "^8.3.2",
+    "uuid": "^14.0.0",
     "ws": "^8.5.0"
   },
   "devDependencies": {
