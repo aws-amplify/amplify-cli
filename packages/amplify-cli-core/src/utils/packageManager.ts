@@ -113,13 +113,47 @@ export const getPackageManagerByType = (packageManagerType: PackageManagerType):
 };
 
 /**
+ * Walk up the directory tree to find a package.json with a packageManager field.
+ * This mimics corepack's behavior for detecting the package manager in monorepos.
+ * The packageManager field format is like "pnpm@10.17.0+sha512..." or "yarn@4.0.0"
+ *
+ * @param startPath - The directory to start searching from
+ * @returns The detected package manager type, or null if not found
+ */
+const findPackageManagerFieldInHierarchy = (startPath: string): PackageManagerType | null => {
+  let currentPath = path.resolve(startPath);
+  const root = path.parse(currentPath).root;
+
+  while (currentPath !== root) {
+    const pkgJsonPath = path.join(currentPath, packageJson);
+    if (fs.existsSync(pkgJsonPath)) {
+      try {
+        const pkgJsonContent = fs.readJsonSync(pkgJsonPath);
+        if (pkgJsonContent.packageManager && typeof pkgJsonContent.packageManager === 'string') {
+          // packageManager field format: "pnpm@10.28.2+sha512..." or "yarn@4.0.0"
+          const match = pkgJsonContent.packageManager.match(/^(npm|yarn|pnpm)@/);
+          if (match) {
+            return match[1] as PackageManagerType;
+          }
+        }
+      } catch {
+        // Ignore JSON parse errors and continue searching
+      }
+    }
+    currentPath = path.dirname(currentPath);
+  }
+  return null;
+};
+
+/**
   * Detect the package manager in the passed in directory or process.cwd, with a preference to yarn over npm
   * 1. Check if a package.json file present in the directory as it is mandatory, if not return null
-  * 2. Check if yarn.lock is present and yarn is present and .yarnrc.yml is present on the system for yarn2
-  * 3. Check if yarn.lock is present and yarn is present on the system
-  * 4. Check if package-lock.json is present
-  * 5. Check if yarn present on the system
-  * 6. Fallback to npm
+  * 2. Check for packageManager field in package.json hierarchy (corepack convention for monorepos)
+  * 3. Check if pnpm-lock.yaml is present and pnpm is present on the system
+  * 4. Check if yarn.lock is present and yarn is present on the system
+  * 5. Check if package-lock.json is present
+  * 6. Check if yarn present on the system
+  * 7. Fallback to npm
   @returns {PackageManager | null} instance for the package manager that was detected or null if not found.
  */
 export const getPackageManager = async (rootPath?: string): Promise<PackageManager | null> => {
@@ -130,6 +164,16 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
 
   if (!fs.existsSync(tempFilePath)) {
     return null;
+  }
+
+  // Check for packageManager field in package.json hierarchy (corepack convention)
+  // This handles monorepos where the packageManager field is in the root package.json
+  const packageManagerFromField = findPackageManagerFieldInHierarchy(effectiveRootPath);
+  if (packageManagerFromField && checkExecutable(packageManagers[packageManagerFromField].executable)) {
+    if (packageManagerFromField === 'yarn') {
+      return getYarnPackageManager(rootPath);
+    }
+    return packageManagers[packageManagerFromField];
   }
 
   // checks for pnpm
