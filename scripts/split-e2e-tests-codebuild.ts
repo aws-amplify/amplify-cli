@@ -191,6 +191,14 @@ type ConfigBase = {
 };
 const MAX_WORKERS = 3;
 const MAX_WORKERS_WINDOWS = 2;
+/**
+ * Maximum number of e2e shards in a single dependency wave. Shards are chained
+ * wave-by-wave (see `staggerJobsIntoWaves`) so that at most this many builds
+ * start simultaneously. This avoids the CodeBuild batch orchestrator fault that
+ * occurs when a single gate (e.g. `upb`) releases all ~140 shards at once,
+ * producing a thundering herd of `StartBuild` calls.
+ */
+const E2E_WAVE_SIZE = 50;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
   region?: string;
@@ -208,6 +216,34 @@ const createRandomJob = (os: OS_TYPE): CandidateJob => {
     useParentAccount: false,
     disableCoverage: false,
   };
+};
+/**
+ * Staggers an ordered list of e2e shard jobs into waves so they do not all
+ * start at the same instant when their shared dependency completes.
+ *
+ * The first `E2E_WAVE_SIZE` shards (wave 1) keep their original dependency gate
+ * (e.g. `upb` for Linux, or `build_windows` + `upb` for Windows). Every later
+ * wave is re-pointed to depend solely on the last shard of the previous wave,
+ * so a wave only fans out once the previous wave is already underway. This caps
+ * the number of simultaneous CodeBuild `StartBuild` calls at roughly one wave
+ * instead of the full shard count, preventing the batch orchestrator from
+ * faulting under a thundering-herd fan-out of ~140 shards.
+ *
+ * Transitive ordering is preserved: because each wave depends on a shard from
+ * the previous wave (which itself depends on the original gate), every shard
+ * still runs strictly after the prebuilt binaries are uploaded. Jobs are
+ * mutated in place and their order is unchanged, so shard identities (and the
+ * build cache that keys off them) are preserved.
+ */
+const staggerJobsIntoWaves = (jobs: any[]): void => {
+  jobs.forEach((job, shardIndex) => {
+    if (shardIndex < E2E_WAVE_SIZE) {
+      // Wave 1 keeps its original gate (e.g. ['upb']).
+      return;
+    }
+    const previousWaveLastIndex = Math.floor(shardIndex / E2E_WAVE_SIZE) * E2E_WAVE_SIZE - 1;
+    job['depend-on'] = [jobs[previousWaveLastIndex].identifier];
+  });
 };
 const splitTestsV3 = (
   baseJobLinux: any,
@@ -302,7 +338,8 @@ const splitTestsV3 = (
     }
     return jobName;
   };
-  const result: any[] = [];
+  const linuxFormattedJobs: any[] = [];
+  const windowsFormattedJobs: any[] = [];
   const dependeeIdentifiers: string[] = [];
   linuxJobs.forEach((job) => {
     if (job.tests.length !== 0) {
@@ -332,7 +369,7 @@ const splitTestsV3 = (
       if (job.disableCoverage) {
         formattedJob.env.variables.DISABLE_COVERAGE = 1;
       }
-      result.push(formattedJob);
+      linuxFormattedJobs.push(formattedJob);
     }
   });
   windowsJobs.forEach((job) => {
@@ -357,10 +394,12 @@ const splitTestsV3 = (
       if (job.disableCoverage) {
         formattedJob.env.variables.DISABLE_COVERAGE = 1;
       }
-      result.push(formattedJob);
+      windowsFormattedJobs.push(formattedJob);
     }
   });
-  return result;
+  staggerJobsIntoWaves(linuxFormattedJobs);
+  staggerJobsIntoWaves(windowsFormattedJobs);
+  return [...linuxFormattedJobs, ...windowsFormattedJobs];
 };
 function main(): void {
   const configBase: any = loadConfigBase();
