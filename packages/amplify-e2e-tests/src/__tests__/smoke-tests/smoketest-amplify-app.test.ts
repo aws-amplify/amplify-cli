@@ -12,8 +12,6 @@ import {
 } from '../../amplify-app-helpers/amplify-app-validation';
 import execa from 'execa';
 
-jest.retryTimes(1);
-
 describe('amplify-app platform tests', () => {
   let projRoot: string;
 
