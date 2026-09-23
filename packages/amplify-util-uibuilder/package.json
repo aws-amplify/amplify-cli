@@ -14,7 +14,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.15.7-gen1-schema-logicalid-fix-v2.0",
+    "@aws-amplify/amplify-category-api": "^5.15.7-gen1-schema-logicalid-fix-v3.0",
     "@aws-amplify/amplify-cli-core": "4.6.0",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/codegen-ui": "^2.20.7",

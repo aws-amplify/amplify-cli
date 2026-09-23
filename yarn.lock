@@ -143,16 +143,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.15.7-gen1-schema-logicalid-fix-v2.0":
-  version: 5.15.7-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/amplify-category-api@npm:5.15.7-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/amplify-category-api@npm:^5.15.7-gen1-schema-logicalid-fix-v3.0":
+  version: 5.15.7-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/amplify-category-api@npm:5.15.7-gen1-schema-logicalid-fix-v3.0"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.6.17-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-auth-transformer": 3.6.17-gen1-schema-logicalid-fix-v3.0
     "@aws-amplify/graphql-schema-generator": ^0.9.4
-    "@aws-amplify/graphql-transformer": 1.8.6-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-migrator": 2.2.35-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer": 1.8.6-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-migrator": 2.2.35-gen1-schema-logicalid-fix-v3.0
     "@aws-cdk/aws-apigatewayv2-alpha": ~2.114.1-alpha.0
     "@aws-sdk/client-ec2": 3.624.0
     "@aws-sdk/client-iam": 3.624.0
@@ -197,7 +197,7 @@ __metadata:
     amplify-util-headless-input: ^1.9.18
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 0aa476f68e12222010cc77621c77782b0406fdec8826586e8527bcbb85e9455d19a9a0c82a596d6a3b30b346cf017595adb40a02138eaaf336015552914b90de
+  checksum: 7052dfabcecfe94fa2b66e137be0d6ca1ce797dbf17af7982e90860d0b4e1beb8667cf7987926ecf92412429c660eaed7616c5a1d4cefeac4c3505582ec675dc
   languageName: node
   linkType: hard
 
@@ -400,7 +400,7 @@ __metadata:
     "@aws-amplify/amplify-cli-logger": 1.3.8
     "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@aws-amplify/amplify-prompts": 2.8.7
-    "@aws-amplify/graphql-transformer-interfaces": ^3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-interfaces": ^3.12.2-gen1-schema-logicalid-fix-v3.0
     "@aws-sdk/util-arn-parser": ^3.893.0
     "@types/archiver": ^5.3.1
     "@types/ejs": ^3.1.1
@@ -509,7 +509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.15.7-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/amplify-category-api": ^5.15.7-gen1-schema-logicalid-fix-v3.0
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-environment-parameters": 1.9.25
     "@aws-sdk/client-s3": ^3.919.0
@@ -871,8 +871,8 @@ __metadata:
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/amplify-util-import": 2.8.6
     "@aws-amplify/cli-extensibility-helper": 3.0.43
-    "@aws-amplify/graphql-transformer-core": ^2.11.3
-    "@aws-amplify/graphql-transformer-interfaces": ^3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": ^2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": ^3.12.2-gen1-schema-logicalid-fix-v3.0
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-api-gateway": ^3.919.0
     "@aws-sdk/client-appsync": ^3.919.0
@@ -977,20 +977,20 @@ __metadata:
     "@aws-amplify/amplify-opensearch-simulator": 1.7.26
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/amplify-provider-awscloudformation": 8.11.19
-    "@aws-amplify/graphql-auth-transformer": ^3.6.17-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-default-value-transformer": ^2.3.23-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-function-transformer": ^2.1.35-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-http-transformer": ^2.1.35-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-index-transformer": ^2.4.19-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-maps-to-transformer": ^3.5.5-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-model-transformer": ^2.14.2
-    "@aws-amplify/graphql-predictions-transformer": ^2.2.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-relational-transformer": ^2.5.21-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-searchable-transformer": ^2.7.21-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-auth-transformer": ^3.6.17-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-default-value-transformer": ^2.3.23-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-function-transformer": ^2.1.35-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-http-transformer": ^2.1.35-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-index-transformer": ^2.4.19-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-maps-to-transformer": ^3.5.5-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-model-transformer": ^2.14.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-predictions-transformer": ^2.2.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-relational-transformer": ^2.5.21-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-searchable-transformer": ^2.7.21-gen1-schema-logicalid-fix-v3.0
     "@aws-amplify/graphql-transformer": ^1.8.5
-    "@aws-amplify/graphql-transformer-core": ^2.11.3
-    "@aws-amplify/graphql-transformer-interfaces": ^3.12.2-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-migrator": ^2.2.35-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": ^2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": ^3.12.2-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-migrator": ^2.2.35-gen1-schema-logicalid-fix-v3.0
     "@aws-sdk/client-dynamodb": ^3.919.0
     "@aws-sdk/client-dynamodb-streams": ^3.919.0
     "@hapi/topo": ^5.0.0
@@ -1041,7 +1041,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.15.7-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/amplify-category-api": ^5.15.7-gen1-schema-logicalid-fix-v3.0
     "@aws-amplify/amplify-cli-core": 4.6.0
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
@@ -1178,7 +1178,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.48
     "@aws-amplify/amplify-category-analytics": 5.0.47
-    "@aws-amplify/amplify-category-api": ^5.15.7-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/amplify-category-api": ^5.15.7-gen1-schema-logicalid-fix-v3.0
     "@aws-amplify/amplify-category-auth": 3.7.28
     "@aws-amplify/amplify-category-custom": 3.1.33
     "@aws-amplify/amplify-category-function": 5.8.3
@@ -1406,15 +1406,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-auth-transformer@npm:3.6.17-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-auth-transformer@npm:^3.6.17-gen1-schema-logicalid-fix-v2.0":
-  version: 3.6.17-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.17-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-auth-transformer@npm:3.6.17-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-auth-transformer@npm:^3.6.17-gen1-schema-logicalid-fix-v3.0":
+  version: 3.6.17-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.17-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-relational-transformer": 2.5.21-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-relational-transformer": 2.5.21-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
@@ -1423,7 +1423,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: b1685179f036c5cdaed941dab1d8a90170d1d9829432f3d8dcab9d466f07c39445d2ce14825bc0b2bc32ef9ba4d63793a5e7ae027738849964818cebebb71b78
+  checksum: 55f8508805741e38c3409abace93e6304634bd9448e02e2c22ab945af73bbe2cd922b107a6332b65cc1bb98ed02af030d3068baf84390d451f7eb66b70b1d58b
   languageName: node
   linkType: hard
 
@@ -1442,18 +1442,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-default-value-transformer@npm:2.3.23-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-default-value-transformer@npm:^2.3.23-gen1-schema-logicalid-fix-v2.0":
-  version: 2.3.23-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.23-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-default-value-transformer@npm:2.3.23-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-default-value-transformer@npm:^2.3.23-gen1-schema-logicalid-fix-v3.0":
+  version: 2.3.23-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.23-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
     libphonenumber-js: 1.9.47
-  checksum: edf0a9faa2f4cf8bf3a60f979e0e181175e2d9c84ef0946d7c6efe3a5d82c915aab96b1dad42944b34e6dd0afba868fdabd439480852a1513d0ef85de2b5821d
+  checksum: eb4e0732e409aab4ee2c4a2948e67f879ebae625b565b4f60d8a891f7ed033408a521160df7006fa7c397bc0d822db1a2a58636813a4fbb3e1be48474e2e9886
   languageName: node
   linkType: hard
 
@@ -1501,20 +1501,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-function-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-function-transformer@npm:^2.1.35-gen1-schema-logicalid-fix-v2.0":
-  version: 2.1.35-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-function-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-function-transformer@npm:^2.1.35-gen1-schema-logicalid-fix-v3.0":
+  version: 2.1.35-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: f954a141200a9258244efe01500790036e9e16d11b3cf9908dbfa0dd97d67bbe3c8b6787c6a35ce9078aa33738ec10fc2639e94846a6091bc58435aa0a4b8a71
+  checksum: 46db439b119a09308663573f79009b188499988b50af2819eaa05a2cdcc92fc6050b882c44f9d4596dcf2d90dc847d73f2707b4e50638fb8effffeb5c580161d
   languageName: node
   linkType: hard
 
@@ -1554,20 +1554,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-http-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-http-transformer@npm:^2.1.35-gen1-schema-logicalid-fix-v2.0":
-  version: 2.1.35-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-http-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-http-transformer@npm:^2.1.35-gen1-schema-logicalid-fix-v3.0":
+  version: 2.1.35-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.35-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 82b3bca86b879a23a19143f0927ca60ced9d584eeddacdc24220dcbc52b9a270acc0c14b2750894e6553a13af850356837b03a3f69f0646f0067351983830533
+  checksum: 6ef54f36ffc75a1b6863e697b904875fc14945670e882ee718fdf83cf4cbc03a3942c2a793dcfbcc74d6035b31f88b55b5f353442786c68761dcd35cbd472405
   languageName: node
   linkType: hard
 
@@ -1589,21 +1589,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-index-transformer@npm:2.4.19-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-index-transformer@npm:^2.4.19-gen1-schema-logicalid-fix-v2.0":
-  version: 2.4.19-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.19-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-index-transformer@npm:2.4.19-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-index-transformer@npm:^2.4.19-gen1-schema-logicalid-fix-v3.0":
+  version: 2.4.19-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.19-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: c64b9636adddf6c54e217fb50756431d7050c7f9bf1676fc07d3d1857b74724afe3e3679e635cbef0b9ab8443cae40739576d4b052e844e6c923f745b6d0b64b
+  checksum: 6e82ac622f0c9d4272954e44d0296502ac528a57f346294fed5d7758105f0f0789bbde2439cccefc7c43a7d24cee83c4f492ec6ee61924ad44af5ba5e12e2700
   languageName: node
   linkType: hard
 
@@ -1623,19 +1623,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-maps-to-transformer@npm:3.5.5-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-maps-to-transformer@npm:^3.5.5-gen1-schema-logicalid-fix-v2.0":
-  version: 3.5.5-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.5.5-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-maps-to-transformer@npm:3.5.5-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-maps-to-transformer@npm:^3.5.5-gen1-schema-logicalid-fix-v3.0":
+  version: 3.5.5-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.5.5-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 1dc6f6c4c5d45ea97ff531ed019dd64423b3dea9295c11f0bef5edf053b2137a6dc84601ea1b33a49a75254b90ea9bacbb7cdd45e739033f73ebed566e76f437
+  checksum: 517b6d90187dd09c066474a96116e4c5ac96851673740437303c400e425e124bc66be606351c5d3c36561dcbf711d8424a407dc58c19473e04b1cff34c0a1bac
   languageName: node
   linkType: hard
 
@@ -1656,7 +1656,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:2.14.2, @aws-amplify/graphql-model-transformer@npm:^2.14.2":
+"@aws-amplify/graphql-model-transformer@npm:2.14.2":
   version: 2.14.2
   resolution: "@aws-amplify/graphql-model-transformer@npm:2.14.2"
   dependencies:
@@ -1673,20 +1673,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:2.14.3-gen1-schema-logicalid-fix-v2.0":
-  version: 2.14.3-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-model-transformer@npm:2.14.3-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-model-transformer@npm:2.14.3-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-model-transformer@npm:^2.14.3-gen1-schema-logicalid-fix-v3.0":
+  version: 2.14.3-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-model-transformer@npm:2.14.3-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 2b8b544961208951841d81bd8cce03986b48ac1464ff9a4e0566928b8945a3db8493a559e91ab21330265612327acf358583b8371a76b159a28f4da8729234b3
+  checksum: 02d16627f5c9f0cb16077b1f953788cb46ba7a621f88d87cef446f0c47ebfc6a74b884854314a9020b1015d53c48494e26a9bf953a7a19397a492a84606bb453
   languageName: node
   linkType: hard
 
@@ -1707,20 +1707,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-predictions-transformer@npm:2.2.3-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-predictions-transformer@npm:^2.2.3-gen1-schema-logicalid-fix-v2.0":
-  version: 2.2.3-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.2.3-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-predictions-transformer@npm:2.2.3-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-predictions-transformer@npm:^2.2.3-gen1-schema-logicalid-fix-v3.0":
+  version: 2.2.3-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.2.3-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: bae4bad444bf0bb05c30374c3753831d726df598b1e5cc9094b0bfe4723d24b874c69a6b9b36460613733da380920f1bfbdf1014c8cb318f0f401e8379a31fbd
+  checksum: 9350db9f285d2aad4d578fc5ff4f842942afc92f504005bec8a0b59cfe2247be8265498eec9fa9c6efa939590177a1bcb7eab21b6c38f0fe209c16c72e3e2fdb
   languageName: node
   linkType: hard
 
@@ -1744,15 +1744,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-relational-transformer@npm:2.5.21-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-relational-transformer@npm:^2.5.21-gen1-schema-logicalid-fix-v2.0":
-  version: 2.5.21-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.5.21-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-relational-transformer@npm:2.5.21-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-relational-transformer@npm:^2.5.21-gen1-schema-logicalid-fix-v3.0":
+  version: 2.5.21-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.5.21-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-index-transformer": 2.4.19-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-index-transformer": 2.4.19-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
@@ -1760,7 +1760,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 32aaddc7be314389c71a3e412905c4962f57abad77f32c4943654711efce064d365710d138b7a32805de1ef21dd7fbcbf8c4005230c12125c781ee6afd0a4e30
+  checksum: 1612ab3deaf39c0a4a14ed0509de60ea353f511d6f85199f7df6ba58824dd0212c7fa8744ee4c6817e1797855e40e90bec434db01afcb75d9a0160a2fc810a87
   languageName: node
   linkType: hard
 
@@ -1806,21 +1806,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.7.21-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-searchable-transformer@npm:^2.7.21-gen1-schema-logicalid-fix-v2.0":
-  version: 2.7.21-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.21-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-searchable-transformer@npm:2.7.21-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-searchable-transformer@npm:^2.7.21-gen1-schema-logicalid-fix-v3.0":
+  version: 2.7.21-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.21-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.34.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 96b132685f8cb4a93c8a0de48297b3d30cbad2d92cc5eb841aed72d670ce008188958ca776d6315eacfc3d2f7b59bee4e000c0d93bd3ce149915afb1bb9b7bf2
+  checksum: 9f0b8e8428f222ebc135c378d81fbb770189e8d7d4cdb4843bb7006e9e89eedaef1c24219c6fc86b8cf30c71636853b43fb8371b92cd88bdf7570887db1697ae
   languageName: node
   linkType: hard
 
@@ -1842,7 +1842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-core@npm:2.11.3, @aws-amplify/graphql-transformer-core@npm:^2.11.3":
+"@aws-amplify/graphql-transformer-core@npm:2.11.3":
   version: 2.11.3
   resolution: "@aws-amplify/graphql-transformer-core@npm:2.11.3"
   dependencies:
@@ -1864,12 +1864,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-core@npm:2.11.4-gen1-schema-logicalid-fix-v2.0":
-  version: 2.11.4-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-transformer-core@npm:2.11.4-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-transformer-core@npm:2.11.4-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-transformer-core@npm:^2.11.4-gen1-schema-logicalid-fix-v3.0":
+  version: 2.11.4-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-transformer-core@npm:2.11.4-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.1
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
@@ -1882,7 +1882,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 6488633efcafe3abe7c8ab25835806c22b739e692b553333de7f74078d500c013b792dcd4c3e1133b200c912ba3094c6c288609b8ed902f7518a155c5117c6cb
+  checksum: adc5a4eb4110b75bf5bfb2a5060c364e62780047787143d8bbeddf90b92a96fe9082538052b268095508e6da958ba6f792aa4aaa78a1ba189e4e9300084b5729
   languageName: node
   linkType: hard
 
@@ -1932,23 +1932,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-interfaces@npm:3.12.2-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-transformer-interfaces@npm:^3.12.2-gen1-schema-logicalid-fix-v2.0":
-  version: 3.12.2-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.12.2-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-transformer-interfaces@npm:3.12.2-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-transformer-interfaces@npm:^3.12.2-gen1-schema-logicalid-fix-v3.0":
+  version: 3.12.2-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.12.2-gen1-schema-logicalid-fix-v3.0"
   dependencies:
     graphql: ^15.5.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 27a4cc0ffcf8901d2589e4ba1db229741f9fcf42fa2f7f0be4215a107258a79631150d0ae63ce7c88a20bfac74d59556c24e7bc869aea196e0e71d679d59919b
+  checksum: 2fe12f1cdd96bdb6f8fa81b0a5e2f1b1cc09a27a108f9788e7de169fad7ac9b6e50945ab8dbf3ad0fb06762512e68bb97d699a4e02fddc8f31734abc5a79bbea
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-migrator@npm:2.2.35-gen1-schema-logicalid-fix-v2.0, @aws-amplify/graphql-transformer-migrator@npm:^2.2.35-gen1-schema-logicalid-fix-v2.0":
-  version: 2.2.35-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.35-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-transformer-migrator@npm:2.2.35-gen1-schema-logicalid-fix-v3.0, @aws-amplify/graphql-transformer-migrator@npm:^2.2.35-gen1-schema-logicalid-fix-v3.0":
+  version: 2.2.35-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.35-gen1-schema-logicalid-fix-v3.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
     fs-extra: ^8.1.0
     glob: ^10.3.0
     graphql: ^15.5.0
@@ -1958,31 +1958,31 @@ __metadata:
     "@aws-amplify/amplify-cli-core": ^4.4.3
     "@aws-amplify/amplify-environment-parameters": ^1.9.14
     "@aws-amplify/amplify-prompts": ^2.8.6
-  checksum: 82f349bc0e71c43c40781ccb88a404935c573e356209a51b8ff87fed566458f7b710b2d50c742b6cca7be487347004abd9250e3572f443f7f5e4e8a49ae23e4c
+  checksum: bf4b637027ff7289b471e2b59c92dffd0d2e05f233a355d54f3f97e8851ef0fcae79b919c0e27c1e5316dd243393fde4736fae02d2e500bb89ed2c5f0e89f5e7
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:1.8.6-gen1-schema-logicalid-fix-v2.0":
-  version: 1.8.6-gen1-schema-logicalid-fix-v2.0
-  resolution: "@aws-amplify/graphql-transformer@npm:1.8.6-gen1-schema-logicalid-fix-v2.0"
+"@aws-amplify/graphql-transformer@npm:1.8.6-gen1-schema-logicalid-fix-v3.0":
+  version: 1.8.6-gen1-schema-logicalid-fix-v3.0
+  resolution: "@aws-amplify/graphql-transformer@npm:1.8.6-gen1-schema-logicalid-fix-v3.0"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.6.17-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-default-value-transformer": 2.3.23-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-function-transformer": 2.1.35-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-http-transformer": 2.1.35-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-index-transformer": 2.4.19-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-maps-to-transformer": 3.5.5-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-predictions-transformer": 2.2.3-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-relational-transformer": 2.5.21-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-searchable-transformer": 2.7.21-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-auth-transformer": 3.6.17-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-default-value-transformer": 2.3.23-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-function-transformer": 2.1.35-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-http-transformer": 2.1.35-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-index-transformer": 2.4.19-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-maps-to-transformer": 3.5.5-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-model-transformer": 2.14.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-predictions-transformer": 2.2.3-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-relational-transformer": 2.5.21-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-searchable-transformer": 2.7.21-gen1-schema-logicalid-fix-v3.0
     "@aws-amplify/graphql-sql-transformer": ^0.3.9
-    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v2.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v2.0
+    "@aws-amplify/graphql-transformer-core": 2.11.4-gen1-schema-logicalid-fix-v3.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.12.2-gen1-schema-logicalid-fix-v3.0
   peerDependencies:
     aws-cdk-lib: ^2.187.0
     constructs: ^10.3.0
-  checksum: 39d1d7813491deba1ba04d47c07682b16f7c8fb4b782c2d09939fb2aed3b05aa39328006e9750f3bb38b5e028963c8d916f257acaaa5d6218229efcc792b6c85
+  checksum: 528f62d23c308d948d9ca00f0762aa4999f7a7dec113cf68b5542e95694f4a83c4383d6e10c43ae67d5fdefefedf587bc4df572d1466c82fef16edbfbb98c1fb
   languageName: node
   linkType: hard
 
@@ -16250,7 +16250,7 @@ __metadata:
     "@aws-amplify/amplify-e2e-core": 5.7.13
     "@aws-amplify/amplify-e2e-gen2-migration": "workspace:^"
     "@aws-amplify/amplify-opensearch-simulator": 1.7.26
-    "@aws-amplify/graphql-transformer-core": ^2.11.3
+    "@aws-amplify/graphql-transformer-core": ^2.11.4-gen1-schema-logicalid-fix-v3.0
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-amplifyuibuilder": ^3.919.0
     "@aws-sdk/client-appsync": ^3.919.0
