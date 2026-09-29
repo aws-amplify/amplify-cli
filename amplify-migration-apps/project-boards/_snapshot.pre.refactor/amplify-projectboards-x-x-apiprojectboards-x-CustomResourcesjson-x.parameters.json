@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-projectboards-x-x-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "gqow23rg3nb4hcj5vunlwg4imm"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/aec3df0ce66b9e507c81ba2a6fe8dad0e853f143"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "projectboards"
+  }
+]

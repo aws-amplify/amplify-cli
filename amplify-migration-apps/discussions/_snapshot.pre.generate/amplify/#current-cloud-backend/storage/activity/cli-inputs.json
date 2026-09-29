@@ -1,0 +1,26 @@
+{
+  "resourceName": "activity",
+  "tableName": "activity",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "userId",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "byUserId",
+      "partitionKey": {
+        "fieldName": "userId",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "timestamp",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

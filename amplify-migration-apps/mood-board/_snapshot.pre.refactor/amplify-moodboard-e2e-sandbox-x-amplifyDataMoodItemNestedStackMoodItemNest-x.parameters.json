@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPI139F66C4ApiId",
+    "ParameterValue": "hcupii7azrauhgy5ecxnsstcfu"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource012EBB62Outputsamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataAmplifyTableManagerTable47470EA7",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-moodboard26050415-TableManagerCustomProvid-OMU0jNiJG1jb"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2adataamplifyDataGraphQLAPINONEDSFA6D0E83Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthauthenticatedUserRole6C444E43Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthauthenticatedU-T4IKwIpTG61k"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthIdentityPool795773D0Ref",
+    "ParameterValue": "us-east-1:ca5ffd47-8370-4277-a499-97156bb9e44f"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboarde2esandbox6f64fc6f2aauthNestedStackauthNestedStackResource0E6CDFCDOutputsamplifymoodboarde2esandbox6f64fc6f2aauthamplifyAuthunauthenticatedUserRoleC00F1583Ref",
+    "ParameterValue": "amplify-moodboard26050415-amplifyAuthunauthenticate-ASd4Xy60bO98"
+  }
+]

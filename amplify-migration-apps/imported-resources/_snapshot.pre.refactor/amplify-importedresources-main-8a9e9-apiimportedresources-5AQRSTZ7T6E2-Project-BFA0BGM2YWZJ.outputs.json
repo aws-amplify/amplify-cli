@@ -1,0 +1,48 @@
+[
+  {
+    "OutputKey": "transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId",
+    "OutputValue": "dwpxejxapfa5veh7a5bjxgqd2i"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId",
+    "OutputValue": "nyv4duzvlbeajmfb3d6vbimdzi"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId",
+    "OutputValue": "of42pjwmxrhzncx67dcyhebxwq"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId",
+    "OutputValue": "twiaszpgzzcv5p7jvq7th4c2ji"
+  },
+  {
+    "OutputKey": "GetAttProjectDataSourceName",
+    "OutputValue": "ProjectTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "xzx4nj36zzemlloxzhpkicpa7i:GetAtt:ProjectDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId",
+    "OutputValue": "axjyyr5gkrestiwupa5abfwnri"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId",
+    "OutputValue": "xjvylquxkradnbnlnhgengruiy"
+  },
+  {
+    "OutputKey": "transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId",
+    "OutputValue": "a2kgziahejenxcgi5nusysgzom"
+  },
+  {
+    "OutputKey": "GetAttProjectTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Project-xzx4nj36zzemlloxzhpkicpa7i-main/stream/2026-03-27T18:35:40.439",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "xzx4nj36zzemlloxzhpkicpa7i:GetAtt:ProjectTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttProjectTableName",
+    "OutputValue": "Project-xzx4nj36zzemlloxzhpkicpa7i-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "xzx4nj36zzemlloxzhpkicpa7i:GetAtt:ProjectTable:Name"
+  }
+]

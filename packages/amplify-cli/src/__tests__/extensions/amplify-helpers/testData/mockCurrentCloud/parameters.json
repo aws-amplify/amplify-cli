@@ -1,0 +1,8 @@
+{
+  "CreateAPIKey": 1,
+  "AppSyncApiName": "lil",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "S3DeploymentBucket": "amplify-lil-dev-182009-deployment",
+  "S3DeploymentRootKey": "amplify-appsync-files/6d93be57c5a95eab736c67e102245348eddd44cb"
+}

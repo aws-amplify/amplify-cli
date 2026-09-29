@@ -1,0 +1,43 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "MoodboardKinesisKinesisStreamECC0FDEB": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": "moodboardKinesis-gen2-x",
+        "ShardCount": 1,
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/analytics/MoodboardKinesis/KinesisStream"
+      }
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-moodboard-x-x-analyticsmoodboardKinesis-x",
+          "LogicalResourceId": "KinesisStream"
+        },
+        "Destination": {
+          "StackName": "amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x",
+          "LogicalResourceId": "MoodboardKinesisKinesisStreamECC0FDEB"
+        }
+      }
+    ]
+  }
+}

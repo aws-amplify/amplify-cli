@@ -1,0 +1,577 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`only grant permission policies as requested verify CRUD policies being granted 1`] = `
+[
+  {
+    "Action": [
+      "geo:CreateMap",
+      "geo:DescribeMap",
+      "geo:GetMapGlyphs",
+      "geo:GetMapSprites",
+      "geo:GetMapStyleDescriptor",
+      "geo:GetMapTile",
+      "geo:DeleteMap",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":map/",
+            {
+              "Ref": "geomap12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:CreatePlaceIndex",
+      "geo:DescribePlaceIndex",
+      "geo:SearchPlaceIndexForPosition",
+      "geo:SearchPlaceIndexForText",
+      "geo:SearchPlaceIndexForSuggestions",
+      "geo:GetPlace",
+      "geo:DeletePlaceIndex",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":place-index/",
+            {
+              "Ref": "geoindex12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:CreateGeofenceCollection",
+      "geo:DescribeGeofenceCollection",
+      "geo:DeleteGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify CRUD policies being granted 2`] = `
+[
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "map12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "index12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify create policies being granted 1`] = `
+[
+  {
+    "Action": [
+      "geo:CreateMap",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":map/",
+            {
+              "Ref": "geomap12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:CreatePlaceIndex",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":place-index/",
+            {
+              "Ref": "geoindex12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:CreateGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify create policies being granted 2`] = `
+[
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "map12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "index12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify delete policies being granted 1`] = `
+[
+  {
+    "Action": [
+      "geo:DeleteMap",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":map/",
+            {
+              "Ref": "geomap12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:DeletePlaceIndex",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":place-index/",
+            {
+              "Ref": "geoindex12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:DeleteGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify delete policies being granted 2`] = `
+[
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "map12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "index12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify read policies being granted 1`] = `
+[
+  {
+    "Action": [
+      "geo:DescribeMap",
+      "geo:GetMapGlyphs",
+      "geo:GetMapSprites",
+      "geo:GetMapStyleDescriptor",
+      "geo:GetMapTile",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":map/",
+            {
+              "Ref": "geomap12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:DescribePlaceIndex",
+      "geo:SearchPlaceIndexForPosition",
+      "geo:SearchPlaceIndexForText",
+      "geo:SearchPlaceIndexForSuggestions",
+      "geo:GetPlace",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":place-index/",
+            {
+              "Ref": "geoindex12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [
+      "geo:DescribeGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify read policies being granted 2`] = `
+[
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "map12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "index12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify update policies being granted 1`] = `
+[
+  {
+    "Action": [],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":map/",
+            {
+              "Ref": "geomap12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":place-index/",
+            {
+              "Ref": "geoindex12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+  {
+    "Action": [],
+    "Effect": "Allow",
+    "Resource": [
+      {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:geo:",
+            {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
+]
+`;
+
+exports[`only grant permission policies as requested verify update policies being granted 2`] = `
+[
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "map12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "index12345",
+  },
+  {
+    "attributes": [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
+  },
+]
+`;

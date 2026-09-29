@@ -1,0 +1,80 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Interpret resource(s) stack creation using Amplify CLI",
+    "Parameters": {
+        "authRoleName": {
+            "Type": "String"
+        },
+        "unauthRoleName": {
+            "Type": "String"
+        },
+        "interpretPolicyName": {
+            "Type": "String"
+        },
+        "resourceName": {
+            "Type": "String"
+        },
+        "access": {
+            "Type": "String"
+        },<% if (props.interpretType === "interpretText") { %>
+        "type": {
+            "Type": "String"
+        },<% } %>
+        "interpretType": {
+            "Type": "String"
+        },
+        "env": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "AuthGuestRoleAccess":{
+            "Fn::Equals": [{"Ref":"access"}, "authAndGuest"]
+        }
+    },
+    "Outputs": {
+        "region": {
+            "Value": { 
+                "Fn::FindInMap": [
+                    "RegionMapping",
+                    { "Ref" : "AWS::Region" },
+                    { "Ref": "interpretType" }
+                ]
+            }
+        },<% if (props.interpretType === "interpretText") { %>
+        "type": {
+            "Value": {"Ref": "type"}
+        }<% } %>
+    },
+    "Resources": {<% if (props.interpretType === "interpretText") { %>
+        "InterpretPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": { "Ref":"interpretPolicyName" },
+                "Roles": {
+                    "Fn::If": [
+                        "AuthGuestRoleAccess",
+                        [{"Ref": "authRoleName"}, {"Ref": "unauthRoleName"}],
+                        [{"Ref": "authRoleName"}]
+                    ]
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "comprehend:DetectSentiment",
+                                "comprehend:DetectEntities",
+                                "comprehend:DetectDominantLanguage",
+                                "comprehend:DetectSyntax",
+                                "comprehend:DetectKeyPhrases"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        }<% } %>
+    }
+}

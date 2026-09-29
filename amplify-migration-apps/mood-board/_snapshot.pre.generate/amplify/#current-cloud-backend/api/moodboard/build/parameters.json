@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "moodboard",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authmoodboard759ae00a",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-moodboard-x-x-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/6be25d562dedde17a5c319fedda0266e5649b812"
+}

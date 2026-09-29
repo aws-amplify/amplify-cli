@@ -1,0 +1,85 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket08BB617F": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x"
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/storage/backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x/Bucket/Resource"
+      }
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-backendonly-x-x-storages3c31471c3-x",
+          "LogicalResourceId": "S3Bucket"
+        },
+        "Destination": {
+          "StackName": "amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x",
+          "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket08BB617F"
+        }
+      }
+    ]
+  }
+}

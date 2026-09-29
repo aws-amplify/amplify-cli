@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "auth": {
+      "mediavault1f08412d": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

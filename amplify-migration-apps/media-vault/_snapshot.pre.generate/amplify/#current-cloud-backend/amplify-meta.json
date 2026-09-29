@@ -1,0 +1,280 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mediavault-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-mediavault-x-x-deployment",
+      "UnauthRoleName": "amplify-mediavault-x-x-unauthRole",
+      "StackName": "amplify-mediavault-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-mediavault-x-x/e5662140-496b-11f1-a0ff-12abecc628fd",
+      "AmplifyAppId": "mediavault"
+    }
+  },
+  "auth": {
+    "mediavault1f08412d": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [
+          "FACEBOOK",
+          "GOOGLE"
+        ],
+        "usernameAttributes": [
+          "EMAIL",
+          "PHONE_NUMBER"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/auth/mediavault1f08412d-cloudformation-template.json",
+        "logicalId": "authmediavault1f08412d"
+      },
+      "output": {
+        "UserPoolId": "us-east-1_10XCh2HEz",
+        "AppClientIDWeb": "72t1gaoqrfgs2pe9bvf723v6s9",
+        "AppClientID": "10vqik6og26c12g7jg7lait0n7",
+        "HostedUIDomain": "mediavault1f08412d-1f08412d-x",
+        "IdentityPoolId": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_10XCh2HEz",
+        "IdentityPoolName": "mediavault1f08412d_identitypool_1f08412d__x",
+        "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.mediavault.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.mediavault.amplifyapp.com/\"]}",
+        "UserPoolName": "mediavault1f08412d_userpool_1f08412d"
+      },
+      "lastPushDirHash": "iKuNR6Db9r/vUh8yTghULG6kYZQ="
+    },
+    "userPoolGroups": {
+      "service": "Cognito-UserPool-Groups",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "mediavault1f08412d",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ],
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "logicalId": "authuserPoolGroups"
+      },
+      "output": {
+        "BasicGroupRole": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-BasicGroupRole",
+        "AdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_10XCh2HEz-AdminGroupRole"
+      },
+      "lastPushDirHash": "YX53bt9uz7MT/9eaBZUPoOBEDvI="
+    }
+  },
+  "api": {
+    "mediavault": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "mediavault1f08412d",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authmediavault1f08412d"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "API_KEY",
+              "apiKeyConfig": {
+                "apiKeyExpirationDays": 100,
+                "apiKeyExpirationDate": "2026-06-16T14:48:16.122Z",
+                "description": "graphql"
+              }
+            }
+          ]
+        },
+        "GraphQLAPIIdOutput": "wmrr5dtpkfgvxmdyzkec7igmum",
+        "GraphQLAPIEndpointOutput": "https://bbskyigsy5arbppf44uuamlvnu.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apimediavault"
+      },
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "lastPushDirHash": "xeCwDYb+22PZHnp37CS+fm9h0Ng="
+    }
+  },
+  "storage": {
+    "mediavault": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "mediavault1f08412d",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "AdminGroupRole"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "BasicGroupRole"
+          ]
+        }
+      ],
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storagemediavault"
+      },
+      "output": {
+        "BucketName": "mediavaultb574f210f1634e3a8d1934f263da5bedx-x",
+        "Region": "us-east-1"
+      },
+      "lastPushDirHash": "d4KUGycvTa29Y+YcflyFk+ynpFs="
+    }
+  },
+  "function": {
+    "thumbnailgen": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "mediavault",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2026-05-06T16:53:00.913Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-05-06T16:53:00.925Z",
+      "distZipFilename": "thumbnailgen-714677357a74314e2b59-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mediavault-x-x-deployment",
+        "s3Key": "amplify-builds/thumbnailgen-714677357a74314e2b59-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/function/thumbnailgen-cloudformation-template.json",
+        "logicalId": "functionthumbnailgen"
+      },
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/mediavaultLambdaRolefe3fe5ce-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:thumbnailgen-x",
+        "Name": "thumbnailgen-x",
+        "LambdaExecutionRole": "mediavaultLambdaRolefe3fe5ce-x"
+      },
+      "lastPushDirHash": "TRSBAbAkfL4/JpTAVU2nBGyGnnk="
+    },
+    "addusertogroup": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "mediavault1f08412d",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2026-05-06T16:53:01.944Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-05-06T16:53:03.658Z",
+      "distZipFilename": "addusertogroup-37314b5358303847466f-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mediavault-x-x-deployment",
+        "s3Key": "amplify-builds/addusertogroup-37314b5358303847466f-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/function/addusertogroup-cloudformation-template.json",
+        "logicalId": "functionaddusertogroup"
+      },
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/mediavaultLambdaRole7cc84196-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:addusertogroup-x",
+        "Name": "addusertogroup-x",
+        "LambdaExecutionRole": "mediavaultLambdaRole7cc84196-x"
+      },
+      "lastPushDirHash": "SgeX4G0/GjsYVSPV9ki6Fos+WXg="
+    },
+    "removeuserfromgroup": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "mediavault1f08412d",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2026-05-06T16:53:04.968Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-05-06T16:53:06.098Z",
+      "distZipFilename": "removeuserfromgroup-43424f7645563034705a-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mediavault-x-x-deployment",
+        "s3Key": "amplify-builds/removeuserfromgroup-43424f7645563034705a-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mediavault-x-x-deployment/amplify-cfn-templates/function/removeuserfromgroup-cloudformation-template.json",
+        "logicalId": "functionremoveuserfromgroup"
+      },
+      "lastPushTimeStamp": "2026-05-06T16:58:13.053Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/mediavaultLambdaRoleeab71492-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:removeuserfromgroup-x",
+        "Name": "removeuserfromgroup-x",
+        "LambdaExecutionRole": "mediavaultLambdaRoleeab71492-x"
+      },
+      "lastPushDirHash": "j8C61Nsjt5xgFbC2yDN/cqxLLCk="
+    }
+  }
+}

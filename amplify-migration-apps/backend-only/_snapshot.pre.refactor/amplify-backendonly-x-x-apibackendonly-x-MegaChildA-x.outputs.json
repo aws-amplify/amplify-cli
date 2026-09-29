@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttMegaChildADataSourceName",
+    "OutputValue": "MegaChildATable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaChildADataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttMegaChildATableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaChildA-swnmmzmw75hwtclcpxwndu4aia-x/stream/2026-05-15T12:49:49.918",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaChildATable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaChildAMegaChildADataSource3DD29B51Name",
+    "OutputValue": "MegaChildATable"
+  },
+  {
+    "OutputKey": "GetAttMegaChildATableName",
+    "OutputValue": "MegaChildA-swnmmzmw75hwtclcpxwndu4aia-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaChildATable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaChildAMegaChildATable91C83B80Ref",
+    "OutputValue": "MegaChildA-swnmmzmw75hwtclcpxwndu4aia-x"
+  }
+]

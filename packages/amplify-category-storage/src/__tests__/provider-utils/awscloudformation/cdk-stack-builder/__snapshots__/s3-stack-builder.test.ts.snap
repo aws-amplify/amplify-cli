@@ -1,0 +1,792 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test S3 transform generates correct CFN template Generated s3 template with all CLI configurations set with no overrides 1`] = `
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "AuthReadAndList": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AuthenticatedAllowList",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "CreateAuthPrivate": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "s3PermissionsAuthenticatedPrivate",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "CreateAuthProtected": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "s3PermissionsAuthenticatedProtected",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "CreateAuthPublic": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "s3PermissionsAuthenticatedPublic",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "CreateAuthUploads": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "s3PermissionsAuthenticatedUploads",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "CreateGuestPublic": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "s3PermissionsGuestPublic",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "CreateGuestUploads": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "s3PermissionsGuestUploads",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "GuestReadAndList": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "GuestAllowList",
+            },
+            "DISALLOW",
+          ],
+        },
+      ],
+    },
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env",
+        },
+        "NONE",
+      ],
+    },
+  },
+  "Description": "S3 Resource for AWS Amplify CLI",
+  "Outputs": {
+    "BucketName": {
+      "Description": "Bucket name for the S3 bucket",
+      "Value": {
+        "Ref": "S3Bucket",
+      },
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region",
+      },
+    },
+  },
+  "Parameters": {
+    "AuthenticatedAllowList": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "GuestAllowList": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "authPolicyName": {
+      "Type": "String",
+    },
+    "authRoleName": {
+      "Type": "String",
+    },
+    "bucketName": {
+      "Type": "String",
+    },
+    "env": {
+      "Type": "String",
+    },
+    "functionS3TriggerMockTriggerCafe2021Arn": {
+      "Default": "functionS3TriggerMockTriggerCafe2021Arn",
+      "Type": "String",
+    },
+    "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole": {
+      "Default": "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole",
+      "Type": "String",
+    },
+    "functionS3TriggerMockTriggerCafe2021Name": {
+      "Default": "functionS3TriggerMockTriggerCafe2021Name",
+      "Type": "String",
+    },
+    "s3PermissionsAuthenticatedPrivate": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "s3PermissionsAuthenticatedProtected": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "s3PermissionsAuthenticatedPublic": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "s3PermissionsAuthenticatedUploads": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "s3PermissionsGuestPublic": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "s3PermissionsGuestUploads": {
+      "Default": "DISALLOW",
+      "Type": "String",
+    },
+    "s3PrivatePolicy": {
+      "Default": "NONE",
+      "Type": "String",
+    },
+    "s3ProtectedPolicy": {
+      "Default": "NONE",
+      "Type": "String",
+    },
+    "s3PublicPolicy": {
+      "Default": "NONE",
+      "Type": "String",
+    },
+    "s3ReadPolicy": {
+      "Default": "NONE",
+      "Type": "String",
+    },
+    "s3UploadsPolicy": {
+      "Default": "NONE",
+      "Type": "String",
+    },
+    "selectedAuthenticatedPermissions": {
+      "Default": "NONE",
+      "Type": "CommaDelimitedList",
+    },
+    "selectedGuestPermissions": {
+      "Default": "NONE",
+      "Type": "CommaDelimitedList",
+    },
+    "triggerFunction": {
+      "Type": "String",
+    },
+    "unauthPolicyName": {
+      "Type": "String",
+    },
+    "unauthRoleName": {
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "S3AuthPrivatePolicy": {
+      "Condition": "CreateAuthPrivate",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Ref": "s3PermissionsAuthenticatedPrivate",
+                  },
+                ],
+              },
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                      "/private/\${cognito-identity.amazonaws.com:sub}/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3PrivatePolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3AuthProtectedPolicy": {
+      "Condition": "CreateAuthProtected",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Ref": "s3PermissionsAuthenticatedProtected",
+                  },
+                ],
+              },
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                      "/protected/\${cognito-identity.amazonaws.com:sub}/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3ProtectedPolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3AuthPublicPolicy": {
+      "Condition": "CreateAuthPublic",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Ref": "s3PermissionsAuthenticatedPublic",
+                  },
+                ],
+              },
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                      "/public/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3PublicPolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3AuthReadPolicy": {
+      "Condition": "AuthReadAndList",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket",
+                    },
+                    "/protected/*",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/",
+                    "public/*",
+                    "protected/",
+                    "protected/*",
+                    "private/\${cognito-identity.amazonaws.com:sub}/",
+                    "private/\${cognito-identity.amazonaws.com:sub}/*",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3ReadPolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3AuthUploadPolicy": {
+      "Condition": "CreateAuthUploads",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Ref": "s3PermissionsAuthenticatedUploads",
+                  },
+                ],
+              },
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                      "/uploads/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3UploadsPolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3Bucket": {
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "TriggerPermissions",
+      ],
+      "Properties": {
+        "BucketName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "bucketName",
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "bucketName",
+                  },
+                  {
+                    "Fn::Select": [
+                      3,
+                      {
+                        "Fn::Split": [
+                          "-",
+                          {
+                            "Ref": "AWS::StackName",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  "-",
+                  {
+                    "Ref": "env",
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*",
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE",
+              ],
+              "AllowedOrigins": [
+                "*",
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag",
+              ],
+              "Id": "S3CORSRuleId1",
+              "MaxAge": 3000,
+            },
+          ],
+        },
+        "NotificationConfiguration": {
+          "LambdaConfigurations": [
+            {
+              "Event": "s3:ObjectCreated:*",
+              "Function": {
+                "Ref": "functionS3TriggerMockTriggerCafe2021Arn",
+              },
+            },
+            {
+              "Event": "s3:ObjectRemoved:*",
+              "Function": {
+                "Ref": "functionS3TriggerMockTriggerCafe2021Arn",
+              },
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "S3GuestPublicPolicy": {
+      "Condition": "CreateGuestPublic",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Ref": "s3PermissionsGuestPublic",
+                  },
+                ],
+              },
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                      "/public/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3PublicPolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "unauthRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3GuestReadPolicy": {
+      "Condition": "GuestReadAndList",
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket",
+                    },
+                    "/protected/*",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/",
+                    "public/*",
+                    "protected/",
+                    "protected/*",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Ref": "s3ReadPolicy",
+        },
+        "Roles": [
+          {
+            "Ref": "unauthRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "S3TriggerBucketPolicy": {
+      "DependsOn": [
+        "S3Bucket",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:ListBucket",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:DeleteObject",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3Bucket",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "amplify-lambda-execution-policy-storage",
+        "Roles": [
+          {
+            "Ref": "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TriggerPermissions": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "functionS3TriggerMockTriggerCafe2021Name",
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId",
+        },
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:s3:::",
+              {
+                "Fn::If": [
+                  "ShouldNotCreateEnvResources",
+                  {
+                    "Ref": "bucketName",
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Ref": "bucketName",
+                        },
+                        {
+                          "Fn::Select": [
+                            3,
+                            {
+                              "Fn::Split": [
+                                "-",
+                                {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                        "-",
+                        {
+                          "Ref": "env",
+                        },
+                      ],
+                    ],
+                  },
+                ],
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+  },
+}
+`;

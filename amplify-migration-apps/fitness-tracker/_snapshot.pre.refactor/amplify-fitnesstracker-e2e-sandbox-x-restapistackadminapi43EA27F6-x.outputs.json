@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "RestApiEndpoint0551178A",
+    "OutputValue": "https://fjmz82oobi.execute-api.us-east-1.amazonaws.com/prod/"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931restapistackadminapiRestApiF538F9AERef",
+    "OutputValue": "fjmz82oobi"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931restapistackadminapiRestApiDeploymentStageprod32CFCD28Ref",
+    "OutputValue": "prod"
+  }
+]

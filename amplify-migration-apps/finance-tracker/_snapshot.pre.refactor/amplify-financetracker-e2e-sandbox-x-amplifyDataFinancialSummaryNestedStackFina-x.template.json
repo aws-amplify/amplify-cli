@@ -1,0 +1,2128 @@
+{
+  "Parameters": {
+    "DynamoDBModelTableReadIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of read IOPS the table should support."
+    },
+    "DynamoDBModelTableWriteIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of write IOPS the table should support."
+    },
+    "DynamoDBBillingMode": {
+      "Type": "String",
+      "Default": "PAY_PER_REQUEST",
+      "AllowedValues": [
+        "PAY_PER_REQUEST",
+        "PROVISIONED"
+      ],
+      "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes."
+    },
+    "DynamoDBEnablePointInTimeRecovery": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Whether to enable Point in Time Recovery on the table."
+    },
+    "DynamoDBEnableServerSideEncryption": {
+      "Type": "String",
+      "Default": "true",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Enable server side encryption powered by KMS."
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceDBEE4862Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerTab0A2F1D43": {
+      "Type": "String"
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName": {
+      "Type": "String"
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef": {
+      "Type": "String"
+    },
+    "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "ShouldUsePayPerRequestBilling": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBBillingMode"
+        },
+        "PAY_PER_REQUEST"
+      ]
+    },
+    "ShouldUsePointInTimeRecovery": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBEnablePointInTimeRecovery"
+        },
+        "true"
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "FinancialSummaryTable": {
+      "Type": "Custom::ImportedAmplifyDynamoDBTable",
+      "Properties": {
+        "ServiceToken": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceDBEE4862Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerTab0A2F1D43"
+        },
+        "tableName": "FinancialSummary-advknbihlbchtlonmy35v53toa-x",
+        "attributeDefinitions": [
+          {
+            "attributeName": "id",
+            "attributeType": "S"
+          }
+        ],
+        "keySchema": [
+          {
+            "attributeName": "id",
+            "keyType": "HASH"
+          }
+        ],
+        "provisionedThroughput": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "ReadCapacityUnits": {
+                "Ref": "DynamoDBModelTableReadIOPS"
+              },
+              "WriteCapacityUnits": {
+                "Ref": "DynamoDBModelTableWriteIOPS"
+              }
+            }
+          ]
+        },
+        "sseSpecification": {
+          "sseEnabled": false
+        },
+        "streamSpecification": {
+          "streamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "deletionProtectionEnabled": true,
+        "allowDestructiveGraphqlSchemaUpdates": true,
+        "replaceTableUponGsiUpdate": false,
+        "isImported": true,
+        "pointInTimeRecoverySpecification": {
+          "Fn::If": [
+            "ShouldUsePointInTimeRecovery",
+            {
+              "PointInTimeRecoveryEnabled": true
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "billingMode": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            "PAY_PER_REQUEST",
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/FinancialSummaryTable/Default/Default"
+      }
+    },
+    "FinancialSummaryIAMRole994EE173": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:ConditionCheckItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetShardIterator"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
+                        {
+                          "tablename": "FinancialSummary-advknbihlbchtlonmy35v53toa-x"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
+                        {
+                          "tablename": "FinancialSummary-advknbihlbchtlonmy35v53toa-x"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "DynamoDBAccess"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "FinancialSummaryIAMRedd6e3-",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "-NONE"
+            ]
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/FinancialSummaryIAMRole/Resource"
+      }
+    },
+    "FinancialSummaryDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "FinancialSummaryTable",
+                              "TableArn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "Name": "FinancialSummaryTable",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "FinancialSummaryIAMRole994EE173",
+            "Arn"
+          ]
+        },
+        "Type": "AMAZON_DYNAMODB"
+      },
+      "DependsOn": [
+        "FinancialSummaryIAMRole994EE173"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/FinancialSummaryDataSource/Resource"
+      }
+    },
+    "QuerygetFinancialSummaryauth0FunctionQuerygetFinancialSummaryauth0FunctionAppSyncFunction5E506611": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e5411cda152c2308dac0a81ffb999cc9c81ea2a1f51e6ce05a377bef8c4dfd.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/QuerygetFinancialSummaryauth0Function/QuerygetFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "QuerygetFinancialSummarypostAuth0FunctionQuerygetFinancialSummarypostAuth0FunctionAppSyncFunctionA4647C62": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/QuerygetFinancialSummarypostAuth0Function/QuerygetFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "QueryGetFinancialSummaryDataResolverFnQueryGetFinancialSummaryDataResolverFnAppSyncFunction2891B701": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08f4d557693d96c1a4efba0f9dc91330e4b19772fd5477c156468843e3d9cb5e.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c6a2d29f01c6091bd1d9afe16e5849d456c96f17c3b215938c8067399532719.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/QueryGetFinancialSummaryDataResolverFn/QueryGetFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "GetFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "getFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerygetFinancialSummaryauth0FunctionQuerygetFinancialSummaryauth0FunctionAppSyncFunction5E506611",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerygetFinancialSummarypostAuth0FunctionQuerygetFinancialSummarypostAuth0FunctionAppSyncFunctionA4647C62",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryGetFinancialSummaryDataResolverFnQueryGetFinancialSummaryDataResolverFnAppSyncFunction2891B701",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "FinancialSummaryTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/queryGetFinancialSummaryResolver"
+      }
+    },
+    "QuerylistFinancialSummariesauth0FunctionQuerylistFinancialSummariesauth0FunctionAppSyncFunction81E7536D": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistFinancialSummariesauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e5411cda152c2308dac0a81ffb999cc9c81ea2a1f51e6ce05a377bef8c4dfd.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/QuerylistFinancialSummariesauth0Function/QuerylistFinancialSummariesauth0Function.AppSyncFunction"
+      }
+    },
+    "QuerylistFinancialSummariespostAuth0FunctionQuerylistFinancialSummariespostAuth0FunctionAppSyncFunctionEF101F81": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistFinancialSummariespostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/QuerylistFinancialSummariespostAuth0Function/QuerylistFinancialSummariespostAuth0Function.AppSyncFunction"
+      }
+    },
+    "QueryListFinancialSummariesDataResolverFnQueryListFinancialSummariesDataResolverFnAppSyncFunction8C65CB26": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryListFinancialSummariesDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fcbe070ecd3023c5bf5b966fa9584757db9762eef123bad0820bd87591b2174.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc01911d0269d4080ea57505dc445dfc315ef7ad85d3d9d4ea1357858bff451d.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/QueryListFinancialSummariesDataResolverFn/QueryListFinancialSummariesDataResolverFn.AppSyncFunction"
+      }
+    },
+    "ListFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "listFinancialSummaries",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerylistFinancialSummariesauth0FunctionQuerylistFinancialSummariesauth0FunctionAppSyncFunction81E7536D",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerylistFinancialSummariespostAuth0FunctionQuerylistFinancialSummariespostAuth0FunctionAppSyncFunctionEF101F81",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryListFinancialSummariesDataResolverFnQueryListFinancialSummariesDataResolverFnAppSyncFunction8C65CB26",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listFinancialSummaries\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "FinancialSummaryTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/queryListFinancialSummariesResolver"
+      }
+    },
+    "MutationcreateFinancialSummaryinit0FunctionMutationcreateFinancialSummaryinit0FunctionAppSyncFunction42902302": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateFinancialSummaryinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a183ddccbd956316c38ef97177b8f088ef0826f62023323f5ae6053d348ccffc.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationcreateFinancialSummaryinit0Function/MutationcreateFinancialSummaryinit0Function.AppSyncFunction"
+      }
+    },
+    "MutationcreateFinancialSummaryauth0FunctionMutationcreateFinancialSummaryauth0FunctionAppSyncFunction3F75F2FD": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9bebf8466dd586faa7ac43fdfbe972915005afb8abb3b20ad6fd811de131925.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationcreateFinancialSummaryauth0Function/MutationcreateFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationcreateFinancialSummarypostAuth0FunctionMutationcreateFinancialSummarypostAuth0FunctionAppSyncFunctionD1D7A44B": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationcreateFinancialSummarypostAuth0Function/MutationcreateFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationCreateFinancialSummaryDataResolverFnMutationCreateFinancialSummaryDataResolverFnAppSyncFunctionCB03E429": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationCreateFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48f46bb2683d5c6591d8e3959d4101bdf0c91120c682bee7214fc55059de47ef.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationCreateFinancialSummaryDataResolverFn/MutationCreateFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "CreateFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "createFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationcreateFinancialSummaryinit0FunctionMutationcreateFinancialSummaryinit0FunctionAppSyncFunction42902302",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateFinancialSummaryauth0FunctionMutationcreateFinancialSummaryauth0FunctionAppSyncFunction3F75F2FD",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateFinancialSummarypostAuth0FunctionMutationcreateFinancialSummarypostAuth0FunctionAppSyncFunctionD1D7A44B",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationCreateFinancialSummaryDataResolverFnMutationCreateFinancialSummaryDataResolverFnAppSyncFunctionCB03E429",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "FinancialSummaryTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/mutationCreateFinancialSummaryResolver"
+      }
+    },
+    "MutationupdateFinancialSummaryinit0FunctionMutationupdateFinancialSummaryinit0FunctionAppSyncFunction92BBAB79": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateFinancialSummaryinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06db846fd14e6fc371f22b12b5545ba8e2dbfeda85d8c8d586c71c282166657b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationupdateFinancialSummaryinit0Function/MutationupdateFinancialSummaryinit0Function.AppSyncFunction"
+      }
+    },
+    "MutationupdateFinancialSummaryauth0FunctionMutationupdateFinancialSummaryauth0FunctionAppSyncFunctionFB36E9F9": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/774d1a58d1a8015f23116bb940a36255cd2a0a98720d3b56e801e7178fedc0bd.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationupdateFinancialSummaryauth0Function/MutationupdateFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationupdateFinancialSummarypostAuth0FunctionMutationupdateFinancialSummarypostAuth0FunctionAppSyncFunction2515B550": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationupdateFinancialSummarypostAuth0Function/MutationupdateFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationUpdateFinancialSummaryDataResolverFnMutationUpdateFinancialSummaryDataResolverFnAppSyncFunctionAB865FFF": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationUpdateFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/474bf0776ec2164a13191d1a0a9e057154931e4918fea5086f49850d02a5371b.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationUpdateFinancialSummaryDataResolverFn/MutationUpdateFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "UpdateFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "updateFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationupdateFinancialSummaryinit0FunctionMutationupdateFinancialSummaryinit0FunctionAppSyncFunction92BBAB79",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateFinancialSummaryauth0FunctionMutationupdateFinancialSummaryauth0FunctionAppSyncFunctionFB36E9F9",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateFinancialSummarypostAuth0FunctionMutationupdateFinancialSummarypostAuth0FunctionAppSyncFunction2515B550",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationUpdateFinancialSummaryDataResolverFnMutationUpdateFinancialSummaryDataResolverFnAppSyncFunctionAB865FFF",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "FinancialSummaryTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/mutationUpdateFinancialSummaryResolver"
+      }
+    },
+    "MutationdeleteFinancialSummaryauth0FunctionMutationdeleteFinancialSummaryauth0FunctionAppSyncFunction8B31E526": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6257bfd1ef2992bd01df135516c0df15c5ff692f426e0c71c93960be8f8c81df.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationdeleteFinancialSummaryauth0Function/MutationdeleteFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationdeleteFinancialSummarypostAuth0FunctionMutationdeleteFinancialSummarypostAuth0FunctionAppSyncFunctionC7E83251": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationdeleteFinancialSummarypostAuth0Function/MutationdeleteFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationDeleteFinancialSummaryDataResolverFnMutationDeleteFinancialSummaryDataResolverFnAppSyncFunction53ADBB1C": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FinancialSummaryDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationDeleteFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f7907d1209a2c9953a0c053df402c634e359546d70c7cc5c2e8e21ea734880f.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "FinancialSummaryDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/MutationDeleteFinancialSummaryDataResolverFn/MutationDeleteFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "DeleteFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "deleteFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteFinancialSummaryauth0FunctionMutationdeleteFinancialSummaryauth0FunctionAppSyncFunction8B31E526",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteFinancialSummarypostAuth0FunctionMutationdeleteFinancialSummarypostAuth0FunctionAppSyncFunctionC7E83251",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationDeleteFinancialSummaryDataResolverFnMutationDeleteFinancialSummaryDataResolverFnAppSyncFunction53ADBB1C",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "FinancialSummaryTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/mutationDeleteFinancialSummaryResolver"
+      }
+    },
+    "SubscriptiononCreateFinancialSummaryauth0FunctionSubscriptiononCreateFinancialSummaryauth0FunctionAppSyncFunction2E1E92F4": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptiononCreateFinancialSummaryauth0Function/SubscriptiononCreateFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononCreateFinancialSummarypostAuth0FunctionSubscriptiononCreateFinancialSummarypostAuth0FunctionAppSyncFunctionCF840444": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptiononCreateFinancialSummarypostAuth0Function/SubscriptiononCreateFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnCreateFinancialSummaryDataResolverFnSubscriptionOnCreateFinancialSummaryDataResolverFnAppSyncFunction3BFEE2D5": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnCreateFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptionOnCreateFinancialSummaryDataResolverFn/SubscriptionOnCreateFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononCreateFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "onCreateFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateFinancialSummaryauth0FunctionSubscriptiononCreateFinancialSummaryauth0FunctionAppSyncFunction2E1E92F4",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateFinancialSummarypostAuth0FunctionSubscriptiononCreateFinancialSummarypostAuth0FunctionAppSyncFunctionCF840444",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateFinancialSummaryDataResolverFnSubscriptionOnCreateFinancialSummaryDataResolverFnAppSyncFunction3BFEE2D5",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/subscriptionOnCreateFinancialSummaryResolver"
+      }
+    },
+    "SubscriptiononUpdateFinancialSummaryauth0FunctionSubscriptiononUpdateFinancialSummaryauth0FunctionAppSyncFunctionBCD76178": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptiononUpdateFinancialSummaryauth0Function/SubscriptiononUpdateFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononUpdateFinancialSummarypostAuth0FunctionSubscriptiononUpdateFinancialSummarypostAuth0FunctionAppSyncFunctionE7A252C6": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptiononUpdateFinancialSummarypostAuth0Function/SubscriptiononUpdateFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnUpdateFinancialSummaryDataResolverFnSubscriptionOnUpdateFinancialSummaryDataResolverFnAppSyncFunctionB7220105": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnUpdateFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptionOnUpdateFinancialSummaryDataResolverFn/SubscriptionOnUpdateFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononUpdateFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "onUpdateFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateFinancialSummaryauth0FunctionSubscriptiononUpdateFinancialSummaryauth0FunctionAppSyncFunctionBCD76178",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateFinancialSummarypostAuth0FunctionSubscriptiononUpdateFinancialSummarypostAuth0FunctionAppSyncFunctionE7A252C6",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnUpdateFinancialSummaryDataResolverFnSubscriptionOnUpdateFinancialSummaryDataResolverFnAppSyncFunctionB7220105",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/subscriptionOnUpdateFinancialSummaryResolver"
+      }
+    },
+    "SubscriptiononDeleteFinancialSummaryauth0FunctionSubscriptiononDeleteFinancialSummaryauth0FunctionAppSyncFunction4AD92A7E": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteFinancialSummaryauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptiononDeleteFinancialSummaryauth0Function/SubscriptiononDeleteFinancialSummaryauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononDeleteFinancialSummarypostAuth0FunctionSubscriptiononDeleteFinancialSummarypostAuth0FunctionAppSyncFunctionAF34787D": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteFinancialSummarypostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptiononDeleteFinancialSummarypostAuth0Function/SubscriptiononDeleteFinancialSummarypostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnDeleteFinancialSummaryDataResolverFnSubscriptionOnDeleteFinancialSummaryDataResolverFnAppSyncFunction13301ED2": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnDeleteFinancialSummaryDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/SubscriptionOnDeleteFinancialSummaryDataResolverFn/SubscriptionOnDeleteFinancialSummaryDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononDeleteFinancialSummaryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "onDeleteFinancialSummary",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteFinancialSummaryauth0FunctionSubscriptiononDeleteFinancialSummaryauth0FunctionAppSyncFunction4AD92A7E",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteFinancialSummarypostAuth0FunctionSubscriptiononDeleteFinancialSummarypostAuth0FunctionAppSyncFunctionAF34787D",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnDeleteFinancialSummaryDataResolverFnSubscriptionOnDeleteFinancialSummaryDataResolverFnAppSyncFunction13301ED2",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteFinancialSummary\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/subscriptionOnDeleteFinancialSummaryResolver"
+      }
+    },
+    "FinancialSummaryOwnerDataResolverFnFinancialSummaryOwnerDataResolverFnAppSyncFunction9FBB9772": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "FinancialSummaryOwnerDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/041534e5fd916595f752318f161512d7c7f83b9f2cf32d0f0be381c12253ff68.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/064303962e481067b44300212516363b99aaee539b6bafaf756fdd83ff0b60f0.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/FinancialSummaryOwnerDataResolverFn/FinancialSummaryOwnerDataResolverFn.AppSyncFunction"
+      }
+    },
+    "FinancialSummaryownerResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+        },
+        "FieldName": "owner",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "FinancialSummaryOwnerDataResolverFnFinancialSummaryOwnerDataResolverFnAppSyncFunction9FBB9772",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"FinancialSummary\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "FinancialSummary"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/financialSummaryOwnerResolver"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X34K2g7b5S7bhNsHtlEoNSwEGx06pCvPsEnTrt9PuTP9l/DvlLAfsdXiWzrs8G38D8QaLkakXbm7LlL4w4klJcoQzsvPrApiIJKVoyZRIN4x+2/JjxKqfZ3RjH4Br4xmagAwoZjyPMVRjudhhoMThNcmML83HTj80RFevHyf/0ntiuJcrAre9SxK3R7+fhQnExUpxQhFTgbQ0jBRyS7UnXAsvqfiadkpptXSt2nrvFcHAEZ3m65DnsX+F5dxbvs5hY/UhQ3fMHBjXRezYBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-financetracker-e2e-sandbox-x/data/amplifyData/FinancialSummary/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "GetAttFinancialSummaryTableStreamArn": {
+      "Description": "Your DynamoDB table StreamArn.",
+      "Value": {
+        "Fn::GetAtt": [
+          "FinancialSummaryTable",
+          "TableStreamArn"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "GetAtt:FinancialSummaryTable:StreamArn"
+            ]
+          ]
+        }
+      }
+    },
+    "GetAttFinancialSummaryTableName": {
+      "Description": "Your DynamoDB table name.",
+      "Value": "FinancialSummary-advknbihlbchtlonmy35v53toa-x",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId"
+              },
+              "GetAtt:FinancialSummaryTable:Name"
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

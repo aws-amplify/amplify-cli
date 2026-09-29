@@ -1,0 +1,59 @@
+{
+  "name": "@aws-amplify/amplify-cli-logger",
+  "version": "1.3.8",
+  "description": "Amplify CLI Logger",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --logHeapUsage",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-amplify/amplify-cli.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
+  "dependencies": {
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

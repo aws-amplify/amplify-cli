@@ -1,0 +1,138 @@
+[
+  {
+    "OutputKey": "webClientId",
+    "OutputValue": "222mggmu5tbjer39m60734j943"
+  },
+  {
+    "OutputKey": "socialProviders",
+    "OutputValue": "[\"GOOGLE\",\"FACEBOOK\"]"
+  },
+  {
+    "OutputKey": "usernameAttributes",
+    "OutputValue": "[\"email\",\"phone_number\"]"
+  },
+  {
+    "OutputKey": "bucketName",
+    "OutputValue": "amplify-mediavault2605061-mediavaultb574f210f1634e-kjdk0mevynvh"
+  },
+  {
+    "OutputKey": "signupAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "oauthClientId",
+    "OutputValue": "222mggmu5tbjer39m60734j943"
+  },
+  {
+    "OutputKey": "allowUnauthenticatedIdentities",
+    "OutputValue": "true"
+  },
+  {
+    "OutputKey": "oauthCognitoDomain",
+    "OutputValue": "593a56df2b7a9d315bc7.auth.us-east-1.amazoncognito.com"
+  },
+  {
+    "OutputKey": "oauthScope",
+    "OutputValue": "[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"]"
+  },
+  {
+    "OutputKey": "oauthRedirectSignOut",
+    "OutputValue": "https://main.mediavault.amplifyapp.com/"
+  },
+  {
+    "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
+    "OutputValue": "API_KEY,AWS_IAM"
+  },
+  {
+    "OutputKey": "mfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "mfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "storageRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "oauthResponseType",
+    "OutputValue": "code"
+  },
+  {
+    "OutputKey": "awsAppsyncApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "OutputKey": "awsAppsyncAuthenticationType",
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS"
+  },
+  {
+    "OutputKey": "oauthRedirectSignIn",
+    "OutputValue": "https://main.mediavault.amplifyapp.com/"
+  },
+  {
+    "OutputKey": "passwordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "awsAppsyncApiEndpoint",
+    "OutputValue": "https://fey767zijvfyfpbfdcw3y43g64.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "awsAppsyncApiId",
+    "OutputValue": "7eddrzeh7benpmtjooxhgkl5pq"
+  },
+  {
+    "OutputKey": "authRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "buckets",
+    "OutputValue": "[\"{\\\"name\\\":\\\"mediavaultb574f210f1634e3a8d1934f263da5bedx-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-mediavault2605061-mediavaultb574f210f1634e-kjdk0mevynvh\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsAdmin\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"],\\\"groupsBasic\\\":[\\\"get\\\",\\\"list\\\"]}}}\"]"
+  },
+  {
+    "OutputKey": "amplifyApiModelSchemaS3Uri",
+    "OutputValue": "s3://amplify-mediavault2605061-amplifydataamplifycodege-zbvi9megv0bv/model-schema.graphql"
+  },
+  {
+    "OutputKey": "groups",
+    "OutputValue": "[{\"Admin\":{\"precedence\":0}},{\"Basic\":{\"precedence\":1}}]"
+  },
+  {
+    "OutputKey": "definedFunctions",
+    "OutputValue": "[\"addusertogroup-gen2-x\",\"removeuserfromgroup-gen2-x\",\"thumbnailgen-gen2-x\"]"
+  },
+  {
+    "OutputKey": "passwordlessOptions",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "deploymentType",
+    "OutputValue": "sandbox"
+  },
+  {
+    "OutputKey": "passwordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "userPoolId",
+    "OutputValue": "us-east-1_DVpEoOThJ"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:b6e4912b-1122-4674-8e7e-27e0fc110d94"
+  },
+  {
+    "OutputKey": "verificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  }
+]

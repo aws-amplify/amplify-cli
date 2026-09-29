@@ -1,0 +1,11 @@
+[
+  {
+    "OutputKey": "BucketName",
+    "OutputValue": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-main",
+    "Description": "Bucket name for the S3 bucket"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  }
+]

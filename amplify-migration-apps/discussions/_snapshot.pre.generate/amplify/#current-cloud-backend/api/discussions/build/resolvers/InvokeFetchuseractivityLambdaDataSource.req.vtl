@@ -1,0 +1,15 @@
+## [Start] Invoke AWS Lambda data source: FetchuseractivityLambdaDataSource. **
+{
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload": {
+      "typeName": $util.toJson($ctx.stash.get("typeName")),
+      "fieldName": $util.toJson($ctx.stash.get("fieldName")),
+      "arguments": $util.toJson($ctx.arguments),
+      "identity": $util.toJson($ctx.identity),
+      "source": $util.toJson($ctx.source),
+      "request": $util.toJson($ctx.request),
+      "prev": $util.toJson($ctx.prev)
+  }
+}
+## [End] Invoke AWS Lambda data source: FetchuseractivityLambdaDataSource. **

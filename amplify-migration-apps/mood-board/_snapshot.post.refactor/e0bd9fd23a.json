@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+      "LogicalResourceId": "UserPool"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+      "LogicalResourceId": "UserPoolClientWeb"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+      "LogicalResourceId": "UserPoolClient"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+      "LogicalResourceId": "IdentityPool"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-x-x-authmoodboard759ae00a-x",
+      "LogicalResourceId": "IdentityPoolRoleMap"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

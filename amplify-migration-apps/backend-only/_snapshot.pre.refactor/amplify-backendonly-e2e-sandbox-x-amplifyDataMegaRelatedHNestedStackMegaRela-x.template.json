@@ -1,0 +1,2144 @@
+{
+  "Parameters": {
+    "DynamoDBModelTableReadIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of read IOPS the table should support."
+    },
+    "DynamoDBModelTableWriteIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of write IOPS the table should support."
+    },
+    "DynamoDBBillingMode": {
+      "Type": "String",
+      "Default": "PAY_PER_REQUEST",
+      "AllowedValues": [
+        "PAY_PER_REQUEST",
+        "PROVISIONED"
+      ],
+      "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes."
+    },
+    "DynamoDBEnablePointInTimeRecovery": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Whether to enable Point in Time Recovery on the table."
+    },
+    "DynamoDBEnableServerSideEncryption": {
+      "Type": "String",
+      "Default": "true",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Enable server side encryption powered by KMS."
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceD3B158C0Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataAmplifyTableManagerTab3AE60C6A": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef": {
+      "Type": "String"
+    },
+    "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "ShouldUsePayPerRequestBilling": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBBillingMode"
+        },
+        "PAY_PER_REQUEST"
+      ]
+    },
+    "ShouldUsePointInTimeRecovery": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBEnablePointInTimeRecovery"
+        },
+        "true"
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "MegaRelatedHTable": {
+      "Type": "Custom::ImportedAmplifyDynamoDBTable",
+      "Properties": {
+        "ServiceToken": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceD3B158C0Outputsamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataAmplifyTableManagerTab3AE60C6A"
+        },
+        "tableName": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x",
+        "attributeDefinitions": [
+          {
+            "attributeName": "id",
+            "attributeType": "S"
+          }
+        ],
+        "keySchema": [
+          {
+            "attributeName": "id",
+            "keyType": "HASH"
+          }
+        ],
+        "provisionedThroughput": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "ReadCapacityUnits": {
+                "Ref": "DynamoDBModelTableReadIOPS"
+              },
+              "WriteCapacityUnits": {
+                "Ref": "DynamoDBModelTableWriteIOPS"
+              }
+            }
+          ]
+        },
+        "sseSpecification": {
+          "sseEnabled": false
+        },
+        "streamSpecification": {
+          "streamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "deletionProtectionEnabled": true,
+        "allowDestructiveGraphqlSchemaUpdates": true,
+        "replaceTableUponGsiUpdate": false,
+        "isImported": true,
+        "pointInTimeRecoverySpecification": {
+          "Fn::If": [
+            "ShouldUsePointInTimeRecovery",
+            {
+              "PointInTimeRecoveryEnabled": true
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "billingMode": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            "PAY_PER_REQUEST",
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MegaRelatedHTable/Default/Default"
+      }
+    },
+    "MegaRelatedHIAMRoleFC2BA477": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:ConditionCheckItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetShardIterator"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
+                        {
+                          "tablename": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
+                        {
+                          "tablename": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "DynamoDBAccess"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "MegaRelatedHIAMRolee624ea-",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "-NONE"
+            ]
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MegaRelatedHIAMRole/Resource"
+      }
+    },
+    "MegaRelatedHDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "MegaRelatedHTable",
+                              "TableArn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "Name": "MegaRelatedHTable",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "MegaRelatedHIAMRoleFC2BA477",
+            "Arn"
+          ]
+        },
+        "Type": "AMAZON_DYNAMODB"
+      },
+      "DependsOn": [
+        "MegaRelatedHIAMRoleFC2BA477"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MegaRelatedHDataSource/Resource"
+      }
+    },
+    "QuerygetMegaRelatedHauth0FunctionQuerygetMegaRelatedHauth0FunctionAppSyncFunctionB2E42E82": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e5411cda152c2308dac0a81ffb999cc9c81ea2a1f51e6ce05a377bef8c4dfd.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/QuerygetMegaRelatedHauth0Function/QuerygetMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "QuerygetMegaRelatedHpostAuth0FunctionQuerygetMegaRelatedHpostAuth0FunctionAppSyncFunctionB6052EA5": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/QuerygetMegaRelatedHpostAuth0Function/QuerygetMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "QueryGetMegaRelatedHDataResolverFnQueryGetMegaRelatedHDataResolverFnAppSyncFunction0BAE7A6F": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08f4d557693d96c1a4efba0f9dc91330e4b19772fd5477c156468843e3d9cb5e.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c6a2d29f01c6091bd1d9afe16e5849d456c96f17c3b215938c8067399532719.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/QueryGetMegaRelatedHDataResolverFn/QueryGetMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "GetMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "getMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerygetMegaRelatedHauth0FunctionQuerygetMegaRelatedHauth0FunctionAppSyncFunctionB2E42E82",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerygetMegaRelatedHpostAuth0FunctionQuerygetMegaRelatedHpostAuth0FunctionAppSyncFunctionB6052EA5",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryGetMegaRelatedHDataResolverFnQueryGetMegaRelatedHDataResolverFnAppSyncFunction0BAE7A6F",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MegaRelatedHTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/queryGetMegaRelatedHResolver"
+      }
+    },
+    "QuerylistMegaRelatedHSauth0FunctionQuerylistMegaRelatedHSauth0FunctionAppSyncFunctionAB578623": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistMegaRelatedHSauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e5411cda152c2308dac0a81ffb999cc9c81ea2a1f51e6ce05a377bef8c4dfd.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/QuerylistMegaRelatedHSauth0Function/QuerylistMegaRelatedHSauth0Function.AppSyncFunction"
+      }
+    },
+    "QuerylistMegaRelatedHSpostAuth0FunctionQuerylistMegaRelatedHSpostAuth0FunctionAppSyncFunction26FFA819": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistMegaRelatedHSpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/QuerylistMegaRelatedHSpostAuth0Function/QuerylistMegaRelatedHSpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "QueryListMegaRelatedHSDataResolverFnQueryListMegaRelatedHSDataResolverFnAppSyncFunction01CF0DDC": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryListMegaRelatedHSDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fcbe070ecd3023c5bf5b966fa9584757db9762eef123bad0820bd87591b2174.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc01911d0269d4080ea57505dc445dfc315ef7ad85d3d9d4ea1357858bff451d.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/QueryListMegaRelatedHSDataResolverFn/QueryListMegaRelatedHSDataResolverFn.AppSyncFunction"
+      }
+    },
+    "ListMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "listMegaRelatedHS",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerylistMegaRelatedHSauth0FunctionQuerylistMegaRelatedHSauth0FunctionAppSyncFunctionAB578623",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerylistMegaRelatedHSpostAuth0FunctionQuerylistMegaRelatedHSpostAuth0FunctionAppSyncFunction26FFA819",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryListMegaRelatedHSDataResolverFnQueryListMegaRelatedHSDataResolverFnAppSyncFunction01CF0DDC",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listMegaRelatedHS\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MegaRelatedHTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/queryListMegaRelatedHSResolver"
+      }
+    },
+    "MutationcreateMegaRelatedHinit0FunctionMutationcreateMegaRelatedHinit0FunctionAppSyncFunctionDEFE2F0F": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateMegaRelatedHinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a183ddccbd956316c38ef97177b8f088ef0826f62023323f5ae6053d348ccffc.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationcreateMegaRelatedHinit0Function/MutationcreateMegaRelatedHinit0Function.AppSyncFunction"
+      }
+    },
+    "MutationcreateMegaRelatedHauth0FunctionMutationcreateMegaRelatedHauth0FunctionAppSyncFunction12C6F6E1": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1f4247197b0d24997768ecdb32813d77d34f3678ad41140a8e4daa24284c90a.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationcreateMegaRelatedHauth0Function/MutationcreateMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationcreateMegaRelatedHpostAuth0FunctionMutationcreateMegaRelatedHpostAuth0FunctionAppSyncFunctionDCECE335": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationcreateMegaRelatedHpostAuth0Function/MutationcreateMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationCreateMegaRelatedHDataResolverFnMutationCreateMegaRelatedHDataResolverFnAppSyncFunction6BC84CDF": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationCreateMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/343b0db7d1e98737c373b3cbcb2192f328055b74e70ad65c18b42571170bc23f.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationCreateMegaRelatedHDataResolverFn/MutationCreateMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "CreateMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "createMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationcreateMegaRelatedHinit0FunctionMutationcreateMegaRelatedHinit0FunctionAppSyncFunctionDEFE2F0F",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateMegaRelatedHauth0FunctionMutationcreateMegaRelatedHauth0FunctionAppSyncFunction12C6F6E1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateMegaRelatedHpostAuth0FunctionMutationcreateMegaRelatedHpostAuth0FunctionAppSyncFunctionDCECE335",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationCreateMegaRelatedHDataResolverFnMutationCreateMegaRelatedHDataResolverFnAppSyncFunction6BC84CDF",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MegaRelatedHTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/mutationCreateMegaRelatedHResolver"
+      }
+    },
+    "MutationupdateMegaRelatedHinit0FunctionMutationupdateMegaRelatedHinit0FunctionAppSyncFunction6DFDD7C9": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateMegaRelatedHinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06db846fd14e6fc371f22b12b5545ba8e2dbfeda85d8c8d586c71c282166657b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationupdateMegaRelatedHinit0Function/MutationupdateMegaRelatedHinit0Function.AppSyncFunction"
+      }
+    },
+    "MutationupdateMegaRelatedHauth0FunctionMutationupdateMegaRelatedHauth0FunctionAppSyncFunctionE6F850DE": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec53fa1188c3211cad42a851a0a51dc62eabbb1891df146895c7440f924568a6.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationupdateMegaRelatedHauth0Function/MutationupdateMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationupdateMegaRelatedHpostAuth0FunctionMutationupdateMegaRelatedHpostAuth0FunctionAppSyncFunctionC92D3440": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationupdateMegaRelatedHpostAuth0Function/MutationupdateMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationUpdateMegaRelatedHDataResolverFnMutationUpdateMegaRelatedHDataResolverFnAppSyncFunctionB391B85D": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationUpdateMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/474bf0776ec2164a13191d1a0a9e057154931e4918fea5086f49850d02a5371b.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationUpdateMegaRelatedHDataResolverFn/MutationUpdateMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "UpdateMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "updateMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationupdateMegaRelatedHinit0FunctionMutationupdateMegaRelatedHinit0FunctionAppSyncFunction6DFDD7C9",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateMegaRelatedHauth0FunctionMutationupdateMegaRelatedHauth0FunctionAppSyncFunctionE6F850DE",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateMegaRelatedHpostAuth0FunctionMutationupdateMegaRelatedHpostAuth0FunctionAppSyncFunctionC92D3440",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationUpdateMegaRelatedHDataResolverFnMutationUpdateMegaRelatedHDataResolverFnAppSyncFunctionB391B85D",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MegaRelatedHTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/mutationUpdateMegaRelatedHResolver"
+      }
+    },
+    "MutationdeleteMegaRelatedHauth0FunctionMutationdeleteMegaRelatedHauth0FunctionAppSyncFunction2BF6E0BC": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6257bfd1ef2992bd01df135516c0df15c5ff692f426e0c71c93960be8f8c81df.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationdeleteMegaRelatedHauth0Function/MutationdeleteMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationdeleteMegaRelatedHpostAuth0FunctionMutationdeleteMegaRelatedHpostAuth0FunctionAppSyncFunctionDDA28862": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationdeleteMegaRelatedHpostAuth0Function/MutationdeleteMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationDeleteMegaRelatedHDataResolverFnMutationDeleteMegaRelatedHDataResolverFnAppSyncFunction429D1A19": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MegaRelatedHDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationDeleteMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f7907d1209a2c9953a0c053df402c634e359546d70c7cc5c2e8e21ea734880f.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "MegaRelatedHDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MutationDeleteMegaRelatedHDataResolverFn/MutationDeleteMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "DeleteMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "deleteMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteMegaRelatedHauth0FunctionMutationdeleteMegaRelatedHauth0FunctionAppSyncFunction2BF6E0BC",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteMegaRelatedHpostAuth0FunctionMutationdeleteMegaRelatedHpostAuth0FunctionAppSyncFunctionDDA28862",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationDeleteMegaRelatedHDataResolverFnMutationDeleteMegaRelatedHDataResolverFnAppSyncFunction429D1A19",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MegaRelatedHTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/mutationDeleteMegaRelatedHResolver"
+      }
+    },
+    "SubscriptiononCreateMegaRelatedHauth0FunctionSubscriptiononCreateMegaRelatedHauth0FunctionAppSyncFunction121EE7A1": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptiononCreateMegaRelatedHauth0Function/SubscriptiononCreateMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononCreateMegaRelatedHpostAuth0FunctionSubscriptiononCreateMegaRelatedHpostAuth0FunctionAppSyncFunction9DE2B6CB": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptiononCreateMegaRelatedHpostAuth0Function/SubscriptiononCreateMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnCreateMegaRelatedHDataResolverFnSubscriptionOnCreateMegaRelatedHDataResolverFnAppSyncFunction6F97D5B4": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnCreateMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptionOnCreateMegaRelatedHDataResolverFn/SubscriptionOnCreateMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononCreateMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "onCreateMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateMegaRelatedHauth0FunctionSubscriptiononCreateMegaRelatedHauth0FunctionAppSyncFunction121EE7A1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateMegaRelatedHpostAuth0FunctionSubscriptiononCreateMegaRelatedHpostAuth0FunctionAppSyncFunction9DE2B6CB",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateMegaRelatedHDataResolverFnSubscriptionOnCreateMegaRelatedHDataResolverFnAppSyncFunction6F97D5B4",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/subscriptionOnCreateMegaRelatedHResolver"
+      }
+    },
+    "SubscriptiononUpdateMegaRelatedHauth0FunctionSubscriptiononUpdateMegaRelatedHauth0FunctionAppSyncFunctionB29B56FE": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptiononUpdateMegaRelatedHauth0Function/SubscriptiononUpdateMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononUpdateMegaRelatedHpostAuth0FunctionSubscriptiononUpdateMegaRelatedHpostAuth0FunctionAppSyncFunction760F7A01": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptiononUpdateMegaRelatedHpostAuth0Function/SubscriptiononUpdateMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnUpdateMegaRelatedHDataResolverFnSubscriptionOnUpdateMegaRelatedHDataResolverFnAppSyncFunctionE1D90234": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnUpdateMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptionOnUpdateMegaRelatedHDataResolverFn/SubscriptionOnUpdateMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononUpdateMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "onUpdateMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateMegaRelatedHauth0FunctionSubscriptiononUpdateMegaRelatedHauth0FunctionAppSyncFunctionB29B56FE",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateMegaRelatedHpostAuth0FunctionSubscriptiononUpdateMegaRelatedHpostAuth0FunctionAppSyncFunction760F7A01",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnUpdateMegaRelatedHDataResolverFnSubscriptionOnUpdateMegaRelatedHDataResolverFnAppSyncFunctionE1D90234",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/subscriptionOnUpdateMegaRelatedHResolver"
+      }
+    },
+    "SubscriptiononDeleteMegaRelatedHauth0FunctionSubscriptiononDeleteMegaRelatedHauth0FunctionAppSyncFunction8B74B951": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteMegaRelatedHauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptiononDeleteMegaRelatedHauth0Function/SubscriptiononDeleteMegaRelatedHauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononDeleteMegaRelatedHpostAuth0FunctionSubscriptiononDeleteMegaRelatedHpostAuth0FunctionAppSyncFunction83B6E359": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteMegaRelatedHpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptiononDeleteMegaRelatedHpostAuth0Function/SubscriptiononDeleteMegaRelatedHpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnDeleteMegaRelatedHDataResolverFnSubscriptionOnDeleteMegaRelatedHDataResolverFnAppSyncFunctionC6DC8F00": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnDeleteMegaRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/SubscriptionOnDeleteMegaRelatedHDataResolverFn/SubscriptionOnDeleteMegaRelatedHDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononDeleteMegaRelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "onDeleteMegaRelatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteMegaRelatedHauth0FunctionSubscriptiononDeleteMegaRelatedHauth0FunctionAppSyncFunction8B74B951",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteMegaRelatedHpostAuth0FunctionSubscriptiononDeleteMegaRelatedHpostAuth0FunctionAppSyncFunction83B6E359",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnDeleteMegaRelatedHDataResolverFnSubscriptionOnDeleteMegaRelatedHDataResolverFnAppSyncFunctionC6DC8F00",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteMegaRelatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/subscriptionOnDeleteMegaRelatedHResolver"
+      }
+    },
+    "MegaRelatedHOwnerDataResolverFnMegaRelatedHOwnerDataResolverFnAppSyncFunction86807087": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPINONEDS3AE603C6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaRelatedHOwnerDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/041534e5fd916595f752318f161512d7c7f83b9f2cf32d0f0be381c12253ff68.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/064303962e481067b44300212516363b99aaee539b6bafaf756fdd83ff0b60f0.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/MegaRelatedHOwnerDataResolverFn/MegaRelatedHOwnerDataResolverFn.AppSyncFunction"
+      }
+    },
+    "MegaRelatedHownerResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+        },
+        "FieldName": "owner",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MegaRelatedHOwnerDataResolverFnMegaRelatedHOwnerDataResolverFnAppSyncFunction86807087",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaRelatedH\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthauthenticatedUserRoleA8E8EE7BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthunauthenticatedUserRole3391288BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bauthNestedStackauthNestedStackResourceE2BB098BOutputsamplifybackendonlye2esandbox5a0ee18a1bauthamplifyAuthIdentityPool987DCE58Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaRelatedH"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/megaRelatedHOwnerResolver"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X34HV0230F9bhNsHtlElOlgINip1WFePcJOnXa6fcnf7L/HPLXF9hu8CqZdV3W+wamDxIlVyvazhQtf2HEgZTiAkVg59UHNhVJSNGSKZJoGP6w5ceMVzlO7sY4BNfANzY97VHIeBxgqkJ/t0NPs8FxlBtbmMpVL5sSFevHyf90SGyXEkXg1p9SxLXR7+f+QnE2sjuiCKnA+xJGdrBPtiNdCsyL+5l0TGrWda148nyaDQdHcJanS57D8xtsN2fxPouJ1Q8E1T1/AMdZf9s2AQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/MegaRelatedH/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "GetAttMegaRelatedHTableStreamArn": {
+      "Description": "Your DynamoDB table StreamArn.",
+      "Value": {
+        "Fn::GetAtt": [
+          "MegaRelatedHTable",
+          "TableStreamArn"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "GetAtt:MegaRelatedHTable:StreamArn"
+            ]
+          ]
+        }
+      }
+    },
+    "GetAttMegaRelatedHTableName": {
+      "Description": "Your DynamoDB table name.",
+      "Value": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "referencetoamplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataGraphQLAPID5BAA66DApiId"
+              },
+              "GetAtt:MegaRelatedHTable:Name"
+            ]
+          ]
+        }
+      }
+    },
+    "amplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedHMegaRelatedHDataSourceAEBFCCFCName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MegaRelatedHDataSource",
+          "Name"
+        ]
+      }
+    },
+    "amplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedHMegaRelatedHTable9FB4320DTableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MegaRelatedHTable",
+          "TableArn"
+        ]
+      }
+    }
+  }
+}

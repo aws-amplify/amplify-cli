@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket13C6388B"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x-holding",
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket13C6388B"
+    }
+  }
+]

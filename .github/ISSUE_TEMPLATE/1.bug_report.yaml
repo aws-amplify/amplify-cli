@@ -1,0 +1,120 @@
+name: Bug Report
+description: Create a report to help us improve Amplify CLI
+labels: ['pending-triage']
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Before submitting please read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports), and try to include as much information as you can.
+
+        For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />.
+        - For issues regarding REST API's, GraphQL API's, or containers, please visit [amplify-category-api](https://github.com/aws-amplify/amplify-category-api/issues/new/choose)
+        - For **Amplify Hosting** issues, visit [amplify-hosting](https://github.com/aws-amplify/amplify-hosting/issues/new/choose)
+        - For **Amplify Codegen** issues, visit [amplify-codegen](https://github.com/aws-amplify/amplify-codegen/issues/new/choose)
+  - type: markdown
+    attributes:
+      value: |
+        ## Environment
+  - type: input
+    attributes:
+      label: How did you install the Amplify CLI?
+      description: 'For example: npm, yarn, curl, etc.'
+  - type: input
+    attributes:
+      label: If applicable, what version of Node.js are you using?
+      description: You can use `node -v` to check the node version on your system.
+  - type: input
+    attributes:
+      label: Amplify CLI Version
+      placeholder: Run `amplify version` to get the Amplify CLI version
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: What operating system are you using?
+      description: 'For example: Mac, Windows, Ubuntu.'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Did you make any manual changes to the cloud resources managed by Amplify? Please describe the changes made.
+      description: 'For example: "Deleted DynamoDB GSIs from the AWS Console or using AWS CLI" Or "No manual changes made"'
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## Details
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      description: |
+        How can this bug be reproduced?
+        Will running the **exact** steps below _in an empty directory_ create an Amplify project that demonstrates the bug behavior?
+        Screenshots can be provided in the issue body below.
+      placeholder: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Project Identifier
+      description: |
+        You can send your project configurations by running `amplify diagnose --send-report` and share the Project Identifier. 
+        Learn more at https://docs.amplify.aws/cli/reference/diagnose/
+  - type: textarea
+    attributes:
+      label: Log output
+      description: |
+        For example, error messages, or stack traces.
+
+        Include any relevant log output under:
+
+        ```
+        ~/.amplify/logs/amplify-cli-<issue-date>.log
+        ```
+
+        **Be sure to remove any sensitive data.**
+
+      value: |
+        <details>
+
+        ```
+        # Put your logs below this line
+
+
+        ```
+
+        </details>
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: |
+        If you have any additional information, workarounds, etc. for us, use the field below.
+        Please note, you can attach screenshots or screen recordings here, by
+        dragging and dropping files in the field below.
+  - type: checkboxes
+    attributes:
+      label: |
+        Before submitting, please confirm:
+      options:
+        - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
+          required: true
+        - label: I have removed any sensitive information from my code snippets and submission.
+          required: true

@@ -1,0 +1,114 @@
+{
+  "Parameters": {
+    "env": {
+      "Type": "String",
+      "Description": "Current Amplify CLI env name"
+    },
+    "apifinancetrackerGraphQLAPIKeyOutput": {
+      "Type": "String"
+    },
+    "apifinancetrackerGraphQLAPIIdOutput": {
+      "Type": "String"
+    },
+    "apifinancetrackerGraphQLAPIEndpointOutput": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "TransactionsByCategoryDSRole265ACEB1": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "TransByCatDSRole-",
+              "x"
+            ]
+          ]
+        }
+      }
+    },
+    "TransactionsByCategoryDSRoleDefaultPolicyDBD3B63A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:GetItem"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TransactionsByCategoryDSRoleDefaultPolicyDBD3B63A",
+        "Roles": [
+          "TransByCatDSRole-x"
+        ]
+      }
+    },
+    "TransactionsByCategoryDS": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": "advknbihlbchtlonmy35v53toa",
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Fn::Sub": [
+              "Transaction-${apiId}-${env}",
+              {
+                "apiId": "advknbihlbchtlonmy35v53toa",
+                "env": "x"
+              }
+            ]
+          }
+        },
+        "Name": "TransactionsByCategoryDataSource",
+        "ServiceRoleArn": "arn:aws:iam::123456789012:role/TransByCatDSRole-x",
+        "Type": "AMAZON_DYNAMODB"
+      }
+    },
+    "GetTransactionsByCategoryResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": "advknbihlbchtlonmy35v53toa",
+        "DataSourceName": "TransactionsByCategoryDataSource",
+        "FieldName": "getTransactionsByCategory",
+        "RequestMappingTemplate": "\n## Custom VTL resolver for getTransactionsByCategory\n#set($limit = $util.defaultIfNull($ctx.args.limit, 20))\n{\n  \"version\": \"2018-05-29\",\n  \"operation\": \"Scan\",\n  \"filter\": {\n    \"expression\": \"category = :category\",\n    \"expressionValues\": {\n      \":category\": $util.dynamodb.toDynamoDBJson($ctx.args.category)\n    }\n  },\n  \"limit\": $limit,\n  \"consistentRead\": true\n}",
+        "ResponseMappingTemplate": "\n## Return the results as a TransactionConnection\n{\n  \"items\": $util.toJson($ctx.result.items),\n  \"nextToken\": $util.toJson($ctx.result.nextToken)\n}",
+        "TypeName": "Query"
+      }
+    }
+  },
+  "Outputs": {
+    "ResolverArn": {
+      "Description": "ARN of the custom getTransactionsByCategory resolver",
+      "Value": "arn:aws:appsync:us-east-1:123456789012:apis/advknbihlbchtlonmy35v53toa/types/Query/resolvers/getTransactionsByCategory"
+    },
+    "DataSourceName": {
+      "Description": "Name of the custom DynamoDB data source",
+      "Value": "TransactionsByCategoryDataSource"
+    }
+  }
+}

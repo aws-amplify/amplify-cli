@@ -1,0 +1,265 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-discussions-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-x-x-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-discussions-x-x-deployment",
+      "UnauthRoleName": "amplify-discussions-x-x-unauthRole",
+      "StackName": "amplify-discussions-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-x-x/4f849dd0-41c5-11f1-9284-0affe1a46c7d",
+      "AmplifyAppId": "discussions"
+    }
+  },
+  "api": {
+    "discussions": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        },
+        "GraphQLAPIIdOutput": "ofxtncx3vjdyxe6g4bijjb7jie",
+        "GraphQLAPIEndpointOutput": "https://dguz2rh3h5egtmvjxgyoummw24.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apidiscussions"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "lastPushDirHash": "nopUivqs4I976Sd0uHOJTBA9TAY="
+    }
+  },
+  "auth": {
+    "discussionsc578c16ec578c16e": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [
+          "EMAIL",
+          "PHONE_NUMBER"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "PHONE_NUMBER"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/auth/discussionsc578c16ec578c16e-cloudformation-template.json",
+        "logicalId": "authdiscussionsc578c16ec578c16e"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "output": {
+        "CreatedSNSRole": "arn:aws:iam::123456789012:role/snsc578c16ex-x",
+        "UserPoolId": "us-east-1_sSC5qNQjO",
+        "AppClientIDWeb": "2rf5dfok6ts6hpm7sb0l8rv0h5",
+        "AppClientID": "1hn3o1sg5n79qkmpt0omutpass",
+        "IdentityPoolId": "us-east-1:9b61f15d-9492-4642-b4ab-d7e1b54c8850",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_sSC5qNQjO",
+        "IdentityPoolName": "discussionsc578c16e_identitypool_c578c16e__x",
+        "UserPoolName": "discussionsc578c16e_userpool_c578c16e"
+      },
+      "lastPushDirHash": "myGTWMctb1i9mLWMpfiKN/8AYD8="
+    }
+  },
+  "function": {
+    "fetchuseractivity": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "activity"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2026-04-26T23:13:12.866Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-04-26T23:13:17.115Z",
+      "distZipFilename": "fetchuseractivity-364962303866625a5833-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-discussions-x-x-deployment",
+        "s3Key": "amplify-builds/fetchuseractivity-364962303866625a5833-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
+        "logicalId": "functionfetchuseractivity"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/discussionsLambdaRole44bd86bc-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:fetchuseractivity-x",
+        "Name": "fetchuseractivity-x",
+        "LambdaExecutionRole": "discussionsLambdaRole44bd86bc-x"
+      },
+      "lastPushDirHash": "Vkt2908Rl4kmwl4yPe5T0CS12qw="
+    },
+    "recorduseractivity": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "discussions"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "activity"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2026-04-26T23:13:18.214Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-04-26T23:13:18.228Z",
+      "distZipFilename": "recorduseractivity-54696a587a7168467354-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-discussions-x-x-deployment",
+        "s3Key": "amplify-builds/recorduseractivity-54696a587a7168467354-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/recorduseractivity-cloudformation-template.json",
+        "logicalId": "functionrecorduseractivity"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/discussionsLambdaRole62a425ae-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:recorduseractivity-x",
+        "Name": "recorduseractivity-x",
+        "LambdaExecutionRole": "discussionsLambdaRole62a425ae-x"
+      },
+      "lastPushDirHash": "QVn0mqrc3h8SkP1h9hNRNVysJGA="
+    },
+    "activityTrigger": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "activity",
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2026-04-26T23:13:20.297Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-04-26T23:13:22.477Z",
+      "distZipFilename": "activityTrigger-6237437664322f794638-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-discussions-x-x-deployment",
+        "s3Key": "amplify-builds/activityTrigger-6237437664322f794638-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/function/activityTrigger-cloudformation-template.json",
+        "logicalId": "functionactivityTrigger"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/discussion2604211534LambdaRole9c491a2b-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:activityTrigger-x",
+        "Name": "activityTrigger-x",
+        "LambdaExecutionRole": "discussion2604211534LambdaRole9c491a2b-x"
+      },
+      "lastPushDirHash": "tyAJY9bxps1bUhemuimxsd5yuIw="
+    }
+  },
+  "storage": {
+    "activity": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/storage/activity-cloudformation-template.json",
+        "logicalId": "storageactivity"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "output": {
+        "PartitionKeyName": "id",
+        "SortKeyName": "userId",
+        "SortKeyType": "S",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x",
+        "StreamArn": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-x/stream/2026-04-26T23:13:33.099",
+        "PartitionKeyType": "S",
+        "Name": "activity-x"
+      },
+      "lastPushDirHash": "CeDHfqEVrr3n7IKd366jTSmnV4Y="
+    },
+    "avatars": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storageavatars"
+      },
+      "output": {
+        "BucketName": "discus-avatarsx-x",
+        "Region": "us-east-1"
+      },
+      "lastPushDirHash": "PWltUfXvooQyBTwrAl6/fqx00TM="
+    },
+    "bookmarks": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-x-x-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
+        "logicalId": "storagebookmarks"
+      },
+      "lastPushTimeStamp": "2026-04-26T23:17:25.483Z",
+      "output": {
+        "PartitionKeyName": "userId",
+        "SortKeyName": "postId",
+        "SortKeyType": "S",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x",
+        "StreamArn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-x/stream/2026-04-26T23:13:32.994",
+        "PartitionKeyType": "S",
+        "Name": "bookmarks-x"
+      },
+      "lastPushDirHash": "UcosRNORY7WR8bi+QNNLl+eX+Eo="
+    }
+  }
+}

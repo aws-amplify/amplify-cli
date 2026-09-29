@@ -1,0 +1,7 @@
+{
+  "version": "1",
+  "serviceConfiguration": {
+    "serviceName": "S3",
+    "resourceName": "something"
+  }
+}

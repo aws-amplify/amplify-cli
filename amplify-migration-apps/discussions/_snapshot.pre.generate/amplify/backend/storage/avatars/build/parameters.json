@@ -1,0 +1,31 @@
+{
+  "bucketName": "discus-avatars",
+  "selectedGuestPermissions": [],
+  "selectedAuthenticatedPermissions": [
+    "s3:PutObject",
+    "s3:GetObject",
+    "s3:ListBucket",
+    "s3:DeleteObject"
+  ],
+  "unauthRoleName": {
+    "Ref": "UnauthRoleName"
+  },
+  "authRoleName": {
+    "Ref": "AuthRoleName"
+  },
+  "s3PrivatePolicy": "Private_policy_bf41454d",
+  "s3ProtectedPolicy": "Protected_policy_bf41454d",
+  "s3PublicPolicy": "Public_policy_bf41454d",
+  "s3ReadPolicy": "read_policy_bf41454d",
+  "s3UploadsPolicy": "Uploads_policy_bf41454d",
+  "authPolicyName": "s3_amplify_bf41454d",
+  "unauthPolicyName": "s3_amplify_bf41454d",
+  "AuthenticatedAllowList": "ALLOW",
+  "GuestAllowList": "DISALLOW",
+  "s3PermissionsAuthenticatedPrivate": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+  "s3PermissionsAuthenticatedProtected": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+  "s3PermissionsAuthenticatedPublic": "s3:PutObject,s3:GetObject,s3:DeleteObject",
+  "s3PermissionsAuthenticatedUploads": "s3:PutObject",
+  "s3PermissionsGuestPublic": "DISALLOW",
+  "s3PermissionsGuestUploads": "DISALLOW"
+}

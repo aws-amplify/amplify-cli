@@ -1,0 +1,17 @@
+name: Smoke Tests - Canaries
+
+# This is required by aws-actions/configure-aws-credentials
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  schedule:
+    - cron: '0 16 * * *' # Everyday 16:00 UTC
+
+jobs:
+  call-smoke-tests:
+    uses: ./.github/workflows/smoke-tests.yml
+    secrets: inherit
+    with:
+      versions: '["rc", "latest"]'

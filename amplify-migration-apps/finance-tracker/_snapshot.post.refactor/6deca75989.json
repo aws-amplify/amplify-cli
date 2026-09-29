@@ -1,0 +1,25 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-customcustomfinance-x",
+          "LogicalResourceId": "Queue11B0C5920"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-customcustomfinanceAA361EE7-x",
+          "LogicalResourceId": "customfinanceQueue1ABF38704"
+        }
+      }
+    ]
+  }
+}

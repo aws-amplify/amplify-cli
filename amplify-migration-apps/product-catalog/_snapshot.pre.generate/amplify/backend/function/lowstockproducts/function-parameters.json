@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "api": {
+      "productcatalog": [
+        "Query"
+      ]
+    }
+  },
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "lowStockThreshold",
+      "environmentVariableName": "LOW_STOCK_THRESHOLD"
+    }
+  ],
+  "secretNames": [
+    "PRODUCT_CATALOG_SECRET"
+  ]
+}

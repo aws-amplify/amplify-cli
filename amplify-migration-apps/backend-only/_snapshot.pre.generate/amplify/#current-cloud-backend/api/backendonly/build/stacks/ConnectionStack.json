@@ -1,0 +1,1093 @@
+{
+  "Resources": {
+    "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "Projecttodosauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Project.todos.auth.1.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      }
+    },
+    "ProjectTodosDataResolverFnProjectTodosDataResolverFnAppSyncFunction6418E519": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "ProjectTodosDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Project.todos.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Project.todos.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "ProjecttodosResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "todos",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "ProjectTodosDataResolverFnProjectTodosDataResolverFnAppSyncFunction6418E519",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"todos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Project"
+      }
+    },
+    "MegaModelMegaChildAItemsDataResolverFnMegaModelMegaChildAItemsDataResolverFnAppSyncFunction77E173FC": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaChildANestedStackMegaChildANestedStackResourceEF4CB200OutputstransformerrootstackMegaChildAMegaChildADataSource3DD29B51Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelMegaChildAItemsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildAItems.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildAItems.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelmegaChildAItemsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "megaChildAItems",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelMegaChildAItemsDataResolverFnMegaModelMegaChildAItemsDataResolverFnAppSyncFunction77E173FC",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"megaChildAItems\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaChildANestedStackMegaChildANestedStackResourceEF4CB200OutputstransformerrootstackMegaChildAMegaChildATable91C83B80Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelMegaChildBItemsDataResolverFnMegaModelMegaChildBItemsDataResolverFnAppSyncFunction91A36CAD": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaChildBNestedStackMegaChildBNestedStackResource55FBD433OutputstransformerrootstackMegaChildBMegaChildBDataSource98942207Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelMegaChildBItemsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildBItems.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildBItems.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelmegaChildBItemsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "megaChildBItems",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelMegaChildBItemsDataResolverFnMegaModelMegaChildBItemsDataResolverFnAppSyncFunction91A36CAD",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"megaChildBItems\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaChildBNestedStackMegaChildBNestedStackResource55FBD433OutputstransformerrootstackMegaChildBMegaChildBTable0BDC4CE9Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelMegaChildCItemsDataResolverFnMegaModelMegaChildCItemsDataResolverFnAppSyncFunction2F9DC2BD": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaChildCNestedStackMegaChildCNestedStackResource01A394DEOutputstransformerrootstackMegaChildCMegaChildCDataSource01CD51EBName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelMegaChildCItemsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildCItems.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildCItems.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelmegaChildCItemsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "megaChildCItems",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelMegaChildCItemsDataResolverFnMegaModelMegaChildCItemsDataResolverFnAppSyncFunction2F9DC2BD",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"megaChildCItems\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaChildCNestedStackMegaChildCNestedStackResource01A394DEOutputstransformerrootstackMegaChildCMegaChildCTable5BFDCBF2Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelMegaChildDItemsDataResolverFnMegaModelMegaChildDItemsDataResolverFnAppSyncFunctionA9806B62": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaChildDNestedStackMegaChildDNestedStackResourceAB76609DOutputstransformerrootstackMegaChildDMegaChildDDataSource465820ABName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelMegaChildDItemsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildDItems.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildDItems.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelmegaChildDItemsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "megaChildDItems",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelMegaChildDItemsDataResolverFnMegaModelMegaChildDItemsDataResolverFnAppSyncFunctionA9806B62",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"megaChildDItems\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaChildDNestedStackMegaChildDNestedStackResourceAB76609DOutputstransformerrootstackMegaChildDMegaChildDTable3287CD98Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelMegaChildEItemsDataResolverFnMegaModelMegaChildEItemsDataResolverFnAppSyncFunction206A2EE5": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaChildENestedStackMegaChildENestedStackResourceD972DC07OutputstransformerrootstackMegaChildEMegaChildEDataSource560E0794Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelMegaChildEItemsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildEItems.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.megaChildEItems.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelmegaChildEItemsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "megaChildEItems",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelMegaChildEItemsDataResolverFnMegaModelMegaChildEItemsDataResolverFnAppSyncFunction206A2EE5",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"megaChildEItems\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaChildENestedStackMegaChildENestedStackResourceD972DC07OutputstransformerrootstackMegaChildEMegaChildETable31881884Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelRelatedFDataResolverFnMegaModelRelatedFDataResolverFnAppSyncFunction40127F42": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaRelatedFNestedStackMegaRelatedFNestedStackResource7DF6948COutputstransformerrootstackMegaRelatedFMegaRelatedFDataSourceD06EAAB6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelRelatedFDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedF.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedF.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelrelatedFResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "relatedF",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelRelatedFDataResolverFnMegaModelRelatedFDataResolverFnAppSyncFunction40127F42",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"relatedF\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaRelatedFNestedStackMegaRelatedFNestedStackResource7DF6948COutputstransformerrootstackMegaRelatedFMegaRelatedFTable5BAA6D21Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelRelatedGDataResolverFnMegaModelRelatedGDataResolverFnAppSyncFunctionE0DF3C9D": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaRelatedGNestedStackMegaRelatedGNestedStackResource448FB6EEOutputstransformerrootstackMegaRelatedGMegaRelatedGDataSource57AB9651Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelRelatedGDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedG.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedG.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelrelatedGResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "relatedG",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelRelatedGDataResolverFnMegaModelRelatedGDataResolverFnAppSyncFunctionE0DF3C9D",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"relatedG\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaRelatedGNestedStackMegaRelatedGNestedStackResource448FB6EEOutputstransformerrootstackMegaRelatedGMegaRelatedGTableCCCB4DC8Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelRelatedHDataResolverFnMegaModelRelatedHDataResolverFnAppSyncFunction724CA8B3": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaRelatedHNestedStackMegaRelatedHNestedStackResource9911E717OutputstransformerrootstackMegaRelatedHMegaRelatedHDataSourceAB43BA59Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelRelatedHDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedH.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedH.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelrelatedHResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "relatedH",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelRelatedHDataResolverFnMegaModelRelatedHDataResolverFnAppSyncFunction724CA8B3",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"relatedH\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaRelatedHNestedStackMegaRelatedHNestedStackResource9911E717OutputstransformerrootstackMegaRelatedHMegaRelatedHTableFED49939Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelRelatedIDataResolverFnMegaModelRelatedIDataResolverFnAppSyncFunction0572C22A": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaRelatedINestedStackMegaRelatedINestedStackResource5237062EOutputstransformerrootstackMegaRelatedIMegaRelatedIDataSource2D6E81F4Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelRelatedIDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedI.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedI.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelrelatedIResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "relatedI",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelRelatedIDataResolverFnMegaModelRelatedIDataResolverFnAppSyncFunction0572C22A",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"relatedI\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaRelatedINestedStackMegaRelatedINestedStackResource5237062EOutputstransformerrootstackMegaRelatedIMegaRelatedITable83A02CC3Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    },
+    "MegaModelRelatedJDataResolverFnMegaModelRelatedJDataResolverFnAppSyncFunction46816F9B": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackMegaRelatedJNestedStackMegaRelatedJNestedStackResource5D6B9546OutputstransformerrootstackMegaRelatedJMegaRelatedJDataSourceBCFB4DD1Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MegaModelRelatedJDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedJ.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/MegaModel.relatedJ.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "MegaModelrelatedJResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "relatedJ",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "Projecttodosauth0FunctionProjecttodosauth0FunctionAppSyncFunctionB9D5F5D1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MegaModelRelatedJDataResolverFnMegaModelRelatedJDataResolverFnAppSyncFunction46816F9B",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"MegaModel\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"relatedJ\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "referencetotransformerrootstackMegaRelatedJNestedStackMegaRelatedJNestedStackResource5D6B9546OutputstransformerrootstackMegaRelatedJMegaRelatedJTableEBA82289Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:c33999a6-1429-4b58-a313-32e6952b5a5c\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "MegaModel"
+      }
+    }
+  },
+  "Parameters": {
+    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildANestedStackMegaChildANestedStackResourceEF4CB200OutputstransformerrootstackMegaChildAMegaChildADataSource3DD29B51Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildANestedStackMegaChildANestedStackResourceEF4CB200OutputstransformerrootstackMegaChildAMegaChildATable91C83B80Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildBNestedStackMegaChildBNestedStackResource55FBD433OutputstransformerrootstackMegaChildBMegaChildBDataSource98942207Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildBNestedStackMegaChildBNestedStackResource55FBD433OutputstransformerrootstackMegaChildBMegaChildBTable0BDC4CE9Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildCNestedStackMegaChildCNestedStackResource01A394DEOutputstransformerrootstackMegaChildCMegaChildCDataSource01CD51EBName": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildCNestedStackMegaChildCNestedStackResource01A394DEOutputstransformerrootstackMegaChildCMegaChildCTable5BFDCBF2Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildDNestedStackMegaChildDNestedStackResourceAB76609DOutputstransformerrootstackMegaChildDMegaChildDDataSource465820ABName": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildDNestedStackMegaChildDNestedStackResourceAB76609DOutputstransformerrootstackMegaChildDMegaChildDTable3287CD98Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildENestedStackMegaChildENestedStackResourceD972DC07OutputstransformerrootstackMegaChildEMegaChildEDataSource560E0794Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaChildENestedStackMegaChildENestedStackResourceD972DC07OutputstransformerrootstackMegaChildEMegaChildETable31881884Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedFNestedStackMegaRelatedFNestedStackResource7DF6948COutputstransformerrootstackMegaRelatedFMegaRelatedFDataSourceD06EAAB6Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedFNestedStackMegaRelatedFNestedStackResource7DF6948COutputstransformerrootstackMegaRelatedFMegaRelatedFTable5BAA6D21Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedGNestedStackMegaRelatedGNestedStackResource448FB6EEOutputstransformerrootstackMegaRelatedGMegaRelatedGDataSource57AB9651Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedGNestedStackMegaRelatedGNestedStackResource448FB6EEOutputstransformerrootstackMegaRelatedGMegaRelatedGTableCCCB4DC8Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedHNestedStackMegaRelatedHNestedStackResource9911E717OutputstransformerrootstackMegaRelatedHMegaRelatedHDataSourceAB43BA59Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedHNestedStackMegaRelatedHNestedStackResource9911E717OutputstransformerrootstackMegaRelatedHMegaRelatedHTableFED49939Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedINestedStackMegaRelatedINestedStackResource5237062EOutputstransformerrootstackMegaRelatedIMegaRelatedIDataSource2D6E81F4Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedINestedStackMegaRelatedINestedStackResource5237062EOutputstransformerrootstackMegaRelatedIMegaRelatedITable83A02CC3Ref": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedJNestedStackMegaRelatedJNestedStackResource5D6B9546OutputstransformerrootstackMegaRelatedJMegaRelatedJDataSourceBCFB4DD1Name": {
+      "Type": "String"
+    },
+    "referencetotransformerrootstackMegaRelatedJNestedStackMegaRelatedJNestedStackResource5D6B9546OutputstransformerrootstackMegaRelatedJMegaRelatedJTableEBA82289Ref": {
+      "Type": "String"
+    }
+  }
+}

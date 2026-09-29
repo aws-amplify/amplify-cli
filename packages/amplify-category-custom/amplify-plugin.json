@@ -1,0 +1,9 @@
+{
+  "name": "custom",
+  "type": "category",
+  "commands": ["add", "remove", "update", "help", "build"],
+  "commandAliases": {
+    "configure": "update"
+  },
+  "eventHandlers": []
+}

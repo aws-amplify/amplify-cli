@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "serviceModification": {
+    "serviceName": "Map",
+    "accessType": "AuthorizedAndGuestUsers",
+    "setAsDefault": true,
+    "name": "mymapname"
+  }
+}

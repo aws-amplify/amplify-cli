@@ -1,0 +1,106 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildANestedStackMegaChildANestedStackResourceEF4CB200OutputstransformerrootstackMegaChildAMegaChildADataSource3DD29B51Name",
+    "ParameterValue": "MegaChildATable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildENestedStackMegaChildENestedStackResourceD972DC07OutputstransformerrootstackMegaChildEMegaChildEDataSource560E0794Name",
+    "ParameterValue": "MegaChildETable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "swnmmzmw75hwtclcpxwndu4aia"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedJNestedStackMegaRelatedJNestedStackResource5D6B9546OutputstransformerrootstackMegaRelatedJMegaRelatedJTableEBA82289Ref",
+    "ParameterValue": "MegaRelatedJ-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedFNestedStackMegaRelatedFNestedStackResource7DF6948COutputstransformerrootstackMegaRelatedFMegaRelatedFTable5BAA6D21Ref",
+    "ParameterValue": "MegaRelatedF-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildCNestedStackMegaChildCNestedStackResource01A394DEOutputstransformerrootstackMegaChildCMegaChildCDataSource01CD51EBName",
+    "ParameterValue": "MegaChildCTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedGNestedStackMegaRelatedGNestedStackResource448FB6EEOutputstransformerrootstackMegaRelatedGMegaRelatedGDataSource57AB9651Name",
+    "ParameterValue": "MegaRelatedGTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildCNestedStackMegaChildCNestedStackResource01A394DEOutputstransformerrootstackMegaChildCMegaChildCTable5BFDCBF2Ref",
+    "ParameterValue": "MegaChildC-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildBNestedStackMegaChildBNestedStackResource55FBD433OutputstransformerrootstackMegaChildBMegaChildBTable0BDC4CE9Ref",
+    "ParameterValue": "MegaChildB-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildANestedStackMegaChildANestedStackResourceEF4CB200OutputstransformerrootstackMegaChildAMegaChildATable91C83B80Ref",
+    "ParameterValue": "MegaChildA-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildDNestedStackMegaChildDNestedStackResourceAB76609DOutputstransformerrootstackMegaChildDMegaChildDDataSource465820ABName",
+    "ParameterValue": "MegaChildDTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedINestedStackMegaRelatedINestedStackResource5237062EOutputstransformerrootstackMegaRelatedIMegaRelatedITable83A02CC3Ref",
+    "ParameterValue": "MegaRelatedI-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedJNestedStackMegaRelatedJNestedStackResource5D6B9546OutputstransformerrootstackMegaRelatedJMegaRelatedJDataSourceBCFB4DD1Name",
+    "ParameterValue": "MegaRelatedJTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-backendonly-x-x-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName",
+    "ParameterValue": "TodoTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedFNestedStackMegaRelatedFNestedStackResource7DF6948COutputstransformerrootstackMegaRelatedFMegaRelatedFDataSourceD06EAAB6Name",
+    "ParameterValue": "MegaRelatedFTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/ab56f9ec11876fd8a590e5467110edd3ef35b042"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildBNestedStackMegaChildBNestedStackResource55FBD433OutputstransformerrootstackMegaChildBMegaChildBDataSource98942207Name",
+    "ParameterValue": "MegaChildBTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildENestedStackMegaChildENestedStackResourceD972DC07OutputstransformerrootstackMegaChildEMegaChildETable31881884Ref",
+    "ParameterValue": "MegaChildE-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedGNestedStackMegaRelatedGNestedStackResource448FB6EEOutputstransformerrootstackMegaRelatedGMegaRelatedGTableCCCB4DC8Ref",
+    "ParameterValue": "MegaRelatedG-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaChildDNestedStackMegaChildDNestedStackResourceAB76609DOutputstransformerrootstackMegaChildDMegaChildDTable3287CD98Ref",
+    "ParameterValue": "MegaChildD-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedINestedStackMegaRelatedINestedStackResource5237062EOutputstransformerrootstackMegaRelatedIMegaRelatedIDataSource2D6E81F4Name",
+    "ParameterValue": "MegaRelatedITable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedHNestedStackMegaRelatedHNestedStackResource9911E717OutputstransformerrootstackMegaRelatedHMegaRelatedHTableFED49939Ref",
+    "ParameterValue": "MegaRelatedH-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMegaRelatedHNestedStackMegaRelatedHNestedStackResource9911E717OutputstransformerrootstackMegaRelatedHMegaRelatedHDataSourceAB43BA59Name",
+    "ParameterValue": "MegaRelatedHTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref",
+    "ParameterValue": "Todo-swnmmzmw75hwtclcpxwndu4aia-x"
+  }
+]

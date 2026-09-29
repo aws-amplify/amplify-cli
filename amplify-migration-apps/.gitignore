@@ -1,0 +1,8 @@
+# Ignore dirs created by amplify CLI commands.
+*/amplify/
+*/.gen2-migration/
+*amplifyconfiguration.json
+*amplify_outputs.json
+
+# But not the ones inside _snapshot.* folders which are tracked and santized.
+!*/_snapshot.*/amplify/

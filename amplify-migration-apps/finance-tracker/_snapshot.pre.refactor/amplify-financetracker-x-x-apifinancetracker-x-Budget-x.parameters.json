@@ -1,0 +1,70 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionQuerygetTransactionauth0FunctionQuerygetTransactionauth0FunctionAppSyncFunctionFEAFFE85FunctionId",
+    "ParameterValue": "qvm5m73xfvgadma22f2ercynki"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/a4cb1f0ff73cb98bbf900bb096b1f227a7c26dc0"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionSubscriptiononCreateTransactionauth0FunctionSubscriptiononCreateTransactionauth0FunctionAppSyncFunction7459F7D8FunctionId",
+    "ParameterValue": "dvj7xg4x3jfzxdu6gornemvklq"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "advknbihlbchtlonmy35v53toa"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionMutationupdateTransactioninit0FunctionMutationupdateTransactioninit0FunctionAppSyncFunctionD3CE5D54FunctionId",
+    "ParameterValue": "mz6lufhxwrgezlm5tgmaiubxue"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionSubscriptionOnCreateTransactionDataResolverFnSubscriptionOnCreateTransactionDataResolverFnAppSyncFunctionB6BAC21CFunctionId",
+    "ParameterValue": "2sb3l5jpgrg3jfq7njy3pho37q"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionMutationcreateTransactioninit0FunctionMutationcreateTransactioninit0FunctionAppSyncFunction6AFE3BC8FunctionId",
+    "ParameterValue": "ixgeg6zxnzgutjgwcobuvnbei4"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionTransactionOwnerDataResolverFnTransactionOwnerDataResolverFnAppSyncFunctionE365EE63FunctionId",
+    "ParameterValue": "t2x6ysbivbh3jhldn2lcnogyea"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-financetracker-x-x-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTransactionNestedStackTransactionNestedStackResourceD58DD790OutputstransformerrootstackTransactionQuerygetTransactionpostAuth0FunctionQuerygetTransactionpostAuth0FunctionAppSyncFunctionE2F460C1FunctionId",
+    "ParameterValue": "yrwyepdyjndebowygyulzz6dv4"
+  }
+]

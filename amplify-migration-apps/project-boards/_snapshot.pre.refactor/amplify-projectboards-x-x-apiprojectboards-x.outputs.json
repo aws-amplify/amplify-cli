@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "gqow23rg3nb4hcj5vunlwg4imm",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-projectboards-x-x-apiprojectboards-x:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "https://o2finqt7ffd3vnvxs6qmr7w2fa.appsync-api.us-east-1.amazonaws.com/graphql",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-projectboards-x-x-apiprojectboards-x:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "da2-fakeapikey00000000000000",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-projectboards-x-x-apiprojectboards-x:GraphQLApiKey"
+  }
+]

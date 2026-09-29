@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931restapistacknutritionapiRestApiDeploymentStageprod4B9DEE70Ref",
+    "OutputValue": "prod"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931restapistacknutritionapiRestApi5C20F999Ref",
+    "OutputValue": "ac2cbblto2"
+  },
+  {
+    "OutputKey": "RestApiEndpoint0551178A",
+    "OutputValue": "https://ac2cbblto2.execute-api.us-east-1.amazonaws.com/prod/"
+  }
+]

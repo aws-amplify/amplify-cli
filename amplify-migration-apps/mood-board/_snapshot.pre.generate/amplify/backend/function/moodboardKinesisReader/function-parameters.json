@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "analytics": {
+      "moodboardKinesis": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

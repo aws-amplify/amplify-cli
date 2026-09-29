@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/importedresourcequotegenerator-564649317a6f53484f35-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-importedresources-main-8a9e9-deployment"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPI42E8974CApiId",
+    "ParameterValue": "2jo7dgnljncqdcy2v3snkmtnbm"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthunauthenticatedUserRole1D29338ARef",
+    "ParameterValue": "amplify-fitnesstra2604261-amplifyAuthunauthenticate-ecqoiuGQ5H3A"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceC371CFEDOutputsamplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataAmplifyTableManagerTab3DFD81CE",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-fitnesstra2604261-TableManagerCustomProvid-FeZ8RnP9Ln1v"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPINONEDSE7AA3E9CName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthauthenticatedUserRoleA58CEB3FRef",
+    "ParameterValue": "amplify-fitnesstra2604261-amplifyAuthauthenticatedU-VBypwE3n9aIB"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackere2esandboxde9d3c8931authNestedStackauthNestedStackResource2017CE60Outputsamplifyfitnesstrackere2esandboxde9d3c8931authamplifyAuthIdentityPool10BED867Ref",
+    "ParameterValue": "us-east-1:bd6461c2-ca69-4013-b6ce-b23e8f1fec7b"
+  }
+]

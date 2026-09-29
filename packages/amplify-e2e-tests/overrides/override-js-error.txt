@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.override = void 0;
+function override(props) {
+    // this is an intentional compilation error here
+    compilation error
+}
+exports.override = override;

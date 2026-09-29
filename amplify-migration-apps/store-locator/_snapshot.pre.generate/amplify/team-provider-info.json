@@ -1,0 +1,34 @@
+{
+  "x": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-storelocator-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-storelocator-x-x-deployment",
+      "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
+      "StackName": "amplify-storelocator-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/c2b0fae0-4681-11f1-b98c-129a05736f99",
+      "AmplifyAppId": "storelocator",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "storelocator41a9495f41a9495f": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "storelocator41a9495f41a9495fPostConfirmation": {
+          "GROUP": "storeLocatorAdmin",
+          "deploymentBucketName": "amplify-storelocator-x-x-deployment",
+          "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip"
+        }
+      },
+      "geo": {
+        "storeLocatorMap": {},
+        "storeLocatorSearch": {},
+        "storeLocatorGeofence": {}
+      }
+    }
+  }
+}

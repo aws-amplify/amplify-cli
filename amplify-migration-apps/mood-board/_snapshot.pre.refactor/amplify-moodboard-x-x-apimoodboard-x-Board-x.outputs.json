@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttBoardTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Board-tw6yns43nvct3fzlwlouod43x4-x/stream/2026-05-04T19:10:53.993",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "tw6yns43nvct3fzlwlouod43x4:GetAtt:BoardTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttBoardDataSourceName",
+    "OutputValue": "BoardTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "tw6yns43nvct3fzlwlouod43x4:GetAtt:BoardDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackBoardBoardDataSource99BFC69FName",
+    "OutputValue": "BoardTable"
+  },
+  {
+    "OutputKey": "GetAttBoardTableName",
+    "OutputValue": "Board-tw6yns43nvct3fzlwlouod43x4-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "tw6yns43nvct3fzlwlouod43x4:GetAtt:BoardTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackBoardBoardTable30788E07Ref",
+    "OutputValue": "Board-tw6yns43nvct3fzlwlouod43x4-x"
+  }
+]

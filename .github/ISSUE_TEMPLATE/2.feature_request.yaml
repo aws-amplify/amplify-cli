@@ -1,0 +1,71 @@
+name: Feature Request
+description: Suggest an idea for the CLI
+labels: ['pending-triage']
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to submit a feature request! Try to include as much information as you can.
+
+        For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
+        - For issues regarding REST API's, GraphQL API's, or containers, please visit [amplify-category-api](https://github.com/aws-amplify/amplify-category-api/issues/new/choose)
+        - For **Amplify Hosting** issues, visit [amplify-hosting](https://github.com/aws-amplify/amplify-hosting/issues/new/choose)
+        - For **Amplify Codegen** issues, visit [amplify-codegen](https://github.com/aws-amplify/amplify-codegen/issues/new/choose)
+  - type: dropdown
+    attributes:
+      label: Is this feature request related to a new or existing Amplify category?
+      description: Which categories does this request impact?
+      multiple: true
+      options:
+        - auth
+        - storage
+        - function
+        - api
+        - analytics
+        - hosting
+        - notifications
+        - interactions
+        - predictions
+        - xr
+        - New category
+  - type: input
+    attributes:
+      label: Is this related to another service?
+      placeholder: e.g. DynamoDB, S3
+  - type: textarea
+    attributes:
+      label: Describe the feature you'd like to request
+      description: |
+        A clear and concise description of what you want to happen. Please include **any related issues**, documentation, etc.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the solution you'd like
+      description: |
+        A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe alternatives you've considered
+      description: |
+        A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Add any other use cases or context about the feature request here. Please include any prototype, workaround, reference implementation, etc.
+  - type: checkboxes
+    attributes:
+      label: Is this something that you'd be interested in working on?
+      options:
+        - label: 👋 I may be able to implement this feature request
+  - type: checkboxes
+    attributes:
+      label: Would this feature include a breaking change?
+      options:
+        - label: ⚠️ This feature might incur a breaking change

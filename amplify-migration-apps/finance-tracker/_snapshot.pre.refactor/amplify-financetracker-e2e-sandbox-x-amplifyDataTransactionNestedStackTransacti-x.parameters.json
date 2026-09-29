@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceDBEE4862Outputsamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataAmplifyTableManagerTab0A2F1D43",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-financetra2605101-TableManagerCustomProvid-aOtcqjjo27iB"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthIdentityPool6759519ERef",
+    "ParameterValue": "us-east-1:c545b731-c650-4ff3-b2f6-1d78d98b925e"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthauthenticatedUserRoleD0901999Ref",
+    "ParameterValue": "amplify-financetra2605101-amplifyAuthauthenticatedU-PdzEwCYD3yi2"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPIAAEC2315ApiId",
+    "ParameterValue": "cqtbb2d36zbalo5egilazvdefi"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bdataamplifyDataGraphQLAPINONEDS29FEA08CName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfinancetrackere2esandbox2ecf3e941bauthNestedStackauthNestedStackResource921F5369Outputsamplifyfinancetrackere2esandbox2ecf3e941bauthamplifyAuthunauthenticatedUserRoleEDBF4BEARef",
+    "ParameterValue": "amplify-financetra2605101-amplifyAuthunauthenticate-7zLAZsqRcPdQ"
+  }
+]

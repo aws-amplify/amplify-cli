@@ -1,0 +1,57 @@
+{
+  "name": "@aws-amplify/amplify-category-analytics",
+  "version": "5.0.47",
+  "description": "amplify-cli analytics plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-analytics"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "watch": "tsc --watch",
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@aws-amplify/amplify-environment-parameters": "1.9.25",
+    "@aws-amplify/amplify-prompts": "2.8.7",
+    "fs-extra": "^8.1.0",
+    "uuid": "^8.3.2"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

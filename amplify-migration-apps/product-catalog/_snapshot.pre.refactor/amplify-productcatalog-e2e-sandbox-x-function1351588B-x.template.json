@@ -1,0 +1,698 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.18.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Resources": {
+    "S3Trigger1ef46783gen2xlambdaServiceRole5345FDB4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "S3Trigger1ef46783-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/S3Trigger1ef46783-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicy72F78790": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appsync:GraphQL",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":appsync:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":apis/",
+                    {
+                      "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CApiId"
+                    },
+                    "/types/Mutation/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicy72F78790",
+        "Roles": [
+          {
+            "Ref": "S3Trigger1ef46783gen2xlambdaServiceRole5345FDB4"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/S3Trigger1ef46783-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "S3Trigger1ef46783gen2xlambda60782236": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "5e24f9a76e5388edfbcad42de74ee95947649425e2bf38163dde053b8cd58ced.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}",
+            "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIDefaultApiKey59E25CD3ApiKey"
+            },
+            "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CGraphQLUrl"
+            },
+            "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CApiId"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "S3Trigger1ef46783-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "S3Trigger1ef46783gen2xlambdaServiceRole5345FDB4",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "S3Trigger1ef46783-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "S3Trigger1ef46783gen2xlambdaServiceRoleDefaultPolicy72F78790",
+        "S3Trigger1ef46783gen2xlambdaServiceRole5345FDB4"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/S3Trigger1ef46783-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.5e24f9a76e5388edfbcad42de74ee95947649425e2bf38163dde053b8cd58ced",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "lowstockproductsgen2xlambdaServiceRole90714F78": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "lowstockproducts-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/lowstockproducts-gen2-x-lambda/ServiceRole/Resource"
+      }
+    },
+    "lowstockproductsgen2xlambdaServiceRoleDefaultPolicy4F01D91D": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appsync:GraphQL",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":appsync:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":apis/",
+                    {
+                      "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CApiId"
+                    },
+                    "/types/Query/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ssm:GetParameters",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/amplify/productcatalog/e2e-sandbox-x/PRODUCT_CATALOG_SECRET"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/amplify/shared/productcatalog/PRODUCT_CATALOG_SECRET"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "lowstockproductsgen2xlambdaServiceRoleDefaultPolicy4F01D91D",
+        "Roles": [
+          {
+            "Ref": "lowstockproductsgen2xlambdaServiceRole90714F78"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/lowstockproducts-gen2-x-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "lowstockproductsgen2xlambdaCBF7B81F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "d7f5c71539741266bb4033be80df7509489683b2b3c51db52b46bb0b103867e2.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "LOW_STOCK_THRESHOLD": "5",
+            "PRODUCT_CATALOG_SECRET": "<value will be resolved during runtime>",
+            "ENV": "gen2-x",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{\"PRODUCT_CATALOG_SECRET\":{\"path\":\"/amplify/productcatalog/e2e-sandbox-x/PRODUCT_CATALOG_SECRET\",\"sharedPath\":\"/amplify/shared/productcatalog/PRODUCT_CATALOG_SECRET\"}}",
+            "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIDefaultApiKey59E25CD3ApiKey"
+            },
+            "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CGraphQLUrl"
+            },
+            "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CApiId"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "lowstockproducts-gen2-x",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "lowstockproductsgen2xlambdaServiceRole90714F78",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "lowstockproducts-gen2-x"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "lowstockproductsgen2xlambdaServiceRoleDefaultPolicy4F01D91D",
+        "lowstockproductsgen2xlambdaServiceRole90714F78"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/lowstockproducts-gen2-x-lambda/Resource",
+        "aws:asset:path": "asset.d7f5c71539741266bb4033be80df7509489683b2b3c51db52b46bb0b103867e2",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNwQqDMBBEv8X7urWR9l6FHqXoB8iarBKNEbqxUsR/Lyo9vRkY3ihUtysmES0SazPEzja4FiyBTRVID0CL1KujsTFU+8lwL1gceM5eBzt5sDTiWk6OIW/9wdfkrP7u9UwbSFqTCAfBxw6QFLNZDxwyEoZTj3nr/9INjl0VqLO+22B/xl4uH6Xwesck6sXa+D37YEfG8uQPAYaCdcwAAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-e2e-sandbox-x/function/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIDefaultApiKey59E25CD3ApiKey": {
+      "Type": "String"
+    },
+    "referencetoamplifyproductcataloge2esandbox554f5b1732dataNestedStackdataNestedStackResourceA15C3FBFOutputsamplifyproductcataloge2esandbox554f5b1732dataamplifyDataGraphQLAPIB3DEFE3CGraphQLUrl": {
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "amplifyproductcataloge2esandbox554f5b1732functionS3Trigger1ef46783gen2xlambda31A05CF0Ref": {
+      "Value": {
+        "Ref": "S3Trigger1ef46783gen2xlambda60782236"
+      }
+    },
+    "amplifyproductcataloge2esandbox554f5b1732functionlowstockproductsgen2xlambda43976A3ARef": {
+      "Value": {
+        "Ref": "lowstockproductsgen2xlambdaCBF7B81F"
+      }
+    },
+    "amplifyproductcataloge2esandbox554f5b1732functionS3Trigger1ef46783gen2xlambda31A05CF0Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "S3Trigger1ef46783gen2xlambda60782236",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

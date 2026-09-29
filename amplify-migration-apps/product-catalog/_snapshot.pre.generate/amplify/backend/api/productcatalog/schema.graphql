@@ -1,0 +1,66 @@
+enum UserRole {
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+type User @model @auth(rules: [
+  { allow: private, provider: iam },
+  { allow: owner, ownerField: "id" }
+]) {
+  id: ID!
+  email: String!
+  name: String!
+  role: UserRole!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Product @model @auth(rules: [{ allow: private, provider: iam }]) {
+  id: ID!
+  serialno: Int!
+  engword: String!
+  price: Float
+  category: String
+  description: String
+  stock: Int
+  brand: String
+  imageKey: String
+  imageUploadedAt: String
+  images: [String]
+  createdBy: String
+  updatedBy: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  comments: [Comment] @hasMany(indexName: "byProduct", fields: ["id"])
+}
+
+type Comment @model @auth(rules: [
+  { allow: private, provider: iam },
+  { allow: owner, ownerField: "authorId" }
+]) {
+  id: ID!
+  productId: ID! @index(name: "byProduct")
+  authorId: String!
+  authorName: String!
+  content: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type LowStockProduct {
+  name: String!
+  stock: Int!
+}
+
+type LowStockResponse {
+  message: String!
+  lowStockProducts: [LowStockProduct!]!
+}
+
+type Query {
+  checkLowStock: LowStockResponse @function(name: "lowstockproducts-${env}") @auth(rules: [
+    { allow: private, provider: iam },
+    { allow: public, provider: apiKey }
+  ])
+}

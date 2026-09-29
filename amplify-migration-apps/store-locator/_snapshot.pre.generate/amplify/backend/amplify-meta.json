@@ -1,0 +1,227 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-storelocator-x-x-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-storelocator-x-x-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-storelocator-x-x-deployment",
+      "UnauthRoleName": "amplify-storelocator-x-x-unauthRole",
+      "StackName": "amplify-storelocator-x-x",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-storelocator-x-x/c2b0fae0-4681-11f1-b98c-129a05736f99",
+      "AmplifyAppId": "storelocator",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    }
+  },
+  "auth": {
+    "userPoolGroups": {
+      "service": "Cognito-UserPool-Groups",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "storelocator41a9495f41a9495f",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ],
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "logicalId": "authuserPoolGroups"
+      },
+      "output": {
+        "storeLocatorAdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_bXsy5KSVZ-storeLocatorAdminGroupRole"
+      },
+      "lastPushDirHash": "aY2fv0JwB9V2Pnq+Iavglw2oGVE="
+    },
+    "storelocator41a9495f41a9495f": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "storelocator41a9495f41a9495fPostConfirmation",
+          "triggerProvider": "Cognito",
+          "attributes": [
+            "Arn",
+            "Name"
+          ]
+        }
+      ],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/auth/storelocator41a9495f41a9495f-cloudformation-template.json",
+        "logicalId": "authstorelocator41a9495f41a9495f"
+      },
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
+      "output": {
+        "UserPoolId": "us-east-1_bXsy5KSVZ",
+        "AppClientIDWeb": "7obnc5l0qida3dd3kqbtltkea0",
+        "AppClientID": "ekdlfabni4oefvrh8hbt92t6v",
+        "IdentityPoolId": "us-east-1:be2cc697-5f0e-4bf0-831a-7c5f63d38e56",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_bXsy5KSVZ",
+        "IdentityPoolName": "storelocator41a9495f_identitypool_41a9495f__x",
+        "UserPoolName": "storelocator41a9495f_userpool_41a9495f"
+      },
+      "lastPushDirHash": "kOURZdfIUMFGbcxG8UDZvU0kWUI="
+    }
+  },
+  "function": {
+    "storelocator41a9495f41a9495fPostConfirmation": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2026-05-02T23:52:02.764Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-05-02T23:52:03.036Z",
+      "distZipFilename": "storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-storelocator-x-x-deployment",
+        "s3Key": "amplify-builds/storelocator41a9495f41a9495fPostConfirmation-6a6c746d4739755a384a-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/function/storelocator41a9495f41a9495fPostConfirmation-cloudformation-template.json",
+        "logicalId": "functionstorelocator41a9495f41a9495fPostConfirmation"
+      },
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/storelocator41a9495f41a9495fPostConfirmation-x",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-x",
+        "Name": "storelocator41a9495f41a9495fPostConfirmation-x",
+        "LambdaExecutionRole": "storelocator41a9495f41a9495fPostConfirmation-x"
+      },
+      "lastPushDirHash": "USuDOxWYbVc89R8jbYFk084MUDU="
+    }
+  },
+  "geo": {
+    "storeLocatorMap": {
+      "isDefault": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Map",
+      "mapStyle": "VectorEsriStreets",
+      "accessType": "AuthorizedAndGuestUsers",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "storelocator41a9495f41a9495f",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "storeLocatorAdminGroupRole"
+          ]
+        }
+      ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorMap-cloudformation-template.json",
+        "logicalId": "geostoreLocatorMap"
+      },
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
+      "output": {
+        "Style": "VectorEsriStreets",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:geo:us-east-1:123456789012:map/storeLocatorMap-x",
+        "Name": "storeLocatorMap-x"
+      },
+      "lastPushDirHash": "83BNu1WBvqATjVJFZfeXWW42EEo="
+    },
+    "storeLocatorSearch": {
+      "isDefault": true,
+      "providerPlugin": "awscloudformation",
+      "service": "PlaceIndex",
+      "dataProvider": "HERE",
+      "dataSourceIntendedUse": "SingleUse",
+      "accessType": "AuthorizedAndGuestUsers",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "storelocator41a9495f41a9495f",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "storeLocatorAdminGroupRole"
+          ]
+        }
+      ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorSearch-cloudformation-template.json",
+        "logicalId": "geostoreLocatorSearch"
+      },
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
+      "output": {
+        "Region": "us-east-1",
+        "Arn": "arn:aws:geo:us-east-1:123456789012:place-index/storeLocatorSearch-x",
+        "Name": "storeLocatorSearch-x"
+      },
+      "lastPushDirHash": "tsVFmyFlVrpTi0MPhsFRI07p4wc="
+    },
+    "storeLocatorGeofence": {
+      "isDefault": true,
+      "providerPlugin": "awscloudformation",
+      "service": "GeofenceCollection",
+      "accessType": "CognitoGroups",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "storelocator41a9495f41a9495f",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "auth",
+          "resourceName": "userPoolGroups",
+          "attributes": [
+            "storeLocatorAdminGroupRole"
+          ]
+        }
+      ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-storelocator-x-x-deployment/amplify-cfn-templates/geo/storeLocatorGeofence-cloudformation-template.json",
+        "logicalId": "geostoreLocatorGeofence"
+      },
+      "lastPushTimeStamp": "2026-05-02T23:56:04.679Z",
+      "output": {
+        "Region": "us-east-1",
+        "Arn": "arn:aws:geo:us-east-1:123456789012:geofence-collection/storeLocatorGeofence-x",
+        "Name": "storeLocatorGeofence-x"
+      },
+      "lastPushDirHash": "Kq6auY5HtW0SrWEan4uiTIa8yt4="
+    }
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x",
+      "LogicalResourceId": "MoodboardKinesisKinesisStreamECC0FDEB"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x-holding",
+      "LogicalResourceId": "MoodboardKinesisKinesisStreamECC0FDEB"
+    }
+  }
+]

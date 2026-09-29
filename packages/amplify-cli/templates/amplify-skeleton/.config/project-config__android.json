@@ -1,0 +1,11 @@
+{
+  "projectName": "amplifyStarter",
+  "version": "2.0",
+  "frontend": "android",
+  "providers": ["awscloudformation"],
+  "android": {
+    "config": {
+      "ResDir": "app/src/main/res"
+    }
+  }
+}

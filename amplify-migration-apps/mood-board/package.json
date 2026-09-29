@@ -1,0 +1,49 @@
+{
+  "name": "@amplify-migration-apps/mood-board-app",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "configure": "./backend/configure.sh",
+    "sanitize": "tsx ../sanitize.ts",
+    "normalize": "tsx ../normalize.ts",
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
+    "test:e2e": "cd ../../packages/amplify-e2e-gen2-migration && npx tsx src/cli.ts --app mood-board --profile ${AWS_PROFILE:-default} ${TEARDOWN:+--teardown}",
+    "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose --testPathIgnorePatterns='shared'",
+    "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose --testPathIgnorePatterns='shared'",
+    "test:shared-data": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose tests/shared-data.test.ts",
+    "test:shared-auth": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose tests/shared-auth.test.ts",
+    "test:shared": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose tests/shared-data.test.ts tests/shared-auth.test.ts",
+    "deploy": "cd ../../packages/amplify-e2e-gen2-migration && npx tsx src/cli.ts --app mood-board --step deploy --profile ${AWS_PROFILE:-default}",
+    "pre-push": "true",
+    "post-generate": "npx tsx migration/post-generate.ts",
+    "post-refactor": "npx tsx migration/post-refactor.ts",
+    "post-rollback": "npx tsx migration/post-rollback.ts",
+    "post-sandbox": "true",
+    "pre-sandbox": "true",
+    "post-push": "npx tsx migration/post-push.ts"
+  },
+  "dependencies": {
+    "@aws-amplify/ui-react": "^6.10.1",
+    "aws-amplify": "^6.14.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2"
+  }
+}

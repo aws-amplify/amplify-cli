@@ -1,0 +1,1 @@
+{"createdOn":"Linux","createdBy":"AmplifyPipelineDeploy","createdWith":"1.22.0","stackType":"root","metadata":{}}

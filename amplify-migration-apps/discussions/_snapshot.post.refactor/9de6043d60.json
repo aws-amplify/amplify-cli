@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x",
+      "LogicalResourceId": "bookmarksA4548304"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-e2e-sandbox-x-storagebookmarks210DAF62-x-holding",
+      "LogicalResourceId": "bookmarksA4548304"
+    }
+  }
+]

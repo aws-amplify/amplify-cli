@@ -1,0 +1,10 @@
+{
+  "features": {
+    "graphQLTransformer": {
+      "customTransformerVersion": 4
+    },
+    "keyTransformer": {
+      "defaultQuery": true
+    }
+  }
+}

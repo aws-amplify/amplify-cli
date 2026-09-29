@@ -1,0 +1,18 @@
+[
+  {
+    "Action": ["sns:Publish"],
+    "Resource": ["*"]
+  },
+  {
+    "Action": ["dynamodb:Scan", "dynamodb:Query", "dynamodb:GetItem"],
+    "Resource": [
+      {
+        "Fn::Sub": ["arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*", {}]
+      }
+    ]
+  },
+  {
+    "Action": ["sts:GetCallerIdentity"],
+    "Resource": ["*"]
+  }
+]

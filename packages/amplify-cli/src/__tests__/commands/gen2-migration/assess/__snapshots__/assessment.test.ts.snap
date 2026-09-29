@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Assessment render() renders a fully supported app 1`] = `
+"
+Assessment For Migrating "myapp" (env: dev)
+
+Resources
+
+┌──────────┬─────────┬──────────┬──────────┬──────────┐
+│ Category │ Service │ Resource │ Generate │ Refactor │
+├──────────┼─────────┼──────────┼──────────┼──────────┤
+│ auth     │ Cognito │ pool     │ ✔        │ ✔        │
+├──────────┼─────────┼──────────┼──────────┼──────────┤
+│ storage  │ S3      │ bucket   │ ✔        │ ✔        │
+└──────────┴─────────┴──────────┴──────────┴──────────┘
+
+⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
+
+https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/
+"
+`;
+
+exports[`Assessment render() renders an app blocked by unsupported refactor 1`] = `
+"
+Assessment For Migrating "myapp" (env: dev)
+
+Resources
+
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│ Category │ Service  │ Resource │ Generate │ Refactor │
+├──────────┼──────────┼──────────┼──────────┼──────────┤
+│ auth     │ Cognito  │ pool     │ ✔        │ ✔        │
+├──────────┼──────────┼──────────┼──────────┼──────────┤
+│ geo      │ Location │ map      │ ✘ Any    │ ✘ Any    │
+└──────────┴──────────┴──────────┴──────────┴──────────┘
+
+During migration, unsupported resources/features can be skipped by passing --skip-validations to the command.
+
+⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
+
+https://docs.amplify.aws/react/start/migrate-to-gen2/feature-matrix/
+"
+`;

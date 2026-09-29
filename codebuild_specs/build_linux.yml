@@ -1,0 +1,12 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - ./.circleci/codebuild-checkout.sh
+      - source ./shared-scripts.sh && _buildLinux
+
+artifacts:
+  files:
+    - 'shared-scripts.sh'

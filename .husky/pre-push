@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Define color variables
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No color
+
+echo "${GREEN}Running pre-push hook${NC}"
+echo "${CYAN}Running yarn build-tests-changed"
+yarn build-tests-changed

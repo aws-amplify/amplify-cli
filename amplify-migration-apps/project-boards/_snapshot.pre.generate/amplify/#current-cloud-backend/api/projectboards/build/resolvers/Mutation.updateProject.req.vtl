@@ -1,0 +1,130 @@
+## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  "id":   $util.dynamodb.toDynamoDB($args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add("$entry.key"))
+  #end
+#else
+  #set( $keyFields = ["id"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get("$entry.key") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+  #else
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = "" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = "SET" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = "$expression $entry.key = $entry.value" )
+    #if( $foreach.hasNext() )
+      #set( $expression = "$expression," )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = "$expression ADD" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = "$expression $entry.key $entry.value" )
+    #if( $foreach.hasNext() )
+      #set( $expression = "$expression," )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = "$expression REMOVE" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = "$expression $entry" )
+    #if( $foreach.hasNext() )
+      #set( $expression = "$expression," )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put("expression", "$expression"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put("expressionNames", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put("expressionValues", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": true
+}))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  "id": {
+      "attributeExists": true
+  }
+}))
+#end
+## End - key condition **
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  "and": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": $Key,
+  "update": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put("condition", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **

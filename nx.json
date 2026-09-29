@@ -1,0 +1,65 @@
+{
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": false
+    }
+  },
+  "extends": "nx/presets/npm.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "!{projectRoot}/**/*.md",
+      "!{projectRoot}/coverage/**",
+      "!{projectRoot}/reports/**",
+      "!{projectRoot}/src/schemas/BackendParameters.schema.json"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/src/__tests__/**",
+      "!{projectRoot}/tests/**",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.tsbuildinfo"
+    ]
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"],
+      "cache": true
+    },
+    "build-tests": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build", "^build"]
+    },
+    "prepare": {
+      "inputs": ["default", "^default"],
+      "dependsOn": ["^prepare"],
+      "cache": true
+    },
+    "package": {
+      "inputs": ["default", "^default"],
+      "dependsOn": ["^package"],
+      "cache": true
+    },
+    "smoketest": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"],
+      "cache": true
+    },
+    "extract-api": {
+      "dependsOn": ["build"],
+      "inputs": ["{projectRoot}/src/**/*", "!{projectRoot}/src/__tests__/**/*"],
+      "outputs": ["{projectRoot}/API.md"],
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    }
+  },
+  "parallel": 8,
+  "defaultBase": "dev"
+}

@@ -1,0 +1,81 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "AuthRoleArn": {
+      "Type": "String"
+    },
+    "UnauthRoleArn": {
+      "Type": "String"
+    },
+    "authfitnesstracker33f5545533f55455UserPoolId": {
+      "Type": "String",
+      "Default": "authfitnesstracker33f5545533f55455UserPoolId"
+    },
+    "authfitnesstracker33f5545533f55455IdentityPoolId": {
+      "Type": "String",
+      "Default": "authfitnesstracker33f5545533f55455IdentityPoolId"
+    },
+    "authfitnesstracker33f5545533f55455AppClientID": {
+      "Type": "String",
+      "Default": "authfitnesstracker33f5545533f55455AppClientID"
+    },
+    "authfitnesstracker33f5545533f55455AppClientIDWeb": {
+      "Type": "String",
+      "Default": "authfitnesstracker33f5545533f55455AppClientIDWeb"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "AdminGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:219ac99d-0294-49a3-aad1-abd4063c42cf"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "us-east-1_meUfbq8Lb",
+              "-AdminGroupRole"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AdminGroupRole": {
+      "Value": "arn:aws:iam::123456789012:role/us-east-1_meUfbq8Lb-AdminGroupRole"
+    }
+  }
+}

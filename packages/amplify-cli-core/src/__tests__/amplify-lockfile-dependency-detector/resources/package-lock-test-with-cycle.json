@@ -1,0 +1,46 @@
+{
+  "name": "test",
+  "version": "10.5.1",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "package1": {
+      "version": "2.5.5",
+      "dependencies": {
+        "package2": "3.4.0"
+      }
+    },
+    "package2": {
+      "version": "3.4.0",
+      "dependencies": {
+        "package3": "3.4.1"
+      }
+    },
+    "package3": {
+      "version": "3.4.1",
+      "dependencies": {
+        "package1": "2.5.5"
+      }
+    }
+  },
+  "dependencies": {
+    "package1": {
+      "version": "2.5.5",
+      "requires": {
+        "package2": "3.4.0"
+      }
+    },
+    "package2": {
+      "version": "3.4.0",
+      "requires": {
+        "package3": "3.4.1"
+      }
+    },
+    "package3": {
+      "version": "3.4.1",
+      "requires": {
+        "package1": "2.5.5"
+      }
+    }
+  }
+}

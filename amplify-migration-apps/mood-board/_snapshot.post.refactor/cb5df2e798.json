@@ -1,0 +1,110 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"analytics-Kinesis\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "kinesisStreamName": {
+      "Type": "String"
+    },
+    "kinesisStreamShardCount": {
+      "Type": "Number",
+      "Default": 1
+    },
+    "authPolicyName": {
+      "Type": "String"
+    },
+    "unauthPolicyName": {
+      "Type": "String"
+    },
+    "authRoleName": {
+      "Type": "String"
+    },
+    "unauthRoleName": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "KinesisStream": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "-",
+            [
+              "moodboardKinesis",
+              "x"
+            ]
+          ]
+        },
+        "ShardCount": "1"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "CognitoUnauthPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "kinesis_amplify_bca5ce95",
+        "Roles": [
+          "amplify-moodboard-x-x-unauthRole"
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+            }
+          ]
+        }
+      }
+    },
+    "CognitoAuthPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "kinesis_amplify_bca5ce95",
+        "Roles": [
+          "amplify-moodboard-x-x-authRole"
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "kinesisStreamArn": {
+      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+    },
+    "kinesisStreamId": {
+      "Value": "moodboardKinesis-x"
+    },
+    "kinesisStreamShardCount": {
+      "Value": "1"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+type Post @model {
+  id: ID!
+  title: String
+  comments: [Comment!]! @connection(keyName: "byPost", fields: ["id"])
+}
+
+type Comment @model @key(name: "byPost", fields: ["postID"]) {
+  id: ID!
+  content: String
+  postID: ID!
+}

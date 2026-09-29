@@ -1,0 +1,35 @@
+[
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_yn4mJLPnC",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "5r1qh4c49h5v1urnk69tm8tvn0",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "157h2rj8drap7rs6kabaa3rs82",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:039abc03-3cc4-4f8d-ae69-6ece8fc6b27b",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_yn4mJLPnC",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "financetracker331811e6_identitypool_331811e6__x"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "financetracker331811e6_userpool_331811e6"
+  }
+]

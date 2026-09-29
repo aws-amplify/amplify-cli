@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: I want help writing my Amplify application
+    url: https://discord.com/invite/amplify
+    about: Check out the `*-help` channels on Amplify's community Discord to ask your questions about building applications with the CLI or other Amplify libraries.

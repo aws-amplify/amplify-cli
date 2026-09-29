@@ -1,0 +1,244 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Check UserPool Group Template Generated userpool group stack template during Push one group 1`] = `
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env",
+        },
+        "NONE",
+      ],
+    },
+  },
+  "Description": "Root Stack for AWS Amplify CLI",
+  "Outputs": {
+    "adminGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
+          "adminGroupRole",
+          "Arn",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "AuthRoleArn": {
+      "Type": "String",
+    },
+    "UnauthRoleArn": {
+      "Type": "String",
+    },
+    "authmockResourceAppClientID": {
+      "Default": "authmockResourceAppClientID",
+      "Type": "String",
+    },
+    "authmockResourceAppClientIDWeb": {
+      "Default": "authmockResourceAppClientIDWeb",
+      "Type": "String",
+    },
+    "authmockResourceIdentityPoolId": {
+      "Default": "authmockResourceIdentityPoolId",
+      "Type": "String",
+    },
+    "authmockResourceUserPoolId": {
+      "Default": "authmockResourceUserPoolId",
+      "Type": "String",
+    },
+    "env": {
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "adminGroup": {
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "admin",
+        "Precedence": 1,
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "adminGroupRole",
+            "Arn",
+          ],
+        },
+        "UserPoolId": {
+          "Ref": "authmockResourceUserPoolId",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
+    "adminGroupRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "authmockResourceIdentityPoolId",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+              "Sid": "",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "authmockResourceUserPoolId",
+              },
+              "-adminGroupRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+}
+`;
+
+exports[`Check UserPool Group Template Generated userpool group stack template during Push with two groups 1`] = `
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env",
+        },
+        "NONE",
+      ],
+    },
+  },
+  "Description": "Root Stack for AWS Amplify CLI",
+  "Outputs": {
+    "adminMockGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
+          "adminMockGroupRole",
+          "Arn",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "AuthRoleArn": {
+      "Type": "String",
+    },
+    "UnauthRoleArn": {
+      "Type": "String",
+    },
+    "authmockResourceAppClientID": {
+      "Default": "authmockResourceAppClientID",
+      "Type": "String",
+    },
+    "authmockResourceAppClientIDWeb": {
+      "Default": "authmockResourceAppClientIDWeb",
+      "Type": "String",
+    },
+    "authmockResourceIdentityPoolId": {
+      "Default": "authmockResourceIdentityPoolId",
+      "Type": "String",
+    },
+    "authmockResourceUserPoolId": {
+      "Default": "authmockResourceUserPoolId",
+      "Type": "String",
+    },
+    "env": {
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "adminMockGroup": {
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "adminMock",
+        "Precedence": 2,
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "adminMockGroupRole",
+            "Arn",
+          ],
+        },
+        "UserPoolId": {
+          "Ref": "authmockResourceUserPoolId",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
+    "adminMockGroupRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "authmockResourceIdentityPoolId",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+              "Sid": "",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "mockActions",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "mockArn",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "analytics-pinpoint-policy",
+          },
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "authmockResourceUserPoolId",
+              },
+              "-adminMockGroupRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+}
+`;

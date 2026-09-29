@@ -1,0 +1,572 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Pinpoint resource stack creation using Amplify CLI",
+  "Parameters": {
+    "appName": {
+      "Type": "String"
+    },
+    "appId": {
+      "Type": "String",
+      "Default": "NONE"
+    },
+    "roleName": {
+      "Type": "String"
+    },
+    "cloudformationPolicyName": {
+      "Type": "String"
+    },
+    "cloudWatchPolicyName": {
+      "Type": "String"
+    },
+    "pinpointPolicyName": {
+      "Type": "String"
+    },
+    "authPolicyName": {
+      "Type": "String"
+    },
+    "unauthPolicyName": {
+      "Type": "String"
+    },
+    "authRoleName": {
+      "Type": "String"
+    },
+    "unauthRoleName": {
+      "Type": "String"
+    },
+    "authRoleArn": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "pinpointInAppMessagingPolicyName": {
+      "Type": "String",
+      "Default": "NONE"
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "Creating pinpoint app"
+          },
+          "Parameters": ["appName"]
+        }
+      ]
+    }
+  },
+  "Conditions": {
+    "ShouldCreatePinpointApp": {
+      "Fn::Equals": [
+        {
+          "Ref": "appId"
+        },
+        "NONE"
+      ]
+    },
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    },
+    "ShouldEnablePinpointInAppMessaging": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "pinpointInAppMessagingPolicyName"
+            },
+            "NONE"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "LambdaExecutionRole": {
+      "Condition": "ShouldCreatePinpointApp",
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "roleName"
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "roleName"
+                  },
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": ["lambda.amazonaws.com"]
+              },
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Ref": "pinpointPolicyName"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["mobileanalytics:*", "mobiletargeting:*"],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": {
+              "Ref": "cloudformationPolicyName"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["cloudformation:*"],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "LambdaCloudWatchPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": {
+          "Ref": "cloudWatchPolicyName"
+        },
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*",
+                  {
+                    "lambdaName": {
+                      "Ref": "PinpointFunction"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "PinpointFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Condition": "ShouldCreatePinpointApp",
+      "Properties": {
+        "Code": {
+          "ZipFile": {
+            "Fn::Join": [
+              "\n",
+              [
+                "const response = require('cfn-response');",
+                "const { CloudFormationClient, DescribeStacksCommand } = require('@aws-sdk/client-cloudformation');",
+                "const { PinpointClient, CreateAppCommand, DeleteAppCommand } = require('@aws-sdk/client-pinpoint');",
+                "exports.handler = function(event, context) {",
+                "    // Don't return promise, response.send() marks context as done internally",
+                "    const ignoredPromise = handleEvent(event, context)",
+                "};",
+                "async function handleEvent(event, context) {",
+                "    if (event.RequestType === 'Delete') {",
+                "        try {",
+                "            const stackID = event.StackId;",
+                "            const cloudFormationClient = new CloudFormationClient({region: event.ResourceProperties.region});",
+                "            const describeStacksOutput = await cloudFormationClient.send(new DescribeStacksCommand({StackName: stackID}));",
+                "            let appId;",
+                "            if (describeStacksOutput.Stacks && describeStacksOutput.Stacks.length > 0) {",
+                "                const {Outputs} = describeStacksOutput.Stacks[0];",
+                "                const appIdOutput = Outputs.find((output) => {",
+                "                    return output.OutputKey === 'Id'",
+                "                });",
+                "                appId = appIdOutput ? appIdOutput.OutputValue : undefined;",
+                "            }",
+                "            if (appId) {",
+                "                const pinpointClient = new PinpointClient({region: event.ResourceProperties.pingPointRegion});",
+                "                const params = {",
+                "                    ApplicationId: appId,",
+                "                };",
+                "                await pinpointClient.send(new DeleteAppCommand(params));",
+                "            }",
+                "            response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
+                "        } catch (e) {",
+                "            if (e.name !== 'NotFoundException') {",
+                "                response.send(event, context, response.FAILED, {'message': `Failed to deleted Pinpoint project`, 'exception': e});",
+                "            } else {",
+                "                response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
+                "            }",
+                "        }",
+                "    } else if (event.RequestType === 'Create') {",
+                "        try {",
+                "            const appName = event.ResourceProperties.appName;",
+                "            const params = {",
+                "                CreateApplicationRequest: {",
+                "                    Name: appName",
+                "                }",
+                "            };",
+                "            const pinpoint = new PinpointClient({region: event.ResourceProperties.pingPointRegion});",
+                "            const res = await pinpoint.send(new CreateAppCommand(params));",
+                "            response.send(event, context, response.SUCCESS, res.ApplicationResponse);",
+                "        } catch (err) {",
+                "            console.log(err.stack);",
+                "            response.send(event, context, response.FAILED, {Error: err});",
+                "        }",
+                "    } else {",
+                "        response.send(event, context, response.SUCCESS);",
+                "    }",
+                "};"
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs22.x",
+        "Timeout": 300,
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        }
+      }
+    },
+    "PinpointFunctionOutputs": {
+      "Type": "Custom::LambdaCallout",
+      "Condition": "ShouldCreatePinpointApp",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": ["PinpointFunction", "Arn"]
+        },
+        "region": {
+          "Ref": "AWS::Region"
+        },
+        "pingPointRegion": {
+          "Fn::FindInMap": [
+            "RegionMapping",
+            {
+              "Ref": "AWS::Region"
+            },
+            "pinpointRegion"
+          ]
+        },
+        "appName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "appName"
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "appName"
+                  },
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "DependsOn": "PinpointFunction"
+    },
+    "CognitoUnauthPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Condition": "ShouldCreatePinpointApp",
+      "Properties": {
+        "PolicyName": {
+          "Ref": "unauthPolicyName"
+        },
+        "Roles": [
+          {
+            "Ref": "unauthRoleName"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "ShouldCreatePinpointApp",
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:mobiletargeting:*:",
+                          {
+                            "Fn::Select": [
+                              "4",
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "authRoleArn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apps/",
+                          {
+                            "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:mobiletargeting:*:",
+                          {
+                            "Fn::Select": [
+                              "4",
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "authRoleArn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apps/",
+                          {
+                            "Ref": "appId"
+                          },
+                          "*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "CognitoAuthPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Condition": "ShouldCreatePinpointApp",
+      "Properties": {
+        "PolicyName": {
+          "Ref": "authPolicyName"
+        },
+        "Roles": [
+          {
+            "Ref": "authRoleName"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "ShouldCreatePinpointApp",
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:mobiletargeting:*:",
+                          {
+                            "Fn::Select": [
+                              "4",
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "authRoleArn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apps/",
+                          {
+                            "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:mobiletargeting:*:",
+                          {
+                            "Fn::Select": [
+                              "4",
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "authRoleArn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apps/",
+                          {
+                            "Ref": "appId"
+                          },
+                          "*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "PinpointInAppMessagingPolicy": {
+      "Condition": "ShouldEnablePinpointInAppMessaging",
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": {
+          "Ref": "pinpointInAppMessagingPolicyName"
+        },
+        "Roles": [
+          {
+            "Ref": "unauthRoleName"
+          },
+          {
+            "Ref": "authRoleName"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["mobiletargeting:GetInAppMessages"],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:mobiletargeting:",
+                      {
+                        "Fn::FindInMap": [
+                          "RegionMapping",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "pinpointRegion"
+                        ]
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apps/",
+                      {
+                        "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
+                      },
+                      "*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
+          "RegionMapping",
+          {
+            "Ref": "AWS::Region"
+          },
+          "pinpointRegion"
+        ]
+      }
+    },
+    "Id": {
+      "Value": {
+        "Fn::If": [
+          "ShouldCreatePinpointApp",
+          {
+            "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
+          },
+          {
+            "Ref": "appId"
+          }
+        ]
+      }
+    },
+    "appName": {
+      "Value": {
+        "Fn::If": [
+          "ShouldCreatePinpointApp",
+          {
+            "Fn::GetAtt": ["PinpointFunctionOutputs", "Name"]
+          },
+          {
+            "Ref": "appName"
+          }
+        ]
+      }
+    }
+  }
+}

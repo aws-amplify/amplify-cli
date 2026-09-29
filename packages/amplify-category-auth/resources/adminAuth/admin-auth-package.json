@@ -1,0 +1,15 @@
+{
+  "name": "adminqueries",
+  "version": "1.0.0",
+  "description": "Administrative actions for Amazon Cognito",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-serverless-express": "^3.3.5",
+    "body-parser": "^1.17.2",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "3.624.0"
+  }
+}

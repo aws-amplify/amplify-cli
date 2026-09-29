@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "GetAttMegaRelatedGTableName",
+    "OutputValue": "MegaRelatedG-swnmmzmw75hwtclcpxwndu4aia-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "clbup6fs5fgy7jotxbvo54dqvy:GetAtt:MegaRelatedGTable:Name"
+  },
+  {
+    "OutputKey": "amplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedGMegaRelatedGTableF598A997TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedG-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "OutputKey": "GetAttMegaRelatedGTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedG-swnmmzmw75hwtclcpxwndu4aia-x/stream/2026-05-15T12:50:37.967",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "clbup6fs5fgy7jotxbvo54dqvy:GetAtt:MegaRelatedGTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifybackendonlye2esandbox5a0ee18a1bdataamplifyDataMegaRelatedGMegaRelatedGDataSource2A47DF7BName",
+    "OutputValue": "MegaRelatedGTable"
+  }
+]

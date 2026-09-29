@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox4e89bdf911dataamplifyDataGraphQLAPI89A80FB0ApiId",
+    "ParameterValue": "yzu4caotfvfmhjvb3xgbhfcklq"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox4e89bdf911dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource574DDE3COutputsamplifyprojectboardse2esandbox4e89bdf911dataamplifyDataAmplifyTableManagerTab62CDC99A",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-projectboa2604261-TableManagerCustomProvid-IyQEUOU36oC2"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox4e89bdf911dataamplifyDataGraphQLAPINONEDS9B72EED3Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox4e89bdf911authNestedStackauthNestedStackResource88264725Outputsamplifyprojectboardse2esandbox4e89bdf911authamplifyAuthauthenticatedUserRole6DCD3C6DRef",
+    "ParameterValue": "amplify-projectboa2604261-amplifyAuthauthenticatedU-qbafrylxvEIG"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox4e89bdf911authNestedStackauthNestedStackResource88264725Outputsamplifyprojectboardse2esandbox4e89bdf911authamplifyAuthunauthenticatedUserRole0D813339Ref",
+    "ParameterValue": "amplify-projectboa2604261-amplifyAuthunauthenticate-lsN2mJov2h1E"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandbox4e89bdf911authNestedStackauthNestedStackResource88264725Outputsamplifyprojectboardse2esandbox4e89bdf911authamplifyAuthIdentityPool422FACB5Ref",
+    "ParameterValue": "us-east-1:7792bdd9-773b-4af4-a7a8-035a45723fac"
+  }
+]

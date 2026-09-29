@@ -1,0 +1,19 @@
+{
+  "name": "functionRuntime",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionRuntime": {
+    "pluginId": "amplify-nodejs-function-runtime-provider",
+    "conditions": {
+      "provider": "awscloudformation",
+      "services": ["Lambda", "LambdaLayer"]
+    },
+    "runtimes": [
+      {
+        "name": "NodeJS",
+        "value": "nodejs"
+      }
+    ]
+  }
+}

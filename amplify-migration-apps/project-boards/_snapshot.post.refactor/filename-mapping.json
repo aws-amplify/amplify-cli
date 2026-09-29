@@ -1,0 +1,22 @@
+{
+  "809e6c5310": "update.amplify-projectboards-x-x-authprojectboards54040ecc-x.template.json",
+  "3b1a56c1ce": "update.amplify-projectboards-x-x-authprojectboards54040ecc-x.parameters.json",
+  "3d3d4b11d6": "update.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.template.json",
+  "2f56b4bb93": "update.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.parameters.json",
+  "c7e1f26524": "refactor.__from__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.__to__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x-holding.source.template.json",
+  "e367c71761": "refactor.__from__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.__to__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x-holding.target.template.json",
+  "1299554f10": "refactor.__from__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.__to__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x-holding.mappings.json",
+  "827d71cfb8": "refactor.__from__.amplify-projectboards-x-x-authprojectboards54040ecc-x.__to__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.source.template.json",
+  "8fd979ed03": "refactor.__from__.amplify-projectboards-x-x-authprojectboards54040ecc-x.__to__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.target.template.json",
+  "4461f863c3": "refactor.__from__.amplify-projectboards-x-x-authprojectboards54040ecc-x.__to__.amplify-projectboards-e2e-sandbox-x-auth179371D7-x.mappings.json",
+  "9799b8bb9e": "update.amplify-projectboards-x-x-storages369f8ff1c-x.template.json",
+  "4c8b5ca88d": "update.amplify-projectboards-x-x-storages369f8ff1c-x.parameters.json",
+  "5eb11b4946": "update.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.template.json",
+  "94b8e3a783": "update.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.parameters.json",
+  "71a9006bbd": "refactor.__from__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json",
+  "92e0f5416b": "refactor.__from__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x-holding.target.template.json",
+  "d6e165aa62": "refactor.__from__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x-holding.mappings.json",
+  "fec55c5960": "refactor.__from__.amplify-projectboards-x-x-storages369f8ff1c-x.__to__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.source.template.json",
+  "3b1460e95a": "refactor.__from__.amplify-projectboards-x-x-storages369f8ff1c-x.__to__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.target.template.json",
+  "0b3bbbfc4a": "refactor.__from__.amplify-projectboards-x-x-storages369f8ff1c-x.__to__.amplify-projectboards-e2e-sandbox-x-storage0EC3F24A-x.mappings.json"
+}

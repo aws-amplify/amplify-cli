@@ -1,0 +1,143 @@
+## [Start] Set query expression for key **
+#set( $modelQueryExpression = {} )
+## [Start] Validate key arguments. **
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && $util.isNullOrBlank($ctx.args.ownerEmail) )
+  $util.error("When providing argument 'scoreCreatedAt' you must also provide 'ownerEmail'.", "InvalidArgumentsError")
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) )
+  #set( $sortKeyArgumentOperations = $ctx.args.scoreCreatedAt.keySet() )
+  #if( $sortKeyArgumentOperations.size() > 1 )
+    $util.error("Argument scoreCreatedAt must specify at most one key condition operation.", "InvalidArgumentsError")
+  #end
+  #foreach( $operation in $sortKeyArgumentOperations )
+    #if( $operation == "between" )
+      #if( $ctx.args.scoreCreatedAt.between.size() != 2 )
+        $util.error("Argument 'scoreCreatedAt.between' expects exactly two elements.", "InvalidArgumentsError")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.scoreCreatedAt.between[0].createdAt) && $util.isNullOrBlank($ctx.args.scoreCreatedAt.between[0].score) )
+        $util.error("When providing argument 'scoreCreatedAt.between[0].createdAt' you must also provide 'scoreCreatedAt.between[0].score'.", "InvalidArgumentsError")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.scoreCreatedAt.between[1].createdAt) && $util.isNullOrBlank($ctx.args.scoreCreatedAt.between[1].score) )
+        $util.error("When providing argument 'scoreCreatedAt.between[1].createdAt' you must also provide 'scoreCreatedAt.between[1].score'.", "InvalidArgumentsError")
+      #end
+    #else
+      #if( !$util.isNullOrBlank($ctx.args.scoreCreatedAt.get("$operation").createdAt) && $util.isNullOrBlank($ctx.args.scoreCreatedAt.get("$operation").score) )
+        $util.error("When providing argument 'scoreCreatedAt.$operation.createdAt' you must also provide 'scoreCreatedAt.$operation.score'.", "InvalidArgumentsError")
+      #end
+    #end
+  #end
+#end
+## [End] Validate key arguments. **
+#if( !$util.isNull($ctx.args.ownerEmail) )
+  #set( $modelQueryExpression.expression = "#ownerEmail = :ownerEmail" )
+  #set( $modelQueryExpression.expressionNames = {
+  "#ownerEmail": "ownerEmail"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  ":ownerEmail": {
+      "S": "$ctx.args.ownerEmail"
+  }
+} )
+#end
+## [Start] Applying Key Condition **
+#set( $sortKeyValue = "" )
+#set( $sortKeyValue2 = "" )
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.beginsWith) )
+#if( !$util.isNull($ctx.args.scoreCreatedAt.beginsWith.score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.beginsWith.score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.beginsWith.createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.beginsWith.createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.between) )
+  #if( $ctx.args.scoreCreatedAt.between.size() != 2 )
+    $util.error("Argument scoreCreatedAt.between expects exactly 2 elements.")
+  #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.between[0].score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.between[0].score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.between[0].createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.between[0].createdAt" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.between[1].score) ) #set( $sortKeyValue2 = "$ctx.args.scoreCreatedAt.between[1].score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.between[1].createdAt) ) #set( $sortKeyValue2 = "$sortKeyValue2#$ctx.args.scoreCreatedAt.between[1].createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey0", { "S": "$sortKeyValue" }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey1", { "S": "$sortKeyValue2" }))
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.eq) )
+#if( !$util.isNull($ctx.args.scoreCreatedAt.eq.score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.eq.score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.eq.createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.eq.createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey = :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.lt) )
+#if( !$util.isNull($ctx.args.scoreCreatedAt.lt.score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.lt.score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.lt.createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.lt.createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey < :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.le) )
+#if( !$util.isNull($ctx.args.scoreCreatedAt.le.score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.le.score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.le.createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.le.createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey <= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.gt) )
+#if( !$util.isNull($ctx.args.scoreCreatedAt.gt.score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.gt.score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.gt.createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.gt.createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey > :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+#if( !$util.isNull($ctx.args.scoreCreatedAt) && !$util.isNull($ctx.args.scoreCreatedAt.ge) )
+#if( !$util.isNull($ctx.args.scoreCreatedAt.ge.score) ) #set( $sortKeyValue = "$ctx.args.scoreCreatedAt.ge.score" ) #end
+#if( !$util.isNull($ctx.args.scoreCreatedAt.ge.createdAt) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.scoreCreatedAt.ge.createdAt" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey >= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "score#createdAt"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
+#end
+
+
+## [End] Applying Key Condition **
+## [End] Set query expression for key **
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $QueryRequest = {
+  "version": "2018-05-29",
+  "operation": "Query",
+  "limit": $limit,
+  "query": $modelQueryExpression,
+  "index": "byOwnerAndScore"
+} )
+#if( !$util.isNull($ctx.args.sortDirection)
+                  && $ctx.args.sortDirection == "DESC" )
+  #set( $QueryRequest.scanIndexForward = false )
+#else
+  #set( $QueryRequest.scanIndexForward = true )
+#end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  "and":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error("Unable to process the filter expression", "Unrecognized Filter")
+  #end
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove("expressionValues"))
+    #end
+    #set( $QueryRequest.filter = $filterExpression )
+  #end
+#end
+$util.toJson($QueryRequest)

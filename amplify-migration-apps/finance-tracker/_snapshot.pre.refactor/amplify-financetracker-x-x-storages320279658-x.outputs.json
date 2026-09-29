@@ -1,0 +1,11 @@
+[
+  {
+    "OutputKey": "BucketName",
+    "OutputValue": "financetrackera14ace1bd4be4b579cb608d44266aea7x-x",
+    "Description": "Bucket name for the S3 bucket"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  }
+]

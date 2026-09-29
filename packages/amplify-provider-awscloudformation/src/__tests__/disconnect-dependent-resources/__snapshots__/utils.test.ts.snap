@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generateIterativeFuncDeploymentSteps generates steps with correct pointers 1`] = `
+{
+  "deploymentSteps": [
+    {
+      "deployment": {
+        "capabilities": [],
+        "parameters": {
+          "param1": "value1",
+        },
+        "previousMetaKey": undefined,
+        "stackName": "testStackId",
+        "stackTemplatePathOrUrl": "amplify-cfn-templates/function/temp/temp-func1-cloudformation-template.json",
+        "tableNames": [],
+      },
+      "rollback": undefined,
+    },
+    {
+      "deployment": {
+        "capabilities": [],
+        "parameters": {
+          "param2": "value2",
+        },
+        "previousMetaKey": "amplify-cfn-templates/function/temp/temp-func1-deployment-meta.json",
+        "stackName": "testStackId",
+        "stackTemplatePathOrUrl": "amplify-cfn-templates/function/temp/temp-func2-cloudformation-template.json",
+        "tableNames": [],
+      },
+      "rollback": {
+        "capabilities": [],
+        "parameters": {
+          "param1": "value1",
+        },
+        "previousMetaKey": undefined,
+        "stackName": "testStackId",
+        "stackTemplatePathOrUrl": "amplify-cfn-templates/function/temp/temp-func1-cloudformation-template.json",
+        "tableNames": [],
+      },
+    },
+  ],
+  "lastMetaKey": "amplify-cfn-templates/function/temp/temp-func2-deployment-meta.json",
+}
+`;
+
+exports[`generateTempFuncCFNTemplates replaces Fn::ImportValue references with placeholder values in template 1`] = `
+{
+  "a": {
+    "b": {
+      "c": [
+        {
+          "Fn::ImportValue": undefined,
+          "Fn::Sub": "TemporaryPlaceholderValue",
+        },
+        {
+          "Fn::Join": [
+            ":",
+            {
+              "Fn::ImportValue": undefined,
+              "Fn::Sub": "TemporaryPlaceholderValue",
+            },
+          ],
+        },
+      ],
+    },
+    "d": {
+      "Fn::ImportValue": undefined,
+      "Fn::Sub": "TemporaryPlaceholderValue",
+    },
+  },
+}
+`;
+
+exports[`prependDeploymentSteps concatenates arrays and moves pointers appropriately 1`] = `
+[
+  {
+    "deployment": {
+      "previousMetaKey": undefined,
+      "stackTemplatePathOrUrl": "deploymentStep1",
+    },
+    "rollback": undefined,
+  },
+  {
+    "deployment": {
+      "previousMetaKey": "deploymentStep1MetaKey",
+      "stackTemplatePathOrUrl": "deploymentStep2",
+    },
+    "rollback": {
+      "previousMetaKey": undefined,
+      "stackTemplatePathOrUrl": "deploymentStep1",
+    },
+  },
+  {
+    "deployment": {
+      "previousMetaKey": "deploymentStep2MetaKey",
+      "stackTemplatePathOrUrl": "deploymentStep3",
+    },
+    "rollback": {
+      "previousMetaKey": "deploymentStep1MetaKey",
+      "stackTemplatePathOrUrl": "deploymentStep2",
+    },
+  },
+  {
+    "deployment": {
+      "previousMetaKey": "deploymentStep3MetaKey",
+      "stackTemplatePathOrUrl": "deploymentStep4",
+    },
+    "rollback": {
+      "previousMetaKey": "deploymentStep2MetaKey",
+      "stackTemplatePathOrUrl": "deploymentStep3",
+    },
+  },
+]
+`;

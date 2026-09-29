@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Define color variables
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No color
+
+echo "${GREEN}Running commit-msg hook${NC}"
+echo "${CYAN}Running npx --no -- commitlint --edit $1${NC}"
+npx --no -- commitlint --edit "$1"

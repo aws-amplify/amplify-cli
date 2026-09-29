@@ -1,0 +1,275 @@
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "cognitoConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ServiceQuestionsBaseResult"
+        },
+        {
+          "$ref": "#/definitions/Pick<OAuthResult,\"hostedUI\"|\"hostedUIDomainName\"|\"hostedUIProviderMeta\"|\"oAuthMetadata\">"
+        },
+        {
+          "$ref": "#/definitions/Pick<SocialProviderResult,\"authProvidersUserPool\">"
+        },
+        {
+          "$ref": "#/definitions/IdentityPoolResult"
+        },
+        {
+          "$ref": "#/definitions/PasswordPolicyResult"
+        },
+        {
+          "$ref": "#/definitions/PasswordRecoveryResult"
+        },
+        {
+          "$ref": "#/definitions/MfaResult"
+        },
+        {
+          "$ref": "#/definitions/AdminQueriesResult"
+        },
+        {
+          "$ref": "#/definitions/Triggers"
+        }
+      ]
+    }
+  },
+  "required": ["cognitoConfig"],
+  "definitions": {
+    "ServiceQuestionsBaseResult": {
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "type": "string",
+          "enum": ["Cognito"]
+        },
+        "resourceName": {
+          "type": "string"
+        },
+        "useDefault": {
+          "enum": ["default", "defaultSocial", "manual"],
+          "type": "string"
+        },
+        "updateFlow": {
+          "enum": ["callbacks", "default", "defaultSocial", "manual", "providers", "updateAdminQueries", "updateUserPoolGroups"],
+          "type": "string"
+        },
+        "requiredAttributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "authSelections": {
+          "enum": ["identityPoolAndUserPool", "identityPoolOnly", "userPoolOnly"],
+          "type": "string"
+        },
+        "userPoolName": {
+          "type": "string"
+        },
+        "usernameAttributes": {
+          "type": "array",
+          "items": {
+            "enum": ["email", "phone_number"],
+            "type": "string"
+          }
+        },
+        "userPoolGroups": {
+          "type": "boolean"
+        },
+        "userPoolGroupList": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userpoolClientRefreshTokenValidity": {
+          "type": "number"
+        },
+        "userpoolClientReadAttributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userpoolClientWriteAttributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userpoolClientSetAttributes": {
+          "type": "boolean"
+        },
+        "usernameCaseSensitive": {
+          "type": "boolean"
+        },
+        "verificationBucketName": {
+          "type": "string"
+        },
+        "resourceNameTruncated": {
+          "type": "string"
+        },
+        "sharedId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "authSelections",
+        "requiredAttributes",
+        "resourceName",
+        "serviceName",
+        "useDefault",
+        "userpoolClientReadAttributes",
+        "userpoolClientWriteAttributes"
+      ]
+    },
+    "Pick<OAuthResult,\"hostedUI\"|\"hostedUIDomainName\"|\"hostedUIProviderMeta\"|\"oAuthMetadata\">": {
+      "type": "object",
+      "properties": {
+        "hostedUI": {
+          "type": "boolean"
+        },
+        "hostedUIDomainName": {
+          "type": "string"
+        },
+        "hostedUIProviderMeta": {},
+        "oAuthMetadata": {}
+      }
+    },
+    "Pick<SocialProviderResult,\"authProvidersUserPool\">": {
+      "type": "object",
+      "properties": {
+        "authProvidersUserPool": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IdentityPoolResult": {
+      "type": "object",
+      "properties": {
+        "thirdPartyAuth": {
+          "type": "boolean"
+        },
+        "identityPoolName": {
+          "type": "string"
+        },
+        "allowUnauthenticatedIdentities": {
+          "type": "boolean"
+        },
+        "authProviders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "googleClientId": {
+          "type": "string"
+        },
+        "googleIos": {
+          "type": "string"
+        },
+        "googleAndroid": {
+          "type": "string"
+        },
+        "facebookAppId": {
+          "type": "string"
+        },
+        "amazonAppId": {
+          "type": "string"
+        },
+        "appleAppId": {
+          "type": "string"
+        },
+        "selectedParties": {
+          "type": "string"
+        },
+        "audiences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PasswordPolicyResult": {
+      "type": "object",
+      "properties": {
+        "passwordPolicyCharacters": {
+          "type": "array",
+          "items": {
+            "enum": ["Requires Lowercase", "Requires Numbers", "Requires Symbols", "Requires Uppercase"],
+            "type": "string"
+          }
+        },
+        "passwordPolicyMinLength": {
+          "type": "number"
+        }
+      }
+    },
+    "PasswordRecoveryResult": {
+      "type": "object",
+      "properties": {
+        "emailVerificationMessage": {
+          "type": "string"
+        },
+        "emailVerificationSubject": {
+          "type": "string"
+        },
+        "smsVerificationMessage": {
+          "type": "string"
+        },
+        "autoVerifiedAttributes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["autoVerifiedAttributes"]
+    },
+    "MfaResult": {
+      "type": "object",
+      "properties": {
+        "mfaConfiguration": {
+          "enum": ["OFF", "ON", "OPTIONAL"],
+          "type": "string"
+        },
+        "mfaTypes": {
+          "type": "array",
+          "items": {
+            "enum": ["SMS Text Message", "TOTP"],
+            "type": "string"
+          }
+        },
+        "smsAuthenticationMessage": {
+          "type": "string"
+        }
+      },
+      "required": ["mfaConfiguration"]
+    },
+    "AdminQueriesResult": {
+      "type": "object",
+      "properties": {
+        "adminQueries": {
+          "type": "boolean"
+        },
+        "adminQueryGroup": {
+          "type": "string"
+        }
+      }
+    },
+    "Triggers": {
+      "type": "object",
+      "properties": {
+        "triggers": {}
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

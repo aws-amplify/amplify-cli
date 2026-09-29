@@ -1,0 +1,12 @@
+{
+  "kinesisStreamName": "moodboardKinesis",
+  "kinesisStreamShardCount": 1,
+  "authRoleName": {
+    "Ref": "AuthRoleName"
+  },
+  "unauthRoleName": {
+    "Ref": "UnauthRoleName"
+  },
+  "authPolicyName": "kinesis_amplify_bca5ce95",
+  "unauthPolicyName": "kinesis_amplify_bca5ce95"
+}

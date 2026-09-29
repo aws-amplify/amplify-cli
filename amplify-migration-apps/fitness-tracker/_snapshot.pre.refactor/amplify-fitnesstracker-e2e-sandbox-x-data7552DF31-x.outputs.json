@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931datalognutritiongen2xlambda0DEE3FECRef",
+    "OutputValue": "lognutrition-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPIDefaultApiKey120A508DApiKey",
+    "OutputValue": "da2-fakeapikey00000000000000"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPI42E8974CGraphQLUrl",
+    "OutputValue": "https://vnuancpb5zgxnet2pfcxgaez64.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931datalognutritiongen2xlambda0DEE3FECArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-x"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataGraphQLAPI42E8974CApiId",
+    "OutputValue": "2jo7dgnljncqdcy2v3snkmtnbm"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackere2esandboxde9d3c8931dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB2060D0D3DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstra2604261-amplifydataamplifycodege-4ywzi9wk0kxn"
+  }
+]

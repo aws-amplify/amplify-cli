@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "importedresources",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authimportedresources2c7c1c40",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

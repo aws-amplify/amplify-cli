@@ -1,0 +1,11 @@
+[
+  {
+    "OutputKey": "BucketName",
+    "OutputValue": "discus-avatarsx-x",
+    "Description": "Bucket name for the S3 bucket"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  }
+]

@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "importedresources",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authimportedresources2c7c1c40",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-importedresources-main-8a9e9-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/a4738ed9c7ff62e5dda2f6697e1457a141ba078d"
+}

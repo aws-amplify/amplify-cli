@@ -1,0 +1,65 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-authfinancetracker331811e6-x",
+          "LogicalResourceId": "UserPool"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-authfinancetracker331811e6-x",
+          "LogicalResourceId": "UserPoolClientWeb"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-authfinancetracker331811e6-x",
+          "LogicalResourceId": "UserPoolClient"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-authfinancetracker331811e6-x",
+          "LogicalResourceId": "IdentityPool"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-financetracker-x-x-authfinancetracker331811e6-x",
+          "LogicalResourceId": "IdentityPoolRoleMap"
+        },
+        "Destination": {
+          "StackName": "amplify-financetracker-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+        }
+      }
+    ]
+  }
+}

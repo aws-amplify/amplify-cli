@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`check when lambdaLayer present and resourceSetting removed 1`] = `
+[
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732f46becd3",
+  },
+]
+`;
+
+exports[`check when lambdaLayer present and resourceSetting selected 1`] = `
+[
+  {
+    "attributes": [
+      "mockUserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "mockauth",
+  },
+  {
+    "attributes": [
+      "mockArn",
+    ],
+    "category": "api",
+    "resourceName": "mockapi",
+  },
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732f46becd3",
+  },
+]
+`;
+
+exports[`check when lambdaLayer removed and resourceSetting present 1`] = `
+[
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  {
+    "attributes": [
+      "UserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "i573239366e8a",
+  },
+]
+`;
+
+exports[`check when lambdaLayer removed and resourceSetting present 2`] = `
+[
+  {
+    "attributes": [
+      "UserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "i573239366e8a",
+  },
+]
+`;
+
+exports[`check when lambdaLayer selected and resourceSetting present 1`] = `
+[
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  {
+    "attributes": [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732f46becd3",
+  },
+  {
+    "attributes": [
+      "UserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "i573239366e8a",
+  },
+]
+`;

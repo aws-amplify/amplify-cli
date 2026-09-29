@@ -1,0 +1,28 @@
+{
+  "name": "amplify-headless-interface",
+  "version": "1.17.8",
+  "description": "interfaces for amplify headless mode payloads",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "generateSchemas": "ts-node ./scripts/generateSchemas.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "amplify",
+    "headless"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.4.0",
+    "typescript-json-schema": "~0.52.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

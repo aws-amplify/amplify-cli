@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttCommentDataSourceName",
+    "OutputValue": "CommentTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "ygivvj3x3fgkjcyo2xd4oyyhuu:GetAtt:CommentDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttCommentTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x/stream/2026-04-26T23:02:24.761",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "ygivvj3x3fgkjcyo2xd4oyyhuu:GetAtt:CommentTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackCommentCommentDataSourceA0E54655Name",
+    "OutputValue": "CommentTable"
+  },
+  {
+    "OutputKey": "transformerrootstackCommentCommentTable5427FDE2Ref",
+    "OutputValue": "Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x"
+  },
+  {
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "Comment-ygivvj3x3fgkjcyo2xd4oyyhuu-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "ygivvj3x3fgkjcyo2xd4oyyhuu:GetAtt:CommentTable:Name"
+  }
+]

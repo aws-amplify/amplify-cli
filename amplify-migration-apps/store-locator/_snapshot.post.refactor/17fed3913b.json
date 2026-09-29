@@ -1,0 +1,308 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "amplifyAuthstoreLocatorAdminGroup85B78B77": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "storeLocatorAdmin",
+        "Precedence": 0,
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-storelocat2605021-amplifyAuthstoreLocatorAd-nDuDBm76X6DS",
+        "UserPoolId": "us-east-1_bbbeDUwsS"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/storeLocatorAdminGroup"
+      }
+    },
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": false
+        },
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationSubject": "Your verification code",
+        "LambdaConfig": {
+          "PostConfirmation": "arn:aws:lambda:us-east-1:123456789012:function:storelocator41a9495f41a9495fPostConfirmation-gen2-x"
+        },
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 8,
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false,
+            "TemporaryPasswordValidityDays": 7
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolTags": {
+          "amplify:deployment-type": "sandbox",
+          "amplify:friendly-name": "amplifyAuth",
+          "created-by": "amplify"
+        },
+        "UsernameAttributes": [
+          "email"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        },
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "Your verification code is {####}",
+          "EmailSubject": "Your verification code",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/UserPool/Resource"
+      }
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlowsUserPoolClient": false,
+        "AuthSessionValidity": 3,
+        "EnablePropagateAdditionalUserContextData": false,
+        "EnableTokenRevocation": true,
+        "GenerateSecret": false,
+        "RefreshTokenValidity": 144000,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "minutes"
+        },
+        "UserPoolId": "us-east-1_bbbeDUwsS"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+      }
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "ExplicitAuthFlows": [
+          "ALLOW_CUSTOM_AUTH",
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "UserPoolId": "us-east-1_bbbeDUwsS"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/UserPoolAppClient/Resource"
+      }
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": true,
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "65o70td2glfh3ovn3vf9krh3fj",
+            "ProviderName": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_bbbeDUwsS"
+                ]
+              ]
+            }
+          },
+          {
+            "ClientId": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x/amplifyAuthUserPoolNativeAppClient79534448",
+            "ProviderName": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_bbbeDUwsS"
+                ]
+              ]
+            }
+          }
+        ],
+        "IdentityPoolTags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "SupportedLoginProviders": {}
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/IdentityPool"
+      }
+    },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:0231d61d-ac0a-4473-88a9-cd5fd610b573",
+        "RoleMappings": {
+          "UserPoolWebClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/",
+                  "us-east-1_bbbeDUwsS",
+                  ":",
+                  "65o70td2glfh3ovn3vf9krh3fj"
+                ]
+              ]
+            },
+            "Type": "Token"
+          }
+        },
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2605021-amplifyAuthunauthenticate-QRaUthOe2FRU",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-storelocat2605021-amplifyAuthauthenticatedU-36b3d2WYDvdP"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-e2e-sandbox-x/auth/amplifyAuth/IdentityPoolRoleAttachment"
+      }
+    }
+  },
+  "Outputs": {},
+  "Metadata": {
+    "ForwardMappings": [
+      {
+        "Source": {
+          "StackName": "amplify-storelocator-x-x-authuserPoolGroups-x",
+          "LogicalResourceId": "storeLocatorAdminGroup"
+        },
+        "Destination": {
+          "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthstoreLocatorAdminGroup85B78B77"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x",
+          "LogicalResourceId": "UserPool"
+        },
+        "Destination": {
+          "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x",
+          "LogicalResourceId": "UserPoolClientWeb"
+        },
+        "Destination": {
+          "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x",
+          "LogicalResourceId": "UserPoolClient"
+        },
+        "Destination": {
+          "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x",
+          "LogicalResourceId": "IdentityPool"
+        },
+        "Destination": {
+          "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+        }
+      },
+      {
+        "Source": {
+          "StackName": "amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x",
+          "LogicalResourceId": "IdentityPoolRoleMap"
+        },
+        "Destination": {
+          "StackName": "amplify-storelocator-e2e-sandbox-x-auth179371D7-x",
+          "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+        }
+      }
+    ]
+  }
+}

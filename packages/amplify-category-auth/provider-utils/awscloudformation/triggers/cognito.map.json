@@ -1,0 +1,30 @@
+{
+  "CreateAuthChallenge": {
+    "name": "Create Auth Challenge"
+  },
+  "CustomMessage": {
+    "name": "Custom Message"
+  },
+  "DefineAuthChallenge": {
+    "name": "Define Auth Challenge"
+  },
+  "PostAuthentication": {
+    "name": "Post Authentication"
+  },
+  "PostConfirmation": {
+    "name": "Post Confirmation"
+  },
+  "PreAuthentication": {
+    "name": "Pre Authentication"
+  },
+  "PreSignup": {
+    "name": "Pre Sign-up"
+  },
+  "VerifyAuthChallengeResponse": {
+    "name": "Verify Auth Challenge Response"
+  },
+  "PreTokenGeneration": {
+    "name": "Pre Token Generation"
+  },
+  "URL": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html"
+}

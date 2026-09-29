@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-backendonly-x-x-storages3c31471c3-x",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonly-e2e-sandbox-x-storage0EC3F24A-x",
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d016xgen2xBucket08BB617F"
+    }
+  }
+]

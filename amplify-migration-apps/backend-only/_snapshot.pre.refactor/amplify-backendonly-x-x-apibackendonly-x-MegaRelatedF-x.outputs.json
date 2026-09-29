@@ -1,0 +1,32 @@
+[
+  {
+    "OutputKey": "GetAttMegaRelatedFDataSourceName",
+    "OutputValue": "MegaRelatedFTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaRelatedFDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaRelatedFMegaRelatedFTable5BAA6D21Ref",
+    "OutputValue": "MegaRelatedF-swnmmzmw75hwtclcpxwndu4aia-x"
+  },
+  {
+    "OutputKey": "GetAttMegaRelatedFTableName",
+    "OutputValue": "MegaRelatedF-swnmmzmw75hwtclcpxwndu4aia-x",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaRelatedFTable:Name"
+  },
+  {
+    "OutputKey": "GetAttMegaRelatedFTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/MegaRelatedF-swnmmzmw75hwtclcpxwndu4aia-x/stream/2026-05-15T12:49:50.881",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "swnmmzmw75hwtclcpxwndu4aia:GetAtt:MegaRelatedFTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaRelatedFMegaRelatedFDataSourceD06EAAB6Name",
+    "OutputValue": "MegaRelatedFTable"
+  },
+  {
+    "OutputKey": "transformerrootstackMegaRelatedFMutationcreateMegaRelatedFauth0FunctionMutationcreateMegaRelatedFauth0FunctionAppSyncFunction3F48B263FunctionId",
+    "OutputValue": "ipz7lfbtzbbd5c7yg66ijdc22i"
+  }
+]

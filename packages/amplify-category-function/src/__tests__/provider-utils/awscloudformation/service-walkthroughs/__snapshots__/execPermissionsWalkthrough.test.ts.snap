@@ -1,0 +1,254 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`askExecRolePermissionsQuestions returns permissions for exists function 1`] = `
+{
+  "categoryPolicies": [
+    {
+      "Action": [
+        "lambda:Get*",
+        "lambda:List*",
+        "lambda:Invoke*",
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:lambda:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":function:",
+              {
+                "Ref": "functionlambda2Name",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ],
+  "dependsOn": [
+    {
+      "attributes": [
+        "Name",
+      ],
+      "category": "function",
+      "resourceName": "lambda2",
+    },
+  ],
+  "environmentMap": {
+    "FUNCTION_LAMBDA2_NAME": {
+      "Ref": "functionlambda2Name",
+    },
+  },
+  "mutableParametersState": {
+    "permissions": {
+      "function": {
+        "lambda2": [
+          "read",
+        ],
+      },
+    },
+  },
+  "topLevelComment": "/* Amplify Params - DO NOT EDIT
+	FUNCTION_LAMBDA2_NAME
+Amplify Params - DO NOT EDIT */",
+}
+`;
+
+exports[`askExecRolePermissionsQuestions returns permissions for function that be about to add right 1`] = `
+{
+  "categoryPolicies": [
+    {
+      "Action": [
+        "lambda:Get*",
+        "lambda:List*",
+        "lambda:Invoke*",
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:lambda:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":function:",
+              {
+                "Ref": "functionlambda2Name",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ],
+  "dependsOn": [
+    {
+      "attributes": [
+        "Name",
+      ],
+      "category": "function",
+      "resourceName": "lambda2",
+    },
+  ],
+  "environmentMap": {
+    "FUNCTION_LAMBDA2_NAME": {
+      "Ref": "functionlambda2Name",
+    },
+  },
+  "mutableParametersState": {
+    "permissions": {
+      "function": {
+        "lambda2": [
+          "read",
+        ],
+      },
+    },
+  },
+  "topLevelComment": "/* Amplify Params - DO NOT EDIT
+	FUNCTION_LAMBDA2_NAME
+Amplify Params - DO NOT EDIT */",
+}
+`;
+
+exports[`check CFN resources 1`] = `
+{
+  "cfnResources": [
+    "apiattr1",
+    "apiattr2",
+  ],
+  "permissionPolicies": "randomPermissionsforapi",
+}
+`;
+
+exports[`check CFN resources for storage 1`] = `
+{
+  "cfnResources": [
+    {
+      "_cfJoinComponentTableArn": [
+        "arn:aws:dynamodb:",
+        {
+          "Ref": "aws_region",
+        },
+        ":",
+        {
+          "Ref": "aws_accountId",
+        },
+        ":table/",
+        {
+          "Fn::ImportValue": {
+            "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+          },
+        },
+      ],
+      "_cfJoinComponentTableName": {
+        "Fn::ImportValue": {
+          "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+        },
+      },
+      "_modelName": "storageattr1@model(appsync)",
+      "attributes": [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "needsAdditionalDynamoDBResourceProps": true,
+      "resourceName": "mock_api",
+    },
+    {
+      "_cfJoinComponentTableArn": [
+        "arn:aws:dynamodb:",
+        {
+          "Ref": "aws_region",
+        },
+        ":",
+        {
+          "Ref": "aws_accountId",
+        },
+        ":table/",
+        {
+          "Fn::ImportValue": {
+            "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+          },
+        },
+      ],
+      "_cfJoinComponentTableName": {
+        "Fn::ImportValue": {
+          "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+        },
+      },
+      "_modelName": "storageattr2@model(appsync)",
+      "attributes": [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "needsAdditionalDynamoDBResourceProps": true,
+      "resourceName": "mock_api",
+    },
+  ],
+  "permissionPolicies": "randomPermissionsforapiandstorage",
+}
+`;
+
+exports[`env resources for CFN for DDB table and api 1`] = `
+{
+  "dependsOn": [
+    {
+      "attributes": [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "resourceName": "mock_api",
+    },
+  ],
+  "envVarStringList": "API_MOCK_API_GRAPHQLAPIIDOUTPUT",
+  "environmentMap": {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": {
+      "Ref": "apimock_apiGraphQLAPIIdOutput",
+    },
+  },
+}
+`;
+
+exports[`env resources for CFN for auth and storage for api 1`] = `
+{
+  "dependsOn": [
+    {
+      "attributes": [
+        "randombucket",
+      ],
+      "category": "storage",
+      "resourceName": "mock_api",
+    },
+    {
+      "attributes": [
+        "userPoolId",
+      ],
+      "category": "auth",
+      "resourceName": "mock_api",
+    },
+  ],
+  "envVarStringList": "AUTH_MOCK_API_USERPOOLID
+	STORAGE_MOCK_API_RANDOMBUCKET",
+  "environmentMap": {
+    "AUTH_MOCK_API_USERPOOLID": {
+      "Ref": "authmock_apiuserPoolId",
+    },
+    "STORAGE_MOCK_API_RANDOMBUCKET": {
+      "Ref": "storagemock_apirandombucket",
+    },
+  },
+}
+`;

@@ -1,0 +1,22 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
+    CI: true
+    CIRCLECI: true
+    IS_AMPLIFY_CI: true
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _amplifyInstallTestSetup
+      # limit memory for new processes to 1GB
+      # this is to make sure that install can work on small VMs
+      # i.e. not buffer content in memory while installing binary
+      - ulimit -Sv 1000000
+      - npm install -g @aws-amplify/cli
+      - source .circleci/local_publish_helpers_codebuild.sh && unsetNpmRegistryUrl
+      - amplify version
+artifacts:
+  files:
+    - 'shared-scripts.sh'

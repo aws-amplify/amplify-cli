@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "financetracker",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authfinancetracker331811e6",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-financetracker-x-x-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/a4cb1f0ff73cb98bbf900bb096b1f227a7c26dc0"
+}

@@ -1,0 +1,326 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.3.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "identityPoolName": {
+      "Type": "String"
+    },
+    "allowUnauthenticatedIdentities": {
+      "Type": "String"
+    },
+    "resourceNameTruncated": {
+      "Type": "String"
+    },
+    "userPoolName": {
+      "Type": "String"
+    },
+    "autoVerifiedAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "mfaConfiguration": {
+      "Type": "String"
+    },
+    "mfaTypes": {
+      "Type": "CommaDelimitedList"
+    },
+    "smsAuthenticationMessage": {
+      "Type": "String"
+    },
+    "smsVerificationMessage": {
+      "Type": "String"
+    },
+    "emailVerificationSubject": {
+      "Type": "String"
+    },
+    "emailVerificationMessage": {
+      "Type": "String"
+    },
+    "defaultPasswordPolicy": {
+      "Type": "String"
+    },
+    "passwordPolicyMinLength": {
+      "Type": "String"
+    },
+    "passwordPolicyCharacters": {
+      "Type": "CommaDelimitedList"
+    },
+    "requiredAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "aliasAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientGenerateSecret": {
+      "Type": "String"
+    },
+    "userpoolClientRefreshTokenValidity": {
+      "Type": "String"
+    },
+    "userpoolClientWriteAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientReadAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientLambdaRole": {
+      "Type": "String"
+    },
+    "userpoolClientSetAttributes": {
+      "Type": "String"
+    },
+    "sharedId": {
+      "Type": "String"
+    },
+    "resourceName": {
+      "Type": "String"
+    },
+    "authSelections": {
+      "Type": "String"
+    },
+    "useDefault": {
+      "Type": "String"
+    },
+    "usernameAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userPoolGroupList": {
+      "Type": "CommaDelimitedList"
+    },
+    "serviceName": {
+      "Type": "String"
+    },
+    "usernameCaseSensitive": {
+      "Type": "String"
+    },
+    "useEnabledMfas": {
+      "Type": "String"
+    },
+    "authRoleArn": {
+      "Type": "String"
+    },
+    "unauthRoleArn": {
+      "Type": "String"
+    },
+    "breakCircularDependency": {
+      "Type": "String"
+    },
+    "dependsOn": {
+      "Type": "CommaDelimitedList"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "UserPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationSubject": "Your verification code",
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": "8",
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "productcatalog90174ac4_userpool_90174ac4",
+              "-",
+              "x"
+            ]
+          ]
+        },
+        "UsernameAttributes": [
+          "email"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "UserPoolClientWeb": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "produc90174ac4_app_clientWeb",
+        "RefreshTokenValidity": "30",
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_klJXJrZWx"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "UserPoolClient": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "produc90174ac4_app_client",
+        "GenerateSecret": "false",
+        "RefreshTokenValidity": "30",
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_klJXJrZWx"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "UserPoolClientRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "upClientLambdaRole90174ac4",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-productcatalog-x-x-authproductcatalog90174ac4-x"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "x"
+            ]
+          ]
+        }
+      }
+    },
+    "IdentityPool": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": "false",
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "3puvqnlfeamqdj6isivfsbe45u",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_klJXJrZWx"
+                }
+              ]
+            }
+          },
+          {
+            "ClientId": "hnnbu1vjentdirodp3bd1t907",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_klJXJrZWx"
+                }
+              ]
+            }
+          }
+        ],
+        "IdentityPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "productcatalog90174ac4_identitypool_90174ac4__",
+              "x"
+            ]
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "IdentityPoolRoleMap": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:c03019f2-a6c5-4d5d-9e0d-e4077c08d534",
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-x-x-unauthRole",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-x-x-authRole"
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    }
+  },
+  "Outputs": {
+    "IdentityPoolId": {
+      "Description": "Id for the identity pool",
+      "Value": "us-east-1:c03019f2-a6c5-4d5d-9e0d-e4077c08d534"
+    },
+    "IdentityPoolName": {
+      "Value": "productcatalog90174ac4_identitypool_90174ac4__x"
+    },
+    "UserPoolId": {
+      "Description": "Id for the user pool",
+      "Value": "us-east-1_klJXJrZWx"
+    },
+    "UserPoolArn": {
+      "Description": "Arn for the user pool",
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_klJXJrZWx"
+    },
+    "UserPoolName": {
+      "Value": "productcatalog90174ac4_userpool_90174ac4"
+    },
+    "AppClientIDWeb": {
+      "Description": "The user pool app client id for web",
+      "Value": "hnnbu1vjentdirodp3bd1t907"
+    },
+    "AppClientID": {
+      "Description": "The user pool app client id",
+      "Value": "3puvqnlfeamqdj6isivfsbe45u"
+    }
+  }
+}

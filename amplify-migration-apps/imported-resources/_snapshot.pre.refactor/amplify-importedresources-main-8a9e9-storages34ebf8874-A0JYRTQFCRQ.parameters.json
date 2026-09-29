@@ -1,0 +1,86 @@
+[
+  {
+    "ParameterKey": "s3PermissionsGuestPublic",
+    "ParameterValue": "s3:GetObject"
+  },
+  {
+    "ParameterKey": "bucketName",
+    "ParameterValue": "importedresources8c81d8d7ede741f3b102b3e1686abe"
+  },
+  {
+    "ParameterKey": "s3PublicPolicy",
+    "ParameterValue": "Public_policy_4ebf8874"
+  },
+  {
+    "ParameterKey": "AuthenticatedAllowList",
+    "ParameterValue": "ALLOW"
+  },
+  {
+    "ParameterKey": "unauthRoleName",
+    "ParameterValue": "importedresources-unauth-role"
+  },
+  {
+    "ParameterKey": "s3PrivatePolicy",
+    "ParameterValue": "Private_policy_4ebf8874"
+  },
+  {
+    "ParameterKey": "selectedGuestPermissions",
+    "ParameterValue": "s3:GetObject,s3:ListBucket"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedPublic",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedPrivate",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedUploads",
+    "ParameterValue": "s3:PutObject"
+  },
+  {
+    "ParameterKey": "s3UploadsPolicy",
+    "ParameterValue": "Uploads_policy_4ebf8874"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "unauthPolicyName",
+    "ParameterValue": "s3_amplify_4ebf8874"
+  },
+  {
+    "ParameterKey": "authRoleName",
+    "ParameterValue": "importedresources-auth-role"
+  },
+  {
+    "ParameterKey": "GuestAllowList",
+    "ParameterValue": "ALLOW"
+  },
+  {
+    "ParameterKey": "authPolicyName",
+    "ParameterValue": "s3_amplify_4ebf8874"
+  },
+  {
+    "ParameterKey": "s3ProtectedPolicy",
+    "ParameterValue": "Protected_policy_4ebf8874"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedProtected",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsGuestUploads",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "s3ReadPolicy",
+    "ParameterValue": "read_policy_4ebf8874"
+  },
+  {
+    "ParameterKey": "selectedAuthenticatedPermissions",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject"
+  }
+]

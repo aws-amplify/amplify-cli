@@ -1,0 +1,62 @@
+[
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CsocialProviders",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CverificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthCognitoDomain",
+    "OutputValue": ".auth.us-east-1.amazoncognito.com"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CallowUnauthenticatedIdentities",
+    "OutputValue": "true"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthResponseType",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthScope",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthClientId",
+    "OutputValue": "2oi4chvjmec9shclb000688s9a"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignIn",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CmfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CoauthRedirectSignOut",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CusernameAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CpasswordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "amplifyimportedresourcesgen2mainbranch908544b6ddauthAmplifyRefAuthCustomResource4124D30CsignupAttributes",
+    "OutputValue": "[\"sub\",\"email\"]"
+  }
+]

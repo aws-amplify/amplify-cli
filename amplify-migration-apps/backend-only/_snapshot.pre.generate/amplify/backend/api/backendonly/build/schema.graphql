@@ -1,0 +1,1481 @@
+type QuoteResponse {
+  message: String!
+  quote: String!
+  author: String!
+  timestamp: String!
+  totalQuotes: Int!
+}
+
+type Query {
+  getRandomQuote: QuoteResponse
+  getProject(id: ID!): Project @aws_api_key @aws_cognito_user_pools
+  listProjects(filter: ModelProjectFilterInput, limit: Int, nextToken: String): ModelProjectConnection @aws_api_key @aws_cognito_user_pools
+  getTodo(id: ID!): Todo @aws_api_key @aws_cognito_user_pools
+  listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection @aws_api_key @aws_cognito_user_pools
+  getMegaModel(id: ID!): MegaModel @aws_api_key @aws_cognito_user_pools
+  listMegaModels(filter: ModelMegaModelFilterInput, limit: Int, nextToken: String): ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools
+  megaModelsByStatusAndCreatedAtAndPriority(status: ProjectStatus!, createdAtPriority: ModelMegaModelByStatusAndCreatedAtCompositeKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMegaModelFilterInput, limit: Int, nextToken: String): ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools
+  megaModelsByPriorityAndDeadlineAndStatus(priority: Priority!, deadlineStatus: ModelMegaModelByPriorityAndDeadlineCompositeKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMegaModelFilterInput, limit: Int, nextToken: String): ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools
+  megaModelsByCategoryAndTitleAndScore(category: Category!, titleScore: ModelMegaModelByCategoryAndTitleCompositeKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMegaModelFilterInput, limit: Int, nextToken: String): ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools
+  megaModelsByOwnerEmailAndScoreAndCreatedAt(ownerEmail: AWSEmail!, scoreCreatedAt: ModelMegaModelByOwnerAndScoreCompositeKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMegaModelFilterInput, limit: Int, nextToken: String): ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools
+  megaModelsByRegionAndUpdatedAtAndCategory(region: String!, updatedAtCategory: ModelMegaModelByRegionAndUpdatedAtCompositeKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMegaModelFilterInput, limit: Int, nextToken: String): ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools
+  getMegaChildA(id: ID!): MegaChildA @aws_api_key @aws_cognito_user_pools
+  listMegaChildAS(filter: ModelMegaChildAFilterInput, limit: Int, nextToken: String): ModelMegaChildAConnection @aws_api_key @aws_cognito_user_pools
+  megaChildASByMegaModelID(megaModelID: ID!, sortDirection: ModelSortDirection, filter: ModelMegaChildAFilterInput, limit: Int, nextToken: String): ModelMegaChildAConnection @aws_api_key @aws_cognito_user_pools
+  getMegaChildB(id: ID!): MegaChildB @aws_api_key @aws_cognito_user_pools
+  listMegaChildBS(filter: ModelMegaChildBFilterInput, limit: Int, nextToken: String): ModelMegaChildBConnection @aws_api_key @aws_cognito_user_pools
+  megaChildBSByMegaModelID(megaModelID: ID!, sortDirection: ModelSortDirection, filter: ModelMegaChildBFilterInput, limit: Int, nextToken: String): ModelMegaChildBConnection @aws_api_key @aws_cognito_user_pools
+  getMegaChildC(id: ID!): MegaChildC @aws_api_key @aws_cognito_user_pools
+  listMegaChildCS(filter: ModelMegaChildCFilterInput, limit: Int, nextToken: String): ModelMegaChildCConnection @aws_api_key @aws_cognito_user_pools
+  megaChildCSByMegaModelID(megaModelID: ID!, sortDirection: ModelSortDirection, filter: ModelMegaChildCFilterInput, limit: Int, nextToken: String): ModelMegaChildCConnection @aws_api_key @aws_cognito_user_pools
+  getMegaChildD(id: ID!): MegaChildD @aws_api_key @aws_cognito_user_pools
+  listMegaChildDS(filter: ModelMegaChildDFilterInput, limit: Int, nextToken: String): ModelMegaChildDConnection @aws_api_key @aws_cognito_user_pools
+  megaChildDSByMegaModelID(megaModelID: ID!, sortDirection: ModelSortDirection, filter: ModelMegaChildDFilterInput, limit: Int, nextToken: String): ModelMegaChildDConnection @aws_api_key @aws_cognito_user_pools
+  getMegaChildE(id: ID!): MegaChildE @aws_api_key @aws_cognito_user_pools
+  listMegaChildES(filter: ModelMegaChildEFilterInput, limit: Int, nextToken: String): ModelMegaChildEConnection @aws_api_key @aws_cognito_user_pools
+  megaChildESByMegaModelID(megaModelID: ID!, sortDirection: ModelSortDirection, filter: ModelMegaChildEFilterInput, limit: Int, nextToken: String): ModelMegaChildEConnection @aws_api_key @aws_cognito_user_pools
+  getMegaRelatedF(id: ID!): MegaRelatedF @aws_api_key @aws_cognito_user_pools
+  listMegaRelatedFS(filter: ModelMegaRelatedFFilterInput, limit: Int, nextToken: String): ModelMegaRelatedFConnection @aws_api_key @aws_cognito_user_pools
+  getMegaRelatedG(id: ID!): MegaRelatedG @aws_api_key @aws_cognito_user_pools
+  listMegaRelatedGS(filter: ModelMegaRelatedGFilterInput, limit: Int, nextToken: String): ModelMegaRelatedGConnection @aws_api_key @aws_cognito_user_pools
+  getMegaRelatedH(id: ID!): MegaRelatedH @aws_api_key @aws_cognito_user_pools
+  listMegaRelatedHS(filter: ModelMegaRelatedHFilterInput, limit: Int, nextToken: String): ModelMegaRelatedHConnection @aws_api_key @aws_cognito_user_pools
+  getMegaRelatedI(id: ID!): MegaRelatedI @aws_api_key @aws_cognito_user_pools
+  listMegaRelatedIS(filter: ModelMegaRelatedIFilterInput, limit: Int, nextToken: String): ModelMegaRelatedIConnection @aws_api_key @aws_cognito_user_pools
+  getMegaRelatedJ(id: ID!): MegaRelatedJ @aws_api_key @aws_cognito_user_pools
+  listMegaRelatedJS(filter: ModelMegaRelatedJFilterInput, limit: Int, nextToken: String): ModelMegaRelatedJConnection @aws_api_key @aws_cognito_user_pools
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+type Project @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  status: ProjectStatus!
+  deadline: AWSDateTime
+  color: String
+  todos(filter: ModelTodoFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelTodoConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Todo @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  name: String!
+  description: String
+  images: [String]
+  projectID: ID
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  projectTodosId: ID
+  owner: String
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Category {
+  GENERAL
+  TECHNICAL
+  BUSINESS
+  SUPPORT
+  MARKETING
+}
+
+type Address @aws_cognito_user_pools @aws_api_key {
+  street: String
+  city: String
+  state: String
+  zip: String
+  country: String
+}
+
+type Metadata @aws_cognito_user_pools @aws_api_key {
+  key: String
+  value: String
+  timestamp: AWSDateTime
+}
+
+type Coordinates @aws_cognito_user_pools @aws_api_key {
+  latitude: Float
+  longitude: Float
+  altitude: Float
+}
+
+type MegaModel @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  status: ProjectStatus!
+  priority: Priority!
+  category: Category!
+  score: Int
+  rating: Float
+  isActive: Boolean
+  deadline: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  startDate: AWSDate
+  endDate: AWSDate
+  duration: Int
+  ownerEmail: AWSEmail
+  websiteUrl: AWSURL
+  phoneNumber: AWSPhone
+  region: String
+  tags: [String]
+  version: Int
+  weight: Float
+  address: Address
+  metadata: Metadata
+  coordinates: Coordinates
+  notes: [String]
+  config: AWSJSON
+  ipAddress: AWSIPAddress
+  timestamp: AWSTimestamp
+  megaChildAItems(filter: ModelMegaChildAFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMegaChildAConnection
+  megaChildBItems(filter: ModelMegaChildBFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMegaChildBConnection
+  megaChildCItems(filter: ModelMegaChildCFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMegaChildCConnection
+  megaChildDItems(filter: ModelMegaChildDFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMegaChildDConnection
+  megaChildEItems(filter: ModelMegaChildEFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMegaChildEConnection
+  relatedF: MegaRelatedF
+  relatedG: MegaRelatedG
+  relatedH: MegaRelatedH
+  relatedI: MegaRelatedI
+  relatedJ: MegaRelatedJ
+  megaModelRelatedFId: ID
+  megaModelRelatedGId: ID
+  megaModelRelatedHId: ID
+  megaModelRelatedIId: ID
+  megaModelRelatedJId: ID
+  owner: String
+}
+
+type MegaChildA @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  megaModelID: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaChildB @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  megaModelID: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaChildC @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  megaModelID: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaChildD @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  megaModelID: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaChildE @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  megaModelID: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaRelatedF @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaRelatedG @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaRelatedH @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaRelatedI @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type MegaRelatedJ @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  title: String!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelProjectConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Project]!
+  nextToken: String
+}
+
+input ModelProjectStatusInput {
+  eq: ProjectStatus
+  ne: ProjectStatus
+}
+
+input ModelProjectFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  status: ModelProjectStatusInput
+  deadline: ModelStringInput
+  color: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelProjectFilterInput]
+  or: [ModelProjectFilterInput]
+  not: ModelProjectFilterInput
+  owner: ModelStringInput
+}
+
+input ModelProjectConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  status: ModelProjectStatusInput
+  deadline: ModelStringInput
+  color: ModelStringInput
+  and: [ModelProjectConditionInput]
+  or: [ModelProjectConditionInput]
+  not: ModelProjectConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateProjectInput {
+  id: ID
+  title: String!
+  description: String
+  status: ProjectStatus!
+  deadline: AWSDateTime
+  color: String
+}
+
+input UpdateProjectInput {
+  id: ID!
+  title: String
+  description: String
+  status: ProjectStatus
+  deadline: AWSDateTime
+  color: String
+}
+
+input DeleteProjectInput {
+  id: ID!
+}
+
+type Mutation {
+  createProject(input: CreateProjectInput!, condition: ModelProjectConditionInput): Project @aws_cognito_user_pools
+  updateProject(input: UpdateProjectInput!, condition: ModelProjectConditionInput): Project @aws_cognito_user_pools
+  deleteProject(input: DeleteProjectInput!, condition: ModelProjectConditionInput): Project @aws_cognito_user_pools
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_cognito_user_pools
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_cognito_user_pools
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo @aws_cognito_user_pools
+  createMegaModel(input: CreateMegaModelInput!, condition: ModelMegaModelConditionInput): MegaModel @aws_cognito_user_pools
+  updateMegaModel(input: UpdateMegaModelInput!, condition: ModelMegaModelConditionInput): MegaModel @aws_cognito_user_pools
+  deleteMegaModel(input: DeleteMegaModelInput!, condition: ModelMegaModelConditionInput): MegaModel @aws_cognito_user_pools
+  createMegaChildA(input: CreateMegaChildAInput!, condition: ModelMegaChildAConditionInput): MegaChildA @aws_cognito_user_pools
+  updateMegaChildA(input: UpdateMegaChildAInput!, condition: ModelMegaChildAConditionInput): MegaChildA @aws_cognito_user_pools
+  deleteMegaChildA(input: DeleteMegaChildAInput!, condition: ModelMegaChildAConditionInput): MegaChildA @aws_cognito_user_pools
+  createMegaChildB(input: CreateMegaChildBInput!, condition: ModelMegaChildBConditionInput): MegaChildB @aws_cognito_user_pools
+  updateMegaChildB(input: UpdateMegaChildBInput!, condition: ModelMegaChildBConditionInput): MegaChildB @aws_cognito_user_pools
+  deleteMegaChildB(input: DeleteMegaChildBInput!, condition: ModelMegaChildBConditionInput): MegaChildB @aws_cognito_user_pools
+  createMegaChildC(input: CreateMegaChildCInput!, condition: ModelMegaChildCConditionInput): MegaChildC @aws_cognito_user_pools
+  updateMegaChildC(input: UpdateMegaChildCInput!, condition: ModelMegaChildCConditionInput): MegaChildC @aws_cognito_user_pools
+  deleteMegaChildC(input: DeleteMegaChildCInput!, condition: ModelMegaChildCConditionInput): MegaChildC @aws_cognito_user_pools
+  createMegaChildD(input: CreateMegaChildDInput!, condition: ModelMegaChildDConditionInput): MegaChildD @aws_cognito_user_pools
+  updateMegaChildD(input: UpdateMegaChildDInput!, condition: ModelMegaChildDConditionInput): MegaChildD @aws_cognito_user_pools
+  deleteMegaChildD(input: DeleteMegaChildDInput!, condition: ModelMegaChildDConditionInput): MegaChildD @aws_cognito_user_pools
+  createMegaChildE(input: CreateMegaChildEInput!, condition: ModelMegaChildEConditionInput): MegaChildE @aws_cognito_user_pools
+  updateMegaChildE(input: UpdateMegaChildEInput!, condition: ModelMegaChildEConditionInput): MegaChildE @aws_cognito_user_pools
+  deleteMegaChildE(input: DeleteMegaChildEInput!, condition: ModelMegaChildEConditionInput): MegaChildE @aws_cognito_user_pools
+  createMegaRelatedF(input: CreateMegaRelatedFInput!, condition: ModelMegaRelatedFConditionInput): MegaRelatedF @aws_cognito_user_pools
+  updateMegaRelatedF(input: UpdateMegaRelatedFInput!, condition: ModelMegaRelatedFConditionInput): MegaRelatedF @aws_cognito_user_pools
+  deleteMegaRelatedF(input: DeleteMegaRelatedFInput!, condition: ModelMegaRelatedFConditionInput): MegaRelatedF @aws_cognito_user_pools
+  createMegaRelatedG(input: CreateMegaRelatedGInput!, condition: ModelMegaRelatedGConditionInput): MegaRelatedG @aws_cognito_user_pools
+  updateMegaRelatedG(input: UpdateMegaRelatedGInput!, condition: ModelMegaRelatedGConditionInput): MegaRelatedG @aws_cognito_user_pools
+  deleteMegaRelatedG(input: DeleteMegaRelatedGInput!, condition: ModelMegaRelatedGConditionInput): MegaRelatedG @aws_cognito_user_pools
+  createMegaRelatedH(input: CreateMegaRelatedHInput!, condition: ModelMegaRelatedHConditionInput): MegaRelatedH @aws_cognito_user_pools
+  updateMegaRelatedH(input: UpdateMegaRelatedHInput!, condition: ModelMegaRelatedHConditionInput): MegaRelatedH @aws_cognito_user_pools
+  deleteMegaRelatedH(input: DeleteMegaRelatedHInput!, condition: ModelMegaRelatedHConditionInput): MegaRelatedH @aws_cognito_user_pools
+  createMegaRelatedI(input: CreateMegaRelatedIInput!, condition: ModelMegaRelatedIConditionInput): MegaRelatedI @aws_cognito_user_pools
+  updateMegaRelatedI(input: UpdateMegaRelatedIInput!, condition: ModelMegaRelatedIConditionInput): MegaRelatedI @aws_cognito_user_pools
+  deleteMegaRelatedI(input: DeleteMegaRelatedIInput!, condition: ModelMegaRelatedIConditionInput): MegaRelatedI @aws_cognito_user_pools
+  createMegaRelatedJ(input: CreateMegaRelatedJInput!, condition: ModelMegaRelatedJConditionInput): MegaRelatedJ @aws_cognito_user_pools
+  updateMegaRelatedJ(input: UpdateMegaRelatedJInput!, condition: ModelMegaRelatedJConditionInput): MegaRelatedJ @aws_cognito_user_pools
+  deleteMegaRelatedJ(input: DeleteMegaRelatedJInput!, condition: ModelMegaRelatedJConditionInput): MegaRelatedJ @aws_cognito_user_pools
+}
+
+input ModelSubscriptionProjectFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  status: ModelSubscriptionStringInput
+  deadline: ModelSubscriptionStringInput
+  color: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionProjectFilterInput]
+  or: [ModelSubscriptionProjectFilterInput]
+  projectTodosId: ModelSubscriptionIDInput
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateProject(filter: ModelSubscriptionProjectFilterInput, owner: String): Project @aws_subscribe(mutations: ["createProject"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateProject(filter: ModelSubscriptionProjectFilterInput, owner: String): Project @aws_subscribe(mutations: ["updateProject"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteProject(filter: ModelSubscriptionProjectFilterInput, owner: String): Project @aws_subscribe(mutations: ["deleteProject"]) @aws_api_key @aws_cognito_user_pools
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: ["createTodo"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: ["updateTodo"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: ["deleteTodo"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaModel(filter: ModelSubscriptionMegaModelFilterInput, owner: String): MegaModel @aws_subscribe(mutations: ["createMegaModel"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaModel(filter: ModelSubscriptionMegaModelFilterInput, owner: String): MegaModel @aws_subscribe(mutations: ["updateMegaModel"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaModel(filter: ModelSubscriptionMegaModelFilterInput, owner: String): MegaModel @aws_subscribe(mutations: ["deleteMegaModel"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaChildA(filter: ModelSubscriptionMegaChildAFilterInput, owner: String): MegaChildA @aws_subscribe(mutations: ["createMegaChildA"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaChildA(filter: ModelSubscriptionMegaChildAFilterInput, owner: String): MegaChildA @aws_subscribe(mutations: ["updateMegaChildA"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaChildA(filter: ModelSubscriptionMegaChildAFilterInput, owner: String): MegaChildA @aws_subscribe(mutations: ["deleteMegaChildA"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaChildB(filter: ModelSubscriptionMegaChildBFilterInput, owner: String): MegaChildB @aws_subscribe(mutations: ["createMegaChildB"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaChildB(filter: ModelSubscriptionMegaChildBFilterInput, owner: String): MegaChildB @aws_subscribe(mutations: ["updateMegaChildB"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaChildB(filter: ModelSubscriptionMegaChildBFilterInput, owner: String): MegaChildB @aws_subscribe(mutations: ["deleteMegaChildB"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaChildC(filter: ModelSubscriptionMegaChildCFilterInput, owner: String): MegaChildC @aws_subscribe(mutations: ["createMegaChildC"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaChildC(filter: ModelSubscriptionMegaChildCFilterInput, owner: String): MegaChildC @aws_subscribe(mutations: ["updateMegaChildC"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaChildC(filter: ModelSubscriptionMegaChildCFilterInput, owner: String): MegaChildC @aws_subscribe(mutations: ["deleteMegaChildC"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaChildD(filter: ModelSubscriptionMegaChildDFilterInput, owner: String): MegaChildD @aws_subscribe(mutations: ["createMegaChildD"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaChildD(filter: ModelSubscriptionMegaChildDFilterInput, owner: String): MegaChildD @aws_subscribe(mutations: ["updateMegaChildD"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaChildD(filter: ModelSubscriptionMegaChildDFilterInput, owner: String): MegaChildD @aws_subscribe(mutations: ["deleteMegaChildD"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaChildE(filter: ModelSubscriptionMegaChildEFilterInput, owner: String): MegaChildE @aws_subscribe(mutations: ["createMegaChildE"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaChildE(filter: ModelSubscriptionMegaChildEFilterInput, owner: String): MegaChildE @aws_subscribe(mutations: ["updateMegaChildE"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaChildE(filter: ModelSubscriptionMegaChildEFilterInput, owner: String): MegaChildE @aws_subscribe(mutations: ["deleteMegaChildE"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaRelatedF(filter: ModelSubscriptionMegaRelatedFFilterInput, owner: String): MegaRelatedF @aws_subscribe(mutations: ["createMegaRelatedF"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaRelatedF(filter: ModelSubscriptionMegaRelatedFFilterInput, owner: String): MegaRelatedF @aws_subscribe(mutations: ["updateMegaRelatedF"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaRelatedF(filter: ModelSubscriptionMegaRelatedFFilterInput, owner: String): MegaRelatedF @aws_subscribe(mutations: ["deleteMegaRelatedF"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaRelatedG(filter: ModelSubscriptionMegaRelatedGFilterInput, owner: String): MegaRelatedG @aws_subscribe(mutations: ["createMegaRelatedG"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaRelatedG(filter: ModelSubscriptionMegaRelatedGFilterInput, owner: String): MegaRelatedG @aws_subscribe(mutations: ["updateMegaRelatedG"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaRelatedG(filter: ModelSubscriptionMegaRelatedGFilterInput, owner: String): MegaRelatedG @aws_subscribe(mutations: ["deleteMegaRelatedG"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaRelatedH(filter: ModelSubscriptionMegaRelatedHFilterInput, owner: String): MegaRelatedH @aws_subscribe(mutations: ["createMegaRelatedH"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaRelatedH(filter: ModelSubscriptionMegaRelatedHFilterInput, owner: String): MegaRelatedH @aws_subscribe(mutations: ["updateMegaRelatedH"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaRelatedH(filter: ModelSubscriptionMegaRelatedHFilterInput, owner: String): MegaRelatedH @aws_subscribe(mutations: ["deleteMegaRelatedH"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaRelatedI(filter: ModelSubscriptionMegaRelatedIFilterInput, owner: String): MegaRelatedI @aws_subscribe(mutations: ["createMegaRelatedI"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaRelatedI(filter: ModelSubscriptionMegaRelatedIFilterInput, owner: String): MegaRelatedI @aws_subscribe(mutations: ["updateMegaRelatedI"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaRelatedI(filter: ModelSubscriptionMegaRelatedIFilterInput, owner: String): MegaRelatedI @aws_subscribe(mutations: ["deleteMegaRelatedI"]) @aws_api_key @aws_cognito_user_pools
+  onCreateMegaRelatedJ(filter: ModelSubscriptionMegaRelatedJFilterInput, owner: String): MegaRelatedJ @aws_subscribe(mutations: ["createMegaRelatedJ"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateMegaRelatedJ(filter: ModelSubscriptionMegaRelatedJFilterInput, owner: String): MegaRelatedJ @aws_subscribe(mutations: ["updateMegaRelatedJ"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteMegaRelatedJ(filter: ModelSubscriptionMegaRelatedJFilterInput, owner: String): MegaRelatedJ @aws_subscribe(mutations: ["deleteMegaRelatedJ"]) @aws_api_key @aws_cognito_user_pools
+}
+
+type ModelTodoConnection @aws_cognito_user_pools @aws_api_key {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  description: ModelStringInput
+  images: ModelStringInput
+  projectID: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+  projectTodosId: ModelIDInput
+  owner: ModelStringInput
+}
+
+input ModelTodoConditionInput {
+  name: ModelStringInput
+  description: ModelStringInput
+  images: ModelStringInput
+  projectID: ModelIDInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  projectTodosId: ModelIDInput
+  owner: ModelStringInput
+}
+
+input CreateTodoInput {
+  id: ID
+  name: String!
+  description: String
+  images: [String]
+  projectID: ID
+  projectTodosId: ID
+}
+
+input UpdateTodoInput {
+  id: ID!
+  name: String
+  description: String
+  images: [String]
+  projectID: ID
+  projectTodosId: ID
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+input ModelSubscriptionTodoFilterInput {
+  id: ModelSubscriptionIDInput
+  name: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  images: ModelSubscriptionStringInput
+  projectID: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+  owner: ModelStringInput
+}
+
+input AddressInput {
+  street: String
+  city: String
+  state: String
+  zip: String
+  country: String
+}
+
+input MetadataInput {
+  key: String
+  value: String
+  timestamp: AWSDateTime
+}
+
+input CoordinatesInput {
+  latitude: Float
+  longitude: Float
+  altitude: Float
+}
+
+type ModelMegaModelConnection @aws_api_key @aws_cognito_user_pools {
+  items: [MegaModel]!
+  nextToken: String
+}
+
+input ModelPriorityInput {
+  eq: Priority
+  ne: Priority
+}
+
+input ModelCategoryInput {
+  eq: Category
+  ne: Category
+}
+
+input ModelMegaModelFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  status: ModelProjectStatusInput
+  priority: ModelPriorityInput
+  category: ModelCategoryInput
+  score: ModelIntInput
+  rating: ModelFloatInput
+  isActive: ModelBooleanInput
+  deadline: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  startDate: ModelStringInput
+  endDate: ModelStringInput
+  duration: ModelIntInput
+  ownerEmail: ModelStringInput
+  websiteUrl: ModelStringInput
+  phoneNumber: ModelStringInput
+  region: ModelStringInput
+  tags: ModelStringInput
+  version: ModelIntInput
+  weight: ModelFloatInput
+  notes: ModelStringInput
+  config: ModelStringInput
+  ipAddress: ModelStringInput
+  timestamp: ModelIntInput
+  and: [ModelMegaModelFilterInput]
+  or: [ModelMegaModelFilterInput]
+  not: ModelMegaModelFilterInput
+  megaModelRelatedFId: ModelIDInput
+  megaModelRelatedGId: ModelIDInput
+  megaModelRelatedHId: ModelIDInput
+  megaModelRelatedIId: ModelIDInput
+  megaModelRelatedJId: ModelIDInput
+  owner: ModelStringInput
+}
+
+input ModelMegaModelConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  status: ModelProjectStatusInput
+  priority: ModelPriorityInput
+  category: ModelCategoryInput
+  score: ModelIntInput
+  rating: ModelFloatInput
+  isActive: ModelBooleanInput
+  deadline: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  startDate: ModelStringInput
+  endDate: ModelStringInput
+  duration: ModelIntInput
+  ownerEmail: ModelStringInput
+  websiteUrl: ModelStringInput
+  phoneNumber: ModelStringInput
+  region: ModelStringInput
+  tags: ModelStringInput
+  version: ModelIntInput
+  weight: ModelFloatInput
+  notes: ModelStringInput
+  config: ModelStringInput
+  ipAddress: ModelStringInput
+  timestamp: ModelIntInput
+  and: [ModelMegaModelConditionInput]
+  or: [ModelMegaModelConditionInput]
+  not: ModelMegaModelConditionInput
+  megaModelRelatedFId: ModelIDInput
+  megaModelRelatedGId: ModelIDInput
+  megaModelRelatedHId: ModelIDInput
+  megaModelRelatedIId: ModelIDInput
+  megaModelRelatedJId: ModelIDInput
+  owner: ModelStringInput
+}
+
+input CreateMegaModelInput {
+  id: ID
+  title: String!
+  description: String
+  status: ProjectStatus!
+  priority: Priority!
+  category: Category!
+  score: Int
+  rating: Float
+  isActive: Boolean
+  deadline: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  startDate: AWSDate
+  endDate: AWSDate
+  duration: Int
+  ownerEmail: AWSEmail
+  websiteUrl: AWSURL
+  phoneNumber: AWSPhone
+  region: String
+  tags: [String]
+  version: Int
+  weight: Float
+  address: AddressInput
+  metadata: MetadataInput
+  coordinates: CoordinatesInput
+  notes: [String]
+  config: AWSJSON
+  ipAddress: AWSIPAddress
+  timestamp: AWSTimestamp
+  megaModelRelatedFId: ID
+  megaModelRelatedGId: ID
+  megaModelRelatedHId: ID
+  megaModelRelatedIId: ID
+  megaModelRelatedJId: ID
+}
+
+input UpdateMegaModelInput {
+  id: ID!
+  title: String
+  description: String
+  status: ProjectStatus
+  priority: Priority
+  category: Category
+  score: Int
+  rating: Float
+  isActive: Boolean
+  deadline: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  startDate: AWSDate
+  endDate: AWSDate
+  duration: Int
+  ownerEmail: AWSEmail
+  websiteUrl: AWSURL
+  phoneNumber: AWSPhone
+  region: String
+  tags: [String]
+  version: Int
+  weight: Float
+  address: AddressInput
+  metadata: MetadataInput
+  coordinates: CoordinatesInput
+  notes: [String]
+  config: AWSJSON
+  ipAddress: AWSIPAddress
+  timestamp: AWSTimestamp
+  megaModelRelatedFId: ID
+  megaModelRelatedGId: ID
+  megaModelRelatedHId: ID
+  megaModelRelatedIId: ID
+  megaModelRelatedJId: ID
+}
+
+input DeleteMegaModelInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaModelFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  status: ModelSubscriptionStringInput
+  priority: ModelSubscriptionStringInput
+  category: ModelSubscriptionStringInput
+  score: ModelSubscriptionIntInput
+  rating: ModelSubscriptionFloatInput
+  isActive: ModelSubscriptionBooleanInput
+  deadline: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  startDate: ModelSubscriptionStringInput
+  endDate: ModelSubscriptionStringInput
+  duration: ModelSubscriptionIntInput
+  ownerEmail: ModelSubscriptionStringInput
+  websiteUrl: ModelSubscriptionStringInput
+  phoneNumber: ModelSubscriptionStringInput
+  region: ModelSubscriptionStringInput
+  tags: ModelSubscriptionStringInput
+  version: ModelSubscriptionIntInput
+  weight: ModelSubscriptionFloatInput
+  notes: ModelSubscriptionStringInput
+  config: ModelSubscriptionStringInput
+  ipAddress: ModelSubscriptionStringInput
+  timestamp: ModelSubscriptionIntInput
+  and: [ModelSubscriptionMegaModelFilterInput]
+  or: [ModelSubscriptionMegaModelFilterInput]
+  megaModelRelatedFId: ModelSubscriptionIDInput
+  megaModelRelatedGId: ModelSubscriptionIDInput
+  megaModelRelatedHId: ModelSubscriptionIDInput
+  megaModelRelatedIId: ModelSubscriptionIDInput
+  megaModelRelatedJId: ModelSubscriptionIDInput
+  owner: ModelStringInput
+}
+
+type ModelMegaChildAConnection @aws_cognito_user_pools @aws_api_key {
+  items: [MegaChildA]!
+  nextToken: String
+}
+
+input ModelMegaChildAFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaChildAFilterInput]
+  or: [ModelMegaChildAFilterInput]
+  not: ModelMegaChildAFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaChildAConditionInput {
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  and: [ModelMegaChildAConditionInput]
+  or: [ModelMegaChildAConditionInput]
+  not: ModelMegaChildAConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaChildAInput {
+  id: ID
+  title: String!
+  megaModelID: ID!
+}
+
+input UpdateMegaChildAInput {
+  id: ID!
+  title: String
+  megaModelID: ID
+}
+
+input DeleteMegaChildAInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaChildAFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  megaModelID: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaChildAFilterInput]
+  or: [ModelSubscriptionMegaChildAFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaChildBConnection @aws_cognito_user_pools @aws_api_key {
+  items: [MegaChildB]!
+  nextToken: String
+}
+
+input ModelMegaChildBFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaChildBFilterInput]
+  or: [ModelMegaChildBFilterInput]
+  not: ModelMegaChildBFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaChildBConditionInput {
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  and: [ModelMegaChildBConditionInput]
+  or: [ModelMegaChildBConditionInput]
+  not: ModelMegaChildBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaChildBInput {
+  id: ID
+  title: String!
+  megaModelID: ID!
+}
+
+input UpdateMegaChildBInput {
+  id: ID!
+  title: String
+  megaModelID: ID
+}
+
+input DeleteMegaChildBInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaChildBFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  megaModelID: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaChildBFilterInput]
+  or: [ModelSubscriptionMegaChildBFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaChildCConnection @aws_cognito_user_pools @aws_api_key {
+  items: [MegaChildC]!
+  nextToken: String
+}
+
+input ModelMegaChildCFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaChildCFilterInput]
+  or: [ModelMegaChildCFilterInput]
+  not: ModelMegaChildCFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaChildCConditionInput {
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  and: [ModelMegaChildCConditionInput]
+  or: [ModelMegaChildCConditionInput]
+  not: ModelMegaChildCConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaChildCInput {
+  id: ID
+  title: String!
+  megaModelID: ID!
+}
+
+input UpdateMegaChildCInput {
+  id: ID!
+  title: String
+  megaModelID: ID
+}
+
+input DeleteMegaChildCInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaChildCFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  megaModelID: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaChildCFilterInput]
+  or: [ModelSubscriptionMegaChildCFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaChildDConnection @aws_cognito_user_pools @aws_api_key {
+  items: [MegaChildD]!
+  nextToken: String
+}
+
+input ModelMegaChildDFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaChildDFilterInput]
+  or: [ModelMegaChildDFilterInput]
+  not: ModelMegaChildDFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaChildDConditionInput {
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  and: [ModelMegaChildDConditionInput]
+  or: [ModelMegaChildDConditionInput]
+  not: ModelMegaChildDConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaChildDInput {
+  id: ID
+  title: String!
+  megaModelID: ID!
+}
+
+input UpdateMegaChildDInput {
+  id: ID!
+  title: String
+  megaModelID: ID
+}
+
+input DeleteMegaChildDInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaChildDFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  megaModelID: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaChildDFilterInput]
+  or: [ModelSubscriptionMegaChildDFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaChildEConnection @aws_cognito_user_pools @aws_api_key {
+  items: [MegaChildE]!
+  nextToken: String
+}
+
+input ModelMegaChildEFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaChildEFilterInput]
+  or: [ModelMegaChildEFilterInput]
+  not: ModelMegaChildEFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaChildEConditionInput {
+  title: ModelStringInput
+  megaModelID: ModelIDInput
+  and: [ModelMegaChildEConditionInput]
+  or: [ModelMegaChildEConditionInput]
+  not: ModelMegaChildEConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaChildEInput {
+  id: ID
+  title: String!
+  megaModelID: ID!
+}
+
+input UpdateMegaChildEInput {
+  id: ID!
+  title: String
+  megaModelID: ID
+}
+
+input DeleteMegaChildEInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaChildEFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  megaModelID: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaChildEFilterInput]
+  or: [ModelSubscriptionMegaChildEFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaRelatedFConnection @aws_api_key @aws_cognito_user_pools {
+  items: [MegaRelatedF]!
+  nextToken: String
+}
+
+input ModelMegaRelatedFFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaRelatedFFilterInput]
+  or: [ModelMegaRelatedFFilterInput]
+  not: ModelMegaRelatedFFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaRelatedFConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  and: [ModelMegaRelatedFConditionInput]
+  or: [ModelMegaRelatedFConditionInput]
+  not: ModelMegaRelatedFConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaRelatedFInput {
+  id: ID
+  title: String!
+  description: String
+}
+
+input UpdateMegaRelatedFInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+input DeleteMegaRelatedFInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaRelatedFFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaRelatedFFilterInput]
+  or: [ModelSubscriptionMegaRelatedFFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaRelatedGConnection @aws_api_key @aws_cognito_user_pools {
+  items: [MegaRelatedG]!
+  nextToken: String
+}
+
+input ModelMegaRelatedGFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaRelatedGFilterInput]
+  or: [ModelMegaRelatedGFilterInput]
+  not: ModelMegaRelatedGFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaRelatedGConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  and: [ModelMegaRelatedGConditionInput]
+  or: [ModelMegaRelatedGConditionInput]
+  not: ModelMegaRelatedGConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaRelatedGInput {
+  id: ID
+  title: String!
+  description: String
+}
+
+input UpdateMegaRelatedGInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+input DeleteMegaRelatedGInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaRelatedGFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaRelatedGFilterInput]
+  or: [ModelSubscriptionMegaRelatedGFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaRelatedHConnection @aws_api_key @aws_cognito_user_pools {
+  items: [MegaRelatedH]!
+  nextToken: String
+}
+
+input ModelMegaRelatedHFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaRelatedHFilterInput]
+  or: [ModelMegaRelatedHFilterInput]
+  not: ModelMegaRelatedHFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaRelatedHConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  and: [ModelMegaRelatedHConditionInput]
+  or: [ModelMegaRelatedHConditionInput]
+  not: ModelMegaRelatedHConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaRelatedHInput {
+  id: ID
+  title: String!
+  description: String
+}
+
+input UpdateMegaRelatedHInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+input DeleteMegaRelatedHInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaRelatedHFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaRelatedHFilterInput]
+  or: [ModelSubscriptionMegaRelatedHFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaRelatedIConnection @aws_api_key @aws_cognito_user_pools {
+  items: [MegaRelatedI]!
+  nextToken: String
+}
+
+input ModelMegaRelatedIFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaRelatedIFilterInput]
+  or: [ModelMegaRelatedIFilterInput]
+  not: ModelMegaRelatedIFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaRelatedIConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  and: [ModelMegaRelatedIConditionInput]
+  or: [ModelMegaRelatedIConditionInput]
+  not: ModelMegaRelatedIConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaRelatedIInput {
+  id: ID
+  title: String!
+  description: String
+}
+
+input UpdateMegaRelatedIInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+input DeleteMegaRelatedIInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaRelatedIFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaRelatedIFilterInput]
+  or: [ModelSubscriptionMegaRelatedIFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelMegaRelatedJConnection @aws_api_key @aws_cognito_user_pools {
+  items: [MegaRelatedJ]!
+  nextToken: String
+}
+
+input ModelMegaRelatedJFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMegaRelatedJFilterInput]
+  or: [ModelMegaRelatedJFilterInput]
+  not: ModelMegaRelatedJFilterInput
+  owner: ModelStringInput
+}
+
+input ModelMegaRelatedJConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  and: [ModelMegaRelatedJConditionInput]
+  or: [ModelMegaRelatedJConditionInput]
+  not: ModelMegaRelatedJConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateMegaRelatedJInput {
+  id: ID
+  title: String!
+  description: String
+}
+
+input UpdateMegaRelatedJInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+input DeleteMegaRelatedJInput {
+  id: ID!
+}
+
+input ModelSubscriptionMegaRelatedJFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionMegaRelatedJFilterInput]
+  or: [ModelSubscriptionMegaRelatedJFilterInput]
+  owner: ModelStringInput
+}
+
+input ModelMegaModelByStatusAndCreatedAtCompositeKeyConditionInput {
+  eq: ModelMegaModelByStatusAndCreatedAtCompositeKeyInput
+  le: ModelMegaModelByStatusAndCreatedAtCompositeKeyInput
+  lt: ModelMegaModelByStatusAndCreatedAtCompositeKeyInput
+  ge: ModelMegaModelByStatusAndCreatedAtCompositeKeyInput
+  gt: ModelMegaModelByStatusAndCreatedAtCompositeKeyInput
+  between: [ModelMegaModelByStatusAndCreatedAtCompositeKeyInput]
+  beginsWith: ModelMegaModelByStatusAndCreatedAtCompositeKeyInput
+}
+
+input ModelMegaModelByStatusAndCreatedAtCompositeKeyInput {
+  createdAt: AWSDateTime
+  priority: Priority
+}
+
+input ModelMegaModelByPriorityAndDeadlineCompositeKeyConditionInput {
+  eq: ModelMegaModelByPriorityAndDeadlineCompositeKeyInput
+  le: ModelMegaModelByPriorityAndDeadlineCompositeKeyInput
+  lt: ModelMegaModelByPriorityAndDeadlineCompositeKeyInput
+  ge: ModelMegaModelByPriorityAndDeadlineCompositeKeyInput
+  gt: ModelMegaModelByPriorityAndDeadlineCompositeKeyInput
+  between: [ModelMegaModelByPriorityAndDeadlineCompositeKeyInput]
+  beginsWith: ModelMegaModelByPriorityAndDeadlineCompositeKeyInput
+}
+
+input ModelMegaModelByPriorityAndDeadlineCompositeKeyInput {
+  deadline: AWSDateTime
+  status: ProjectStatus
+}
+
+input ModelMegaModelByCategoryAndTitleCompositeKeyConditionInput {
+  eq: ModelMegaModelByCategoryAndTitleCompositeKeyInput
+  le: ModelMegaModelByCategoryAndTitleCompositeKeyInput
+  lt: ModelMegaModelByCategoryAndTitleCompositeKeyInput
+  ge: ModelMegaModelByCategoryAndTitleCompositeKeyInput
+  gt: ModelMegaModelByCategoryAndTitleCompositeKeyInput
+  between: [ModelMegaModelByCategoryAndTitleCompositeKeyInput]
+  beginsWith: ModelMegaModelByCategoryAndTitleCompositeKeyInput
+}
+
+input ModelMegaModelByCategoryAndTitleCompositeKeyInput {
+  title: String
+  score: Int
+}
+
+input ModelMegaModelByOwnerAndScoreCompositeKeyConditionInput {
+  eq: ModelMegaModelByOwnerAndScoreCompositeKeyInput
+  le: ModelMegaModelByOwnerAndScoreCompositeKeyInput
+  lt: ModelMegaModelByOwnerAndScoreCompositeKeyInput
+  ge: ModelMegaModelByOwnerAndScoreCompositeKeyInput
+  gt: ModelMegaModelByOwnerAndScoreCompositeKeyInput
+  between: [ModelMegaModelByOwnerAndScoreCompositeKeyInput]
+  beginsWith: ModelMegaModelByOwnerAndScoreCompositeKeyInput
+}
+
+input ModelMegaModelByOwnerAndScoreCompositeKeyInput {
+  score: Int
+  createdAt: String
+}
+
+input ModelMegaModelByRegionAndUpdatedAtCompositeKeyConditionInput {
+  eq: ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput
+  le: ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput
+  lt: ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput
+  ge: ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput
+  gt: ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput
+  between: [ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput]
+  beginsWith: ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput
+}
+
+input ModelMegaModelByRegionAndUpdatedAtCompositeKeyInput {
+  updatedAt: AWSDateTime
+  category: Category
+}

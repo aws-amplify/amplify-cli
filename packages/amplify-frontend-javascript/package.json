@@ -1,0 +1,41 @@
+{
+  "name": "@aws-amplify/amplify-frontend-javascript",
+  "version": "3.10.27",
+  "description": "amplify-cli front-end plugin for JavaScript projects",
+  "scripts": {
+    "test": "jest --logHeapUsage",
+    "test-watch": "yarn test --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-frontend-javascript"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.6.0",
+    "@babel/core": "^7.23.2",
+    "@babel/plugin-transform-modules-commonjs": "7.10.4",
+    "chalk": "^4.1.1",
+    "execa": "^5.1.1",
+    "fs-extra": "^8.1.0",
+    "graphql-config": "^2.2.1",
+    "inquirer": "^7.3.3",
+    "lodash": "^4.17.21"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'createdAt#priority': "createdAtPriority" }))
+#else
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('createdAt#priority', "createdAtPriority"))
+#end
+$util.qr($ctx.args.input.put('createdAt#priority',"${mergedValues.createdAt}#${mergedValues.priority}"))
+{}

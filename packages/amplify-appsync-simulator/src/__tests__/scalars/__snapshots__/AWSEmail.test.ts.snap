@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AWSEmail parse Should reject a non-string 1`] = `"Value is not string: 1"`;
+
+exports[`AWSEmail parse Should reject an invalid email address 1`] = `"Value is not a valid email address: @@"`;

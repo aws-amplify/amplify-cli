@@ -1,0 +1,435 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.4.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "identityPoolName": {
+      "Type": "String"
+    },
+    "allowUnauthenticatedIdentities": {
+      "Type": "String"
+    },
+    "resourceNameTruncated": {
+      "Type": "String"
+    },
+    "userPoolName": {
+      "Type": "String"
+    },
+    "autoVerifiedAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "mfaConfiguration": {
+      "Type": "String"
+    },
+    "mfaTypes": {
+      "Type": "CommaDelimitedList"
+    },
+    "smsAuthenticationMessage": {
+      "Type": "String"
+    },
+    "smsVerificationMessage": {
+      "Type": "String"
+    },
+    "emailVerificationSubject": {
+      "Type": "String"
+    },
+    "emailVerificationMessage": {
+      "Type": "String"
+    },
+    "defaultPasswordPolicy": {
+      "Type": "String"
+    },
+    "passwordPolicyMinLength": {
+      "Type": "String"
+    },
+    "passwordPolicyCharacters": {
+      "Type": "CommaDelimitedList"
+    },
+    "requiredAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "aliasAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientGenerateSecret": {
+      "Type": "String"
+    },
+    "userpoolClientRefreshTokenValidity": {
+      "Type": "String"
+    },
+    "userpoolClientWriteAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientReadAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientLambdaRole": {
+      "Type": "String"
+    },
+    "userpoolClientSetAttributes": {
+      "Type": "String"
+    },
+    "sharedId": {
+      "Type": "String"
+    },
+    "resourceName": {
+      "Type": "String"
+    },
+    "authSelections": {
+      "Type": "String"
+    },
+    "useDefault": {
+      "Type": "String"
+    },
+    "hostedUI": {
+      "Type": "String"
+    },
+    "usernameAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "hostedUIDomainName": {
+      "Type": "String"
+    },
+    "authProvidersUserPool": {
+      "Type": "CommaDelimitedList"
+    },
+    "hostedUIProviderMeta": {
+      "Type": "String"
+    },
+    "userPoolGroupList": {
+      "Type": "CommaDelimitedList"
+    },
+    "serviceName": {
+      "Type": "String"
+    },
+    "usernameCaseSensitive": {
+      "Type": "String"
+    },
+    "useEnabledMfas": {
+      "Type": "String"
+    },
+    "authRoleArn": {
+      "Type": "String"
+    },
+    "unauthRoleArn": {
+      "Type": "String"
+    },
+    "breakCircularDependency": {
+      "Type": "String"
+    },
+    "dependsOn": {
+      "Type": "CommaDelimitedList"
+    },
+    "oAuthMetadata": {
+      "Type": "String"
+    },
+    "hostedUIProviderCreds": {
+      "Type": "String",
+      "NoEcho": true
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "UserPoolClientRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "upClientLambdaRole1f08412d",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-mediavault-x-x-authmediavault1f08412d-x"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "x"
+            ]
+          ]
+        }
+      }
+    },
+    "HostedUICustomResource": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');\nconst {\n  CognitoIdentityProviderClient,\n  CreateUserPoolDomainCommand,\n  DeleteUserPoolDomainCommand,\n  DescribeUserPoolCommand,\n  DescribeUserPoolDomainCommand,\n} = require('@aws-sdk/client-cognito-identity-provider');\nconst identity = new CognitoIdentityProviderClient({});\n\nexports.handler = (event, context) => {\n  // Don't return promise, response.send() marks context as done internally\n  void tryHandleEvent(event, context);\n};\n\nasync function tryHandleEvent(event, context) {\n  try {\n    await handleEvent(event);\n    response.send(event, context, response.SUCCESS, {});\n  } catch (err) {\n    console.log(err);\n    response.send(event, context, response.FAILED, { err });\n  }\n}\n\nasync function handleEvent(event) {\n  const userPoolId = event.ResourceProperties.userPoolId;\n  const inputDomainName = event.ResourceProperties.hostedUIDomainName;\n  if (event.RequestType === 'Delete') {\n    await deleteUserPoolDomain(inputDomainName, userPoolId);\n  } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {\n    await createOrUpdateDomain(inputDomainName, userPoolId);\n  }\n}\n\nasync function checkDomainAvailability(domainName) {\n  const params = { Domain: domainName };\n  try {\n    const res = await identity.send(new DescribeUserPoolDomainCommand(params));\n    return !(res.DomainDescription && res.DomainDescription.UserPoolId);\n  } catch (err) {\n    return false;\n  }\n}\n\nasync function deleteUserPoolDomain(domainName, userPoolId) {\n  const params = { Domain: domainName, UserPoolId: userPoolId };\n  await identity.send(new DeleteUserPoolDomainCommand(params));\n}\n\nasync function createUserPoolDomain(domainName, userPoolId) {\n  const params = {\n    Domain: domainName,\n    UserPoolId: userPoolId,\n  };\n  await identity.send(new CreateUserPoolDomainCommand(params));\n}\n\nasync function createOrUpdateDomain(inputDomainName, userPoolId) {\n  const result = await identity.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));\n  if (result.UserPool.Domain === inputDomainName) {\n    // if existing domain is same as input domain do nothing.\n    return;\n  }\n  if (inputDomainName) {\n    // create new or replace existing domain.\n    const isDomainAvailable = await checkDomainAvailability(inputDomainName);\n    if (isDomainAvailable) {\n      if (result.UserPool.Domain) {\n        await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);\n      }\n      await createUserPoolDomain(inputDomainName, userPoolId);\n    } else {\n      throw new Error('Domain not available');\n    }\n  } else if (result.UserPool.Domain) {\n    // if input domain is undefined delete existing domain if exists.\n    await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);\n  }\n}\n"
+        },
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authmediavault1f08412d-x/UserPoolClientRole",
+        "Runtime": "nodejs22.x",
+        "Timeout": 300
+      }
+    },
+    "HostedUICustomResourcePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:CreateUserPoolDomain",
+                "cognito-idp:DescribeUserPool",
+                "cognito-idp:DeleteUserPoolDomain"
+              ],
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_10XCh2HEz"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:DescribeUserPoolDomain"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              "us-east-1_10XCh2HEz",
+              "true"
+            ]
+          ]
+        },
+        "Roles": [
+          "amplify-mediavault-x-x-authmediavault1f08412d-x/UserPoolClientRole"
+        ]
+      }
+    },
+    "HostedUICustomResourceLogPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "lambda": "amplify-mediavault-x-x-authmediavault1f08412d-x/HostedUICustomResource"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              "us-east-1_10XCh2HEz",
+              "hostedUILogPolicy"
+            ]
+          ]
+        },
+        "Roles": [
+          "amplify-mediavault-x-x-authmediavault1f08412d-x/UserPoolClientRole"
+        ]
+      }
+    },
+    "HostedUICustomResourceInputs": {
+      "Type": "Custom::LambdaCallout",
+      "Properties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault-x-x-authmediavault1f08412d-x/HostedUICustomResource",
+        "hostedUIDomainName": {
+          "Fn::Join": [
+            "-",
+            [
+              "mediavault1f08412d-1f08412d",
+              "x"
+            ]
+          ]
+        },
+        "userPoolId": "us-east-1_10XCh2HEz"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "HostedUIProvidersCustomResource": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');\nconst {\n  CognitoIdentityProviderClient,\n  CreateIdentityProviderCommand,\n  DeleteIdentityProviderCommand,\n  ListIdentityProvidersCommand,\n  UpdateIdentityProviderCommand,\n} = require('@aws-sdk/client-cognito-identity-provider');\nconst identity = new CognitoIdentityProviderClient({});\n\nexports.handler = (event, context) => {\n  // Don't return promise, response.send() marks context as done internally\n  void tryHandleEvent(event, context);\n};\n\nasync function tryHandleEvent(event, context) {\n  try {\n    await handleEvent(event);\n    response.send(event, context, response.SUCCESS, {});\n  } catch (err) {\n    console.log(err.stack);\n    response.send(event, context, response.FAILED, { err });\n  }\n}\n\nasync function handleEvent(event) {\n  const userPoolId = event.ResourceProperties.userPoolId;\n  const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);\n  const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);\n  const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;\n  if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {\n    const listIdentityProvidersResponse = await identity.send(\n      new ListIdentityProvidersCommand({\n        UserPoolId: userPoolId,\n        MaxResults: 60,\n      }),\n    );\n    console.log(listIdentityProvidersResponse);\n    const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);\n    const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);\n    for (const providerMetadata of hostedUIProviderMeta) {\n      if (providerList.indexOf(providerMetadata.ProviderName) > -1) {\n        await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);\n      } else {\n        await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);\n      }\n    }\n    for (const provider of providerList) {\n      if (providerListInParameters.indexOf(provider) < 0) {\n        await deleteIdentityProvider(provider, userPoolId);\n      }\n    }\n  }\n}\n\nfunction getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {\n  const providerMeta = hostedUIProviderMeta.find((provider) => provider.ProviderName === providerName);\n  const providerCreds = hostedUIProviderCreds.find((provider) => provider.ProviderName === providerName);\n  let requestParams = {\n    ProviderName: providerMeta.ProviderName,\n    UserPoolId: userPoolId,\n    AttributeMapping: providerMeta.AttributeMapping,\n  };\n  if (providerMeta.ProviderName === 'SignInWithApple') {\n    if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {\n      requestParams.ProviderDetails = {\n        client_id: providerCreds.client_id,\n        team_id: providerCreds.team_id,\n        key_id: providerCreds.key_id,\n        private_key: providerCreds.private_key,\n        authorize_scopes: providerMeta.authorize_scopes,\n      };\n    } else {\n      requestParams = null;\n    }\n  } else {\n    if (providerCreds.client_id && providerCreds.client_secret) {\n      requestParams.ProviderDetails = {\n        client_id: providerCreds.client_id,\n        client_secret: providerCreds.client_secret,\n        authorize_scopes: providerMeta.authorize_scopes,\n      };\n    } else {\n      requestParams = null;\n    }\n  }\n  return requestParams;\n}\n\nasync function createIdentityProvider(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {\n  const requestParams = getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);\n  if (!requestParams) {\n    return;\n  }\n  requestParams.ProviderType = requestParams.ProviderName;\n  await identity.send(new CreateIdentityProviderCommand(requestParams));\n}\n\nasync function updateIdentityProvider(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {\n  const requestParams = getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);\n  if (!requestParams) {\n    return;\n  }\n  await identity.send(new UpdateIdentityProviderCommand(requestParams));\n}\n\nasync function deleteIdentityProvider(providerName, userPoolId) {\n  const params = { ProviderName: providerName, UserPoolId: userPoolId };\n  await identity.send(new DeleteIdentityProviderCommand(params));\n}\n"
+        },
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::123456789012:role/amplify-mediavault-x-x-authmediavault1f08412d-x/UserPoolClientRole",
+        "Runtime": "nodejs22.x",
+        "Timeout": 300
+      }
+    },
+    "HostedUIProvidersCustomResourcePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:CreateIdentityProvider",
+                "cognito-idp:UpdateIdentityProvider",
+                "cognito-idp:ListIdentityProviders",
+                "cognito-idp:DeleteIdentityProvider"
+              ],
+              "Resource": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_10XCh2HEz"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:DescribeUserPoolDomain"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              "us-east-1_10XCh2HEz",
+              "hostedUIProvider"
+            ]
+          ]
+        },
+        "Roles": [
+          "amplify-mediavault-x-x-authmediavault1f08412d-x/UserPoolClientRole"
+        ]
+      }
+    },
+    "HostedUIProvidersCustomResourceLogPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "lambda": "amplify-mediavault-x-x-authmediavault1f08412d-x/HostedUIProvidersCustomResource"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              "us-east-1_10XCh2HEz",
+              "hostedUIProviderLogPolicy"
+            ]
+          ]
+        },
+        "Roles": [
+          "amplify-mediavault-x-x-authmediavault1f08412d-x/UserPoolClientRole"
+        ]
+      }
+    },
+    "HostedUIProvidersCustomResourceInputs": {
+      "Type": "Custom::LambdaCallout",
+      "Properties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-mediavault-x-x-authmediavault1f08412d-x/HostedUIProvidersCustomResource",
+        "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
+        "hostedUIProviderCreds": {
+          "Ref": "hostedUIProviderCreds"
+        },
+        "userPoolId": "us-east-1_10XCh2HEz"
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    }
+  },
+  "Outputs": {
+    "IdentityPoolId": {
+      "Description": "Id for the identity pool",
+      "Value": "us-east-1:4d2bec4d-0dbb-4434-8fdd-6cb7545082ad"
+    },
+    "IdentityPoolName": {
+      "Value": "mediavault1f08412d_identitypool_1f08412d__x"
+    },
+    "HostedUIDomain": {
+      "Value": "mediavault1f08412d-1f08412d-x"
+    },
+    "OAuthMetadata": {
+      "Value": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.mediavault.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.mediavault.amplifyapp.com/\"]}"
+    },
+    "UserPoolId": {
+      "Description": "Id for the user pool",
+      "Value": "us-east-1_10XCh2HEz"
+    },
+    "UserPoolArn": {
+      "Description": "Arn for the user pool",
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_10XCh2HEz"
+    },
+    "UserPoolName": {
+      "Value": "mediavault1f08412d_userpool_1f08412d"
+    },
+    "AppClientIDWeb": {
+      "Description": "The user pool app client id for web",
+      "Value": "72t1gaoqrfgs2pe9bvf723v6s9"
+    },
+    "AppClientID": {
+      "Description": "The user pool app client id",
+      "Value": "10vqik6og26c12g7jg7lait0n7"
+    }
+  }
+}

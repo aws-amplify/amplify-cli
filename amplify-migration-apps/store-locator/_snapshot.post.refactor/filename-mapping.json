@@ -1,0 +1,17 @@
+{
+  "f85e756616": "update.amplify-storelocator-x-x-authuserPoolGroups-x.template.json",
+  "9adf8d0bb8": "update.amplify-storelocator-x-x-authuserPoolGroups-x.parameters.json",
+  "9172096227": "update.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.template.json",
+  "c79f773d1f": "update.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.parameters.json",
+  "a4bcbef6b5": "refactor.__from__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x-holding.source.template.json",
+  "17fed3913b": "refactor.__from__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x-holding.target.template.json",
+  "da564ad54f": "refactor.__from__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x-holding.mappings.json",
+  "0dac0ebc2c": "refactor.__from__.amplify-storelocator-x-x-authuserPoolGroups-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.source.template.json",
+  "0a04198e12": "refactor.__from__.amplify-storelocator-x-x-authuserPoolGroups-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.target.template.json",
+  "72c024c3fa": "refactor.__from__.amplify-storelocator-x-x-authuserPoolGroups-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.mappings.json",
+  "3f332cb86a": "update.amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.template.json",
+  "3eec5310ef": "update.amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.parameters.json",
+  "c4c9a09d59": "refactor.__from__.amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.source.template.json",
+  "492f7cabb1": "refactor.__from__.amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.target.template.json",
+  "b05ee6aad8": "refactor.__from__.amplify-storelocator-x-x-authstorelocator41a9495f41a9495f-x.__to__.amplify-storelocator-e2e-sandbox-x-auth179371D7-x.mappings.json"
+}

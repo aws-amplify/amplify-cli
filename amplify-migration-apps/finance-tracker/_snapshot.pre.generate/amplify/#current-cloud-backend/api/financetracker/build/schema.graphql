@@ -1,0 +1,453 @@
+type Transaction @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  description: String!
+  amount: Float!
+  type: TransactionType!
+  category: String!
+  date: AWSDateTime!
+  receiptUrl: String
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+type Budget @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  category: String!
+  limit: Float!
+  month: String!
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type FinancialSummary @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  totalIncome: Float!
+  totalExpenses: Float!
+  balance: Float!
+  month: String!
+  owner: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type CalculatedSummary {
+  totalIncome: Float!
+  totalExpenses: Float!
+  balance: Float!
+  savingsRate: Float!
+}
+
+type NotificationResult {
+  success: Boolean!
+  message: String!
+}
+
+type TransactionConnection {
+  items: [Transaction]
+  nextToken: String
+}
+
+type Query {
+  calculateFinancialSummary: CalculatedSummary
+  getTransactionsByCategory(category: String!, limit: Int): TransactionConnection
+  getTransaction(id: ID!): Transaction @aws_api_key @aws_cognito_user_pools
+  listTransactions(filter: ModelTransactionFilterInput, limit: Int, nextToken: String): ModelTransactionConnection @aws_api_key @aws_cognito_user_pools
+  getBudget(id: ID!): Budget @aws_api_key @aws_cognito_user_pools
+  listBudgets(filter: ModelBudgetFilterInput, limit: Int, nextToken: String): ModelBudgetConnection @aws_api_key @aws_cognito_user_pools
+  getFinancialSummary(id: ID!): FinancialSummary @aws_api_key @aws_cognito_user_pools
+  listFinancialSummaries(filter: ModelFinancialSummaryFilterInput, limit: Int, nextToken: String): ModelFinancialSummaryConnection @aws_api_key @aws_cognito_user_pools
+}
+
+type Mutation {
+  sendMonthlyReport(email: String!): NotificationResult
+  sendBudgetAlert(email: String!, category: String!, exceeded: Float!): NotificationResult
+  createTransaction(input: CreateTransactionInput!, condition: ModelTransactionConditionInput): Transaction @aws_cognito_user_pools
+  updateTransaction(input: UpdateTransactionInput!, condition: ModelTransactionConditionInput): Transaction @aws_cognito_user_pools
+  deleteTransaction(input: DeleteTransactionInput!, condition: ModelTransactionConditionInput): Transaction @aws_cognito_user_pools
+  createBudget(input: CreateBudgetInput!, condition: ModelBudgetConditionInput): Budget @aws_cognito_user_pools
+  updateBudget(input: UpdateBudgetInput!, condition: ModelBudgetConditionInput): Budget @aws_cognito_user_pools
+  deleteBudget(input: DeleteBudgetInput!, condition: ModelBudgetConditionInput): Budget @aws_cognito_user_pools
+  createFinancialSummary(input: CreateFinancialSummaryInput!, condition: ModelFinancialSummaryConditionInput): FinancialSummary @aws_cognito_user_pools
+  updateFinancialSummary(input: UpdateFinancialSummaryInput!, condition: ModelFinancialSummaryConditionInput): FinancialSummary @aws_cognito_user_pools
+  deleteFinancialSummary(input: DeleteFinancialSummaryInput!, condition: ModelFinancialSummaryConditionInput): FinancialSummary @aws_cognito_user_pools
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTransactionConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Transaction]!
+  nextToken: String
+}
+
+input ModelTransactionTypeInput {
+  eq: TransactionType
+  ne: TransactionType
+}
+
+input ModelTransactionFilterInput {
+  id: ModelIDInput
+  description: ModelStringInput
+  amount: ModelFloatInput
+  type: ModelTransactionTypeInput
+  category: ModelStringInput
+  date: ModelStringInput
+  receiptUrl: ModelStringInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTransactionFilterInput]
+  or: [ModelTransactionFilterInput]
+  not: ModelTransactionFilterInput
+}
+
+input ModelTransactionConditionInput {
+  description: ModelStringInput
+  amount: ModelFloatInput
+  type: ModelTransactionTypeInput
+  category: ModelStringInput
+  date: ModelStringInput
+  receiptUrl: ModelStringInput
+  owner: ModelStringInput
+  and: [ModelTransactionConditionInput]
+  or: [ModelTransactionConditionInput]
+  not: ModelTransactionConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTransactionInput {
+  id: ID
+  description: String!
+  amount: Float!
+  type: TransactionType!
+  category: String!
+  date: AWSDateTime!
+  receiptUrl: String
+  owner: String
+}
+
+input UpdateTransactionInput {
+  id: ID!
+  description: String
+  amount: Float
+  type: TransactionType
+  category: String
+  date: AWSDateTime
+  receiptUrl: String
+  owner: String
+}
+
+input DeleteTransactionInput {
+  id: ID!
+}
+
+input ModelSubscriptionTransactionFilterInput {
+  id: ModelSubscriptionIDInput
+  description: ModelSubscriptionStringInput
+  amount: ModelSubscriptionFloatInput
+  type: ModelSubscriptionStringInput
+  category: ModelSubscriptionStringInput
+  date: ModelSubscriptionStringInput
+  receiptUrl: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTransactionFilterInput]
+  or: [ModelSubscriptionTransactionFilterInput]
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateTransaction(filter: ModelSubscriptionTransactionFilterInput, owner: String): Transaction @aws_subscribe(mutations: ["createTransaction"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateTransaction(filter: ModelSubscriptionTransactionFilterInput, owner: String): Transaction @aws_subscribe(mutations: ["updateTransaction"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteTransaction(filter: ModelSubscriptionTransactionFilterInput, owner: String): Transaction @aws_subscribe(mutations: ["deleteTransaction"]) @aws_api_key @aws_cognito_user_pools
+  onCreateBudget(filter: ModelSubscriptionBudgetFilterInput, owner: String): Budget @aws_subscribe(mutations: ["createBudget"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateBudget(filter: ModelSubscriptionBudgetFilterInput, owner: String): Budget @aws_subscribe(mutations: ["updateBudget"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteBudget(filter: ModelSubscriptionBudgetFilterInput, owner: String): Budget @aws_subscribe(mutations: ["deleteBudget"]) @aws_api_key @aws_cognito_user_pools
+  onCreateFinancialSummary(filter: ModelSubscriptionFinancialSummaryFilterInput, owner: String): FinancialSummary @aws_subscribe(mutations: ["createFinancialSummary"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateFinancialSummary(filter: ModelSubscriptionFinancialSummaryFilterInput, owner: String): FinancialSummary @aws_subscribe(mutations: ["updateFinancialSummary"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteFinancialSummary(filter: ModelSubscriptionFinancialSummaryFilterInput, owner: String): FinancialSummary @aws_subscribe(mutations: ["deleteFinancialSummary"]) @aws_api_key @aws_cognito_user_pools
+}
+
+type ModelBudgetConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Budget]!
+  nextToken: String
+}
+
+input ModelBudgetFilterInput {
+  id: ModelIDInput
+  category: ModelStringInput
+  limit: ModelFloatInput
+  month: ModelStringInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelBudgetFilterInput]
+  or: [ModelBudgetFilterInput]
+  not: ModelBudgetFilterInput
+}
+
+input ModelBudgetConditionInput {
+  category: ModelStringInput
+  limit: ModelFloatInput
+  month: ModelStringInput
+  owner: ModelStringInput
+  and: [ModelBudgetConditionInput]
+  or: [ModelBudgetConditionInput]
+  not: ModelBudgetConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateBudgetInput {
+  id: ID
+  category: String!
+  limit: Float!
+  month: String!
+  owner: String
+}
+
+input UpdateBudgetInput {
+  id: ID!
+  category: String
+  limit: Float
+  month: String
+  owner: String
+}
+
+input DeleteBudgetInput {
+  id: ID!
+}
+
+input ModelSubscriptionBudgetFilterInput {
+  id: ModelSubscriptionIDInput
+  category: ModelSubscriptionStringInput
+  limit: ModelSubscriptionFloatInput
+  month: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionBudgetFilterInput]
+  or: [ModelSubscriptionBudgetFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelFinancialSummaryConnection @aws_api_key @aws_cognito_user_pools {
+  items: [FinancialSummary]!
+  nextToken: String
+}
+
+input ModelFinancialSummaryFilterInput {
+  id: ModelIDInput
+  totalIncome: ModelFloatInput
+  totalExpenses: ModelFloatInput
+  balance: ModelFloatInput
+  month: ModelStringInput
+  owner: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelFinancialSummaryFilterInput]
+  or: [ModelFinancialSummaryFilterInput]
+  not: ModelFinancialSummaryFilterInput
+}
+
+input ModelFinancialSummaryConditionInput {
+  totalIncome: ModelFloatInput
+  totalExpenses: ModelFloatInput
+  balance: ModelFloatInput
+  month: ModelStringInput
+  owner: ModelStringInput
+  and: [ModelFinancialSummaryConditionInput]
+  or: [ModelFinancialSummaryConditionInput]
+  not: ModelFinancialSummaryConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateFinancialSummaryInput {
+  id: ID
+  totalIncome: Float!
+  totalExpenses: Float!
+  balance: Float!
+  month: String!
+  owner: String
+}
+
+input UpdateFinancialSummaryInput {
+  id: ID!
+  totalIncome: Float
+  totalExpenses: Float
+  balance: Float
+  month: String
+  owner: String
+}
+
+input DeleteFinancialSummaryInput {
+  id: ID!
+}
+
+input ModelSubscriptionFinancialSummaryFilterInput {
+  id: ModelSubscriptionIDInput
+  totalIncome: ModelSubscriptionFloatInput
+  totalExpenses: ModelSubscriptionFloatInput
+  balance: ModelSubscriptionFloatInput
+  month: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionFinancialSummaryFilterInput]
+  or: [ModelSubscriptionFinancialSummaryFilterInput]
+  owner: ModelStringInput
+}

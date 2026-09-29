@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30authamplifyAuthauthenticatedUserRole653CC0EDRef",
+    "OutputValue": "amplify-discussion2604261-amplifyAuthauthenticatedU-1LlvGIJO4FUB"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30authamplifyAuthunauthenticatedUserRoleAE3DAE47Ref",
+    "OutputValue": "amplify-discussion2604261-amplifyAuthunauthenticate-X0syNMj6Bw9A"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30authamplifyAuthUserPoolAppClient08F43254Ref",
+    "OutputValue": "2ua1bovopogjdbrucppg2ovsvl"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30authamplifyAuthUserPoolD53CCEAFRef",
+    "OutputValue": "us-east-1_7U3vm4vrD"
+  },
+  {
+    "OutputKey": "amplifydiscussionse2esandbox16be747e30authamplifyAuthIdentityPool2B69FEE4Ref",
+    "OutputValue": "us-east-1:48663aa6-2f3e-4bbf-ad42-796f9f4c1673"
+  }
+]

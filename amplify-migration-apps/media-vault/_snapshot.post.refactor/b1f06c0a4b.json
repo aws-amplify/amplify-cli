@@ -1,0 +1,22 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-mediavault-x-x-authuserPoolGroups-x",
+      "LogicalResourceId": "AdminGroup"
+    },
+    "Destination": {
+      "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-mediavault-x-x-authuserPoolGroups-x",
+      "LogicalResourceId": "BasicGroup"
+    },
+    "Destination": {
+      "StackName": "amplify-mediavault-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthBasicGroupC4A5D75D"
+    }
+  }
+]

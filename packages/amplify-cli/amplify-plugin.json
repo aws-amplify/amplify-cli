@@ -1,0 +1,35 @@
+{
+  "name": "core",
+  "type": "core",
+  "commands": [
+    "categories",
+    "configure",
+    "console",
+    "delete",
+    "diagnose",
+    "drift",
+    "env",
+    "export",
+    "gen2-migration",
+    "help",
+    "init",
+    "logout",
+    "migrate",
+    "plugin",
+    "publish",
+    "push",
+    "pull",
+    "run",
+    "status",
+    "uninstall",
+    "upgrade",
+    "version",
+    "build",
+    "report"
+  ],
+  "commandAliases": {
+    "h": "help",
+    "serve": "run",
+    "ls": "status"
+  }
+}

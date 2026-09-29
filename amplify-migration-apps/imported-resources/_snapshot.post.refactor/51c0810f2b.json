@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-importedresources-main-8a9e9-storages34ebf8874-A0JYRTQFCRQ",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "amplify-importedresources-gen2main-branch-908544b6dd-storage0EC3F24A-Y3A4CP55I1Z4",
+      "LogicalResourceId": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket7C2850AF"
+    }
+  }
+]

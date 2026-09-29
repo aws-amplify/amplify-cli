@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-fitnesstracker-x-x-authuserPoolGroups-x",
+      "LogicalResourceId": "AdminGroup"
+    },
+    "Destination": {
+      "StackName": "amplify-fitnesstracker-e2e-sandbox-x-auth179371D7-x",
+      "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04"
+    }
+  }
+]
