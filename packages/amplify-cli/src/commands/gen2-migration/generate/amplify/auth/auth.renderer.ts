@@ -259,7 +259,10 @@ export class AuthRenderer {
 
     defineAuthProperties.push(this.createLogInWithPropertyAssignment(options, loginFlags));
 
-    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes);
+    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(
+      options.userPool.SchemaAttributes,
+      AuthRenderer.deriveLoginMechanisms(options.userPool),
+    );
     const customAttributes = AuthRenderer.deriveCustomUserAttributes(options.userPool.SchemaAttributes);
     const hasStandard = Object.keys(standardAttributes).length > 0;
     const hasCustom = Object.keys(customAttributes).length > 0;
@@ -408,9 +411,24 @@ export class AuthRenderer {
   /**
    * Extracts standard user attributes from schema, keeping required ones
    * and any that appear in the app client read/write attribute lists.
+   *
+   * A standard attribute whose required/mutable is already implied by a login
+   * mechanism (email/phone) is intentionally omitted. The `@aws-amplify/backend`
+   * auth construct already declares email/phone as required user attributes when
+   * they are used as login methods, and it does so with the correct Cognito
+   * AttributeDataType. Re-declaring the same standard attribute here produces a
+   * redundant `standardAttributes` override that the construct renders into a
+   * UserPool Schema member carrying { Name, Required, Mutable } but no
+   * AttributeDataType. CreateUserPool and the CFN import tolerate the missing
+   * data type, but the second-phase UpdateUserPool (fired when an auth Lambda
+   * trigger is attached) validates strictly and rejects it with
+   * "Invalid AttributeDataType input", so only trigger apps fail. Genuinely
+   * non-login required standard attributes (e.g. givenName) are still emitted so
+   * their required/mutable intent is preserved.
    */
   private static deriveStandardUserAttributes(
     schema?: readonly SchemaAttributeType[],
+    loginMechanisms?: { readonly email: boolean; readonly phone: boolean },
   ): Record<string, { readonly required?: boolean; readonly mutable?: boolean }> {
     if (!schema) return {};
     const result: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> = {};
@@ -423,6 +441,15 @@ export class AuthRenderer {
       // https://github.com/aws-amplify/amplify-backend/blob/757e2ce01616ad0c24547c541f1be4d389fd408b/packages/auth-construct/src/types.ts#L599-L602
       // where do optional attributes go? unclear, this might be a gap we have, or it might be that Gen1 has no option to set optional attributes.
       if (!attribute.Required) continue;
+
+      // Skip standard attributes already implied by a login mechanism. loginWith
+      // makes them required with a valid AttributeDataType in the construct, so
+      // restating them here only adds a DataType-less Schema member that breaks
+      // the strict UpdateUserPool validation on trigger apps.
+      const impliedByLogin =
+        (attribute.Name === 'email' && loginMechanisms?.email) ||
+        (attribute.Name === 'phone_number' && loginMechanisms?.phone);
+      if (impliedByLogin) continue;
 
       result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
         required: attribute.Required,

@@ -45,12 +45,6 @@ export const auth = defineAuth({
       logoutUrls: ['https://main.mediavault.amplifyapp.com/'],
     },
   },
-  userAttributes: {
-    email: {
-      required: true,
-      mutable: true,
-    },
-  },
   groups: ['Admin', 'Basic'],
   multifactor: {
     mode: 'OFF',

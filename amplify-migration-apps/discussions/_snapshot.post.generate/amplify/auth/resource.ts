@@ -11,10 +11,6 @@ export const auth = defineAuth({
       required: true,
       mutable: true,
     },
-    phoneNumber: {
-      required: true,
-      mutable: true,
-    },
   },
   multifactor: {
     mode: 'OFF',

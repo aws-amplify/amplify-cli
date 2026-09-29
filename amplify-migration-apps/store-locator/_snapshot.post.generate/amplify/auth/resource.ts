@@ -10,12 +10,6 @@ export const auth = defineAuth({
       verificationEmailBody: () => 'Your verification code is {####}',
     },
   },
-  userAttributes: {
-    email: {
-      required: true,
-      mutable: true,
-    },
-  },
   groups: ['storeLocatorAdmin'],
   triggers: {
     postConfirmation: storelocator41a9495f41a9495fPostConfirmation,

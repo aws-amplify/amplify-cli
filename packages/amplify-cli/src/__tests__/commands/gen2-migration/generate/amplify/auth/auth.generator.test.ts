@@ -606,10 +606,6 @@ describe('AuthGenerator', () => {
           email: true,
         },
         userAttributes: {
-          email: {
-            required: true,
-            mutable: true,
-          },
           givenName: {
             required: true,
             mutable: false,
@@ -2245,10 +2241,6 @@ describe('AuthGenerator', () => {
           email: true,
         },
         userAttributes: {
-          email: {
-            required: true,
-            mutable: true,
-          },
           address: {
             required: true,
             mutable: false,

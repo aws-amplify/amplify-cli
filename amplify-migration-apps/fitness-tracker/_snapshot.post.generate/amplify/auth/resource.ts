@@ -11,12 +11,6 @@ export const auth = defineAuth({
       verificationEmailBody: () => 'Your verification code is {####}',
     },
   },
-  userAttributes: {
-    email: {
-      required: true,
-      mutable: true,
-    },
-  },
   groups: ['Admin'],
   triggers: {
     preSignUp: fitnesstracker33f5545533f55455PreSignup,
