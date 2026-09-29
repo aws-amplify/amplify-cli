@@ -22,7 +22,12 @@ import { extractStackNameFromId } from '../gen2-migration/_common/utils';
  * Known false-positive filters applied to Phase 1 drift results.
  * Add new filters here instead of modifying the detection loop.
  */
-const FALSE_POSITIVE_FILTERS = [isAmplifyAuthRoleDenyToAllowChange, isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift] as const;
+const FALSE_POSITIVE_FILTERS = [
+  isAmplifyAuthRoleDenyToAllowChange,
+  isAmplifyRestApiDescriptionDrift,
+  isAmplifyTriggerPolicyDrift,
+  isAppSyncApiKeyExpiresTimeRelativeDrift,
+] as const;
 
 /**
  * Enriched drift tree node — one per stack (root or nested)
@@ -220,6 +225,37 @@ export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff:
   } catch (e: any) {
     print.debug(`Failed to parse trigger policy JSON: ${e.message || 'Unknown error'}`);
     return false;
+  }
+
+  return false;
+}
+
+/**
+ * Check if a property difference is a time-relative AppSync ApiKey /Expires false positive.
+ *
+ * An ApiKey Expires value is computed as createTime + validity at deploy time, then
+ * re-derived at a later lock time during drift detection, so the two epoch timestamps
+ * legitimately differ. This is safe because a real configuration change never manifests
+ * as an /Expires value drift, and the epoch guard prevents this filter from masking any
+ * non-timestamp mutation.
+ */
+export function isAppSyncApiKeyExpiresTimeRelativeDrift(
+  drift: StackResourceDrift,
+  propDiff: PropertyDifference,
+  print: SpinningLogger,
+): boolean {
+  if (drift.ResourceType !== 'AWS::AppSync::ApiKey') return false;
+  if (propDiff.PropertyPath !== '/Expires') return false;
+
+  const expected = Number(propDiff.ExpectedValue);
+  const actual = Number(propDiff.ActualValue);
+  const isEpochLike = (n: number): boolean => Number.isFinite(n) && n > 1_600_000_000;
+
+  if (isEpochLike(expected) && isEpochLike(actual)) {
+    print.debug(
+      `Filtering false positive: time-relative AppSync ApiKey /Expires drift on ${drift.LogicalResourceId} (expected=${propDiff.ExpectedValue}, actual=${propDiff.ActualValue})`,
+    );
+    return true;
   }
 
   return false;
