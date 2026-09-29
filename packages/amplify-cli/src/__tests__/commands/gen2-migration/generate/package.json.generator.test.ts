@@ -31,12 +31,12 @@ describe('RootPackageJsonGenerator', () => {
         "name": "amplify-gen2",
         "dependencies": {},
         "devDependencies": {
-          "@aws-amplify/backend": "^1.18.0",
+          "@aws-amplify/backend": "~1.23.0",
           "@aws-amplify/backend-cli": "^1.8.0",
           "@aws-amplify/backend-data": "^1.6.2",
           "@types/node": "*",
-          "aws-cdk": "^2",
-          "aws-cdk-lib": "^2",
+          "aws-cdk": "~2.254.0",
+          "aws-cdk-lib": "~2.254.0",
           "ci-info": "^4.3.1",
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
@@ -63,12 +63,12 @@ describe('RootPackageJsonGenerator', () => {
           "some-lib": "^1.0.0"
         },
         "devDependencies": {
-          "@aws-amplify/backend": "^1.18.0",
+          "@aws-amplify/backend": "~1.23.0",
           "@aws-amplify/backend-cli": "^1.8.0",
           "@aws-amplify/backend-data": "^1.6.2",
           "@types/node": "*",
-          "aws-cdk": "^2",
-          "aws-cdk-lib": "^2",
+          "aws-cdk": "~2.254.0",
+          "aws-cdk-lib": "~2.254.0",
           "ci-info": "^4.3.1",
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
@@ -101,12 +101,12 @@ describe('RootPackageJsonGenerator', () => {
           "react": "^18"
         },
         "devDependencies": {
-          "@aws-amplify/backend": "^1.18.0",
+          "@aws-amplify/backend": "~1.23.0",
           "@aws-amplify/backend-cli": "^1.8.0",
           "@aws-amplify/backend-data": "^1.6.2",
           "@types/node": "*",
-          "aws-cdk": "^2",
-          "aws-cdk-lib": "^2",
+          "aws-cdk": "~2.254.0",
+          "aws-cdk-lib": "~2.254.0",
           "ci-info": "^4.3.1",
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
@@ -115,5 +115,25 @@ describe('RootPackageJsonGenerator', () => {
       }
       "
     `);
+  });
+
+  it('pins aws-cdk, aws-cdk-lib and @aws-amplify/backend to bounded tilde ranges (no unbounded caret)', async () => {
+    const gen = new RootPackageJsonGenerator(outputDir);
+    const ops = await gen.plan();
+    await ops[0].execute();
+
+    const content = await fs.readFile(path.join(outputDir, 'package.json'), 'utf-8');
+    const pkg = JSON.parse(content) as { devDependencies: Record<string, string> };
+    const dev = pkg.devDependencies;
+
+    for (const name of ['aws-cdk', 'aws-cdk-lib', '@aws-amplify/backend']) {
+      expect(dev[name]).not.toBe('^2');
+      expect(dev[name]).not.toBe('^1.18.0');
+      expect(dev[name]).toMatch(/^~\d+\.\d+\.\d+$/);
+    }
+
+    expect(dev['aws-cdk-lib']).toBe('~2.254.0');
+    expect(dev['aws-cdk']).toBe('~2.254.0');
+    expect(dev['@aws-amplify/backend']).toBe('~1.23.0');
   });
 });

@@ -13,12 +13,17 @@ type PackageJson = {
 };
 
 const GEN2_DEV_DEPENDENCIES: Record<string, string> = {
-  '@aws-amplify/backend': '^1.18.0',
+  // Generated apps ship with no committed lockfile, so an unbounded `^` range floats
+  // per ampx-sandbox run. Bounding backend + aws-cdk to the last-known-good minor keeps
+  // installs reproducible and blocks the float to auth-construct 1.12.0 / aws-cdk-lib
+  // 2.271 that broke the Cognito UserPool UPDATE ('Invalid AttributeDataType'). Other
+  // packages keep caret intentionally.
+  '@aws-amplify/backend': '~1.23.0',
   '@aws-amplify/backend-cli': '^1.8.0',
   '@aws-amplify/backend-data': '^1.6.2',
   '@types/node': '*',
-  'aws-cdk': '^2',
-  'aws-cdk-lib': '^2',
+  'aws-cdk': '~2.254.0',
+  'aws-cdk-lib': '~2.254.0',
   'ci-info': '^4.3.1',
   constructs: '^10.0.0',
   esbuild: '^0.27.0',
