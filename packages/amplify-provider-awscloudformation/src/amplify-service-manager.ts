@@ -153,6 +153,16 @@ export async function init(amplifyServiceParams) {
           resolution: 'https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html',
         });
       }
+      if (e.code === 'InvalidSignatureException') {
+        throw new AmplifyError(
+          'ProjectInitError',
+          {
+            message: 'The request signature we calculated does not match the signature you provided',
+            resolution: 'Check your AWS Secret Access Key',
+          },
+          e,
+        );
+      }
       // default fault
       throw new AmplifyFault(
         'ProjectInitFault',
