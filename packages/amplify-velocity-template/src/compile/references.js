@@ -74,6 +74,10 @@ module.exports = function (Velocity, utils) {
       return base[property];
     }
 
+    if (isBlockedProperty(property)) {
+      return undefined;
+    }
+
     var letter = property.charCodeAt(0);
     var isUpper = letter < 91;
     var ret = base[property];
@@ -90,6 +94,12 @@ module.exports = function (Velocity, utils) {
     if (!isUpper) {
       // address => Address
       property = String.fromCharCode(letter).toUpperCase() + property.slice(1);
+    }
+
+    // Re-check after case normalization so getConstructor() cannot map to
+    // "Constructor" then lowercase to "constructor" and reach the prototype chain.
+    if (isBlockedProperty(property)) {
+      return undefined;
     }
 
     return base[property];
@@ -258,7 +268,11 @@ module.exports = function (Velocity, utils) {
       }
 
       if (id === 'set' && !(id in baseRef)) {
-        baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]);
+        var setKey = this.getLiteral(property.args[0]);
+        if (isBlockedProperty(setKey)) {
+          return '';
+        }
+        baseRef[setKey] = this.getLiteral(property.args[1]);
         return '';
       }
 
@@ -269,7 +283,11 @@ module.exports = function (Velocity, utils) {
 
       // setter 处理
       if (id.indexOf('set') === 0 && !baseRef[id]) {
-        baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
+        var setterKey = id.slice(3);
+        if (isBlockedProperty(setterKey)) {
+          return baseRef;
+        }
+        baseRef[setterKey] = this.getLiteral(property.args[0]);
         // $page.setName(123)
         baseRef.toString = function () {
           return '';
@@ -289,7 +307,11 @@ module.exports = function (Velocity, utils) {
       } else if (id === 'size' && !baseRef[id]) {
         return getSize(baseRef);
       } else if (id === 'put' && !baseRef[id]) {
-        return (baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]));
+        var putKey = this.getLiteral(property.args[0]);
+        if (isBlockedProperty(putKey)) {
+          return undefined;
+        }
+        return (baseRef[putKey] = this.getLiteral(property.args[1]));
       } else if (id === 'add' && !baseRef[id] && typeof baseRef.push === 'function') {
         return baseRef.push(this.getLiteral(property.args[0]));
       } else if (id === 'remove') {
