@@ -19,6 +19,16 @@ const backend = defineBackend({
 
 export type Backend = typeof backend;
 
+backend.auth.resources.userPool.grant(
+  backend.admin.resources.lambda,
+  'cognito-idp:AdminGetDevice',
+  'cognito-idp:AdminGetUser',
+  'cognito-idp:AdminListDevices',
+  'cognito-idp:AdminListGroupsForUser',
+  'cognito-idp:ListGroups',
+  'cognito-idp:ListUsers',
+  'cognito-idp:ListUsersInGroup'
+);
 nutritionapi.defineNutritionapiApi(backend);
 adminapi.defineAdminapiApi(backend);
 

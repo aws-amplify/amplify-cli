@@ -1,5 +1,4 @@
 import { defineStorage } from '@aws-amplify/backend';
-import { thumbnailgen } from '../function/thumbnailgen/resource';
 import { CfnResource } from 'aws-cdk-lib';
 import type { Backend } from '../backend';
 
@@ -15,20 +14,17 @@ export const storage = defineStorage({
       allow.authenticated.to(['write', 'read', 'delete']),
       allow.groups(['Admin']).to(['write', 'read', 'delete']),
       allow.groups(['Basic']).to(['read']),
-      allow.resource(thumbnailgen).to(['read', 'write', 'delete']),
     ],
     'protected/{entity_id}/*': [
       allow.entity('identity').to(['write', 'read', 'delete']),
       allow.authenticated.to(['read']),
       allow.groups(['Admin']).to(['write', 'read', 'delete']),
       allow.groups(['Basic']).to(['read']),
-      allow.resource(thumbnailgen).to(['read', 'write', 'delete']),
     ],
     'private/{entity_id}/*': [
       allow.entity('identity').to(['write', 'read', 'delete']),
       allow.groups(['Admin']).to(['write', 'read', 'delete']),
       allow.groups(['Basic']).to(['read']),
-      allow.resource(thumbnailgen).to(['read', 'write', 'delete']),
     ],
   }),
 });

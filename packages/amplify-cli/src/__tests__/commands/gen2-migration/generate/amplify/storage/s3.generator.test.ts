@@ -121,10 +121,7 @@ describe('S3Generator', () => {
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({}),
-      });
+      export const storage = defineStorage({ name: \`myBucket-main-\${branchName}\` });
 
       export function postRefactor(backend: Backend) {
         const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
@@ -596,7 +593,7 @@ describe('S3Generator', () => {
     `);
   });
 
-  it('renders function access patterns with imports', async () => {
+  it('emits function access as forward-direction grants in backend.ts', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
       storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
@@ -620,52 +617,37 @@ describe('S3Generator', () => {
     );
     generator.addFunctionAccess('processImages', ['read', 'write']);
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-      "import { defineStorage } from '@aws-amplify/backend';
-      import { processImages } from '../function/processImages/resource';
-      import { CfnResource } from 'aws-cdk-lib';
-      import type { Backend } from '../backend';
+    // Function->storage access must NOT be emitted as a reverse-direction
+    // allow.resource(fn) entry in the defineStorage access block (that creates a
+    // storage->function dependency and causes circular dependencies). With no
+    // guest/authenticated/group access, resource.ts has no access block and does
+    // not import the function.
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).not.toContain('access:');
+    expect(resourceTs).not.toContain('allow.resource');
+    expect(resourceTs).not.toContain("from '../function/processImages/resource'");
 
-      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({
-          'public/*': [allow.resource(processImages).to(['read', 'write'])],
-          'protected/{entity_id}/*': [
-            allow.resource(processImages).to(['read', 'write']),
-          ],
-          'private/{entity_id}/*': [
-            allow.resource(processImages).to(['read', 'write']),
-          ],
-        }),
-      });
-
-      export function postRefactor(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        s3Bucket.bucketName = 'myBucket-main-abc123';
-      }
-
-      export function applyEscapeHatches(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        for (const cfnResource of backend.storage.stack.node
-          .findAll()
-          .filter(
-            (c) =>
-              CfnResource.isCfnResource(c) &&
-              ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
-                c.cfnResourceType
-              )
-          )) {
-          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-        }
-      }
-      "
-    `);
+    // read + write emits an explicit IAM policy with the EXACT Amplify action set
+    // (GetObject + PutObject + ListBucket) and crucially NO s3:DeleteObject — a
+    // CDK bucket.grantReadWrite would have bundled DeleteObject in, over-granting
+    // a function whose Gen1 access was read+write only.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      'backend.processImages.resources.lambda.addToRolePolicy(\n' +
+        '  new PolicyStatement({\n' +
+        '    effect: Effect.ALLOW,\n' +
+        "    actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],\n" +
+        "    resources: [backend.storage.resources.bucket.arnForObjects('*'), backend.storage.resources.bucket.bucketArn],\n" +
+        '  }),\n' +
+        ');',
+    );
+    // The emitted statement must not carry a delete action.
+    const [[emitted]] = addPostDefineBackendStatementSpy.mock.calls;
+    expect(emitted).not.toContain('s3:DeleteObject');
   });
 
   it('renders triggers with function imports', async () => {
@@ -707,7 +689,6 @@ describe('S3Generator', () => {
 
       export const storage = defineStorage({
         name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({}),
         triggers: {
           onUpload: onUploadFn,
           onDelete: onDeleteFn,
@@ -763,48 +744,118 @@ describe('S3Generator', () => {
     generator.addFunctionAccess('myFunc', ['read']);
     generator.addFunctionAccess('myFunc', ['write']);
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(writtenFile('resource.ts')).toMatchInlineSnapshot(`
-      "import { defineStorage } from '@aws-amplify/backend';
-      import { myFunc } from '../function/myFunc/resource';
-      import { CfnResource } from 'aws-cdk-lib';
-      import type { Backend } from '../backend';
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).not.toContain('access:');
+    expect(resourceTs).not.toContain('allow.resource');
+    expect(resourceTs).not.toContain("from '../function/myFunc/resource'");
 
-      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+    // Duplicate addFunctionAccess calls consolidate: read + write -> one policy
+    // statement with GetObject + PutObject + ListBucket (no DeleteObject), emitted
+    // once into backend.ts.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledTimes(1);
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      'backend.myFunc.resources.lambda.addToRolePolicy(\n' +
+        '  new PolicyStatement({\n' +
+        '    effect: Effect.ALLOW,\n' +
+        "    actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],\n" +
+        "    resources: [backend.storage.resources.bucket.arnForObjects('*'), backend.storage.resources.bucket.bucketArn],\n" +
+        '  }),\n' +
+        ');',
+    );
+  });
 
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({
-          'public/*': [allow.resource(myFunc).to(['read', 'write'])],
-          'protected/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
-          'private/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
-        }),
+  it('emits exact per-variant actions for delete-only, read+delete, and write-only access', async () => {
+    const runVariant = async (functionName: string, perms: ('read' | 'write' | 'create' | 'delete')[]) => {
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
       });
+      jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: [] });
+      jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+      jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+      jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
 
-      export function postRefactor(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        s3Bucket.bucketName = 'myBucket-main-abc123';
-      }
+      const bg = new BackendGenerator(outputDir, logger);
+      const generator = new S3Generator(
+        gen1App,
+        bg,
+        outputDir,
+        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+        logger,
+      );
+      generator.addFunctionAccess(functionName, perms);
+      const spy = jest.spyOn(bg, 'addPostDefineBackendStatement');
+      const ops = await generator.plan();
+      await ops[0].execute();
+      expect(spy).toHaveBeenCalledTimes(1);
+      return spy.mock.calls[0][0] as string;
+    };
 
-      export function applyEscapeHatches(backend: Backend) {
-        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-        for (const cfnResource of backend.storage.stack.node
-          .findAll()
-          .filter(
-            (c) =>
-              CfnResource.isCfnResource(c) &&
-              ['AWS::S3::Bucket', 'Custom::S3AutoDeleteObjects'].includes(
-                c.cfnResourceType
-              )
-          )) {
-          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-        }
-      }
-      "
-    `);
+    // delete-only: DeleteObject on objects, no ListBucket, no read/write.
+    const deleteOnly = await runVariant('delFn', ['delete']);
+    expect(deleteOnly).toContain("actions: ['s3:DeleteObject']");
+    expect(deleteOnly).toContain("resources: [backend.storage.resources.bucket.arnForObjects('*')]");
+    expect(deleteOnly).not.toContain('s3:GetObject');
+    expect(deleteOnly).not.toContain('s3:ListBucket');
+
+    // read + delete: GetObject + DeleteObject + ListBucket (read pulls in ListBucket + bucketArn), no PutObject.
+    const readDelete = await runVariant('rdFn', ['read', 'delete']);
+    expect(readDelete).toContain("actions: ['s3:DeleteObject', 's3:GetObject', 's3:ListBucket']");
+    expect(readDelete).toContain('backend.storage.resources.bucket.bucketArn');
+    expect(readDelete).not.toContain('s3:PutObject');
+
+    // write-only: PutObject only, no ListBucket (read absent), no DeleteObject.
+    const writeOnly = await runVariant('wFn', ['write']);
+    expect(writeOnly).toContain("actions: ['s3:PutObject']");
+    expect(writeOnly).toContain("resources: [backend.storage.resources.bucket.arnForObjects('*')]");
+    expect(writeOnly).not.toContain('s3:ListBucket');
+    expect(writeOnly).not.toContain('s3:DeleteObject');
+    expect(writeOnly).not.toContain('s3:GetObject');
+  });
+
+  it('emits both identity access AND a function grant when a bucket has both', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      storage: { myBucket: { service: 'S3', output: { BucketName: 'myBucket-main-abc123' } } },
+    });
+    // guest read access AND a function grant on the same bucket.
+    jest.spyOn(gen1App, 'cliInputs').mockReturnValue({ authAccess: [], guestAccess: ['READ'] });
+    jest.spyOn(gen1App.aws, 'fetchBucketAccelerate').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketVersioning').mockResolvedValue(undefined);
+    jest.spyOn(gen1App.aws, 'fetchBucketEncryption').mockResolvedValue(undefined);
+
+    const generator = new S3Generator(
+      gen1App,
+      backendGenerator,
+      outputDir,
+      { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+      logger,
+    );
+    generator.addFunctionAccess('mixedFn', ['read']);
+
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    // Identity (guest) access stays in the defineStorage access block...
+    const resourceTs = writtenFile('resource.ts');
+    expect(resourceTs).toContain('access:');
+    expect(resourceTs).toContain('guest');
+    // ...and the function grant is still emitted forward-direction in backend.ts.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      'backend.mixedFn.resources.lambda.addToRolePolicy(\n' +
+        '  new PolicyStatement({\n' +
+        '    effect: Effect.ALLOW,\n' +
+        "    actions: ['s3:GetObject', 's3:ListBucket'],\n" +
+        "    resources: [backend.storage.resources.bucket.arnForObjects('*'), backend.storage.resources.bucket.bucketArn],\n" +
+        '  }),\n' +
+        ');',
+    );
   });
 
   it('renders empty access when no access patterns configured', async () => {
@@ -839,10 +890,7 @@ describe('S3Generator', () => {
 
       const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
-      export const storage = defineStorage({
-        name: \`myBucket-main-\${branchName}\`,
-        access: (allow) => ({}),
-      });
+      export const storage = defineStorage({ name: \`myBucket-main-\${branchName}\` });
 
       export function postRefactor(backend: Backend) {
         const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;

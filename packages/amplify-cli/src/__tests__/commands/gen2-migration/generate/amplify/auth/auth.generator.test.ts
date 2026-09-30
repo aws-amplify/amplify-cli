@@ -1,4 +1,5 @@
 import { AuthGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/auth/auth.generator';
+import { AuthPermissions } from '../../../../../../commands/gen2-migration/generate/amplify/auth/auth.renderer';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate/amplify/backend.generator';
 import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
@@ -1456,69 +1457,27 @@ describe('AuthGenerator', () => {
       permissions: { manageUsers: true, listUsers: true },
     });
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-      "import { defineAuth } from '@aws-amplify/backend';
-      import { adminFunc } from '../function/adminFunc/resource';
-      import { CfnResource, Duration } from 'aws-cdk-lib';
-      import type { Backend } from '../backend';
+    // Function->auth access must NOT be emitted as a reverse-direction access
+    // block on defineAuth (that creates an auth->function dependency and causes
+    // circular dependencies). The generated auth/resource.ts has no access block
+    // and does not import the function.
+    const resourceTs = writtenFile('auth/resource.ts');
+    expect(resourceTs).not.toContain('access:');
+    expect(resourceTs).not.toContain('allow.resource');
+    expect(resourceTs).not.toContain("from '../function/adminFunc/resource'");
 
-      export const auth = defineAuth({
-        loginWith: {
-          email: true,
-        },
-        multifactor: {
-          mode: 'OFF',
-        },
-        access: (allow) => [
-          allow.resource(adminFunc).to(['manageUsers']),
-          allow.resource(adminFunc).to(['listUsers']),
-        ],
-      });
-
-      export function applyEscapeHatches(backend: Backend) {
-        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-        cfnUserPool.usernameAttributes = undefined;
-        cfnUserPool.policies = {
-          passwordPolicy: {},
-        };
-        const userPool = backend.auth.resources.userPool;
-        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
-          disableOAuth: true,
-          generateSecret: false,
-        });
-        const cognitoProviders =
-          backend.auth.resources.cfnResources.cfnIdentityPool
-            .cognitoIdentityProviders;
-        if (cognitoProviders && Array.isArray(cognitoProviders)) {
-          cognitoProviders.push({
-            clientId: nativeUserPoolClient.userPoolClientId,
-            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
-          });
-        }
-        for (const cfnResource of backend.auth.stack.node
-          .findAll()
-          .filter(
-            (c) =>
-              CfnResource.isCfnResource(c) &&
-              [
-                'AWS::Cognito::UserPool',
-                'AWS::Cognito::IdentityPool',
-                'AWS::Cognito::UserPoolClient',
-                'AWS::Cognito::IdentityPoolRoleAttachment',
-                'AWS::Cognito::UserPoolGroup',
-                'AWS::Cognito::UserPoolDomain',
-                'AWS::Cognito::UserPoolIdentityProvider',
-              ].includes(c.cfnResourceType)
-          )) {
-          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-        }
-      }
-      "
-    `);
+    // Instead, a forward-direction grant is emitted into backend.ts on the
+    // underlying user pool construct, keeping the dependency function->auth.
+    // manageUsers + listUsers consolidate into one grant call with sorted,
+    // de-duplicated cognito-idp actions (ListUsers appears once).
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      "backend.auth.resources.userPool.grant(backend.adminFunc.resources.lambda, 'cognito-idp:AdminConfirmSignUp', 'cognito-idp:AdminCreateUser', 'cognito-idp:AdminDeleteUser', 'cognito-idp:AdminDeleteUserAttributes', 'cognito-idp:AdminDisableUser', 'cognito-idp:AdminEnableUser', 'cognito-idp:AdminGetUser', 'cognito-idp:AdminListGroupsForUser', 'cognito-idp:AdminRespondToAuthChallenge', 'cognito-idp:AdminSetUserMFAPreference', 'cognito-idp:AdminSetUserSettings', 'cognito-idp:AdminUpdateUserAttributes', 'cognito-idp:AdminUserGlobalSignOut', 'cognito-idp:ListUsers');",
+    );
   });
 
   it('generates multiple functions with auth access', async () => {
@@ -1551,71 +1510,22 @@ describe('AuthGenerator', () => {
     generator.addFunctionAuthAccess({ resourceName: 'func1', permissions: { createUser: true } });
     generator.addFunctionAuthAccess({ resourceName: 'func2', permissions: { deleteUser: true, getUser: true } });
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(writtenFile('auth/resource.ts')).toMatchInlineSnapshot(`
-      "import { defineAuth } from '@aws-amplify/backend';
-      import { func1 } from '../function/func1/resource';
-      import { func2 } from '../function/func2/resource';
-      import { CfnResource, Duration } from 'aws-cdk-lib';
-      import type { Backend } from '../backend';
+    const resourceTs = writtenFile('auth/resource.ts');
+    expect(resourceTs).not.toContain('access:');
+    expect(resourceTs).not.toContain('allow.resource');
 
-      export const auth = defineAuth({
-        loginWith: {
-          email: true,
-        },
-        multifactor: {
-          mode: 'OFF',
-        },
-        access: (allow) => [
-          allow.resource(func1).to(['createUser']),
-          allow.resource(func2).to(['deleteUser']),
-          allow.resource(func2).to(['getUser']),
-        ],
-      });
-
-      export function applyEscapeHatches(backend: Backend) {
-        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-        cfnUserPool.usernameAttributes = undefined;
-        cfnUserPool.policies = {
-          passwordPolicy: {},
-        };
-        const userPool = backend.auth.resources.userPool;
-        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
-          disableOAuth: true,
-          generateSecret: false,
-        });
-        const cognitoProviders =
-          backend.auth.resources.cfnResources.cfnIdentityPool
-            .cognitoIdentityProviders;
-        if (cognitoProviders && Array.isArray(cognitoProviders)) {
-          cognitoProviders.push({
-            clientId: nativeUserPoolClient.userPoolClientId,
-            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
-          });
-        }
-        for (const cfnResource of backend.auth.stack.node
-          .findAll()
-          .filter(
-            (c) =>
-              CfnResource.isCfnResource(c) &&
-              [
-                'AWS::Cognito::UserPool',
-                'AWS::Cognito::IdentityPool',
-                'AWS::Cognito::UserPoolClient',
-                'AWS::Cognito::IdentityPoolRoleAttachment',
-                'AWS::Cognito::UserPoolGroup',
-                'AWS::Cognito::UserPoolDomain',
-                'AWS::Cognito::UserPoolIdentityProvider',
-              ].includes(c.cfnResourceType)
-          )) {
-          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
-          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
-        }
-      }
-      "
-    `);
+    // One forward-direction grant per function, with per-function actions sorted.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      "backend.auth.resources.userPool.grant(backend.func1.resources.lambda, 'cognito-idp:AdminCreateUser');",
+    );
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      "backend.auth.resources.userPool.grant(backend.func2.resources.lambda, 'cognito-idp:AdminDeleteUser', 'cognito-idp:AdminGetUser');",
+    );
   });
 
   it('skips functions with empty auth access', async () => {
@@ -1647,12 +1557,237 @@ describe('AuthGenerator', () => {
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
     generator.addFunctionAuthAccess({ resourceName: 'noAccessFunc', permissions: {} });
 
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
     const ops = await generator.plan();
     await ops[0].execute();
 
     const resourceTs = writtenFile('auth/resource.ts');
     expect(resourceTs).not.toContain('access');
     expect(resourceTs).not.toContain('noAccessFunc');
+    // A function with no enabled permissions produces no grant statement.
+    expect(addPostDefineBackendStatementSpy).not.toHaveBeenCalled();
+  });
+
+  it('emits no grant and no warning when no function access is registered', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+    const warnSpy = jest.spyOn(logger, 'warn');
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    expect(addPostDefineBackendStatementSpy).not.toHaveBeenCalled();
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('consolidates overlapping permissions across duplicate function entries into one grant', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // Same function registered twice; getUser overlaps with manageUsers' action set.
+    generator.addFunctionAuthAccess({ resourceName: 'dupFunc', permissions: { getUser: true } });
+    generator.addFunctionAuthAccess({ resourceName: 'dupFunc', permissions: { manageUsers: true } });
+
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    // A single grant statement for the function, with actions de-duplicated
+    // (AdminGetUser appears once despite getUser + manageUsers both granting it)
+    // and sorted.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledTimes(1);
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      "backend.auth.resources.userPool.grant(backend.dupFunc.resources.lambda, 'cognito-idp:AdminConfirmSignUp', 'cognito-idp:AdminCreateUser', 'cognito-idp:AdminDeleteUser', 'cognito-idp:AdminDeleteUserAttributes', 'cognito-idp:AdminDisableUser', 'cognito-idp:AdminEnableUser', 'cognito-idp:AdminGetUser', 'cognito-idp:AdminListGroupsForUser', 'cognito-idp:AdminRespondToAuthChallenge', 'cognito-idp:AdminSetUserMFAPreference', 'cognito-idp:AdminSetUserSettings', 'cognito-idp:AdminUpdateUserAttributes', 'cognito-idp:AdminUserGlobalSignOut', 'cognito-idp:ListUsers');",
+    );
+  });
+
+  it('falls back to a raw cognito-idp action and warns for an unknown permission', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // A permission name not in PERMISSION_ACTION_MAP (simulates upstream drift).
+    generator.addFunctionAuthAccess({
+      resourceName: 'futureFunc',
+      permissions: { someFuturePermission: true } as unknown as AuthPermissions,
+    });
+
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+    const warnSpy = jest.spyOn(logger, 'warn');
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    // The unknown permission is emitted as a raw cognito-idp:<permission> action
+    // rather than dropped, so nothing is silently lost.
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      "backend.auth.resources.userPool.grant(backend.futureFunc.resources.lambda, 'cognito-idp:someFuturePermission');",
+    );
+    // ...and the operator is warned so they can verify the generated action.
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('someFuturePermission'));
+  });
+
+  it('throws at generate time when a function name is not a valid JS identifier', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // A hyphenated name would interpolate as invalid TS (backend.my-func.resources.lambda).
+    generator.addFunctionAuthAccess({ resourceName: 'my-func', permissions: { getUser: true } });
+
+    const ops = await generator.plan();
+    await expect(ops[0].execute()).rejects.toThrow(/not a valid JavaScript identifier/);
+  });
+
+  it('routes trigger-function auth access to the defineAuth access block and non-trigger access to a backend.ts grant', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // triggerFn is BOTH a postConfirmation trigger AND has auth access.
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'triggerFn' });
+    generator.addFunctionAuthAccess({ resourceName: 'triggerFn', permissions: { addUserToGroup: true } });
+    // plainFn only has auth access (no trigger).
+    generator.addFunctionAuthAccess({ resourceName: 'plainFn', permissions: { getUser: true } });
+
+    const addPostDefineBackendStatementSpy = jest.spyOn(backendGenerator, 'addPostDefineBackendStatement');
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('auth/resource.ts');
+    // Trigger function's access rides the defineAuth `access` block (a trigger
+    // already couples auth<->function, and Amplify co-locates the grant — no new
+    // cross-stack edge, so no circular dependency).
+    expect(resourceTs).toContain('access: (allow)');
+    expect(resourceTs).toContain('allow.resource(triggerFn).to');
+    // ...and is NOT emitted as a backend.ts userPool.grant.
+    const backendGrants = addPostDefineBackendStatementSpy.mock.calls.map((c) => c[0] as string);
+    expect(backendGrants.some((s) => s.includes('backend.triggerFn.resources.lambda'))).toBe(false);
+
+    // Non-trigger function's access uses the forward backend.ts grant (the #14727
+    // fix) and does NOT appear in the defineAuth access block.
+    expect(resourceTs).not.toContain('allow.resource(plainFn)');
+    expect(addPostDefineBackendStatementSpy).toHaveBeenCalledWith(
+      "backend.auth.resources.userPool.grant(backend.plainFn.resources.lambda, 'cognito-idp:AdminGetUser');",
+    );
   });
 
   it('emits cfnIdentityPool.allowUnauthenticatedIdentities = false', async () => {

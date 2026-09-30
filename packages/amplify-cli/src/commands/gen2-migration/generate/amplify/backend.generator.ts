@@ -20,6 +20,7 @@ import { SpinningLogger } from '../../_common/spinning-logger';
  */
 export class BackendGenerator implements Planner {
   private readonly namespaceImports: NamespaceImport[] = [];
+  private readonly namedImports: Record<string, Set<string>> = {};
   private readonly defineBackendEntries: DefineBackendEntry[] = [];
   private readonly applyEscapeHatchesCalls: EscapeHatchCall[] = [];
   private readonly postRefactorCalls: string[] = [];
@@ -39,6 +40,18 @@ export class BackendGenerator implements Planner {
    */
   public addNamespaceImport(alias: string, source: string): void {
     this.namespaceImports.push({ alias, source });
+  }
+
+  /**
+   * Adds a named import: `import { name } from 'source';`. Deduplicated per
+   * source, so multiple callers requesting the same symbol collapse to one
+   * import specifier (e.g. several categories emitting IAM policy statements).
+   */
+  public addNamedImport(source: string, name: string): void {
+    if (!this.namedImports[source]) {
+      this.namedImports[source] = new Set();
+    }
+    this.namedImports[source].add(name);
   }
 
   /**
@@ -93,6 +106,7 @@ export class BackendGenerator implements Planner {
         execute: async () => {
           const options: BackendRenderOptions = {
             namespaceImports: this.namespaceImports,
+            namedImports: this.namedImports,
             defineBackendEntries: this.defineBackendEntries,
             postDefineBackendCalls: this.postDefineBackendCalls,
             postDefineBackendStatements: this.postDefineBackendStatements,
