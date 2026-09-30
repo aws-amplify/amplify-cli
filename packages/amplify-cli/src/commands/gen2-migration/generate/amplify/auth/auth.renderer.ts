@@ -147,6 +147,39 @@ const MAPPED_USER_ATTRIBUTE_NAME: Record<string, string> = {
   website: 'website',
 };
 
+/**
+ * Cognito standard user-pool attribute names mapped to their fixed
+ * AttributeDataType. Cognito standard attributes have a fixed data type, but
+ * the @aws-amplify/backend auth construct and CDK emit login-derived required
+ * standard attributes (email/phone) into the UserPool Schema as
+ * { Name, Required, Mutable } with NO AttributeDataType. CreateUserPool and CFN
+ * import tolerate the omission, but a second-phase UpdateUserPool (fired when an
+ * auth Lambda trigger is attached) validates strictly and rejects it with
+ * "Invalid AttributeDataType input". The gen2-migration escape hatch re-emits
+ * the Schema with a valid AttributeDataType per member to satisfy that update.
+ */
+const STANDARD_ATTRIBUTE_DATA_TYPE: Record<string, string> = {
+  address: 'String',
+  birthdate: 'String',
+  email: 'String',
+  family_name: 'String',
+  gender: 'String',
+  given_name: 'String',
+  locale: 'String',
+  middle_name: 'String',
+  name: 'String',
+  nickname: 'String',
+  phone_number: 'String',
+  picture: 'String',
+  preferred_username: 'String',
+  profile: 'String',
+  zoneinfo: 'String',
+  website: 'String',
+  email_verified: 'Boolean',
+  phone_number_verified: 'Boolean',
+  updated_at: 'Number',
+};
+
 const MAP_IDENTITY_PROVIDER: Record<string, [string, string]> = {
   [IdentityProviderTypeType.Google]: ['googleLogin', 'googleAttributes'],
   [IdentityProviderTypeType.SignInWithApple]: ['appleLogin', 'appleAttributes'],
@@ -537,6 +570,46 @@ export class AuthRenderer {
       overrides.aliasAttributes = userPool.AliasAttributes;
     }
     return overrides;
+  }
+
+  /**
+   * Builds an explicit UserPool Schema override that carries a valid
+   * AttributeDataType for every standard attribute the pool declares. This is
+   * required because the @aws-amplify/backend auth construct always injects a
+   * login-derived required standard attribute (email/phone via loginWith) and
+   * CDK renders it into the CFN Schema without an AttributeDataType. Cognito's
+   * CreateUserPool tolerates the missing type, but the second-phase
+   * UpdateUserPool fired when an auth Lambda trigger is attached rejects it with
+   * "Invalid AttributeDataType input". Re-emitting the Schema with the fixed
+   * Cognito data type per standard attribute makes the update valid.
+   *
+   * Returns an empty array when the pool declares no standard schema attribute
+   * (so no override is emitted), and skips custom attributes, which the
+   * construct already renders with their own dataType.
+   */
+  private static deriveUserPoolSchemaOverride(
+    userPool: UserPoolType,
+  ): Array<{ readonly Name: string; readonly Required: boolean; readonly Mutable: boolean; readonly AttributeDataType: string }> {
+    const schema = userPool.SchemaAttributes;
+    if (!schema) return [];
+    const members: Array<{ readonly Name: string; readonly Required: boolean; readonly Mutable: boolean; readonly AttributeDataType: string }> =
+      [];
+    const seen = new Set<string>();
+    for (const attribute of schema) {
+      const name = attribute.Name;
+      // Only standard attributes need the fix; custom (custom:) attributes are
+      // rendered by the construct with their own dataType and are left alone.
+      if (!name || !(name in STANDARD_ATTRIBUTE_DATA_TYPE)) continue;
+      if (seen.has(name)) continue;
+      seen.add(name);
+      members.push({
+        Name: name,
+        Required: attribute.Required ?? false,
+        Mutable: attribute.Mutable ?? true,
+        AttributeDataType: STANDARD_ATTRIBUTE_DATA_TYPE[name],
+      });
+    }
+    return members;
   }
 
   /**
@@ -1100,8 +1173,9 @@ export class AuthRenderer {
     const hasIdentityProviders = AuthRenderer.hasIdentityProviders(options.nativeClient);
 
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
-    if (Object.keys(userPoolOverrides).length > 0) {
-      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides));
+    const userPoolSchemaOverride = AuthRenderer.deriveUserPoolSchemaOverride(options.userPool);
+    if (Object.keys(userPoolOverrides).length > 0 || userPoolSchemaOverride.length > 0) {
+      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides, userPoolSchemaOverride));
     }
 
     // Declare cfnIdentityPool once when any IdentityPool escape hatch is needed
@@ -1225,7 +1299,10 @@ export class AuthRenderer {
   }
 
   /** Builds cfnUserPool password policy and username attribute override statements. */
-  private buildUserPoolOverrideStatements(overrides: Record<string, string | boolean | number | string[] | undefined>): ts.Statement[] {
+  private buildUserPoolOverrideStatements(
+    overrides: Record<string, string | boolean | number | string[] | undefined>,
+    schemaOverride: ReadonlyArray<{ readonly Name: string; readonly Required: boolean; readonly Mutable: boolean; readonly AttributeDataType: string }> = [],
+  ): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const mappedPolicyType: Record<string, string> = {
       MinimumLength: 'minimumLength',
@@ -1243,6 +1320,8 @@ export class AuthRenderer {
       passwordPolicy: {},
     };
 
+    const hasOverrides = Object.keys(overrides).length > 0;
+
     for (const [overridePath, value] of Object.entries(overrides)) {
       if (overridePath.includes('PasswordPolicy')) {
         const policyKey = overridePath.split('.')[2];
@@ -1254,7 +1333,18 @@ export class AuthRenderer {
       }
     }
 
-    statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    if (hasOverrides) {
+      statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    }
+
+    // Re-emit the UserPool Schema with a valid AttributeDataType per standard
+    // attribute. The construct injects login-derived required standard
+    // attributes without a data type, which the trigger-driven UpdateUserPool
+    // rejects; this override supplies the fixed Cognito data type.
+    if (schemaOverride.length > 0) {
+      statements.push(TS.addPropertyOverride('cfnUserPool', 'Schema', schemaOverride as object));
+    }
+
     return statements;
   }
 

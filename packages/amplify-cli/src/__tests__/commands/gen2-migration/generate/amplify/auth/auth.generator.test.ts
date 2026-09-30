@@ -622,6 +622,20 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Name: 'email',
+            Required: true,
+            Mutable: true,
+            AttributeDataType: 'String',
+          },
+          {
+            Name: 'given_name',
+            Required: true,
+            Mutable: false,
+            AttributeDataType: 'String',
+          },
+        ]);
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           disableOAuth: true,
@@ -2257,6 +2271,32 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Name: 'email',
+            Required: true,
+            Mutable: true,
+            AttributeDataType: 'String',
+          },
+          {
+            Name: 'address',
+            Required: true,
+            Mutable: false,
+            AttributeDataType: 'String',
+          },
+          {
+            Name: 'birthdate',
+            Required: false,
+            Mutable: true,
+            AttributeDataType: 'String',
+          },
+          {
+            Name: 'given_name',
+            Required: false,
+            Mutable: false,
+            AttributeDataType: 'String',
+          },
+        ]);
         const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
         cfnIdentityPool.allowUnauthenticatedIdentities = false;
         const userPool = backend.auth.resources.userPool;

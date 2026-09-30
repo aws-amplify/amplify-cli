@@ -30,6 +30,20 @@ export function applyEscapeHatches(backend: Backend) {
       temporaryPasswordValidityDays: 7,
     },
   };
+  cfnUserPool.addPropertyOverride('Schema', [
+    {
+      Name: 'email',
+      Required: true,
+      Mutable: true,
+      AttributeDataType: 'String',
+    },
+    {
+      Name: 'phone_number',
+      Required: true,
+      Mutable: true,
+      AttributeDataType: 'String',
+    },
+  ]);
   const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
   cfnIdentityPool.allowUnauthenticatedIdentities = false;
   const userPool = backend.auth.resources.userPool;
