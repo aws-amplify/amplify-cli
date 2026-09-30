@@ -157,6 +157,11 @@ const MAPPED_USER_ATTRIBUTE_NAME: Record<string, string> = {
  * auth Lambda trigger is attached) validates strictly and rejects it with
  * "Invalid AttributeDataType input". The gen2-migration escape hatch re-emits
  * the Schema with a valid AttributeDataType per member to satisfy that update.
+ *
+ * The auto-managed *_verified boolean attributes (email_verified,
+ * phone_number_verified) are intentionally NOT listed: Cognito manages them
+ * itself and rejects them as declared user schema members. phone_number_verified
+ * is also 21 characters, over Cognito's 20-character schema member name limit.
  */
 const STANDARD_ATTRIBUTE_DATA_TYPE: Record<string, string> = {
   address: 'String',
@@ -175,10 +180,11 @@ const STANDARD_ATTRIBUTE_DATA_TYPE: Record<string, string> = {
   profile: 'String',
   zoneinfo: 'String',
   website: 'String',
-  email_verified: 'Boolean',
-  phone_number_verified: 'Boolean',
   updated_at: 'Number',
 };
+
+// Cognito rejects any UserPool Schema member whose Name exceeds 20 characters.
+const MAX_SCHEMA_ATTRIBUTE_NAME_LENGTH = 20;
 
 const MAP_IDENTITY_PROVIDER: Record<string, [string, string]> = {
   [IdentityProviderTypeType.Google]: ['googleLogin', 'googleAttributes'],
@@ -599,7 +605,12 @@ export class AuthRenderer {
       const name = attribute.Name;
       // Only standard attributes need the fix; custom (custom:) attributes are
       // rendered by the construct with their own dataType and are left alone.
+      // The map intentionally excludes the auto-managed *_verified attributes.
       if (!name || !(name in STANDARD_ATTRIBUTE_DATA_TYPE)) continue;
+      // Cognito rejects a Schema member name longer than 20 characters. Every
+      // name in the map is already within the limit; this guard makes that a
+      // hard invariant so the override can never emit a name Cognito rejects.
+      if (name.length > MAX_SCHEMA_ATTRIBUTE_NAME_LENGTH) continue;
       if (seen.has(name)) continue;
       seen.add(name);
       members.push({

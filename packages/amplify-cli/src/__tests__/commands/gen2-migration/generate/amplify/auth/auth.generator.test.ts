@@ -673,6 +673,67 @@ describe('AuthGenerator', () => {
     `);
   });
 
+  it('excludes auto-managed and over-length standard attributes from the Schema override', async () => {
+    // A live Cognito user pool reports auto-managed standard attributes in its
+    // schema (email_verified, phone_number_verified, sub) alongside the ones the
+    // app declares. The Schema escape-hatch override must NOT re-declare the
+    // auto-managed *_verified attributes: Cognito rejects them as user schema
+    // members, and phone_number_verified (21 chars) also exceeds the 20-char
+    // schema member name limit ("Member must have length less than or equal to
+    // 20"). Only real, declarable standard attributes get an AttributeDataType.
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'sub', Required: false, Mutable: false, AttributeDataType: 'String' },
+        { Name: 'email', Required: true, Mutable: true },
+        { Name: 'email_verified', Required: false, Mutable: true },
+        { Name: 'phone_number', Required: false, Mutable: true },
+        { Name: 'phone_number_verified', Required: false, Mutable: true },
+        { Name: 'given_name', Required: true, Mutable: false },
+      ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+
+    // The Schema override is emitted with the declarable standard attributes.
+    expect(content).toMatch(/addPropertyOverride\('Schema'/);
+    expect(content).toMatch(/Name: 'email'/);
+    expect(content).toMatch(/Name: 'phone_number'/);
+    expect(content).toMatch(/Name: 'given_name'/);
+    // Every declared member carries a valid AttributeDataType.
+    expect(content).toMatch(/AttributeDataType: 'String'/);
+    // Auto-managed *_verified attributes are never re-declared as schema members.
+    expect(content).not.toMatch(/email_verified/);
+    expect(content).not.toMatch(/phone_number_verified/);
+    // 'sub' is Cognito-managed and not a declarable standard attribute here.
+    expect(content).not.toMatch(/Name: 'sub'/);
+  });
+
   it('generates custom user attributes', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
