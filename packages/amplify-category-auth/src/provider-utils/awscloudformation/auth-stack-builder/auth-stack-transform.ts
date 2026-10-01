@@ -181,6 +181,27 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       });
       cognitoStackProps = Object.assign(cognitoStackProps, { permissions: triggerPermissions, dependsOn, authTriggerConnections });
     }
+
+    // Detect whether this is an UPDATE to a UserPool that already has required attributes deployed.
+    // The deployed values live in build/parameters.json (same source validateCfnParameters reads).
+    // Cognito forbids re-declaring/modifying an EXISTING standard attribute on UpdateUserPool, so we
+    // signal which already-deployed STANDARD required attributes must not be re-emitted into the
+    // UserPool Schema. Custom attributes (custom:*) are intentionally excluded here - Cognito allows
+    // adding them on update, so they continue to be emitted. On a fresh create there is no deployed
+    // parameters.json, so this stays empty and create behavior is unchanged.
+    const parametersJSONFilePath = path.join(
+      pathManager.getBackendDirPath(),
+      this._category,
+      this.resourceName,
+      'build',
+      'parameters.json',
+    );
+    const oldParameters = fs.readJSONSync(parametersJSONFilePath, { throws: false });
+    const deployedRequiredAttributes: string[] = oldParameters?.requiredAttributes ?? [];
+    cognitoStackProps.alreadyDeployedRequiredStandardAttributes = deployedRequiredAttributes.filter(
+      (attr: string) => !attr.startsWith('custom:'),
+    );
+
     return cognitoStackProps;
   };
 
@@ -517,7 +538,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         );
       }
       if (Array.isArray(value)) {
-        if (key !== 'userAutoVerifiedAttributeUpdateSettings') {
+        // `alreadyDeployedRequiredStandardAttributes` is an internal update-detection signal, not a
+        // deployable parameter - keep it out of the CFN template and out of parameters.json.
+        if (key !== 'userAutoVerifiedAttributeUpdateSettings' && key !== 'alreadyDeployedRequiredStandardAttributes') {
           this._authTemplateObj.addCfnParameter(
             {
               type: 'CommaDelimitedList',
