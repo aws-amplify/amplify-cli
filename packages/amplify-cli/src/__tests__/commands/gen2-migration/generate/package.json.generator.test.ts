@@ -41,6 +41,9 @@ describe('RootPackageJsonGenerator', () => {
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
           "tsx": "^4.20.6"
+        },
+        "overrides": {
+          "@aws-cdk/toolkit-lib": "1.40.0"
         }
       }
       "
@@ -74,6 +77,9 @@ describe('RootPackageJsonGenerator', () => {
           "esbuild": "^0.27.0",
           "test-lib": "^3.0.0",
           "tsx": "^4.20.6"
+        },
+        "overrides": {
+          "@aws-cdk/toolkit-lib": "1.40.0"
         }
       }
       "
@@ -111,6 +117,9 @@ describe('RootPackageJsonGenerator', () => {
           "constructs": "^10.0.0",
           "esbuild": "^0.27.0",
           "tsx": "^4.20.6"
+        },
+        "overrides": {
+          "@aws-cdk/toolkit-lib": "1.40.0"
         }
       }
       "

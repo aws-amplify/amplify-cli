@@ -49,7 +49,6 @@ export function applyEscapeHatches(backend: Backend) {
       temporaryPasswordValidityDays: 7,
     },
   };
-  cfnUserPool.addPropertyOverride('Schema', []);
   const userPool = backend.auth.resources.userPool;
   const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
     refreshTokenValidity: Duration.days(100),
