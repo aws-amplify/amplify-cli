@@ -1073,8 +1073,12 @@ export class AuthRenderer {
     const hasIdentityProviders = AuthRenderer.hasIdentityProviders(options.nativeClient);
 
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
-    if (Object.keys(userPoolOverrides).length > 0) {
-      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides));
+    // Always emit the Schema override for a migrated UserPool (see
+    // buildUserPoolOverrideStatements for why), so the statement is emitted even
+    // when there are no other User Pool overrides.
+    const schemaAttributes = options.userPool?.SchemaAttributes;
+    if (Object.keys(userPoolOverrides).length > 0 || (schemaAttributes && schemaAttributes.length > 0)) {
+      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides, schemaAttributes));
     }
 
     // Declare cfnIdentityPool once when any IdentityPool escape hatch is needed
@@ -1198,7 +1202,10 @@ export class AuthRenderer {
   }
 
   /** Builds cfnUserPool password policy and username attribute override statements. */
-  private buildUserPoolOverrideStatements(overrides: Record<string, string | boolean | number | string[] | undefined>): ts.Statement[] {
+  private buildUserPoolOverrideStatements(
+    overrides: Record<string, string | boolean | number | string[] | undefined>,
+    schemaAttributes?: readonly SchemaAttributeType[],
+  ): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const mappedPolicyType: Record<string, string> = {
       MinimumLength: 'minimumLength',
@@ -1216,6 +1223,8 @@ export class AuthRenderer {
       passwordPolicy: {},
     };
 
+    const hasOverrides = Object.keys(overrides).length > 0;
+
     for (const [overridePath, value] of Object.entries(overrides)) {
       if (overridePath.includes('PasswordPolicy')) {
         const policyKey = overridePath.split('.')[2];
@@ -1227,8 +1236,75 @@ export class AuthRenderer {
       }
     }
 
-    statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    if (hasOverrides) {
+      statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    }
+
+    // Override the UserPool Schema so it matches the imported Gen1 pool and is a
+    // no-op on the refactor UpdateUserPool. The refactor imports the pre-existing
+    // Gen1 pool, which already carries all of its attributes with their data
+    // types. Without this override the auth construct re-emits a login-derived
+    // standard attribute (email) WITHOUT an AttributeDataType, and the
+    // trigger-driven UpdateUserPool against the imported pool rejects it with
+    // "Invalid AttributeDataType input". Two shapes were ruled out against a
+    // live migrated pool:
+    //   - an empty Schema array fails the fresh CreateUserPool with "Schema
+    //     must have length greater than or equal to 1";
+    //   - a member marked Required: true fails the refactor UpdateUserPool with
+    //     "Required custom attributes are not supported", because Cognito reads
+    //     any Required member on update as introducing a required attribute.
+    // The one shape valid on BOTH create and update is each existing attribute
+    // emitted with its AttributeDataType, its constraints, and Required: false.
+    const schemaOverride = AuthRenderer.buildSchemaOverride(schemaAttributes);
+    if (schemaOverride) {
+      statements.push(TS.addPropertyOverride('cfnUserPool', 'Schema', schemaOverride));
+    }
+
     return statements;
+  }
+
+  /**
+   * Builds the CloudFormation Schema override value from the imported pool's
+   * attributes. Each attribute is emitted with its AttributeDataType, its
+   * mutability, its constraints, and Required: false, so the override is valid
+   * on the fresh CreateUserPool and a no-op on the refactor UpdateUserPool
+   * against the imported pool. Returns undefined when there is no schema to
+   * override (no statement is emitted).
+   */
+  private static buildSchemaOverride(schema?: readonly SchemaAttributeType[]): object[] | undefined {
+    if (!schema || schema.length === 0) return undefined;
+    const members: object[] = [];
+    for (const attribute of schema) {
+      if (!attribute.Name || !attribute.AttributeDataType) continue;
+      // Only emit attributes the caller can actually declare: a custom
+      // attribute (custom: prefix) or a user-facing standard attribute. Skip
+      // Cognito's auto-managed attributes (sub, email_verified,
+      // phone_number_verified, identities, ...): the pool creates them itself,
+      // and some break the override - phone_number_verified is 21 characters,
+      // over Cognito's 20-character limit on a Schema member Name, so including
+      // it fails CreateUserPool with "Member must have length less than or
+      // equal to 20".
+      const isCustom = attribute.Name.startsWith('custom:');
+      const isDeclarableStandard = attribute.Name in MAPPED_USER_ATTRIBUTE_NAME;
+      if (!isCustom && !isDeclarableStandard) continue;
+      const member: Record<string, string | boolean | object> = {
+        Name: attribute.Name,
+        AttributeDataType: attribute.AttributeDataType,
+        // Required MUST be false: Cognito rejects any Required member on the
+        // refactor UpdateUserPool with "Required custom attributes are not
+        // supported". The imported pool already carries its own required flags.
+        Required: false,
+        Mutable: attribute.Mutable ?? true,
+      };
+      if (attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0) {
+        member.StringAttributeConstraints = { ...attribute.StringAttributeConstraints };
+      }
+      if (attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0) {
+        member.NumberAttributeConstraints = { ...attribute.NumberAttributeConstraints };
+      }
+      members.push(member);
+    }
+    return members.length > 0 ? members : undefined;
   }
 
   private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType, hasIdentityPool: boolean): ts.Statement[] {
