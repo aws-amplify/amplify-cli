@@ -10,6 +10,7 @@ import path from 'path';
 import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getCLIInputs, getProjectMeta, setCLIInputs } from './projectMeta';
 import { getUserPoolClients } from './sdk-calls';
 import { AddAuthUserPoolOnlyWithOAuthSettings } from '../categories';
+import { getEphemeralApplePrivateKey } from './envVars';
 
 const tempPassword = 'tempPassword1@';
 
@@ -260,7 +261,6 @@ export const createUserPoolOnlyWithOAuthSettings = (projectPrefix: string, short
     appleAppClientId: 'com.fake.app',
     appleAppTeamId: '2QLEWNDK6K',
     appleAppKeyID: '2QLZXKYJ8J',
-    appleAppPrivateKey:
-      '----BEGIN PRIVATE KEY----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
+    appleAppPrivateKey: getEphemeralApplePrivateKey(),
   };
 };
