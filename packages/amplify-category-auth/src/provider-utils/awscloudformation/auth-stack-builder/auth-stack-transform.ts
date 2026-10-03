@@ -197,7 +197,14 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       'parameters.json',
     );
     const oldParameters = fs.readJSONSync(parametersJSONFilePath, { throws: false });
-    const deployedRequiredAttributes: string[] = oldParameters?.requiredAttributes ?? [];
+    const poolAlreadyDeployed = Boolean(
+      stateManager.getMeta(undefined, { throwIfNotExist: false })?.auth?.[this.resourceName]?.output?.UserPoolId,
+    );
+    // Required attributes are immutable after CreateUserPool, so when the pool already exists every
+    // standard required attribute in the inputs is necessarily already on the pool.
+    const deployedRequiredAttributes: string[] = poolAlreadyDeployed
+      ? [...(oldParameters?.requiredAttributes ?? []), ...(cognitoStackProps.requiredAttributes ?? [])]
+      : oldParameters?.requiredAttributes ?? [];
     cognitoStackProps.alreadyDeployedRequiredStandardAttributes = deployedRequiredAttributes.filter(
       (attr: string) => !attr.startsWith('custom:'),
     );
