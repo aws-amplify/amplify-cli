@@ -1251,7 +1251,7 @@ const supportedServices = {
         ],
         validation: {
           operator: 'regex',
-          value: '(-+BEGIN PRIVATE KEY-+)(.+[^-])(-+END PRIVATE KEY-+)',
+          value: '(-+BEGIN PRIVATE KEY-+)([^\\r\\n-]*[^\\s-][^\\r\\n-]*)(-+END PRIVATE KEY-+)',
           onErrorMsg:
             'Private key provided is invalid. You must provide the entire key (including the -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY----- on a single line)',
         },
