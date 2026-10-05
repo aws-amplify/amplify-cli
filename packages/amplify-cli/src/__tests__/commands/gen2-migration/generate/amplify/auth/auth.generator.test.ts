@@ -4,6 +4,8 @@ import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_c
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import * as fs from 'fs';
+import * as path from 'path';
 
 jest.unmock('fs-extra');
 
@@ -2448,5 +2450,45 @@ describe('AuthGenerator', () => {
     expect(content).toContain('Required: false');
     // No DataType-less member reaches the override.
     expect(content).toMatch(/AttributeDataType: 'String'/);
+  });
+
+  it('emits the deployed Gen1 template Schema verbatim when available so refactor/rollback never changes it', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: { UserPoolId: 'us-east-1_abc123', AppClientIDWeb: 'webclient123', AppClientID: 'client123' },
+        },
+      },
+    });
+    const buildDir = path.join(gen1App.ccbDir, 'auth', 'testAuth', 'build');
+    fs.mkdirSync(buildDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(buildDir, 'testAuth-cloudformation-template.json'),
+      JSON.stringify({ Resources: { UserPool: { Properties: { Schema: [{ Mutable: true, Name: 'email', Required: true }] } } } }),
+    );
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', AttributeDataType: 'String', Required: true, Mutable: true },
+        { Name: 'name', AttributeDataType: 'String', Required: false, Mutable: true },
+      ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+
+    const schemaCall = content.slice(content.indexOf("addPropertyOverride('Schema'"));
+    const schemaBlock = schemaCall.slice(0, schemaCall.indexOf(']);'));
+    expect(schemaBlock).toContain("Name: 'email'");
+    expect(schemaBlock).toContain('Required: true');
+    expect(schemaBlock).not.toContain("Name: 'name'");
+    expect(schemaBlock).not.toContain('AttributeDataType');
   });
 });

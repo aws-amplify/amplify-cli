@@ -27,11 +27,6 @@ type AuthStackMetadata = {
   authTriggerConnections?: AuthTriggerConnection[];
   userAutoVerifiedAttributeUpdateSettings?: string[];
   authTriggerPermissions?: AuthTriggerPermissions[];
-  // Standard required attributes that are already deployed on the existing UserPool (read from the deployed
-  // build/parameters.json during an update). Cognito forbids re-declaring/modifying an existing standard
-  // attribute on UpdateUserPool, so the UserPool Schema members for these are NOT re-emitted on an update.
-  // Empty/undefined on a fresh create, so create behavior is unchanged.
-  alreadyDeployedRequiredStandardAttributes?: string[];
 };
 
 export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &

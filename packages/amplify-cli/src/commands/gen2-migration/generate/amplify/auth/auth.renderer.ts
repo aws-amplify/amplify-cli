@@ -105,6 +105,13 @@ export interface AuthRenderOptions {
   readonly triggers?: readonly AuthTrigger[];
   readonly mfaConfig?: GetUserPoolMfaConfigResponse;
   readonly access?: readonly FunctionAccess[];
+  /**
+   * The UserPool `Schema` exactly as declared in the deployed Gen1 auth template. When present it is
+   * emitted verbatim so the Schema stays byte-identical across the forward refactor, the Gen2
+   * deploy, the rollback and the subsequent Gen1 push; the Cognito handler rejects any Schema change
+   * (modification or removal) on an existing pool.
+   */
+  readonly gen1UserPoolSchema?: readonly Record<string, unknown>[];
 }
 
 // TypeScript AST factory for creating nodes
@@ -1077,8 +1084,10 @@ export class AuthRenderer {
     // buildUserPoolOverrideStatements for why), so the statement is emitted even
     // when there are no other User Pool overrides.
     const schemaAttributes = options.userPool?.SchemaAttributes;
-    if (Object.keys(userPoolOverrides).length > 0 || (schemaAttributes && schemaAttributes.length > 0)) {
-      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides, schemaAttributes));
+    const gen1Schema = options.gen1UserPoolSchema;
+    const hasSchema = (gen1Schema && gen1Schema.length > 0) || (schemaAttributes && schemaAttributes.length > 0);
+    if (Object.keys(userPoolOverrides).length > 0 || hasSchema) {
+      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides, schemaAttributes, gen1Schema));
     }
 
     // Declare cfnIdentityPool once when any IdentityPool escape hatch is needed
@@ -1205,6 +1214,7 @@ export class AuthRenderer {
   private buildUserPoolOverrideStatements(
     overrides: Record<string, string | boolean | number | string[] | undefined>,
     schemaAttributes?: readonly SchemaAttributeType[],
+    gen1Schema?: readonly Record<string, unknown>[],
   ): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const mappedPolicyType: Record<string, string> = {
@@ -1255,7 +1265,10 @@ export class AuthRenderer {
     //     any Required member on update as introducing a required attribute.
     // The one shape valid on BOTH create and update is each existing attribute
     // emitted with its AttributeDataType, its constraints, and Required: false.
-    const schemaOverride = AuthRenderer.buildSchemaOverride(schemaAttributes);
+    const schemaOverride =
+      gen1Schema && gen1Schema.length > 0
+        ? gen1Schema.map((member) => ({ ...member }))
+        : AuthRenderer.buildSchemaOverride(schemaAttributes);
     if (schemaOverride) {
       statements.push(TS.addPropertyOverride('cfnUserPool', 'Schema', schemaOverride));
     }

@@ -296,29 +296,15 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
-        // On an update to a UserPool that already has required attributes deployed, Cognito forbids
-        // re-declaring/modifying an EXISTING standard attribute (UpdateUserPool fails with
-        // "Existing schema attributes cannot be modified or deleted."). Those standard members already
-        // exist on the pool, so skip re-emitting them. Custom attributes (custom:*) are still emitted
-        // because Cognito allows ADDING custom attributes on update. On a fresh create the set is empty,
-        // so every required attribute is emitted exactly as before.
-        const alreadyDeployed = new Set(props.alreadyDeployedRequiredStandardAttributes ?? []);
         const schemaAttributes: cognito.CfnUserPool.SchemaAttributeProperty[] = [];
         props.requiredAttributes.forEach((attr) => {
-          const isCustom = attr.startsWith('custom:');
-          if (!isCustom && alreadyDeployed.has(attr)) {
-            // standard attribute already present on the existing pool - do not re-declare it
-            return;
-          }
           schemaAttributes.push({
             name: attr,
             required: true,
             mutable: true,
           });
         });
-        if (schemaAttributes.length > 0) {
-          this.userPool!.schema = schemaAttributes;
-        }
+        this.userPool!.schema = schemaAttributes;
       }
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {

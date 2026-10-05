@@ -50,6 +50,14 @@ export class AuthGenerator implements Planner {
     this.triggers.push(trigger);
   }
 
+  private readGen1UserPoolSchema(): Record<string, unknown>[] | undefined {
+    const name = this.resource.resourceName;
+    const templatePath = `auth/${name}/build/${name}-cloudformation-template.json`;
+    if (!this.gen1App.fileExists(templatePath)) return undefined;
+    const schema = this.gen1App.json(templatePath)?.Resources?.UserPool?.Properties?.Schema;
+    return Array.isArray(schema) && schema.length > 0 ? schema : undefined;
+  }
+
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const userPoolId = this.gen1App.resourceMetaOutput(this.resource, 'UserPoolId');
     const userPool = await this.gen1App.aws.fetchUserPool(userPoolId);
@@ -78,6 +86,7 @@ export class AuthGenerator implements Planner {
       nativeClient,
       triggers: this.triggers,
       access: this.access,
+      gen1UserPoolSchema: this.readGen1UserPoolSchema(),
     };
 
     const authDir = path.join(this.outputDir, 'amplify', 'auth');
