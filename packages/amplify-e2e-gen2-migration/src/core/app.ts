@@ -16,7 +16,14 @@ import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
 import { normalize } from './normalize';
 import { CredentialManager } from './credentials';
-import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import {
+  CloudFormationClient,
+  DescribeStackEventsCommand,
+  DescribeStackResourcesCommand,
+  GetTemplateCommand,
+  paginateListStacks,
+  StackStatus,
+} from '@aws-sdk/client-cloudformation';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { fromIni } from '@aws-sdk/credential-providers';
@@ -285,7 +292,13 @@ export class App {
     await this.pull();
     await this.refactorRollback(gen2StackName);
     await this.lockRollback();
-    await this.push();
+    await this.dumpUserPoolSchemaDiagnostics('pre-rollback-push');
+    try {
+      await this.push();
+    } catch (error) {
+      await this.dumpUserPoolSchemaDiagnostics('rollback-push-failed');
+      throw error;
+    }
 
     await this.testGen1();
 
@@ -667,6 +680,53 @@ export class App {
   // ============================================================
   // Private Helpers
   // ============================================================
+
+  /**
+   * Logs the Gen1 auth UserPool Schema as synthesized locally, as deployed on the live
+   * Gen1 auth stack, the local auth parameters.json, and the UserPool's own failure events.
+   * Best-effort: never throws, so it cannot mask the real test failure.
+   */
+  private async dumpUserPoolSchemaDiagnostics(label: string): Promise<void> {
+    try {
+      const backendDir = path.join(this.targetAppPath, 'amplify', 'backend');
+      const meta = fs.readJSONSync(path.join(backendDir, 'amplify-meta.json'), { throws: false }) ?? {};
+      const authResources: Record<string, { service?: string }> = meta.auth ?? {};
+      const authName = Object.keys(authResources).find((name) => authResources[name].service === 'Cognito');
+      if (!authName) {
+        this.logger.info(`[schema-diag:${label}] no Cognito auth resource`);
+        return;
+      }
+      const buildDir = path.join(backendDir, 'auth', authName, 'build');
+      const localTemplate = fs.readJSONSync(path.join(buildDir, `${authName}-cloudformation-template.json`), { throws: false });
+      const params = fs.readJSONSync(path.join(buildDir, 'parameters.json'), { throws: false });
+      this.logger.info(
+        `[schema-diag:${label}] local UserPool Schema: ${JSON.stringify(localTemplate?.Resources?.UserPool?.Properties?.Schema)}`,
+      );
+      this.logger.info(`[schema-diag:${label}] local parameters.requiredAttributes: ${JSON.stringify(params?.requiredAttributes)}`);
+      this.logger.info(`[schema-diag:${label}] meta UserPoolId: ${meta.auth[authName].output?.UserPoolId}`);
+
+      const region = meta.providers?.awscloudformation?.Region;
+      const rootStack = meta.providers?.awscloudformation?.StackName;
+      const cfn = new CloudFormationClient({ ...this.getClientConfig(), region });
+      const { StackResources } = await cfn.send(new DescribeStackResourcesCommand({ StackName: rootStack }));
+      const authStackId = StackResources?.find((r) => r.LogicalResourceId === `auth${authName}`)?.PhysicalResourceId;
+      if (!authStackId) return;
+      const { TemplateBody } = await cfn.send(new GetTemplateCommand({ StackName: authStackId, TemplateStage: 'Original' }));
+      const liveTemplate = JSON.parse(TemplateBody ?? '{}');
+      this.logger.info(
+        `[schema-diag:${label}] live Gen1 auth stack UserPool Schema: ${JSON.stringify(
+          liveTemplate?.Resources?.UserPool?.Properties?.Schema,
+        )}`,
+      );
+      const { StackEvents } = await cfn.send(new DescribeStackEventsCommand({ StackName: authStackId }));
+      (StackEvents ?? [])
+        .filter((e) => e.LogicalResourceId === 'UserPool' && e.ResourceStatusReason)
+        .slice(0, 5)
+        .forEach((e) => this.logger.info(`[schema-diag:${label}] UserPool event ${e.ResourceStatus}: ${e.ResourceStatusReason}`));
+    } catch (error) {
+      this.logger.info(`[schema-diag:${label}] diagnostics failed: ${(error as Error).message}`);
+    }
+  }
 
   /**
    * Bootstrap CDK in the target account/region. Idempotent — succeeds
