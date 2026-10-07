@@ -127,7 +127,7 @@ __metadata:
     slash: ^3.0.0
     ulid: ^2.3.0
     uuid: ^8.3.2
-    ws: ^8.5.0
+    ws: ^7.5.11
   languageName: unknown
   linkType: soft
 
@@ -35302,6 +35302,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ws@npm:^7.5.11":
+  version: 7.5.11
+  resolution: "ws@npm:7.5.11"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 7972670b676fb1ccba73b0899ca3c2e04e8c2075629c2614cced7f556536f96a672bbf4619fc5a06c8b8720bb839a47ca88c69c95dc14c9c61a99fbecba1c866
+  languageName: node
+  linkType: hard
+
 "ws@npm:^7.5.7":
   version: 7.5.10
   resolution: "ws@npm:7.5.10"
@@ -35317,7 +35332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.0, ws@npm:^8.5.0":
+"ws@npm:^8.18.0":
   version: 8.18.1
   resolution: "ws@npm:8.18.1"
   peerDependencies:
