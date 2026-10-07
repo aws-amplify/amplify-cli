@@ -2,7 +2,16 @@ import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  $TSAny,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  isWindowsPlatform,
+  AmplifyError,
+  buildOverrideDir,
+  pathManager,
+} from '@aws-amplify/amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -82,7 +91,21 @@ export class APITest {
       await this.appSyncSimulator.start();
       await this.resolverOverrideManager.start();
       await this.watch(context);
-      const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
+
+      // Build override.ts
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideDir = await this.getAPIBackendDirectory(context);
+      const isOverride = await buildOverrideDir(backendDir, overrideDir).catch((error) => {
+        throw new AmplifyError('InvalidOverrideError', {
+          message: error.message,
+          link: 'https://docs.amplify.aws/cli/graphql/override/',
+        });
+      });
+      const overrideConfig = {
+        overrideFlag: isOverride,
+      };
+
+      const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters, overrideConfig);
 
       // If any of the model types are searchable, start opensearch local instance
       if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform()) {
@@ -147,9 +170,9 @@ export class APITest {
     }
   }
 
-  private async runTransformer(context, parameters = {}) {
-    const { transformerOutput } = await runTransformer(context);
-    let config: any = processAppSyncResources(transformerOutput, parameters);
+  private async runTransformer(context, cfnParameters = {}, overrideConfig = {}) {
+    const { transformerOutput } = await runTransformer(context, overrideConfig);
+    let config: any = processAppSyncResources(transformerOutput, cfnParameters);
     config = await this.ensureDDBTables(config);
     config = await this.configureDDBDataSource(config);
     this.transformerResult = await this.configureLambdaDataSource(context, config);
