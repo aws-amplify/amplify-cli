@@ -55,6 +55,7 @@ export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails =
       AppClientSecret: authMeta.output.AppClientSecret,
       AppClientIDWeb: authMeta.output.AppClientIDWeb,
       HostedUIDomain: authMeta.output.HostedUIDomain,
+      HostedUICustomDomain: authMeta.output.HostedUICustomDomain,
       OAuthMetadata: authMeta.output.OAuthMetadata ? JSON.parse(authMeta.output.OAuthMetadata) : undefined,
     },
     team: {
@@ -120,6 +121,7 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
       AppClientSecret: authMeta.output.AppClientSecret,
       AppClientIDWeb: authMeta.output.AppClientIDWeb,
       HostedUIDomain: authMeta.output.HostedUIDomain,
+      HostedUICustomDomain: authMeta.output.HostedUICustomDomain,
       OAuthMetadata: authMeta.output.OAuthMetadata ? JSON.parse(authMeta.output.OAuthMetadata) : undefined,
       IdentityPoolId: authMeta.output.IdentityPoolId,
       IdentityPoolName: authMeta.output.IdentityPoolName,
