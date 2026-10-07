@@ -1,6 +1,7 @@
 export type ResourceDefinition = {
   category: string;
   service: string;
+  serviceType?: string;
   build?: boolean;
   resourceName: string;
   providerPlugin?: string;
