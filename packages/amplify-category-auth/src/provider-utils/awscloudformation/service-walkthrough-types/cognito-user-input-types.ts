@@ -154,6 +154,7 @@ export enum TriggerType {
   PreSignup = 'PreSignUp',
   VerifyAuthChallengeResponse = 'VerifyAuthChallengeResponse',
   PreTokenGeneration = 'PreTokenGeneration',
+  UserMigration = 'UserMigration',
 }
 
 export type AuthTriggerConnection = {
