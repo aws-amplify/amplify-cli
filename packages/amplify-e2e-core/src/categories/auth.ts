@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { getCLIPath, getSocialProviders, KEY_DOWN_ARROW, KEY_UP_ARROW, nspawn as spawn, setTransformerVersionFlag } from '..';
 
 export type AddAuthUserPoolOnlyNoOAuthSettings = {
@@ -34,7 +36,7 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
 };
 
 export const addAuthWithDefault = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
-  return spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
     .wait('Do you want to use the default authentication')
     .sendCarriageReturn()
     .wait('How do you want users to be able to sign in')
@@ -43,6 +45,36 @@ export const addAuthWithDefault = async (cwd: string, testingWithLatestCodebase 
     .sendCarriageReturn()
     .sendEof()
     .runAsync();
+  addAuthOverrideToDisableSelfSignup(cwd);
+};
+
+/**
+ * Writes an override.ts file to the auth resource directory that disables self-registration
+ * by setting AdminCreateUserConfig.AllowAdminCreateUserOnly = true.
+ * This ensures e2e test Cognito pools do not allow public self-sign-up.
+ */
+export const addAuthOverrideToDisableSelfSignup = (cwd: string): void => {
+  const authDir = path.join(cwd, 'amplify', 'backend', 'auth');
+  if (!fs.existsSync(authDir)) return;
+
+  const resources = fs.readdirSync(authDir).filter((f) => !f.startsWith('.') && fs.statSync(path.join(authDir, f)).isDirectory());
+  if (resources.length === 0) return;
+
+  const resourceDir = path.join(authDir, resources[0]);
+  const overrideFilePath = path.join(resourceDir, 'override.ts');
+
+  const overrideContent = [
+    "import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';",
+    '',
+    'export function override(resources: AmplifyAuthCognitoStackTemplate): void {',
+    '  resources.userPool.adminCreateUserConfig = {',
+    '    allowAdminCreateUserOnly: true,',
+    '  };',
+    '}',
+    '',
+  ].join('\n');
+
+  fs.writeFileSync(overrideFilePath, overrideContent);
 };
 
 export function runAmplifyAuthConsole(cwd: string): Promise<void> {
@@ -102,6 +134,7 @@ export function addAuthWithGroupTrigger(cwd: string): Promise<void> {
       .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -143,6 +176,7 @@ export async function addAuthWithEmailVerificationAndUserPoolGroupTriggers(cwd: 
     .wait('Do you want to edit your add-to-group function now?')
     .sendConfirmNo()
     .runAsync();
+  addAuthOverrideToDisableSelfSignup(cwd);
 }
 
 interface AddApiOptions {
@@ -197,6 +231,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOption
       .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -286,6 +321,7 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Pa
       .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -368,6 +404,7 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -872,6 +909,7 @@ export function addAuthWithRecaptchaTrigger(cwd: string): Promise<void> {
       .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -967,6 +1005,7 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1022,6 +1061,7 @@ export function addAuthWithDefaultSocial_v4_30(cwd: string): Promise<void> {
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1099,6 +1139,7 @@ export function addAuthWithDefaultSocial(cwd: string): Promise<void> {
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1259,6 +1300,7 @@ export function addAuthUserPoolOnly(cwd: string): Promise<void> {
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1329,7 +1371,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
       .sendEof()
-      .run((err: Error) => (err ? reject(err) : resolve()));
+      .run((err: Error) => (err ? reject(err) : (addAuthOverrideToDisableSelfSignup(cwd), resolve())));
   });
 }
 
@@ -1400,6 +1442,7 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string): Promise<void> {
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1612,6 +1655,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('Successfully')
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1640,6 +1684,7 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
       .sendLine('n')
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(projectDir);
           resolve();
         } else {
           reject(err);
@@ -1854,6 +1899,7 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -1978,6 +2024,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -2033,6 +2080,7 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
       .sendEof()
       .run((err: Error) => {
         if (!err) {
+          addAuthOverrideToDisableSelfSignup(cwd);
           resolve();
         } else {
           reject(err);
@@ -2370,5 +2418,6 @@ export const addAuthWithOidcForNonJSProject = async (
     .sendConfirmNo()
     .sendEof();
 
-  return chain.runAsync();
+  await chain.runAsync();
+  addAuthOverrideToDisableSelfSignup(cwd);
 };
