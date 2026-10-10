@@ -241,6 +241,11 @@ export class DataRenderer {
 
     const nodes: ts.Node[] = [this.renderNamedImport('defineData', '@aws-amplify/backend'), this.renderBackendTypeImport()];
 
+    const lambdaFunctionName = this.extractLambdaFunctionName(opts.authorizationModes);
+    if (lambdaFunctionName) {
+      nodes.push(this.renderNamedImport(lambdaFunctionName, `../function/${lambdaFunctionName}/resource`));
+    }
+
     const escapeHatchResult = this.renderApplyEscapeHatches(opts);
     for (const imp of escapeHatchResult.additionalImports) {
       nodes.push(imp);
@@ -549,6 +554,23 @@ export class DataRenderer {
         excludeVerboseContent: logConfig.excludeVerboseContent,
       }),
     };
+  }
+
+  /**
+   * Extracts the Lambda function name from the authorization modes config,
+   * if a Lambda authorizer is configured.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from amplify-meta.json authConfig
+  private extractLambdaFunctionName(authorizationModes?: any): string | undefined {
+    if (!authorizationModes) return undefined;
+    const defaultLambda = authorizationModes.defaultAuthentication?.lambdaAuthorizerConfig?.lambdaFunction;
+    if (defaultLambda) return defaultLambda;
+    for (const provider of authorizationModes.additionalAuthenticationProviders ?? []) {
+      if (provider.authenticationType === 'AWS_LAMBDA' && provider.lambdaAuthorizerConfig?.lambdaFunction) {
+        return provider.lambdaAuthorizerConfig.lambdaFunction;
+      }
+    }
+    return undefined;
   }
 
   /** Extracts additional auth providers from the raw AppSync API object. */
