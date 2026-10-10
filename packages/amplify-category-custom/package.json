@@ -33,7 +33,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^11.0.1",
     "ora": "^4.0.3",
-    "uuid": "^8.3.2"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",

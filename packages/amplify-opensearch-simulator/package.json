@@ -41,7 +41,7 @@
   "devDependencies": {
     "@types/node": "^20.9.0",
     "@types/openpgp": "^4.4.19",
-    "uuid": "^8.3.2"
+    "uuid": "^14.0.0"
   },
   "berry": {
     "plugins": [
