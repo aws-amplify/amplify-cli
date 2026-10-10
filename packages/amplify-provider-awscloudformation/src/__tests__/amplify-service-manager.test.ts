@@ -64,4 +64,23 @@ describe('init', () => {
     };
     await expect(init(amplifyServiceParamsStub)).rejects.toMatchInlineSnapshot(`[ConfigurationError: Missing Region in Config]`);
   });
+
+  it('throws ProjectInitError with helpful message on InvalidSignatureException', async () => {
+    mockAmplifyClient.on(CreateAppCommand).rejectsOnce({
+      name: 'InvalidSignatureException',
+      message: 'Forbidden',
+    });
+    getConfiguredAmplifyClientMock.mockResolvedValue(mockAmplifyClient as unknown as AmplifyClient);
+
+    const amplifyServiceParamsStub = {
+      context: {},
+      awsConfigInfo: {},
+      projectName: 'test-project',
+      envName: 'test',
+      stackName: 'test-stack-name',
+    };
+    await expect(init(amplifyServiceParamsStub)).rejects.toMatchInlineSnapshot(
+      `[ProjectInitError: The request to create the Amplify app failed with: Forbidden]`,
+    );
+  });
 });
