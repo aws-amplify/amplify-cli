@@ -1,0 +1,6 @@
+{
+  "name": "packageManager-yarn-field-test",
+  "version": "1.0.0",
+  "description": "Test package with packageManager field for yarn",
+  "packageManager": "yarn@4.0.0"
+}
