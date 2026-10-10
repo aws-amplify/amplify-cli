@@ -175,7 +175,7 @@
   "packageManager": "yarn@3.5.0",
   "resolutions": {
     "cross-fetch": "^2.2.6",
-    "fast-xml-parser": "~4.5.4",
+    "fast-xml-parser": "~4.5.6",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
     "istanbul/async": "^2.6.4",
