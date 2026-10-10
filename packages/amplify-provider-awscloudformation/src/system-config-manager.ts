@@ -186,7 +186,7 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
       log(ex);
     }
     if (profileConfig.role_arn && roleSessionName && roleCredentials) {
-      cacheRoleCredentials(profileConfig.role_arn, roleSessionName, roleCredentials);
+      cacheRoleCredentials(profileConfig.role_arn, roleSessionName, roleCredentials.credentials);
     }
   }
 
@@ -245,9 +245,14 @@ const getCachedRoleCredentials = (roleArn: string, sessionName: string): $TSAny 
       return undefined;
     }
   }
+  if (!roleCredentials) {
+    return undefined;
+  }
   return {
     credentials: {
       ...roleCredentials,
+      // Ensure expiration is a Date object (JSON serialization converts it to string)
+      expiration: roleCredentials.expiration ? new Date(roleCredentials.expiration) : undefined,
     },
   };
 };
