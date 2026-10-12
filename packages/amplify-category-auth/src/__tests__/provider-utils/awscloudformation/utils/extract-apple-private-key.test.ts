@@ -1,16 +1,20 @@
+import * as crypto from 'crypto';
 import { extractApplePrivateKey } from '../../../../provider-utils/awscloudformation/utils/extract-apple-private-key';
 
 describe('When extracting apple private key...', () => {
-  const expectedOutput =
-    'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw';
+  // The key is generated at runtime so that no static private-key-shaped literal is
+  // committed to source (Mirador acat-bosco/rsa-private-key false-positive). P-256 is
+  // the curve Sign in with Apple uses (ES256).
+  const { privateKey: pem } = crypto.generateKeyPairSync('ec', {
+    namedCurve: 'prime256v1',
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+    publicKeyEncoding: { type: 'spki', format: 'pem' },
+  });
+
+  const expectedOutput = crypto.createPrivateKey(pem).export({ type: 'pkcs8', format: 'der' }).toString('base64');
 
   it('it should remove new lines and space and comments', () => {
-    const input = `-----BEGIN PRIVATE KEY-----
-        MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadY
-        iCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIf
-        TT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6
-        y89bWcNw
-        -----END PRIVATE KEY-----`;
+    const input = pem;
     expect(extractApplePrivateKey(input)).toEqual(expectedOutput);
   });
 
