@@ -1263,6 +1263,77 @@ describe('AuthGenerator', () => {
     `);
   });
 
+  // Regression: a Gen1 pool with phone_number as a username attribute AND a
+  // social IdP whose Gen1 attribute mapping only covers email. Cognito treats
+  // phone_number as an implicitly-required attribute and rejects any federated
+  // IdP whose attributeMapping omits it ("The attribute mapping is missing
+  // required attributes [phone_number]"), rolling the deploy back. The renderer
+  // must inject the required standard attribute into every social provider's
+  // attributeMapping so the generated Gen2 app deploys. See gen2-migration
+  // media-vault E2E.
+  it('injects required username standard attributes (phone_number) into social IdP attribute mappings', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    // phone_number is a username attribute -> Cognito requires it in every IdP mapping.
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [],
+      UsernameAttributes: ['email', 'phone_number'],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+    // Gen1 social IdP mapping only covers email + a custom username claim.
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([
+      {
+        ProviderType: IdentityProviderTypeType.Google,
+        ProviderName: 'Google',
+        ProviderDetails: { authorized_scopes: 'openid email profile' },
+        AttributeMapping: { email: 'email', username: 'sub' },
+      },
+      {
+        ProviderType: IdentityProviderTypeType.Facebook,
+        ProviderName: 'Facebook',
+        ProviderDetails: { authorized_scopes: 'email public_profile' },
+        AttributeMapping: { email: 'email', username: 'id' },
+      },
+    ]);
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({
+      CallbackURLs: [],
+      LogoutURLs: [],
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const resource = writtenFile('auth/resource.ts');
+
+    // The required standard attribute is injected into BOTH social provider mappings,
+    // mapped to its own claim name (the identity default Cognito accepts).
+    const phoneMappingCount = (resource.match(/phoneNumber: 'phone_number'/g) ?? []).length;
+    expect(phoneMappingCount).toBe(2);
+    // The Gen1-declared mapping is preserved (custom username claim still emitted).
+    expect(resource).toContain("username: 'sub'");
+    expect(resource).toContain("username: 'id'");
+    // phone_number remains a username attribute on the pool (login behavior preserved).
+    expect(resource).toContain("cfnUserPool.usernameAttributes = ['email', 'phone_number'];");
+  });
+
   it('generates external providers', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },

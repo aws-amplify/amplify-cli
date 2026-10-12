@@ -322,7 +322,10 @@ export class AuthRenderer {
    * Parses OIDC/SAML providers, attribute mappings, and scopes from
    * identity provider details.
    */
-  private static deriveExternalProviders(details?: readonly IdentityProviderType[]): {
+  private static deriveExternalProviders(
+    details?: readonly IdentityProviderType[],
+    requiredStandardAttributes: readonly string[] = [],
+  ): {
     readonly oidcProviders: readonly OidcProviderConfig[];
     readonly samlProvider: SamlProviderConfig | undefined;
     readonly attributeMappings: Readonly<Record<string, { standard: Record<string, string>; custom: Record<string, string> }>>;
@@ -385,12 +388,30 @@ export class AuthRenderer {
       }
     }
 
+    // Cognito requires that EVERY federated identity provider's attribute
+    // mapping include every standard attribute the user pool marks as required
+    // (a username/alias attribute such as `phone_number` is implicitly
+    // required). A Gen1 pool can carry `phone_number` as a username attribute
+    // while its social IdP mappings only cover email — a valid Gen1 shape that
+    // Gen2 rejects at deploy time with "The attribute mapping is missing
+    // required attributes [phone_number]". Ensure each social provider mapping
+    // carries the required standard attributes, mapping each to its own claim
+    // name (the identity default Cognito accepts) when the Gen1 metadata did
+    // not already provide one.
+    const requiredStandard = requiredStandardAttributes.filter((attr) => attr in MAPPED_USER_ATTRIBUTE_NAME);
+    if (requiredStandard.length > 0) {
+      for (const mapping of Object.values(attributeMappings)) {
+        for (const attr of requiredStandard) {
+          const gen2Key = MAPPED_USER_ATTRIBUTE_NAME[attr];
+          if (!(gen2Key in mapping.standard)) {
+            mapping.standard[gen2Key] = attr;
+          }
+        }
+      }
+    }
+
     return { oidcProviders, samlProvider, attributeMappings, providerScopes };
   }
-
-  /**
-   * Derives MFA configuration from Cognito SDK types.
-   */
   private static deriveMfaConfig(mfa?: GetUserPoolMfaConfigResponse): {
     readonly mode: string;
     readonly sms?: boolean;
@@ -721,7 +742,10 @@ export class AuthRenderer {
       assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
     }
 
-    const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders);
+    const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders, [
+      ...(options.userPool.UsernameAttributes ?? []),
+      ...(options.userPool.AliasAttributes ?? []),
+    ]);
     const hasExternalProviders =
       loginFlags.googleLogin ||
       loginFlags.amazonLogin ||
