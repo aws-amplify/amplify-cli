@@ -77,7 +77,9 @@ export class AuthGenerator implements Planner {
       mfaConfig,
       nativeClient,
       triggers: this.triggers,
-      access: this.access,
+      // `access` is set inside execute() from the trigger subset (see below):
+      // the partition must run AFTER the function generators have populated
+      // this.access / this.triggers, which happens after plan() returns.
     };
 
     const authDir = path.join(this.outputDir, 'amplify', 'auth');
@@ -89,10 +91,21 @@ export class AuthGenerator implements Planner {
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
           this.logger.info('Rendering auth/resource.ts');
-          const nodeArray = this.defineAuth.render(renderOptions);
-          let content = TS.printNodes(nodeArray);
 
-          content = content.replace(/\(allow, _unused\)/g, '(allow)');
+          // Partition function auth access by whether the function is ALSO an auth
+          // trigger. Computed HERE (not in plan()) because the function generators
+          // populate this.access / this.triggers after this.plan() returns. A
+          // trigger already forces an `auth -> function` cross-stack edge, so its
+          // access must ride the defineAuth `access` block (Amplify co-locates it,
+          // adding no new edge); a forward backend.ts userPool.grant on a trigger
+          // function would add a `function -> auth` edge and close a circular
+          // dependency at deploy time. Non-trigger access uses the forward grant.
+          const triggerResourceNames = new Set(this.triggers.map((t) => t.resourceName));
+          const triggerAccess = this.access.filter((a) => triggerResourceNames.has(a.resourceName));
+          const nonTriggerAccess = this.access.filter((a) => !triggerResourceNames.has(a.resourceName));
+
+          const nodeArray = this.defineAuth.render({ ...renderOptions, access: triggerAccess });
+          const content = TS.printNodes(nodeArray);
 
           await fs.mkdir(authDir, { recursive: true });
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
@@ -100,6 +113,26 @@ export class AuthGenerator implements Planner {
           this.backendGenerator.addNamespaceImport('auth', './auth/resource');
           this.backendGenerator.addDefineBackendEntry('auth', 'auth', 'auth');
           this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'auth', extraArgs: [] });
+
+          /**
+           * Emit non-trigger function -> auth access as forward-direction grants
+           * in backend.ts (`backend.auth.resources.userPool.grant(...)`). Trigger
+           * functions are handled via the defineAuth `access` block instead (see
+           * the partition above), because a forward grant on a trigger function
+           * would close a circular dependency at deploy time.
+           */
+          const unknownPermissions = AuthRenderer.unknownPermissions(nonTriggerAccess);
+          if (unknownPermissions.length > 0) {
+            this.logger.warn(
+              `Unrecognized Gen1 auth permission(s) [${unknownPermissions.join(
+                ', ',
+              )}] have no known cognito-idp action mapping and were emitted as raw 'cognito-idp:<permission>' actions. Verify the generated IAM actions in amplify/backend.ts.`,
+            );
+          }
+          for (const statement of this.defineAuth.buildFunctionAccessBackendStatements(nonTriggerAccess)) {
+            this.backendGenerator.addPostDefineBackendStatement(statement);
+          }
+
           if (userPool.Domain) {
             this.backendGenerator.addPostRefactorCall('auth.postRefactor(backend)');
           }

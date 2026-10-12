@@ -105,6 +105,22 @@ export class S3Generator implements Planner {
           this.backendGenerator.addDefineBackendEntry('storage', 'storage', 'storage');
           this.backendGenerator.addApplyEscapeHatchesCall({ alias: 'storage', extraArgs: [] });
           this.backendGenerator.addPostRefactorCall('storage.postRefactor(backend);');
+
+          // Emit function->storage access as forward-direction IAM policy
+          // statements in backend.ts (backend.<fn>.resources.lambda.addToRolePolicy(...))
+          // rather than reverse-direction allow.resource(fn) entries on
+          // defineStorage, which would create a `storage -> function` cross-stack
+          // dependency and cause circular dependencies at deploy time. Exact
+          // Amplify action set is used (not bucket.grant*) to avoid over-granting
+          // s3:DeleteObject that CDK's grantWrite/grantReadWrite bundle in.
+          const storageGrantStatements = this.renderer.buildFunctionAccessBackendStatements(this.functionAccess);
+          if (storageGrantStatements.length > 0) {
+            this.backendGenerator.addNamedImport('aws-cdk-lib/aws-iam', 'Effect');
+            this.backendGenerator.addNamedImport('aws-cdk-lib/aws-iam', 'PolicyStatement');
+          }
+          for (const statement of storageGrantStatements) {
+            this.backendGenerator.addPostDefineBackendStatement(statement);
+          }
         },
       },
     ];
