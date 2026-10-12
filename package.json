@@ -178,6 +178,7 @@
     "fast-xml-parser": "~4.5.4",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
+    "handlebars": "^4.7.9",
     "istanbul/async": "^2.6.4",
     "jake/async": "^2.6.4",
     "json5": "^2.2.3",
