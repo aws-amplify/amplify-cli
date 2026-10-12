@@ -183,6 +183,23 @@ export class TS {
   }
 
   /**
+   * Creates `{target}.addPropertyOverride("{path}", {value});` as an expression statement.
+   */
+  public static addPropertyOverride(
+    target: string,
+    path: string,
+    value: number | string | boolean | string[] | object | undefined,
+  ): ts.ExpressionStatement {
+    return factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier(target), factory.createIdentifier('addPropertyOverride')),
+        undefined,
+        [factory.createStringLiteral(path), TS.jsValue(value)],
+      ),
+    );
+  }
+
+  /**
    * Converts a JavaScript value to a TypeScript AST expression.
    */
   public static jsValue(value: number | string | boolean | string[] | object | undefined): ts.Expression {
@@ -190,7 +207,13 @@ export class TS {
     if (typeof value === 'boolean') return value ? factory.createTrue() : factory.createFalse();
     if (typeof value === 'number') return factory.createNumericLiteral(value);
     if (typeof value === 'string') return factory.createStringLiteral(value);
-    if (Array.isArray(value)) return factory.createArrayLiteralExpression(value.map((v) => factory.createStringLiteral(v)));
+    if (Array.isArray(value)) {
+      return factory.createArrayLiteralExpression(
+        value.map((v) =>
+          typeof v === 'string' ? factory.createStringLiteral(v) : TS.jsValue(v as number | string | boolean | string[] | object),
+        ),
+      );
+    }
     if (typeof value === 'object') {
       const props = Object.entries(value).map(([key, val]) =>
         factory.createPropertyAssignment(key, TS.jsValue(val as number | string | boolean | string[] | object | undefined)),
