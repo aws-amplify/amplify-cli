@@ -1,4 +1,21 @@
 module.exports = function (Velocity, utils) {
+  // Local copy of the prototype-chain denylist. Kept local (no cross-module
+  // import) so #set directive writes cannot walk to constructor/__proto__/
+  // prototype and escape the template sandbox.
+  var BLOCKED_PROPERTIES = [
+    'constructor',
+    '__proto__',
+    'prototype',
+    '__defineGetter__',
+    '__defineSetter__',
+    '__lookupGetter__',
+    '__lookupSetter__',
+  ];
+
+  function isBlockedProperty(name) {
+    return typeof name === 'string' && BLOCKED_PROPERTIES.indexOf(name) !== -1;
+  }
+
   /**
    * 变量设置
    */
@@ -60,6 +77,10 @@ module.exports = function (Velocity, utils) {
             } else {
               key = key.value;
             }
+          }
+
+          if (isBlockedProperty(key)) {
+            return true;
           }
 
           if (isEnd) {
