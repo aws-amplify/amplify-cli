@@ -23,6 +23,7 @@ const GEN2_DEV_DEPENDENCIES: Record<string, string> = {
   constructs: '^10.0.0',
   esbuild: '^0.27.0',
   tsx: '^4.20.6',
+  typescript: '~5.9.3',
 };
 
 function sortKeys(obj: Record<string, string>): Record<string, string> {
