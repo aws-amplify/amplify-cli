@@ -4,6 +4,8 @@ import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_c
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import * as fs from 'fs';
+import * as path from 'path';
 
 jest.unmock('fs-extra');
 
@@ -729,6 +731,18 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Name: 'custom:department',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+            StringAttributeConstraints: {
+              MinLength: '1',
+              MaxLength: '50',
+            },
+          },
+        ]);
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           disableOAuth: true,
@@ -2361,5 +2375,120 @@ describe('AuthGenerator', () => {
     expect(content).toContain('loginWith');
     expect(content).toContain('applyEscapeHatches');
     expect(content).toContain('userPool.addClient');
+  });
+
+  it('emits a Schema override with every attribute Required:false so both the create and the refactor UpdateUserPool are valid', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    // A realistic live-pool schema as Cognito reports it: standard attrs carry
+    // their AttributeDataType (email/given_name required, name optional), the
+    // auto-managed *_verified booleans and sub, and a custom attribute that is
+    // required in the source pool. The override must emit each with its data
+    // type and Required:false (never Required:true), which is the one shape
+    // valid on both the fresh CreateUserPool and the refactor UpdateUserPool.
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', AttributeDataType: 'String', Required: true, Mutable: true },
+        { Name: 'given_name', AttributeDataType: 'String', Required: true, Mutable: false },
+        { Name: 'name', AttributeDataType: 'String', Required: false, Mutable: true },
+        { Name: 'email_verified', Required: false, Mutable: true, AttributeDataType: 'Boolean' },
+        { Name: 'phone_number_verified', Required: false, Mutable: true, AttributeDataType: 'Boolean' },
+        { Name: 'sub', AttributeDataType: 'String', Required: false, Mutable: false },
+        { Name: 'custom:department', AttributeDataType: 'String', Required: true, Mutable: true },
+      ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+
+    // The override is emitted with the pool's attributes so the fresh
+    // CreateUserPool gets a valid non-empty Schema. Every member carries its
+    // AttributeDataType and Required:false: a required member (standard or
+    // custom) is exactly what Cognito rejects at the refactor UpdateUserPool
+    // with "Required custom attributes are not supported", and a member with no
+    // AttributeDataType is rejected with "Invalid AttributeDataType input".
+    // (Both proven end-to-end against a live migrated pool.)
+    expect(content).toMatch(/addPropertyOverride\('Schema', \[\s*\{/);
+
+    // The required custom attribute is preserved but demoted to Required:false.
+    expect(content).toContain("Name: 'custom:department'");
+
+    // Cognito's auto-managed attributes are excluded: the pool creates them
+    // itself, and phone_number_verified (21 chars) exceeds the 20-char limit on
+    // a Schema member Name, which would fail CreateUserPool with "Member must
+    // have length less than or equal to 20".
+    expect(content).not.toContain("Name: 'phone_number_verified'");
+    expect(content).not.toContain("Name: 'email_verified'");
+    expect(content).not.toContain("Name: 'sub'");
+
+    // No member is ever marked Required:true.
+    expect(content).not.toMatch(/Required:\s*true/);
+    // Every emitted member carries Required:false.
+    expect(content).toContain('Required: false');
+    // No DataType-less member reaches the override.
+    expect(content).toMatch(/AttributeDataType: 'String'/);
+  });
+
+  it('emits the deployed Gen1 template Schema verbatim when available so refactor/rollback never changes it', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: { UserPoolId: 'us-east-1_abc123', AppClientIDWeb: 'webclient123', AppClientID: 'client123' },
+        },
+      },
+    });
+    const buildDir = path.join(gen1App.ccbDir, 'auth', 'testAuth', 'build');
+    fs.mkdirSync(buildDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(buildDir, 'testAuth-cloudformation-template.json'),
+      JSON.stringify({ Resources: { UserPool: { Properties: { Schema: [{ Mutable: true, Name: 'email', Required: true }] } } } }),
+    );
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', AttributeDataType: 'String', Required: true, Mutable: true },
+        { Name: 'name', AttributeDataType: 'String', Required: false, Mutable: true },
+      ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+
+    const schemaCall = content.slice(content.indexOf("addPropertyOverride('Schema'"));
+    const schemaBlock = schemaCall.slice(0, schemaCall.indexOf(']);'));
+    expect(schemaBlock).toContain("Name: 'email'");
+    expect(schemaBlock).toContain('Required: true');
+    expect(schemaBlock).not.toContain("Name: 'name'");
+    expect(schemaBlock).not.toContain('AttributeDataType');
   });
 });
