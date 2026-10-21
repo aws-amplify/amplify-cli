@@ -166,6 +166,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-kinesis.test.ts|src/__tests__/notifications-analytics-compatibility-sms-2.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_notifications_analytics_compatibility_in_app_1_studio_modelgen
@@ -180,6 +181,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/plugin.test.ts|src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_global_sandbox_c_analytics_2_pull
@@ -194,6 +196,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_with_babel_config_notifications_in_app_messaging_env_2_notifications_fcm
@@ -264,6 +267,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-model-e.test.ts|src/__tests__/schema-auth-4b.test.ts|src/__tests__/notifications-sms.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_iam_permissions_boundary_export_node_function
@@ -355,6 +359,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_10.test.ts|src/__tests__/function-permissions.test.ts|src/__tests__/env-5.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_custom_resources_auth_9
@@ -551,6 +556,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts|src/__tests__/minify-cloudformation.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_init_force_push_hooks_c_help
@@ -1202,6 +1208,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-2.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1222,6 +1229,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1242,6 +1250,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1372,6 +1381,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-4b.test.ts|src/__tests__/notifications-sms.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1562,6 +1572,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function-permissions.test.ts|src/__tests__/env-5.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1902,6 +1913,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb

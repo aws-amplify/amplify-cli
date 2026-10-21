@@ -620,6 +620,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-4b.test.ts|src/__tests__/notifications-sms.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1091,6 +1092,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - w_schema_auth_4d_frontend_config_drift
@@ -1211,6 +1213,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function-permissions.test.ts|src/__tests__/env-5.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - w_function_9a_export_pull_a
@@ -1271,6 +1274,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-2.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - w_schema_auth_4a_s3_sse
@@ -1281,6 +1285,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - w_container_hosting_auth_10
@@ -1291,6 +1296,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - w_iam_permissions_boundary_node_function
