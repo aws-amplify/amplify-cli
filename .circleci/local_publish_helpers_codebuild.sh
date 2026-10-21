@@ -209,6 +209,14 @@ function useChildAccountCredentials {
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
+# Re-assumes the parent test account role from the CodeBuild role. The parent session lasts one hour, so a first
+# attempt that runs longer leaves expired credentials behind and the retry would fail before running any test.
+function refreshParentAccountCredentials {
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+    unset AWS_ACCESS_KEY_ID_ORIG AWS_SECRET_ACCESS_KEY_ORIG AWS_SESSION_TOKEN_ORIG
+    _loadTestAccountCredentials
+}
+
 function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
@@ -219,6 +227,9 @@ function retry {
     until [ $n -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
+        if [ "$FIRST_RUN" = false ] && declare -F _loadTestAccountCredentials > /dev/null; then
+            refreshParentAccountCredentials
+        fi
         setAwsAccountCredentials
         "$@" && break
         n=$[$n+1]
