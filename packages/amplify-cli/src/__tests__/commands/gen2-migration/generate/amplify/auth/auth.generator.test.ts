@@ -2424,32 +2424,103 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
     const content = writtenFile('auth/resource.ts');
 
-    // The override is emitted with the pool's attributes so the fresh
-    // CreateUserPool gets a valid non-empty Schema. Every member carries its
-    // AttributeDataType and Required:false: a required member (standard or
-    // custom) is exactly what Cognito rejects at the refactor UpdateUserPool
-    // with "Required custom attributes are not supported", and a member with no
-    // AttributeDataType is rejected with "Invalid AttributeDataType input".
-    // (Both proven end-to-end against a live migrated pool.)
-    expect(content).toMatch(/addPropertyOverride\('Schema', \[\s*\{/);
+    // Every member carries its AttributeDataType and Required:false; Cognito's
+    // auto-managed attributes (sub, *_verified) are excluded.
+    expect(content).toMatchInlineSnapshot(`
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
 
-    // The required custom attribute is preserved but demoted to Required:false.
-    expect(content).toContain("Name: 'custom:department'");
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        userAttributes: {
+          email: {
+            required: true,
+            mutable: true,
+          },
+          givenName: {
+            required: true,
+            mutable: false,
+          },
+          'custom:department': {
+            mutable: true,
+            dataType: 'String',
+          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
 
-    // Cognito's auto-managed attributes are excluded: the pool creates them
-    // itself, and phone_number_verified (21 chars) exceeds the 20-char limit on
-    // a Schema member Name, which would fail CreateUserPool with "Member must
-    // have length less than or equal to 20".
-    expect(content).not.toContain("Name: 'phone_number_verified'");
-    expect(content).not.toContain("Name: 'email_verified'");
-    expect(content).not.toContain("Name: 'sub'");
-
-    // No member is ever marked Required:true.
-    expect(content).not.toMatch(/Required:\s*true/);
-    // Every emitted member carries Required:false.
-    expect(content).toContain('Required: false');
-    // No DataType-less member reaches the override.
-    expect(content).toMatch(/AttributeDataType: 'String'/);
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Name: 'email',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+          },
+          {
+            Name: 'given_name',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: false,
+          },
+          {
+            Name: 'name',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+          },
+          {
+            Name: 'custom:department',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+          },
+        ]);
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 
   it('emits the deployed Gen1 template Schema verbatim when available so refactor/rollback never changes it', async () => {
@@ -2484,11 +2555,65 @@ describe('AuthGenerator', () => {
     await ops[0].execute();
     const content = writtenFile('auth/resource.ts');
 
-    const schemaCall = content.slice(content.indexOf("addPropertyOverride('Schema'"));
-    const schemaBlock = schemaCall.slice(0, schemaCall.indexOf(']);'));
-    expect(schemaBlock).toContain("Name: 'email'");
-    expect(schemaBlock).toContain('Required: true');
-    expect(schemaBlock).not.toContain("Name: 'name'");
-    expect(schemaBlock).not.toContain('AttributeDataType');
+    // The template Schema is emitted as-is; the live pool's attributes are not used.
+    expect(content).toMatchInlineSnapshot(`
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
+
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        userAttributes: {
+          email: {
+            required: true,
+            mutable: true,
+          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Mutable: true,
+            Name: 'email',
+            Required: true,
+          },
+        ]);
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 });
