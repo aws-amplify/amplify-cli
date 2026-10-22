@@ -108,6 +108,8 @@ graph TB
    - REST API Description property (null vs empty)
    - Auth trigger policies on Lambda execution roles (Cognito trigger policies added during push)
    - S3 trigger policies on Lambda execution roles (S3 trigger policies added during push)
+   - AppSync ApiKey `/Expires` changes that only reflect the time-relative expiry
+   - DynamoDB `StreamSpecification` tags left behind by the Gen2 stack after `gen2-migration refactor --rollback`
 6. Filters to only drifted resources (MODIFIED or DELETED) at detection time
 
 **Example drift detected:**
@@ -322,7 +324,13 @@ Amplify's push pipeline introduces drift that should not be reported:
 
 ```typescript
 // From detect-stack-drift.ts — all filters are registered in a single array
-const FALSE_POSITIVE_FILTERS = [isAmplifyAuthRoleDenyToAllowChange, isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift] as const;
+const FALSE_POSITIVE_FILTERS = [
+  isAmplifyAuthRoleDenyToAllowChange,
+  isAmplifyRestApiDescriptionDrift,
+  isAmplifyTriggerPolicyDrift,
+  isAppSyncApiKeyExpiresTimeRelativeDrift,
+  isGen2MigrationStreamTagDrift,
+] as const;
 
 // REST API Description: null vs empty mismatch
 function isAmplifyRestApiDescriptionDrift(drift, propDiff, print): boolean {
@@ -333,6 +341,15 @@ function isAmplifyRestApiDescriptionDrift(drift, propDiff, print): boolean {
 function isAmplifyTriggerPolicyDrift(drift, propDiff, print): boolean {
   // Parses PolicyDocument JSON and checks actions via Set containment
   // against known Cognito or S3 trigger policy patterns
+}
+
+// Gen2 stack tags that CloudFormation propagated onto a DynamoDB table's
+// StreamSpecification while the table lived in the Gen2 stack. After a refactor
+// rollback the Gen1 template declares no stream tags, so they are never removed.
+function isGen2MigrationStreamTagDrift(drift, propDiff, print): boolean {
+  // Filters /StreamSpecification/Tags/N on AWS::DynamoDB::Table when the template
+  // value is null and the tag key is amplify:deployment-type, created-by or
+  // gen2-migration/post-refactor
 }
 ```
 
