@@ -10,6 +10,7 @@ type PackageJson = {
   readonly scripts?: Record<string, string>;
   readonly devDependencies?: Record<string, string>;
   readonly dependencies?: Record<string, string>;
+  readonly overrides?: Record<string, string>;
 };
 
 const GEN2_DEV_DEPENDENCIES: Record<string, string> = {
@@ -23,6 +24,19 @@ const GEN2_DEV_DEPENDENCIES: Record<string, string> = {
   constructs: '^10.0.0',
   esbuild: '^0.27.0',
   tsx: '^4.20.6',
+};
+
+// Pin the deploy engine's CDK toolkit to a version that keeps `ampx sandbox`
+// hotswap fallbacks in STANDARD mode. @aws-cdk/toolkit-lib 1.32.0 forces
+// Express mode on any hotswap deployment that falls back to a full deployment,
+// even without `--express`, which also relaxes the rollback and replacement
+// checks and breaks a gen2-migration refactor that needs a replacement update
+// ("Replacement type updates not supported on stack with disable-rollback").
+// 1.40.0 restores STANDARD mode. The fix shipped in @aws-amplify/backend-deployer
+// 2.2.1 but was dropped again in 2.3.x, which the backend-cli caret range floats
+// to, so pin the transitive toolkit-lib here until the deployer re-lands it.
+const GEN2_OVERRIDES: Record<string, string> = {
+  '@aws-cdk/toolkit-lib': '1.40.0',
 };
 
 function sortKeys(obj: Record<string, string>): Record<string, string> {
@@ -139,10 +153,16 @@ export class RootPackageJsonGenerator implements Planner {
             }
           }
 
+          const mergedOverrides: Record<string, string> = {
+            ...(packageJson.overrides ?? {}),
+            ...GEN2_OVERRIDES,
+          };
+
           const patched: PackageJson = {
             ...packageJson,
             dependencies: sortKeys(mergedDependencies),
             devDependencies: sortKeys(mergedDevDependencies),
+            overrides: sortKeys(mergedOverrides),
           };
 
           await fs.mkdir(path.dirname(packageJsonPath), { recursive: true });

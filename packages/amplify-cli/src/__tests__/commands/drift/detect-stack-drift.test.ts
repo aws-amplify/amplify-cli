@@ -3,6 +3,7 @@ import {
   isAmplifyRestApiDescriptionDrift,
   isAmplifyTriggerPolicyDrift,
   isAppSyncApiKeyExpiresTimeRelativeDrift,
+  isGen2MigrationStreamTagDrift,
 } from '../../../commands/drift/detect-stack-drift';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
 
@@ -221,5 +222,39 @@ describe('isAppSyncApiKeyExpiresTimeRelativeDrift', () => {
         mockPrinter,
       ),
     ).toBe(false);
+  });
+});
+
+describe('isGen2MigrationStreamTagDrift', () => {
+  const tableDrift = makeDrift({ ResourceType: 'AWS::DynamoDB::Table' });
+  const tagDiff = (key: string, overrides: Partial<PropertyDifference> = {}) =>
+    makePropDiff({
+      PropertyPath: '/StreamSpecification/Tags/0',
+      ExpectedValue: 'null',
+      ActualValue: JSON.stringify({ Key: key, Value: 'x' }),
+      ...overrides,
+    });
+
+  it.each(['amplify:deployment-type', 'created-by', 'gen2-migration/post-refactor'])('filters leftover Gen2 stream tag %s', (key) => {
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff(key), mockPrinter)).toBe(true);
+  });
+
+  it('keeps unknown stream tags', () => {
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff('team'), mockPrinter)).toBe(false);
+  });
+
+  it('keeps tags declared in the template', () => {
+    expect(
+      isGen2MigrationStreamTagDrift(tableDrift, tagDiff('created-by', { ExpectedValue: '{"Key":"created-by","Value":"y"}' }), mockPrinter),
+    ).toBe(false);
+  });
+
+  it('ignores other resource types and paths', () => {
+    expect(isGen2MigrationStreamTagDrift(makeDrift(), tagDiff('created-by'), mockPrinter)).toBe(false);
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff('created-by', { PropertyPath: '/Tags/0' }), mockPrinter)).toBe(false);
+  });
+
+  it('does not throw on unparseable values', () => {
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff('x', { ActualValue: 'not-json' }), mockPrinter)).toBe(false);
   });
 });

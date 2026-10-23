@@ -711,6 +711,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-model-e.test.ts|src/__tests__/schema-auth-4b.test.ts|src/__tests__/notifications-sms.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - l_import_s3_1
     - identifier: l_amplify_app
@@ -818,6 +819,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/plugin.test.ts|src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - l_schema_iterative_update_locking_function_8_api_8
     - identifier: l_datastore_modelgen
@@ -927,6 +929,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-kinesis.test.ts|src/__tests__/notifications-analytics-compatibility-sms-2.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - l_api_lambda_auth_1_schema_auth_14_api_key_migration1
     - identifier: l_schema_auth_4c_init_a_geo_add_a
@@ -1004,6 +1007,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_10.test.ts|src/__tests__/function-permissions.test.ts|src/__tests__/env-5.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - l_import_s3_2a
     - identifier: l_android_notifications_pinpoint_config_android_analytics_pinpoint_config_opensearch_simulator
@@ -1103,6 +1107,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - l_hostingPROD
     - identifier: l_notifications_sms_update_notifications_multi_env_minify_cloudformation
@@ -1110,6 +1115,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-sms-update.test.ts|src/__tests__/notifications-multi-env.test.ts|src/__tests__/minify-cloudformation.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - l_hosting_geo_import_3
     - identifier: l_searchable_datastore_schema_searchable

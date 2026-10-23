@@ -4,6 +4,8 @@ import { DiscoveredResource } from '../../../../../../commands/gen2-migration/_c
 import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import * as fs from 'fs';
+import * as path from 'path';
 
 jest.unmock('fs-extra');
 
@@ -729,6 +731,18 @@ describe('AuthGenerator', () => {
         cfnUserPool.policies = {
           passwordPolicy: {},
         };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Name: 'custom:department',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+            StringAttributeConstraints: {
+              MinLength: '1',
+              MaxLength: '50',
+            },
+          },
+        ]);
         const userPool = backend.auth.resources.userPool;
         const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
           disableOAuth: true,
@@ -2361,5 +2375,245 @@ describe('AuthGenerator', () => {
     expect(content).toContain('loginWith');
     expect(content).toContain('applyEscapeHatches');
     expect(content).toContain('userPool.addClient');
+  });
+
+  it('emits a Schema override with every attribute Required:false so both the create and the refactor UpdateUserPool are valid', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    // A realistic live-pool schema as Cognito reports it: standard attrs carry
+    // their AttributeDataType (email/given_name required, name optional), the
+    // auto-managed *_verified booleans and sub, and a custom attribute that is
+    // required in the source pool. The override must emit each with its data
+    // type and Required:false (never Required:true), which is the one shape
+    // valid on both the fresh CreateUserPool and the refactor UpdateUserPool.
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', AttributeDataType: 'String', Required: true, Mutable: true },
+        { Name: 'given_name', AttributeDataType: 'String', Required: true, Mutable: false },
+        { Name: 'name', AttributeDataType: 'String', Required: false, Mutable: true },
+        { Name: 'email_verified', Required: false, Mutable: true, AttributeDataType: 'Boolean' },
+        { Name: 'phone_number_verified', Required: false, Mutable: true, AttributeDataType: 'Boolean' },
+        { Name: 'sub', AttributeDataType: 'String', Required: false, Mutable: false },
+        { Name: 'custom:department', AttributeDataType: 'String', Required: true, Mutable: true },
+      ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+
+    // Every member carries its AttributeDataType and Required:false; Cognito's
+    // auto-managed attributes (sub, *_verified) are excluded.
+    expect(content).toMatchInlineSnapshot(`
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
+
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        userAttributes: {
+          email: {
+            required: true,
+            mutable: true,
+          },
+          givenName: {
+            required: true,
+            mutable: false,
+          },
+          'custom:department': {
+            mutable: true,
+            dataType: 'String',
+          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Name: 'email',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+          },
+          {
+            Name: 'given_name',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: false,
+          },
+          {
+            Name: 'name',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+          },
+          {
+            Name: 'custom:department',
+            AttributeDataType: 'String',
+            Required: false,
+            Mutable: true,
+          },
+        ]);
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        const cognitoProviders =
+          backend.auth.resources.cfnResources.cfnIdentityPool
+            .cognitoIdentityProviders;
+        if (cognitoProviders && Array.isArray(cognitoProviders)) {
+          cognitoProviders.push({
+            clientId: nativeUserPoolClient.userPoolClientId,
+            providerName: \`cognito-idp.\${backend.auth.stack.region}.amazonaws.com/\${userPool.userPoolId}\`,
+          });
+        }
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
+  });
+
+  it('emits the deployed Gen1 template Schema verbatim when available so refactor/rollback never changes it', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: { UserPoolId: 'us-east-1_abc123', AppClientIDWeb: 'webclient123', AppClientID: 'client123' },
+        },
+      },
+    });
+    const buildDir = path.join(gen1App.ccbDir, 'auth', 'testAuth', 'build');
+    fs.mkdirSync(buildDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(buildDir, 'testAuth-cloudformation-template.json'),
+      JSON.stringify({ Resources: { UserPool: { Properties: { Schema: [{ Mutable: true, Name: 'email', Required: true }] } } } }),
+    );
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({
+      SchemaAttributes: [
+        { Name: 'email', AttributeDataType: 'String', Required: true, Mutable: true },
+        { Name: 'name', AttributeDataType: 'String', Required: false, Mutable: true },
+      ],
+    });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    const ops = await generator.plan();
+    await ops[0].execute();
+    const content = writtenFile('auth/resource.ts');
+
+    // The template Schema is emitted as-is; the live pool's attributes are not used.
+    expect(content).toMatchInlineSnapshot(`
+      "import { defineAuth } from '@aws-amplify/backend';
+      import { CfnResource, Duration } from 'aws-cdk-lib';
+      import type { Backend } from '../backend';
+
+      export const auth = defineAuth({
+        loginWith: {
+          email: true,
+        },
+        userAttributes: {
+          email: {
+            required: true,
+            mutable: true,
+          },
+        },
+        multifactor: {
+          mode: 'OFF',
+        },
+      });
+
+      export function applyEscapeHatches(backend: Backend) {
+        const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+        cfnUserPool.usernameAttributes = undefined;
+        cfnUserPool.policies = {
+          passwordPolicy: {},
+        };
+        cfnUserPool.addPropertyOverride('Schema', [
+          {
+            Mutable: true,
+            Name: 'email',
+            Required: true,
+          },
+        ]);
+        const userPool = backend.auth.resources.userPool;
+        const nativeUserPoolClient = userPool.addClient('NativeAppClient', {
+          disableOAuth: true,
+          generateSecret: false,
+        });
+        for (const cfnResource of backend.auth.stack.node
+          .findAll()
+          .filter(
+            (c) =>
+              CfnResource.isCfnResource(c) &&
+              [
+                'AWS::Cognito::UserPool',
+                'AWS::Cognito::IdentityPool',
+                'AWS::Cognito::UserPoolClient',
+                'AWS::Cognito::IdentityPoolRoleAttachment',
+                'AWS::Cognito::UserPoolGroup',
+                'AWS::Cognito::UserPoolDomain',
+                'AWS::Cognito::UserPoolIdentityProvider',
+              ].includes(c.cfnResourceType)
+          )) {
+          (cfnResource as CfnResource).addOverride('UpdateReplacePolicy', 'Retain');
+          (cfnResource as CfnResource).addOverride('DeletionPolicy', 'Retain');
+        }
+      }
+      "
+    `);
   });
 });
