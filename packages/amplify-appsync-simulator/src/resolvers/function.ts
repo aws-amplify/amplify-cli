@@ -36,7 +36,7 @@ export class AmplifySimulatorFunction extends AppSyncBaseResolver {
       };
     }
     try {
-      result = await dataLoader.load(requestTemplateResult.result);
+      result = await dataLoader.load(requestTemplateResult.result, { info });
     } catch (e) {
       // pipeline resolver does not throw error
       // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-changelog.html#aws-appsync-resolver-mapping-template-version-2018-05-29
