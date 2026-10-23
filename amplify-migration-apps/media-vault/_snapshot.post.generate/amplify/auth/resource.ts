@@ -1,6 +1,4 @@
 import { defineAuth, secret } from '@aws-amplify/backend';
-import { addusertogroup } from '../function/addusertogroup/resource';
-import { removeuserfromgroup } from '../function/removeuserfromgroup/resource';
 import { CfnResource, Duration } from 'aws-cdk-lib';
 import {
   OAuthScope,
@@ -55,36 +53,6 @@ export const auth = defineAuth({
   multifactor: {
     mode: 'OFF',
   },
-  access: (allow) => [
-    allow.resource(addusertogroup).to(['manageUsers']),
-    allow.resource(addusertogroup).to(['manageGroupMembership']),
-    allow.resource(addusertogroup).to(['manageUserDevices']),
-    allow.resource(addusertogroup).to(['managePasswordRecovery']),
-    allow.resource(addusertogroup).to(['setUserMfaPreference']),
-    allow.resource(addusertogroup).to(['updateUserAttributes']),
-    allow.resource(addusertogroup).to(['createGroup']),
-    allow.resource(addusertogroup).to(['forgetDevice']),
-    allow.resource(addusertogroup).to(['setUserSettings']),
-    allow.resource(addusertogroup).to(['listUsers']),
-    allow.resource(addusertogroup).to(['listUsersInGroup']),
-    allow.resource(addusertogroup).to(['listGroups']),
-    allow.resource(addusertogroup).to(['updateGroup']),
-    allow.resource(addusertogroup).to(['deleteGroup']),
-    allow.resource(removeuserfromgroup).to(['manageUsers']),
-    allow.resource(removeuserfromgroup).to(['manageGroupMembership']),
-    allow.resource(removeuserfromgroup).to(['manageUserDevices']),
-    allow.resource(removeuserfromgroup).to(['managePasswordRecovery']),
-    allow.resource(removeuserfromgroup).to(['setUserMfaPreference']),
-    allow.resource(removeuserfromgroup).to(['updateUserAttributes']),
-    allow.resource(removeuserfromgroup).to(['createGroup']),
-    allow.resource(removeuserfromgroup).to(['forgetDevice']),
-    allow.resource(removeuserfromgroup).to(['setUserSettings']),
-    allow.resource(removeuserfromgroup).to(['listUsers']),
-    allow.resource(removeuserfromgroup).to(['listUsersInGroup']),
-    allow.resource(removeuserfromgroup).to(['listGroups']),
-    allow.resource(removeuserfromgroup).to(['updateGroup']),
-    allow.resource(removeuserfromgroup).to(['deleteGroup']),
-  ],
 });
 
 export function applyEscapeHatches(backend: Backend) {
