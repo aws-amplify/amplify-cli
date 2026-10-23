@@ -423,7 +423,10 @@ function _putCredsInProfile {
 }
 
 function _installIntegTestsDependencies {
-    apt-get update
+    # A third-party PPA in the build image (git-core) intermittently returns 503 and fails the index refresh even though
+    # the packages below come from the Ubuntu archive. Retry once, then continue with the indexes that were fetched;
+    # a genuinely missing index still fails the installs below.
+    apt-get update || apt-get update || echo "apt-get update failed; continuing with available package indexes"
     apt-get install -y sudo
     sudo apt-get install -y lsof
     sudo apt-get install -y python3 python3-pip libpython3-dev

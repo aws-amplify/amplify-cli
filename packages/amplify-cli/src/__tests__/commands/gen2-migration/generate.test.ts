@@ -157,13 +157,8 @@ describe('AmplifyMigrationGenerateStep', () => {
 
     it('skips unsupported resources without instantiating generators', async () => {
       const gen1 = mockGen1App({
-        discover: () => [{ category: 'function', resourceName: 'myPythonFunc', service: 'Lambda', key: 'function:Lambda' as const }],
-        json: (p: string) => {
-          if (p.endsWith('-cloudformation-template.json')) {
-            return { Resources: { LambdaFunction: { Properties: { Runtime: 'python3.11' } } } };
-          }
-          return undefined;
-        },
+        discover: () => [{ category: 'storage', resourceName: 'myImportedTable', service: 'DynamoDB', key: 'storage:DynamoDB' as const }],
+        categoryMeta: () => ({ myImportedTable: { serviceType: 'imported' } }),
       });
       const logger = new SpinningLogger('generate', { debug: true });
 
@@ -172,7 +167,7 @@ describe('AmplifyMigrationGenerateStep', () => {
       // 3 validation ops (lock, working dir, assessment)
       // 6 infrastructure generators (backend, root package.json, backend package.json, tsconfig, amplify.yml, gitignore)
       // 1 post-generation op (replace folder)
-      // = 10 total — the unsupported function contributes zero operations.
+      // = 10 total — the unsupported (imported) resource contributes zero operations.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- accessing private field to assert operation count
       expect((plan as any).operations).toHaveLength(10);
     });

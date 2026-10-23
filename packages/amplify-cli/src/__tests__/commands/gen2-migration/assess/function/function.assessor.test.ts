@@ -78,38 +78,17 @@ describe('FunctionAssessor', () => {
     expect(assessment.features).toHaveLength(0);
   });
 
-  describe('non-JS runtime detection', () => {
-    it('marks resource as unsupported for generate when runtime is Python', () => {
+  it('marks generate as supported for every runtime', () => {
+    for (const runtime of ['nodejs18.x', 'python3.11', 'go1.x', 'java21', 'dotnet8', 'ruby3.3']) {
       const gen1App = mockGen1App([], {
-        [NODEJS_TEMPLATE_PATH]: { Resources: { LambdaFunction: { Properties: { Runtime: 'python3.11' } } } },
+        [NODEJS_TEMPLATE_PATH]: { Resources: { LambdaFunction: { Properties: { Runtime: runtime } } } },
       });
-      const assessment = new Assessment('app', 'dev');
-      new FunctionAssessor(gen1App, RESOURCE).record(assessment);
-
-      const entry = assessment.resources[0];
-      expect(entry!.generate.level).toBe('unsupported');
-      expect(entry!.generate.note).toContain('requires adding code after generate');
-      expect(entry!.refactor.level).toBe('not-applicable');
-    });
-
-    it('fails assessment validFor generate when runtime is non-JS', () => {
-      const gen1App = mockGen1App([], {
-        [NODEJS_TEMPLATE_PATH]: { Resources: { LambdaFunction: { Properties: { Runtime: 'dotnet8' } } } },
-      });
-      const assessment = new Assessment('app', 'dev');
-      new FunctionAssessor(gen1App, RESOURCE).record(assessment);
-
-      expect(assessment.validFor('generate')).toBe(false);
-      expect(assessment.validFor('refactor')).toBe(true);
-    });
-
-    it('treats nodejs runtimes as supported', () => {
-      const gen1App = mockGen1App([], { [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE });
       const assessment = new Assessment('app', 'dev');
       new FunctionAssessor(gen1App, RESOURCE).record(assessment);
 
       expect(assessment.resources[0]!.generate.level).toBe('supported');
-      expect(assessment.features).toHaveLength(0);
-    });
+      expect(assessment.validFor('generate')).toBe(true);
+      expect(assessment.validFor('refactor')).toBe(true);
+    }
   });
 });

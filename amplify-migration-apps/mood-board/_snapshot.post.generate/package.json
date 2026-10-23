@@ -55,5 +55,8 @@
     "tsx": "^4.20.6",
     "typescript": "^5.5.3",
     "vite": "^5.4.2"
+  },
+  "overrides": {
+    "@aws-cdk/toolkit-lib": "1.40.0"
   }
 }

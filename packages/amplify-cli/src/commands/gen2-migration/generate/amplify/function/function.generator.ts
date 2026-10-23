@@ -80,16 +80,13 @@ export class FunctionGenerator implements Planner {
       });
 
     const runtime = config.Runtime;
-    if (runtime && !runtime.startsWith('nodejs')) {
-      throw new AmplifyError('UnsupportedRuntimeError', {
-        message: `Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`,
-        resolution: 'Migrate the function to a Node.js runtime before running the Gen 2 migration.',
-      });
-    }
 
     this.logger.debug(`Fetching Lambda function schedule '${deployedName}'`);
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
-    const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
+    const entry =
+      runtime && !runtime.startsWith('nodejs')
+        ? config.Handler ?? 'index.handler'
+        : TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
     const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {}, this.readModelNames());
 
     const dynamoActions = this.extractDynamoActions();
@@ -141,21 +138,72 @@ export class FunctionGenerator implements Planner {
         describe: async () => [`Generate amplify/function/${resourceName}/resource.ts`],
         execute: async () => {
           const dirPath = path.join(this.outputDir, 'amplify', 'function', resourceName);
-
-          this.logger.info(`Rendering function/${resourceName}/resource.ts`);
-          const nodes = this.renderer.render(renderOpts);
-          const content = TS.printNodes(nodes);
-
           await fs.mkdir(dirPath, { recursive: true });
-          await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
-          await this.copyFunctionSource(resourceName, dirPath);
 
           const alias = resourceName;
-          this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
-          this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
 
-          const escapeHatchArgs = this.deriveApplyEscapeHatchArguments(hasAnalytics, dynamicEnvVars);
-          this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: escapeHatchArgs });
+          if (runtime && !runtime.startsWith('nodejs')) {
+            // Non-JS runtime: emit the Gen2 custom function pattern
+            // (defineFunction((scope) => new Function(...))). These functions
+            // have no applyEscapeHatches() export, so no escape-hatch call is
+            // registered on the backend.
+            this.logger.info(`Rendering custom function/${resourceName}/resource.ts`);
+            const manualMigrationNotes: string[] = [];
+            if (dynamicEnvVars.length > 0) {
+              manualMigrationNotes.push(
+                `Dynamic environment variables (branch/secret/cross-resource references) were not migrated: ${dynamicEnvVars
+                  .map((v) => v.name)
+                  .join(', ')}. Wire them via backend.${resourceName}.resources.lambda.addEnvironment(...) in backend.ts.`,
+              );
+            }
+            if (schedule) {
+              manualMigrationNotes.push(
+                `A schedule ('${schedule}') was configured on the Gen1 function but was not migrated. Add an EventBridge schedule in backend.ts.`,
+              );
+            }
+            const ungrantedPermissions: string[] = [];
+            if (dynamoActions.length > 0) ungrantedPermissions.push('DynamoDB table access');
+            if (appSyncPermissions.hasMutation || appSyncPermissions.hasQuery) ungrantedPermissions.push('AppSync (GraphQL API) access');
+            if (hasAnalytics) ungrantedPermissions.push('Kinesis (analytics) access');
+            if (unMappedAuthActions.length > 0) ungrantedPermissions.push('additional IAM policy actions');
+            if (dataTriggerModels.length > 0) ungrantedPermissions.push('data (@model) trigger wiring');
+            if (storageTriggerTables.length > 0) ungrantedPermissions.push('storage (DynamoDB) trigger wiring');
+            if (ungrantedPermissions.length > 0) {
+              manualMigrationNotes.push(
+                `Permission grants / triggers were not migrated: ${ungrantedPermissions.join(
+                  ', ',
+                )}. Re-add them on the function's CDK resource in backend.ts.`,
+              );
+            }
+            const content = this.renderer.renderCustomFunction({
+              resourceName,
+              handler: entry,
+              runtime,
+              architecture: config.Architectures?.[0],
+              timeoutSeconds: config.Timeout,
+              memoryMB: config.MemorySize,
+              environment: literalEnvVars,
+              manualMigrationNotes,
+            });
+            await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
+            await this.copyFunctionSource(resourceName, dirPath, runtime);
+
+            this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
+            this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
+          } else {
+            this.logger.info(`Rendering function/${resourceName}/resource.ts`);
+            const nodes = this.renderer.render(renderOpts);
+            const content = TS.printNodes(nodes);
+
+            await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
+            await this.copyFunctionSource(resourceName, dirPath);
+
+            this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
+            this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
+
+            const escapeHatchArgs = this.deriveApplyEscapeHatchArguments(hasAnalytics, dynamicEnvVars);
+            this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: escapeHatchArgs });
+          }
         },
       },
     ];
@@ -220,20 +268,21 @@ export class FunctionGenerator implements Planner {
     }
   }
 
-  private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
+  private async copyFunctionSource(resourceName: string, destDir: string, runtime?: string): Promise<void> {
     const srcDir = path.join('amplify', 'backend', 'function', resourceName, 'src');
+    const isNonJs = runtime !== undefined && !runtime.startsWith('nodejs');
     await fs.cp(srcDir, destDir, {
       recursive: true,
       filter: (src) => {
         const b = path.basename(src);
-        return (
-          b !== 'node_modules' &&
-          b !== '.yarn' &&
-          b !== 'package.json' &&
-          b !== 'package-lock.json' &&
-          b !== 'yarn.lock' &&
-          b !== 'pnpm-lock.yaml'
-        );
+        if (b === 'node_modules' || b === '.yarn') return false;
+        // For Node.js functions, filter out JS dependency/lock files so they
+        // don't leak into the generated Gen2 project. Non-JS functions keep
+        // their dependency manifests (requirements.txt, go.mod, pom.xml, etc.).
+        if (!isNonJs) {
+          return b !== 'package.json' && b !== 'package-lock.json' && b !== 'yarn.lock' && b !== 'pnpm-lock.yaml';
+        }
+        return true;
       },
     });
   }
