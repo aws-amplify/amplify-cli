@@ -43,9 +43,13 @@ describe('reserved property names in reference resolution', function () {
     (({}).y === undefined).should.eql(true);
   });
 
-  it('does not write a reserved key via put("__proto__", ...)', function () {
-    render('$!ctx.put("__proto__", "yes")', { ctx: { name: 'foo' } });
-    (({}).__proto__.polluted === undefined).should.eql(true);
+  it('does not write a reserved key via put("constructor", ...)', function () {
+    // Discriminating: without the guard, put() assigns an own "constructor"
+    // key (hasOwnProperty becomes true). put("__proto__", <string>) would be a
+    // JS no-op guarded or not, so "constructor" is used to actually exercise it.
+    var ctx = { name: 'foo' };
+    render('$!ctx.put("constructor", "yes")', { ctx: ctx });
+    ctx.hasOwnProperty('constructor').should.eql(false);
   });
 
   it('does not write a reserved key via set("constructor", ...)', function () {
@@ -54,9 +58,14 @@ describe('reserved property names in reference resolution', function () {
     ctx.hasOwnProperty('constructor').should.eql(false);
   });
 
-  it('does not write a reserved key via setConstructor(...) accessor', function () {
+  it('does not write a reserved key via setconstructor(...) accessor', function () {
+    // Discriminating: the setter path takes id.slice(3) verbatim with no
+    // re-casing, so the lowercase "setconstructor" produces the reserved key
+    // "constructor" that the guard actually matches. (Capitalized
+    // "setConstructor" slices to "Constructor", which is not reserved and never
+    // exercises the guard.) Without the guard this writes an own "constructor".
     var ctx = { name: 'foo' };
-    render('$!ctx.setConstructor("yes")', { ctx: ctx });
+    render('$!ctx.setconstructor("yes")', { ctx: ctx });
     ctx.hasOwnProperty('constructor').should.eql(false);
   });
 
