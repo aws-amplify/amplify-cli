@@ -720,34 +720,59 @@ export class AuthRenderer {
       return;
     }
 
+    // Consolidate each function's enabled permissions into a single deduped,
+    // sorted set keyed by resource name. A function may be registered more than
+    // once, and emitting one `allow.resource(fn).to([...])` per function (rather
+    // than one rule per permission) keeps parity with the forward
+    // buildFunctionAccessBackendStatements path and generates fewer Policy
+    // constructs. Insertion order is preserved so the emitted rule order is
+    // stable across runs.
+    const permissionsByFunction = new Map<string, Set<string>>();
     for (const func of functionsWithAuthAccess) {
+      // The resource name is interpolated verbatim into both `allow.resource(<id>)`
+      // and the named import, so it must be a valid JS identifier or the generated
+      // auth/resource.ts would not compile (mirrors the non-trigger grant path and
+      // the S3 builder, which validate the same way).
+      TS.assertValidIdentifier(func.resourceName, `auth access block for function '${func.resourceName}'`);
+      const existing = permissionsByFunction.get(func.resourceName) ?? new Set<string>();
+      for (const [permission, enabled] of Object.entries(func.permissions)) {
+        if (enabled) {
+          existing.add(permission);
+        }
+      }
+      permissionsByFunction.set(func.resourceName, existing);
+    }
+
+    for (const resourceName of permissionsByFunction.keys()) {
       // Skip adding the import if the function is already imported (e.g. by addLambdaTriggers for the trigger wiring).
-      const alreadyImported = Object.values(namedImports).some((names) => names.has(func.resourceName));
+      const alreadyImported = Object.values(namedImports).some((names) => names.has(resourceName));
       if (!alreadyImported) {
-        namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+        namedImports[`../function/${resourceName}/resource`] = new Set([resourceName]);
       }
     }
 
     const accessRules: ts.Expression[] = [];
-    for (const func of functionsWithAuthAccess) {
-      for (const [permission, enabled] of Object.entries(func.permissions)) {
-        if (enabled) {
-          accessRules.push(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
-                  undefined,
-                  [factory.createIdentifier(func.resourceName)],
-                ),
-                factory.createIdentifier('to'),
-              ),
-              undefined,
-              [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
-            ),
-          );
-        }
+    for (const [resourceName, permissions] of permissionsByFunction) {
+      if (permissions.size === 0) {
+        continue;
       }
+      const permissionLiterals = Array.from(permissions)
+        .sort()
+        .map((permission) => factory.createStringLiteral(permission));
+      accessRules.push(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
+              undefined,
+              [factory.createIdentifier(resourceName)],
+            ),
+            factory.createIdentifier('to'),
+          ),
+          undefined,
+          [factory.createArrayLiteralExpression(permissionLiterals)],
+        ),
+      );
     }
 
     if (accessRules.length > 0) {

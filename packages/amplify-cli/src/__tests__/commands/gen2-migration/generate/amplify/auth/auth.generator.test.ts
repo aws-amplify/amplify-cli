@@ -1748,6 +1748,135 @@ describe('AuthGenerator', () => {
     await expect(ops[0].execute()).rejects.toThrow(/not a valid JavaScript identifier/);
   });
 
+  it('throws at generate time when a TRIGGER function name is not a valid JS identifier', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // A hyphenated trigger name would interpolate as invalid TS in the defineAuth
+    // access block (allow.resource(my-trigger) / import { my-trigger }). The
+    // up-front validation in execute() must cover the trigger path too, not just
+    // the non-trigger grant path.
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'my-trigger' });
+    generator.addFunctionAuthAccess({ resourceName: 'my-trigger', permissions: { addUserToGroup: true } });
+
+    const ops = await generator.plan();
+    await expect(ops[0].execute()).rejects.toThrow(/not a valid JavaScript identifier/);
+  });
+
+  it('warns when a trigger function also has storage or data access (potential deploy-time cycle)', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // storageTriggerFn is a postConfirmation trigger that ALSO touches storage/data
+    // (recorded by the function generator). The combination can close the cycle
+    // auth -> function (trigger) -> storage -> auth that the partition cannot break.
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'storageTriggerFn' });
+    generator.addFunctionAuthAccess({ resourceName: 'storageTriggerFn', permissions: { addUserToGroup: true } });
+    generator.markFunctionHasStorageOrDataAccess('storageTriggerFn');
+
+    const warnSpy = jest.spyOn(logger, 'warn');
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const cycleWarning = warnSpy.mock.calls
+      .map((c) => c[0] as string)
+      .find((msg) => msg.includes('storageTriggerFn') && msg.includes('storage or data'));
+    expect(cycleWarning).toBeDefined();
+    expect(cycleWarning).toContain('circular dependency');
+  });
+
+  it('warns about an unknown permission on a TRIGGER function, not just non-trigger access', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // An unmapped Gen1 permission on a TRIGGER function must still warn: it rides
+    // into the defineAuth access block as a raw action, so silently skipping the
+    // trigger subset would hide it from the operator.
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'triggerFutureFn' });
+    generator.addFunctionAuthAccess({
+      resourceName: 'triggerFutureFn',
+      permissions: { someFuturePermission: true } as unknown as AuthPermissions,
+    });
+
+    const warnSpy = jest.spyOn(logger, 'warn');
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const unknownWarning = warnSpy.mock.calls.map((c) => c[0] as string).find((msg) => msg.includes('someFuturePermission'));
+    expect(unknownWarning).toBeDefined();
+  });
+
   it('routes trigger-function auth access to the defineAuth access block and non-trigger access to a backend.ts grant', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },

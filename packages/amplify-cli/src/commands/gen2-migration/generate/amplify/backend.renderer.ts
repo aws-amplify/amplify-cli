@@ -65,11 +65,18 @@ export class BackendRenderer {
       nodes.push(this.renderNamespaceImport(imp.alias, imp.source));
     }
     nodes.push(this.renderDefineBackendImport());
-    nodes.push(TS.namedImport('aws-cdk-lib', 'Tags'));
-    // Additional named imports contributed by category generators (e.g. IAM
-    // PolicyStatement/Effect for function access grants), deduped and sorted.
-    for (const source of Object.keys(options.namedImports ?? {}).sort()) {
-      const names = Array.from(options.namedImports![source]).sort();
+    // Merge the always-present `Tags` import into the deduped/sorted named-import
+    // map so every aws-cdk-lib symbol is emitted through a single import. A future
+    // addNamedImport('aws-cdk-lib', ...) (e.g. another category adding a cdk
+    // symbol) would otherwise emit a second `aws-cdk-lib` import and, for Tags, a
+    // duplicate-identifier compile error.
+    const namedImports: Record<string, Set<string>> = {};
+    for (const [source, names] of Object.entries(options.namedImports ?? {})) {
+      namedImports[source] = new Set(names);
+    }
+    (namedImports['aws-cdk-lib'] ??= new Set()).add('Tags');
+    for (const source of Object.keys(namedImports).sort()) {
+      const names = Array.from(namedImports[source]).sort();
       if (names.length > 0) {
         nodes.push(TS.namedImport(source, ...names));
       }
