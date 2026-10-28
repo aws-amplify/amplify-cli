@@ -1933,6 +1933,128 @@ describe('AuthGenerator', () => {
     );
   });
 
+  it('throws at generate time for a trigger-ONLY function whose name is not a valid JS identifier', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // Trigger ONLY (no addFunctionAuthAccess), so the renderer's per-function
+    // assert on the access block never sees this name. The bad name is caught ONLY
+    // by the triggers half of the up-front validation loop in execute() — this is
+    // the case that isolates that branch (the mixed trigger+access test above would
+    // also trip the renderer's own assert).
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'my-trigger-only' });
+
+    const ops = await generator.plan();
+    await expect(ops[0].execute()).rejects.toThrow(/not a valid JavaScript identifier/);
+  });
+
+  it('consolidates a function registered twice with overlapping permissions into one deduped, sorted rule', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // triggerFn is a trigger (so its access rides the defineAuth access block) and
+    // is registered TWICE with overlapping permissions. The consolidation must emit
+    // a single allow.resource(triggerFn).to([...]) whose actions are deduped and
+    // sorted — not one rule per registration or per permission.
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'triggerFn' });
+    generator.addFunctionAuthAccess({ resourceName: 'triggerFn', permissions: { createGroup: true, addUserToGroup: true } });
+    generator.addFunctionAuthAccess({ resourceName: 'triggerFn', permissions: { addUserToGroup: true, getGroup: true } });
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('auth/resource.ts');
+    // Exactly one rule for the function...
+    expect(resourceTs.match(/allow\.resource\(triggerFn\)/g)).toHaveLength(1);
+    // ...with the union of both registrations, deduped and sorted alphabetically.
+    expect(resourceTs).toContain("allow.resource(triggerFn).to(['addUserToGroup', 'createGroup', 'getGroup'])");
+  });
+
+  it('emits no access rule for a trigger function whose permissions are all false', async () => {
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      auth: {
+        testAuth: {
+          service: 'Cognito',
+          output: {
+            UserPoolId: 'us-east-1_abc123',
+            AppClientIDWeb: 'webclient123',
+            AppClientID: 'client123',
+            IdentityPoolId: 'us-east-1:idpool',
+          },
+        },
+      },
+    });
+    jest.spyOn(gen1App.aws, 'fetchUserPool').mockResolvedValue({ SchemaAttributes: [] });
+    jest.spyOn(gen1App.aws, 'fetchMfaConfig').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchUserPoolClient').mockResolvedValue({});
+    jest.spyOn(gen1App.aws, 'fetchIdentityProviders').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityGroups').mockResolvedValue([]);
+    jest.spyOn(gen1App.aws, 'fetchIdentityPool').mockResolvedValue({
+      IdentityPoolId: 'us-east-1:idpool',
+      IdentityPoolName: 'test-pool',
+      AllowUnauthenticatedIdentities: true,
+    });
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, authResource, logger);
+    // A trigger function registered with only disabled permissions contributes no
+    // actions, so the consolidation must skip it entirely (no empty .to([]) rule).
+    generator.addTrigger({ event: 'postConfirmation', resourceName: 'noGrantTriggerFn' });
+    generator.addFunctionAuthAccess({ resourceName: 'noGrantTriggerFn', permissions: { addUserToGroup: false } });
+
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const resourceTs = writtenFile('auth/resource.ts');
+    expect(resourceTs).not.toContain('allow.resource(noGrantTriggerFn)');
+  });
+
   it('emits cfnIdentityPool.allowUnauthenticatedIdentities = false', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },

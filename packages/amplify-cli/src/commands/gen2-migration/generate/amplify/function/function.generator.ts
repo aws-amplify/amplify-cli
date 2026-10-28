@@ -133,15 +133,25 @@ export class FunctionGenerator implements Planner {
 
     // Tell the auth generator if this function also touches storage or data, so
     // it can warn when the same function is an auth trigger (the trigger edge plus
-    // these storage/data grants can form a deploy-time circular dependency the
-    // auth-grant partition alone cannot break).
-    const hasDataAccess =
+    // these grants can form a deploy-time circular dependency the auth-grant
+    // partition alone cannot break).
+    //
+    // Data and analytics grants (DynamoDB/AppSync/@model triggers, Kinesis — the
+    // analytics identity pool closes an auth->trigger->analytics->auth edge too)
+    // are only actually emitted for JS (nodejs) runtimes; for a non-JS runtime
+    // they are surfaced as "not migrated" manual notes rather than real grants, so
+    // they cannot form the cycle and must not raise the warning. Storage access is
+    // contributed to the S3 generator regardless of runtime, so it always counts.
+    const isJsRuntime = !runtime || runtime.startsWith('nodejs');
+    const hasDataOrAnalyticsAccess =
       dynamoActions.length > 0 ||
       appSyncPermissions.hasMutation ||
       appSyncPermissions.hasQuery ||
       dataTriggerModels.length > 0 ||
-      storageTriggerTables.length > 0;
-    if ((hasStorageAccess || hasDataAccess) && this.authGenerator) {
+      storageTriggerTables.length > 0 ||
+      hasAnalytics;
+    const marksCycleRisk = hasStorageAccess || (isJsRuntime && hasDataOrAnalyticsAccess);
+    if (marksCycleRisk && this.authGenerator) {
       this.authGenerator.markFunctionHasStorageOrDataAccess(resourceName);
     }
 

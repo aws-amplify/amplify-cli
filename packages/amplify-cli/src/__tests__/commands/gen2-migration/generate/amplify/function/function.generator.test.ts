@@ -4,6 +4,7 @@ import { RootPackageJsonGenerator } from '../../../../../../commands/gen2-migrat
 import { Gen1App } from '../../../../../../commands/gen2-migration/_common/gen1-app';
 import { createGen1App } from '../../_helpers/create-gen1-app';
 import { SpinningLogger } from '../../../../../../commands/gen2-migration/_common/spinning-logger';
+import { Runtime } from '@aws-sdk/client-lambda';
 
 jest.unmock('fs-extra');
 
@@ -1129,6 +1130,77 @@ describe('FunctionGenerator', () => {
     expect(mockAuthGenerator.addTrigger).toHaveBeenCalledWith({
       event: 'preSignUp',
       resourceName: 'testAuthPreSignup',
+    });
+  });
+
+  describe('marks the auth generator when a function also has data access', () => {
+    async function planWithDynamoAccess(runtime: Runtime) {
+      const gen1App = await createGen1App({
+        providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+        auth: { testAuth: { service: 'Cognito' } },
+        function: {
+          testAuthPreSignup: {
+            service: 'Lambda',
+            output: { Name: 'testAuthPreSignup-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:testAuthPreSignup-main-abc' },
+          },
+        },
+      });
+      jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('testAuthPreSignup-main-abc');
+      jest.spyOn(gen1App, 'json').mockReturnValue({
+        Resources: {
+          AmplifyResourcesPolicy: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+                    Resource: [{ 'Fn::Sub': 'arn:aws:dynamodb:*:*:table/Todo-${api}' }],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+      jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+      jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+      jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+        FunctionName: 'testAuthPreSignup-main-abc',
+        Handler: 'index.handler',
+        Timeout: 3,
+        MemorySize: 128,
+        Runtime: runtime,
+        Environment: { Variables: {} },
+      });
+      jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+      const mockAuthGenerator = {
+        addTrigger: jest.fn(),
+        addFunctionAuthAccess: jest.fn(),
+        markFunctionHasStorageOrDataAccess: jest.fn(),
+      };
+      const generator = createFunctionGenerator({
+        gen1App,
+        backendGenerator,
+        packageJsonGenerator,
+        outputDir,
+        resourceName: 'testAuthPreSignup',
+      });
+      generator.setAuthGenerator(mockAuthGenerator as any);
+      await generator.plan();
+      return mockAuthGenerator;
+    }
+
+    it('marks a JS-runtime trigger with DynamoDB grants', async () => {
+      const mockAuthGenerator = await planWithDynamoAccess('nodejs18.x');
+      expect(mockAuthGenerator.markFunctionHasStorageOrDataAccess).toHaveBeenCalledWith('testAuthPreSignup');
+    });
+
+    it('does not mark a non-JS-runtime function, whose data grants are not migrated', async () => {
+      const mockAuthGenerator = await planWithDynamoAccess('python3.12');
+      expect(mockAuthGenerator.markFunctionHasStorageOrDataAccess).not.toHaveBeenCalled();
     });
   });
 

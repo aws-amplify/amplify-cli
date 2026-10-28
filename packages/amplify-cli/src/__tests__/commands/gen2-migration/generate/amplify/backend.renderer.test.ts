@@ -22,19 +22,20 @@ describe('BackendRenderer named imports', () => {
   it('emits the aws-iam import when a storage grant contributes it', () => {
     const output = renderBackend(
       baseOptions({
-        namedImports: { 'aws-iam': new Set(['PolicyStatement', 'Effect']) },
+        namedImports: { 'aws-cdk-lib/aws-iam': new Set(['PolicyStatement', 'Effect']) },
       }),
     );
 
-    // The IAM symbols a storage/data function-access grant needs are present...
-    expect(output).toContain("import { Effect, PolicyStatement } from 'aws-iam';");
+    // The IAM symbols a storage/data function-access grant needs are present,
+    // keyed by the exact source s3.generator registers (`aws-cdk-lib/aws-iam`)...
+    expect(output).toContain("import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';");
   });
 
   it('omits the aws-iam import when no named imports are contributed', () => {
     const output = renderBackend(baseOptions({ namedImports: {} }));
 
-    // ...and nothing emits an aws-iam import when no grants were contributed.
-    expect(output).not.toContain('aws-iam');
+    // ...and nothing emits an aws-cdk-lib/aws-iam import when no grants were contributed.
+    expect(output).not.toContain('aws-cdk-lib/aws-iam');
   });
 
   it('merges the always-present Tags into a single aws-cdk-lib import rather than duplicating it', () => {
