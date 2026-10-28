@@ -1,4 +1,7 @@
-var isBlockedProperty = require('./reserved-properties').isBlockedProperty;
+var reserved = require('./reserved-properties');
+var isBlockedProperty = reserved.isBlockedProperty;
+var safeGetProperty = reserved.safeGetProperty;
+var safeSetProperty = reserved.safeSetProperty;
 
 module.exports = function (Velocity, utils) {
   'use strict';
@@ -206,7 +209,7 @@ module.exports = function (Velocity, utils) {
       if (type === 'method') {
         ret = this.getPropMethod(property, baseRef, ast);
       } else if (type === 'property') {
-        ret = isBlockedProperty(id) ? undefined : baseRef[id];
+        ret = safeGetProperty(baseRef, id);
       } else {
         ret = this.getPropIndex(property, baseRef);
       }
@@ -228,7 +231,7 @@ module.exports = function (Velocity, utils) {
         key = ast.value;
       }
 
-      return isBlockedProperty(key) ? undefined : baseRef[key];
+      return safeGetProperty(baseRef, key);
     },
 
     /**
@@ -248,11 +251,7 @@ module.exports = function (Velocity, utils) {
       }
 
       if (id === 'set' && !(id in baseRef)) {
-        var setKey = this.getLiteral(property.args[0]);
-        if (isBlockedProperty(setKey)) {
-          return '';
-        }
-        baseRef[setKey] = this.getLiteral(property.args[1]);
+        safeSetProperty(baseRef, this.getLiteral(property.args[0]), this.getLiteral(property.args[1]));
         return '';
       }
 
@@ -263,11 +262,9 @@ module.exports = function (Velocity, utils) {
 
       // setter 处理
       if (id.indexOf('set') === 0 && !baseRef[id]) {
-        var setterKey = id.slice(3);
-        if (isBlockedProperty(setterKey)) {
+        if (!safeSetProperty(baseRef, id.slice(3), this.getLiteral(property.args[0]))) {
           return baseRef;
         }
-        baseRef[setterKey] = this.getLiteral(property.args[0]);
         // $page.setName(123)
         baseRef.toString = function () {
           return '';
@@ -288,10 +285,8 @@ module.exports = function (Velocity, utils) {
         return getSize(baseRef);
       } else if (id === 'put' && !baseRef[id]) {
         var putKey = this.getLiteral(property.args[0]);
-        if (isBlockedProperty(putKey)) {
-          return undefined;
-        }
-        return (baseRef[putKey] = this.getLiteral(property.args[1]));
+        var putValue = this.getLiteral(property.args[1]);
+        return safeSetProperty(baseRef, putKey, putValue) ? putValue : undefined;
       } else if (id === 'add' && !baseRef[id] && typeof baseRef.push === 'function') {
         return baseRef.push(this.getLiteral(property.args[0]));
       } else if (id === 'remove') {

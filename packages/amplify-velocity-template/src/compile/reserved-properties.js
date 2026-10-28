@@ -27,7 +27,36 @@ function isBlockedProperty(name) {
   return typeof name === 'string' && BLOCKED_PROPERTIES.indexOf(name) !== -1;
 }
 
+/**
+ * Guarded read: route template-controlled property reads through this so a
+ * new read path is protected by construction instead of by remembering to
+ * call isBlockedProperty.
+ * @param {object} base object being read
+ * @param {string|number} key property name or index from the template
+ * @returns {*} base[key], or undefined when the key is blocked
+ */
+function safeGetProperty(base, key) {
+  return isBlockedProperty(key) ? undefined : base[key];
+}
+
+/**
+ * Guarded write: route template-controlled property writes through this.
+ * @param {object} base object being written
+ * @param {string|number} key property name from the template
+ * @param {*} value value to assign
+ * @returns {boolean} true if written, false if the key was blocked
+ */
+function safeSetProperty(base, key, value) {
+  if (isBlockedProperty(key)) {
+    return false;
+  }
+  base[key] = value;
+  return true;
+}
+
 module.exports = {
   BLOCKED_PROPERTIES: BLOCKED_PROPERTIES,
   isBlockedProperty: isBlockedProperty,
+  safeGetProperty: safeGetProperty,
+  safeSetProperty: safeSetProperty,
 };

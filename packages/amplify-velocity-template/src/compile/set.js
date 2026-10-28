@@ -1,4 +1,6 @@
-var isBlockedProperty = require('./reserved-properties').isBlockedProperty;
+var reserved = require('./reserved-properties');
+var isBlockedProperty = reserved.isBlockedProperty;
+var safeSetProperty = reserved.safeSetProperty;
 
 module.exports = function (Velocity, utils) {
   /**
@@ -69,7 +71,8 @@ module.exports = function (Velocity, utils) {
           }
 
           if (isEnd) {
-            return (baseRef[key] = val);
+            safeSetProperty(baseRef, key, val);
+            return true;
           }
 
           baseRef = baseRef[key];
