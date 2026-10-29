@@ -1,8 +1,32 @@
+import ts from 'typescript';
 import {
+  describeUnexpectedHandlerFormat,
   extractTableName,
   FunctionRenderer,
   mapToCdkRuntime,
+  toCommentText,
+  toStringLiteral,
 } from '../../../../../../commands/gen2-migration/generate/amplify/function/function.renderer';
+
+/** Returns syntax errors reported by the TypeScript compiler for the generated source. */
+function syntaxErrors(source: string): string[] {
+  const result = ts.transpileModule(source, { reportDiagnostics: true, compilerOptions: { module: ts.ModuleKind.ESNext } });
+  return (result.diagnostics ?? []).map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
+}
+
+/** Finds every `<name>: <initializer>` property assignment in the generated source. */
+function findPropertyInitializers(source: string, name: string): ts.Expression[] {
+  const sourceFile = ts.createSourceFile('resource.ts', source, ts.ScriptTarget.Latest, true);
+  const found: ts.Expression[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isPropertyAssignment(node) && ts.isIdentifier(node.name) && node.name.text === name) {
+      found.push(node.initializer);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  return found;
+}
 
 describe('extractTableName', () => {
   it('recovers original casing via case-insensitive match against known model names', () => {
@@ -193,6 +217,173 @@ describe('FunctionRenderer.renderCustomFunction', () => {
 
     expect(output).toContain('runtime: Runtime.PROVIDED_AL2023');
     expect(output).toContain("// WARNING: runtime 'cobol1.0' is not recognized");
+  });
+});
+
+describe('FunctionRenderer.renderCustomFunction escaping of interpolated values', () => {
+  const renderer = new FunctionRenderer('d1abc2def3', 'main');
+
+  it('renders a normal handler with unchanged output', () => {
+    const output = renderer.renderCustomFunction({
+      resourceName: 'myPythonFunc',
+      handler: 'index.handler',
+      runtime: 'python3.12',
+      timeoutSeconds: 20,
+      memoryMB: 256,
+      environment: { STAGE: 'prod' },
+    });
+
+    // The import header is static text; compare everything from the exported declaration on.
+    const declarationStart = output.indexOf('export const myPythonFunc');
+    expect(output.slice(0, declarationStart)).toContain('const functionDir = path.dirname(fileURLToPath(import.meta.url));\n\n');
+    expect(output.slice(declarationStart)).toBe(
+      [
+        `export const myPythonFunc = defineFunction(`,
+        `  (scope) =>`,
+        `    new Function(scope, 'myPythonFunc', {`,
+        `      handler: 'index.handler',`,
+        `      runtime: Runtime.PYTHON_3_12,`,
+        `      architecture: Architecture.X86_64,`,
+        `      timeout: Duration.seconds(20),`,
+        `      memorySize: 256,`,
+        `      environment: {`,
+        `        "STAGE": "prod",`,
+        `      },`,
+        `      code: Code.fromAsset(functionDir, {`,
+        `        bundling: {`,
+        `          image: Runtime.PYTHON_3_12.bundlingImage,`,
+        `          local: {`,
+        `            tryBundle(outputDir: string) {`,
+        `              execSync(\`python3 -m pip install -r \${path.join(functionDir, 'requirements.txt')} -t \${path.join(outputDir)} --platform manylinux2014_x86_64 --only-binary=:all:\`);`,
+        `              execSync(\`cp -r \${functionDir}/* \${path.join(outputDir)}\`);`,
+        `              return true;`,
+        `            },`,
+        `          },`,
+        `        },`,
+        `      }),`,
+        `    }),`,
+        `);`,
+        ``,
+      ].join('\n'),
+    );
+    expect(syntaxErrors(output)).toEqual([]);
+  });
+
+  it.each([
+    ['python3.12', "index.handler'quoted\\x`${a}),b"],
+    ['java21', 'pkg::Cls::run\\x'],
+    ['dotnet8', "Asm::Ns.Cls::Run'x"],
+    ['ruby3.3', "file.method\\'`${b},)"],
+  ])('handler values containing quote or backslash characters round-trip as a string literal (%s)', (runtime, handler) => {
+    const output = renderer.renderCustomFunction({ resourceName: 'myFunc', handler, runtime });
+
+    expect(syntaxErrors(output)).toEqual([]);
+    const initializers = findPropertyInitializers(output, 'handler');
+    expect(initializers).toHaveLength(1);
+    expect(ts.isStringLiteral(initializers[0])).toBe(true);
+    expect((initializers[0] as ts.StringLiteral).text).toBe(handler);
+  });
+
+  it('adds a warning comment for a handler with an unexpected format', () => {
+    const output = renderer.renderCustomFunction({
+      resourceName: 'myFunc',
+      handler: "index.handler'quoted",
+      runtime: 'python3.12',
+    });
+
+    expect(output).toContain(`// WARNING: handler "index.handler'quoted" does not match the expected 'module.function' format`);
+    expect(syntaxErrors(output)).toEqual([]);
+  });
+
+  it('keeps runtime text with line breaks and comment terminators inside the comment line', () => {
+    const runtime = 'python3.4\nextra */ text\r\nmore';
+    const output = renderer.renderCustomFunction({ resourceName: 'myFunc', handler: 'index.handler', runtime });
+
+    expect(syntaxErrors(output)).toEqual([]);
+    expect(output).toContain("// NOTE: runtime 'python3.4 extra * / text more' has no matching CDK Runtime member");
+    for (const line of output.split('\n').filter((l) => l.includes('extra'))) {
+      expect(line.startsWith('//')).toBe(true);
+    }
+    // Only the expected top-level statements are present.
+    const sourceFile = ts.createSourceFile('resource.ts', output, ts.ScriptTarget.Latest, true);
+    const kinds = sourceFile.statements.map((s) =>
+      ts.isImportDeclaration(s) ? 'import' : ts.isVariableStatement(s) ? 'variable' : 'other',
+    );
+    expect(kinds).toEqual(['import', 'import', 'import', 'import', 'import', 'import', 'variable', 'variable']);
+  });
+
+  it('keeps manual migration notes with line breaks inside the comment line', () => {
+    const output = renderer.renderCustomFunction({
+      resourceName: 'myFunc',
+      handler: 'index.handler',
+      runtime: 'python3.12',
+      manualMigrationNotes: ["A schedule ('rate(1 day)\nnext') was not migrated."],
+    });
+
+    expect(output).toContain("//   - A schedule ('rate(1 day) next') was not migrated.");
+    expect(syntaxErrors(output)).toEqual([]);
+  });
+
+  it('renders the existing runtime comment line unchanged for a normal runtime', () => {
+    const output = renderer.renderCustomFunction({ resourceName: 'myFunc', handler: 'index.handler', runtime: 'python3.4' });
+
+    expect(output).toContain(
+      "// NOTE: runtime 'python3.4' has no matching CDK Runtime member (it may be deprecated/EOL).\n" +
+        '// Falling back to Runtime.PROVIDED_AL2023',
+    );
+  });
+
+  it('rejects a resource name that is not a valid identifier', () => {
+    expect(() => renderer.renderCustomFunction({ resourceName: "my'Func", handler: 'index.handler', runtime: 'python3.12' })).toThrow(
+      /not a valid TypeScript identifier/,
+    );
+  });
+});
+
+describe('toStringLiteral', () => {
+  it('leaves plain values unchanged inside single quotes', () => {
+    expect(toStringLiteral('index.handler')).toBe("'index.handler'");
+    expect(toStringLiteral('com.example.Handler::handleRequest')).toBe("'com.example.Handler::handleRequest'");
+  });
+
+  it('escapes quotes, backslashes, and line terminators', () => {
+    expect(toStringLiteral("a'b\\c\nd\u2028e")).toBe("'a\\'b\\\\c\\nd\\u2028e'");
+  });
+});
+
+describe('toCommentText', () => {
+  it('leaves plain values unchanged', () => {
+    expect(toCommentText('python3.12')).toBe('python3.12');
+  });
+
+  it('replaces line terminators and comment terminators', () => {
+    expect(toCommentText('a\nb\r\nc\u2029d */ e')).toBe('a b c d * / e');
+  });
+});
+
+describe('describeUnexpectedHandlerFormat', () => {
+  it.each([
+    ['python3.12', 'index.handler'],
+    ['python3.12', 'src/app.lambda_handler'],
+    ['ruby3.3', 'lambda_function.LambdaFunctions::Handler.run'],
+    ['java21', 'com.example.Handler::handleRequest'],
+    ['java21', 'example.Handler'],
+    ['dotnet8', 'MyAssembly::MyNamespace.Handler::FunctionHandler'],
+    ['dotnet8', 'MyAssembly'],
+    ['provided.al2023', 'anything'],
+    ['cobol1.0', 'anything'],
+  ])('accepts the expected format (%s, %s)', (runtime, handler) => {
+    expect(describeUnexpectedHandlerFormat(runtime, handler)).toBeUndefined();
+  });
+
+  it.each([
+    ['python3.12', "index.handler'quoted"],
+    ['python3.12', 'index'],
+    ['java21', 'pkg::Cls::run\\x'],
+    ['dotnet8', 'Asm::Cls'],
+    ['ruby3.3', 'file.method`x'],
+  ])('warns on an unexpected format (%s, %s)', (runtime, handler) => {
+    expect(describeUnexpectedHandlerFormat(runtime, handler)).toContain('does not match the expected');
   });
 });
 

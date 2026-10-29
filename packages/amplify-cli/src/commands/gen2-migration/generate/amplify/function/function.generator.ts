@@ -9,7 +9,13 @@ import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
-import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars, DynamicEnvVar } from './function.renderer';
+import {
+  FunctionRenderer,
+  FunctionRenderOptions,
+  classifyEnvVars,
+  DynamicEnvVar,
+  describeUnexpectedHandlerFormat,
+} from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
@@ -148,6 +154,10 @@ export class FunctionGenerator implements Planner {
             // have no applyEscapeHatches() export, so no escape-hatch call is
             // registered on the backend.
             this.logger.info(`Rendering custom function/${resourceName}/resource.ts`);
+            const handlerFormatWarning = describeUnexpectedHandlerFormat(runtime, entry);
+            if (handlerFormatWarning) {
+              this.logger.warn(`Function '${resourceName}': ${handlerFormatWarning}`);
+            }
             const manualMigrationNotes: string[] = [];
             if (dynamicEnvVars.length > 0) {
               manualMigrationNotes.push(
