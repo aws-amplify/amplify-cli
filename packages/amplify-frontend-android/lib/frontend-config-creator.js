@@ -91,7 +91,7 @@ function writeToFile(filePath, fileName, configObject) {
 
 function getAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
   const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-  return amplifyConfigHelper.generateConfig(context, newAWSConfig);
+  return amplifyConfigHelper.generateConfig(context, newAWSConfig, amplifyResources);
 }
 
 function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources) {

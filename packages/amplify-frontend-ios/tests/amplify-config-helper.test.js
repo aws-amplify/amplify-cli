@@ -1,4 +1,4 @@
-const configHelper = require('../../amplify-frontend-android/lib/amplify-config-helper');
+const configHelper = require('../lib/amplify-config-helper');
 jest.mock('@aws-amplify/amplify-cli-core');
 
 const mapServiceName = 'Map';
@@ -89,6 +89,11 @@ describe('generate maps and search configuration', () => {
 describe('customer pinpoint configuration', () => {
   it('generates correct notifications channel pinpoint configuration', () => {
     const amplifyMeta = {
+      providers: {
+        awscloudformation: {
+          Region: 'us-east-1',
+        },
+      },
       notifications: {
         amplifyplayground: {
           service: 'Pinpoint',
@@ -106,8 +111,14 @@ describe('customer pinpoint configuration', () => {
         },
       },
     };
-    const amplifyConfiguration = {};
-    configHelper.constructNotifications(amplifyMeta, amplifyConfiguration);
+
+    const mockContext = {
+      amplify: {
+        getProjectMeta: jest.fn().mockReturnValue(amplifyMeta),
+      },
+    };
+
+    const amplifyConfiguration = configHelper.generateConfig(mockContext, {});
 
     const expectedAmplifyConfiguration = {
       notifications: {
@@ -124,5 +135,115 @@ describe('customer pinpoint configuration', () => {
       },
     };
     expect(amplifyConfiguration).toMatchObject(expectedAmplifyConfiguration);
+  });
+});
+
+describe('AppSync configuration', () => {
+  const mockContext = {
+    amplify: {
+      getProjectMeta: jest.fn(),
+    },
+  };
+  let amplifyMeta = {};
+  const expectedAmplifyConfiguration = {
+    UserAgent: 'aws-amplify-cli/2.0',
+    Version: '1.0',
+    api: {
+      plugins: {
+        awsAPIPlugin: {
+          testapi: {
+            apiKey: 'expectedApiKey',
+            authorizationType: undefined,
+            endpoint: 'expectedEndpoint',
+            endpointType: 'GraphQL',
+            region: 'us-east-1',
+          },
+        },
+      },
+    },
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    amplifyMeta = {
+      providers: {
+        awscloudformation: {
+          Region: 'us-east-1',
+        },
+      },
+      api: {
+        testapi: {
+          service: 'AppSync',
+          output: {
+            GraphQLAPIEndpointOutput: 'expectedEndpoint',
+            GraphQLAPIKeyOutput: 'expectedApiKey',
+          },
+        },
+      },
+    };
+  });
+  it('generates correct endpoint and apiKey based on outputs in Amplify meta', () => {
+    mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(amplifyMeta);
+    const amplifyConfiguration = configHelper.generateConfig(mockContext, {}, {});
+
+    const expectedAmplifyConfiguration = {
+      UserAgent: 'aws-amplify-cli/2.0',
+      Version: '1.0',
+      api: {
+        plugins: {
+          awsAPIPlugin: {
+            testapi: {
+              apiKey: 'expectedApiKey',
+              authorizationType: undefined,
+              endpoint: 'expectedEndpoint',
+              endpointType: 'GraphQL',
+              region: 'us-east-1',
+            },
+          },
+        },
+      },
+    };
+    expect(amplifyConfiguration).toMatchObject(expectedAmplifyConfiguration);
+  });
+
+  it('generates correct endpoint and apiKey based on overriden resource outputs', () => {
+    amplifyMeta.api.testapi.output.GraphQLAPIEndpointOutput = 'notExpectedEndpoint';
+    amplifyMeta.api.testapi.output.GraphQLAPIKeyOutput = 'notExpectedEndpoint';
+    mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(amplifyMeta);
+    const amplifyResources = {
+      serviceResourceMapping: {
+        AppSync: [
+          {
+            output: {
+              GraphQLAPIEndpointOutput: 'expectedEndpoint',
+              GraphQLAPIKeyOutput: 'expectedApiKey',
+            },
+          },
+        ],
+      },
+    };
+    const amplifyConfiguration = configHelper.generateConfig(mockContext, {}, amplifyResources);
+    expect(amplifyConfiguration).toMatchObject(expectedAmplifyConfiguration);
+  });
+
+  it('does not add apiKey if its not available', () => {
+    amplifyMeta.api.testapi.output.GraphQLAPIEndpointOutput = 'notExpectedEndpoint';
+    delete amplifyMeta.api.testapi.output.GraphQLAPIKeyOutput;
+    mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(amplifyMeta);
+    const amplifyResources = {
+      serviceResourceMapping: {
+        AppSync: [
+          {
+            output: {
+              GraphQLAPIEndpointOutput: 'expectedEndpoint',
+            },
+          },
+        ],
+      },
+    };
+    const expected = { ...expectedAmplifyConfiguration };
+    delete expected.api.plugins.awsAPIPlugin.testapi.apiKey;
+    const amplifyConfiguration = configHelper.generateConfig(mockContext, {}, amplifyResources);
+    expect(amplifyConfiguration).toMatchObject(expected);
   });
 });
