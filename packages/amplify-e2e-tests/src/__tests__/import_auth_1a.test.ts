@@ -13,6 +13,8 @@ import {
   deleteProjectDir,
   getCognitoResourceName,
   initJSProjectWithProfile,
+  amplifyMockApi,
+  cancelAmplifyMockApi,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -146,6 +148,19 @@ describe('auth import userpool only', () => {
     await amplifyPush(projectRoot);
 
     expectApiHasCorrectAuthConfig(projectRoot, projectPrefix, ogProjectDetails.meta.UserPoolId);
+  });
+
+  it('imported auth with graphql api and cognito should allow mock api', async () => {
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }); // space at to make sure its not web client
+    await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot, { transformerVersion: 1 });
+    await amplifyPush(projectRoot);
+
+    amplifyMockApi(projectRoot);
+    
+    expectApiHasCorrectAuthConfig(projectRoot, projectPrefix, ogProjectDetails.meta.UserPoolId);
+    await cancelAmplifyMockApi(projectRoot);
+
   });
 
   it('imported auth with function and crud on auth should push', async () => {
