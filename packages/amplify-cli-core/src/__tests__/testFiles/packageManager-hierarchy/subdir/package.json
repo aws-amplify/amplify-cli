@@ -1,0 +1,5 @@
+{
+  "name": "packageManager-hierarchy-subdir-test",
+  "version": "1.0.0",
+  "description": "Subdirectory package without packageManager field"
+}
