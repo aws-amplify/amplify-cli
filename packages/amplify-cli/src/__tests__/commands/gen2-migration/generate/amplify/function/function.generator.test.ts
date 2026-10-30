@@ -1281,6 +1281,48 @@ describe('FunctionGenerator', () => {
     );
   });
 
+  it.each([
+    ['handler.handler', false],
+    ["handler.handler'quoted", true],
+  ])('warns on unexpected handler format for non-nodejs runtime (%s)', async (handler, expectWarning) => {
+    const warnSpy = jest.spyOn(SpinningLogger.prototype, 'warn').mockImplementation(() => undefined);
+    const gen1App = await createGen1App({
+      providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
+      function: {
+        myFunc: {
+          service: 'Lambda',
+          output: { Name: 'myFunc-main-abc', Arn: 'arn:aws:lambda:us-east-1:123:function:myFunc-main-abc' },
+        },
+      },
+    });
+    jest.spyOn(gen1App, 'resourceMetaOutput').mockReturnValue('myFunc-main-abc');
+    jest.spyOn(gen1App, 'json').mockReturnValue({ Resources: {} });
+    jest.spyOn(gen1App, 'file').mockReturnValue('{}');
+    jest.spyOn(gen1App, 'fileExists').mockReturnValue(false);
+    jest.spyOn(gen1App.aws, 'fetchFunctionConfig').mockResolvedValue({
+      FunctionName: 'myFunc-main-abc',
+      Handler: handler,
+      Runtime: 'python3.9',
+      Environment: { Variables: {} },
+    });
+    jest.spyOn(gen1App.aws, 'fetchFunctionSchedule').mockResolvedValue(undefined);
+
+    const generator = createFunctionGenerator({ gen1App, backendGenerator, packageJsonGenerator, outputDir });
+    const ops = await generator.plan();
+    await ops[0].execute();
+
+    const handlerWarnings = warnSpy.mock.calls.filter((c) => String(c[0]).includes('does not match the expected'));
+    if (expectWarning) {
+      expect(handlerWarnings).toHaveLength(1);
+      expect(handlerWarnings[0][0]).toContain(`Function 'myFunc': handler "handler.handler'quoted"`);
+      expect(writtenFile('resource.ts')).toContain("handler: 'handler.handler\\'quoted'");
+    } else {
+      expect(handlerWarnings).toHaveLength(0);
+      expect(writtenFile('resource.ts')).toContain("handler: 'handler.handler'");
+    }
+    warnSpy.mockRestore();
+  });
+
   it('uses original model name casing from schema for table grants and env vars', async () => {
     const gen1App = await createGen1App({
       providers: { awscloudformation: { StackName: 'amplify-test-main-123456', Region: 'us-east-1' } },
