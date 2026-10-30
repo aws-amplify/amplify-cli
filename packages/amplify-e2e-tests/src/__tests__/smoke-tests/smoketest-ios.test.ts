@@ -10,8 +10,6 @@ import {
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-jest.retryTimes(1);
-
 describe('Smoke Test - iOS', () => {
   if (process.platform == 'darwin') {
     let projRoot: string;
