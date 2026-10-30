@@ -1,5 +1,6 @@
 var reserved = require('./reserved-properties');
 var isBlockedProperty = reserved.isBlockedProperty;
+var safeGetProperty = reserved.safeGetProperty;
 var safeSetProperty = reserved.safeSetProperty;
 
 module.exports = function (Velocity, utils) {
@@ -43,6 +44,10 @@ module.exports = function (Velocity, utils) {
         val = this.config.valueMapper(this.getLiteral(ast.equal[1]), valAst.type);
       }
 
+      if (isBlockedProperty(ref.id)) {
+        return;
+      }
+
       if (!ref.path) {
         context[ref.id] = val;
       } else {
@@ -66,16 +71,12 @@ module.exports = function (Velocity, utils) {
             }
           }
 
-          if (isBlockedProperty(key)) {
-            return true;
-          }
-
           if (isEnd) {
             safeSetProperty(baseRef, key, val);
             return true;
           }
 
-          baseRef = baseRef[key];
+          baseRef = safeGetProperty(baseRef, key);
 
           // such as
           // #set($a.d.c2 = 2)

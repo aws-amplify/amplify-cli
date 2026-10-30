@@ -8,6 +8,7 @@ describe('reserved property names in reference resolution', function () {
     delete global.__vtlReserved;
     delete Object.prototype.polluted;
     delete Object.prototype.y;
+    delete Object.prototype.p;
   });
 
   it('does not resolve constructor via getConstructor() accessor', function () {
@@ -67,6 +68,47 @@ describe('reserved property names in reference resolution', function () {
     var ctx = { name: 'foo' };
     render('$!ctx.setconstructor("yes")', { ctx: ctx });
     ctx.hasOwnProperty('constructor').should.eql(false);
+  });
+
+  it('renders a rejected setconstructor(...) like other rejected writes', function () {
+    render('$ctx.setconstructor("yes")', { ctx: { name: 'foo' } }).should.eql('');
+  });
+
+  it('does not write through a reserved root identifier via #set', function () {
+    render('#set($__proto__.p = "x")', { ctx: { name: 'foo' } });
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('does not assign a reserved root identifier via #set', function () {
+    var context = { name: 'foo' };
+    render('#set($__proto__ = {"p": "x"})', context);
+    (Object.getPrototypeOf(context) === Object.prototype).should.eql(true);
+  });
+
+  it('does not resolve a reserved root identifier in a reference', function () {
+    render('$!constructor.assign($__proto__, {"p":"x"})', { ctx: { name: 'foo' } });
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('does not resolve a reserved root identifier from a #foreach scope', function () {
+    render('#foreach($i in [1])$!constructor.assign($__proto__, {"p":"x"})#end', {});
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('does not read or delete a reserved key via remove()', function () {
+    var vm = '$!ctx.remove("constructor").assign($ctx.remove("__proto__"), {"p":"x"})';
+    render(vm, { ctx: { name: 'foo' } });
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('still removes a normal key via remove()', function () {
+    var ctx = { name: 'foo', k: 'v' };
+    render('$ctx.remove("k")', { ctx: ctx }).should.eql('v');
+    ctx.hasOwnProperty('k').should.eql(false);
+  });
+
+  it('still resolves a normal root identifier, including inside #foreach', function () {
+    render('$a#foreach($i in [1])$a$i#end', { a: 'x' }).should.eql('xx1');
   });
 
   it('still resolves a normal getter accessor', function () {

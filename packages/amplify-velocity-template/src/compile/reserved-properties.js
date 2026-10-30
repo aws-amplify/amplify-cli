@@ -1,10 +1,8 @@
 'use strict';
 
-// Single source of truth for the prototype-chain denylist shared by every
-// template-controlled property access path (reference resolution in
-// references.js and #set directive writes in set.js). Keeping one list avoids
-// the two copies drifting and silently reopening the prototype-pollution /
-// sandbox-escape vector for a name added to only one copy.
+// Prototype-chain names that templates must not read or write, shared by
+// reference resolution (references.js) and #set (set.js). Keeping one list
+// stops the copies drifting apart when a name is added to only one of them.
 var BLOCKED_PROPERTIES = [
   'constructor',
   '__proto__',

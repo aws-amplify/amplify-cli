@@ -121,12 +121,12 @@ module.exports = function (Velocity, utils) {
       var isSilent = this.silence || ast.leader === '$!';
       var isfn = ast.args !== undefined;
       var context = this.context;
-      var ret = context[ast.id];
+      var ret = safeGetProperty(context, ast.id);
       var local = this.getLocal(ast);
 
       var text = Velocity.Helper.getRefText(ast);
 
-      if (text in context) {
+      if (!isBlockedProperty(text) && Object.prototype.hasOwnProperty.call(context, text)) {
         return ast.prue && escape ? convert(context[text]) : context[text];
       }
 
@@ -167,6 +167,12 @@ module.exports = function (Velocity, utils) {
       var id = ast.id;
       var local = this.local;
       var ret = false;
+
+      // Local scopes are plain objects, so `id in _local` would also match
+      // inherited names like constructor and resolve them to Object.
+      if (isBlockedProperty(id)) {
+        return { value: ret, isLocaled: false };
+      }
 
       var isLocaled = utils.some(
         this.conditions,
@@ -263,7 +269,7 @@ module.exports = function (Velocity, utils) {
       // setter 处理
       if (id.indexOf('set') === 0 && !baseRef[id]) {
         if (!safeSetProperty(baseRef, id.slice(3), this.getLiteral(property.args[0]))) {
-          return baseRef;
+          return '';
         }
         // $page.setName(123)
         baseRef.toString = function () {
@@ -303,8 +309,12 @@ module.exports = function (Velocity, utils) {
           baseRef.splice(indexToRemove, 1);
           return ret;
         } else if (utils.isObject(baseRef)) {
-          ret = baseRef[this.getLiteral(property.args[0])];
-          delete baseRef[this.getLiteral(property.args[0])];
+          var removeKey = this.getLiteral(property.args[0]);
+          if (isBlockedProperty(removeKey)) {
+            return undefined;
+          }
+          ret = baseRef[removeKey];
+          delete baseRef[removeKey];
           return ret;
         }
 
