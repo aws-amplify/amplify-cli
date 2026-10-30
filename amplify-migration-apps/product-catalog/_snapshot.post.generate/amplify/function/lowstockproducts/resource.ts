@@ -1,4 +1,4 @@
-import { defineFunction } from '@aws-amplify/backend';
+import { defineFunction, secret } from '@aws-amplify/backend';
 import type { Backend } from '../../backend';
 
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
@@ -12,8 +12,7 @@ export const lowstockproducts = defineFunction({
     ENV: `${branchName}`,
     REGION: 'us-east-1',
     LOW_STOCK_THRESHOLD: '5',
-    PRODUCT_CATALOG_SECRET:
-      '/amplify/productcatalog/x/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET',
+    PRODUCT_CATALOG_SECRET: secret('PRODUCT_CATALOG_SECRET'),
   },
   runtime: 22,
 });
