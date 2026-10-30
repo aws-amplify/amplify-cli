@@ -1,19 +1,24 @@
 /**
  * Extract Amplify category from a logical resource ID.
  */
+const CATEGORY_PREFIXES = [
+  ['auth', 'Auth'],
+  ['storage', 'Storage'],
+  ['function', 'Function'],
+  ['api', 'Api'],
+  ['analytics', 'Analytics'],
+  ['hosting', 'Hosting'],
+  ['notifications', 'Notifications'],
+  ['interactions', 'Interactions'],
+  ['predictions', 'Predictions'],
+  ['geo', 'Geo'],
+  ['custom', 'Custom'],
+] as const;
+
 export function extractCategory(logicalId: string): string {
   const idLower = logicalId.toLowerCase();
-  if (idLower.includes('auth')) return 'Auth';
-  if (idLower.includes('storage')) return 'Storage';
-  if (idLower.includes('function')) return 'Function';
-  if (idLower.includes('api')) return 'Api';
-  if (idLower.includes('analytics')) return 'Analytics';
-  if (idLower.includes('hosting')) return 'Hosting';
-  if (idLower.includes('notifications')) return 'Notifications';
-  if (idLower.includes('interactions')) return 'Interactions';
-  if (idLower.includes('predictions')) return 'Predictions';
-  if (idLower.includes('geo')) return 'Geo';
-  if (idLower.includes('custom')) return 'Custom';
-  if (idLower.includes('deployment') || idLower.includes('infrastructure') || idLower.includes('core')) return 'Core Infrastructure';
+  const category = CATEGORY_PREFIXES.find(([prefix]) => idLower.startsWith(prefix));
+  if (category) return category[1];
+  if (idLower.startsWith('deployment') || idLower.startsWith('infrastructure') || idLower.startsWith('core')) return 'Core Infrastructure';
   return 'Other';
 }
