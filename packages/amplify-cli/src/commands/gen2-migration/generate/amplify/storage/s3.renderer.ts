@@ -66,7 +66,7 @@ export class S3Renderer {
     postImportStatements.push(TS.createBranchNameDeclaration());
 
     this.renderName(propertyAssignments, opts.name);
-    this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
+    this.renderAccessPatterns(propertyAssignments, postImportStatements, opts);
     this.renderTriggers(propertyAssignments, namedImports, opts);
 
     const nodes: ts.Node[] = [
@@ -217,24 +217,20 @@ export class S3Renderer {
     target.push(factory.createPropertyAssignment(factory.createIdentifier('name'), nameExpression));
   }
 
-  private renderAccessPatterns(
-    target: ts.PropertyAssignment[],
-    namedImports: Record<string, Set<string>>,
-    postImportStatements: ts.Node[],
-    opts: S3RenderOptions,
-  ): void {
+  private renderAccessPatterns(target: ts.PropertyAssignment[], postImportStatements: ts.Node[], opts: S3RenderOptions): void {
     if (!opts.access) return;
 
-    target.push(this.buildAccessProperty(opts.access));
+    // Only emit the `access` block for identity-based (guest/authenticated/group)
+    // access. Function access is emitted as forward-direction grants in backend.ts
+    // (see buildFunctionAccessBackendStatements), so a bucket whose only Gen1
+    // access was function access produces no `access` block here.
+    const hasIdentityAccess =
+      (opts.access.guest?.length ?? 0) > 0 ||
+      (opts.access.auth?.length ?? 0) > 0 ||
+      (opts.access.groups !== undefined && Object.keys(opts.access.groups).length > 0);
 
-    if (opts.access.functions && opts.access.functions.length > 0) {
-      for (const functionAccess of opts.access.functions) {
-        const functionImportPath = `../function/${functionAccess.functionName}/resource`;
-        if (!namedImports[functionImportPath]) {
-          namedImports[functionImportPath] = new Set();
-        }
-        namedImports[functionImportPath].add(functionAccess.functionName);
-      }
+    if (hasIdentityAccess) {
+      target.push(this.buildAccessProperty(opts.access));
     }
 
     if (opts.access.groups) {
@@ -300,22 +296,16 @@ export class S3Renderer {
         protectedPathAccess.push(pattern);
       }
     }
-    if (accessPatterns.functions && accessPatterns.functions.length > 0) {
-      const consolidated: Record<string, Set<Permission>> = {};
-      for (const { functionName, permissions } of accessPatterns.functions) {
-        if (!consolidated[functionName]) {
-          consolidated[functionName] = new Set(permissions);
-        } else {
-          for (const p of permissions) consolidated[functionName].add(p);
-        }
-      }
-      for (const [functionName, permissions] of Object.entries(consolidated)) {
-        const pattern = S3Renderer.createResourcePattern(allowIdentifier, functionName, Array.from(permissions));
-        publicPathAccess.push(pattern);
-        privatePathAccess.push(pattern);
-        protectedPathAccess.push(pattern);
-      }
-    }
+    // NOTE: function access is intentionally NOT emitted here as
+    // `allow.resource(fn).to([...])` entries in the per-path access map. That
+    // construct makes the storage stack reference the function's role, i.e. a
+    // `storage -> function` cross-stack dependency, which combined with the
+    // function's own grants to other categories closes a cross-stack cycle and
+    // produces a CloudformationStackCircularDependencyError on deploy. Function
+    // access is instead emitted in backend.ts as forward-direction CDK grants on
+    // the bucket construct (see buildFunctionAccessBackendStatements), preserving
+    // the `function -> storage` direction. Guest / authenticated / group access
+    // below is per-path and stays in the access block.
 
     const allowAssignments: ts.PropertyAssignment[] = [];
     if (publicPathAccess.length > 0) {
@@ -376,22 +366,94 @@ export class S3Renderer {
     );
   }
 
-  private static createResourcePattern(
-    allowIdentifier: ts.Identifier,
-    functionName: string,
-    permissions: readonly Permission[],
-  ): CallExpression {
-    return factory.createCallExpression(
-      factory.createPropertyAccessExpression(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier('resource')),
-          undefined,
-          [factory.createIdentifier(functionName)],
-        ),
-        factory.createIdentifier('to'),
-      ),
-      undefined,
-      [factory.createArrayLiteralExpression(permissions.map((p) => factory.createStringLiteral(p)))],
-    );
+  /**
+   * Builds the forward-direction function->storage grant statements emitted into
+   * backend.ts (not into storage/resource.ts).
+   *
+   * Each granted function gets an explicit IAM policy statement added to its own
+   * role, referencing only the bucket ARN:
+   *
+   *   backend.<fn>.resources.lambda.addToRolePolicy(
+   *     new PolicyStatement({ effect: Effect.ALLOW, actions: [...], resources: [...] }),
+   *   );
+   *
+   * The policy is attached to the FUNCTION's role and references the bucket ARN,
+   * so the cross-stack dependency stays `function -> storage`. It replaces the
+   * previous `allow.resource(fn).to([...])` entries in the defineStorage access
+   * block, which pointed the dependency the other way (`storage -> function`) and
+   * caused deploy-time circular dependencies when the same function also accessed
+   * auth/data.
+   *
+   * The action set is the EXACT Amplify Gen1 permission -> S3 action mapping, NOT
+   * a CDK bucket.grant* helper: CDK's grantWrite/grantReadWrite bundle
+   * s3:DeleteObject into "write" (writeActions = delete + put), whereas Amplify's
+   * `write`/`create` mean PutObject only and `delete` is a distinct permission. A
+   * function whose Gen1 access was ['read','write'] must NOT receive DeleteObject
+   * it never had, so the actions are enumerated exactly:
+   *   read           -> s3:GetObject (object) + s3:ListBucket (bucket)
+   *   write / create -> s3:PutObject (object)
+   *   delete         -> s3:DeleteObject (object)
+   *
+   * Object-scoped actions target `${bucket.bucketArn}/*`; the bucket-scoped
+   * s3:ListBucket targets the bucket ARN itself. Returns one statement string per
+   * granted function (permissions consolidated across duplicate entries), or an
+   * empty array when there is nothing to grant. The caller registers the IAM
+   * named imports and passes these to BackendGenerator.addPostDefineBackendStatement.
+   */
+  public buildFunctionAccessBackendStatements(functions: readonly FunctionAccess[] | undefined): string[] {
+    if (!functions || functions.length === 0) {
+      return [];
+    }
+
+    // Consolidate permissions per function (a function may appear more than once).
+    const permsByFunction: Record<string, Set<Permission>> = {};
+    for (const { functionName, permissions } of functions) {
+      if (!permsByFunction[functionName]) {
+        permsByFunction[functionName] = new Set();
+      }
+      for (const p of permissions) {
+        permsByFunction[functionName].add(p);
+      }
+    }
+
+    const statements: string[] = [];
+    for (const [functionName, permSet] of Object.entries(permsByFunction)) {
+      const objectActions = new Set<string>();
+      let needsListBucket = false;
+      if (permSet.has('read')) {
+        objectActions.add('s3:GetObject');
+        needsListBucket = true;
+      }
+      if (permSet.has('write') || permSet.has('create')) {
+        objectActions.add('s3:PutObject');
+      }
+      if (permSet.has('delete')) {
+        objectActions.add('s3:DeleteObject');
+      }
+      if (objectActions.size === 0 && !needsListBucket) {
+        continue;
+      }
+
+      TS.assertValidIdentifier(functionName, `storage access grant for function '${functionName}'`);
+      const lambda = `backend.${functionName}.resources.lambda`;
+      const bucket = `backend.storage.resources.bucket`;
+      const actions = Array.from(objectActions)
+        .sort()
+        .map((a) => `'${a}'`);
+      // Object actions target the objects ARN; s3:ListBucket (read) targets the
+      // bucket ARN itself, so read grants get two resource entries.
+      const resources = needsListBucket ? [`${bucket}.arnForObjects('*')`, `${bucket}.bucketArn`] : [`${bucket}.arnForObjects('*')`];
+      const bucketActions = needsListBucket ? [...actions, `'s3:ListBucket'`] : actions;
+      statements.push(
+        `${lambda}.addToRolePolicy(\n` +
+          `  new PolicyStatement({\n` +
+          `    effect: Effect.ALLOW,\n` +
+          `    actions: [${bucketActions.join(', ')}],\n` +
+          `    resources: [${resources.join(', ')}],\n` +
+          `  }),\n` +
+          `);`,
+      );
+    }
+    return statements;
   }
 }

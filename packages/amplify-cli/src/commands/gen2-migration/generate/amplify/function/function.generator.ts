@@ -128,8 +128,32 @@ export class FunctionGenerator implements Planner {
     this.contributeDependencies();
     this.contributeAuthAccess(authAccess);
     this.contributeAuthTrigger();
-    this.contributeStorageAccess();
+    const hasStorageAccess = this.contributeStorageAccess();
     this.contributeStorageTrigger();
+
+    // Tell the auth generator if this function also touches storage or data, so
+    // it can warn when the same function is an auth trigger (the trigger edge plus
+    // these grants can form a deploy-time circular dependency the auth-grant
+    // partition alone cannot break).
+    //
+    // Data and analytics grants (DynamoDB/AppSync/@model triggers, Kinesis — the
+    // analytics identity pool closes an auth->trigger->analytics->auth edge too)
+    // are only actually emitted for JS (nodejs) runtimes; for a non-JS runtime
+    // they are surfaced as "not migrated" manual notes rather than real grants, so
+    // they cannot form the cycle and must not raise the warning. Storage access is
+    // contributed to the S3 generator regardless of runtime, so it always counts.
+    const isJsRuntime = !runtime || runtime.startsWith('nodejs');
+    const hasDataOrAnalyticsAccess =
+      dynamoActions.length > 0 ||
+      appSyncPermissions.hasMutation ||
+      appSyncPermissions.hasQuery ||
+      dataTriggerModels.length > 0 ||
+      storageTriggerTables.length > 0 ||
+      hasAnalytics;
+    const marksCycleRisk = hasStorageAccess || (isJsRuntime && hasDataOrAnalyticsAccess);
+    if (marksCycleRisk && this.authGenerator) {
+      this.authGenerator.markFunctionHasStorageOrDataAccess(resourceName);
+    }
 
     return [
       {
@@ -225,8 +249,8 @@ export class FunctionGenerator implements Planner {
     if (event) this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
   }
 
-  private contributeStorageAccess(): void {
-    if (!this.s3Generator) return;
+  private contributeStorageAccess(): boolean {
+    if (!this.s3Generator) return false;
     const S3_ACTION_TO_PERMISSION: Readonly<Record<string, Permission>> = {
       's3:GetObject': 'read',
       's3:PutObject': 'write',
@@ -236,7 +260,7 @@ export class FunctionGenerator implements Planner {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
-    if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
+    if (!policy || policy.Type !== 'AWS::IAM::Policy') return false;
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
     const permissions = new Set<Permission>();
     for (const statement of Array.isArray(statements) ? statements : [statements]) {
@@ -246,7 +270,9 @@ export class FunctionGenerator implements Planner {
         if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) permissions.add(S3_ACTION_TO_PERMISSION[action]);
       }
     }
-    if (permissions.size > 0) this.s3Generator.addFunctionAccess(this.resource.resourceName, Array.from(permissions));
+    if (permissions.size === 0) return false;
+    this.s3Generator.addFunctionAccess(this.resource.resourceName, Array.from(permissions));
+    return true;
   }
 
   private contributeStorageTrigger(): void {
