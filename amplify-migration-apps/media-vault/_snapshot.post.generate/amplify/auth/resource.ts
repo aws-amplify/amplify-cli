@@ -21,6 +21,7 @@ export const auth = defineAuth({
         scopes: ['openid', 'email', 'profile'],
         attributeMapping: {
           email: 'email',
+          phoneNumber: 'phone_number',
           custom: {
             username: 'sub',
           },
@@ -32,6 +33,7 @@ export const auth = defineAuth({
         scopes: ['email', 'public_profile'],
         attributeMapping: {
           email: 'email',
+          phoneNumber: 'phone_number',
           custom: {
             username: 'id',
           },
