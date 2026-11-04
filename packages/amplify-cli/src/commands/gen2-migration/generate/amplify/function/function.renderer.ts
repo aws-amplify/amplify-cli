@@ -99,8 +99,18 @@ export class FunctionRenderer {
     // gets copy-only bundling, so the generated file compiles yet won't deploy a working
     // artifact — warn loudly instead of silently emitting broken code.
     const isUnknownFamily = mappedRuntime === 'PROVIDED_AL2023' && !isProvided;
-    const timeout = opts.timeoutSeconds ?? 3;
-    const memorySize = opts.memoryMB ?? 128;
+    const timeout = toNumericText(opts.timeoutSeconds, 3);
+    const memorySize = toNumericText(opts.memoryMB, 128);
+    // The resource name is emitted as a bare identifier (export name), which cannot be
+    // escaped, so reject anything that would not produce valid TypeScript.
+    if (!isIdentifier(opts.resourceName)) {
+      throw new AmplifyError('MigrationError', {
+        message: `Function resource name ${JSON.stringify(opts.resourceName)} is not a valid TypeScript identifier`,
+        resolution: 'Rename the Gen1 function resource to use only letters, digits, and underscores before migrating.',
+      });
+    }
+    // go/provided runtimes have no entry in HANDLER_FORMATS (handler is forced to 'bootstrap').
+    const handlerFormatWarning = describeUnexpectedHandlerFormat(opts.runtime, handler);
 
     const lines: string[] = [
       `import { execSync } from 'node:child_process';`,
@@ -116,13 +126,13 @@ export class FunctionRenderer {
 
     if (!runtimeIsKnown) {
       lines.push(
-        `// NOTE: runtime '${opts.runtime}' has no matching CDK Runtime member (it may be deprecated/EOL).`,
+        `// NOTE: runtime '${toCommentText(opts.runtime)}' has no matching CDK Runtime member (it may be deprecated/EOL).`,
         `// Falling back to Runtime.PROVIDED_AL2023 — set the correct runtime and provide a bootstrap, or upgrade the function runtime.`,
         ``,
       );
     } else if (isUnknownFamily) {
       lines.push(
-        `// WARNING: runtime '${opts.runtime}' is not recognized. The bundling below only copies source files,`,
+        `// WARNING: runtime '${toCommentText(opts.runtime)}' is not recognized. The bundling below only copies source files,`,
         `// so this function will NOT build or deploy a working artifact as-is. Set the correct runtime and`,
         `// provide a build/bootstrap step, or migrate the function to a supported runtime.`,
         ``,
@@ -134,17 +144,21 @@ export class FunctionRenderer {
     if (opts.manualMigrationNotes && opts.manualMigrationNotes.length > 0) {
       lines.push(`// TODO: The following Gen1 configuration was not migrated automatically and must be re-added manually:`);
       for (const note of opts.manualMigrationNotes) {
-        lines.push(`//   - ${note}`);
+        lines.push(`//   - ${toCommentText(note)}`);
       }
       lines.push(``);
+    }
+
+    if (handlerFormatWarning) {
+      lines.push(`// WARNING: ${toCommentText(handlerFormatWarning)}`, ``);
     }
 
     const bundlingBlock = renderBundlingBlock(opts.runtime, opts.architecture);
 
     lines.push(`export const ${opts.resourceName} = defineFunction(`);
     lines.push(`  (scope) =>`);
-    lines.push(`    new Function(scope, '${opts.resourceName}', {`);
-    lines.push(`      handler: '${handler}',`);
+    lines.push(`    new Function(scope, ${toStringLiteral(opts.resourceName)}, {`);
+    lines.push(`      handler: ${toStringLiteral(handler)},`);
     lines.push(`      runtime: Runtime.${cdkRuntime},`);
     lines.push(`      architecture: Architecture.${architecture},`);
     lines.push(`      timeout: Duration.seconds(${timeout}),`);
@@ -1160,4 +1174,72 @@ function renderBundlingBlock(runtime: string, architecture?: string): string[] {
   }
   // Default: just copy files
   return [`execSync(\`cp -r \${functionDir}/* \${path.join(outputDir)}\`);`];
+}
+
+// ── Helpers for values interpolated into generated custom function source ──
+
+/**
+ * Expected handler shapes per runtime family. Handlers that do not match are still
+ * rendered (escaped) but produce a generator warning so the user can verify them.
+ */
+const HANDLER_FORMATS: ReadonlyArray<{ readonly prefix: string; readonly pattern: RegExp; readonly expected: string }> = [
+  { prefix: 'python', pattern: /^[\w\-./]+\.\w+$/, expected: 'module.function' },
+  { prefix: 'ruby', pattern: /^[\w\-./]+\.[\w:.]+$/, expected: 'file.method' },
+  { prefix: 'java', pattern: /^[\w$.]+(::\w+)?$/, expected: 'package.Class::method' },
+  { prefix: 'dotnet', pattern: /^[\w.-]+(::[\w.+]+::\w+)?$/, expected: 'Assembly::Namespace.Class::Method' },
+];
+
+/**
+ * Returns a warning message when the handler does not match the expected format for the
+ * runtime family, or undefined when it matches (or the runtime has no known format).
+ */
+export function describeUnexpectedHandlerFormat(runtime: string, handler: string): string | undefined {
+  const format = HANDLER_FORMATS.find((f) => runtime.startsWith(f.prefix));
+  if (!format || format.pattern.test(handler)) return undefined;
+  return (
+    `handler ${JSON.stringify(handler)} does not match the expected '${format.expected}' format for runtime ` +
+    `${JSON.stringify(runtime)}. It was copied as-is; verify it before deploying.`
+  );
+}
+
+/**
+ * Renders a value as a single-quoted TypeScript string literal. Backslashes, quotes, and
+ * control/line-terminator characters are escaped so the literal always parses back to
+ * the original value. Plain values render unchanged inside the quotes.
+ */
+export function toStringLiteral(value: string): string {
+  // eslint-disable-next-line no-control-regex
+  const escaped = value.replace(/[\\'\u0000-\u001f\u007f\u2028\u2029]/g, (ch) => {
+    switch (ch) {
+      case '\\':
+        return '\\\\';
+      case "'":
+        return "\\'";
+      case '\n':
+        return '\\n';
+      case '\r':
+        return '\\r';
+      case '\t':
+        return '\\t';
+      default:
+        return `\\u${ch.charCodeAt(0).toString(16).padStart(4, '0')}`;
+    }
+  });
+  return `'${escaped}'`;
+}
+
+/**
+ * Makes a value safe to embed in a generated `//` comment: line terminators become spaces
+ * (so the text cannot continue onto a code line) and `*\/` is broken up.
+ */
+export function toCommentText(value: string): string {
+  return value.replace(/\r\n|[\r\n\u2028\u2029]/g, ' ').replace(/\*\//g, '* /');
+}
+
+function isIdentifier(value: string): boolean {
+  return /^[A-Za-z_$][\w$]*$/.test(value);
+}
+
+function toNumericText(value: number | undefined, fallback: number): string {
+  return String(typeof value === 'number' && Number.isFinite(value) ? value : fallback);
 }
