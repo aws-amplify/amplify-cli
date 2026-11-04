@@ -2,6 +2,7 @@ import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesI
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
+import { preserveGraphQLSchemaLogicalId } from './graphql-schema-logical-id-preserver';
 
 const buildDir = 'build';
 
@@ -16,6 +17,7 @@ export const preProcessCFNTemplate = async (filePath: string, options?: { minify
   const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   await prePushCfnTemplateModifier(cfnTemplate);
+  preserveGraphQLSchemaLogicalId(cfnTemplate, filePath);
   const backendDir = pathManager.getBackendDirPath();
   const pathSuffix = filePath.startsWith(backendDir) ? filePath.slice(backendDir.length) : path.parse(filePath).base;
   const newPath = path.join(backendDir, providerName, buildDir, pathSuffix);
