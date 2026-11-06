@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.29-rc.33662b5b82d4a47.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.28...@aws-amplify/amplify-category-auth@3.7.29-rc.33662b5b82d4a47.0) (2026-11-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** clean up OIDC provider on auth stack teardown ([#14952](https://github.com/aws-amplify/amplify-cli/issues/14952)) ([499edcc](https://github.com/aws-amplify/amplify-cli/commit/499edccecc397cc24e29b58973a65ecf7cf89833))
+
+
+
+
+
 ## [3.7.28](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.27...@aws-amplify/amplify-category-auth@3.7.28) (2026-05-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

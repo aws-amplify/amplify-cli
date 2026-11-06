@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.14-rc.33662b5b82d4a47.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.7.13...@aws-amplify/amplify-e2e-core@5.7.14-rc.33662b5b82d4a47.0) (2026-11-06)
+
+
+### Bug Fixes
+
+* **cli-internal:** unblock e2e for release (gen2 migration, drift, e2e infra) ([#14998](https://github.com/aws-amplify/amplify-cli/issues/14998)) ([333fb43](https://github.com/aws-amplify/amplify-cli/commit/333fb4306b6f22eb8d1536947ab0dfcdc2861202))
+* **security:** remove committed Apple Sign In private key from E2E config ([#14986](https://github.com/aws-amplify/amplify-cli/issues/14986)) ([6f0313f](https://github.com/aws-amplify/amplify-cli/commit/6f0313ff3b0ba7730543fd1da355198edad8f27d))
+
+
+
+
+
 ## [5.7.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.7.12...@aws-amplify/amplify-e2e-core@5.7.13) (2026-05-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core
