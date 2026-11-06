@@ -1,11 +1,22 @@
 import { run } from '../../commands/build';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-provider-awscloudformation');
 jest.mock('@aws-amplify/amplify-category-custom');
+jest.mock('@aws-amplify/amplify-prompts', () => ({
+  printer: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
+}));
 
 describe('run build command', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('runs build command for only a resource', async () => {
     const context_stub = {
       amplify: {
@@ -130,6 +141,7 @@ describe('run build command', () => {
     const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(5);
+    expect(printer.success).toHaveBeenCalledWith('Successfully built resources');
   });
 
   it('runs command successfully empty Arrays', async () => {
