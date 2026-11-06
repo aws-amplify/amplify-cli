@@ -237,7 +237,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   let redirectSignOut;
 
   if (cognitoResource.output.HostedUIDomain) {
-    domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
+    domain =
+      cognitoResource.output.HostedUICustomDomain || `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
   }
 
   if (cognitoResource.output.OAuthMetadata) {

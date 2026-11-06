@@ -15,6 +15,7 @@ export type AuthProjectDetails = {
     AppClientSecret?: string;
     AppClientIDWeb?: string;
     HostedUIDomain?: string;
+    HostedUICustomDomain?: string;
     OAuthMetadata?: $TSObject;
     IdentityPoolId?: string;
     IdentityPoolName?: string;

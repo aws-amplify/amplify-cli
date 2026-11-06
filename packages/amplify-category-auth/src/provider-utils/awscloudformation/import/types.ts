@@ -46,6 +46,7 @@ export type MetaOutput = {
   GoogleWebClient?: string;
   AppleWebClient?: string;
   HostedUIDomain?: string;
+  HostedUICustomDomain?: string;
   OAuthMetadata?: string;
   CreatedSNSRole?: string;
 };
