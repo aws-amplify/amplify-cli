@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.7.28",
+  "version": "3.7.29",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",

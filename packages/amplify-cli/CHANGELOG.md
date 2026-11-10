@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.5.1...@aws-amplify/cli-internal@14.6.0) (2026-11-10)
+
+
+### Bug Fixes
+
+* **cli-internal:** escape function handler in generated custom function resources ([#15000](https://github.com/aws-amplify/amplify-cli/issues/15000)) ([328f222](https://github.com/aws-amplify/amplify-cli/commit/328f222b2df91627ea98adf73055eeb6d2177063))
+* **cli-internal:** handle ResourceNotFoundException in fetchFunctionSchedule ([#14891](https://github.com/aws-amplify/amplify-cli/issues/14891)) ([50e3f28](https://github.com/aws-amplify/amplify-cli/commit/50e3f2844c6f8162d7519f94de32763544d4f0a0)), closes [#14883](https://github.com/aws-amplify/amplify-cli/issues/14883)
+* **cli-internal:** unblock e2e for release (gen2 migration, drift, e2e infra) ([#14998](https://github.com/aws-amplify/amplify-cli/issues/14998)) ([333fb43](https://github.com/aws-amplify/amplify-cli/commit/333fb4306b6f22eb8d1536947ab0dfcdc2861202))
+* **cli-internal:** use consistent model name casing for DynamoDB table references ([#14892](https://github.com/aws-amplify/amplify-cli/issues/14892)) ([33d2ca2](https://github.com/aws-amplify/amplify-cli/commit/33d2ca2b4e1c4e95340e2228a42c2f37cef7de64))
+* **cli:** address review feedback on storage access mapping ([662bea5](https://github.com/aws-amplify/amplify-cli/commit/662bea5c68aeeaf2071617a4f49470c085cb4f52))
+* **cli:** filter benign time-relative AppSync ApiKey /Expires drift ([#14991](https://github.com/aws-amplify/amplify-cli/issues/14991)) ([ca69bd9](https://github.com/aws-amplify/amplify-cli/commit/ca69bd90b3de7f049347d6f249f45f88af8b99e8))
+* **cli:** gen2-migration forward-direction function grants avoid circular deps ([#14981](https://github.com/aws-amplify/amplify-cli/issues/14981)) ([d39ae61](https://github.com/aws-amplify/amplify-cli/commit/d39ae612d4302f860bce5db3ecdd5f03cf5833ca))
+* **cli:** generate admin queries auth wiring ([#14909](https://github.com/aws-amplify/amplify-cli/issues/14909)) ([7779fe3](https://github.com/aws-amplify/amplify-cli/commit/7779fe3386d2e1e2a4afc0d4cc3c6f0898b7ec90))
+* **cli:** prefer sign-in attributes over auto-verify for login derivation ([4f71cb6](https://github.com/aws-amplify/amplify-cli/commit/4f71cb63586803f1fe947a3302b750f87cc5b2ef)), closes [#14810](https://github.com/aws-amplify/amplify-cli/issues/14810)
+* **cli:** preserve phone-based sign-in in gen2 migration ([2872f88](https://github.com/aws-amplify/amplify-cli/commit/2872f887823ccaf2715f27551ad736f030c9308b)), closes [#14810](https://github.com/aws-amplify/amplify-cli/issues/14810)
+* **cli:** scope migrated private/protected S3 access to the caller identity ([77840cc](https://github.com/aws-amplify/amplify-cli/commit/77840cc5d605c688df9e6d846e300536e2981911))
+* **cli:** use execFileSync for git operations in --app init flow ([#14960](https://github.com/aws-amplify/amplify-cli/issues/14960)) ([4812ec7](https://github.com/aws-amplify/amplify-cli/commit/4812ec74c2df9fc381c2f70d42bc8b819d15a1d1))
+* **gen2-migration:** skip Identity Pool when Gen1 auth is User Pool-only ([#14971](https://github.com/aws-amplify/amplify-cli/issues/14971)) ([0784724](https://github.com/aws-amplify/amplify-cli/commit/0784724abb4f7ebf5c2481fa10c1632de658f2ba)), closes [#14742](https://github.com/aws-amplify/amplify-cli/issues/14742)
+
+
+### Features
+
+* bump version ([#15001](https://github.com/aws-amplify/amplify-cli/issues/15001)) ([59efc95](https://github.com/aws-amplify/amplify-cli/commit/59efc955a208688b53fdb1c4076e73b1a62fb74d))
+* **gen2-migration:** generate code for non-JS Lambda functions ([#14972](https://github.com/aws-amplify/amplify-cli/issues/14972)) ([3661df1](https://github.com/aws-amplify/amplify-cli/commit/3661df1318e2a62c5fd997d7d16a433387123311)), closes [#14535](https://github.com/aws-amplify/amplify-cli/issues/14535)
+
+
+
+
+
 ## [14.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.5.0...@aws-amplify/cli-internal@14.5.1) (2026-06-25)
 
 

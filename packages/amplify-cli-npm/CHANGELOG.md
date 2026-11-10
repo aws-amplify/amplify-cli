@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.5.1...@aws-amplify/cli@14.6.0) (2026-11-10)
+
+
+### Features
+
+* bump version ([#15001](https://github.com/aws-amplify/amplify-cli/issues/15001)) ([59efc95](https://github.com/aws-amplify/amplify-cli/commit/59efc955a208688b53fdb1c4076e73b1a62fb74d))
+* **gen2-migration:** generate code for non-JS Lambda functions ([#14972](https://github.com/aws-amplify/amplify-cli/issues/14972)) ([3661df1](https://github.com/aws-amplify/amplify-cli/commit/3661df1318e2a62c5fd997d7d16a433387123311)), closes [#14535](https://github.com/aws-amplify/amplify-cli/issues/14535)
+
+
+
+
+
 ## [14.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.5.0...@aws-amplify/cli@14.5.1) (2026-06-25)
 
 **Note:** Version bump only for package @aws-amplify/cli
