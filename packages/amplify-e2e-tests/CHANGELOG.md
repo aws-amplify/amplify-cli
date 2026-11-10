@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.19...amplify-e2e-tests@4.11.20) (2026-11-10)
+
+
+### Bug Fixes
+
+* **security:** remove committed Apple Sign In private key from E2E config ([#14986](https://github.com/aws-amplify/amplify-cli/issues/14986)) ([6f0313f](https://github.com/aws-amplify/amplify-cli/commit/6f0313ff3b0ba7730543fd1da355198edad8f27d))
+
+
+
+
+
 ## [4.11.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.18...amplify-e2e-tests@4.11.19) (2026-06-25)
 
 **Note:** Version bump only for package amplify-e2e-tests

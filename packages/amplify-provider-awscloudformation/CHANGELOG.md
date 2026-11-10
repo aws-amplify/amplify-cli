@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.19...@aws-amplify/amplify-provider-awscloudformation@8.11.20) (2026-11-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** preserve GraphQLSchema logical id on v1 to v2 migration ([#14963](https://github.com/aws-amplify/amplify-cli/issues/14963)) ([a143599](https://github.com/aws-amplify/amplify-cli/commit/a143599cb2fa369604ebfa3dc173f3e5c9e38449))
+
+
+
+
+
 ## [8.11.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.18...@aws-amplify/amplify-provider-awscloudformation@8.11.19) (2026-05-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
