@@ -43,7 +43,7 @@ const supportedPlatforms = [
   {
     TYPE: 'Darwin',
     ARCHITECTURE: 'arm64',
-    COMPRESSED_BINARY_PATH: 'amplify-pkg-macos-x64.tgz',
+    COMPRESSED_BINARY_PATH: 'amplify-pkg-macos-arm64.tgz',
   },
 ];
 

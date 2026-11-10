@@ -253,6 +253,7 @@ function _uploadPkgBinaries {
     loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
     loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
     loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos-arm $CODEBUILD_SRC_DIR/out
     loadCache repo-out-win $CODEBUILD_SRC_DIR/out
 
     echo Done loading binaries
@@ -681,6 +682,7 @@ function _verifyPkgCLI {
     loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
     loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
     loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos-arm $CODEBUILD_SRC_DIR/out
     loadCache repo-out-win $CODEBUILD_SRC_DIR/out
     source .circleci/local_publish_helpers_codebuild.sh && verifyPkgCli
 }
@@ -696,6 +698,9 @@ function _githubPrerelease {
     tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
     tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
     tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+    # arm64 tarballs from generatePkgCli contain an out/ prefix; repack flat so `amplify upgrade` finds the binary
+    tar zcvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
+    tar zcvf amplify-pkg-macos-arm64.tgz amplify-pkg-macos-arm64
     cd $CODEBUILD_SRC_DIR
     echo Publish Amplify CLI GitHub prerelease
     commit=$(git rev-parse HEAD~1)

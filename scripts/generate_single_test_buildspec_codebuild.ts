@@ -47,6 +47,7 @@ const main = () => {
     'build_pkg_binaries_arm',
     'build_pkg_binaries_linux',
     'build_pkg_binaries_macos',
+    'build_pkg_binaries_macos_arm',
     'build_pkg_binaries_win',
     'upb',
   ];

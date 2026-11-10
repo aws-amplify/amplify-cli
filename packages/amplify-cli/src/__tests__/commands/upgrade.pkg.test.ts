@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import fetch, { Response } from 'node-fetch';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as core from '@aws-amplify/amplify-cli-core';
@@ -63,8 +64,9 @@ coreMock.pathManager.getHomeDotAmplifyDirPath = jest.fn().mockReturnValue('homed
 
 const contextStubTyped = contextStub as unknown as $TSContext;
 
-// save original process.platform
+// save original process.platform and process.arch
 const originalPlatform = process.platform;
+const originalArch = process.arch;
 expect.addSnapshotSerializer(windowsPathSerializer);
 
 describe('run upgrade using packaged CLI', () => {
@@ -72,6 +74,9 @@ describe('run upgrade using packaged CLI', () => {
   afterEach(() => {
     Object.defineProperty(process, 'platform', {
       value: originalPlatform,
+    });
+    Object.defineProperty(process, 'arch', {
+      value: originalArch,
     });
   });
 
@@ -108,9 +113,12 @@ describe('run upgrade using packaged CLI', () => {
         body: mockStream,
       } as unknown as Response);
 
-    // override process.platform
+    // override process.platform and process.arch
     Object.defineProperty(process, 'platform', {
       value: 'linux',
+    });
+    Object.defineProperty(process, 'arch', {
+      value: 'x64',
     });
 
     // test
@@ -133,6 +141,42 @@ describe('run upgrade using packaged CLI', () => {
   "700",
 ]
 `);
+  });
+
+  it.each([
+    ['darwin', 'amplify-pkg-macos-arm64'],
+    ['linux', 'amplify-pkg-linux-arm64'],
+  ])('downloads the arm64 binary on %s arm64', async (platform, binaryName) => {
+    // setup
+    fetchMock
+      .mockResolvedValueOnce({
+        status: 200,
+        json: jest.fn().mockResolvedValueOnce({
+          tag_name: 'v100.0.0',
+        }),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        status: 200,
+        headers: {
+          get: jest.fn().mockReturnValue('100'),
+        },
+        body: mockStream,
+      } as unknown as Response);
+
+    // override process.platform and process.arch
+    Object.defineProperty(process, 'platform', {
+      value: platform,
+    });
+    Object.defineProperty(process, 'arch', {
+      value: 'arm64',
+    });
+
+    // test
+    await run(contextStubTyped);
+
+    // validate
+    expect(fetchMock.mock.calls[1][0]).toBe(`https://github.com/aws-amplify/amplify-cli/releases/download/v100.0.0/${binaryName}.tgz`);
+    expect(fsMock.move.mock.calls[0][0]).toBe(path.join('homedir', 'bin', binaryName));
   });
 
   it('moves old binary to temp location before downloading on windows', async () => {

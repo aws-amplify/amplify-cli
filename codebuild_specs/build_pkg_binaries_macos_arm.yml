@@ -1,0 +1,13 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      # ldid ad-hoc signs the binary on Linux; Apple Silicon refuses to run unsigned executables
+      - apt-get update && apt-get install -y ldid
+      - source ./shared-scripts.sh && _buildBinaries macos-arm
+
+artifacts:
+  files:
+    - 'shared-scripts.sh'

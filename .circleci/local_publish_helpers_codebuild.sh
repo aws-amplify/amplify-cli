@@ -52,6 +52,7 @@ function uploadPkgCliCodeBuild {
     # Version conflicts are caught at cb-publish-step-2-verdaccio script
     aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64.tgz
     aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64.tgz
+    aws s3 cp amplify-pkg-macos-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-arm64.tgz
     aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64.tgz
     aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
 
@@ -86,25 +87,34 @@ function generatePkgCli {
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
 
-  if [[ "$@" =~ 'arm' ]]; then
-    npx pkg --no-bytecode --public-packages "*" --public -t node22-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
-    tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
-  fi
-
-  if [[ "$@" =~ 'linux' ]]; then
-    npx pkg -t node22-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
-    tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
-  fi
-
-  if [[ "$@" =~ 'macos' ]]; then
-    npx pkg -t node22-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
-    tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
-  fi
-
-  if [[ "$@" =~ 'win' ]]; then
-    npx pkg -t node22-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
-    tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
-  fi
+  # Exact match: substring checks would let 'macos-arm' also trigger the 'arm' and 'macos' targets
+  case "$1" in
+    arm)
+      npx pkg --no-bytecode --public-packages "*" --public -t node22-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
+      tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
+      ;;
+    linux)
+      npx pkg -t node22-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+      tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
+      ;;
+    macos)
+      npx pkg -t node22-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
+      tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
+      ;;
+    macos-arm)
+      # pkg only warns when it cannot ad-hoc sign, and macOS on Apple Silicon kills unsigned binaries
+      if [[ "$(uname)" != "Darwin" ]] && ! command -v ldid >/dev/null; then
+        echo "ldid is required to sign the macos-arm64 binary on $(uname)"
+        exit 1
+      fi
+      npx pkg --no-bytecode --public-packages "*" --public -t node22-macos-arm64 ../build/node_modules -o ../out/amplify-pkg-macos-arm64
+      tar -czvf ../out/amplify-pkg-macos-arm64.tgz ../out/amplify-pkg-macos-arm64
+      ;;
+    win)
+      npx pkg -t node22-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+      tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
+      ;;
+  esac
 
   cd ..
 }
@@ -145,6 +155,7 @@ function verifyPkgCli {
     verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((1105 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((1095 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((875 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-arm64" "amplify-pkg-macos-arm64.tgz" $((1105 * 1024 * 1024))
 }
 
 function unsetNpmRegistryUrl {
