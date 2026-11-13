@@ -7,7 +7,7 @@ const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
 const { fileLogger } = require('./utils/aws-logger');
 const { minifyAllJSONInFolderRecursively } = require('./utils/minify-json');
-
+const { optimizeAppSyncResolverDeployment } = require('./utils/appsync-resolver-optimizer');
 const logger = fileLogger('upload-appsync-files');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
@@ -187,6 +187,17 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const deploymentRootKey = await getDeploymentRootKey(resourceDir);
     writeUpdatedParametersJson(resource, deploymentRootKey);
 
+    if (context.input.options?.['skip-unchanged-resolvers'] && category === 'api') {
+      await optimizeAppSyncResolverDeployment(
+        context,
+        category,
+        resourceName,
+        resourceBuildDir,
+        deploymentRootKey,
+        useDeprecatedParameters,
+      );
+    }
+
     // Upload build/* to S3.
     const s3Client = await S3.getInstance(context);
     if (!fs.existsSync(resourceBuildDir)) {
@@ -195,6 +206,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (context.input.options?.minify) {
       minifyAllJSONInFolderRecursively(resourceBuildDir);
     }
+
     const spinner = new ora('Uploading files.');
     spinner.start();
     await TransformPackage.uploadAPIProject({
