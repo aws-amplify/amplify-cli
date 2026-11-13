@@ -81,6 +81,12 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+    - identifier: build_pkg_binaries_macos_arm
+      buildspec: codebuild_specs/build_pkg_binaries_macos_arm.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
       env:
@@ -95,6 +101,7 @@ batch:
         - build_pkg_binaries_arm
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
+        - build_pkg_binaries_macos_arm
         - build_pkg_binaries_win
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml

@@ -5,7 +5,13 @@ type ProcessArgs = {
   version: string;
   excludeGithub: boolean;
 };
-const githubBinaries = ['amplify-pkg-linux-arm64.tgz', 'amplify-pkg-linux.tgz', 'amplify-pkg-macos.tgz', 'amplify-pkg-win.exe.tgz'];
+const githubBinaries = [
+  'amplify-pkg-linux-arm64.tgz',
+  'amplify-pkg-linux.tgz',
+  'amplify-pkg-macos.tgz',
+  'amplify-pkg-macos-arm64.tgz',
+  'amplify-pkg-win.exe.tgz',
+];
 const parseArgs = async (): Promise<ProcessArgs> => {
   const args = yargs(process.argv.slice(2))
     .version(false)
@@ -35,7 +41,13 @@ const existsInGitHub = async (version: string): Promise<boolean> => {
   return responseStatuses.every((s) => s === 200);
 };
 
-const s3Binaries = ['amplify-pkg-linux-arm64.tgz', 'amplify-pkg-linux-x64.tgz', 'amplify-pkg-macos-x64.tgz', 'amplify-pkg-win-x64.tgz'];
+const s3Binaries = [
+  'amplify-pkg-linux-arm64.tgz',
+  'amplify-pkg-linux-x64.tgz',
+  'amplify-pkg-macos-x64.tgz',
+  'amplify-pkg-macos-arm64.tgz',
+  'amplify-pkg-win-x64.tgz',
+];
 const existsInS3 = async (version: string): Promise<boolean> => {
   const buildUrl = (binary: string) => `https://package.cli.amplify.aws/${version}/${binary}`;
   const responses = await Promise.all(s3Binaries.map((b) => fetch(buildUrl(b))));

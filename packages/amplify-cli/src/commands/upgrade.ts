@@ -14,7 +14,7 @@ import { oldVersionPath } from '../utils/win-constants';
 const repoOwner = 'aws-amplify';
 const repoName = 'amplify-cli';
 
-const binName = (platform: 'macos' | 'win.exe' | 'linux'): string => `amplify-pkg-${platform}`;
+const binName = (platform: 'macos' | 'macos-arm64' | 'win.exe' | 'linux' | 'linux-arm64'): string => `amplify-pkg-${platform}`;
 const binUrl = (version: string, binaryName: string): string =>
   `https://github.com/${repoOwner}/${repoName}/releases/download/v${version}/${binaryName}.tgz`;
 const latestVersionUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
@@ -45,7 +45,8 @@ const upgradeCli = async (print, version: string): Promise<void> => {
   const isWin = process.platform.startsWith('win');
   const binDir = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin');
   const binPath = path.join(binDir, isWin ? 'amplify.exe' : 'amplify');
-  const platformSuffix = isWin ? 'win.exe' : process.platform === 'darwin' ? 'macos' : 'linux';
+  const osName = process.platform === 'darwin' ? 'macos' : 'linux';
+  const platformSuffix = isWin ? 'win.exe' : process.arch === 'arm64' ? (`${osName}-arm64` as const) : osName;
   const extractedName = binName(platformSuffix);
   const extractedPath = path.join(binDir, extractedName);
   const url = binUrl(version, extractedName);
