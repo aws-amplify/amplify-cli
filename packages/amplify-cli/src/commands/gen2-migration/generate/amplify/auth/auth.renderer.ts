@@ -426,7 +426,10 @@ export class AuthRenderer {
    * Parses OIDC/SAML providers, attribute mappings, and scopes from
    * identity provider details.
    */
-  private static deriveExternalProviders(details?: readonly IdentityProviderType[]): {
+  private static deriveExternalProviders(
+    details?: readonly IdentityProviderType[],
+    requiredStandardAttributes: readonly string[] = [],
+  ): {
     readonly oidcProviders: readonly OidcProviderConfig[];
     readonly samlProvider: SamlProviderConfig | undefined;
     readonly attributeMappings: Readonly<Record<string, { standard: Record<string, string>; custom: Record<string, string> }>>;
@@ -486,6 +489,17 @@ export class AuthRenderer {
             }
           }
         }
+      }
+    }
+
+    // Cognito rejects any IdP attribute mapping that omits a required standard
+    // attribute: "The attribute mapping is missing required attributes [phone_number]".
+    // Gen1 allowed this, e.g. phone_number as a username attribute with email-only
+    // social mappings. Fill each gap with a same-name claim mapping.
+    const required = requiredStandardAttributes.filter((attr) => attr in MAPPED_USER_ATTRIBUTE_NAME);
+    for (const mapping of Object.values(attributeMappings)) {
+      for (const attr of required) {
+        mapping.standard[MAPPED_USER_ATTRIBUTE_NAME[attr]] ??= attr;
       }
     }
 
@@ -952,7 +966,10 @@ export class AuthRenderer {
       assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
     }
 
-    const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders);
+    const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders, [
+      ...(options.userPool.UsernameAttributes ?? []),
+      ...(options.userPool.AliasAttributes ?? []),
+    ]);
     const hasExternalProviders =
       loginFlags.googleLogin ||
       loginFlags.amazonLogin ||
