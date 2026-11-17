@@ -1,7 +1,7 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { AmplifyAppSyncSimulator } from '../..';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
-import { VelocityTemplate } from '../../velocity';
+import { AppSyncVTLRenderContext, VelocityTemplate } from '../../velocity';
 import { JavaArray } from '../../velocity/value-mapper/array';
 import { JavaMap } from '../../velocity/value-mapper/map';
 import { mockInfo } from './util/general-utils.test';
@@ -127,6 +127,47 @@ describe('VelocityTemplate', () => {
       );
       expect(result.errors).toEqual([]);
       expect(result.result).toEqual('the same value');
+    });
+  });
+
+  describe('property keys set from a string in a template', () => {
+    const renderTemplate = (content: string) => {
+      const template = new VelocityTemplate({ path: 'INLINE_TEMPLATE', content: `"${content}"` }, simulator);
+      const result = template.render(
+        { arguments: {} } as AppSyncVTLRenderContext,
+        { headers: {}, requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY },
+        mockInfo,
+      );
+      return result.result;
+    };
+
+    it('treats a key from #set the same as the equivalent string key on read', () => {
+      const viaVariable = renderTemplate('#set($m = {})#set($k = "constructor")[$!m[$k]]');
+      const viaLiteral = renderTemplate('#set($m = {})[$!m["constructor"]]');
+      expect(viaVariable).toEqual(viaLiteral);
+      expect(viaVariable).toEqual('[]');
+    });
+
+    it('treats a key from #set the same as the equivalent string key on get()', () => {
+      const viaVariable = renderTemplate('#set($m = {})#set($k = "constructor")[$!m.get($k)]');
+      const viaLiteral = renderTemplate('#set($m = {})[$!m.get("constructor")]');
+      expect(viaVariable).toEqual(viaLiteral);
+    });
+
+    it('treats a key from #set the same as the equivalent string key on write', () => {
+      const viaVariable = renderTemplate('#set($m = {})#set($k = "__proto__")#set($m[$k] = [1])[$!m.size()]');
+      const viaLiteral = renderTemplate('#set($m = {})#set($m["__proto__"] = [1])[$!m.size()]');
+      expect(viaVariable).toEqual(viaLiteral);
+    });
+
+    it('treats a key from #set the same as the equivalent string key on put', () => {
+      const viaVariable = renderTemplate('#set($m = {})#set($k = "__proto__")$!m.put($k, [1])[$!m.size()]');
+      const viaLiteral = renderTemplate('#set($m = {})$!m.put("__proto__", [1])[$!m.size()]');
+      expect(viaVariable).toEqual(viaLiteral);
+    });
+
+    it('still reads and writes with normal string keys', () => {
+      expect(renderTemplate('#set($m = {})#set($k = "a")#set($m[$k] = "v")$m[$k]')).toEqual('v');
     });
   });
 

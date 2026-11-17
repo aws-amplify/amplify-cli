@@ -22,7 +22,16 @@ var BLOCKED_PROPERTIES = [
  * @returns {boolean} true when the name is disallowed
  */
 function isBlockedProperty(name) {
-  return typeof name === 'string' && BLOCKED_PROPERTIES.indexOf(name) !== -1;
+  return isBlockedKey(toPropertyKey(name));
+}
+
+// Convert a template key to the primitive the property access will use.
+function toPropertyKey(key) {
+  return typeof key === 'string' || typeof key === 'number' || typeof key === 'symbol' ? key : String(key);
+}
+
+function isBlockedKey(key) {
+  return typeof key === 'string' && BLOCKED_PROPERTIES.indexOf(key) !== -1;
 }
 
 /**
@@ -34,7 +43,8 @@ function isBlockedProperty(name) {
  * @returns {*} base[key], or undefined when the key is blocked
  */
 function safeGetProperty(base, key) {
-  return isBlockedProperty(key) ? undefined : base[key];
+  var k = toPropertyKey(key);
+  return isBlockedKey(k) ? undefined : base[k];
 }
 
 /**
@@ -45,16 +55,18 @@ function safeGetProperty(base, key) {
  * @returns {boolean} true if written, false if the key was blocked
  */
 function safeSetProperty(base, key, value) {
-  if (isBlockedProperty(key)) {
+  var k = toPropertyKey(key);
+  if (isBlockedKey(k)) {
     return false;
   }
-  base[key] = value;
+  base[k] = value;
   return true;
 }
 
 module.exports = {
   BLOCKED_PROPERTIES: BLOCKED_PROPERTIES,
   isBlockedProperty: isBlockedProperty,
+  toPropertyKey: toPropertyKey,
   safeGetProperty: safeGetProperty,
   safeSetProperty: safeSetProperty,
 };
