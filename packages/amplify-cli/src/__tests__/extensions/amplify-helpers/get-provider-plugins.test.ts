@@ -65,4 +65,13 @@ describe('executeProviderCommand', () => {
     await executeProviderCommand(mockContext, 'fakedPlugin');
     expect(consoleLogSpy).toHaveBeenLastCalledWith('fakePluginResult');
   });
+  it('should load provider plugins using require() not dynamic import() to support pkg binary', async () => {
+    // Ensures plugins are loaded synchronously via require(), which is compatible with
+    // pkg-bundled binaries where vm.Script does not set importModuleDynamically callback.
+    stateManagerMock.getProjectConfig.mockReturnValue({ providers: ['fakedPlugin'] });
+    const pluginPath = '../../../../__mocks__/faked-plugin';
+    const loaded = require(pluginPath);
+    expect(loaded).toBeDefined();
+    expect(typeof loaded.fakedPlugin).toBe('function');
+  });
 });
