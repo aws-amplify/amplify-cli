@@ -1,13 +1,14 @@
 import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import { globSync } from 'glob';
-import execa from 'execa';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { detectPackageManager, installDependencies } from './packageManagerUtils';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
     try {
-      await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' }); // making virtual env in project folder
+      const packageManager = await detectPackageManager();
+      await installDependencies(params.srcRoot, packageManager);
     } catch (err) {
       throw new AmplifyError(
         'PackagingLambdaFunctionError',
