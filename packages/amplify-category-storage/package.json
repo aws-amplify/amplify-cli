@@ -43,7 +43,7 @@
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "cloudform-types": "^4.2.0",
