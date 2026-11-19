@@ -1,0 +1,6 @@
+{
+  "name": "packageManager-pnpm-field-test",
+  "version": "1.0.0",
+  "description": "Test package with packageManager field for pnpm",
+  "packageManager": "pnpm@10.17.0"
+}

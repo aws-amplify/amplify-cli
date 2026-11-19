@@ -1,0 +1,5 @@
+{
+  "name": "packageManager-hierarchy-fallback-subdir-test",
+  "version": "1.0.0",
+  "description": "Subdirectory with yarn.lock but no packageManager field"
+}

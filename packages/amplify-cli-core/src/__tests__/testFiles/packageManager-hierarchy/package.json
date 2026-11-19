@@ -1,0 +1,6 @@
+{
+  "name": "packageManager-hierarchy-test",
+  "version": "1.0.0",
+  "description": "Root package with packageManager field for hierarchy test",
+  "packageManager": "pnpm@10.17.0"
+}
