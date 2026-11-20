@@ -125,3 +125,103 @@ describe('reserved property names in reference resolution', function () {
     map.k.should.eql('v');
   });
 });
+
+describe('property keys that are not plain strings', function () {
+  var render = Velocity.render;
+
+  afterEach(function () {
+    delete Object.prototype.p;
+  });
+
+  function wrapped(value) {
+    return {
+      toString: function () {
+        return value;
+      },
+    };
+  }
+
+  it('treats a list key the same as the equivalent string key on read', function () {
+    render('#set($k = ["constructor"])$!x[$k]', { x: {} }).should.eql('');
+    render('$!x["constructor"]', { x: {} }).should.eql('');
+  });
+
+  it('treats a nested list key the same as the equivalent string key on read', function () {
+    render('#set($k = [["constructor"]])$!x[$k]', { x: {} }).should.eql('');
+  });
+
+  it('treats a wrapped string key the same as the equivalent string key on read', function () {
+    render('$!x[$k]', { x: {}, k: wrapped('constructor') }).should.eql('');
+  });
+
+  it('treats a list key the same as the equivalent string key on put', function () {
+    var x = {};
+    render('#set($k = ["__proto__"])$!x.put($k, $y)', { x: x, y: { p: 1 } });
+    Object.keys(x).length.should.eql(0);
+    (Object.getPrototypeOf(x) === Object.prototype).should.eql(true);
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('treats a wrapped string key the same as the equivalent string key on put', function () {
+    var x = {};
+    render('$!x.put($k, $y)', { x: x, y: 'v', k: wrapped('__proto__') });
+    Object.keys(x).length.should.eql(0);
+    (Object.getPrototypeOf(x) === Object.prototype).should.eql(true);
+  });
+
+  it('treats a list key the same as the equivalent string key on #set', function () {
+    var x = {};
+    render('#set($k = ["__proto__"])#set($x[$k] = $y)', { x: x, y: { p: 1 } });
+    (Object.getPrototypeOf(x) === Object.prototype).should.eql(true);
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('treats a nested list key the same as the equivalent string key on #set', function () {
+    var x = {};
+    render('#set($k = [["__proto__"]])#set($x[$k] = $y)', { x: x, y: { p: 1 } });
+    (Object.getPrototypeOf(x) === Object.prototype).should.eql(true);
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('treats a wrapped string key the same as the equivalent string key on #set', function () {
+    var x = {};
+    render('#set($x[$k] = $y)', { x: x, y: { p: 1 }, k: wrapped('__proto__') });
+    (Object.getPrototypeOf(x) === Object.prototype).should.eql(true);
+    (({}).p === undefined).should.eql(true);
+  });
+
+  it('treats a list key the same as the equivalent string key on remove', function () {
+    render('#set($k = ["constructor"])$!x.remove($k)', { x: {} }).should.eql('');
+  });
+
+  it('still reads and writes with a number key', function () {
+    render('$x[1]', { x: ['a', 'b'] }).should.eql('b');
+    var x = [];
+    render('#set($x[0] = "v")', { x: x });
+    x[0].should.eql('v');
+    var m = {};
+    render('$!m.put(5, "v")', { m: m });
+    m['5'].should.eql('v');
+  });
+
+  it('still reads and writes with normal string keys', function () {
+    render('$x["a"]', { x: { a: 'v' } }).should.eql('v');
+    render('#set($k = "a")$x[$k]', { x: { a: 'v' } }).should.eql('v');
+    render('#set($k = ["a"])$!x[$k]', { x: { a: 'v' } }).should.eql('v');
+    var m = {};
+    render('$!m.put("k", "v")#set($m["j"] = "w")', { m: m });
+    m.k.should.eql('v');
+    m.j.should.eql('w');
+  });
+
+  it('treats a list key the same as the equivalent string key on get()', function () {
+    render('#set($k = ["constructor"])$!x.get($k)', { x: {} }).should.eql('');
+    render('$!x.get($k)', { x: {}, k: wrapped('constructor') }).should.eql('');
+    render('#set($k = ["a"])$!x.get($k)', { x: { a: 'v' } }).should.eql('v');
+  });
+
+  it('does not throw for a symbol key', function () {
+    var s = Symbol('s');
+    render('$!x[$k]', { x: {}, k: s }).should.eql('');
+  });
+});

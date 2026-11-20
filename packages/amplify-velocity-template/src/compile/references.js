@@ -2,6 +2,7 @@ var reserved = require('./reserved-properties');
 var isBlockedProperty = reserved.isBlockedProperty;
 var safeGetProperty = reserved.safeGetProperty;
 var safeSetProperty = reserved.safeSetProperty;
+var toPropertyKey = reserved.toPropertyKey;
 
 module.exports = function (Velocity, utils) {
   'use strict';
@@ -57,6 +58,7 @@ module.exports = function (Velocity, utils) {
       return base[property];
     }
 
+    property = toPropertyKey(property);
     if (isBlockedProperty(property)) {
       return undefined;
     }
@@ -309,7 +311,7 @@ module.exports = function (Velocity, utils) {
           baseRef.splice(indexToRemove, 1);
           return ret;
         } else if (utils.isObject(baseRef)) {
-          var removeKey = this.getLiteral(property.args[0]);
+          var removeKey = toPropertyKey(this.getLiteral(property.args[0]));
           if (isBlockedProperty(removeKey)) {
             return undefined;
           }
