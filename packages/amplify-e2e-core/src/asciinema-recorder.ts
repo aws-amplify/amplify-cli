@@ -61,6 +61,9 @@ export class Recorder {
       shell: true,
       // Do not set useConpty. node-pty is smart enough to set it to true only on versions of Windows that support it.
       // useConpty: true,
+      // Node 24 + Windows: force the winpty backend. ConPTY's AttachConsole path can throw during
+      // PTY teardown on Node 24, so we opt out of ConPTY here to keep e2e recordings stable.
+      useConpty: false,
       ...this.options,
     });
     this.addFrame(this.renderPrompt(this.cwd, this.cmd, this.args));

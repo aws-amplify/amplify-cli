@@ -104,7 +104,23 @@ export interface AuthRenderOptions {
   readonly identityGroups?: readonly GroupType[];
   readonly triggers?: readonly AuthTrigger[];
   readonly mfaConfig?: GetUserPoolMfaConfigResponse;
+  /**
+   * Function access rendered as the `access: (allow) => [...]` block ON
+   * defineAuth. This path is used ONLY for functions that are ALSO auth triggers
+   * (postConfirmation etc.): a trigger already forces an `auth -> function`
+   * cross-stack edge, and Amplify's `access` construct co-locates the grant so no
+   * SECOND edge is added. Non-trigger function access is emitted separately as a
+   * forward-direction grant in backend.ts (see buildFunctionAccessBackendStatements)
+   * to avoid the reverse `auth -> function` edge that caused circular dependencies.
+   */
   readonly access?: readonly FunctionAccess[];
+  /**
+   * The UserPool `Schema` exactly as declared in the deployed Gen1 auth template. When present it is
+   * emitted verbatim so the Schema stays byte-identical across the forward refactor, the Gen2
+   * deploy, the rollback and the subsequent Gen1 push; the Cognito handler rejects any Schema change
+   * (modification or removal) on an existing pool.
+   */
+  readonly gen1UserPoolSchema?: readonly Record<string, unknown>[];
 }
 
 // TypeScript AST factory for creating nodes
@@ -112,6 +128,86 @@ const factory = ts.factory;
 
 // Secret management identifier for Gen 2
 const secretIdentifier = factory.createIdentifier('secret');
+
+/**
+ * Maps each Amplify Gen2 auth permission name (as configured on a Gen1 function's
+ * cognito access) to the concrete `cognito-idp:*` IAM actions it grants.
+ *
+ * This mirrors the permission -> action expansion that `allow.resource(fn).to()`
+ * performs internally in `@aws-amplify/backend-auth` (transcribed from its
+ * `AuthAccessPolicyArbiter` / `access.ts` permission tables, ~v1.6.x, since the
+ * package does not export the raw-action map for import). Two drift risks, only
+ * the first of which is guarded:
+ *   1. A NEW permission NAME added upstream -> caught: unknownPermissions() warns
+ *      at generate time and the raw-action fallback keeps it visible.
+ *   2. A new ACTION added to an EXISTING permission (e.g. another cognito-idp
+ *      action folded into `manageUsers`) -> NOT caught: this table would silently
+ *      under-grant. If you bump the upstream reference, re-check the action sets
+ *      below against it, not just the permission names.
+ */
+const PERMISSION_ACTION_MAP: Readonly<Record<string, readonly string[]>> = {
+  manageUsers: [
+    'cognito-idp:AdminConfirmSignUp',
+    'cognito-idp:AdminCreateUser',
+    'cognito-idp:AdminDeleteUser',
+    'cognito-idp:AdminDeleteUserAttributes',
+    'cognito-idp:AdminDisableUser',
+    'cognito-idp:AdminEnableUser',
+    'cognito-idp:AdminGetUser',
+    'cognito-idp:AdminListGroupsForUser',
+    'cognito-idp:AdminRespondToAuthChallenge',
+    'cognito-idp:AdminSetUserMFAPreference',
+    'cognito-idp:AdminSetUserSettings',
+    'cognito-idp:AdminUpdateUserAttributes',
+    'cognito-idp:AdminUserGlobalSignOut',
+    'cognito-idp:ListUsers',
+  ],
+  manageGroups: [
+    'cognito-idp:GetGroup',
+    'cognito-idp:ListGroups',
+    'cognito-idp:CreateGroup',
+    'cognito-idp:DeleteGroup',
+    'cognito-idp:UpdateGroup',
+  ],
+  manageGroupMembership: [
+    'cognito-idp:AdminAddUserToGroup',
+    'cognito-idp:AdminRemoveUserFromGroup',
+    'cognito-idp:AdminListGroupsForUser',
+    'cognito-idp:ListUsersInGroup',
+  ],
+  manageUserDevices: [
+    'cognito-idp:AdminForgetDevice',
+    'cognito-idp:AdminGetDevice',
+    'cognito-idp:AdminListDevices',
+    'cognito-idp:AdminUpdateDeviceStatus',
+  ],
+  managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
+  addUserToGroup: ['cognito-idp:AdminAddUserToGroup'],
+  createUser: ['cognito-idp:AdminCreateUser'],
+  deleteUser: ['cognito-idp:AdminDeleteUser'],
+  deleteUserAttributes: ['cognito-idp:AdminDeleteUserAttributes'],
+  disableUser: ['cognito-idp:AdminDisableUser'],
+  enableUser: ['cognito-idp:AdminEnableUser'],
+  forgetDevice: ['cognito-idp:AdminForgetDevice'],
+  getDevice: ['cognito-idp:AdminGetDevice'],
+  getUser: ['cognito-idp:AdminGetUser'],
+  listUsers: ['cognito-idp:ListUsers'],
+  listDevices: ['cognito-idp:AdminListDevices'],
+  listGroupsForUser: ['cognito-idp:AdminListGroupsForUser'],
+  listUsersInGroup: ['cognito-idp:ListUsersInGroup'],
+  listGroups: ['cognito-idp:ListGroups'],
+  createGroup: ['cognito-idp:CreateGroup'],
+  deleteGroup: ['cognito-idp:DeleteGroup'],
+  getGroup: ['cognito-idp:GetGroup'],
+  updateGroup: ['cognito-idp:UpdateGroup'],
+  removeUserFromGroup: ['cognito-idp:AdminRemoveUserFromGroup'],
+  resetUserPassword: ['cognito-idp:AdminResetUserPassword'],
+  setUserMfaPreference: ['cognito-idp:AdminSetUserMFAPreference'],
+  setUserPassword: ['cognito-idp:AdminSetUserPassword'],
+  setUserSettings: ['cognito-idp:AdminSetUserSettings'],
+  updateDeviceStatus: ['cognito-idp:AdminUpdateDeviceStatus'],
+  updateUserAttributes: ['cognito-idp:AdminUpdateUserAttributes'],
+};
 
 // Social provider secret key constants
 const googleClientID = 'GOOGLE_CLIENT_ID';
@@ -285,7 +381,15 @@ export class AuthRenderer {
     const mfa = AuthRenderer.deriveMfaConfig(options.mfaConfig);
     this.addMfaConfig(mfa, defineAuthProperties);
 
-    this.addFunctionAccess(options.access, defineAuthProperties, namedImports);
+    // Function access is split by whether the function is ALSO an auth trigger:
+    //  - trigger + access  -> emitted here as the `access` block on defineAuth.
+    //    A trigger already forces an `auth -> function` edge, and Amplify's access
+    //    construct co-locates the grant, so this adds no NEW cross-stack edge.
+    //  - access only        -> emitted in backend.ts as a forward-direction grant
+    //    (buildFunctionAccessBackendStatements), avoiding the reverse edge that
+    //    causes circular dependencies for functions that also touch data/storage.
+    // options.access carries ONLY the trigger subset (the generator partitions it).
+    this.addFunctionAccessBlock(options.access, defineAuthProperties, namedImports);
 
     return TS.renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('auth'),
@@ -594,7 +698,15 @@ export class AuthRenderer {
     );
   }
 
-  private addFunctionAccess(
+  /**
+   * Emits the `access: (allow) => [allow.resource(fn).to([...])]` block ON
+   * defineAuth for the given functions. Used ONLY for functions that are also
+   * auth triggers (see AuthRenderOptions.access) — the trigger already forces an
+   * `auth -> function` edge, and Amplify's access construct co-locates the grant,
+   * so this does not add a new cross-stack edge (unlike the non-trigger case,
+   * which uses a forward backend.ts grant to avoid exactly that edge).
+   */
+  private addFunctionAccessBlock(
     functions: readonly FunctionAccess[] | undefined,
     properties: PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
@@ -608,35 +720,59 @@ export class AuthRenderer {
       return;
     }
 
+    // Consolidate each function's enabled permissions into a single deduped,
+    // sorted set keyed by resource name. A function may be registered more than
+    // once, and emitting one `allow.resource(fn).to([...])` per function (rather
+    // than one rule per permission) keeps parity with the forward
+    // buildFunctionAccessBackendStatements path and generates fewer Policy
+    // constructs. Insertion order is preserved so the emitted rule order is
+    // stable across runs.
+    const permissionsByFunction = new Map<string, Set<string>>();
     for (const func of functionsWithAuthAccess) {
-      // Skip adding import if the function is already imported (e.g., by addLambdaTriggers for auth triggers).
-      const alreadyImported = Object.values(namedImports).some((names) => names.has(func.resourceName));
+      // The resource name is interpolated verbatim into both `allow.resource(<id>)`
+      // and the named import, so it must be a valid JS identifier or the generated
+      // auth/resource.ts would not compile (mirrors the non-trigger grant path and
+      // the S3 builder, which validate the same way).
+      TS.assertValidIdentifier(func.resourceName, `auth access block for function '${func.resourceName}'`);
+      const existing = permissionsByFunction.get(func.resourceName) ?? new Set<string>();
+      for (const [permission, enabled] of Object.entries(func.permissions)) {
+        if (enabled) {
+          existing.add(permission);
+        }
+      }
+      permissionsByFunction.set(func.resourceName, existing);
+    }
+
+    for (const resourceName of permissionsByFunction.keys()) {
+      // Skip adding the import if the function is already imported (e.g. by addLambdaTriggers for the trigger wiring).
+      const alreadyImported = Object.values(namedImports).some((names) => names.has(resourceName));
       if (!alreadyImported) {
-        namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
+        namedImports[`../function/${resourceName}/resource`] = new Set([resourceName]);
       }
     }
 
     const accessRules: ts.Expression[] = [];
-
-    for (const func of functionsWithAuthAccess) {
-      for (const [permission, enabled] of Object.entries(func.permissions)) {
-        if (enabled) {
-          accessRules.push(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
-                  undefined,
-                  [factory.createIdentifier(func.resourceName)],
-                ),
-                factory.createIdentifier('to'),
-              ),
-              undefined,
-              [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
-            ),
-          );
-        }
+    for (const [resourceName, permissions] of permissionsByFunction) {
+      if (permissions.size === 0) {
+        continue;
       }
+      const permissionLiterals = Array.from(permissions)
+        .sort()
+        .map((permission) => factory.createStringLiteral(permission));
+      accessRules.push(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
+              undefined,
+              [factory.createIdentifier(resourceName)],
+            ),
+            factory.createIdentifier('to'),
+          ),
+          undefined,
+          [factory.createArrayLiteralExpression(permissionLiterals)],
+        ),
+      );
     }
 
     if (accessRules.length > 0) {
@@ -646,10 +782,7 @@ export class AuthRenderer {
           factory.createArrowFunction(
             undefined,
             undefined,
-            [
-              factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow')),
-              factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('_unused')),
-            ],
+            [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow'))],
             undefined,
             undefined,
             factory.createArrayLiteralExpression(accessRules, true),
@@ -659,9 +792,143 @@ export class AuthRenderer {
     }
   }
 
+  /**
+   * Builds the forward-direction function->auth grant statements emitted into
+   * backend.ts (not into auth/resource.ts).
+   *
+   * Each granted function is wired with a CDK grant on the underlying user pool
+   * construct:
+   *
+   *   backend.auth.resources.userPool.grant(
+   *     backend.<fn>.resources.lambda,
+   *     '<cognito-idp:Action>', ...
+   *   );
+   *
+   * This adds the IAM policy to the FUNCTION's role and only references the user
+   * pool ARN, so the cross-stack dependency stays `function -> auth`. It replaces
+   * the previous `access: (allow) => [allow.resource(fn).to([...])]` block on
+   * defineAuth, which pointed the dependency the other way (`auth -> function`)
+   * and caused deploy-time circular dependencies when the same function also
+   * accessed data/storage.
+   *
+   * Returns one statement string per granted function (already de-duplicated and
+   * with actions sorted for stable output), or an empty array when there is
+   * nothing to grant. The caller passes these to
+   * BackendGenerator.addPostDefineBackendStatement.
+   */
+  public buildFunctionAccessBackendStatements(functions: readonly FunctionAccess[] | undefined): string[] {
+    if (!functions || functions.length === 0) {
+      return [];
+    }
+
+    // Consolidate permissions per function (a function may appear more than once).
+    const actionsByFunction: Record<string, Set<string>> = {};
+    for (const func of functions) {
+      const enabledPermissions = Object.entries(func.permissions)
+        .filter(([, enabled]) => enabled)
+        .map(([permission]) => permission);
+      if (enabledPermissions.length === 0) {
+        continue;
+      }
+      if (!actionsByFunction[func.resourceName]) {
+        actionsByFunction[func.resourceName] = new Set();
+      }
+      for (const permission of enabledPermissions) {
+        for (const action of AuthRenderer.actionsForPermission(permission)) {
+          actionsByFunction[func.resourceName].add(action);
+        }
+      }
+    }
+
+    const statements: string[] = [];
+    for (const [resourceName, actions] of Object.entries(actionsByFunction)) {
+      if (actions.size === 0) {
+        continue;
+      }
+      TS.assertValidIdentifier(resourceName, `auth access grant for function '${resourceName}'`);
+      const actionArgs = Array.from(actions)
+        .sort()
+        .map((a) => `'${a}'`)
+        .join(', ');
+      statements.push(`backend.auth.resources.userPool.grant(backend.${resourceName}.resources.lambda, ${actionArgs});`);
+    }
+    return statements;
+  }
+
+  /**
+   * Collects the distinct enabled permission names across all granted functions
+   * that are NOT present in PERMISSION_ACTION_MAP.
+   *
+   * The map covers the full AuthPermissions set, so this is normally empty; a
+   * non-empty result means the upstream permission set drifted from the mapping
+   * table. The generator warns on these (rather than the pure renderer logging)
+   * so the operator sees which permissions fell through to the raw-action
+   * fallback and can verify the generated IAM actions.
+   */
+  public static unknownPermissions(functions: readonly FunctionAccess[] | undefined): string[] {
+    if (!functions) {
+      return [];
+    }
+    const unknown = new Set<string>();
+    for (const func of functions) {
+      for (const [permission, enabled] of Object.entries(func.permissions)) {
+        if (enabled && !(permission in PERMISSION_ACTION_MAP)) {
+          unknown.add(permission);
+        }
+      }
+    }
+    return Array.from(unknown).sort();
+  }
+
+  /**
+   * Maps an Amplify Gen2 auth permission name to its concrete `cognito-idp:*` IAM
+   * actions via PERMISSION_ACTION_MAP. An unrecognized permission falls back to a
+   * raw `cognito-idp:<permission>` action so it is visible in review rather than
+   * silently dropped; unknownPermissions() surfaces the same case as a warning.
+   */
+  private static actionsForPermission(permission: string): readonly string[] {
+    return PERMISSION_ACTION_MAP[permission] ?? [`cognito-idp:${permission}`];
+  }
+
+  /**
+   * Derives which login mechanisms (email, phone) the Gen1 user pool actually
+   * uses, based on its sign-in configuration.
+   *
+   * Gen2 `defineAuth` maps `loginWith.email`/`loginWith.phone` (truthy) onto the
+   * Cognito user pool's `signInAliases` and `autoVerify` settings. The
+   * authoritative signals for "can sign in with" are `UsernameAttributes` and
+   * `AliasAttributes`, so those are consulted first. `AutoVerifiedAttributes`
+   * only controls whether Cognito sends a verification code on signup/update and
+   * does not by itself make an attribute usable for sign in (e.g. a pool may
+   * auto-verify an attribute for SMS-based recovery while supporting only plain
+   * username sign-in). It is therefore used only as a fallback when neither
+   * `UsernameAttributes` nor `AliasAttributes` is populated — which is the
+   * shape of the pool in aws-amplify/amplify-cli#14810, where phone-based
+   * verification is the only signal available.
+   *
+   * `defineAuth` requires at least one of email/phone, so we fall back to email
+   * when the pool exposes none of the above (e.g. username-only sign-in),
+   * matching the previous default behavior.
+   */
+  private static deriveLoginMechanisms(userPool: UserPoolType): { readonly email: boolean; readonly phone: boolean } {
+    const signInAttributes = [...(userPool.UsernameAttributes ?? []), ...(userPool.AliasAttributes ?? [])];
+    // Fall back to auto-verified attributes only when no sign-in attribute is
+    // configured, since auto-verify alone does not imply the attribute is a
+    // usable login mechanism.
+    const signals = new Set<string>(signInAttributes.length > 0 ? signInAttributes : userPool.AutoVerifiedAttributes ?? []);
+    let email = signals.has('email');
+    const phone = signals.has('phone_number');
+    if (!email && !phone) {
+      email = true;
+    }
+    return { email, phone };
+  }
+
   private createLogInWithPropertyAssignment(options: AuthRenderOptions, loginFlags: Record<string, boolean>): PropertyAssignment {
     const logInWith = factory.createIdentifier('loginWith');
     const assignments: ts.ObjectLiteralElementLike[] = [];
+
+    const { email: emailEnabled, phone: phoneEnabled } = AuthRenderer.deriveLoginMechanisms(options.userPool);
 
     const emailOptions =
       options.userPool.EmailVerificationMessage || options.userPool.EmailVerificationSubject
@@ -671,10 +938,18 @@ export class AuthRenderer {
           }
         : undefined;
 
-    if (emailOptions) {
-      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(emailOptions)));
-    } else {
-      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+    if (emailEnabled) {
+      if (emailOptions) {
+        assignments.push(
+          factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(emailOptions)),
+        );
+      } else {
+        assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+      }
+    }
+
+    if (phoneEnabled) {
+      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
     }
 
     const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders);
@@ -1029,15 +1304,23 @@ export class AuthRenderer {
     const hasIdentityProviders = AuthRenderer.hasIdentityProviders(options.nativeClient);
 
     const userPoolOverrides = AuthRenderer.deriveUserPoolOverrides(options.userPool);
-    if (Object.keys(userPoolOverrides).length > 0) {
-      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides));
+    // Always emit the Schema override for a migrated UserPool (see
+    // buildUserPoolOverrideStatements for why), so the statement is emitted even
+    // when there are no other User Pool overrides.
+    const schemaAttributes = options.userPool?.SchemaAttributes;
+    const gen1Schema = options.gen1UserPoolSchema;
+    const hasSchema = (gen1Schema && gen1Schema.length > 0) || (schemaAttributes && schemaAttributes.length > 0);
+    if (Object.keys(userPoolOverrides).length > 0 || hasSchema) {
+      statements.push(...this.buildUserPoolOverrideStatements(userPoolOverrides, schemaAttributes, gen1Schema));
     }
 
     // Declare cfnIdentityPool once when any IdentityPool escape hatch is needed
     // (either disabling unauth identities or removing the hard-coded
     // SupportedLoginProviders on regenerate). Defining the const twice would
-    // produce invalid TypeScript.
-    const needsCfnIdentityPool = options.identityPool?.AllowUnauthenticatedIdentities === false || hasIdentityProviders;
+    // produce invalid TypeScript. Skipped entirely when no Identity Pool exists
+    // (User Pool-only configurations).
+    const needsCfnIdentityPool =
+      !!options.identityPool && (options.identityPool.AllowUnauthenticatedIdentities === false || hasIdentityProviders);
     if (needsCfnIdentityPool) {
       statements.push(TS.constFromBackend('cfnIdentityPool', 'auth', 'resources', 'cfnResources', 'cfnIdentityPool'));
     }
@@ -1046,7 +1329,7 @@ export class AuthRenderer {
       statements.push(TS.assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
     }
 
-    if (hasIdentityProviders) {
+    if (hasIdentityProviders && options.identityPool) {
       // cfnIdentityPool.addPropertyDeletionOverride('SupportedLoginProviders')
       //
       // Gen1 generates SupportedLoginProviders on the IdentityPool from the
@@ -1074,7 +1357,7 @@ export class AuthRenderer {
       statements.push(TS.assignProp('cfnUserPoolClient', 'allowedOAuthFlows', options.webClient.AllowedOAuthFlows));
     }
 
-    statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient));
+    statements.push(...this.buildNativeUserPoolClientStatements(options.nativeClient, !!options.identityPool));
 
     statements.push(TS.retentionLoop(TS.propAccess('backend', 'auth', 'stack', 'node'), AUTH_RESOURCES_TO_RETAIN));
 
@@ -1152,7 +1435,11 @@ export class AuthRenderer {
   }
 
   /** Builds cfnUserPool password policy and username attribute override statements. */
-  private buildUserPoolOverrideStatements(overrides: Record<string, string | boolean | number | string[] | undefined>): ts.Statement[] {
+  private buildUserPoolOverrideStatements(
+    overrides: Record<string, string | boolean | number | string[] | undefined>,
+    schemaAttributes?: readonly SchemaAttributeType[],
+    gen1Schema?: readonly Record<string, unknown>[],
+  ): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const mappedPolicyType: Record<string, string> = {
       MinimumLength: 'minimumLength',
@@ -1170,6 +1457,8 @@ export class AuthRenderer {
       passwordPolicy: {},
     };
 
+    const hasOverrides = Object.keys(overrides).length > 0;
+
     for (const [overridePath, value] of Object.entries(overrides)) {
       if (overridePath.includes('PasswordPolicy')) {
         const policyKey = overridePath.split('.')[2];
@@ -1181,11 +1470,81 @@ export class AuthRenderer {
       }
     }
 
-    statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    if (hasOverrides) {
+      statements.push(TS.assignProp('cfnUserPool', 'policies', policies));
+    }
+
+    // Override the UserPool Schema so it matches the imported Gen1 pool and is a
+    // no-op on the refactor UpdateUserPool. The refactor imports the pre-existing
+    // Gen1 pool, which already carries all of its attributes with their data
+    // types. Without this override the auth construct re-emits a login-derived
+    // standard attribute (email) WITHOUT an AttributeDataType, and the
+    // trigger-driven UpdateUserPool against the imported pool rejects it with
+    // "Invalid AttributeDataType input". Two shapes were ruled out against a
+    // live migrated pool:
+    //   - an empty Schema array fails the fresh CreateUserPool with "Schema
+    //     must have length greater than or equal to 1";
+    //   - a member marked Required: true fails the refactor UpdateUserPool with
+    //     "Required custom attributes are not supported", because Cognito reads
+    //     any Required member on update as introducing a required attribute.
+    // The one shape valid on BOTH create and update is each existing attribute
+    // emitted with its AttributeDataType, its constraints, and Required: false.
+    const schemaOverride =
+      gen1Schema && gen1Schema.length > 0
+        ? gen1Schema.map((member) => ({ ...member }))
+        : AuthRenderer.buildSchemaOverride(schemaAttributes);
+    if (schemaOverride) {
+      statements.push(TS.addPropertyOverride('cfnUserPool', 'Schema', schemaOverride));
+    }
+
     return statements;
   }
 
-  private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType): ts.Statement[] {
+  /**
+   * Builds the CloudFormation Schema override value from the imported pool's
+   * attributes. Each attribute is emitted with its AttributeDataType, its
+   * mutability, its constraints, and Required: false, so the override is valid
+   * on the fresh CreateUserPool and a no-op on the refactor UpdateUserPool
+   * against the imported pool. Returns undefined when there is no schema to
+   * override (no statement is emitted).
+   */
+  private static buildSchemaOverride(schema?: readonly SchemaAttributeType[]): object[] | undefined {
+    if (!schema || schema.length === 0) return undefined;
+    const members: object[] = [];
+    for (const attribute of schema) {
+      if (!attribute.Name || !attribute.AttributeDataType) continue;
+      // Only emit attributes the caller can actually declare: a custom
+      // attribute (custom: prefix) or a user-facing standard attribute. Skip
+      // Cognito's auto-managed attributes (sub, email_verified,
+      // phone_number_verified, identities, ...): the pool creates them itself,
+      // and some break the override - phone_number_verified is 21 characters,
+      // over Cognito's 20-character limit on a Schema member Name, so including
+      // it fails CreateUserPool with "Member must have length less than or
+      // equal to 20".
+      const isCustom = attribute.Name.startsWith('custom:');
+      const isDeclarableStandard = attribute.Name in MAPPED_USER_ATTRIBUTE_NAME;
+      if (!isCustom && !isDeclarableStandard) continue;
+      const member: Record<string, string | boolean | object> = {
+        Name: attribute.Name,
+        AttributeDataType: attribute.AttributeDataType,
+        // Required MUST be false: Cognito rejects any Required member on the
+        // refactor UpdateUserPool with "Required custom attributes are not
+        // supported". The imported pool already carries its own required flags.
+        Required: false,
+        Mutable: attribute.Mutable ?? true,
+      };
+      if (attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0) {
+        member.StringAttributeConstraints = { ...attribute.StringAttributeConstraints };
+      }
+      if (attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0) {
+        member.NumberAttributeConstraints = { ...attribute.NumberAttributeConstraints };
+      }
+      members.push(member);
+    }
+    return members.length > 0 ? members : undefined;
+  }
+
+  private buildNativeUserPoolClientStatements(userPoolClient: UserPoolClientType, hasIdentityPool: boolean): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const hasIdentityProviders = AuthRenderer.hasIdentityProviders(userPoolClient);
 
@@ -1367,7 +1726,7 @@ export class AuthRenderer {
       ),
     );
 
-    statements.push(...this.buildCognitoProvidersPushStatements(clientVarName));
+    statements.push(...this.buildCognitoProvidersPushStatements(clientVarName, hasIdentityPool));
 
     if (hasIdentityProviders) {
       statements.push(...this.buildProviderSetupStatements());
@@ -1382,9 +1741,11 @@ export class AuthRenderer {
 
   /**
    * Builds the cognitoIdentityProviders push block that registers the native app client
-   * with the identity pool.
+   * with the identity pool. Skipped when no identity pool is present (User Pool-only config).
    */
-  private buildCognitoProvidersPushStatements(clientVarName: string): ts.Statement[] {
+  private buildCognitoProvidersPushStatements(clientVarName: string, hasIdentityPool: boolean): ts.Statement[] {
+    if (!hasIdentityPool) return [];
+
     const statements: ts.Statement[] = [];
 
     // const cognitoProviders = backend.auth.resources.cfnResources.cfnIdentityPool.cognitoIdentityProviders;

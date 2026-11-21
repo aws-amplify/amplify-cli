@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.17...amplify-velocity-template@1.4.18) (2026-11-10)
+
+
+### Bug Fixes
+
+* **amplify-velocity-template:** block prototype-chain property access in vtl reference resolver ([#14964](https://github.com/aws-amplify/amplify-cli/issues/14964)) ([b208637](https://github.com/aws-amplify/amplify-cli/commit/b208637dba2c7d144e171d38824b4b2864b1bcd6))
+* **amplify-velocity-template:** consistent handling of reserved property names in reference resolution ([#14992](https://github.com/aws-amplify/amplify-cli/issues/14992)) ([0db4384](https://github.com/aws-amplify/amplify-cli/commit/0db438465d919df3b85cc0270f1924cd4d348408))
+
+
+
+
+
 ## [1.4.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.16...amplify-velocity-template@1.4.17) (2025-09-17)
 
 **Note:** Version bump only for package amplify-velocity-template

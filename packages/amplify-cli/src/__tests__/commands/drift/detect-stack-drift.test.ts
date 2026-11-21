@@ -1,5 +1,10 @@
 import { type StackResourceDrift, type PropertyDifference } from '@aws-sdk/client-cloudformation';
-import { isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift } from '../../../commands/drift/detect-stack-drift';
+import {
+  isAmplifyRestApiDescriptionDrift,
+  isAmplifyTriggerPolicyDrift,
+  isAppSyncApiKeyExpiresTimeRelativeDrift,
+  isGen2MigrationStreamTagDrift,
+} from '../../../commands/drift/detect-stack-drift';
 import { SpinningLogger } from '../../../commands/gen2-migration/_common/spinning-logger';
 
 const mockPrinter = new SpinningLogger('test', { debug: true });
@@ -165,5 +170,91 @@ describe('isAmplifyTriggerPolicyDrift', () => {
     const drift = makeDrift({ ResourceType: 'AWS::IAM::Role' });
     const propDiff = makePropDiff({ PropertyPath: '/Policies/0', ExpectedValue: 'null', ActualValue: 'not-json' });
     expect(isAmplifyTriggerPolicyDrift(drift, propDiff, mockPrinter)).toBe(false);
+  });
+});
+
+describe('isAppSyncApiKeyExpiresTimeRelativeDrift', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  const apiKeyDrift = () => makeDrift({ ResourceType: 'AWS::AppSync::ApiKey', LogicalResourceId: 'GraphQLAPIKey' });
+
+  it('filters the real CI pair (integer expected vs scientific-notation actual)', () => {
+    const propDiff = makePropDiff({ PropertyPath: '/Expires', ExpectedValue: '1791274802', ActualValue: '1.7912736E+9' });
+    expect(isAppSyncApiKeyExpiresTimeRelativeDrift(apiKeyDrift(), propDiff, mockPrinter)).toBe(true);
+  });
+
+  it('filters a plain-integer epoch pair that differ by seconds', () => {
+    const propDiff = makePropDiff({ PropertyPath: '/Expires', ExpectedValue: '1791274802', ActualValue: '1791276717' });
+    expect(isAppSyncApiKeyExpiresTimeRelativeDrift(apiKeyDrift(), propDiff, mockPrinter)).toBe(true);
+  });
+
+  it('does not filter non-epoch numeric or non-numeric values', () => {
+    expect(
+      isAppSyncApiKeyExpiresTimeRelativeDrift(
+        apiKeyDrift(),
+        makePropDiff({ PropertyPath: '/Expires', ExpectedValue: '12345', ActualValue: '0' }),
+        mockPrinter,
+      ),
+    ).toBe(false);
+    expect(
+      isAppSyncApiKeyExpiresTimeRelativeDrift(
+        apiKeyDrift(),
+        makePropDiff({ PropertyPath: '/Expires', ExpectedValue: '12345', ActualValue: 'abc' }),
+        mockPrinter,
+      ),
+    ).toBe(false);
+  });
+
+  it('ignores wrong resource type and wrong property path', () => {
+    // wrong resource type
+    expect(
+      isAppSyncApiKeyExpiresTimeRelativeDrift(
+        makeDrift({ ResourceType: 'AWS::AppSync::GraphQLApi' }),
+        makePropDiff({ PropertyPath: '/Expires', ExpectedValue: '1791274802', ActualValue: '1791276717' }),
+        mockPrinter,
+      ),
+    ).toBe(false);
+    // wrong property path
+    expect(
+      isAppSyncApiKeyExpiresTimeRelativeDrift(
+        apiKeyDrift(),
+        makePropDiff({ PropertyPath: '/Description', ExpectedValue: '1791274802', ActualValue: '1791276717' }),
+        mockPrinter,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('isGen2MigrationStreamTagDrift', () => {
+  const tableDrift = makeDrift({ ResourceType: 'AWS::DynamoDB::Table' });
+  const tagDiff = (key: string, overrides: Partial<PropertyDifference> = {}) =>
+    makePropDiff({
+      PropertyPath: '/StreamSpecification/Tags/0',
+      ExpectedValue: 'null',
+      ActualValue: JSON.stringify({ Key: key, Value: 'x' }),
+      ...overrides,
+    });
+
+  it.each(['amplify:deployment-type', 'created-by', 'gen2-migration/post-refactor'])('filters leftover Gen2 stream tag %s', (key) => {
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff(key), mockPrinter)).toBe(true);
+  });
+
+  it('keeps unknown stream tags', () => {
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff('team'), mockPrinter)).toBe(false);
+  });
+
+  it('keeps tags declared in the template', () => {
+    expect(
+      isGen2MigrationStreamTagDrift(tableDrift, tagDiff('created-by', { ExpectedValue: '{"Key":"created-by","Value":"y"}' }), mockPrinter),
+    ).toBe(false);
+  });
+
+  it('ignores other resource types and paths', () => {
+    expect(isGen2MigrationStreamTagDrift(makeDrift(), tagDiff('created-by'), mockPrinter)).toBe(false);
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff('created-by', { PropertyPath: '/Tags/0' }), mockPrinter)).toBe(false);
+  });
+
+  it('does not throw on unparseable values', () => {
+    expect(isGen2MigrationStreamTagDrift(tableDrift, tagDiff('x', { ActualValue: 'not-json' }), mockPrinter)).toBe(false);
   });
 });

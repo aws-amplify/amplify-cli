@@ -129,7 +129,14 @@ class AmplifyCLIExecutionReporter {
     resultsWithRecordings.config = this._globalConfig;
     resultsWithRecordings.endTime = Date.now();
     resultsWithRecordings._reporterOptions = { ...this._options, logoImg, customInfos: {} };
-    const data = JSON.stringify(resultsWithRecordings);
+    const seen = new WeakSet();
+    const data = JSON.stringify(resultsWithRecordings, (_key, value) => {
+      if (value && typeof value === 'object') {
+        if (seen.has(value)) return '[Circular]';
+        seen.add(value);
+      }
+      return value;
+    });
 
     const filePath = path.resolve(publicPath, filename);
     // const filePathMock = path.resolve(publicPath, `devMock.json`);

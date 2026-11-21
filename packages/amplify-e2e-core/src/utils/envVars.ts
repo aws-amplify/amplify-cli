@@ -1,3 +1,5 @@
+import { generateKeyPairSync } from 'crypto';
+
 type AWSCredentials = {
   AWS_ACCESS_KEY_ID?: string;
   AWS_SECRET_ACCESS_KEY?: string;
@@ -22,6 +24,32 @@ export function getEnvVars(): EnvironmentVariables {
   return { ...process.env } as EnvironmentVariables;
 }
 
+let ephemeralApplePrivateKey: string | undefined;
+
+/**
+ * Returns an ephemeral P-256 (ES256) private key for Sign in with Apple test configuration.
+ *
+ * Cognito only validates the key's structure when the provider is configured -- no request is made
+ * to Apple -- so a key generated at run time satisfies validation without committing key material.
+ *
+ * The PEM is flattened to a single line because callers feed this value into interactive CLI
+ * prompts, where an embedded newline would register as an Enter keypress. `extractApplePrivateKey`
+ * strips whitespace and accepts any number of delimiter dashes, so the single-line form parses.
+ *
+ * The key is memoized so every caller in a test process observes the same value.
+ */
+export function getEphemeralApplePrivateKey(): string {
+  if (!ephemeralApplePrivateKey) {
+    const { privateKey } = generateKeyPairSync('ec', {
+      namedCurve: 'prime256v1',
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+    });
+    ephemeralApplePrivateKey = privateKey.replace(/\r?\n/g, '');
+  }
+  return ephemeralApplePrivateKey;
+}
+
 export function getSocialProviders(getEnv = false): SocialProviders {
   if (!getEnv) {
     return {
@@ -34,9 +62,7 @@ export function getSocialProviders(getEnv = false): SocialProviders {
       APPLE_APP_ID: 'com.fake.app',
       APPLE_TEAM_ID: '2QLEWNDK6K',
       APPLE_KEY_ID: '2QLZXKYJ8J',
-      // Cognito validates the private key, this is an invalidated key.
-      APPLE_PRIVATE_KEY:
-        '----BEGIN PRIVATE KEY-----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
+      APPLE_PRIVATE_KEY: getEphemeralApplePrivateKey(),
     };
   }
   const {
@@ -80,9 +106,6 @@ export function getSocialProviders(getEnv = false): SocialProviders {
   if (!APPLE_KEY_ID) {
     missingVars.push('APPLE_KEY_ID');
   }
-  if (!APPLE_PRIVATE_KEY_2) {
-    missingVars.push('APPLE_PRIVATE_KEY');
-  }
 
   if (missingVars.length > 0) {
     throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
@@ -97,6 +120,6 @@ export function getSocialProviders(getEnv = false): SocialProviders {
     APPLE_APP_ID,
     APPLE_TEAM_ID,
     APPLE_KEY_ID,
-    APPLE_PRIVATE_KEY: APPLE_PRIVATE_KEY_2,
+    APPLE_PRIVATE_KEY: APPLE_PRIVATE_KEY_2 || getEphemeralApplePrivateKey(),
   };
 }

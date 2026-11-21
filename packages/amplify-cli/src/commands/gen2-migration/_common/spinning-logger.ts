@@ -8,6 +8,8 @@ import chalk from 'chalk';
  */
 export class SpinningLogger {
   private static readonly SEPARATOR = ' → ';
+  private static readonly instances = new Set<SpinningLogger>();
+  private static sigintRegistered = false;
   private readonly segments: string[] = [];
   private readonly spinner: AmplifySpinner;
   private readonly debugMode: boolean;
@@ -17,14 +19,21 @@ export class SpinningLogger {
     this.debugMode = options?.debug ?? globalIsDebug;
     this.spinner = new AmplifySpinner();
 
-    // Restore the cursor if the process is interrupted while the spinner is active
-    process.on('SIGINT', () => {
-      if (this.spinnerActive) {
-        this.spinner.stop();
-      }
-      // Registering a SIGINT handler disables the default exit behavior, so we must exit explicitly.
-      process.exit(130);
-    });
+    // Register the SIGINT handler only once to avoid accumulating listeners
+    // across multiple SpinningLogger instances (which causes
+    // MaxListenersExceededWarning and prevents clean process exit in tests).
+    if (!SpinningLogger.sigintRegistered) {
+      SpinningLogger.sigintRegistered = true;
+      process.on('SIGINT', () => {
+        for (const instance of SpinningLogger.instances) {
+          if (instance.spinnerActive) {
+            instance.spinner.stop();
+          }
+        }
+        // Registering a SIGINT handler disables the default exit behavior, so we must exit explicitly.
+        process.exit(130);
+      });
+    }
   }
 
   /**
@@ -38,6 +47,7 @@ export class SpinningLogger {
       return;
     }
     this.spinnerActive = true;
+    SpinningLogger.instances.add(this);
     this.spinner.start(this.buildSpinnerText());
   }
 
@@ -49,6 +59,7 @@ export class SpinningLogger {
     if (!this.debugMode && this.spinnerActive) {
       this.spinner.stop();
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
     }
   }
 
@@ -64,6 +75,7 @@ export class SpinningLogger {
     if (this.spinnerActive) {
       this.spinner.stop(text, true);
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
     }
   }
 
@@ -79,6 +91,7 @@ export class SpinningLogger {
     if (this.spinnerActive) {
       this.spinner.stop(text, false);
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
     }
   }
 
@@ -149,12 +162,15 @@ export class SpinningLogger {
   public pause() {
     if (this.spinnerActive && !this.debugMode) {
       this.spinnerActive = false;
+      SpinningLogger.instances.delete(this);
       this.spinner.stop();
     }
   }
 
   public resume() {
     if (!this.spinnerActive && !this.debugMode) {
+      this.spinnerActive = true;
+      SpinningLogger.instances.add(this);
       this.spinner.start(this.buildSpinnerText());
     }
   }

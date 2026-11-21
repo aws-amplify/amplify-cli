@@ -815,6 +815,7 @@ export function rebuildApi(projDir: string, apiName: string) {
     spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
       .wait('Type the name of the API to confirm you want to continue')
       .sendLine(apiName)
+      .sendConfirmNoIfPrompt('Do you want to generate code for your newly created GraphQL API')
       .run((err) => (err ? reject(err) : resolve()));
   });
 }

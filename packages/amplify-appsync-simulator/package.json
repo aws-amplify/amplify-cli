@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.16.20",
+  "version": "2.16.21",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "@aws-sdk/util-dynamodb": "^3.919.0",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-velocity-template": "1.4.17",
+    "amplify-velocity-template": "1.4.18",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",

@@ -26,6 +26,22 @@ export type ResourceTsParameters = {
  */
 export class TS {
   /**
+   * Asserts that `name` is a valid JavaScript identifier before it is
+   * interpolated verbatim into generated source (e.g. `backend.${name}.resources.lambda`).
+   * Amplify resource names are expected to be identifier-safe, but an unexpected
+   * name containing hyphens/dots/spaces would emit invalid TypeScript; failing
+   * loudly at generate time is preferable to writing a file that won't compile.
+   * `context` names the interpolation site for the error message.
+   */
+  public static assertValidIdentifier(name: string, context: string): void {
+    // Matches a standard JS identifier (letter/underscore/$ start; the standard
+    // Unicode identifier ranges are not needed for Amplify resource names).
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name)) {
+      throw new Error(`Cannot generate ${context}: '${name}' is not a valid JavaScript identifier and would produce invalid TypeScript.`);
+    }
+  }
+
+  /**
    * Prints a TypeScript AST node array to a formatted string.
    */
   public static printNodes(nodes: ts.NodeArray<ts.Node>, printWidth?: number): string {
@@ -183,6 +199,23 @@ export class TS {
   }
 
   /**
+   * Creates `{target}.addPropertyOverride("{path}", {value});` as an expression statement.
+   */
+  public static addPropertyOverride(
+    target: string,
+    path: string,
+    value: number | string | boolean | string[] | object | undefined,
+  ): ts.ExpressionStatement {
+    return factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier(target), factory.createIdentifier('addPropertyOverride')),
+        undefined,
+        [factory.createStringLiteral(path), TS.jsValue(value)],
+      ),
+    );
+  }
+
+  /**
    * Converts a JavaScript value to a TypeScript AST expression.
    */
   public static jsValue(value: number | string | boolean | string[] | object | undefined): ts.Expression {
@@ -190,7 +223,13 @@ export class TS {
     if (typeof value === 'boolean') return value ? factory.createTrue() : factory.createFalse();
     if (typeof value === 'number') return factory.createNumericLiteral(value);
     if (typeof value === 'string') return factory.createStringLiteral(value);
-    if (Array.isArray(value)) return factory.createArrayLiteralExpression(value.map((v) => factory.createStringLiteral(v)));
+    if (Array.isArray(value)) {
+      return factory.createArrayLiteralExpression(
+        value.map((v) =>
+          typeof v === 'string' ? factory.createStringLiteral(v) : TS.jsValue(v as number | string | boolean | string[] | object),
+        ),
+      );
+    }
     if (typeof value === 'object') {
       const props = Object.entries(value).map(([key, val]) =>
         factory.createPropertyAssignment(key, TS.jsValue(val as number | string | boolean | string[] | object | undefined)),

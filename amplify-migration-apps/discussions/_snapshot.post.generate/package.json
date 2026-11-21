@@ -50,5 +50,8 @@
     "@aws-sdk/client-dynamodb": "^3.936.0",
     "@aws-sdk/lib-dynamodb": "^3.936.0",
     "aws-amplify": "^6.15.8"
+  },
+  "overrides": {
+    "@aws-cdk/toolkit-lib": "1.40.0"
   }
 }

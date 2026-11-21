@@ -1,12 +1,21 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { globSync } from 'glob';
 import { AmplifyMigrationOperation } from '../../../_common/operation';
 import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { Planner } from '../../../_common/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../../_common/gen1-app';
 import { TS } from '../../ts';
-import { FunctionRenderer, FunctionRenderOptions, classifyEnvVars, DynamicEnvVar } from './function.renderer';
+import {
+  FunctionRenderer,
+  FunctionRenderOptions,
+  classifyEnvVars,
+  DynamicEnvVar,
+  describeUnexpectedHandlerFormat,
+} from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
@@ -35,6 +44,7 @@ export class FunctionGenerator implements Planner {
   private readonly resource: DiscoveredResource;
   private readonly renderer: FunctionRenderer;
   private readonly logger: SpinningLogger;
+  private cachedModelNames: readonly string[] | undefined;
 
   public constructor(options: FunctionGeneratorOptions) {
     this.gen1App = options.gen1App;
@@ -53,6 +63,16 @@ export class FunctionGenerator implements Planner {
     this.s3Generator = s3Generator;
   }
 
+  /**
+   * Returns model names extracted from the GraphQL schema.
+   * Caches the result so the schema is read at most once per generator.
+   */
+  private readModelNames(): readonly string[] {
+    if (this.cachedModelNames) return this.cachedModelNames;
+    this.cachedModelNames = readSchemaModelNames(this.gen1App);
+    return this.cachedModelNames;
+  }
+
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const resourceName = this.resource.resourceName;
     const deployedName = this.gen1App.resourceMetaOutput(this.resource, 'Name');
@@ -66,17 +86,14 @@ export class FunctionGenerator implements Planner {
       });
 
     const runtime = config.Runtime;
-    if (runtime && !runtime.startsWith('nodejs')) {
-      throw new AmplifyError('UnsupportedRuntimeError', {
-        message: `Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`,
-        resolution: 'Migrate the function to a Node.js runtime before running the Gen 2 migration.',
-      });
-    }
 
     this.logger.debug(`Fetching Lambda function schedule '${deployedName}'`);
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
-    const entry = TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
-    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {});
+    const entry =
+      runtime && !runtime.startsWith('nodejs')
+        ? config.Handler ?? 'index.handler'
+        : TS.extractFilePathFromHandler(config.Handler ?? 'index.js');
+    const { literalEnvVars, dynamicEnvVars } = classifyEnvVars(config.Environment?.Variables ?? {}, this.readModelNames());
 
     const dynamoActions = this.extractDynamoActions();
     const kinesisActions = this.extractKinesisActions();
@@ -104,6 +121,7 @@ export class FunctionGenerator implements Planner {
       dataTriggerModels,
       storageTriggerTables,
       unMappedAuthActions,
+      modelNames: this.readModelNames(),
       kinesisConfig: hasAnalytics
         ? {
             resourceName: this.gen1App.singleResourceName('analytics', 'Kinesis'),
@@ -116,8 +134,32 @@ export class FunctionGenerator implements Planner {
     this.contributeDependencies();
     this.contributeAuthAccess(authAccess);
     this.contributeAuthTrigger();
-    this.contributeStorageAccess();
+    const hasStorageAccess = this.contributeStorageAccess();
     this.contributeStorageTrigger();
+
+    // Tell the auth generator if this function also touches storage or data, so
+    // it can warn when the same function is an auth trigger (the trigger edge plus
+    // these grants can form a deploy-time circular dependency the auth-grant
+    // partition alone cannot break).
+    //
+    // Data and analytics grants (DynamoDB/AppSync/@model triggers, Kinesis — the
+    // analytics identity pool closes an auth->trigger->analytics->auth edge too)
+    // are only actually emitted for JS (nodejs) runtimes; for a non-JS runtime
+    // they are surfaced as "not migrated" manual notes rather than real grants, so
+    // they cannot form the cycle and must not raise the warning. Storage access is
+    // contributed to the S3 generator regardless of runtime, so it always counts.
+    const isJsRuntime = !runtime || runtime.startsWith('nodejs');
+    const hasDataOrAnalyticsAccess =
+      dynamoActions.length > 0 ||
+      appSyncPermissions.hasMutation ||
+      appSyncPermissions.hasQuery ||
+      dataTriggerModels.length > 0 ||
+      storageTriggerTables.length > 0 ||
+      hasAnalytics;
+    const marksCycleRisk = hasStorageAccess || (isJsRuntime && hasDataOrAnalyticsAccess);
+    if (marksCycleRisk && this.authGenerator) {
+      this.authGenerator.markFunctionHasStorageOrDataAccess(resourceName);
+    }
 
     return [
       {
@@ -126,21 +168,76 @@ export class FunctionGenerator implements Planner {
         describe: async () => [`Generate amplify/function/${resourceName}/resource.ts`],
         execute: async () => {
           const dirPath = path.join(this.outputDir, 'amplify', 'function', resourceName);
-
-          this.logger.info(`Rendering function/${resourceName}/resource.ts`);
-          const nodes = this.renderer.render(renderOpts);
-          const content = TS.printNodes(nodes);
-
           await fs.mkdir(dirPath, { recursive: true });
-          await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
-          await this.copyFunctionSource(resourceName, dirPath);
 
           const alias = resourceName;
-          this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
-          this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
 
-          const escapeHatchArgs = this.deriveApplyEscapeHatchArguments(hasAnalytics, dynamicEnvVars);
-          this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: escapeHatchArgs });
+          if (runtime && !runtime.startsWith('nodejs')) {
+            // Non-JS runtime: emit the Gen2 custom function pattern
+            // (defineFunction((scope) => new Function(...))). These functions
+            // have no applyEscapeHatches() export, so no escape-hatch call is
+            // registered on the backend.
+            this.logger.info(`Rendering custom function/${resourceName}/resource.ts`);
+            const handlerFormatWarning = describeUnexpectedHandlerFormat(runtime, entry);
+            if (handlerFormatWarning) {
+              this.logger.warn(`Function '${resourceName}': ${handlerFormatWarning}`);
+            }
+            const manualMigrationNotes: string[] = [];
+            if (dynamicEnvVars.length > 0) {
+              manualMigrationNotes.push(
+                `Dynamic environment variables (branch/secret/cross-resource references) were not migrated: ${dynamicEnvVars
+                  .map((v) => v.name)
+                  .join(', ')}. Wire them via backend.${resourceName}.resources.lambda.addEnvironment(...) in backend.ts.`,
+              );
+            }
+            if (schedule) {
+              manualMigrationNotes.push(
+                `A schedule ('${schedule}') was configured on the Gen1 function but was not migrated. Add an EventBridge schedule in backend.ts.`,
+              );
+            }
+            const ungrantedPermissions: string[] = [];
+            if (dynamoActions.length > 0) ungrantedPermissions.push('DynamoDB table access');
+            if (appSyncPermissions.hasMutation || appSyncPermissions.hasQuery) ungrantedPermissions.push('AppSync (GraphQL API) access');
+            if (hasAnalytics) ungrantedPermissions.push('Kinesis (analytics) access');
+            if (unMappedAuthActions.length > 0) ungrantedPermissions.push('additional IAM policy actions');
+            if (dataTriggerModels.length > 0) ungrantedPermissions.push('data (@model) trigger wiring');
+            if (storageTriggerTables.length > 0) ungrantedPermissions.push('storage (DynamoDB) trigger wiring');
+            if (ungrantedPermissions.length > 0) {
+              manualMigrationNotes.push(
+                `Permission grants / triggers were not migrated: ${ungrantedPermissions.join(
+                  ', ',
+                )}. Re-add them on the function's CDK resource in backend.ts.`,
+              );
+            }
+            const content = this.renderer.renderCustomFunction({
+              resourceName,
+              handler: entry,
+              runtime,
+              architecture: config.Architectures?.[0],
+              timeoutSeconds: config.Timeout,
+              memoryMB: config.MemorySize,
+              environment: literalEnvVars,
+              manualMigrationNotes,
+            });
+            await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
+            await this.copyFunctionSource(resourceName, dirPath, runtime);
+
+            this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
+            this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
+          } else {
+            this.logger.info(`Rendering function/${resourceName}/resource.ts`);
+            const nodes = this.renderer.render(renderOpts);
+            const content = TS.printNodes(nodes);
+
+            await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
+            await this.copyFunctionSource(resourceName, dirPath);
+
+            this.backendGenerator.addNamespaceImport(alias, `./function/${resourceName}/resource`);
+            this.backendGenerator.addDefineBackendEntry(resourceName, alias, resourceName);
+
+            const escapeHatchArgs = this.deriveApplyEscapeHatchArguments(hasAnalytics, dynamicEnvVars);
+            this.backendGenerator.addApplyEscapeHatchesCall({ alias, extraArgs: escapeHatchArgs });
+          }
         },
       },
     ];
@@ -162,8 +259,8 @@ export class FunctionGenerator implements Planner {
     if (event) this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
   }
 
-  private contributeStorageAccess(): void {
-    if (!this.s3Generator) return;
+  private contributeStorageAccess(): boolean {
+    if (!this.s3Generator) return false;
     const S3_ACTION_TO_PERMISSION: Readonly<Record<string, Permission>> = {
       's3:GetObject': 'read',
       's3:PutObject': 'write',
@@ -173,7 +270,7 @@ export class FunctionGenerator implements Planner {
     const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
-    if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
+    if (!policy || policy.Type !== 'AWS::IAM::Policy') return false;
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
     const permissions = new Set<Permission>();
     for (const statement of Array.isArray(statements) ? statements : [statements]) {
@@ -183,7 +280,9 @@ export class FunctionGenerator implements Planner {
         if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) permissions.add(S3_ACTION_TO_PERMISSION[action]);
       }
     }
-    if (permissions.size > 0) this.s3Generator.addFunctionAccess(this.resource.resourceName, Array.from(permissions));
+    if (permissions.size === 0) return false;
+    this.s3Generator.addFunctionAccess(this.resource.resourceName, Array.from(permissions));
+    return true;
   }
 
   private contributeStorageTrigger(): void {
@@ -205,20 +304,21 @@ export class FunctionGenerator implements Planner {
     }
   }
 
-  private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
+  private async copyFunctionSource(resourceName: string, destDir: string, runtime?: string): Promise<void> {
     const srcDir = path.join('amplify', 'backend', 'function', resourceName, 'src');
+    const isNonJs = runtime !== undefined && !runtime.startsWith('nodejs');
     await fs.cp(srcDir, destDir, {
       recursive: true,
       filter: (src) => {
         const b = path.basename(src);
-        return (
-          b !== 'node_modules' &&
-          b !== '.yarn' &&
-          b !== 'package.json' &&
-          b !== 'package-lock.json' &&
-          b !== 'yarn.lock' &&
-          b !== 'pnpm-lock.yaml'
-        );
+        if (b === 'node_modules' || b === '.yarn') return false;
+        // For Node.js functions, filter out JS dependency/lock files so they
+        // don't leak into the generated Gen2 project. Non-JS functions keep
+        // their dependency manifests (requirements.txt, go.mod, pom.xml, etc.).
+        if (!isNonJs) {
+          return b !== 'package.json' && b !== 'package-lock.json' && b !== 'yarn.lock' && b !== 'pnpm-lock.yaml';
+        }
+        return true;
       },
     });
   }
@@ -446,4 +546,123 @@ function resolveAuthAccess(cognitoActions: string[]): { permissions: AuthPermiss
 
   const unMapped = cognitoActions.filter((a) => !covered.has(a));
   return { permissions: result as AuthPermissions, unMapped: unMapped };
+}
+
+/**
+ * Reads model names from the Gen1 app's GraphQL schema.
+ * Returns an empty array when no AppSync API exists.
+ *
+ * Both sources below are merged (rather than short-circuiting on the first
+ * that yields anything) because neither is complete on its own:
+ * 1. `build/schema.graphql` (transformer output) exposes names via the
+ *    standardised `ModelXConnection` types. Robust against directive ordering,
+ *    but the transformer only emits a Connection type for models that have a
+ *    list query, so a model declared `@model(queries: null)` never appears here.
+ * 2. The raw user schema (single file or directory) is parsed for
+ *    `type <Name> ... @model` with a parser that handles interleaved directives.
+ *    This covers every @model regardless of its query configuration.
+ *
+ * Merging guarantees a model missing from one source is still recovered from
+ * the other; names present in both are de-duplicated.
+ */
+function readSchemaModelNames(gen1App: Gen1App): readonly string[] {
+  const apiCategory = gen1App.categoryMeta('api');
+  if (!apiCategory) return [];
+  const apiEntry = Object.entries(apiCategory).find(([, v]) => (v as Record<string, unknown>).service === 'AppSync');
+  if (!apiEntry) return [];
+  const [apiName] = apiEntry;
+
+  const names = new Set<string>();
+
+  // Source 1: build/schema.graphql (transformer standardised output).
+  try {
+    const buildSchema = gen1App.file(path.join('api', apiName, 'build', 'schema.graphql'));
+    const connectionRegex = /type\s+Model(\w+)Connection\b/g;
+    let match: RegExpExecArray | null;
+    while ((match = connectionRegex.exec(buildSchema)) !== null) {
+      names.add(match[1]);
+    }
+  } catch (err) {
+    // build schema not available — rely on the raw schema below
+    printer.debug(`readSchemaModelNames: build schema unavailable for api '${apiName}': ${String(err)}`);
+  }
+
+  // Source 2: raw user schema — catches models with no Connection type
+  // (e.g. `@model(queries: null)`) that Source 1 cannot see.
+  try {
+    const schema = collectUserSchema(gen1App, apiName);
+    for (const name of extractModelNamesFromRawSchema(schema)) {
+      names.add(name);
+    }
+  } catch (err) {
+    // raw schema not available — keep whatever the build schema yielded
+    printer.debug(`readSchemaModelNames: raw schema unavailable for api '${apiName}': ${String(err)}`);
+  }
+
+  return [...names];
+}
+
+/**
+ * Collects all user-authored GraphQL schema content from either the single
+ * `schema.graphql` file or the `schema/` directory (multi-file pattern).
+ */
+function collectUserSchema(gen1App: Gen1App, apiName: string): string {
+  // Gen1 apps use one layout XOR the other, never both: `amplify add api`
+  // scaffolds a single `schema.graphql`, and the multi-file `schema/`
+  // directory is the alternate layout. The Gen1 transformer's own schema
+  // loader reads one or the other (directory preferred), so preferring the
+  // single file when present and otherwise reading the directory mirrors
+  // that behaviour; there is no case where both must be unioned.
+  const schemaFilePath = path.join('api', apiName, 'schema.graphql');
+  if (gen1App.fileExists(schemaFilePath)) {
+    return gen1App.file(schemaFilePath);
+  }
+
+  const schemaDirPath = path.join('api', apiName, 'schema');
+  const fullDirPath = path.join(gen1App.ccbDir, schemaDirPath);
+  if (!existsSync(fullDirPath)) return '';
+  const files = globSync('**/*.graphql', { cwd: fullDirPath }).sort();
+  return files.map((f) => gen1App.file(path.join(schemaDirPath, f))).join('\n');
+}
+
+/**
+ * Extracts @model type names from a raw GraphQL schema string.
+ * Handles directives with nested braces (e.g., @auth(rules: [{...}]))
+ * appearing between the type name and @model.
+ */
+function extractModelNamesFromRawSchema(schema: string): string[] {
+  const names: string[] = [];
+  const typeRegex = /\btype\s+(\w+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = typeRegex.exec(schema)) !== null) {
+    const typeName = match[1];
+    // Bound the scan to the current type definition: slice off everything
+    // from the next top-level `type` keyword onward. A well-formed type is
+    // terminated by its `{...}` body (handled by the brace break below), but
+    // bounding here keeps the scan airtight even for a bodyless type — it can
+    // never walk `afterName` into the following type looking for `@model`.
+    const rest = schema.slice(match.index + match[0].length);
+    const nextType = rest.search(/\btype\s/);
+    const afterName = nextType === -1 ? rest : rest.slice(0, nextType);
+    let depth = 0;
+    let foundModel = false;
+    for (let i = 0; i < afterName.length; i++) {
+      const ch = afterName[i];
+      if (ch === '(') {
+        depth++;
+      } else if (ch === ')') {
+        depth--;
+      } else if (depth === 0 && ch === '{') {
+        break;
+      }
+      // Match `@model` as a whole directive; a bare startsWith would also
+      // accept `@models` / `@modelFoo`.
+      if (depth === 0 && /^@model(?![A-Za-z0-9])/.test(afterName.slice(i))) {
+        foundModel = true;
+        break;
+      }
+    }
+    if (foundModel) names.push(typeName);
+  }
+  return names;
 }

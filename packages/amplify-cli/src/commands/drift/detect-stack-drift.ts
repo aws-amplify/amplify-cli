@@ -22,7 +22,13 @@ import { extractStackNameFromId } from '../gen2-migration/_common/utils';
  * Known false-positive filters applied to Phase 1 drift results.
  * Add new filters here instead of modifying the detection loop.
  */
-const FALSE_POSITIVE_FILTERS = [isAmplifyAuthRoleDenyToAllowChange, isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift] as const;
+const FALSE_POSITIVE_FILTERS = [
+  isAmplifyAuthRoleDenyToAllowChange,
+  isAmplifyRestApiDescriptionDrift,
+  isAmplifyTriggerPolicyDrift,
+  isAppSyncApiKeyExpiresTimeRelativeDrift,
+  isGen2MigrationStreamTagDrift,
+] as const;
 
 /**
  * Enriched drift tree node — one per stack (root or nested)
@@ -222,6 +228,65 @@ export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff:
     return false;
   }
 
+  return false;
+}
+
+/**
+ * Check if a property difference is a time-relative AppSync ApiKey /Expires false positive.
+ *
+ * An ApiKey Expires value is computed as createTime + validity at deploy time, then
+ * re-derived at a later lock time during drift detection, so the two epoch timestamps
+ * legitimately differ. This is safe because a real configuration change never manifests
+ * as an /Expires value drift, and the epoch guard prevents this filter from masking any
+ * non-timestamp mutation.
+ */
+export function isAppSyncApiKeyExpiresTimeRelativeDrift(
+  drift: StackResourceDrift,
+  propDiff: PropertyDifference,
+  print: SpinningLogger,
+): boolean {
+  if (drift.ResourceType !== 'AWS::AppSync::ApiKey') return false;
+  if (propDiff.PropertyPath !== '/Expires') return false;
+
+  const expected = Number(propDiff.ExpectedValue);
+  const actual = Number(propDiff.ActualValue);
+  const isEpochLike = (n: number): boolean => Number.isFinite(n) && n > 1_600_000_000;
+
+  if (isEpochLike(expected) && isEpochLike(actual)) {
+    print.debug(
+      `Filtering false positive: time-relative AppSync ApiKey /Expires drift on ${drift.LogicalResourceId} (expected=${propDiff.ExpectedValue}, actual=${propDiff.ActualValue})`,
+    );
+    return true;
+  }
+
+  return false;
+}
+
+const GEN2_MIGRATION_TAG_KEYS = new Set(['amplify:deployment-type', 'created-by', 'gen2-migration/post-refactor']);
+
+/**
+ * Check if a property difference is a DynamoDB stream tag left behind by the Gen2 stack.
+ *
+ * While a table lives in the Gen2 stack, CloudFormation propagates the Gen2 stack tags onto its
+ * StreamSpecification. After `gen2-migration refactor --rollback` the Gen1 template does not
+ * declare stream tags, so CloudFormation never removes them and drift detection reports each one
+ * as an unexpected entry. Only tags absent from the template whose key is a known Amplify Gen2
+ * tag are filtered; any other stream tag change is still reported.
+ */
+export function isGen2MigrationStreamTagDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
+  if (drift.ResourceType !== 'AWS::DynamoDB::Table') return false;
+  if (!propDiff.PropertyPath || !/^\/StreamSpecification\/Tags\/\d+$/.test(propDiff.PropertyPath)) return false;
+  if (propDiff.ExpectedValue !== 'null') return false;
+
+  try {
+    const tag = JSON.parse(propDiff.ActualValue ?? '');
+    if (typeof tag?.Key === 'string' && GEN2_MIGRATION_TAG_KEYS.has(tag.Key)) {
+      print.debug(`Filtering false positive: Gen2 stream tag '${tag.Key}' on ${drift.LogicalResourceId}`);
+      return true;
+    }
+  } catch (e: any) {
+    print.debug(`Failed to parse stream tag JSON: ${e.message || 'Unknown error'}`);
+  }
   return false;
 }
 

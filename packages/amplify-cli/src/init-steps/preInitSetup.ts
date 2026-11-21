@@ -1,5 +1,5 @@
 import { $TSContext, AmplifyError, getPackageManager, LocalEnvInfo, pathManager } from '@aws-amplify/amplify-cli-core';
-import { execSync } from 'child_process';
+import { execFileSync, execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
@@ -83,7 +83,7 @@ function validateGithubRepo(repoUrl: string | boolean): asserts repoUrl is strin
     }
     url.parse(repoUrl);
 
-    execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
+    execFileSync('git', ['ls-remote', repoUrl], { stdio: 'ignore' });
   } catch (e) {
     throw new AmplifyError(
       'ProjectInitError',
@@ -110,7 +110,7 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   }
 
   try {
-    execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
+    execFileSync('git', ['clone', repoUrl, '.'], { stdio: 'inherit' });
   } catch (e) {
     throw new AmplifyError(
       'ProjectInitError',

@@ -21,6 +21,15 @@ FORCE_REGION_MAP.set('src/__tests__/interactions.test.ts', 'us-west-2');
 FORCE_REGION_MAP.set('src/__tests__/interactions-1.test.ts', 'us-west-2');
 FORCE_REGION_MAP.set('src/__tests__/interactions-2.test.ts', 'us-west-2');
 FORCE_REGION_MAP.set('src/__tests__/migration_tests_v10/pinpoint-region.migration.test.ts', 'us-east-2');
+// Enabling the Pinpoint SMS channel intermittently fails in some regions (notably ap-southeast-1 and eu-central-1),
+// so tests that enable it are pinned to a region where it reliably succeeds.
+FORCE_REGION_MAP.set('src/__tests__/function-permissions.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/notifications-analytics-compatibility-sms-1.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/notifications-analytics-compatibility-sms-2.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/notifications-multi-env.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/notifications-sms.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/notifications-sms-pull.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/notifications-sms-update.test.ts', 'us-west-2');
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 export const USE_PARENT_ACCOUNT = [

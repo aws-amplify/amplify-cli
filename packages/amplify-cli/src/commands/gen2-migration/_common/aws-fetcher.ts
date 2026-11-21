@@ -141,8 +141,15 @@ export class AwsFetcher {
       throw e;
     }
     if (!ruleName) return undefined;
-    const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
-    return ruleResponse.ScheduleExpression;
+    try {
+      const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
+      return ruleResponse.ScheduleExpression;
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name === 'ResourceNotFoundException') {
+        return undefined;
+      }
+      throw e;
+    }
   }
 
   // ── Storage (S3) ────────────────────────────────────────────────
@@ -151,9 +158,19 @@ export class AwsFetcher {
     return this.clients.s3.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
   }
 
+  /**
+   * Returns the bucket acceleration status, or undefined when S3 does not support the operation.
+   */
   public async fetchBucketAccelerate(bucketName: string) {
-    const { Status } = await this.clients.s3.send(new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }));
-    return Status;
+    try {
+      const { Status } = await this.clients.s3.send(new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }));
+      return Status;
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name === 'MethodNotAllowed') {
+        return undefined;
+      }
+      throw e;
+    }
   }
 
   public async fetchBucketVersioning(bucketName: string) {

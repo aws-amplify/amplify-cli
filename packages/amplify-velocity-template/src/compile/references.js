@@ -1,3 +1,9 @@
+var reserved = require('./reserved-properties');
+var isBlockedProperty = reserved.isBlockedProperty;
+var safeGetProperty = reserved.safeGetProperty;
+var safeSetProperty = reserved.safeSetProperty;
+var toPropertyKey = reserved.toPropertyKey;
+
 module.exports = function (Velocity, utils) {
   'use strict';
 
@@ -52,6 +58,11 @@ module.exports = function (Velocity, utils) {
       return base[property];
     }
 
+    property = toPropertyKey(property);
+    if (isBlockedProperty(property)) {
+      return undefined;
+    }
+
     var letter = property.charCodeAt(0);
     var isUpper = letter < 91;
     var ret = base[property];
@@ -68,6 +79,12 @@ module.exports = function (Velocity, utils) {
     if (!isUpper) {
       // address => Address
       property = String.fromCharCode(letter).toUpperCase() + property.slice(1);
+    }
+
+    // Re-check after case normalization so getConstructor() cannot map to
+    // "Constructor" then lowercase to "constructor" and reach the prototype chain.
+    if (isBlockedProperty(property)) {
+      return undefined;
     }
 
     return base[property];
@@ -106,12 +123,12 @@ module.exports = function (Velocity, utils) {
       var isSilent = this.silence || ast.leader === '$!';
       var isfn = ast.args !== undefined;
       var context = this.context;
-      var ret = context[ast.id];
+      var ret = safeGetProperty(context, ast.id);
       var local = this.getLocal(ast);
 
       var text = Velocity.Helper.getRefText(ast);
 
-      if (text in context) {
+      if (!isBlockedProperty(text) && Object.prototype.hasOwnProperty.call(context, text)) {
         return ast.prue && escape ? convert(context[text]) : context[text];
       }
 
@@ -152,6 +169,12 @@ module.exports = function (Velocity, utils) {
       var id = ast.id;
       var local = this.local;
       var ret = false;
+
+      // Local scopes are plain objects, so `id in _local` would also match
+      // inherited names like constructor and resolve them to Object.
+      if (isBlockedProperty(id)) {
+        return { value: ret, isLocaled: false };
+      }
 
       var isLocaled = utils.some(
         this.conditions,
@@ -194,7 +217,7 @@ module.exports = function (Velocity, utils) {
       if (type === 'method') {
         ret = this.getPropMethod(property, baseRef, ast);
       } else if (type === 'property') {
-        ret = baseRef[id];
+        ret = safeGetProperty(baseRef, id);
       } else {
         ret = this.getPropIndex(property, baseRef);
       }
@@ -216,7 +239,7 @@ module.exports = function (Velocity, utils) {
         key = ast.value;
       }
 
-      return baseRef[key];
+      return safeGetProperty(baseRef, key);
     },
 
     /**
@@ -226,13 +249,17 @@ module.exports = function (Velocity, utils) {
       var id = property.id;
       var ret = '';
 
+      if (isBlockedProperty(id)) {
+        return undefined;
+      }
+
       // get(xxx)
       if (id === 'get' && !(id in baseRef)) {
         return getter(baseRef, this.getLiteral(property.args[0]));
       }
 
       if (id === 'set' && !(id in baseRef)) {
-        baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]);
+        safeSetProperty(baseRef, this.getLiteral(property.args[0]), this.getLiteral(property.args[1]));
         return '';
       }
 
@@ -243,7 +270,9 @@ module.exports = function (Velocity, utils) {
 
       // setter 处理
       if (id.indexOf('set') === 0 && !baseRef[id]) {
-        baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
+        if (!safeSetProperty(baseRef, id.slice(3), this.getLiteral(property.args[0]))) {
+          return '';
+        }
         // $page.setName(123)
         baseRef.toString = function () {
           return '';
@@ -263,7 +292,9 @@ module.exports = function (Velocity, utils) {
       } else if (id === 'size' && !baseRef[id]) {
         return getSize(baseRef);
       } else if (id === 'put' && !baseRef[id]) {
-        return (baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]));
+        var putKey = this.getLiteral(property.args[0]);
+        var putValue = this.getLiteral(property.args[1]);
+        return safeSetProperty(baseRef, putKey, putValue) ? putValue : undefined;
       } else if (id === 'add' && !baseRef[id] && typeof baseRef.push === 'function') {
         return baseRef.push(this.getLiteral(property.args[0]));
       } else if (id === 'remove') {
@@ -280,8 +311,12 @@ module.exports = function (Velocity, utils) {
           baseRef.splice(indexToRemove, 1);
           return ret;
         } else if (utils.isObject(baseRef)) {
-          ret = baseRef[this.getLiteral(property.args[0])];
-          delete baseRef[this.getLiteral(property.args[0])];
+          var removeKey = toPropertyKey(this.getLiteral(property.args[0]));
+          if (isBlockedProperty(removeKey)) {
+            return undefined;
+          }
+          ret = baseRef[removeKey];
+          delete baseRef[removeKey];
           return ret;
         }
 

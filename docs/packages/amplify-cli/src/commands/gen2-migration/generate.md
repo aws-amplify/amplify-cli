@@ -62,7 +62,10 @@ holds `backend.generator.ts` (assembles `backend.ts`),
 ### Top-level generators
 
 `package.json.generator.ts` writes the root `package.json` with Gen2 dev
-dependencies. `amplify.yml.generator.ts` repurposes or creates the CI/CD
+dependencies and an `overrides` entry pinning `@aws-cdk/toolkit-lib` to 1.40.0;
+toolkit-lib 1.32.0 (pulled in by the floating backend-deployer range) forces
+Express mode when a sandbox hotswap falls back to a full deployment, which
+breaks the refactor's replacement updates. `amplify.yml.generator.ts` repurposes or creates the CI/CD
 buildspec. `gitignore.generator.ts` appends Gen2 entries to `.gitignore`.
 
 ## Architecture
@@ -159,6 +162,29 @@ execution. Runs last and writes `backend.ts` from accumulated content.
 
 - **Renderers are pure.** No AWS calls, no file I/O, no `Gen1App`
   dependency. Pass options, get AST nodes.
+
+### AdminQueries REST APIs
+
+The REST API generator recognizes the CLI-owned AdminQueries feature only when
+the API resource is named `AdminQueries` and its `amplify-meta.json` entry has
+the expected Cognito and Lambda dependencies. Function-name prefixes alone do
+not enable AdminQueries authorization or IAM permissions. Generated Gen1 User
+Pool ARNs use CDK's partition-aware `Stack.formatArn`. If the referenced Gen1
+User Pool ID is missing, generation warns and scopes the Lambda policy to the
+Gen2 User Pool only.
+
+### Auth UserPool Schema
+
+The auth renderer always emits a `cfnUserPool.addPropertyOverride('Schema', ...)`
+for a migrated User Pool, because Cognito rejects any Schema change on an
+existing pool and the Gen2 auth construct would otherwise re-emit login-derived
+attributes without an `AttributeDataType`. `AuthGenerator` reads the Schema
+verbatim from the deployed Gen1 template
+(`auth/<name>/build/<name>-cloudformation-template.json`) so it stays identical
+across the refactor, the Gen2 deploy and a rollback. When that template is not
+available, the renderer builds the Schema from the live pool's attributes
+(declarable standard and custom attributes only, each with its data type and
+`Required: false`).
 
 ## Execution Flow
 

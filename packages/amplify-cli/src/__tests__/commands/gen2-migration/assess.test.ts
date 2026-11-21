@@ -85,7 +85,7 @@ describe('AmplifyMigrationAssessor', () => {
       expect(assessment.resources[0].refactor.level).toBe('unsupported');
     });
 
-    it('marks function with non-JS runtime as unsupported for generate', () => {
+    it('marks function with non-JS runtime as supported for generate', () => {
       const gen1App = mockGen1App(
         [{ category: 'function', resourceName: 'myPythonFunc', service: 'Lambda', key: 'function:Lambda' }],
         ['function/myPythonFunc/myPythonFunc-cloudformation-template.json'],
@@ -99,9 +99,9 @@ describe('AmplifyMigrationAssessor', () => {
       const assessment = assessor.assess();
 
       expect(assessment.resources).toHaveLength(1);
-      expect(assessment.resources[0].generate.level).toBe('unsupported');
+      expect(assessment.resources[0].generate.level).toBe('supported');
       expect(assessment.resources[0].refactor.level).toBe('not-applicable');
-      expect(assessment.validFor('generate')).toBe(false);
+      expect(assessment.validFor('generate')).toBe(true);
       expect(assessment.validFor('refactor')).toBe(true);
     });
   });
