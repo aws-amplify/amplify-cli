@@ -106,7 +106,7 @@
             "ViewerProtocolPolicy": "redirect-to-https",
             "DefaultTTL": 86400,
             "MaxTTL": 31536000,
-            "MinTTL": 60,
+            "MinTTL": 0,
             "Compress": true
           },
           "DefaultRootObject": "index.html",
