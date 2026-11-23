@@ -64,4 +64,27 @@ describe('init', () => {
     };
     await expect(init(amplifyServiceParamsStub)).rejects.toMatchInlineSnapshot(`[ConfigurationError: Missing Region in Config]`);
   });
+
+  it('throws ProjectInitError if secret access key is invalid', async () => {
+    const amplifyClientStub = {
+      createApp: jest.fn().mockReturnValue({
+        promise: jest.fn().mockRejectedValue({
+          code: 'InvalidSignatureException',
+        }),
+      }),
+    } as unknown as Amplify;
+    getConfiguredAmplifyClientMock.mockClear();
+    getConfiguredAmplifyClientMock.mockResolvedValue(amplifyClientStub);
+
+    const amplifyServiceParamsStub = {
+      context: {},
+      awsConfigInfo: {},
+      projectName: 'test-project',
+      envName: 'test',
+      stackName: 'test-stack-name',
+    };
+    await expect(init(amplifyServiceParamsStub)).rejects.toMatchInlineSnapshot(
+      `[ProjectInitError: The request signature we calculated does not match the signature you provided]`,
+    );
+  });
 });
