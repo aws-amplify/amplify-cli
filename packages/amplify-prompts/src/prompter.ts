@@ -17,6 +17,11 @@ import { printer } from './printer';
 import { Stopwatch } from './stopwatch';
 
 /**
+ * Recorded in the flow data as the response to an input prompt.
+ */
+const responsePlaceholder = '****';
+
+/**
  * Provides methods for collecting interactive customer responses from the shell
  */
 class AmplifyPrompter implements Prompter {
@@ -45,10 +50,10 @@ class AmplifyPrompter implements Prompter {
     this.flowData = flowData;
   };
 
-  private pushInteractiveFlow = (promptString: string, input: unknown, redact = false) => {
+  private pushInteractiveFlow = (promptString: string, input: unknown, usePlaceholder = false) => {
     if (isInteractiveShell) {
       if (this.flowData && input) {
-        const finalInput = redact ? '*'.repeat(typeof input === 'string' ? input.length : 1) : input;
+        const finalInput = usePlaceholder ? responsePlaceholder : input;
         this.flowData.pushInteractiveFlow(promptString, finalInput);
       }
     }
@@ -112,7 +117,7 @@ class AmplifyPrompter implements Prompter {
    * The validate and transform functions will be applied to each element in the list individually
    *
    * If the yes flag is set, the initial value is returned. If no initial value is specified, an error is thrown
-   * The response is recorded in the flow data as a masked value
+   * The response is recorded in the flow data as a placeholder
    * @param message The prompt message
    * @param options Prompt options. options.transform is required if T !== string
    * @returns The prompt response

@@ -115,12 +115,12 @@ export type StackTraceElement = {
   lineNumber: string;
   columnNumber: string;
 };
+/**
+ * Error recorded in usage data. Only the error name and code are included.
+ */
 export type SerializableError = {
   name: string;
-  message: string;
-  details?: string;
   code?: string;
-  trace?: StackTraceElement[];
 };
 export type InputOptions = Record<string, string | boolean>;
 export interface IFlowReport {

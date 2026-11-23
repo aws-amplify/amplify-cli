@@ -1943,10 +1943,7 @@ export const SecretFileMode = 384;
 // @public (undocumented)
 export type SerializableError = {
     name: string;
-    message: string;
-    details?: string;
     code?: string;
-    trace?: StackTraceElement[];
 };
 
 // @public (undocumented)

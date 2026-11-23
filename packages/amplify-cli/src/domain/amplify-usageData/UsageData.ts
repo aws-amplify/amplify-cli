@@ -20,7 +20,7 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
-import redactInput from './identifiable-input-regex';
+import { getRecordedInput } from './known-commands';
 import { Timer } from './Timer';
 import { UsageDataPayload } from './UsageDataPayload';
 
@@ -54,7 +54,8 @@ export class UsageData implements IUsageData {
   }
 
   /**
-   * Initialize the usage data object
+   * Initialize the usage data object.
+   * Only known plugin, command and sub-command names of the input are recorded, see getRecordedInput.
    */
   init(
     installationUuid: string,
@@ -69,7 +70,7 @@ export class UsageData implements IUsageData {
     this.projectSettings = projectSettings;
     this.version = version;
     this.inputOptions = input.options ? pick(input.options as InputOptions, ['sandboxId']) : {};
-    this.input = redactInput(input, true);
+    this.input = getRecordedInput(input);
     this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
     this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
     this.flow.setInput(input);

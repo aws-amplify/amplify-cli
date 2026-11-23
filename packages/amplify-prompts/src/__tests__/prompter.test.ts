@@ -106,7 +106,7 @@ describe('input', () => {
     ]);
   });
 
-  it('records a masked prompt response in flow data', async () => {
+  it('records a placeholder for the prompt response in flow data', async () => {
     const pushInteractiveFlow = jest.fn();
     prompter.setFlowData({
       setIsHeadless: jest.fn(),
@@ -118,10 +118,10 @@ describe('input', () => {
     promptMock.mockResolvedValueOnce({ result: 'TEST_CANARY_VALUE' });
 
     expect(await prompter.input('test message')).toEqual('TEST_CANARY_VALUE');
-    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '*****************');
+    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '****');
   });
 
-  it('records a masked transformed response in flow data', async () => {
+  it('records a placeholder for the transformed response in flow data', async () => {
     const pushInteractiveFlow = jest.fn();
     prompter.setFlowData({
       setIsHeadless: jest.fn(),
@@ -133,10 +133,10 @@ describe('input', () => {
     promptMock.mockResolvedValueOnce({ result: '42' });
 
     expect(await prompter.input<'one', number>('test message', { transform: (input) => Number(input) })).toEqual(42);
-    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '*');
+    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '****');
   });
 
-  it('records a masked initial value in flow data if yes flag set', async () => {
+  it('records a placeholder for the initial value in flow data if yes flag set', async () => {
     flagsMock.isYes = true;
     const pushInteractiveFlow = jest.fn();
     prompter.setFlowData({
@@ -148,7 +148,7 @@ describe('input', () => {
     });
 
     expect(await prompter.input('test message', { initial: 'TEST_CANARY_VALUE' })).toEqual('TEST_CANARY_VALUE');
-    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '*****************');
+    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '****');
   });
 });
 

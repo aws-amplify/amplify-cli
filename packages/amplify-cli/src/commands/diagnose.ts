@@ -19,7 +19,7 @@ import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { collectFiles } from './helpers/collect-files';
 import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-import { SerializableError } from '../domain/amplify-usageData/SerializableError';
+import { DetailedSerializableError } from '../domain/amplify-usageData/SerializableError';
 import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
 import { Context } from '../domain/context';
@@ -256,15 +256,15 @@ const getAppId = (): string => {
  * Caught AWS SDK errors attach the raw `IncomingMessage`/`ClientRequest` via `$response`,
  * which contains a circular `req <-> res` reference. A naive `JSON.stringify(error)` throws
  * `TypeError: Converting circular structure to JSON` and aborts report creation. Routing
- * through `SerializableError` guarantees a cycle-free payload and redacts ARNs and
+ * through `DetailedSerializableError` guarantees a cycle-free payload and replaces ARNs and
  * home-directory paths as a side benefit.
  */
 const serializeErrorForReport = (error: Error): object => {
-  const serializedError = new SerializableError(error);
+  const serializedError = new DetailedSerializableError(error);
   if (error instanceof AmplifyException && error.downstreamException) {
     return {
       error: serializedError,
-      downstreamException: new SerializableError(error.downstreamException),
+      downstreamException: new DetailedSerializableError(error.downstreamException),
     };
   }
   return { error: serializedError };
