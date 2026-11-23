@@ -13,6 +13,7 @@ import {
 } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
 import { homedir } from 'os';
+import redactInput from './identifiable-input-regex';
 
 /**
  * Store the data and sequence of events of CLI walkthrough
@@ -67,28 +68,23 @@ export class CLIFlowReport implements IFlowData {
   }
 
   /**
-   * Set the CLI input args
+   * Set the CLI input args.
+   * Only command metadata (plugin, command, sub-commands) is kept in the report input.
    * @param input - first arguments provided in the CLI flow
    */
   setInput(input: CLIInput): void {
-    this.input = input;
     for (let i = 0; i < input.argv.length; i++) {
       if (input.argv[i].match(this.filePathRegex)) {
-        const arg = this.anonymizePath(input.argv[i]);
-        this.input.argv[i] = arg;
+        input.argv[i] = this.anonymizePath(input.argv[i]);
       }
     }
 
-    this.runtime = this.input.argv[0] as string;
-    this.executable = this.input.argv[1] as string;
+    this.runtime = input.argv[0] as string;
+    this.executable = input.argv[1] as string;
     this.cmd = input.argv[2] as string;
     this.subCmd = input.argv[3] ? input.argv[3] : undefined;
     this.optionFlowData = []; // key-value store with ordering maintained
-    // Parse options
-    if (input.options?.prompt) {
-      const prompt: string = input.options.prompt as unknown as string;
-      this.pushInteractiveFlow(prompt, input.options.input);
-    }
+    this.input = redactInput(input, true);
   }
 
   /**

@@ -105,6 +105,51 @@ describe('input', () => {
       '20suffix',
     ]);
   });
+
+  it('records a masked prompt response in flow data', async () => {
+    const pushInteractiveFlow = jest.fn();
+    prompter.setFlowData({
+      setIsHeadless: jest.fn(),
+      pushHeadlessFlow: jest.fn(),
+      pushInteractiveFlow,
+      getFlowReport: jest.fn(),
+      assignProjectIdentifier: jest.fn(),
+    });
+    promptMock.mockResolvedValueOnce({ result: 'TEST_CANARY_VALUE' });
+
+    expect(await prompter.input('test message')).toEqual('TEST_CANARY_VALUE');
+    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '*****************');
+  });
+
+  it('records a masked transformed response in flow data', async () => {
+    const pushInteractiveFlow = jest.fn();
+    prompter.setFlowData({
+      setIsHeadless: jest.fn(),
+      pushHeadlessFlow: jest.fn(),
+      pushInteractiveFlow,
+      getFlowReport: jest.fn(),
+      assignProjectIdentifier: jest.fn(),
+    });
+    promptMock.mockResolvedValueOnce({ result: '42' });
+
+    expect(await prompter.input<'one', number>('test message', { transform: (input) => Number(input) })).toEqual(42);
+    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '*');
+  });
+
+  it('records a masked initial value in flow data if yes flag set', async () => {
+    flagsMock.isYes = true;
+    const pushInteractiveFlow = jest.fn();
+    prompter.setFlowData({
+      setIsHeadless: jest.fn(),
+      pushHeadlessFlow: jest.fn(),
+      pushInteractiveFlow,
+      getFlowReport: jest.fn(),
+      assignProjectIdentifier: jest.fn(),
+    });
+
+    expect(await prompter.input('test message', { initial: 'TEST_CANARY_VALUE' })).toEqual('TEST_CANARY_VALUE');
+    expect(pushInteractiveFlow).toHaveBeenCalledWith('test message', '*****************');
+  });
 });
 
 describe('pick', () => {

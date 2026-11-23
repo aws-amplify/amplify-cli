@@ -15,6 +15,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { CLIFlowReport } from '../domain/amplify-usageData/FlowReport';
+import { CLIInput } from '../domain/command-input';
 import { homedir } from 'os';
 
 describe('Test FlowReport Logging', () => {
@@ -117,6 +118,37 @@ describe('Test FlowReport Logging', () => {
     flowReport.setInput(mockInputs.headlessInput('auth', 'add'));
 
     expect(flowReport.executable).not.toContain(homedir());
+  });
+
+  it('report input only includes command metadata', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'init', '--test-option', 'TEST_CANARY_VALUE']);
+    input.plugin = 'core';
+    input.command = 'init';
+    input.options = { 'test-option': 'TEST_CANARY_VALUE' };
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'core', command: 'init' });
+    expect(report.cmd).toEqual('init');
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
+  });
+
+  it('headless report input only includes command metadata', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'env', 'import', '--test-option', 'TEST_CANARY_VALUE']);
+    input.plugin = 'core';
+    input.command = 'env';
+    input.subCommands = ['import'];
+    input.options = { 'test-option': 'TEST_CANARY_VALUE' };
+
+    flowReport.pushHeadlessFlow('{}', input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'core', command: 'env', subCommands: ['import'] });
+    expect(report.isHeadless).toEqual(true);
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
   });
 });
 
