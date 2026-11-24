@@ -365,7 +365,7 @@ const validateCredentials = (credentials: $TSAny, profileName: string): void => 
 
 const normalizeKeys = (config: $TSAny): $TSAny => {
   const configClone = { ...config };
-  if (configClone) {
+  if (config) {
     configClone.accessKeyId = config.accessKeyId || config.aws_access_key_id;
     configClone.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
     configClone.sessionToken = config.sessionToken || config.aws_session_token;
