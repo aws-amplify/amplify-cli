@@ -186,6 +186,9 @@ export class App {
 
   /**
    * Restore the pre-generate snapshot into the amplify/ directory.
+   *
+   * The restored amplify-meta.json keeps the live provider block and drops each function's
+   * recorded LambdaExecutionRole, so admin roles resolve to the live env's role names.
    */
   public async configure(): Promise<void> {
     this.logger.info('Configuring categories...');
@@ -204,8 +207,14 @@ export class App {
     restore('.config');
     restore('team-provider-info.json');
 
-    const newMeta = JSON.parse(fs.readFileSync(metaPath, { encoding: 'utf-8' })) as { providers: Record<string, unknown> };
+    const newMeta = JSON.parse(fs.readFileSync(metaPath, { encoding: 'utf-8' })) as {
+      providers: Record<string, unknown>;
+      function?: Record<string, { output?: Record<string, unknown> }>;
+    };
     newMeta.providers['awscloudformation'] = oldMeta.providers['awscloudformation'];
+    // The recorded LambdaExecutionRole names the snapshot env's role. Leaving it in makes the
+    // transform grant admin access to that env's role instead of the live env's.
+    for (const fn of Object.values(newMeta.function ?? {})) delete fn.output?.LambdaExecutionRole;
     fs.writeFileSync(metaPath, JSON.stringify(newMeta, null, 2));
     fs.removeSync(path.join(this.targetAppPath, '.amplify.init'));
     this.removeGitignoreLine('amplifyconfiguration.json');

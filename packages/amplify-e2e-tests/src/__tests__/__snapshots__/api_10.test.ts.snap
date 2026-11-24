@@ -62,8 +62,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -174,8 +175,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
