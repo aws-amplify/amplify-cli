@@ -14,14 +14,39 @@ const stackRegex = /amplify-[a-zA-Z0-9-]+/g;
 const filePathRegex = new RegExp(`(file:/+)?${homedir().replaceAll('\\', '/')}[\\w.\\-_@\\\\/]+`, 'g');
 
 /**
- * Wrapper around Error.name
+ * Error recorded in usage data.
+ *
+ * Only the error name and code are included.
  */
 export class SerializableError {
-  name: string;
-  message: string;
-  details?: string;
-  code?: string;
-  trace?: Trace[];
+  public readonly name: string;
+
+  public readonly code?: string;
+
+  constructor(error: Error) {
+    const { code } = error as $TSAny;
+    this.name = error.name;
+    this.code = typeof code === 'string' ? sanitize(code) : undefined;
+  }
+}
+
+/**
+ * Error included in a diagnose report.
+ *
+ * Includes the error message, details, code and stack trace.
+ * ARNs are replaced in the message and details; stack names and home directory paths are replaced in the message.
+ */
+export class DetailedSerializableError {
+  public readonly name: string;
+
+  public readonly message: string;
+
+  public readonly details?: string;
+
+  public readonly code?: string;
+
+  public readonly trace?: Trace[];
+
   constructor(error: Error) {
     this.name = error.name;
     this.message = anonymizePaths(sanitize(error.message)!);
