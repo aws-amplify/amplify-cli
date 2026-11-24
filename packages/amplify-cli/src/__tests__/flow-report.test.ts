@@ -13,8 +13,8 @@ import {
   AddApiRequest,
 } from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
-import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { CLIFlowReport } from '../domain/amplify-usageData/FlowReport';
+import { CLIInput } from '../domain/command-input';
 import { homedir } from 'os';
 
 describe('Test FlowReport Logging', () => {
@@ -43,7 +43,7 @@ describe('Test FlowReport Logging', () => {
     expect(flowReport.version).toEqual(mockInputs.version);
   });
 
-  it('flow-log-headless-payload: (Auth) is redacted in flowReport', () => {
+  it('flow-log-headless-payload: (Auth) records a placeholder for headless parameters', () => {
     const input = getAuthHeadlessTestInput();
     const inputString = JSON.stringify(input);
     const flowReport = new CLIFlowReport();
@@ -55,10 +55,10 @@ describe('Test FlowReport Logging', () => {
     expect(report.isHeadless).toEqual(true);
     expect(report.input.plugin).toEqual('auth');
     expect(report.input.command).toEqual('add');
-    expect(report.optionFlowData[0].input).toEqual(Redactor(inputString));
+    expect(report.optionFlowData[0].input).toEqual('****');
   });
 
-  it('flow-log-headless-payload: (Storage S3) is redacted in flowReport', () => {
+  it('flow-log-headless-payload: (Storage S3) records a placeholder for headless parameters', () => {
     const input = getAddStorageS3HeadlessTestInput();
     const inputString = JSON.stringify(input);
     const flowReport = new CLIFlowReport();
@@ -67,42 +67,34 @@ describe('Test FlowReport Logging', () => {
     expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.bucketName);
     expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.resourceName);
     expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.lambdaTrigger?.name as string);
-    expect(flowReport.optionFlowData[0].input).toContain(redactValue('bucketName', input.serviceConfiguration.bucketName));
-    expect(flowReport.optionFlowData[0].input).toContain(redactValue('resourceName', input.serviceConfiguration.resourceName));
-    expect(flowReport.optionFlowData[0].input).toContain(redactValue('name', input.serviceConfiguration.lambdaTrigger?.name as string));
 
     const report = flowReport.getFlowReport();
     expect(report.isHeadless).toEqual(true);
     expect(report.input.plugin).toEqual('storage');
     expect(report.input.command).toEqual('add');
-    expect(report.optionFlowData[0].input).toEqual(Redactor(inputString));
+    expect(report.optionFlowData[0].input).toEqual('****');
   });
 
-  it('flow-log-headless-payload: (API GraphQL) headless-payload is redacted in flowReport', () => {
+  it('flow-log-headless-payload: (API GraphQL) records a placeholder for headless parameters', () => {
     const input = getGraphQLHeadlessTestInput();
 
     const inputString = JSON.stringify(input);
     const flowReport = new CLIFlowReport();
     flowReport.assignProjectIdentifier();
     flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('api', 'add'));
-    expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.apiName); // resource name redacted
-    expect(flowReport.optionFlowData[0].input).toContain(redactValue('apiName', input.serviceConfiguration.apiName));
-    const redactedInput = JSON.parse(flowReport.optionFlowData[0].input as unknown as string);
-    expect(redactedInput.serviceConfiguration.transformSchema).toEqual(input.serviceConfiguration.transformSchema); // transform schema must exist
+    expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.apiName);
+    expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.transformSchema);
+    expect(flowReport.optionFlowData[0].input).toEqual('****');
   });
 
-  it('flow-log-headless-payload: (Geo) is redacted in flowReport', () => {
+  it('flow-log-headless-payload: (Geo) records a placeholder for headless parameters', () => {
     const input = getGeoHeadlessTestInput();
     const inputString = JSON.stringify(input);
-    const redactedName = redactValue('name', input.serviceConfiguration.name);
     const flowReport = new CLIFlowReport();
     flowReport.assignProjectIdentifier();
     flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('geo', 'add'));
-    expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.name); // resource name redacted
-    expect(flowReport.optionFlowData[0].input).toContain(redactedName); // resource name redacted
-    expect(flowReport.optionFlowData[0].input).toContain(input.serviceConfiguration.accessType);
-    expect(flowReport.optionFlowData[0].input).toContain(input.serviceConfiguration.mapStyle);
-    expect(flowReport.optionFlowData[0].input).toEqual(Redactor(inputString));
+    expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.name);
+    expect(flowReport.optionFlowData[0].input).toEqual('****');
   });
 
   it('runtime does not contain home directory info', () => {
@@ -118,12 +110,165 @@ describe('Test FlowReport Logging', () => {
 
     expect(flowReport.executable).not.toContain(homedir());
   });
-});
 
-const redactValue = (key: string, value: unknown) => {
-  const retVal = JSON.parse(Redactor(JSON.stringify({ [key]: value })));
-  return retVal[key];
-};
+  it('report input only includes command metadata', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'init', '--test-option', 'TEST_CANARY_VALUE']);
+    input.plugin = 'core';
+    input.command = 'init';
+    input.options = { 'test-option': 'TEST_CANARY_VALUE' };
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'core', command: 'init' });
+    expect(report.cmd).toEqual('init');
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
+  });
+
+  it('headless report only includes command metadata', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'add', 'storage', '--headless', '--test-option', 'TEST_CANARY_VALUE']);
+    input.plugin = 'storage';
+    input.command = 'add';
+    input.options = { headless: true, 'test-option': 'TEST_CANARY_VALUE' };
+    const headlessPayload: AddStorageRequest = {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        resourceName: 'TEST_CANARY_VALUE',
+        bucketName: 'TEST_CANARY_VALUE',
+        permissions: {
+          auth: [CrudOperation.READ],
+          groups: { TEST_CANARY_VALUE: [CrudOperation.READ] },
+        },
+      },
+    };
+
+    flowReport.pushHeadlessFlow(JSON.stringify(headlessPayload), input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'storage', command: 'add' });
+    expect(report.isHeadless).toEqual(true);
+    expect(report.optionFlowData).toEqual([{ input: '****', timestamp: expect.any(Number) }]);
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
+  });
+
+  it('report input records positional arguments as placeholders', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'env', 'checkout', 'TEST_CANARY_VALUE']);
+    input.plugin = 'core';
+    input.command = 'env';
+    input.subCommands = ['checkout', 'TEST_CANARY_VALUE'];
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'core', command: 'env', subCommands: ['checkout', '<unknown>'] });
+    expect(report.cmd).toEqual('env');
+    expect(report.subCmd).toEqual('checkout');
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
+  });
+
+  it('report input records an unknown command and every name after it as placeholders', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'TEST_CANARY_VALUE', 'env', 'checkout']);
+    input.plugin = 'core';
+    input.command = 'TEST_CANARY_VALUE';
+    input.subCommands = ['env', 'checkout'];
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'core', command: '<unknown>', subCommands: ['<unknown>', '<unknown>'] });
+    expect(report.cmd).toEqual('<unknown>');
+    expect(report.subCmd).toEqual('<unknown>');
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
+  });
+
+  it('report input records commands of an unknown plugin as placeholders', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'TEST_CANARY_VALUE', 'add']);
+    input.plugin = 'TEST_CANARY_VALUE';
+    input.command = 'add';
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: '<unknown>', command: '<unknown>' });
+    expect(report.cmd).toEqual('<unknown>');
+    expect(report.subCmd).toEqual('<unknown>');
+  });
+
+  it('report cmd and subCmd are the plugin and command names when a plugin is named', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'api', 'add']);
+    input.plugin = 'api';
+    input.command = 'add';
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.cmd).toEqual('api');
+    expect(report.subCmd).toEqual('add');
+  });
+
+  it('report cmd is the command name of a core command without subcommands', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'status']);
+    input.plugin = 'core';
+    input.command = 'status';
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.cmd).toEqual('status');
+    expect(report.subCmd).toBeUndefined();
+  });
+
+  it('report input does not match inherited object property names', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'env', 'constructor', '__proto__']);
+    input.plugin = 'core';
+    input.command = 'env';
+    input.subCommands = ['constructor', '__proto__'];
+
+    flowReport.setInput(input);
+
+    expect(flowReport.getFlowReport().input).toEqual({
+      argv: [],
+      plugin: 'core',
+      command: 'env',
+      subCommands: ['<unknown>', '<unknown>'],
+    });
+  });
+
+  it('report input records a plugin command reached through a plugin alias', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'override', 'root']);
+    input.plugin = 'root';
+    input.command = 'override';
+
+    flowReport.setInput(input);
+
+    expect(flowReport.getFlowReport().input).toEqual({ argv: [], plugin: 'root', command: 'override' });
+  });
+
+  it('report input records the command that help is shown for', () => {
+    const flowReport = new CLIFlowReport();
+    const input = new CLIInput(['node', 'amplify', 'mock', 'function', 'TEST_CANARY_VALUE', '--help']);
+    input.plugin = 'mock';
+    input.command = 'help';
+    input.subCommands = ['mock', 'function', 'TEST_CANARY_VALUE'];
+    input.options = { help: true };
+
+    flowReport.setInput(input);
+    const report = flowReport.getFlowReport();
+
+    expect(report.input).toEqual({ argv: [], plugin: 'mock', command: 'help', subCommands: ['mock', 'function', '<unknown>'] });
+    expect(JSON.stringify(report)).not.toContain('TEST_CANARY_VALUE');
+  });
+});
 
 /** * Helper functions and test data ***/
 const mockAddStorageInput: AddS3ServiceConfiguration = {

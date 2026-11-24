@@ -295,6 +295,37 @@ describe('test usage data payload generation', () => {
     expect(usageData.error).toEqual(new SerializableError(amplifyError));
     expect(usageData.downstreamException).toEqual(new SerializableError(downstreamException));
   });
+  it('records only the name and code of an error and its downstream exception', async () => {
+    const downstreamException = Object.assign(new Error('test downstream error message'), { code: 'ResourceNotFoundException' });
+    const amplifyError = new AmplifyError(
+      'NotImplementedError',
+      { message: 'test error message', details: 'test error details', resolution: 'test error resolution' },
+      downstreamException,
+    );
+    const usageData = JSON.parse(JSON.stringify(UsageData.Instance.getUsageDataPayload(amplifyError, '')));
+    expect(usageData.error).toEqual({ name: 'NotImplementedError' });
+    expect(usageData.downstreamException).toEqual({ name: 'Error', code: 'ResourceNotFoundException' });
+  });
+  it('records positional arguments in the payload input as placeholders', async () => {
+    const input = new CommandLineInput(['node', 'amplify', 'env', 'checkout', 'TEST_CANARY_VALUE']);
+    input.plugin = 'core';
+    input.command = 'env';
+    input.subCommands = ['checkout', 'TEST_CANARY_VALUE'];
+    UsageData.Instance.init(
+      uuid.v4(),
+      '',
+      input,
+      'accountId',
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' } as unknown as ProjectSettings,
+      Date.now(),
+    );
+
+    const usageData = UsageData.Instance.getUsageDataPayload(null, '');
+
+    expect(usageData.input).toEqual({ argv: [], plugin: 'core', command: 'env', subCommands: ['checkout', '<unknown>'] });
+    expect(usageData.flowReport.input).toEqual({ argv: [], plugin: 'core', command: 'env', subCommands: ['checkout', '<unknown>'] });
+    expect(JSON.stringify(usageData)).not.toContain('TEST_CANARY_VALUE');
+  });
 });
 
 const checkUsageData = async (): Promise<void> => {

@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { constants, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CLIInput } from '../command-input';
 import { getAmplifyLogger, Redactor, IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
@@ -13,6 +13,12 @@ import {
 } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
 import { homedir } from 'os';
+import { getRecordedInput } from './known-commands';
+
+/**
+ * Recorded as the input of a headless flow.
+ */
+const headlessParametersPlaceholder = '****';
 
 /**
  * Store the data and sequence of events of CLI walkthrough
@@ -67,28 +73,22 @@ export class CLIFlowReport implements IFlowData {
   }
 
   /**
-   * Set the CLI input args
+   * Set the CLI input args.
+   * Only known plugin, command and sub-command names are kept in the report input, see getRecordedInput.
+   * cmd and subCmd are the first two recorded names in command line order: the plugin name (unless core), the command and its sub-commands.
    * @param input - first arguments provided in the CLI flow
    */
-  setInput(input: CLIInput): void {
-    this.input = input;
-    for (let i = 0; i < input.argv.length; i++) {
-      if (input.argv[i].match(this.filePathRegex)) {
-        const arg = this.anonymizePath(input.argv[i]);
-        this.input.argv[i] = arg;
-      }
-    }
-
-    this.runtime = this.input.argv[0] as string;
-    this.executable = this.input.argv[1] as string;
-    this.cmd = input.argv[2] as string;
-    this.subCmd = input.argv[3] ? input.argv[3] : undefined;
+  setInput(input: ICommandInput): void {
+    const [runtime, executable] = input.argv.slice(0, 2).map(this.anonymizePath);
+    this.runtime = runtime;
+    this.executable = executable;
+    const recordedInput = getRecordedInput(input);
+    const pluginNames = recordedInput.plugin === constants.CORE ? [] : [recordedInput.plugin];
+    const [cmd, subCmd] = [...pluginNames, recordedInput.command, ...(recordedInput.subCommands ?? [])];
+    this.input = recordedInput;
+    this.cmd = cmd;
+    this.subCmd = subCmd;
     this.optionFlowData = []; // key-value store with ordering maintained
-    // Parse options
-    if (input.options?.prompt) {
-      const prompt: string = input.options.prompt as unknown as string;
-      this.pushInteractiveFlow(prompt, input.options.input);
-    }
   }
 
   /**
@@ -141,15 +141,15 @@ export class CLIFlowReport implements IFlowData {
   }
 
   /**
-   * This method is called whenever the CLI is invoked in headless mode
-   * @param headlessParameterString - headless parameter string ( serialized but before schema validation )
+   * This method is called whenever the CLI is invoked in headless mode.
+   * Records that headless parameters were provided.
+   * @param _headlessParameterString - headless parameter string ( serialized but before schema validation )
    */
-  pushHeadlessFlow(headlessParameterString: string, cliInput: ICommandInput): void {
+  pushHeadlessFlow(_headlessParameterString: string, cliInput: ICommandInput): void {
     this.assignProjectIdentifier(); // conditionally initialize the project identifier
     this.setIsHeadless(true);
     this.setInput(cliInput);
-    const cleanOption = Redactor(headlessParameterString);
-    const timeStampedOption: IOptionFlowHeadlessData = { input: cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
+    const timeStampedOption: IOptionFlowHeadlessData = { input: headlessParametersPlaceholder, timestamp: new Date().valueOf() }; // attach unix-style timestamp
     this.optionFlowData.push(timeStampedOption);
   }
 
